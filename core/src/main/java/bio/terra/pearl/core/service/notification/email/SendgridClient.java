@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.notification.SendgridEvent;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -14,6 +15,7 @@ import org.apache.commons.text.StringSubstitutor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class SendgridClient {
   }
 
 
-  public void sendEmail(Mail mail) throws Exception {
+  public void sendEmail(Mail mail) {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
       log.info("Email send skipped: no sendgrid api provided");
@@ -43,8 +45,13 @@ public class SendgridClient {
 
     request.setMethod(Method.POST);
     request.setEndpoint("mail/send");
-    request.setBody(mail.build());
-    sg.api(request);
+    try {
+      request.setBody(mail.build());
+      sg.api(request);
+    } catch (IOException ex) {
+      // this likely means the network failed, not that the email failed to send
+      throw new IOInternalException("Error sending email", ex);
+    }
   }
 
   public List<SendgridEvent> getEvents(Instant startDate, Instant endDate, int queryLimit) throws Exception {

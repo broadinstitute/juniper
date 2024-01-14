@@ -557,6 +557,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/facets:
+    get:
+      summary: Gets enrollee search facets for a study and  environment
+      tags: [ enrolleeSearch ]
+      operationId: getSearchFacets
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of enrollee search facets
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
     get:
       summary: Loads the specified metric for the given study env
@@ -721,10 +738,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notificationConfigs:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
     get:
-      summary: gets all the active notification configs for the environment
-      tags: [ notificationConfig ]
+      summary: gets all the active triggered actions for the environment
+      tags: [ trigger ]
       operationId: findByStudy
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -732,13 +749,13 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
-          description: The notification configs
+          description: The triggered actions
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
     post:
-      summary: create a new notification config for the environment
-      tags: [ notificationConfig ]
+      summary: create a new triggered action for the environment
+      tags: [ trigger ]
       operationId: create
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -753,10 +770,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notificationConfigs/{configId}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers/{configId}:
     get:
-      summary: gets the notification config by id
-      tags: [ notificationConfig ]
+      summary: gets the trigger by id
+      tags: [ trigger ]
       operationId: get
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -765,13 +782,27 @@ paths:
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
-          description: The notification config
+          description: The trigger
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+    delete:
+      summary: deactivates the trigger by id
+      tags: [ trigger ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
     patch:
-      summary: Since configs are immutable, a new config is made and the current one is deactivated.  The new config is attached to the study and is returned
-      tags: [ notificationConfig ]
+      summary: Since triggers are immutable, a new config is made and the current one is deactivated.  The new trigger is attached to the study and is returned
+      tags: [ trigger ]
       operationId: replace
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -783,14 +814,14 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: The new notification config
+          description: The new trigger
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/adhoc:
     post:
-      summary: Send a one-off notification/message to one or more enrollees with a specified notification config
-      tags: [ notifications ]
+      summary: Send a one-off notification/message to one or more enrollees with a specified trigger
+      tags: [ trigger ]
       operationId: adHoc
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -801,17 +832,18 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: The notification config created/used for the notification
+          description: The trigger created/used for the notification
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/notificationConfigs/{configId}/test:
+  /api/portals/v1/{portalShortcode}/env/{envName}/triggers/{configId}/test:
     post:
-      summary: Sends a test notification for the given config and enrolleeRuleData
-      tags: [ notifications ]
+      summary: Sends a test action for the given trigger and enrolleeRuleData
+      tags: [ trigger ]
       operationId: test
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:

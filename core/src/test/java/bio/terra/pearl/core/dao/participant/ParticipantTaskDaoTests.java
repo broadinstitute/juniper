@@ -3,15 +3,15 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.notification.NotificationConfigFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.NotificationType;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -23,6 +23,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,12 +55,12 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
 
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var trigger = triggerFactory.buildPersisted(Trigger.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
-                .notificationType(NotificationType.TASK_REMINDER),
+                .triggerType(TriggerType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
-                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+                notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
@@ -93,18 +94,40 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
 
         // Now check that it filters out tasks if there is a recent notification
-        var notificationConfig = notificationConfigFactory.buildPersisted(NotificationConfig.builder()
+        var trigger = triggerFactory.buildPersisted(Trigger.builder()
                         .deliveryType(NotificationDeliveryType.EMAIL)
-                        .notificationType(NotificationType.TASK_REMINDER),
+                        .triggerType(TriggerType.TASK_REMINDER),
                 studyEnv.getId(), portalEnv.getId());
         notificationFactory.buildPersisted(
-                notificationFactory.builder(enrolleeBundle, notificationConfig).deliveryStatus(NotificationDeliveryStatus.SENT)
+                notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
         var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
         assertThat(tasksRecentNotification, hasSize(1));
         assertThat(tasksRecentNotification.get(0).getEnrolleeId(), equalTo(enrolleeBundle2.enrollee().getId())); // only the second enrollee's task should appear
+    }
+
+    @Test
+    @Transactional
+    void testFindTasksByStudy(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_1", "task_name1", TaskStatus.NEW, TaskType.CONSENT);
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_2", "task_name2", TaskStatus.NEW, TaskType.SURVEY);
+        participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_3", "task_name3", TaskStatus.COMPLETE, TaskType.CONSENT);
+        participantTaskFactory.buildPersisted(enrolleeBundle2, "stable_id_1", "task_name1", TaskStatus.COMPLETE, TaskType.SURVEY);
+
+        List<ParticipantTaskDao.EnrolleeTasks> enrolleeTasks = participantTaskDao.findTasksByStudy(studyEnv.getId());
+        assertThat(enrolleeTasks, hasSize(3));
+        assertThat(enrolleeTasks.stream().map(ParticipantTaskDao.EnrolleeTasks::getTargetStableId).toList(),
+                containsInAnyOrder("stable_id_1", "stable_id_2", "stable_id_3"));
+        assertThat(enrolleeTasks.stream().map(ParticipantTaskDao.EnrolleeTasks::getTargetName).toList(),
+                containsInAnyOrder("task_name1", "task_name2", "task_name3"));
     }
 
     @Autowired
@@ -118,7 +141,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
-    private NotificationConfigFactory notificationConfigFactory;
+    private TriggerFactory triggerFactory;
     @Autowired
     private NotificationFactory notificationFactory;
     @Autowired

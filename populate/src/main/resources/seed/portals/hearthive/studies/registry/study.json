@@ -32,8 +32,8 @@
           "surveyVersion": 1
         }
       ],
-      "notificationConfigDtos": [{
-        "notificationType": "EVENT",
+      "triggerDtos": [{
+        "triggerType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "emailTemplateStableId": "hh_registry_studyEnroll",
         "emailTemplateVersion": 1

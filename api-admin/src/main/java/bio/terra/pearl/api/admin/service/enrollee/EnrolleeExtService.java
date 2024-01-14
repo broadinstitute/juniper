@@ -4,6 +4,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
@@ -45,6 +46,15 @@ public class EnrolleeExtService {
       List<SqlSearchableFacet> facets) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
+  }
+
+  public List<EnrolleeSearchFacet> getSearchFacets(
+      AdminUser user,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName) {
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    return enrolleeSearchService.getFacets(studyShortcode, environmentName);
   }
 
   public List<Enrollee> findForKitManagement(

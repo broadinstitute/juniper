@@ -4,13 +4,14 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.AnswerService;
@@ -22,7 +23,6 @@ import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -66,11 +66,13 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected StudyService studyService;
     @Autowired
-    protected NotificationConfigService notificationConfigService;
+    protected TriggerService triggerService;
     @Autowired
     protected EmailTemplateService emailTemplateService;
     @Autowired
     protected ConsentFormService consentFormService;
+    @Autowired
+    protected SiteContentService siteContentService;
 
     protected void setUpEnvironments() {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {

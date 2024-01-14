@@ -18,13 +18,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class NotificationDispatcher {
-    private NotificationConfigService notificationConfigService;
+    private TriggerService triggerService;
     private NotificationService notificationService;
     private Map<NotificationDeliveryType, NotificationSender> senderMap;
 
-    public NotificationDispatcher(NotificationConfigService notificationConfigService,
+    public NotificationDispatcher(TriggerService triggerService,
                                   NotificationService notificationService, EnrolleeEmailService enrolleeEmailService) {
-        this.notificationConfigService = notificationConfigService;
+        this.triggerService = triggerService;
         this.notificationService = notificationService;
         senderMap = Map.of(NotificationDeliveryType.EMAIL, enrolleeEmailService);
     }
@@ -33,11 +33,11 @@ public class NotificationDispatcher {
     @EventListener
     @Order(DispatcherOrder.NOTIFICATION)
     public void handleEvent(EnrolleeEvent event) {
-        List<NotificationConfig> configs = notificationConfigService
+        List<Trigger> configs = triggerService
                 .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId(), true)
-                .stream().filter(config  -> config.getNotificationType().equals(NotificationType.EVENT))
+                .stream().filter(config  -> config.getTriggerType().equals(TriggerType.EVENT))
                 .toList();
-        for (NotificationConfig config: configs) {
+        for (Trigger config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
                 if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
@@ -55,19 +55,19 @@ public class NotificationDispatcher {
      * Where this will help is for bulk operations -- if we want to send out 2000 emails to all the ourHealth participants
      * because of a new survey, it lets us have just 1 database operation per notification instead of 2
      * */
-    protected void dispatchNotificationAsync(NotificationConfig config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
+    protected void dispatchNotificationAsync(Trigger config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
         Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId, null);
         notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())
                 .processNotificationAsync(notification, config, enrolleeRuleData);
     }
 
-    public void dispatchNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData,
+    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
                                      NotificationContextInfo notificationContextInfo) {
         dispatchNotification(config, enrolleeRuleData, notificationContextInfo, Map.of());
     }
 
-    public void dispatchNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData,
+    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
                                      NotificationContextInfo notificationContextInfo, Map<String, String> customMessages) {
         Notification notification = initializeNotification(config, enrolleeRuleData,
             notificationContextInfo.portalEnv().getId(), customMessages);
@@ -75,17 +75,17 @@ public class NotificationDispatcher {
             .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
     }
 
-    public void dispatchTestNotification(NotificationConfig config, EnrolleeRuleData enrolleeRuleData) throws Exception {
+    public void dispatchTestNotification(Trigger config, EnrolleeRuleData enrolleeRuleData) {
         senderMap.get(config.getDeliveryType())
                 .sendTestNotification(config, enrolleeRuleData);
     }
 
-    public Notification initializeNotification(NotificationConfig config, EnrolleeRuleData ruleData,
+    public Notification initializeNotification(Trigger config, EnrolleeRuleData ruleData,
                                                UUID portalEnvId, Map<String, String> customMessages) {
         return Notification.builder()
                 .enrolleeId(ruleData.enrollee().getId())
                 .participantUserId(ruleData.enrollee().getParticipantUserId())
-                .notificationConfigId(config.getId())
+                .triggerId(config.getId())
                 .deliveryStatus(NotificationDeliveryStatus.READY)
                 .deliveryType(config.getDeliveryType())
                 .studyEnvironmentId(ruleData.enrollee().getStudyEnvironmentId())
@@ -95,7 +95,7 @@ public class NotificationDispatcher {
                 .build();
     }
 
-    public NotificationContextInfo loadContextInfo(NotificationConfig config) {
+    public NotificationContextInfo loadContextInfo(Trigger config) {
         return senderMap.get(config.getDeliveryType()).loadContextInfo(config);
     }
 

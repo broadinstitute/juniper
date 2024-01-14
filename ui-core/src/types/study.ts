@@ -14,7 +14,7 @@ export type StudyEnvironment = {
   preEnrollSurveyId?: string
   configuredConsents: StudyEnvironmentConsent[]
   configuredSurveys: StudyEnvironmentSurvey[]
-  notificationConfigs: NotificationConfig[]
+  triggers: Trigger[]
 }
 
 export type StudyEnvironmentConfig = {
@@ -51,12 +51,12 @@ export type StudyEnvironmentConsent = {
   prepopulate: boolean
 }
 
-export type NotificationConfig = {
+export type Trigger = {
   id: string
   portalEnvironmentId: string
   studyEnvironmentId: string
   active: boolean
-  notificationType: string
+  triggerType: string
   deliveryType: string
   rule?: string
   eventType: string
