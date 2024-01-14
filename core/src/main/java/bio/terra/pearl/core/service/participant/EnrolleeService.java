@@ -15,7 +15,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -172,7 +172,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         List<Enrollee> enrollees = enrolleesAndIds.getFirst();
         List<UUID> enrolleeIds = enrolleesAndIds.getSecond();
 
-        Map<UUID, List<KitRequestDetails>> kitsByEnrolleeId = kitRequestService.findByEnrollees(enrollees);
+        Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(enrollees);
         Map<UUID, Set<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
 
         enrollees.forEach(enrollee -> {

@@ -44,7 +44,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -157,7 +156,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .build());
 
         // Act
-        Collection<KitRequestDetails> kits = kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
+        Collection<KitRequestDto> kits = kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
 
         PepperKit pepperKit = objectMapper.readValue(kitRequest1.getExternalKit(), PepperKit.class);
         // note: this works because the order of insertion in KitRequestDetails is deterministic
@@ -165,7 +164,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         detailsJson.put("requestId", kitRequest1.getId().toString());
         detailsJson.put("shippingId", pepperKit.getDsmShippingLabel());
 
-        for (KitRequestDetails kit : kits) {
+        for (KitRequestDto kit : kits) {
             if (kit.getId().equals(kitRequest1.getId())) {
                 assertThat(kit.getStatus(), equalTo(KitRequestStatus.CREATED));
                 assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee.getShortcode()));
@@ -215,11 +214,11 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         KitRequest kitRequest2 = kitRequestFactory.buildPersisted(testName,
             enrollee2, pepperKit2, kitType.getId(), adminUser.getId());
 
-        Map<UUID, List<KitRequestDetails>> kits = kitRequestService.findByEnrollees(List.of(enrollee1, enrollee2));
+        Map<UUID, List<KitRequestDto>> kits = kitRequestService.findByEnrollees(List.of(enrollee1, enrollee2));
 
         for (var entry : kits.entrySet()) {
             if (enrollee1.getId().equals(entry.getKey())) {
-                KitRequestDetails kit = entry.getValue().get(0);
+                KitRequestDto kit = entry.getValue().get(0);
                 assertThat(kit.getId(), equalTo(kitRequest1.getId()));
                 assertThat(kit.getStatus(), equalTo(KitRequestStatus.CREATED));
                 assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee1.getShortcode()));
@@ -231,7 +230,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 detailsJson.put("shippingId", pepperKit1.getDsmShippingLabel());
                 assertThat(kit.getDetails(), equalTo(objectMapper.writeValueAsString(detailsJson)));
             } else if (enrollee2.getId().equals(entry.getKey())) {
-                KitRequestDetails kit = entry.getValue().get(0);
+                KitRequestDto kit = entry.getValue().get(0);
                 assertThat(kit.getId(), equalTo(kitRequest2.getId()));
                 assertThat(kit.getStatus(), equalTo(KitRequestStatus.DEACTIVATED));
                 assertThat(kit.getKitType().getName(), equalTo(kitType.getName()));
@@ -250,9 +249,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
             }
         }
 
-        List<KitRequestDetails> kits2 = kitRequestService.findByEnrollee(enrollee2);
+        List<KitRequestDto> kits2 = kitRequestService.findByEnrollee(enrollee2);
         assertThat(kits2.size(), equalTo(1));
-        KitRequestDetails kit = kits2.get(0);
+        KitRequestDto kit = kits2.get(0);
         assertThat(kit.getId(), equalTo(kitRequest2.getId()));
         assertThat(kit.getStatus(), equalTo(KitRequestStatus.DEACTIVATED));
         assertThat(kit.getEnrolleeShortcode(), equalTo(enrollee2.getShortcode()));

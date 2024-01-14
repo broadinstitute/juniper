@@ -5,7 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
@@ -57,10 +57,10 @@ public class KitExtService {
   }
 
   public static class KitRequestListResponse {
-    protected static final List<KitRequestDetails> kitRequests = new ArrayList<>();
+    protected static final List<KitRequestDto> kitRequests = new ArrayList<>();
     protected static final List<Exception> exceptions = new ArrayList<>();
 
-    public void addKitRequest(KitRequestDetails kitRequest) {
+    public void addKitRequest(KitRequestDto kitRequest) {
       kitRequests.add(kitRequest);
     }
 
@@ -69,7 +69,7 @@ public class KitExtService {
     }
   }
 
-  public Collection<KitRequestDetails> getKitRequestsByStudyEnvironment(
+  public Collection<KitRequestDto> getKitRequestsByStudyEnvironment(
       AdminUser adminUser,
       String portalShortcode,
       String studyShortcode,
@@ -81,14 +81,13 @@ public class KitExtService {
     return kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
   }
 
-  public KitRequestDetails requestKit(
+  public KitRequestDto requestKit(
       AdminUser adminUser, String studyShortcode, String enrolleeShortcode, String kitTypeName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitTypeName);
   }
 
-  public Collection<KitRequestDetails> getKitRequests(
-      AdminUser adminUser, String enrolleeShortcode) {
+  public Collection<KitRequestDto> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.findByEnrollee(enrollee);
   }

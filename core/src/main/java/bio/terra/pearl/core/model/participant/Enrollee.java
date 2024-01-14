@@ -5,7 +5,7 @@ import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import java.util.*;
 
 import lombok.Builder;
@@ -40,5 +40,5 @@ public class Enrollee extends BaseEntity {
     @Builder.Default
     private List<ParticipantNote> participantNotes = new ArrayList<>();
     @Builder.Default
-    private List<KitRequestDetails> kitRequests = new ArrayList<>();
+    private List<KitRequestDto> kitRequests = new ArrayList<>();
 }

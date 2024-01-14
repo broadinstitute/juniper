@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class KitRequestDetailsTest extends BaseSpringBootTest {
+class KitRequestDtoTest extends BaseSpringBootTest {
 
   @Autowired
   private ObjectMapper objectMapper;
@@ -41,7 +41,7 @@ class KitRequestDetailsTest extends BaseSpringBootTest {
           .id(UUID.randomUUID())
           .externalKit(objectMapper.writeValueAsString(pepperKit))
           .build();
-      String details = KitRequestDetails.createRequestDetails(kitRequest, objectMapper);
+      String details = KitRequestDto.createRequestDetails(kitRequest, objectMapper);
 
       JsonNode jsonDetails = objectMapper.readTree(details);
       assertThat(jsonDetails.get("requestId").textValue(), equalTo(kitRequest.getId().toString()));
@@ -49,7 +49,7 @@ class KitRequestDetailsTest extends BaseSpringBootTest {
           jsonDetails.get("shippingId").textValue(), equalTo(pepperKit.getDsmShippingLabel()));
       assertThat(jsonDetails.get("errorDate").textValue(), equalTo(pepperKit.getErrorDate()));
     } catch (Exception e) {
-      Assertions.fail("Failed to build KitRequestDetails", e);
+      Assertions.fail("Failed to build KitRequestDto", e);
     }
   }
 }

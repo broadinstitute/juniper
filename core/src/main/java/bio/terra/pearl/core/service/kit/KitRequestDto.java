@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.kit;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
-import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -25,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @SuperBuilder
 @NoArgsConstructor
 @Slf4j
-public class KitRequestDetails {
+public class KitRequestDto {
   private UUID id;
   private Instant createdAt;
   private KitType kitType;
@@ -43,8 +42,8 @@ public class KitRequestDetails {
   private String details;
   private String enrolleeShortcode;
 
-  public KitRequestDetails(KitRequest kitRequest, KitType kitType, String enrolleeShortcode,
-                           ObjectMapper objectMapper) {
+  public KitRequestDto(KitRequest kitRequest, KitType kitType, String enrolleeShortcode,
+                       ObjectMapper objectMapper) {
     this.id = kitRequest.getId();
     this.createdAt = kitRequest.getCreatedAt();
     this.kitType = kitType;

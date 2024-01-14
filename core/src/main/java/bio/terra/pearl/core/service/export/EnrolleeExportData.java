@@ -5,7 +5,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -20,5 +20,5 @@ public class EnrolleeExportData {
     private List<Answer> answers;
     private List<ParticipantTask> tasks;
     private List<SurveyResponse> responses;
-    private List<KitRequestDetails> kitRequests;
+    private List<KitRequestDto> kitRequests;
 }

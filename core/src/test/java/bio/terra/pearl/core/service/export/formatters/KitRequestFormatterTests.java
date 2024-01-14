@@ -4,12 +4,10 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,14 +25,14 @@ public class KitRequestFormatterTests {
         );
         KitRequestFormatter moduleFormatter = new KitRequestFormatter();
         String sentDate = "2023-11-17T14:57:59.548Z";
-        List<KitRequestDetails> kitRequests = List.of(
-            KitRequestDetails.builder()
+        List<KitRequestDto> kitRequests = List.of(
+            KitRequestDto.builder()
                 .kitType(kitTypeList.get(0))
                 .status(KitRequestStatus.SENT)
                 .createdAt(Instant.now())
                 .sentAt(Instant.parse(sentDate))
                 .build(),
-            KitRequestDetails.builder()
+            KitRequestDto.builder()
                 .kitType(kitTypeList.get(1))
                 .status(KitRequestStatus.DEACTIVATED)
                 .createdAt(Instant.now().minus(1, java.time.temporal.ChronoUnit.DAYS))

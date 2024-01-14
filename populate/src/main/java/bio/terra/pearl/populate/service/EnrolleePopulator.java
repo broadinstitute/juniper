@@ -20,7 +20,7 @@ import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.notification.NotificationConfigService;
@@ -262,7 +262,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             timeShiftPopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
         }
         enrollee.getKitRequests().add(
-            new KitRequestDetails(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
+            new KitRequestDto(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
         return kitRequest;
     }
 

@@ -72,7 +72,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Send a request for a sample kit to Pepper.
      * Throws PepperApiException if the Pepper API request failed
      */
-    public KitRequestDetails requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
+    public KitRequestDto requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
     throws PepperApiException {
         // create and save kit request
         if (enrollee.getProfileId() == null) {
@@ -99,7 +99,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
         kitRequest = dao.createWithIdSpecified(kitRequest);
         log.info("Kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
-        return new KitRequestDetails(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
     /**
@@ -124,15 +124,15 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Fetch all kits for an enrollee.
      */
-    public List<KitRequestDetails> findByEnrollee(Enrollee enrollee) {
+    public List<KitRequestDto> findByEnrollee(Enrollee enrollee) {
         List<KitRequest> kits = dao.findByEnrollee(enrollee.getId());
-        return createKitRequestDetails(kits, getKitTypeMap(), getEnrollees(kits));
+        return createKitRequestDto(kits, getKitTypeMap(), getEnrollees(kits));
     }
 
     /**
      * Fetch all kits for a collection of enrollees
      */
-    public Map<UUID, List<KitRequestDetails>> findByEnrollees(Collection<Enrollee> enrollees) {
+    public Map<UUID, List<KitRequestDto>> findByEnrollees(Collection<Enrollee> enrollees) {
         Map<UUID, Enrollee> idToEnrollee =
             enrollees.stream().collect(Collectors.toMap(Enrollee::getId, Function.identity()));
         Map<UUID, List<KitRequest>> idToKitRequest = dao.findByEnrolleeIds(idToEnrollee.keySet());
@@ -141,30 +141,30 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return idToKitRequest.entrySet().stream()
             .collect(Collectors.toMap(
                 Map.Entry::getKey,
-                entry -> createKitRequestDetails(entry.getValue(), kitTypeMap, idToEnrollee)
+                entry -> createKitRequestDto(entry.getValue(), kitTypeMap, idToEnrollee)
             ));
     }
 
     /**
      * Fetch all kits for a study environment.
      */
-    public Collection<KitRequestDetails> getKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
+    public Collection<KitRequestDto> getKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
         List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
-        return createKitRequestDetails(kits, getKitTypeMap(), getEnrollees(kits));
+        return createKitRequestDto(kits, getKitTypeMap(), getEnrollees(kits));
     }
 
-    protected List<KitRequestDetails> createKitRequestDetails(List<KitRequest> kitRequests,
-                                                              Map<UUID, KitType> kitTypeMap,
-                                                              Map<UUID, Enrollee> enrollees
+    protected List<KitRequestDto> createKitRequestDto(List<KitRequest> kitRequests,
+                                                          Map<UUID, KitType> kitTypeMap,
+                                                          Map<UUID, Enrollee> enrollees
     ) {
-        List<KitRequestDetails> kitRequestDetails = new ArrayList<>();
+        List<KitRequestDto> kitRequestDto = new ArrayList<>();
         kitRequests.forEach(kit -> {
             String enrolleeShortcode = enrollees.get(kit.getEnrolleeId()).getShortcode();
-            KitRequestDetails requestDetails =
-                new KitRequestDetails(kit, kitTypeMap.get(kit.getKitTypeId()), enrolleeShortcode, objectMapper);
-            kitRequestDetails.add(requestDetails);
+            KitRequestDto requestDetails =
+                new KitRequestDto(kit, kitTypeMap.get(kit.getKitTypeId()), enrolleeShortcode, objectMapper);
+            kitRequestDto.add(requestDetails);
         });
-        return kitRequestDetails;
+        return kitRequestDto;
     }
 
     protected  Map<UUID, KitType> getKitTypeMap() {

@@ -1,17 +1,17 @@
 package bio.terra.pearl.core.service.export.formatters.item;
 
 import bio.terra.pearl.core.service.export.DataValueExportType;
-import bio.terra.pearl.core.service.kit.KitRequestDetails;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 
-public class KitRequestTypeFormatter extends PropertyItemFormatter<KitRequestDetails> {
+public class KitRequestTypeFormatter extends PropertyItemFormatter<KitRequestDto> {
     public KitRequestTypeFormatter() {
-        super("kitType", KitRequestDetails.class);
+        super("kitType", KitRequestDto.class);
         this.baseColumnKey = "kitType";
         this.dataType = DataValueExportType.STRING;
     }
 
     @Override
-    public String getExportString(KitRequestDetails bean) {
+    public String getExportString(KitRequestDto bean) {
         return bean.getKitType().getName();
     }
 }
