@@ -283,7 +283,9 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     /**
      * query by ORing together pairs of values.  E.g., if you are trying to retreive a set of
      * surveys, and you have a stableId and a version for each, you can query for all of them at once.
-     * Will return the results in the same order as the input values.
+     * Will return the results in the same order as the input values so they can be matched up.
+     * This means that if there are duplicates in the input values, there will be duplicates in the
+     * output values so that the input and output arrays match up.
      */
     protected List<T> findAllByTwoProperties(String column1Name, List<?> column1Values,
                                              String column2Name, List<?> column2Values) {
