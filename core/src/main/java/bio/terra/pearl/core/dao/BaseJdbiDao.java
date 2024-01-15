@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import lombok.Getter;
@@ -17,6 +18,7 @@ import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.jdbi.v3.core.result.RowView;
 import org.jdbi.v3.core.statement.PreparedBatch;
+import org.jdbi.v3.core.statement.Query;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
 
@@ -244,6 +246,16 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+
+    protected List<T> findAllByProperty(String columnName, Object columnValue) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
+                        .bind("columnValue", columnValue)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     protected Optional<T> findByTwoProperties(String column1Name, Object column1Value,
                                               String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
@@ -268,13 +280,40 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected List<T> findAllByProperty(String columnName, Object columnValue) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
-                        .bind("columnValue", columnValue)
-                        .mapTo(clazz)
-                        .list()
-        );
+    /**
+     * query by ORing together pairs of values.  E.g., if you are trying to retreive a set of
+     * surveys, and you have a stableId and a version for each, you can query for all of them at once.
+     * Will return the results in the same order as the input values.
+     */
+    protected List<T> findAllByTwoProperties(String column1Name, List<?> column1Values,
+                                             String column2Name, List<?> column2Values) {
+        if (column1Values.size() != column2Values.size()) {
+            throw new IllegalArgumentException("column1Values and column2Values must be the same size");
+        }
+        if (column1Values.isEmpty()) {
+            // short circuit this case because bindList errors if list is empty
+            return new ArrayList<>();
+        }
+        String whereClause = IntStream.range(0, column1Values.size())
+                .mapToObj(i -> "(%s = :column1Value%s and %s = :column2Value%s and ordering = %s)".formatted(
+                        column1Name, i, column2Name, i, i))
+                .collect(Collectors.joining(" or "));
+        String sortValues = IntStream.range(0, column1Values.size())
+                .mapToObj(i -> "(:column1Value%s, :column2Value%s, %s)".formatted(i, i, i))
+                .collect(Collectors.joining(", "));
+        String joinClause = """
+                 join (values %s) as sortJoin (column1, column2, ordering)
+                on (%s = sortJoin.column1  and %s = sortJoin.column2) 
+                """.formatted(sortValues, column1Name, column2Name);
+        return jdbi.withHandle(handle -> {
+            Query query = handle.createQuery("select * from %s %s where %s order by sortJoin.ordering"
+                    .formatted(tableName, joinClause, whereClause));
+            for (int i = 0; i < column1Values.size(); i++) {
+                query = query.bind("column1Value" + i, column1Values.get(i))
+                        .bind("column2Value" + i, column2Values.get(i));
+            }
+            return query.mapTo(clazz).list();
+        });
     }
 
     protected Stream<T> streamAllByProperty(String columnName, Object columnValue) {
@@ -296,19 +335,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .bindList("columnValues", columnValues)
                         .mapTo(clazz)
                         .list()
-        );
-    }
-
-    protected Stream<T> streamAllByPropertyCollection(String columnName, Collection<?> columnValues) {
-        if (columnValues.isEmpty()) {
-            // short circuit this case because bindList errors if list is empty
-            return Stream.empty();
-        }
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where " + columnName + " IN (<columnValues>);")
-                        .bindList("columnValues", columnValues)
-                        .mapTo(clazz)
-                        .stream()
         );
     }
 

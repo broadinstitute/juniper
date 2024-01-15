@@ -4,7 +4,7 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
-  SiteContent
+  SiteContent, Study, StudyEnvironment
 } from '@juniper/ui-core'
 
 /** mock portal object with one environment */
@@ -17,6 +17,33 @@ export const mockPortal = (): Portal => {
     portalEnvironments: [mockPortalEnvironment()]
   }
 }
+
+/** mock study object */
+export const mockStudy = (): Study => {
+  return {
+    shortcode: 'study1',
+    name: 'Study 1',
+    studyEnvironments: []
+  }
+}
+
+/** mock study environment object */
+export const mockStudyEnv = (): StudyEnvironment => {
+  return {
+    id: 'studyEnv1',
+    environmentName: 'sandbox',
+    studyEnvironmentConfig: {
+      acceptingEnrollment: true,
+      initialized: true,
+      passwordProtected: false,
+      password: 'password'
+    },
+    configuredSurveys: [],
+    configuredConsents: [],
+    notificationConfigs: []
+  }
+}
+
 
 /** mock environment with a siteContent */
 export const mockPortalEnvironment = (): PortalEnvironment => {

@@ -2,13 +2,17 @@ package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.survey.Survey;
 import lombok.Getter;
 import lombok.Setter;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,6 +21,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +30,11 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     @Autowired
     PortalDao portalDao;
     @Autowired
+    SurveyDao surveyDao;
+    @Autowired
     PortalFactory portalFactory;
+    @Autowired
+    SurveyFactory surveyFactory;
 
     @Test
     public void testGenerateInsertFields() {
@@ -64,9 +73,36 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testBulkInsertOfBasicList() {
-        Portal portal1 = portalFactory.builder("testBulkInsertOfBasicList").build();
-        Portal portal2 = portalFactory.builder("testBulkInsertOfBasicList").build();
+    public void testFindAllByTwoPropertiesArray(TestInfo testInfo) {
+        Survey surveyA1 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).stableId("A").version(1));
+        Survey surveyA2 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).stableId("A").version(2));
+        Survey surveyB1 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).stableId("B").version(1));
+        Survey surveyB2 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).stableId("B").version(2));
+        Survey surveyC1 = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).stableId("C").version(1));
+
+        List<Survey> surveys = surveyDao.findAllByTwoProperties(
+                "stable_id", List.of("B", "A"), "version", List.of(1, 2));
+        assertThat(surveys, contains(surveyB1, surveyA2));
+
+        surveys = surveyDao.findAllByTwoProperties(
+                "stable_id", List.of("C"), "version", List.of(2));
+        assertThat(surveys, empty());
+
+        surveys = surveyDao.findAllByTwoProperties(
+                "stable_id", List.of(), "version", List.of());
+        assertThat(surveys, empty());
+    }
+
+    @Test
+    @Transactional
+    public void testBulkInsertOfBasicList(TestInfo testInfo) {
+        Portal portal1 = portalFactory.builder(getTestName(testInfo)).build();
+        Portal portal2 = portalFactory.builder(getTestName(testInfo)).build();
         portalDao.bulkCreate(List.of(portal1, portal2));
         assertThat(portalDao.findOneByShortcode(portal1.getShortcode()).get().getName(), equalTo(portal1.getName()));
         assertThat(portalDao.findOneByShortcode(portal2.getShortcode()).get().getName(), equalTo(portal2.getName()));
@@ -74,9 +110,9 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testBulkInsertFailsIfAnyFail() {
-        Portal portal1 = portalFactory.builder("testBulkInsertOfBasicList").build();
-        Portal portal2 = portalFactory.builder("testBulkInsertOfBasicList").build();
+    public void testBulkInsertFailsIfAnyFail(TestInfo testInfo) {
+        Portal portal1 = portalFactory.builder(getTestName(testInfo)).build();
+        Portal portal2 = portalFactory.builder(getTestName(testInfo)).build();
         Portal portal3 = Portal.builder().shortcode(null).build();
         Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
             portalDao.bulkCreate(List.of(portal1, portal2, portal3));
@@ -85,29 +121,13 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testStreamAllByProperty() {
+    public void testStreamAllByProperty(TestInfo testInfo) {
         // Arrange
-        var portal1 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
-        var portal2 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
+        var portal1 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
+        var portal2 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
 
         // Act
         var stream = portalDao.streamAllByProperty("name", "testStreamAllByProperty");
-        var foundPortals = stream.toList();
-
-        // Assert
-        assertThat(foundPortals, contains(portal1, portal2));
-    }
-
-    @Test
-    @Transactional
-    public void testStreamAllByPropertyCollection() {
-        // Arrange
-        var portal1 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
-        var portal2 = portalDao.create(portalFactory.builder("").name("testStreamAllByProperty").build());
-        var portalIds = List.of(portal1.getId(), portal2.getId());
-
-        // Act
-        var stream = portalDao.streamAllByPropertyCollection("id", portalIds);
         var foundPortals = stream.toList();
 
         // Assert

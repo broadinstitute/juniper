@@ -37,6 +37,10 @@ public class SurveyFactory {
         return surveyService.create(builderWithDependencies(testName).build());
     }
 
+    public Survey buildPersisted(Survey.SurveyBuilder builder) {
+        return surveyService.create(builder.build());
+    }
+
     public Survey buildPersisted(String testName, List<AnswerMapping> mappings) {
         Survey survey = builderWithDependencies(testName)
                 .answerMappings(mappings)

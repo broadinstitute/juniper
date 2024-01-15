@@ -168,8 +168,8 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
 
         enrollees.forEach(enrollee -> {
             // Be sure to set empty collections to indicate that they are empty instead of not initialized
-            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptySet()));
-            enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
+            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), List.of()));
+            enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), List.of()));
         });
 
         return enrollees;

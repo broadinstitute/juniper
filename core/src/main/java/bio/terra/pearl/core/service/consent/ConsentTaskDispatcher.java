@@ -71,7 +71,7 @@ public class ConsentTaskDispatcher {
 
     /** check the enrollee's current consent status, and update it if needed.  this will handle both
      * updating the DB and the enrollee object in-place */
-    public Enrollee updateEnrolleeConsented(Enrollee enrollee, Set<ParticipantTask> participantTasks) {
+    public Enrollee updateEnrolleeConsented(Enrollee enrollee, List<ParticipantTask> participantTasks) {
         boolean consentStatus = checkIsEnrolleeConsented(participantTasks);
         if (enrollee.isConsented() != consentStatus) {
             enrollee.setConsented(consentStatus);
@@ -81,7 +81,7 @@ public class ConsentTaskDispatcher {
     }
 
     /** an enrollee is consented iff they have at least one completed consent and no outstanding consents */
-    public static boolean checkIsEnrolleeConsented(Set<ParticipantTask> participantTasks) {
+    public static boolean checkIsEnrolleeConsented(List<ParticipantTask> participantTasks) {
         List<ParticipantTask> outstandingConsents = participantTasks.stream().filter(
                 task -> task.getTaskType().equals(TaskType.CONSENT) && !task.getStatus().equals(TaskStatus.COMPLETE)
         ).toList();
@@ -133,7 +133,7 @@ public class ConsentTaskDispatcher {
     /**
      * an enrollee cannot have two tasks to complete the same consent form (defined by stableId)
      */
-    public boolean isDuplicateTask(ParticipantTask task, Set<ParticipantTask> allTasks) {
+    public boolean isDuplicateTask(ParticipantTask task, List<ParticipantTask> allTasks) {
         return !allTasks.stream().filter(existingTask ->
                         existingTask.getTargetStableId().equals(task.getTargetStableId()))
                 .toList().isEmpty();

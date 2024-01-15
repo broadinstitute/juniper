@@ -12,7 +12,6 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,21 +44,18 @@ public class ParticipantTaskExtService {
         enrolleeService.findByPortalParticipantUser(portalUser.ppUser());
 
     List<ParticipantTask> outreachTasks =
-        participantEnrollees.stream()
-            .map(enrollee -> participantTaskService.findByEnrolleeId(enrollee.getId()))
+        participantTaskService
+            .findByEnrolleeIds(participantEnrollees.stream().map(Enrollee::getId).toList())
+            .values()
+            .stream()
             .flatMap(Collection::stream)
             .filter(task -> taskType == null || task.getTaskType().equals(taskType))
             .toList();
 
     List<Survey> outreachSurveys =
-        outreachTasks.stream()
-            .map(
-                task ->
-                    surveyService.findByStableId(
-                        task.getTargetStableId(), task.getTargetAssignedVersion()))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .toList();
+        surveyService.findByStableIds(
+            outreachTasks.stream().map(ParticipantTask::getTargetStableId).toList(),
+            outreachTasks.stream().map(ParticipantTask::getTargetAssignedVersion).toList());
     List<TaskAndSurvey> tasksAndSurveys =
         IntStream.range(0, outreachTasks.size())
             .mapToObj(i -> new TaskAndSurvey(outreachSurveys.get(i), outreachTasks.get(i)))
