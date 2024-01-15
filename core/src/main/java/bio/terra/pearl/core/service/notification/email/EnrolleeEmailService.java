@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -49,12 +49,12 @@ public class EnrolleeEmailService implements NotificationSender {
 
     @Async
     @Override
-    public void processNotificationAsync(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData) {
+    public void processNotificationAsync(Notification notification, Trigger config, EnrolleeRuleData ruleData) {
         NotificationContextInfo contextInfo = loadContextInfo(config);
         processNotification(notification, config, ruleData, contextInfo);
     }
 
-    public void processNotification(Notification notification, NotificationConfig config, EnrolleeRuleData ruleData,
+    public void processNotification(Notification notification, Trigger config, EnrolleeRuleData ruleData,
                                     NotificationContextInfo contextInfo) {
         if (!shouldSendEmail(config, ruleData, contextInfo)) {
             notification.setDeliveryStatus(NotificationDeliveryStatus.SKIPPED);
@@ -90,13 +90,13 @@ public class EnrolleeEmailService implements NotificationSender {
      * test emails, since we want all regular emails to be logged via notifications in standard ways.
      * */
     @Override
-    public void sendTestNotification(NotificationConfig config, EnrolleeRuleData ruleData) throws Exception {
+    public void sendTestNotification(Trigger config, EnrolleeRuleData ruleData) {
         NotificationContextInfo contextInfo = loadContextInfo(config);
         buildAndSendEmail(contextInfo, ruleData, new Notification());
     }
 
     protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData,
-                                     Notification notification) throws Exception {
+                                     Notification notification) {
         Mail mail = buildEmail(contextInfo, ruleData, notification);
         sendgridClient.sendEmail(mail);
         return mail;
@@ -128,16 +128,16 @@ public class EnrolleeEmailService implements NotificationSender {
         return mail;
     }
 
-    public boolean shouldSendEmail(NotificationConfig config,
+    public boolean shouldSendEmail(Trigger config,
                                    EnrolleeRuleData ruleData,
                                    NotificationContextInfo contextInfo) {
         if (ruleData.profile() != null && ruleData.profile().isDoNotEmail()) {
-            log.info("skipping email, enrollee {} is doNotEmail: notificationConfig: {}, portalEnv: {}",
+            log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
                     ruleData.enrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (config.getEmailTemplateId() == null) {
-            log.error("no email template configured: notificationConfig: {}, portalEnv: {}",
+            log.error("no email template configured: triggerId: {}, portalEnv: {}",
                     config.getId(), config.getPortalEnvironmentId());
             return false;
         }
@@ -153,11 +153,11 @@ public class EnrolleeEmailService implements NotificationSender {
      * loads the context information needed to send a notification (things not specific to an enrollee/user)
      * this method will almost certainly benefit from caching, especially with respect to bulk emails.
      *
-     * This can return null if called in an async context where the notificationConfig points to an
+     * This can return null if called in an async context where the trigger points to an
      * environment that either no longer exists or has not yet been populated (e.g. during a populate_portal.sh call)
      */
     @Override
-    public NotificationContextInfo loadContextInfo(NotificationConfig config) {
+    public NotificationContextInfo loadContextInfo(Trigger config) {
         PortalEnvironment portalEnvironment = portalEnvService.loadWithEnvConfig(config.getPortalEnvironmentId()).orElse(null);
         if (portalEnvironment == null) {
             return null;

@@ -2,8 +2,8 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import ParticipantList from './ParticipantList'
-import Api, { EnrolleeSearchResult } from 'api/api'
-import { mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
+import { mockTaskSearchFacet, mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { KEYWORD_FACET } from 'api/enrolleeSearch'
@@ -16,7 +16,16 @@ const mockSearchApi = (numSearchResults: number) => {
     })
 }
 
+const mockGetFacetsApi = () => {
+  return jest.spyOn(Api, 'getSearchFacets')
+    .mockImplementation(() => {
+      const searchFacets: EnrolleeSearchFacet[] = new Array(mockTaskSearchFacet())
+      return Promise.resolve(searchFacets)
+    })
+}
+
 test('renders a participant with link', async () => {
+  mockGetFacetsApi()
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -31,6 +40,7 @@ test('renders a participant with link', async () => {
 })
 
 test('renders filters for participant columns', async () => {
+  mockGetFacetsApi()
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -42,6 +52,7 @@ test('renders filters for participant columns', async () => {
 })
 
 test('filters participants based on shortcode', async () => {
+  mockGetFacetsApi()
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -60,6 +71,7 @@ test('filters participants based on shortcode', async () => {
 })
 
 test('send email is toggled depending on participants selected', async () => {
+  mockGetFacetsApi()
   mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -72,6 +84,7 @@ test('send email is toggled depending on participants selected', async () => {
 })
 
 test('keyword search sends search api request', async () => {
+  mockGetFacetsApi()
   const searchSpy = mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -88,6 +101,7 @@ test('keyword search sends search api request', async () => {
 })
 
 test('allows the user to cycle pages', async () => {
+  mockGetFacetsApi()
   mockSearchApi(100)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)
@@ -107,6 +121,7 @@ test('allows the user to cycle pages', async () => {
 })
 
 test('allows the user to change the page size', async () => {
+  mockGetFacetsApi()
   mockSearchApi(100)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)

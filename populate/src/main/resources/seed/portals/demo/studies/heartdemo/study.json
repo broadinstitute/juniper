@@ -52,26 +52,26 @@
           "populateFileName": "surveys/ourHealthConsent.json"
         }
       ],
-      "notificationConfigDtos": [{
-        "notificationType": "EVENT",
+      "triggerDtos": [{
+        "triggerType": "EVENT",
         "eventType": "STUDY_ENROLLMENT",
         "populateFileName": "emails/studyEnroll.json"
       },{
-        "notificationType": "EVENT",
+        "triggerType": "EVENT",
         "eventType": "STUDY_CONSENT",
         "populateFileName": "emails/studyConsent.json"
       },{
-        "notificationType": "TASK_REMINDER",
+        "triggerType": "TASK_REMINDER",
         "taskType": "CONSENT",
         "populateFileName": "emails/consentReminder.json"
       },{
-        "notificationType": "TASK_REMINDER",
+        "triggerType": "TASK_REMINDER",
         "taskType": "SURVEY",
         "reminderIntervalMinutes": 10080,
         "maxNumReminders": 2,
         "populateFileName": "emails/surveyReminder.json"
       },{
-        "notificationType": "AD_HOC",
+        "triggerType": "AD_HOC",
         "populateFileName": "emails/adHoc.json"
       }],
       "enrolleeFiles": [

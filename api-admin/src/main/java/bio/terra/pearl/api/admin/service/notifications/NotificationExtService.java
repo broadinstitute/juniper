@@ -3,12 +3,12 @@ package bio.terra.pearl.api.admin.service.notifications;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.NotificationConfig;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.notification.NotificationConfigService;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
+import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationExtService {
-  private NotificationConfigService notificationConfigService;
+  private TriggerService triggerService;
   private NotificationDispatcher notificationDispatcher;
   private EnrolleeService enrolleeService;
   private EnrolleeRuleService enrolleeRuleService;
@@ -34,7 +34,7 @@ public class NotificationExtService {
   private StudyService studyService;
 
   public NotificationExtService(
-      NotificationConfigService notificationConfigService,
+      TriggerService triggerService,
       NotificationDispatcher notificationDispatcher,
       EnrolleeService enrolleeService,
       EnrolleeRuleService enrolleeRuleService,
@@ -42,7 +42,7 @@ public class NotificationExtService {
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
       StudyService studyService) {
-    this.notificationConfigService = notificationConfigService;
+    this.triggerService = triggerService;
     this.notificationDispatcher = notificationDispatcher;
     this.enrolleeService = enrolleeService;
     this.enrolleeRuleService = enrolleeRuleService;
@@ -52,7 +52,7 @@ public class NotificationExtService {
     this.studyService = studyService;
   }
 
-  public NotificationConfig sendAdHoc(
+  public Trigger sendAdHoc(
       AdminUser user,
       String portalShortcode,
       String studyShortcode,
@@ -69,7 +69,7 @@ public class NotificationExtService {
       authUtilService.checkEnrolleeInStudyEnv(enrollee, studyEnv);
     }
 
-    NotificationConfig config = notificationConfigService.find(configId).get();
+    Trigger config = triggerService.find(configId).get();
 
     // bulk load the enrollees
     List<EnrolleeRuleData> enrolleeRuleData =

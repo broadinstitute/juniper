@@ -79,7 +79,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.emailTemplatePopulator = emailTemplatePopulator;
     }
 
-    private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) throws IOException {
+    private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) {
         Study newStudy = studyPopulator.populate(context.newFrom(studyFileName), overwrite);
         Optional<PortalStudy> portalStudyOpt = portalStudyService.findStudyInPortal(newStudy.getShortcode(), portal.getId());
         if (portalStudyOpt.isEmpty()) {
@@ -90,7 +90,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     }
 
     private void initializePortalEnv(PortalEnvironmentPopDto portalEnvPopDto,
-                                     PortalPopulateContext portalPopContext, boolean overwrite) throws IOException {
+                                     PortalPopulateContext portalPopContext, boolean overwrite) {
         /** unless we've overwritten the whole portal (overwirte mode) don't alter non-sandbox environments */
         if (!portalEnvPopDto.getEnvironmentName().equals(EnvironmentName.sandbox) && !overwrite) {
             return;

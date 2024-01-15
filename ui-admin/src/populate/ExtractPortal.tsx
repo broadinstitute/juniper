@@ -6,18 +6,21 @@ import { PortalShortcodeControl } from './PopulateControls'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Button } from 'components/forms/Button'
 import { doApiLoad } from 'api/api-utils'
+import { successNotification } from '../util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** control for downloading portal configs as a zip file */
 export default function ExtractPortal({ initialPortalShortcode }: {initialPortalShortcode: string}) {
   const [portalShortcode, setPortalShortcode] = useState(initialPortalShortcode)
   const [isLoading, setIsLoading] = useState(false)
 
-  const doExport = () => {
+  const doExport = async () => {
     doApiLoad(async () => {
       const response = await Api.extractPortal(portalShortcode)
       const blob = await response.blob()
       const fileName = `${currentIsoDate()}-${portalShortcode}-config.zip`
       saveBlobAsDownload(blob, fileName)
+      Store.addNotification(successNotification('Portal config downloaded'))
     }, { setIsLoading })
   }
 

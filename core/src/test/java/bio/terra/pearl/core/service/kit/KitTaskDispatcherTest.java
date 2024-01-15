@@ -131,6 +131,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
     private void verifyTask(ParticipantTask task, EnrolleeFactory.EnrolleeBundle enrolleeBundle, UUID kitRequestId) {
         assertThat(task.getTaskType(), equalTo(TaskType.KIT_REQUEST));
         assertThat(task.getTargetName(), equalTo("Kit Request"));
+        assertThat(task.getTargetStableId(), equalTo("kit_request"));
         assertThat(task.getEnrolleeId(), equalTo(enrolleeBundle.enrollee().getId()));
         assertThat(task.getKitRequestId(), equalTo(kitRequestId));
         assertThat(task.getPortalParticipantUserId(), equalTo(enrolleeBundle.portalParticipantUser().getId()));

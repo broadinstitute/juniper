@@ -5,7 +5,7 @@
     "studies/heartdemo/study.json"
   ],
   "siteContentFiles": [
-    "siteContent/siteContent.json"
+    "siteContent/siteContent-1/siteContent.json", "siteContent/siteContent-2/siteContent.json"
   ],
   "portalEnvironmentDtos": [
     {
@@ -18,7 +18,7 @@
         "emailSourceAddress": "support@juniper.terra.bio"
       },
       "siteContentPopDto": {
-        "populateFileName": "siteContent/siteContent.json"
+        "populateFileName": "siteContent/siteContent-2/siteContent.json"
       },
       "participantUserFiles": [
         "participants/jsalk.json",
