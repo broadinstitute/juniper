@@ -40,7 +40,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
     },
     configuredSurveys: [],
     configuredConsents: [],
-    notificationConfigs: []
+    triggers: []
   }
 }
 
