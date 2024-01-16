@@ -12,7 +12,7 @@ import Api, { KitRequest } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl, renderEmptyMessage } from 'util/tableUtils'
-import { instantToDateString, isoToInstant } from 'util/timeUtils'
+import { instantToDateString } from 'util/timeUtils'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 import KitStatusCell from '../participants/KitStatusCell'
@@ -34,15 +34,15 @@ type KitStatusTabConfig = {
  * columns to hide must be explicitly configured.
  */
 const defaultColumns: VisibilityState = {
-  'enrollee_shortcode': true,
+  'enrolleeShortcode': true,
   'kitType_displayName': true,
   'createdAt': true,
-  'pepperStatus_labelDate': false,
-  'pepperStatus_trackingNumber': false,
-  'pepperStatus_scanDate': false,
-  'pepperStatus_returnTrackingNumber': false,
-  'pepperStatus_receiveDate': false,
-  'pepperStatus': false
+  'labeledAt': false,
+  'trackingNumber': false,
+  'sentAt': false,
+  'returnTrackingNumber': false,
+  'receivedAt': false,
+  'status': false
 }
 
 /**
@@ -58,44 +58,44 @@ const statusTabs: KitStatusTabConfig[] = [
     statuses: ['QUEUED'],
     key: 'queued',
     additionalColumns: [
-      'pepperStatus_labelDate', 'pepperStatus_trackingNumber'
+      'labeledAt', 'trackingNumber'
     ]
   },
   {
     statuses: ['SENT'],
     key: 'sent',
     additionalColumns: [
-      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
-      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber'
+      'labeledAt', 'trackingNumber',
+      'sentAt', 'returnTrackingNumber'
     ]
   },
   {
     statuses: ['RECEIVED'],
     key: 'returned',
     additionalColumns: [
-      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
-      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
-      'pepperStatus_receiveDate'
+      'labeledAt', 'trackingNumber',
+      'sentAt', 'returnTrackingNumber',
+      'receivedAt'
     ]
   },
   {
     statuses: ['ERRORED', 'UNKNOWN'],
     key: 'issues',
     additionalColumns: [
-      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
-      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
-      'pepperStatus_receiveDate',
-      'pepperStatus'
+      'labeledAt', 'trackingNumber',
+      'sentAt', 'returnTrackingNumber',
+      'receivedAt',
+      'status'
     ]
   },
   {
     statuses: ['DEACTIVATED'],
     key: 'deactivated',
     additionalColumns: [
-      'pepperStatus_labelDate', 'pepperStatus_trackingNumber',
-      'pepperStatus_scanDate', 'pepperStatus_returnTrackingNumber',
-      'pepperStatus_receiveDate',
-      'pepperStatus'
+      'labeledAt', 'trackingNumber',
+      'sentAt', 'returnTrackingNumber',
+      'receivedAt',
+      'status'
     ]
   }
 ]
@@ -196,7 +196,7 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
 
   const columns: ColumnDef<KitRequest, string>[] = [{
     header: 'Enrollee shortcode',
-    accessorKey: 'enrollee.shortcode',
+    accessorKey: 'enrolleeShortcode',
     meta: {
       columnType: 'string'
     },
@@ -215,30 +215,30 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     enableColumnFilter: false
   }, {
     header: 'Labeled',
-    accessorKey: 'pepperStatus.labelDate',
-    cell: data => instantToDateString(isoToInstant(data.getValue())),
+    accessorKey: 'labeledAt',
+    cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
     header: 'Tracking Number',
-    accessorKey: 'pepperStatus.trackingNumber',
+    accessorKey: 'trackingNumber',
     enableColumnFilter: false
   }, {
     header: 'Sent',
-    accessorKey: 'pepperStatus.scanDate',
-    cell: data => instantToDateString(isoToInstant(data.getValue())),
+    accessorKey: 'sentAt',
+    cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
     header: 'Return Tracking Number',
-    accessorKey: 'pepperStatus.returnTrackingNumber',
+    accessorKey: 'returnTrackingNumber',
     enableColumnFilter: false
   }, {
     header: 'Returned',
-    accessorKey: 'pepperStatus.receiveDate',
-    cell: data => instantToDateString(isoToInstant(data.getValue())),
+    accessorKey: 'receivedAt',
+    cell: data => instantToDateString(Number(data.getValue())),
     enableColumnFilter: false
   }, {
     header: 'Status',
-    accessorKey: 'parsedExternalKit',
+    accessorKey: 'status',
     cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
     enableColumnFilter: false
   }]

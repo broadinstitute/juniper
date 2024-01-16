@@ -20,6 +20,7 @@ import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.notification.TriggerService;
@@ -50,6 +51,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -78,6 +80,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private KitTypeDao kitTypeDao;
     private AdminUserDao adminUserDao;
     private ParticipantNotePopulator participantNotePopulator;
+    private ObjectMapper objectMapper;
 
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
@@ -94,7 +97,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              WithdrawnEnrolleeService withdrawnEnrolleeService,
                              TimeShiftPopulateDao timeShiftPopulateDao,
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
-                             ParticipantNotePopulator participantNotePopulator) {
+                             ParticipantNotePopulator participantNotePopulator,
+                             ObjectMapper objectMapper
+    ) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -116,6 +121,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
+        this.objectMapper = objectMapper;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
@@ -255,7 +261,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         if (kitRequestPopDto.getCreatedAt() != null) {
             timeShiftPopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
         }
-        enrollee.getKitRequests().add(kitRequest);
+        enrollee.getKitRequests().add(
+            new KitRequestDto(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
         return kitRequest;
     }
 
