@@ -3,7 +3,6 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -16,7 +15,6 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
 
@@ -103,10 +101,9 @@ public class EnrolleeExportService {
      */
     public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId)  {
         List<ModuleFormatter> moduleFormatters = new ArrayList<>();
-        List<KitType> kitTypes = kitTypeDao.findAll();
         moduleFormatters.add(new EnrolleeFormatter(exportOptions));
         moduleFormatters.add(new ProfileFormatter(exportOptions));
-        moduleFormatters.add(new KitRequestFormatter(kitTypes));
+        moduleFormatters.add(new KitRequestFormatter());
         moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
         return moduleFormatters;
     }
@@ -151,7 +148,7 @@ public class EnrolleeExportService {
                 answerDao.findByEnrolleeId(enrollee.getId()),
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId()),
-                kitRequestService.findByEnrolleeId(enrollee.getId())
+                kitRequestService.findByEnrollee(enrollee)
         );
     }
 

@@ -7,11 +7,12 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.Collection;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -40,7 +41,7 @@ public class KitController implements KitApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    var kits =
+    Collection<KitRequestDto> kits =
         kitExtService.getKitRequestsByStudyEnvironment(
             adminUser, portalShortcode, studyShortcode, environmentName);
 
@@ -60,7 +61,7 @@ public class KitController implements KitApi {
       String enrolleeShortcode,
       String kitType) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    KitRequest sampleKit =
+    KitRequestDto sampleKit =
         kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
     return ResponseEntity.ok(sampleKit);
   }
@@ -69,7 +70,8 @@ public class KitController implements KitApi {
   public ResponseEntity<Object> getKitRequests(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    var kitRequests = kitExtService.getKitRequests(adminUser, enrolleeShortcode);
+    Collection<KitRequestDto> kitRequests =
+        kitExtService.getKitRequests(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(kitRequests);
   }
 

@@ -3,9 +3,9 @@ package bio.terra.pearl.api.admin.service.kit;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
@@ -45,24 +45,31 @@ public class KitExtService {
     KitRequestListResponse response = new KitRequestListResponse();
     for (String enrolleeShortcode : enrolleeShortcodes) {
       try {
-        KitRequest kitRequest = requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
-        response.kitRequests.add(kitRequest);
+        response.addKitRequest(requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType));
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
         // this,
         // a structured response might be useful here
-        response.exceptions.add(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
+        response.addException(new Exception(enrolleeShortcode + ": " + e.getMessage(), e));
       }
     }
     return response;
   }
 
   public static class KitRequestListResponse {
-    public List<KitRequest> kitRequests = new ArrayList<>();
-    public List<Exception> exceptions = new ArrayList<>();
+    protected static final List<KitRequestDto> kitRequests = new ArrayList<>();
+    protected static final List<Exception> exceptions = new ArrayList<>();
+
+    public void addKitRequest(KitRequestDto kitRequest) {
+      kitRequests.add(kitRequest);
+    }
+
+    public void addException(Exception exception) {
+      exceptions.add(exception);
+    }
   }
 
-  public Collection<KitRequest> getKitRequestsByStudyEnvironment(
+  public Collection<KitRequestDto> getKitRequestsByStudyEnvironment(
       AdminUser adminUser,
       String portalShortcode,
       String studyShortcode,
@@ -70,20 +77,19 @@ public class KitExtService {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnvironment =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    return kitRequestService.getSampleKitsByStudyEnvironment(studyEnvironment);
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    return kitRequestService.getKitsByStudyEnvironment(studyEnvironment);
   }
 
-  public KitRequest requestKit(
+  public KitRequestDto requestKit(
       AdminUser adminUser, String studyShortcode, String enrolleeShortcode, String kitTypeName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitTypeName);
   }
 
-  public Collection<KitRequest> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
+  public Collection<KitRequestDto> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.findByEnrolleeId(enrollee.getId());
+    return kitRequestService.findByEnrollee(enrollee);
   }
 
   public void refreshKitStatuses(
