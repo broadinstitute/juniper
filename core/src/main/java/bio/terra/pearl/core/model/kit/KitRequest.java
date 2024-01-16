@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.model.kit;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.util.UUID;
 public class KitRequest extends BaseEntity {
     private UUID creatingAdminUserId;
     private UUID enrolleeId;
-    private Enrollee enrollee;
     private UUID kitTypeId;
     private KitType kitType;
     /**
@@ -24,8 +22,12 @@ public class KitRequest extends BaseEntity {
      */
     private String sentToAddress;
     private KitRequestStatus status;
+    private Instant labeledAt;
     private Instant sentAt;
     private Instant receivedAt;
+    private String trackingNumber;
+    private String returnTrackingNumber;
+    private String errorMessage;
     /**
      * JSON blob of the request state from DSM or another sample processor, kept to make sure we capture
      * any fields that don't happen to be stored directly in our model

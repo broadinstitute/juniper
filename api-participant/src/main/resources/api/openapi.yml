@@ -231,6 +231,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/tasks:
+    get:
+      summary: List the tasks available to the signed-in user of the given type, includes the survey for each task
+      tags: [ participantTask ]
+      operationId: listTasksWithSurveys
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: taskType, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: list of outreach activities
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/surveys/{stableId}/{version}:
     get:
       summary: Gets a survey and an active response if it exists for the signed-in user

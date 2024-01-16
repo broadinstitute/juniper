@@ -1,4 +1,3 @@
-import _pick from 'lodash/pick'
 import {
   AlertTrigger,
   ConsentForm,
@@ -214,50 +213,20 @@ export type SiteImageMetadata = {
   version: number
 }
 
-const emptyPepperKit: PepperKit = {
-  kitId: '',
-  currentStatus: '(unknown)',
-  labelDate: '',
-  scanDate: '',
-  receiveDate: '',
-  trackingNumber: '',
-  returnTrackingNumber: '',
-  errorMessage: ''
-}
-
-/**
- * Parse kit status JSON returned from Pepper.
- *
- * Since the JSON is coming from outside of Juniper, we want to be extra careful to guard against unexpected content.
- * Therefore, this function will never raise an error and will always return an object that conforms to the
- * `PepperKitStatus` type.
- */
-function parsePepperKitStatus(json: string | undefined): PepperKit {
-  if (json) {
-    try {
-      const pepperStatus = JSON.parse(json)
-      return {
-        ...emptyPepperKit,
-        ..._pick(pepperStatus,
-          'juniperKitId', 'currentStatus', 'labelDate', 'scanDate', 'receiveDate', 'trackingNumber',
-          'returnTrackingNumber', 'errorMessage')
-      }
-    } catch {
-      // ignore; fall-through to result for unexpected value
-    }
-  }
-  return emptyPepperKit
-}
-
 export type KitRequest = {
   id: string,
   createdAt: number,
-  enrollee?: Enrollee,
   kitType: KitType,
+  status: string,
   sentToAddress: string,
-  status: string
-  externalKit?: string
-  parsedExternalKit?: PepperKit
+  labeledAt?: number,
+  sentAt?: number,
+  receivedAt?: number,
+  trackingNumber?: string,
+  returnTrackingNumber?: string,
+  errorMessage?: string,
+  details?: string,
+  enrolleeShortcode?: string
 }
 
 export type Config = {
@@ -750,11 +719,7 @@ export default {
     Promise<Enrollee> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
     const response = await fetch(url, this.getGetInit())
-    const enrollee: Enrollee = await this.processJsonResponse(response)
-    enrollee.kitRequests?.forEach(kit => {
-      kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit)
-    })
-    return enrollee
+    return await this.processJsonResponse(response)
   },
 
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
@@ -827,11 +792,7 @@ export default {
   ): Promise<KitRequest[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/kits`
     const response = await fetch(url, this.getGetInit())
-    const kits: KitRequest[] = await this.processJsonResponse(response)
-    kits.forEach(kit => {
-      kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit)
-    })
-    return kits
+    return await this.processJsonResponse(response)
   },
 
   async createKitRequest(
@@ -845,9 +806,7 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
-    const kit = await this.processJsonResponse(response)
-    kit.pepperStatus = parsePepperKitStatus(kit.dsmStatus)
-    return kit
+    return await this.processJsonResponse(response)
   },
 
   async requestKits(
@@ -864,11 +823,7 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeShortcodes)
     })
-    const listResponse: KitRequestListResponse = await this.processJsonResponse(response)
-    listResponse.kitRequests.forEach(kit => {
-      kit.parsedExternalKit = parsePepperKitStatus(kit.externalKit)
-    })
-    return listResponse
+    return await this.processJsonResponse(response)
   },
 
   async refreshKitStatuses(

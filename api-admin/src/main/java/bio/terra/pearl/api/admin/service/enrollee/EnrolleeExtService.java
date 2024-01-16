@@ -12,8 +12,6 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
-import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -24,25 +22,18 @@ public class EnrolleeExtService {
   private AuthUtilService authUtilService;
   private EnrolleeService enrolleeService;
   private WithdrawnEnrolleeService withdrawnEnrolleeService;
-  private PortalService portalService;
-  private PortalStudyService portalStudyService;
   private DataChangeRecordService dataChangeRecordService;
-
   private EnrolleeSearchService enrolleeSearchService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
-      PortalService portalService,
-      PortalStudyService portalStudyService,
       DataChangeRecordService dataChangeRecordService,
       EnrolleeSearchService enrolleeSearchService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
-    this.portalService = portalService;
-    this.portalStudyService = portalStudyService;
     this.dataChangeRecordService = dataChangeRecordService;
     this.enrolleeSearchService = enrolleeSearchService;
   }

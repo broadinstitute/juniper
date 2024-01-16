@@ -7,6 +7,7 @@ import {
   PreregistrationResponse,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
+  Survey,
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
@@ -118,6 +119,11 @@ export type HubResponse = {
   profile: Profile
 }
 
+export type TaskWithSurvey = {
+  task: ParticipantTask,
+  survey: Survey
+}
+
 export type PortalParticipantUser = {
   profile: object
 }
@@ -192,6 +198,13 @@ export default {
 
   async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
     const url = `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}/dashboard/config/alerts`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async listOutreachActivities(
+  ): Promise<TaskWithSurvey[]> {
+    const url = `${baseEnvUrl(false)}/tasks?taskType=outreach`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

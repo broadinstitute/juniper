@@ -2,31 +2,38 @@ package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
+import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.security.SecureRandom;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +41,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
+    private final ParticipantTaskDao participantTaskDao;
+    private final SurveyResponseDao surveyResponseDao;
+    private final ProfileService profileService;
     private SurveyResponseService surveyResponseService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentService studyEnvironmentService;
     private ConsentResponseService consentResponseService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private NotificationService notificationService;
-    private PortalStudyService portalStudyService;
-    private PortalService portalService;
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
@@ -51,13 +59,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private SecureRandom secureRandom;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
+                           SurveyResponseDao surveyResponseDao,
+                           ParticipantTaskDao participantTaskDao,
+                           ProfileService profileService,
                            @Lazy SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
                            ConsentResponseService consentResponseService,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
-                           NotificationService notificationService, PortalStudyService portalStudyService,
-                           @Lazy PortalService portalService,
+                           NotificationService notificationService,
                            @Lazy DataChangeRecordService dataChangeRecordService,
                            @Lazy WithdrawnEnrolleeService withdrawnEnrolleeService,
                            @Lazy ParticipantUserService participantUserService,
@@ -65,14 +75,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom) {
         super(enrolleeDao);
+        this.surveyResponseDao = surveyResponseDao;
+        this.participantTaskDao = participantTaskDao;
+        this.profileService = profileService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.consentResponseService = consentResponseService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationService = notificationService;
-        this.portalStudyService = portalStudyService;
-        this.portalService = portalService;
         this.dataChangeRecordService = dataChangeRecordService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
         this.participantUserService = participantUserService;
@@ -105,17 +116,71 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId, sortProperty, sortDir);
     }
 
-    public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {
-        StudyEnvironment studyEnvironment = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-        return dao.findForKitManagement(studyEnvironment.getId());
-    }
-
+    /**
+     * loads child relationships including survey responses, profile, etc...
+     * This currently makes ~10 separate DB queries, all of which should be individually quite quick.
+     * If this grows much more, it might be worth parallelizing or batching the DB fetches.
+     *
+     * because the individual queries are returning relatively small amounts of data (likely <10KB each) splitting these
+     * into separate API calls and incurring the overhead of separate DB auth queries for each request
+     * would probably result in much worse performance.
+     *
+     * That said, if this grows too much larger, it might make sense to group it into two different
+     * batches.
+     * */
     public Enrollee loadForAdminView(Enrollee enrollee) {
-        return dao.loadForAdminView(enrollee);
+        enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
+        enrollee.getConsentResponses().addAll(consentResponseService.findByEnrolleeId(enrollee.getId()));
+        if (enrollee.getPreEnrollmentResponseId() != null) {
+            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+        }
+        enrollee.getParticipantNotes().addAll(participantNoteService.findByEnrollee(enrollee.getId()));
+        return loadForParticipantDashboard(enrollee);
     }
 
+    /**
+     * Load enrollee tasks, profile, and kit requests
+     * (See loadForAdminView description for performance information)
+     */
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
-        return dao.loadForParticipantDashboard(enrollee);
+        enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
+        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
+        enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
+        return enrollee;
+    }
+
+    /**
+     * Fetches enrollees, loading all details needed for the kit management view -- currently tasks and kits.
+     * Reduces database round-trips by fetching entities from each table and performing in-memory joins.
+     * Uses Streams to reduce the number of iterations over collections of entities:
+     *  - Streams enrollees into two lists: enrollees and enrollee IDs
+     *    - avoids separately collecting IDs from entities
+     *    - retains order of results (not otherwise guaranteed when using something like Collectors.toMap())
+     *  - Streams tasks and kits into maps grouped by enrollee ID
+     *    - avoids separate iteration to build these maps
+     *  All that remains is a single traversal through the enrollee list to attach their tasks and kits.
+     */
+    @Transactional
+    public List<Enrollee> findForKitManagement(String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnvironment = studyEnvironmentService.verifyStudy(studyShortcode, envName);
+        Pair<List<Enrollee>, List<UUID>> enrolleesAndIds = dao.streamByStudyEnvironmentId(studyEnvironment.getId())
+                .collect(Collectors.teeing(Collectors.toList(),
+                        Collectors.mapping(Enrollee::getId, Collectors.toList()),
+                Pair::of
+        ));
+
+        List<Enrollee> enrollees = enrolleesAndIds.getFirst();
+        List<UUID> enrolleeIds = enrolleesAndIds.getSecond();
+
+        Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(enrollees);
+        Map<UUID, List<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
+
+        enrollees.forEach(enrollee -> {
+            // Be sure to set empty collections to indicate that they are empty instead of not initialized
+            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
+            enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
+        });
+        return enrollees;
     }
 
     public Optional<Enrollee> findByPreEnrollResponseId(UUID preEnrollResponseId) {
@@ -203,7 +268,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             }
         }
         if (shortcode == null) {
-            throw new RuntimeException("Unable to generate unique shortcode");
+            throw new InternalServerException("Unable to generate unique shortcode");
         }
         return shortcode;
     }

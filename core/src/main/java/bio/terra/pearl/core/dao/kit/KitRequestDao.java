@@ -29,8 +29,8 @@ public class KitRequestDao extends BaseMutableJdbiDao<KitRequest> {
     }
 
     public Map<UUID, List<KitRequest>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
-        return streamAllByPropertyCollection("enrollee_id", enrolleeIds)
-                .collect(Collectors.groupingBy(KitRequest::getEnrolleeId, Collectors.toList()));
+        return findAllByPropertyCollection("enrollee_id", enrolleeIds)
+                .stream().collect(Collectors.groupingBy(KitRequest::getEnrolleeId, Collectors.toList()));
     }
 
     /**
