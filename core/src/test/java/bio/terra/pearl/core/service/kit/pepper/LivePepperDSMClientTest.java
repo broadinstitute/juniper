@@ -185,7 +185,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatus(TestInfo info) throws Exception {
+    public void testFetchKitStatus() throws Exception {
         // Arrange
         PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy1")
