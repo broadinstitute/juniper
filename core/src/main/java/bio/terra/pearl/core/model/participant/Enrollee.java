@@ -32,11 +32,11 @@ public class Enrollee extends BaseEntity {
     private String shortcode;
     private boolean consented;
     @Builder.Default
-    private Set<SurveyResponse> surveyResponses = new HashSet<>();
+    private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default
-    private Set<ConsentResponse> consentResponses = new HashSet<>();
+    private List<ConsentResponse> consentResponses = new ArrayList<>();
     @Builder.Default
-    private Set<ParticipantTask> participantTasks = new HashSet<>();
+    private List<ParticipantTask> participantTasks = new ArrayList<>();
     @Builder.Default
     private List<ParticipantNote> participantNotes = new ArrayList<>();
     @Builder.Default

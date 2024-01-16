@@ -7,7 +7,8 @@ import {
   ParticipantTaskStatus,
   ParticipantTaskType,
   ParticipantUser,
-  Profile
+  Profile,
+  Survey
 } from 'api/api'
 
 
@@ -65,6 +66,23 @@ export const mockParticipantTask = (taskType: ParticipantTaskType, status: Parti
     taskType,
     taskOrder: 0,
     blocksHub: true
+  }
+}
+
+/**
+ * mock survey form
+ */
+export const mockSurvey = (stableId: string): Survey => {
+  return {
+    id: 'survey1',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    name: 'Survey 1',
+    content: '{}',
+    stableId,
+    version: 1,
+    surveyType: 'RESEARCH',
+    blurb: 'This is a survey'
   }
 }
 

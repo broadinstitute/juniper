@@ -105,7 +105,7 @@ public class SurveyTaskDispatcher {
      * configured survey must allow recurrence.
      */
     public static boolean isDuplicateTask(StudyEnvironmentSurvey studySurvey, ParticipantTask task,
-                                   Set<ParticipantTask> allTasks) {
+                                   List<ParticipantTask> allTasks) {
         return !allTasks.stream()
                 .filter(existingTask ->
                         (existingTask.getTaskType() == TaskType.SURVEY || existingTask.getTaskType() == TaskType.OUTREACH) &&

@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CrudService;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -21,6 +22,10 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
         return dao.findByEnrolleeId(enrolleeId);
+    }
+
+    public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(List<UUID> enrolleeIds) {
+        return dao.findByEnrolleeIds(enrolleeIds);
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId);}

@@ -173,11 +173,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         List<UUID> enrolleeIds = enrolleesAndIds.getSecond();
 
         Map<UUID, List<KitRequestDto>> kitsByEnrolleeId = kitRequestService.findByEnrollees(enrollees);
-        Map<UUID, Set<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
+        Map<UUID, List<ParticipantTask>> tasksByEnrolleeId = participantTaskDao.findByEnrolleeIds(enrolleeIds);
 
         enrollees.forEach(enrollee -> {
             // Be sure to set empty collections to indicate that they are empty instead of not initialized
-            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptySet()));
+            enrollee.setParticipantTasks(tasksByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
             enrollee.setKitRequests(kitsByEnrolleeId.getOrDefault(enrollee.getId(), Collections.emptyList()));
         });
         return enrollees;
