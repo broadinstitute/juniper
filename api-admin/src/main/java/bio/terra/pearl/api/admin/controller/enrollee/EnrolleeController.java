@@ -60,7 +60,7 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser operator = authUtilService.requireAdminUser(request);
     Profile profile = objectMapper.convertValue(body, Profile.class);
 
-    enrolleeExtService.updateProfile(operator, enrolleeShortcode, profile);
+    profile = enrolleeExtService.updateProfile(operator, enrolleeShortcode, profile);
 
     return ResponseEntity.ok(profile);
   }

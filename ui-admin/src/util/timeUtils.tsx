@@ -23,29 +23,6 @@ export function dateToDefaultString(date: number[] | undefined) {
   return new Date(date[0], date[1]  - 1, date[2]).toLocaleDateString()
 }
 
-/** renders a java LocalDate as a date string.  this should be sensitive to the user's locale */
-export function javaDateToIsoString(date: number[] | undefined) {
-  if (typeof date === 'undefined' || date.length != 3) {
-    return ''
-  }
-  // note we need to subtract one from the month parameter since java months are one-indexed and JS is zero-indexed
-  return new Date(date[0], date[1] - 1, date[2]).toISOString()
-}
-
-/** Parse an ISO string as a java date in the user's locale. */
-export function isoStringToJavaDate(dateStr: string): number[] | undefined {
-  try {
-    const parsedDate = new Date(dateStr)
-    if (isNaN(parsedDate.getDay()) || isNaN(parsedDate.getMonth()) || isNaN(parsedDate.getFullYear())) {
-      return undefined
-    }
-
-    return [parsedDate.getFullYear(), parsedDate.getMonth() + 1, parsedDate.getDay()]
-  } catch {
-    return undefined
-  }
-}
-
 /** returns current date in ISO format, e.g. 2023-04-15 */
 export function currentIsoDate() {
   return new Date().toISOString().substring(0, 10)

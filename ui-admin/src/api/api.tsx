@@ -786,6 +786,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updateProfile(
+    portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string, profile: Profile
+  ):
+    Promise<Profile> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/profile`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(profile),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createParticipantNote(portalShortcode: string,
     studyShortcode: string,
     envName: string,
