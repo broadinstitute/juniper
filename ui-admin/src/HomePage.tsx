@@ -43,16 +43,17 @@ function HomePage() {
                       <li>
                         <button className="dropdown-item"
                                 onClick={() => setShowDeleteStudyModal(!showDeleteStudyModal)}>Delete
-                          { showDeleteStudyModal && <DeleteStudyModal study={study}
-                                                                      portal={portal}
-                                                                      onDismiss={() => setShowDeleteStudyModal(false)}
-                                                                      reload={reload}/> }
+
                         </button>
                       </li>
                     </ul>
                   </div>
                 </span>
               </span>
+              { showDeleteStudyModal && <DeleteStudyModal study={study}
+                                                          portal={portal}
+                                                          onDismiss={() => setShowDeleteStudyModal(false)}
+                                                          reload={reload}/> }
             </li>
           })
         )}
