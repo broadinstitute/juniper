@@ -9,7 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.apache.http.entity.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,17 +25,23 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.matchesRegex;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
-    // Common test fixture entities
-    private Enrollee enrollee;
-    private KitRequest kitRequest;
-    private PepperKitAddress address;
 
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private KitRequestFactory kitRequestFactory;
+    @Autowired
+    private ObjectMapper objectMapper;
     @MockBean
     private LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
 
@@ -53,10 +62,6 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
                 .thenReturn("http://localhost:%d".formatted(mockWebServer.getPort()));
         when(pepperDSMConfig.getSecret())
                 .thenReturn("secret");
-
-        enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
-        address = PepperKitAddress.builder().build();
     }
 
     @AfterEach void shutdown() throws Exception {
@@ -65,7 +70,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testBadErrorResponseFromPepper() throws Exception {
+    public void testBadErrorResponseFromPepper(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
         // Arrange
         var unexpectedJsonBody = "{\"unexpected\": \"boom\"}";
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
@@ -80,7 +89,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testErrorResponseFromPepperWithUnexpectedAttributes() throws Exception {
+    public void testErrorResponseFromPepperWithUnexpectedAttributes(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
         var unexpectedJsonBody = """
                 {
                   "errorMessage": "unknown kit",
@@ -104,7 +117,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void test4xxResponseFromPepper() throws Exception {
+    public void test4xxResponseFromPepper(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
         var kitId = "111-222-333";
         var errorMessage = "UNABLE_TO_VERIFY_ADDRESS";
         mockPepperResponse(
@@ -125,7 +142,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void test5xxResponseFromPepper() throws Exception {
+    public void test5xxResponseFromPepper(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
         // Arrange
         var errorResponseBody = "Internal server error";
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
@@ -140,7 +161,11 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSendKitRequest() throws Exception {
+    public void testSendKitRequest(TestInfo info) throws Exception {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        PepperKitAddress address = PepperKitAddress.builder().build();
+
         PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId(kitRequest.getId().toString())
                 .currentStatus(PepperKitStatus.CREATED.pepperString)
@@ -160,7 +185,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatus() throws Exception {
+    public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
         PepperKit kitStatus = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy1")
@@ -185,6 +210,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testFetchKitStatusByStudy() throws Exception {
+
         // Arrange
         PepperKit kitStatus1 = PepperKit.builder()
                 .juniperKitId("testFetchKitStatusByStudy_kit1")
@@ -221,11 +247,4 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         assertThat(recordedRequest.getPath(), equalTo(path));
         assertThat(recordedRequest.getHeader("Authorization"), matchesRegex("Bearer .+"));
     }
-
-    @Autowired
-    private EnrolleeFactory enrolleeFactory;
-    @Autowired
-    private KitRequestFactory kitRequestFactory;
-    @Autowired
-    private ObjectMapper objectMapper;
 }
