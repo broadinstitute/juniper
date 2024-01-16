@@ -42,7 +42,7 @@ const DeleteStudyModal = ({
         <label className="form-label">
           Confirm by typing &quot;{deleteString}&quot; below.<br/>
           <input type="text" size={50} className="form-control" id="inputSurveyRemoval" value={confirmDeleteStudy}
-                 onChange={event => setConfirmDeleteStudy(event.target.value)}/>
+            onChange={event => setConfirmDeleteStudy(event.target.value)}/>
         </label>
       </form>
     </Modal.Body>
