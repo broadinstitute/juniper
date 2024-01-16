@@ -14,6 +14,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
 import bio.terra.pearl.core.service.datarepo.DatasetService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -70,6 +71,12 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
 
     public Optional<StudyEnvironment> findByStudy(String studyShortcode, EnvironmentName environmentName) {
         return dao.findByStudy(studyShortcode, environmentName);
+    }
+
+    public StudyEnvironment verifyStudy(String studyShortcode, EnvironmentName environmentName) {
+        return findByStudy(studyShortcode, environmentName).orElseThrow(() ->
+                new NotFoundException("Study not found for environment %s: %s"
+                        .formatted(environmentName, studyShortcode)));
     }
 
     public StudyEnvironment loadWithAllContent(StudyEnvironment studyEnvironment) {

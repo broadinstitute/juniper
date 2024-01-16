@@ -60,20 +60,28 @@ public class KitRequestFactory {
 
     public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus,
                                      UUID kitTypeId, UUID adminUserId)
-            throws JsonProcessingException {
+        throws JsonProcessingException {
+        PepperKit pepperKit = PepperKit.builder()
+            .dsmShippingLabel(UUID.randomUUID().toString())
+            .currentStatus(pepperKitStatus.pepperString)
+            .participantId(enrollee.getShortcode())
+            .build();
+        return buildPersisted(testName, enrollee, pepperKit, kitTypeId, adminUserId);
+    }
+
+    public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKit pepperKit,
+                                     UUID kitTypeId, UUID adminUserId)
+        throws JsonProcessingException {
         var kitRequest = builder(testName)
-                .creatingAdminUserId(adminUserId)
-                .enrolleeId(enrollee.getId())
-                .kitTypeId(kitTypeId)
-                .status(PepperKitStatus.mapToKitRequestStatus(pepperKitStatus.pepperString))
-                .build();
-        var savedKitRequest = kitRequestDao.create(kitRequest);
-        var dsmStatus = PepperKit.builder()
-                .currentStatus(pepperKitStatus.pepperString)
-                .juniperKitId(savedKitRequest.getId().toString())
-                .participantId(enrollee.getShortcode())
-                .build();
-        savedKitRequest.setExternalKit(objectMapper.writeValueAsString(dsmStatus));
+            .creatingAdminUserId(adminUserId)
+            .enrolleeId(enrollee.getId())
+            .kitTypeId(kitTypeId)
+            .status(PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus()))
+            .errorMessage(pepperKit.getErrorMessage())
+            .build();
+        KitRequest savedKitRequest = kitRequestDao.create(kitRequest);
+        pepperKit.setJuniperKitId(savedKitRequest.getId().toString());
+        savedKitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKit));
         savedKitRequest.setExternalKitFetchedAt(Instant.now());
         return kitRequestDao.update(savedKitRequest);
     }
