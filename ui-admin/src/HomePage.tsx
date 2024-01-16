@@ -9,6 +9,7 @@ import { Button, IconButton } from './components/forms/Button'
 import CreateNewStudyModal from './study/CreateNewStudyModal'
 import { useUser } from './user/UserProvider'
 import DeleteStudyModal from './study/adminTasks/DeleteStudyModal'
+import { Study } from '@juniper/ui-core/build/types/study'
 
 
 /** Shows a user the list of portals available to them */
@@ -17,6 +18,7 @@ function HomePage() {
   const { user } = useUser()
   const [showNewStudyModal, setShowNewStudyModal] = useState(false)
   const [showDeleteStudyModal, setShowDeleteStudyModal] = useState(false)
+  const [selectedStudy, setSelectedStudy] = useState<Study>()
 
   return <div className="container">
     <h1 className="h2">Juniper Home</h1>
@@ -37,23 +39,27 @@ function HomePage() {
               <span className="dropdown">
                 <span className="nav-item dropdown ms-1">
                   <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
-                              aria-expanded="false" aria-label="configure study"/>
+                    aria-expanded="false" aria-label="configure study"/>
                   <div className="dropdown-menu">
                     <ul className="list-unstyled">
                       <li>
                         <button className="dropdown-item"
-                                onClick={() => setShowDeleteStudyModal(!showDeleteStudyModal)}>Delete
-
+                          onClick={
+                            () => {
+                              setShowDeleteStudyModal(!showDeleteStudyModal)
+                              setSelectedStudy(study)
+                            }}>Delete
                         </button>
+                        { selectedStudy && showDeleteStudyModal &&
+                          <DeleteStudyModal study={selectedStudy}
+                            portal={portal}
+                            onDismiss={() => setShowDeleteStudyModal(false)}
+                            reload={reload}/> }
                       </li>
                     </ul>
                   </div>
                 </span>
               </span>
-              { showDeleteStudyModal && <DeleteStudyModal study={study}
-                                                          portal={portal}
-                                                          onDismiss={() => setShowDeleteStudyModal(false)}
-                                                          reload={reload}/> }
             </li>
           })
         )}
