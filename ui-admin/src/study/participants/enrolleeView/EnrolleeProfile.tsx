@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
-import { dateToDefaultString } from 'util/timeUtils'
+import { dateToUSLocaleString, usLocalStringToDate } from 'util/timeUtils'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { isNil } from 'lodash'
 
 /**
  * shows the enrollee profile and allows editing from the admin side
@@ -11,6 +12,25 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const [profile, setProfile] = useState<Profile>(enrollee.profile)
   const [editMode, setEditMode] = useState<boolean>(false)
+
+  const [birthDateStr, setBirthDateStr] = useState<string>(dateToUSLocaleString(profile.birthDate))
+  const [birthDateStrValid, setBirthDateStrValid] = useState<boolean>(true)
+
+  useEffect(() => {
+    const date: number[] | undefined = usLocalStringToDate(birthDateStr)
+
+    if (isNil(date)) {
+      setBirthDateStrValid(false)
+    } else {
+      setProfile(prevProfile => {
+        return {
+          ...prevProfile,
+          birthDate: date
+        }
+      })
+      setBirthDateStrValid(true)
+    }
+  }, [birthDateStr])
 
   const updateProfile = async () => {
     const updatedProfile = await Api.updateProfile(
@@ -87,9 +107,9 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
       </div>
       <div className="mb-3">
         <label className="form-label">
-          Birthdate:
-          <input className={`form-control`} type="text"
-            disabled={!editMode} value={dateToDefaultString(profile.birthDate)}/>
+          Birthdate (MM/DD/YYYY):
+          <input className={`form-control ${birthDateStrValid ? '' : 'is-invalid'}`} type="text"
+            disabled={!editMode} value={birthDateStr} onChange={e => setBirthDateStr(e.target.value)}/>
         </label>
       </div>
       <div className="mb-3">
