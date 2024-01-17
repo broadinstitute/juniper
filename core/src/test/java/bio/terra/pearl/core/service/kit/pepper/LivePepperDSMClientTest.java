@@ -71,8 +71,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testBadErrorResponseFromPepper(TestInfo info) throws Exception {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         // Arrange
@@ -90,8 +90,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testErrorResponseFromPepperWithUnexpectedAttributes(TestInfo info) throws Exception {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         var unexpectedJsonBody = """
@@ -118,8 +118,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void test4xxResponseFromPepper(TestInfo info) throws Exception {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         var kitId = "111-222-333";
@@ -143,8 +143,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void test5xxResponseFromPepper(TestInfo info) throws Exception {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         // Arrange
@@ -162,8 +162,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testSendKitRequest(TestInfo info) throws Exception {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(info.getDisplayName());
-        KitRequest kitRequest = kitRequestFactory.buildPersisted(info.getDisplayName(), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         PepperKit kitStatus = PepperKit.builder()
