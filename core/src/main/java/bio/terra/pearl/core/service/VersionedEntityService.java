@@ -25,6 +25,10 @@ public abstract class VersionedEntityService<T extends BaseEntity & Versioned, D
         return dao.findByStableId(stableId);
     }
 
+    public List<T> findByStableIds(List<String> stableIds, List<Integer> versions) {
+        return dao.findByStableIds(stableIds, versions);
+    }
+
     public int getNextVersion(String stableId) {
         return dao.getNextVersion(stableId);
     }

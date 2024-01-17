@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
 import java.util.Set;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
@@ -29,7 +30,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         ParticipantTask kitTask = ParticipantTask.builder()
                 .taskType(TaskType.KIT_REQUEST)
                 .build();
-        Set<ParticipantTask> existingTasks = Set.of(surveyTask1, surveyTask2, kitTask);
+        List<ParticipantTask> existingTasks = List.of(surveyTask1, surveyTask2, kitTask);
         boolean isDuplicate = SurveyTaskDispatcher.isDuplicateTask(studyEnvironmentSurvey, surveyTask1,
                 existingTasks);
         assertTrue(isDuplicate);
@@ -52,7 +53,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
                 .targetStableId("oh_outsideAdvert")
                 .taskType(TaskType.OUTREACH)
                 .build();
-        Set<ParticipantTask> existingTasks = Set.of(outreachTask1);
+        List<ParticipantTask> existingTasks = List.of(outreachTask1);
         ParticipantTask outreachTask2 = ParticipantTask.builder()
                 .targetStableId("oh_outsideAdvert")
                 .taskType(TaskType.OUTREACH)

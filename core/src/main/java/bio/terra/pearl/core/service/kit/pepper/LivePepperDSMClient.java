@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -82,7 +83,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
                 .build();
-        var pepperDSMKitRequest = PepperDSMKitRequest.builder()
+        PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)
                 .kitType(kitRequest.getKitType().getName())
                 .juniperStudyId("juniper-%s".formatted(studyShortcode))
@@ -93,7 +94,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         } catch (JsonProcessingException e) {
             // There's no normal reason for PepperDSMKitRequest serialization to fail,
             // so if it fails, something very unexpected is happening
-            throw new RuntimeException(e);
+            throw new InternalServerException("Error serializing PepperDSMKitRequest", e);
         }
     }
 

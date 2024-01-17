@@ -18,6 +18,10 @@ public abstract class BaseVersionedJdbiDao<T extends BaseEntity & Versioned> ext
         return findByTwoProperties("stable_id", stableId, "version", version);
     }
 
+    public List<T> findByStableIds(List<String> stableIds, List<Integer> versions) {
+        return findAllByTwoProperties("stable_id", stableIds, "version", versions);
+    }
+
     public List<T> findByStableId(String stableId) {
         return findAllByProperty("stable_id", stableId);
     }

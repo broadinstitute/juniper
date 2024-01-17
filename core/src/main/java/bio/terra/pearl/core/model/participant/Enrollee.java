@@ -2,11 +2,12 @@ package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
-import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import java.util.*;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,13 +32,13 @@ public class Enrollee extends BaseEntity {
     private String shortcode;
     private boolean consented;
     @Builder.Default
-    private Set<SurveyResponse> surveyResponses = new HashSet<>();
+    private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default
-    private Set<ConsentResponse> consentResponses = new HashSet<>();
+    private List<ConsentResponse> consentResponses = new ArrayList<>();
     @Builder.Default
-    private Set<ParticipantTask> participantTasks = new HashSet<>();
+    private List<ParticipantTask> participantTasks = new ArrayList<>();
     @Builder.Default
     private List<ParticipantNote> participantNotes = new ArrayList<>();
     @Builder.Default
-    private List<KitRequest> kitRequests = new ArrayList<>();
+    private List<KitRequestDto> kitRequests = new ArrayList<>();
 }

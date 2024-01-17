@@ -18,6 +18,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -40,10 +41,6 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
-    // NOTE: These are completely made up for now, until we get further with the Pepper integration and know what the real
-    // possible statuses are.
-    private static final Set<String> PEPPER_COMPLETED_STATUSES = Set.of("PROCESSED", "CANCELLED");
-    private static final Set<String> PEPPER_FAILED_STATUSES = Set.of("CONTAMINATED");
     private final DaoUtils daoUtils;
 
     public KitRequestService(KitRequestDao dao,
@@ -75,7 +72,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Send a request for a sample kit to Pepper.
      * Throws PepperApiException if the Pepper API request failed
      */
-    public KitRequest requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
+    public KitRequestDto requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
     throws PepperApiException {
         // create and save kit request
         if (enrollee.getProfileId() == null) {
@@ -87,22 +84,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
         // send kit request to DSM
         try {
-            PepperKit dsmKitStatus = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
+            PepperKit pepperKit = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
             // write out the PepperKitStatus as a string for storage
-            String pepperRequestJson = objectMapper.writeValueAsString(dsmKitStatus);
+            String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
         } catch (PepperParseException e) {
             // response was successful, but we got unexpected format back from pepper
             // we want to log the error, but still continue on to saving the kit
-            log.error("Unable to parse kit response status from Pepper: kit id %s", kitRequest.getId());
+            log.error("Unable to parse kit response status from Pepper: kit id {}", kitRequest.getId());
         } catch (JsonProcessingException e) {
             // serialization failures shouldn't ever happen in the objectMapper.writeValueAsString, but don't abort the operation, since the
             // pepper request was already successful
-            log.error("Unable to write kit response status from Pepper: kit id %s", kitRequest.getId());
+            log.error("Unable to serialize kit response status from Pepper: kit id {}", kitRequest.getId());
         }
         kitRequest = dao.createWithIdSpecified(kitRequest);
         log.info("Kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
-        return kitRequest;
+        return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
 
     /**
@@ -127,22 +124,52 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     /**
      * Fetch all kits for an enrollee.
      */
-    public List<KitRequest> findByEnrolleeId(UUID enrolleeId) {
-        return dao.findByEnrollee(enrolleeId);
+    public List<KitRequestDto> findByEnrollee(Enrollee enrollee) {
+        List<KitRequest> kits = dao.findByEnrollee(enrollee.getId());
+        return createKitRequestDto(kits, getKitTypeMap(), getEnrollees(kits));
     }
 
     /**
-     * Fetch all sample kits for a study environment.
+     * Fetch all kits for a collection of enrollees
      */
-    public Collection<KitRequest> getSampleKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
-        var allKitTypes = kitTypeDao.findAll();
-        var kitTypeMap = allKitTypes.stream().collect(Collectors.toMap(KitType::getId, Function.identity()));
-        var kits = dao.findByStudyEnvironment(studyEnvironment.getId());
-        kits.forEach(kit -> {
-            kit.setKitType(kitTypeMap.get(kit.getKitTypeId()));
-            enrolleeService.find(kit.getEnrolleeId()).ifPresent(kit::setEnrollee);
+    public Map<UUID, List<KitRequestDto>> findByEnrollees(Collection<Enrollee> enrollees) {
+        Map<UUID, Enrollee> idToEnrollee =
+            enrollees.stream().collect(Collectors.toMap(Enrollee::getId, Function.identity()));
+        Map<UUID, List<KitRequest>> idToKitRequest = dao.findByEnrolleeIds(idToEnrollee.keySet());
+
+        Map<UUID, KitType> kitTypeMap = getKitTypeMap();
+        return idToKitRequest.entrySet().stream()
+            .collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> createKitRequestDto(entry.getValue(), kitTypeMap, idToEnrollee)
+            ));
+    }
+
+    /**
+     * Fetch all kits for a study environment.
+     */
+    public Collection<KitRequestDto> getKitsByStudyEnvironment(StudyEnvironment studyEnvironment) {
+        List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
+        return createKitRequestDto(kits, getKitTypeMap(), getEnrollees(kits));
+    }
+
+    protected List<KitRequestDto> createKitRequestDto(List<KitRequest> kitRequests,
+                                                          Map<UUID, KitType> kitTypeMap,
+                                                          Map<UUID, Enrollee> enrollees
+    ) {
+        List<KitRequestDto> kitRequestDto = new ArrayList<>();
+        kitRequests.forEach(kit -> {
+            String enrolleeShortcode = enrollees.get(kit.getEnrolleeId()).getShortcode();
+            KitRequestDto requestDetails =
+                new KitRequestDto(kit, kitTypeMap.get(kit.getKitTypeId()), enrolleeShortcode, objectMapper);
+            kitRequestDto.add(requestDetails);
         });
-        return kits;
+        return kitRequestDto;
+    }
+
+    protected  Map<UUID, KitType> getKitTypeMap() {
+        return kitTypeDao.findAll().stream()
+            .collect(Collectors.toMap(KitType::getId, Function.identity()));
     }
 
     /**
@@ -151,18 +178,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Do _NOT_ call this repeatedly for a collection of kits. Use a bulk operation instead to avoid overwhelming DSM.
      */
     @Transactional
-    public PepperKit syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
+    public void syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
         KitRequest kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
-        var pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
-        try {
-            kitRequest.setExternalKit(objectMapper.writeValueAsString(pepperKitStatus));
-            kitRequest.setExternalKitFetchedAt(Instant.now());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Could not parse JSON response from DSM", e);
-        }
-        dao.update(kitRequest);
-        return pepperKitStatus;
-    }
+        PepperKit pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
+        saveKitStatus(kitRequest, pepperKitStatus, Instant.now());
+     }
 
     /**
      * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
@@ -177,7 +197,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         List<UUID> studyEnvIds = envKitTypes.stream().map(StudyEnvironmentKitType::getStudyEnvironmentId).distinct().toList();
         List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll(studyEnvIds);
         List<Study> studies = studyService.findAll(
-                studyEnvs.stream().map(StudyEnvironment::getStudyId).distinct().collect(Collectors.toList())
+                studyEnvs.stream().map(StudyEnvironment::getStudyId).distinct().toList()
         );
         // it doesn't actually matter what order we process the studies in, but it's nice for logging to have them
         // consistently alphabetical
@@ -189,9 +209,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
            try {
                Collection<PepperKit> pepperKits = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
                // now find the environments for this study from the list of environments with kit types
-               studyEnvs.stream().filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).forEach( studyEnv -> {
-                   syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits);
-               });
+               studyEnvs.stream().filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).forEach(studyEnv ->
+                   syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits)
+               );
             } catch (PepperParseException | PepperApiException e) {
                 // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
@@ -200,12 +220,15 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     @Transactional
-    public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName) throws PepperParseException, PepperApiException {
+    public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName)
+            throws PepperParseException, PepperApiException {
         Collection<PepperKit> pepperKits = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
         syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKits);
     }
 
-    private void syncKitStatusesForStudyEnv(String studyShortcode, EnvironmentName envName, Collection<PepperKit> pepperKits) throws PepperParseException, PepperApiException {
+    private void syncKitStatusesForStudyEnv(String studyShortcode, EnvironmentName envName,
+                                            Collection<PepperKit> pepperKits)
+            throws PepperParseException, PepperApiException {
         UUID studyEnvId = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("No matching study")).getId();
         Instant pepperStatusFetchedAt = Instant.now();
@@ -213,20 +236,24 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 Collectors.toMap(PepperKit::getJuniperKitId, Function.identity(),
                         (kit1, kit2) -> !kit1.getCurrentStatus().equals("Deactivated") ? kit1 : kit2));
 
-        studyEnvironmentService.find(studyEnvId).ifPresent(
-                studyEnvironment -> {
-                    List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
+        studyEnvironmentService.find(studyEnvId).ifPresent(studyEnvironment -> {
+            List<KitRequest> kits = dao.findByStudyEnvironment(studyEnvironment.getId());
 
-                    // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
-                    // we want to update the records in Juniper so those are the ones we want to iterate here.
-                    for (KitRequest kit : kits) {
-                        PepperKit pepperKitStatus = pepperKitByKitId.get(kit.getId().toString());
-                        if (pepperKitStatus != null) {
-                            saveKitStatus(kit, pepperKitStatus, pepperStatusFetchedAt);
-                        }
+            // The set of kits returned from DSM may be different from the set of incomplete kits in Juniper, but
+            // we want to update the records in Juniper so those are the ones we want to iterate here.
+            for (KitRequest kitRequest : kits) {
+                PepperKit pepperKit = pepperKitByKitId.get(kitRequest.getId().toString());
+                if (pepperKit != null) {
+                    try {
+                        saveKitStatus(kitRequest, pepperKit, pepperStatusFetchedAt);
+                    } catch (Exception e) {
+                        // continue processing other requests
+                        log.error("Error processing kit status update for kit request %s"
+                                .formatted(kitRequest.getId()), e);
                     }
                 }
-        );
+            }
+        });
     }
 
     public List<KitRequest> findByStudyEnvironment(UUID studyEnvironmentId) {
@@ -269,13 +296,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         } catch (JsonProcessingException e) {
             // There's no good reason for PepperKitAddress serialization to fail, so if it does, something very
             // unexpected is happening.  Throw RuntimeException to ensure @Transactional annotations will rollback.
-            throw new RuntimeException(e);
+            throw new InternalServerException("Error serializing PepperKitAddress", e);
         }
     }
 
     /**
-     * Saves updated kit status. This is called from a batch job, so exceptions are caught and logged instead of thrown
-     * to allow the rest of the batch to be processed.
+     * Saves updated kit status and creates an event for certain status changes
      */
     private void saveKitStatus(KitRequest kitRequest, PepperKit pepperKit, Instant pepperStatusFetchedAt) {
         KitRequestStatus priorStatus = kitRequest.getStatus();
@@ -285,25 +311,29 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             KitRequestStatus status = PepperKitStatus.mapToKitRequestStatus(pepperKit.getCurrentStatus());
             kitRequest.setStatus(status);
             setKitDates(kitRequest, pepperKit);
+            // for now just copy these over on each update, since there is currently no reason to make it conditional
+            kitRequest.setTrackingNumber(pepperKit.getTrackingNumber());
+            kitRequest.setReturnTrackingNumber(pepperKit.getReturnTrackingNumber());
+            kitRequest.setErrorMessage(pepperKit.getErrorMessage());
             dao.update(kitRequest);
         } catch (JsonProcessingException e) {
-            log.error("Unable to serialize status JSON for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
+            throw new InternalServerException("Error serializing PepperKit for kit request %s: %s"
+                    .formatted(kitRequest.getId(), pepperKit.toString()), e);
         }
 
-        try {
-            notifyKitStatusChange(kitRequest, priorStatus);
-        } catch (Exception e) {
-            log.error("Error publishing kit status event for KitRequest enrollee %s".formatted(kitRequest.getEnrolleeId()), e);
-        }
+        notifyKitStatusChange(kitRequest, priorStatus);
     }
 
     protected void setKitDates(KitRequest kitRequest, PepperKit pepperKit) {
         try {
             // collect this information regardless of status
-            kitRequest.setSentAt(parsePepperDateTime(pepperKit.getLabelDate()));
+            kitRequest.setLabeledAt(parsePepperDateTime(pepperKit.getLabelDate()));
+            kitRequest.setSentAt(parsePepperDateTime(pepperKit.getScanDate()));
             kitRequest.setReceivedAt(parsePepperDateTime(pepperKit.getReceiveDate()));
         } catch (Exception e) {
-            log.error("Error parsing PepperKit date for kit %s: %s".formatted(kitRequest.getId(), pepperKit.toString()), e);
+            // continue processing this request even if the date parsing fails
+            log.error("Error parsing PepperKit date for kit %s: %s"
+                    .formatted(kitRequest.getId(), pepperKit.toString()), e);
         }
     }
 
@@ -317,11 +347,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             return;
         }
 
-        Enrollee enrollee = enrolleeService.find(kitRequest.getEnrolleeId()).orElseThrow(() ->
-                new IllegalStateException("Invalid enrollee for KitRequest %s: enrollee ID=%s".formatted(kitRequest.getId(), kitRequest.getEnrolleeId())));
+        Enrollee enrollee = getEnrollee(kitRequest);
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
 
         eventService.publishKitStatusEvent(kitRequest, enrollee, ppUser, priorStatus);
+    }
+
+    protected Enrollee getEnrollee(KitRequest kitRequest) {
+        return enrolleeService.find(kitRequest.getEnrolleeId()).orElseThrow(() ->
+                new IllegalStateException("Invalid enrollee for KitRequest %s: enrollee ID=%s"
+                        .formatted(kitRequest.getId(), kitRequest.getEnrolleeId())));
+    }
+
+    protected Map<UUID, Enrollee> getEnrollees(List<KitRequest> kitRequests) {
+        List<UUID> enrolleeIds = kitRequests.stream().map(KitRequest::getEnrolleeId).toList();
+        return enrolleeService.findAll(enrolleeIds).stream()
+            .collect(Collectors.toMap(Enrollee::getId, Function.identity()));
     }
 
     /**
