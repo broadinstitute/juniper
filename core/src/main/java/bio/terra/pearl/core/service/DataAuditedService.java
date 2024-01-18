@@ -72,6 +72,7 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
                     .build();
             dataChangeRecordService.create(changeRecord);
         } catch (Exception e) {
+            System.out.println(obj);
             throw new RuntimeException("Could not serialize for audit log", e);
         }
         return dao.update(obj);

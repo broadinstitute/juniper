@@ -34,14 +34,4 @@ public class DataAuditInfo {
     // you should reuse this object for each)
     @Builder.Default
     private UUID operationId = UUID.randomUUID();
-    
-    public static DataAuditInfo fromEnrolleeId(UUID enrolleeId, UUID portalParticipantUserId, UUID responsibleUserId) {
-        return DataAuditInfo
-                .builder()
-                .enrolleeId(enrolleeId)
-                .responsibleUserId(responsibleUserId)
-                .portalParticipantUserId(portalParticipantUserId)
-                .operationId(UUID.randomUUID())
-                .build();
-    }
 }

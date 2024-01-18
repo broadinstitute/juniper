@@ -108,6 +108,7 @@ public class AuthUtilService {
     // least one
     List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
     List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
+    System.out.println(portalIds);
     if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
       throw new PermissionDeniedException(
           "User %s does not have permissions on enrollee %s or enrollee does not exist"

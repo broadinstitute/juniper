@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -90,6 +91,11 @@ public class EnrolleeExtService {
 
   public Profile updateProfile(AdminUser operator, String enrolleeShortcode, Profile profile) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
-    return this.profileService.updateWithMailingAddress(profile);
+    return this.profileService.updateWithMailingAddress(
+        profile,
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(operator.getId())
+            .enrolleeId(enrollee.getId())
+            .build());
   }
 }
