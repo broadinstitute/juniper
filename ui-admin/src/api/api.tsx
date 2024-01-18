@@ -159,11 +159,11 @@ export type DataChangeRecord = {
   id: string,
   createdAt: number,
   modelName: string,
-  fieldName: string,
+  fieldName?: string,
   oldValue: string,
   newValue: string,
-  responsibleUserId: string,
-  responsibleAdminUserId: string
+  responsibleUserId?: string,
+  responsibleAdminUserId?: string
 }
 
 export type KitType = {

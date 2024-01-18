@@ -58,7 +58,8 @@ public class ParticipantNoteExtService {
               .assignedAdminUserId(assignedAdminUserId)
               .status(TaskStatus.NEW)
               .build();
-      adminTaskService.create(task, DataAuditInfo.fromAdminUserId(user.getId()));
+      adminTaskService.create(
+          task, DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build());
     }
     return savedNote;
   }

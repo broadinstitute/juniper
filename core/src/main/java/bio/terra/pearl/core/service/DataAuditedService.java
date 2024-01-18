@@ -67,8 +67,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
             DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
                     .modelName(oldRecord.getClass().getSimpleName())
                     .modelId(obj.getId())
-                    .newValue(objectMapper.writeValueAsString(obj))
-                    .oldValue(objectMapper.writeValueAsString(oldRecord))
+                    .newValue(objectMapper.writeValueAsString(processModelBeforeAuditing(obj)))
+                    .oldValue(objectMapper.writeValueAsString(processModelBeforeAuditing(oldRecord)))
                     .build();
             dataChangeRecordService.create(changeRecord);
         } catch (Exception e) {
@@ -133,13 +133,22 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
         return obj;
     }
 
+    /**
+     * Override this function if you need to do any processing
+     * (e.g., pulling in linked objects) before saving an
+     * audit change.
+     */
+    protected M processModelBeforeAuditing(M model) {
+        return model;
+    }
+
     /** note this should be called AFTER the model has been saved, so the generated ID can be included */
     protected DataChangeRecord makeCreationChangeRecord(M newModel, DataAuditInfo auditInfo) {
         try {
             DataChangeRecord changeRecord = DataChangeRecord.fromAuditInfo(auditInfo)
                     .modelName(newModel.getClass().getSimpleName())
                     .modelId(newModel.getId())
-                    .newValue(objectMapper.writeValueAsString(newModel))
+                    .newValue(objectMapper.writeValueAsString(processModelBeforeAuditing(newModel)))
                     .oldValue(null)
                     .build();
             return changeRecord;
@@ -154,7 +163,7 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
                     .modelName(oldModel.getClass().getSimpleName())
                     .modelId(oldModel.getId())
                     .newValue(null)
-                    .oldValue(objectMapper.writeValueAsString(oldModel))
+                    .oldValue(objectMapper.writeValueAsString(processModelBeforeAuditing(oldModel)))
                     .build();
             return changeRecord;
         } catch (Exception e) {
