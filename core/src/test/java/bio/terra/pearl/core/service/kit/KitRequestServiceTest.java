@@ -17,7 +17,13 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
+import bio.terra.pearl.core.service.kit.pepper.PepperErrorResponse;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,8 +46,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -59,7 +66,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.setFamilyName("Tester");
         profile.setPhoneNumber("111-222-3333");
         profile.getMailingAddress().setStreet1("123 Fake Street");
-        profileService.updateWithMailingAddress(profile);
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
         var expectedSentToAddress = PepperKitAddress.builder()
                 .firstName("Alex")
                 .lastName("Tester")
@@ -88,7 +95,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.setFamilyName("Tester");
         profile.setPhoneNumber("111-222-3333");
         profile.getMailingAddress().setStreet1("123 Fake Street");
-        profileService.updateWithMailingAddress(profile);
+        profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
             var kitRequest = (KitRequest) invocation.getArguments()[2];
@@ -118,14 +125,14 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         String sentDate = "2023-11-17T14:57:59.548Z";
         String errorMessage = "Something went wrong";
         PepperKit pepperKit = PepperKit.builder()
-            .juniperKitId(kitRequest.getId().toString())
-            .currentStatus(PepperKitStatus.SENT.pepperString)
-            .scanDate(sentDate)
-            .errorMessage(errorMessage)
-            .build();
+                .juniperKitId(kitRequest.getId().toString())
+                .currentStatus(PepperKitStatus.SENT.pepperString)
+                .scanDate(sentDate)
+                .errorMessage(errorMessage)
+                .build();
         when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(pepperKit);
         when(mockEventService.publishKitStatusEvent(any(KitRequest.class),
-            any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenReturn(null);
+                any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenReturn(null);
 
         kitRequestService.syncKitStatusFromPepper(kitRequest.getId());
 
@@ -148,7 +155,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         KitRequest kitRequest1 = kitRequestFactory.buildPersisted(testName,
                 enrollee, PepperKitStatus.CREATED, kitType.getId(), adminUser.getId());
         KitRequest kitRequest2 = kitRequestDao.create(
-            kitRequestFactory.builder(testName)
+                kitRequestFactory.builder(testName)
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
@@ -190,29 +197,29 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         KitType kitType = kitTypeFactory.buildPersisted(testName);
 
         PepperKit pepperKit1 = PepperKit.builder()
-            .dsmShippingLabel(UUID.randomUUID().toString())
-            .currentStatus(PepperKitStatus.CREATED.pepperString)
-            .build();
+                .dsmShippingLabel(UUID.randomUUID().toString())
+                .currentStatus(PepperKitStatus.CREATED.pepperString)
+                .build();
 
         Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnvironment);
         KitRequest kitRequest1 = kitRequestFactory.buildPersisted(testName,
-            enrollee1, pepperKit1, kitType.getId(), adminUser.getId());
+                enrollee1, pepperKit1, kitType.getId(), adminUser.getId());
 
         String errorMessage = "Something went wrong";
         String deactivationReason = "Withdrawn from study";
         String deactivationDate =
-            DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now());
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now());
         PepperKit pepperKit2 = PepperKit.builder()
-            .dsmShippingLabel(UUID.randomUUID().toString())
-            .currentStatus(PepperKitStatus.DEACTIVATED.pepperString)
-            .errorMessage(errorMessage)
-            .deactivationReason(deactivationReason)
-            .deactivationDate(deactivationDate)
-            .build();
+                .dsmShippingLabel(UUID.randomUUID().toString())
+                .currentStatus(PepperKitStatus.DEACTIVATED.pepperString)
+                .errorMessage(errorMessage)
+                .deactivationReason(deactivationReason)
+                .deactivationDate(deactivationDate)
+                .build();
 
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnvironment);
         KitRequest kitRequest2 = kitRequestFactory.buildPersisted(testName,
-            enrollee2, pepperKit2, kitType.getId(), adminUser.getId());
+                enrollee2, pepperKit2, kitType.getId(), adminUser.getId());
 
         Map<UUID, List<KitRequestDto>> kits = kitRequestService.findByEnrollees(List.of(enrollee1, enrollee2));
 

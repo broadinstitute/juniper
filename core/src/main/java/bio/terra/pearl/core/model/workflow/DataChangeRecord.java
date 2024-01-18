@@ -1,11 +1,12 @@
 package bio.terra.pearl.core.model.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.UUID;
 
 /**
  * logs a discrete change to a participant's persisted data, such as a change to their profile or a survey
@@ -34,6 +35,9 @@ public class DataChangeRecord extends BaseEntity {
         return DataChangeRecord.builder()
                 .responsibleAdminUserId(auditInfo.getResponsibleAdminUserId())
                 .responsibleUserId(auditInfo.getResponsibleUserId())
-                .operationId(auditInfo.getOperationId());
+                .operationId(auditInfo.getOperationId())
+                .enrolleeId(auditInfo.getEnrolleeId())
+                .portalParticipantUserId(auditInfo.getPortalParticipantUserId())
+                .surveyId(auditInfo.getSurveyId());
     }
 }
