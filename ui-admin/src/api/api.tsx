@@ -488,7 +488,7 @@ export default {
   },
 
   async deleteStudy(portalShortcode: string, studyShortcode: string): Promise<Response> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}`
+    const url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()

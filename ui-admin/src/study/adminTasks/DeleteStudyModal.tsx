@@ -2,10 +2,9 @@ import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
-import { Store } from 'react-notifications-component'
-import { failureNotification } from '../../util/notifications'
 import { Study } from '@juniper/ui-core/build/types/study'
 import { Portal } from '@juniper/ui-core/build/types/portal'
+import { doApiLoad } from '../../api/api-utils'
 
 /** renders a modal that allows deleting a survey */
 const DeleteStudyModal = ({
@@ -20,11 +19,9 @@ const DeleteStudyModal = ({
   const deleteStudy = async () => {
     setIsLoading(true)
 
-    await Api.deleteStudy(portal.shortcode, study.shortcode).catch(() =>
-      Store.addNotification(failureNotification('Error deleting study'))
-    )
+    await doApiLoad(async () => Api.deleteStudy(portal.shortcode, study.shortcode),
+      { setIsLoading })
     reload()
-    setIsLoading(false)
     onDismiss()
   }
 
@@ -37,7 +34,9 @@ const DeleteStudyModal = ({
     </Modal.Header>
     <Modal.Body>
       <div className="mb-3">
-        Are you sure you want to delete the <strong>{study.name}</strong> study? </div>
+        Are you sure you want to delete the <strong>{study.name}</strong> study?  This
+        will permanently delete the study, and all forms, configuration, and participants, across all environments
+        and portals </div>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label">
           Confirm by typing &quot;{deleteString}&quot; below.<br/>

@@ -72,22 +72,28 @@ public class StudyExtService {
   @Transactional
   public void delete(String portalShortcode, String studyShortcode, AdminUser operator) {
     if (!operator.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permission to create studies");
+      throw new PermissionDeniedException("You do not have permission to delete studies");
     }
-    NotFoundException notFoundException =
-        new NotFoundException(
-            "Portal "
-                + portalShortcode
-                + " was not found as one of the portals for study "
-                + studyShortcode);
     Portal portal =
         portalService
             .findOneByShortcodeOrHostname(portalShortcode)
-            .orElseThrow(() -> notFoundException);
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Portal "
+                            + portalShortcode
+                            + " was not found as one of the portals for study "
+                            + studyShortcode));
     PortalStudy portalStudy =
         portalStudyService
             .findStudyInPortal(studyShortcode, portal.getId())
-            .orElseThrow(() -> notFoundException);
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Portal "
+                            + portalShortcode
+                            + " was not found as one of the portals for study "
+                            + studyShortcode));
     portalStudyService.deleteByStudyId(portalStudy.getStudyId());
     studyService.delete(portalStudy.getStudyId(), CascadeProperty.EMPTY_SET);
   }
