@@ -76,6 +76,9 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   public void testStudyDeletion(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
+    for (EnvironmentName envName : EnvironmentName.values()) {
+      environmentFactory.buildPersisted(getTestName(testInfo), envName);
+    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyExtService.StudyCreationDto studyDto =
         new StudyExtService.StudyCreationDto(newStudyShortcode, "the new study");
@@ -93,6 +96,9 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   public void testStudyDeletionNeedsSuperUser(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
+    for (EnvironmentName envName : EnvironmentName.values()) {
+      environmentFactory.buildPersisted(getTestName(testInfo), envName);
+    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyExtService.StudyCreationDto studyDto =
         new StudyExtService.StudyCreationDto(newStudyShortcode, "the new study");
