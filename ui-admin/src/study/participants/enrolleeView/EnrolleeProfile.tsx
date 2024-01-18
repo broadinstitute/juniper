@@ -17,6 +17,17 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   const [birthDateStrValid, setBirthDateStrValid] = useState<boolean>(true)
 
   useEffect(() => {
+    if (birthDateStr === '') {
+      setProfile(prevProfile => {
+        return {
+          ...prevProfile,
+          birthDate: undefined
+        }
+      })
+      setBirthDateStrValid(true)
+      return
+    }
+
     const date: number[] | undefined = usLocalStringToDate(birthDateStr)
 
     if (isNil(date)) {

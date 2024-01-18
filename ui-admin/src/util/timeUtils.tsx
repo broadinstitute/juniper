@@ -29,7 +29,7 @@ export function dateToDefaultString(date: number[] | undefined) {
  * Convert java date into the US locale string, which is MM/DD/YYYY.
  */
 export function dateToUSLocaleString(date: number[] | undefined): string {
-  if (typeof date === 'undefined' || date.length != 3 || !isNil(date.find(val => isNil(val)))) {
+  if (typeof date === 'undefined' || date.length != 3 || !date.every(val => !isNil(val))) {
     return ''
   }
 
@@ -42,6 +42,14 @@ export function dateToUSLocaleString(date: number[] | undefined): string {
  */
 export function usLocalStringToDate(date: string): number[] | undefined {
   const splitDate: string[] = date.split('/')
+  if (splitDate.length != 3) {
+    return undefined
+  }
+  console.log(splitDate)
+  if (splitDate.findIndex(val => val === '') >= 0) {
+    return undefined
+  }
+
   try {
     const splitDateAsNums = splitDate.map(parseInt)
 
