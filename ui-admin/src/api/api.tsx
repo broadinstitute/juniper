@@ -2,8 +2,8 @@ import {
   AlertTrigger,
   ConsentForm,
   ConsentResponse,
-  ParticipantTask,
   ParticipantDashboardAlert,
+  ParticipantTask,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -17,7 +17,7 @@ import {
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
-import { facetValuesToString, FacetValue, FacetType, FacetOption } from './enrolleeSearch'
+import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
@@ -159,11 +159,11 @@ export type DataChangeRecord = {
   id: string,
   createdAt: number,
   modelName: string,
-  fieldName: string,
+  fieldName?: string,
   oldValue: string,
   newValue: string,
-  responsibleUserId: string,
-  responsibleAdminUserId: string
+  responsibleUserId?: string,
+  responsibleAdminUserId?: string
 }
 
 export type KitType = {

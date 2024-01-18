@@ -10,22 +10,32 @@ import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.*;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.participant.*;
+import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -45,14 +55,20 @@ import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -262,7 +278,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             timeShiftPopulateDao.changeKitCreationTime(kitRequest.getId(), kitRequestPopDto.getCreatedAt());
         }
         enrollee.getKitRequests().add(
-            new KitRequestDto(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
+                new KitRequestDto(kitRequest, kitType, enrollee.getShortcode(), objectMapper));
         return kitRequest;
     }
 
@@ -293,8 +309,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private Trigger matchTriggerToNotification(List<Trigger> triggers,
                                                NotificationPopDto notification) {
         return triggers.stream().filter(config ->
-                config.getEventType().equals(notification.getTriggerEventType()) &&
-                config.getTriggerType().equals(notification.getTriggerType()) &&
+                        config.getEventType().equals(notification.getTriggerEventType()) &&
+                                config.getTriggerType().equals(notification.getTriggerType()) &&
                 config.getDeliveryType().equals(notification.getDeliveryType()))
                 .findFirst().orElse(null);
     }
@@ -344,7 +360,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Profile profile = profileService.find(ppUser.getProfileId()).get();
         boolean isDoNotEmail = profile.isDoNotEmail();
         profile.setDoNotEmail(true);
-        profileService.update(profile);
+        profileService.update(profile,
+                DataAuditInfo.builder()
+                        .portalParticipantUserId(ppUser.getId())
+                        .responsibleUserId(ppUser.getParticipantUserId())
+                        .build()
+        );
 
         if (popDto.isSimulateSubmissions()) {
             HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedUser, ppUser,
@@ -386,7 +407,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
          */
         profile = profileService.find(ppUser.getProfileId()).get();
         profile.setDoNotEmail(isDoNotEmail);
-        profileService.update(profile);
+        profileService.update(profile, DataAuditInfo
+                .builder()
+                .portalParticipantUserId(ppUser.getId())
+                .responsibleUserId(ppUser.getParticipantUserId())
+                .enrolleeId(enrollee.getId())
+                .build());
         if (popDto.isTimeShifted()) {
             timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }

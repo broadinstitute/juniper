@@ -14,7 +14,6 @@ import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
-import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,9 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class AdminTaskServiceTests extends BaseSpringBootTest {
     @Test
@@ -38,7 +39,10 @@ public class AdminTaskServiceTests extends BaseSpringBootTest {
                 .studyEnvironmentId(studyEnvironment.getId())
                 .description("some task")
                 .build();
-        AdminTask savedTask = adminTaskService.create(task, DataAuditInfo.fromAdminUserId(user.getId()));
+        AdminTask savedTask = adminTaskService.create(task, DataAuditInfo
+                .builder()
+                .responsibleAdminUserId(user.getId())
+                .build());
 
         DaoTestUtils.assertGeneratedProperties(savedTask);
         assertThat(savedTask.getDescription(), equalTo(task.getDescription()));
@@ -49,13 +53,19 @@ public class AdminTaskServiceTests extends BaseSpringBootTest {
         assertThat(changeRecords.size(), equalTo(1));
 
         savedTask.setStatus(TaskStatus.COMPLETE);
-        savedTask = adminTaskService.update(savedTask, DataAuditInfo.fromAdminUserId(user.getId()));
+        savedTask = adminTaskService.update(savedTask, DataAuditInfo
+                .builder()
+                .responsibleAdminUserId(user.getId())
+                .build());
         assertThat(savedTask.getCompletedAt(), greaterThan(Instant.now().minusMillis(3000)));
 
         changeRecords = dataChangeRecordService.findByModelId(savedTask.getId());
         assertThat(changeRecords.size(), equalTo(2));
 
-        adminTaskService.delete(savedTask.getId(), DataAuditInfo.fromAdminUserId(user.getId()));
+        adminTaskService.delete(savedTask.getId(), DataAuditInfo
+                .builder()
+                .responsibleAdminUserId(user.getId())
+                .build());
         assertThat(adminTaskService.find(savedTask.getId()).isPresent(), equalTo(false));
 
         changeRecords = dataChangeRecordService.findByModelId(savedTask.getId());
@@ -72,7 +82,10 @@ public class AdminTaskServiceTests extends BaseSpringBootTest {
                 .description("some task")
                 .build();
         Assertions.assertThrows(UnableToExecuteStatementException.class, () -> {
-            adminTaskService.create(task, DataAuditInfo.fromAdminUserId(user.getId()));
+            adminTaskService.create(task, DataAuditInfo
+                    .builder()
+                    .responsibleAdminUserId(user.getId())
+                    .build());
         });
     }
 
