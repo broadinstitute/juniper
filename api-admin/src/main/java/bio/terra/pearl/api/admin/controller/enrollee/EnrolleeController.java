@@ -6,7 +6,6 @@ import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.Profile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,21 +47,6 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     var records = enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(records);
-  }
-
-  @Override
-  public ResponseEntity<Object> updateProfile(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      String enrolleeShortcode,
-      Object body) {
-    AdminUser operator = authUtilService.requireAdminUser(request);
-    Profile profile = objectMapper.convertValue(body, Profile.class);
-
-    profile = enrolleeExtService.updateProfile(operator, enrolleeShortcode, profile);
-
-    return ResponseEntity.ok(profile);
   }
 
   @Override

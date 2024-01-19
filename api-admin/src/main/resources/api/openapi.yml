@@ -606,26 +606,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/profile:
-    post:
-      summary: Update this enrollee's profile
-      tags: [ enrollee ]
-      operationId: updateProfile
-      requestBody:
-        required: true
-        description: profile with all desired changes
-        content: { application/json: { schema: { type: object } } }
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: Updated profile
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/withdraw:
     post:
       summary: withdraws the given enrollee from the study
@@ -671,6 +651,26 @@ paths:
       responses:
         '200':
           description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/profiles/byEnrollee/{enrolleeShortcode}:
+    put:
+      summary: Update this enrollee's profile
+      tags: [ profile ]
+      operationId: updateProfileForEnrollee
+      requestBody:
+        required: true
+        description: profile with all desired changes
+        content: { application/json: { schema: { type: object } } }
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Updated profile
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

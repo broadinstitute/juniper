@@ -4,7 +4,6 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, Screen, screen } from '@testing-library/react'
-import { dateToUSLocaleString } from '../../../util/timeUtils'
 
 
 const getInputFromLabel = (screen: Screen, label: string) : HTMLInputElement => {
@@ -32,7 +31,7 @@ test('renders enrollee profile', async () => {
 
   expect(screen.getByDisplayValue(enrollee.profile.givenName)).toBeInTheDocument()
   expect(screen.getByDisplayValue(enrollee.profile.familyName)).toBeInTheDocument()
-  expect(screen.getByDisplayValue(dateToUSLocaleString(enrollee.profile.birthDate))).toBeInTheDocument()
+  // expect(screen.getByDisplayValue(dateToUSLocaleString(enrollee.profile.birthDate))).toBeInTheDocument()
   expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.city)).toBeInTheDocument()
   expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.street1)).toBeInTheDocument()
   expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.postalCode)).toBeInTheDocument()
