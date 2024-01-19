@@ -14,6 +14,10 @@ import bio.terra.pearl.core.service.study.StudyService;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,9 +60,13 @@ public class KitExtService {
     return response;
   }
 
+  @Getter
+  @SuperBuilder
+  @NoArgsConstructor
+  @Slf4j
   public static class KitRequestListResponse {
-    protected static final List<KitRequestDto> kitRequests = new ArrayList<>();
-    protected static final List<Exception> exceptions = new ArrayList<>();
+    private final List<KitRequestDto> kitRequests = new ArrayList<>();
+    private final List<Exception> exceptions = new ArrayList<>();
 
     public void addKitRequest(KitRequestDto kitRequest) {
       kitRequests.add(kitRequest);
