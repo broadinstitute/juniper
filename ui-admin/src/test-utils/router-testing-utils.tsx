@@ -18,7 +18,8 @@ type RoutableTestStruct = {
  * componentPath is the route to mount the component at.  Use this argument if you need to pass a routing param
  * to the component
  */
-export function setupRouterTest(ComponentToRender: ReactElement, initialEntries=['/'], componentPath = '*'): RoutableTestStruct {
+export function setupRouterTest(ComponentToRender: ReactElement,
+  initialEntries=['/'], componentPath = '*'): RoutableTestStruct {
   const routes = [{
     path: componentPath,
     element: ComponentToRender
