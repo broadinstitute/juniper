@@ -3,5 +3,6 @@
   "bodyPopulateFile": "studyEnroll.html",
   "subject": "Welcome!",
   "stableId": "hd_hd_studyEnroll",
-  "version": 1
+  "version": 1,
+  "publishedVersion": 1
 }

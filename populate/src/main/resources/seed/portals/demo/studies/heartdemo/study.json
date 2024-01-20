@@ -106,21 +106,105 @@
     },
     {
       "environmentName": "irb",
+      "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
-      }
+        "initialized": true
+      },
+      "preEnrollSurveyDto": {
+        "populateFileName": "surveys/preEnroll.json"
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/basic.json", "required": true},
+        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/medicalHistory.json"},
+        {"populateFileName": "surveys/familyHistory.json"},
+        {"populateFileName": "surveys/medList.json"},
+        {"populateFileName": "surveys/lifestyle.json"},
+        {"populateFileName": "surveys/phq9gad7.json"},
+        {"populateFileName": "surveys/socialHealth.json", "active": false},
+        {"populateFileName": "surveys/socialHealthV2.json"}
+      ],
+      "configuredConsentDtos": [
+        {
+          "populateFileName": "surveys/ourHealthConsent.json"
+        }
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      },{
+        "triggerType": "AD_HOC",
+        "populateFileName": "emails/adHoc.json"
+      }]
     },
     {
       "environmentName": "live",
+      "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
-      }
+        "initialized": true
+      },
+      "preEnrollSurveyDto": {
+        "populateFileName": "surveys/preEnroll.json"
+      },
+      "configuredSurveyDtos": [
+        {"populateFileName": "surveys/basic.json", "required": true},
+        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/medicalHistory.json"},
+        {"populateFileName": "surveys/familyHistory.json"},
+        {"populateFileName": "surveys/medList.json"},
+        {"populateFileName": "surveys/lifestyle.json"},
+        {"populateFileName": "surveys/phq9gad7.json"},
+        {"populateFileName": "surveys/socialHealth.json", "active": false},
+        {"populateFileName": "surveys/socialHealthV2.json"}
+      ],
+      "configuredConsentDtos": [
+        {
+          "populateFileName": "surveys/ourHealthConsent.json"
+        }
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "populateFileName": "emails/studyEnroll.json"
+      },{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_CONSENT",
+        "populateFileName": "emails/studyConsent.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "CONSENT",
+        "populateFileName": "emails/consentReminder.json"
+      },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "SURVEY",
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/surveyReminder.json"
+      },{
+        "triggerType": "AD_HOC",
+        "populateFileName": "emails/adHoc.json"
+      }]
     }
   ]
 }
