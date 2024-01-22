@@ -18,8 +18,11 @@ public class ProfileExtService {
     this.profileService = profileService;
   }
 
+  /**
+   * Updates the profile on behalf of the enrollee; requires a justification for auditing purposes.
+   */
   public Profile updateProfileForEnrollee(
-      AdminUser operator, String enrolleeShortcode, Profile profile) {
+      AdminUser operator, String enrolleeShortcode, String justification, Profile profile) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return this.profileService.updateWithMailingAddress(
         profile,

@@ -124,6 +124,11 @@ export type Profile = {
   birthDate?: number[]
 }
 
+export type ProfileUpdateDto = {
+  justification: string,
+  profile: Profile
+}
+
 export type MailingAddress = {
   street1: string,
   street2: string,
@@ -163,7 +168,8 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
-  responsibleAdminUserId?: string
+  responsibleAdminUserId?: string,
+  justification?: string
 }
 
 export type KitType = {
@@ -751,13 +757,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async updateProfile(
-    portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string, profile: Profile
+  async updateProfileForEnrollee(
+    portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string, profile: ProfileUpdateDto
   ):
     Promise<Profile> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/profile`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/profiles/byEnrollee/${enrolleeShortcode}`
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify(profile),
       headers: this.getInitHeaders()
     })

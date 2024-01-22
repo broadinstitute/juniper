@@ -29,6 +29,8 @@ public class DataAuditInfo {
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
+    private String justification;
+
     // If one operation creates multiple DataChangeRecords, then
     // they should all have the same operation id (in other words,
     // you should reuse this object for each)

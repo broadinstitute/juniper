@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.participant;
 
 import bio.terra.pearl.api.admin.api.ProfileApi;
+import bio.terra.pearl.api.admin.models.dto.ProfileUpdateDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.participant.ProfileExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -38,9 +39,14 @@ public class ProfileController implements ProfileApi {
       String enrolleeShortcode,
       Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    Profile profile = objectMapper.convertValue(body, Profile.class);
+    ProfileUpdateDto profileUpdateDto = objectMapper.convertValue(body, ProfileUpdateDto.class);
 
-    profile = profileExtService.updateProfileForEnrollee(operator, enrolleeShortcode, profile);
+    Profile profile =
+        profileExtService.updateProfileForEnrollee(
+            operator,
+            enrolleeShortcode,
+            profileUpdateDto.getJustification(),
+            profileUpdateDto.getProfile());
 
     return ResponseEntity.ok(profile);
   }
