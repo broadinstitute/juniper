@@ -18,7 +18,6 @@ test('enables updating of email templates', async () => {
   const saveSpy = jest.spyOn(Api, 'updateTrigger')
     .mockImplementation(() => Promise.resolve(trigger))
 
-  // jest.doMock('./EmailTemplateEditor', () => MockEmailTemplateEditor)
   renderWithRouter(<div>
     <ReactNotifications />
     <TriggerView studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}
