@@ -3,39 +3,99 @@ import React from 'react'
 import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { render, Screen, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { dateToDefaultString } from '../../../util/timeUtils'
+import userEvent from '@testing-library/user-event'
+import Api from '../../../api/api'
 
-
-const getInputFromLabel = (screen: Screen, label: string) : HTMLInputElement => {
-  const val = screen.getByText(label, { exact: false })
-
-  const inputElement = val.querySelector<HTMLInputElement>('input')
-
-  if (inputElement === null) {
-    throw new Error(`could not find input with label ${ label}`)
-  }
-
-  return inputElement
-}
 
 test('renders enrollee profile', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
   render(RoutedComponent)
 
+  const profile = enrollee.profile
+  const mailingAddress = profile.mailingAddress
 
-  expect(screen.getByDisplayValue(enrollee.profile.givenName)).toBeInTheDocument()
-  expect(screen.getByDisplayValue(enrollee.profile.familyName)).toBeInTheDocument()
-  // expect(screen.getByDisplayValue(dateToUSLocaleString(enrollee.profile.birthDate))).toBeInTheDocument()
-  expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.city)).toBeInTheDocument()
-  expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.street1)).toBeInTheDocument()
-  expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.postalCode)).toBeInTheDocument()
-  expect(screen.getByDisplayValue(enrollee.profile.mailingAddress.state)).toBeInTheDocument()
+  expect(screen.getByText(`${enrollee.profile.givenName} ${enrollee.profile.familyName}`)).toBeInTheDocument()
+  expect(screen.getByText(dateToDefaultString(enrollee.profile.birthDate))).toBeInTheDocument()
+  expect(screen.getByText(enrollee.profile.mailingAddress.street1)).toBeInTheDocument()
+  // e.g., Boston, MA 02120
+  expect(screen.getByText(
+    `${mailingAddress.city}, ${mailingAddress.state} ${mailingAddress.postalCode}`
+  )).toBeInTheDocument()
+})
 
-  getInputFromLabel(screen, 'Family name')
+test('displays updates before submitting', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+
+  const { RoutedComponent } = setupRouterTest(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Edit', { exact: false }))
+  await waitFor(() => {
+    expect(screen.getByPlaceholderText('Given Name')).toBeInTheDocument()
+  })
+
+  await userEvent.clear(screen.getByPlaceholderText('Given Name'))
+  await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
+  await userEvent.clear(screen.getByPlaceholderText('Family Name'))
+  await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
+  await userEvent.clear(screen.getByPlaceholderText('City'))
+  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+
+  await userEvent.click(screen.getByText('Save'))
+
+  // they are broken up by a fontawesome arrow, but if you just say exact: false,
+  // screen figures it out
+  expect(screen.getByText('Jonas James', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('Salk Bond', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('Cambridge London', { exact: false })).toBeInTheDocument()
+})
+
+test('profile update is sent appropriately with justification', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'updateProfileForEnrollee')
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+
+  const { RoutedComponent } = setupRouterTest(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Edit', { exact: false }))
+  await waitFor(() => {
+    expect(screen.getByPlaceholderText('Given Name')).toBeInTheDocument()
+  })
+
+  await userEvent.clear(screen.getByPlaceholderText('Given Name'))
+  await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
+  await userEvent.clear(screen.getByPlaceholderText('Family Name'))
+  await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
+  await userEvent.clear(screen.getByPlaceholderText('City'))
+  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+
+  await userEvent.click(screen.getByText('Save'))
+
+  await userEvent.type(screen.getByPlaceholderText('Justification'), 'A really great reason')
+
+  await userEvent.click(screen.getByText('Confirm Save'))
+
+  // TODO: check spy
 })

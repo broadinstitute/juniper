@@ -8,7 +8,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
-import { findDifferencesBetweenTwoObjects, ObjectDiff } from '../../util/objectUtils'
+import { findDifferencesBetweenObjects, ObjectDiff } from '../../util/objectUtils'
 
 
 // some records contain whole objects, so we want
@@ -20,7 +20,7 @@ const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataC
     const oldObject: { [index: string]: object } = JSON.parse(record.oldValue)
 
     if ((newObject && typeof newObject === 'object') || (oldObject && typeof oldObject === 'object')) {
-      const diffs: ObjectDiff[] = findDifferencesBetweenTwoObjects(newObject, oldObject)
+      const diffs: ObjectDiff[] = findDifferencesBetweenObjects(oldObject, newObject)
 
       return diffs.map<DataChangeRecord>((diff: ObjectDiff) => {
         return {

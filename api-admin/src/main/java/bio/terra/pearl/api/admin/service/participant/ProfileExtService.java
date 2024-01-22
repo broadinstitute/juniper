@@ -29,6 +29,7 @@ public class ProfileExtService {
         DataAuditInfo.builder()
             .responsibleAdminUserId(operator.getId())
             .enrolleeId(enrollee.getId())
+            .justification(justification)
             .build());
   }
 }
