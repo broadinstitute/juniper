@@ -118,6 +118,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
             emailTemplate: {
               ...updatedTemplate,
               id: undefined,
+              publishedVersion: undefined,
               version: config ? config.emailTemplate.version + 1 : 1
             }
           }
