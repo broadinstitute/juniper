@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service.enrollee;
+package bio.terra.pearl.api.admin.service.participant;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -18,16 +18,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class EnrolleeExtServiceTests extends BaseSpringBootTest {
+public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
-  @Autowired private EnrolleeExtService enrolleeExtService;
+  @Autowired private ProfileExtService profileExtService;
   @Autowired private EnrolleeFactory enrolleeFactory;
   @Autowired private ProfileService profileService;
   @Autowired private DataChangeRecordService dataChangeRecordService;
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
 
   @Test
-  public void testUpdateProfileFailsIfNotInPortal(TestInfo info) {
+  public void testUpdateProfileForEnrolleeFailsIfNotInPortal(TestInfo info) {
     var studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
@@ -40,15 +40,16 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> {
-          enrolleeExtService.updateProfile(
+          profileExtService.updateProfileForEnrollee(
               operator,
               enrollee.getShortcode(),
+              "Asdf",
               Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
         });
   }
 
   @Test
-  public void testUpdateProfile(TestInfo info) {
+  public void testUpdateProfileForEnrollee(TestInfo info) {
     var studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
@@ -58,9 +59,10 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
 
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
 
-    enrolleeExtService.updateProfile(
+    profileExtService.updateProfileForEnrollee(
         operator,
         enrollee.getShortcode(),
+        "A good reason",
         Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
 
     Profile newProfile = profileService.find(enrollee.getProfileId()).orElseThrow();
@@ -75,5 +77,6 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
     Assertions.assertEquals("Profile", profileUpdateRecord.getModelName());
     Assertions.assertFalse(profileUpdateRecord.getOldValue().contains("TEST"));
     Assertions.assertTrue(profileUpdateRecord.getNewValue().contains("TEST"));
+    Assertions.assertEquals("A good reason", profileUpdateRecord.getJustification());
   }
 }
