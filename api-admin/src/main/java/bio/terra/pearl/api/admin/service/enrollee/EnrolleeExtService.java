@@ -9,15 +9,13 @@ import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExtService {
@@ -26,21 +24,18 @@ public class EnrolleeExtService {
   private WithdrawnEnrolleeService withdrawnEnrolleeService;
   private DataChangeRecordService dataChangeRecordService;
   private EnrolleeSearchService enrolleeSearchService;
-  private ProfileService profileService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
       DataChangeRecordService dataChangeRecordService,
-      EnrolleeSearchService enrolleeSearchService,
-      ProfileService profileService) {
+      EnrolleeSearchService enrolleeSearchService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.dataChangeRecordService = dataChangeRecordService;
     this.enrolleeSearchService = enrolleeSearchService;
-    this.profileService = profileService;
   }
 
   public List<EnrolleeSearchResult> search(
