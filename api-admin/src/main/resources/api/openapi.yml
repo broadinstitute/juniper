@@ -836,7 +836,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/triggers/{configId}/test:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers/{configId}/test:
     post:
       summary: Sends a test action for the given trigger and enrolleeRuleData
       tags: [ trigger ]
