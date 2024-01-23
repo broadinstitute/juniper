@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import { ObjectDiff } from '../../util/objectUtils'
+import { ObjectDiff } from 'util/objectUtils'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
-export default function JustifyAndSaveModal({
+export default function JustifyChangesModal({
   saveWithJustification,
   onDismiss,
   changes

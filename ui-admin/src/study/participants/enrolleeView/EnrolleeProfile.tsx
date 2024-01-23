@@ -7,7 +7,7 @@ import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import JustifyAndSaveModal from '../JustifyAndSaveModal'
+import JustifyChangesModal from '../JustifyChangesModal'
 import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
@@ -74,7 +74,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 
     {
       showJustifyAndSaveModal && (
-        <JustifyAndSaveModal
+        <JustifyChangesModal
           onDismiss={() => setShowJustifyAndSaveModal(false)}
           saveWithJustification={saveProfile}
           changes={findDifferencesBetweenObjects(enrollee.profile, editedProfile)}
