@@ -18,16 +18,17 @@ databaseChangeLog:
         - sql:
             sql: |
               update survey set 
-                a.eligibility_rule = b.eligibility_rule, 
-                a.allow_admin_edit = b.allow_admin_edit, 
-                a.allow_participant_start = b.allow_participant_start, 
-                a.allow_participant_reedit = b.allow_participant_reedit,
-                a.prepopulate = b.prepopulate, 
-                a.recur = b.recur, 
-                a.recurrence_interval_days = b.recurrence_interval_days, 
-                a.days_after_eligible = b.days_after_eligible, 
-                a.required = b.required
-              from survey a join study_environment_survey b on a.id = b.survey_id;
+                eligibility_rule = study_environment_survey.eligibility_rule, 
+                allow_admin_edit = study_environment_survey.allow_admin_edit, 
+                allow_participant_start = study_environment_survey.allow_participant_start, 
+                allow_participant_reedit = study_environment_survey.allow_participant_reedit,
+                prepopulate = study_environment_survey.prepopulate, 
+                recur = study_environment_survey.recur, 
+                recurrence_interval_days = study_environment_survey.recurrence_interval_days, 
+                days_after_eligible = study_environment_survey.days_after_eligible, 
+                required = study_environment_survey.required
+              from study_environment_survey
+              where survey.id = study_environment_survey.survey_id;
         - dropColumn:
             tableName: study_environment_survey
             columns:
@@ -39,7 +40,6 @@ databaseChangeLog:
               - column: { name: recur }
               - column: { name: recurrence_interval_days }
               - column: { name: days_after_eligible }
-              - column: { name: survey_id }
               - column: { name: required }
         - addColumn:
             tableName: trigger

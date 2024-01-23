@@ -16,6 +16,11 @@ export type SurveyParamsT = StudyParams & {
   version?: string
 }
 
+export type SaveableFormProps = {
+  content: string,
+  required?: boolean
+}
+
 /** Handles logic for updating study environment surveys */
 function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
                       {studyEnvContext: StudyEnvContextT, survey: Survey, readOnly?: boolean}) {
@@ -24,11 +29,11 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
 
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
-  async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
+  async function createNewVersion(saveableProps: SaveableFormProps): Promise<void> {
     try {
       const updatedSurvey = await Api.createNewSurveyVersion(
         portal.shortcode,
-        { ...currentSurvey, content: updatedTextContent }
+        { ...currentSurvey, ...saveableProps }
       )
       const configuredSurvey = currentEnv.configuredSurveys
         .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey

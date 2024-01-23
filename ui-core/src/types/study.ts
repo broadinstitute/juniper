@@ -29,13 +29,6 @@ export type StudyEnvironmentSurvey = {
   surveyId: string
   survey: Survey
   surveyOrder: number
-  required: boolean
-  recur: boolean
-  recurrenceIntervalDays: number
-  allowAdminEdit: boolean
-  allowParticipantStart: boolean
-  allowParticipantReedit: boolean
-  prepopulate: boolean,
   studyEnvironmentId?: string
 }
 

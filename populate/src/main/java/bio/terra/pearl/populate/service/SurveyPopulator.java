@@ -81,10 +81,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
 
     @Override
     public Survey overwriteExisting(Survey existingObj, SurveyPopDto popDto, PortalPopulateContext context) throws IOException {
-        existingObj.setContent(popDto.getContent());
-        existingObj.setName(popDto.getName());
-        existingObj.setFooter(popDto.getFooter());
-        existingObj.setPublishedVersion(popDto.getPublishedVersion());
+        BeanUtils.copyProperties(existingObj, popDto, "id", "stableId", "version", "createdAt", "lastUpdatedAt", "answerMappings", "portalId");
         surveyPopulateDao.update(existingObj);
         updateAnswerMappings(existingObj, popDto);
         surveyQuestionDefinitionDao.deleteBySurveyId(existingObj.getId());

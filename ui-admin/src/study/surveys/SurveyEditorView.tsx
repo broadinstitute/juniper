@@ -8,12 +8,11 @@ import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
-import { faClockRotateLeft, faDownload, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationCircle, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import VersionSelector from './VersionSelector'
+import FormOptions from './FormOptions'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
-import { saveBlobAsDownload } from 'util/downloadUtils'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -45,7 +44,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   //for them to know if the version of the survey they're seeing are from a draft or are actually published.
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
-  const [showVersionSelector, setShowVersionSelector] = useState(false)
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
   const [showErrors, setShowErrors] = useState(false)
 
@@ -106,28 +105,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               </span> }
               )
             </span>
-            <button className="btn btn-secondary" onClick={() => setShowVersionSelector(true)}>
-              <FontAwesomeIcon icon={faClockRotateLeft}/> History
+            <button className="btn btn-secondary" onClick={() => setShowAdvancedOptions(true)}>
+              Options <FontAwesomeIcon icon={faGear}/>
             </button>
-            <Button variant="secondary"
-              disabled={!isEmpty(validationErrors)}
-              tooltip={isEmpty(validationErrors) ?
-                'Download the current contents of the JSON Editor as a JSON file.' :
-                'The form contains invalid JSON. Please correct the errors before downloading.'
-              }
-              onClick={() => {
-                const content = draft?.content || currentForm.content
-                // To get this formatted nicely and not as one giant line, need to parse
-                // this as an object and then stringify the result.
-                const blob = new Blob(
-                  [JSON.stringify(JSON.parse(content), null, 2)],
-                  { type: 'application/json' })
-                const filename = !draft ? `${currentForm.stableId}_v${currentForm.version}.json` :
-                  `${currentForm.stableId}_v${currentForm.version}_draft_${Date.now()}.json`
-                saveBlobAsDownload(blob, filename)
-              }}>
-              <FontAwesomeIcon icon={faDownload}/> Download JSON
-            </Button>
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
@@ -191,13 +171,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
-        { showVersionSelector && <VersionSelector
+        { showAdvancedOptions && <FormOptions
           studyEnvContext={studyEnvContext}
           visibleVersionPreviews={visibleVersionPreviews}
           setVisibleVersionPreviews={setVisibleVersionPreviews}
-          stableId={currentForm.stableId}
-          setShow={setShowVersionSelector}
-          show={showVersionSelector}
+          form={{ ...currentForm, content: draft?.content || currentForm.content }}
+          isDirty={!!draft}
+          onDismiss={() => setShowAdvancedOptions(false)}
           isConsentForm={isConsentForm}/>
         }
       </div>

@@ -21,6 +21,7 @@ public class StudyEnvironmentSurvey extends BaseEntity implements VersionedEntit
     @Builder.Default
     private boolean active = true; // whether this represents a current configuration
     private Survey survey;
+    private int surveyOrder; // what order the survey will be given in, compared to other surveys triggered at the same time
     @Override
     public Versioned versionedEntity() {
         return survey;

@@ -207,7 +207,7 @@ const SurveyListItem = (props: SurveyListItemProps) => {
       <Link to={`surveys/${survey.stableId}?readOnly=${isReadOnlyEnv}`}>
         {survey.name}
         <span className="mx-1 detail">v{survey.version}</span>
-        {surveyConfig.required && <span className="detail">(required)</span>}
+        {surveyConfig.survey.required && <span className="detail">(required)</span>}
       </Link>
     </div>
     { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
@@ -231,17 +231,6 @@ const SurveyListItem = (props: SurveyListItemProps) => {
                 setSelectedSurveyConfig(surveyConfig)
               }}>
                 Delete
-            </button>
-          </li>
-          <li className="pt-2">
-            <button className="dropdown-item"
-              onClick={async () => {
-                await updateConfiguredSurvey({
-                  ...surveyConfig,
-                  required: !surveyConfig.required
-                })
-              }}>
-              { surveyConfig.required? 'Set as optional' : 'Set as required' }
             </button>
           </li>
         </ul>

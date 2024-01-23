@@ -15,6 +15,23 @@ export type SurveyType = 'RESEARCH' | 'OUTREACH'
 export type Survey = VersionedForm & {
   surveyType: SurveyType
   blurb?: string
+  required: boolean
+  recur: boolean
+  recurrenceIntervalDays: number
+  allowAdminEdit: boolean
+  allowParticipantStart: boolean
+  allowParticipantReedit: boolean
+  prepopulate: boolean
+}
+
+export const defaultSurvey = {
+  required: false,
+  recur: false,
+  recurrenceIntervalDays: 0,
+  allowAdminEdit: true,
+  allowParticipantStart: true,
+  allowParticipantReedit: true,
+  prepopulate: false
 }
 
 export type ConsentForm = VersionedForm

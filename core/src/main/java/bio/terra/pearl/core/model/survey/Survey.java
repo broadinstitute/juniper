@@ -30,6 +30,8 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private List<AnswerMapping> answerMappings = new ArrayList<>();
     // markdown to be displayed below every page of the survey
     private String footer;
+    @Builder.Default
+    private List<AnswerMapping> triggers = new ArrayList<>();
 
     @Builder.Default
     private boolean recur = false;
@@ -39,8 +41,6 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private Integer recurrenceIntervalDays;
     // how many days after being eligible (e.g. after consent, or rule triggering) to offer the survey
     private Integer daysAfterEligible;
-
-    private int surveyOrder; // what order the survey will be given in, compared to other surveys triggered at the same time
     private String eligibilityRule;
     @Builder.Default
     private boolean allowAdminEdit = true; // whether study staff can edit this
@@ -50,6 +50,5 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private boolean allowParticipantReedit = true; // whether participants can change answers after submission
     @Builder.Default
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recur is true)
-
 }
 

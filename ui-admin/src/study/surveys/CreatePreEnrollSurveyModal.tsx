@@ -10,6 +10,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
+import { defaultSurvey } from '@juniper/ui-core'
 
 /** dialog for adding a new PreEnrollment survey */
 export default function CreatePreEnrollSurveyModal({ studyEnvContext, onDismiss }:
@@ -23,6 +24,7 @@ export default function CreatePreEnrollSurveyModal({ studyEnvContext, onDismiss 
     await doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
+          ...defaultSurvey,
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: 'RESEARCH',
           content: '{"pages":[]}', name: formName, stableId: formStableId
         })

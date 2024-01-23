@@ -84,7 +84,8 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const numSelected = enrolleesSelected.length
   const enableActionButtons = numSelected > 0
 
-  const requiredSurveys = currentEnv.configuredSurveys.filter(survey => survey.required)
+  const requiredSurveys = currentEnv.configuredSurveys
+    .filter(studyEnvSurvey => studyEnvSurvey.survey.required)
   const hasCompletedAllRequiredSurveys = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
       task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'

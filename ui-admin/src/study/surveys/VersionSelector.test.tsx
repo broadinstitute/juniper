@@ -1,7 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import { mockStudyEnvContext, mockSurvey, mockSurveyVersionsList } from 'test-utils/mocking-utils'
-import VersionSelector from './VersionSelector'
+import FormOptions from './FormOptions'
 import { select } from 'react-select-event'
 
 jest.mock('api/api', () => ({
@@ -17,11 +17,11 @@ describe('VersionSelector', () => {
   test('renders a list of form versions that can be selected', async () => {
     //Arrange
     const studyEnvContext = mockStudyEnvContext()
-    render(<VersionSelector
+    render(<FormOptions
       studyEnvContext={studyEnvContext}
-      stableId={mockSurvey().stableId}
-      show={true}
-      setShow={jest.fn()}
+      form={mockSurvey()}
+      onDismiss={jest.fn()}
+      isDirty={false}
       visibleVersionPreviews={[]}
       setVisibleVersionPreviews={jest.fn()}
     />)

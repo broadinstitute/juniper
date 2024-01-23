@@ -34,15 +34,15 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig {
     private EmailTemplate emailTemplate;
     private String rule;
 
-    private TriggerEventType eventType; // for notificationTypes of ON_EVENT
+    private TriggerEventType eventType; // for notificationTypes of EVENT
     /**
-     * notificationTypes of ON_TASK, if specified, will limit to one type of task.  if null,
+     * notificationTypes of TASK_REMINDER, if specified, will limit to one type of task.  if null,
      * will apply to all tasks.
      */
     private TaskType taskType;
-    private String taskTargetStableId; // for notificationTypes of ON_TASK
+    private UUID surveyId; // a specific survey the trigger is attached to
     /**
-     * for notificationTypes of ON_TASK -- if specified
+     * for notificationTypes of TASK_REMINDER -- if specified
         this will delay sending until the specified number of minutes have passed while the task is in an incomplete state
      */
     @Builder.Default
