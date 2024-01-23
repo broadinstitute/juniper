@@ -373,7 +373,7 @@ export const mockParticipantNote = (): ParticipantNote => {
 }
 
 /** mock NotificationConfig */
-export const mockNotificationConfig = (): Trigger => {
+export const mockTrigger = (): Trigger => {
   return {
     id: 'noteId1',
     triggerType: 'EVENT',

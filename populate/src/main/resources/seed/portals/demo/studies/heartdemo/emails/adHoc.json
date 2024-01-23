@@ -3,5 +3,6 @@
   "bodyPopulateFile": "adHoc.html",
   "subject": "${adHocSubject}",
   "stableId": "hd_hd_adhoc",
-  "version": 1
+  "version": 1,
+  "publishedVersion": 1
 }

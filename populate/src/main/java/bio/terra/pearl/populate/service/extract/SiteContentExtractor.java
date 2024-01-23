@@ -104,10 +104,13 @@ public class SiteContentExtractor {
     public HtmlSectionPopDto convertHtmlSection(HtmlSection htmlSection) {
         HtmlSectionPopDto htmlSectionPopDto = new HtmlSectionPopDto();
         BeanUtils.copyProperties(htmlSection, htmlSectionPopDto, "id", "htmlPageId", "sectionConfig");
-        try {
-            htmlSectionPopDto.setSectionConfigJson(objectMapper.readTree(htmlSection.getSectionConfig()));
-        } catch (Exception e) {
-            throw new RuntimeException("Error converting section config to json", e);
+        if (htmlSection.getSectionConfig() != null) {
+            // this is not a raw html section, so write the config as json for legibility
+            try {
+                htmlSectionPopDto.setSectionConfigJson(objectMapper.readTree(htmlSection.getSectionConfig()));
+            } catch (Exception e) {
+                throw new RuntimeException("Error converting section config to json", e);
+            }
         }
         return htmlSectionPopDto;
     }

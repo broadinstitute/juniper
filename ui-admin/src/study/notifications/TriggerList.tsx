@@ -22,7 +22,7 @@ const CONFIG_GROUPS = [
 ]
 
 /** shows configuration of notifications for a study */
-export default function NotificationContent({ studyEnvContext, portalContext }:
+export default function TriggerList({ studyEnvContext, portalContext }:
   {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()

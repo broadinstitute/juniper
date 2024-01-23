@@ -889,15 +889,14 @@ export default {
   },
 
   async testTrigger(portalShortcode: string, studyShortcode: string, envName: string,
-    triggerId: string, enrolleeRuleData: object): Promise<Trigger> {
+    triggerId: string, enrolleeRuleData: object): Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${triggerId}`
       + `/test`
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
     })
-    return await this.processJsonResponse(response)
   },
 
   async deleteTrigger(portalShortcode: string, studyShortcode: string, envName: string,
