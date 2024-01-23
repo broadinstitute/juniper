@@ -6,9 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
-import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -17,8 +15,9 @@ import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EnrolleeExtService {
@@ -87,15 +86,5 @@ public class EnrolleeExtService {
       throws JsonProcessingException {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
-  }
-
-  public Profile updateProfile(AdminUser operator, String enrolleeShortcode, Profile profile) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
-    return this.profileService.updateWithMailingAddress(
-        profile,
-        DataAuditInfo.builder()
-            .responsibleAdminUserId(operator.getId())
-            .enrolleeId(enrollee.getId())
-            .build());
   }
 }
