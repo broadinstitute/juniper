@@ -4,9 +4,9 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString } from '../../../util/timeUtils'
+import { dateToDefaultString } from 'util/timeUtils'
 import userEvent from '@testing-library/user-event'
-import Api from '../../../api/api'
+import Api from 'api/api'
 
 
 test('renders enrollee profile', async () => {

@@ -4,16 +4,17 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import Api, { Enrollee, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '../../../util/timeUtils'
+import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyAndSaveModal from '../JustifyAndSaveModal'
-import { findDifferencesBetweenObjects } from '../../../util/objectUtils'
+import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from '../../../util/notifications'
+import { successNotification } from 'util/notifications'
+import { doApiLoad } from 'api/api-utils'
 
 /**
- * shows the enrollee profile and allows editing from the admin side
+ * Shows the enrollee profile and allows editing from the admin side
  */
 export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
                                           {
@@ -22,12 +23,12 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
                                             onUpdate: () => void
                                           }) {
   const [editMode, setEditMode] = useState<boolean>(false)
-  const [hasBeenEdited, setHasBeenEdited] = useState<boolean>(false)
+  const [isDirty, setIsDirty] = useState<boolean>(false)
   const [editedProfile, setEditedProfile] = useState<Profile>(cloneDeep(enrollee.profile))
   const [showJustifyAndSaveModal, setShowJustifyAndSaveModal] = useState<boolean>(false)
 
   const saveProfile = async (justification: string) => {
-    try {
+    await doApiLoad(async () => {
       await Api.updateProfileForEnrollee(
         studyEnvContext.portal.shortcode,
         studyEnvContext.study.shortcode,
@@ -36,17 +37,15 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
         { justification, profile: editedProfile })
 
       Store.addNotification(successNotification('Successfully updated enrollee profile.'))
-    } catch (e) {
-      Store.addNotification(failureNotification('Could not update enrollee profile.'))
-    } finally {
+
       onUpdate()
-    }
+    }, {})
   }
 
   const onProfileUpdate = (profileUpdate: React.SetStateAction<Profile>) => {
     setEditedProfile(profileUpdate)
-    if (!hasBeenEdited) {
-      setHasBeenEdited(true)
+    if (!isDirty) {
+      setIsDirty(true)
     }
   }
 
@@ -59,7 +58,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
             Edit
         </button>}
         {editMode && <div className="flex-grow-1 d-flex justify-content-end">
-          <button className="btn btn-primary mx-2 " disabled={!hasBeenEdited}
+          <button className="btn btn-primary mx-2 " disabled={!isDirty}
             onClick={() => setShowJustifyAndSaveModal(true)}>
                 Next: Add Justification
           </button>
@@ -89,7 +88,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 }
 
 /**
- *
+ * Read only view of the profile.
  */
 export function ReadOnlyProfile(
   { profile }: {
@@ -97,7 +96,7 @@ export function ReadOnlyProfile(
   }
 ) {
   const mailingAddress = profile.mailingAddress
-  return <React.Fragment>
+  return <>
     <ReadOnlyRow title={'Name'} values={[`${profile.givenName} ${profile.familyName}`]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyRow title={'Primary Address'} values={[
@@ -109,11 +108,11 @@ export function ReadOnlyProfile(
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'On' : 'Off']}/>
     <ReadOnlyRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
-  </React.Fragment>
+  </>
 }
 
 /**
- *
+ * Editable profile, providing the update to `setProfile` on each change.
  */
 export function EditableProfile(
   { profile, setProfile }: {
@@ -153,8 +152,8 @@ export function EditableProfile(
     })
   }
 
-  return <React.Fragment>
-    <CardRow title={'Name'}>
+  return <>
+    <FormRow title={'Name'}>
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
@@ -167,8 +166,8 @@ export function EditableProfile(
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
-    </CardRow>
-    <CardRow title={'Birthdate'}>
+    </FormRow>
+    <FormRow title={'Birthdate'}>
       <div className='row'>
         <div className="col">
           <input className="form-control" type="date"
@@ -179,8 +178,8 @@ export function EditableProfile(
         <div className="col"/>
       </div>
       {/*onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>*/}
-    </CardRow>
-    <CardRow title={'Primary Address'}>
+    </FormRow>
+    <FormRow title={'Primary Address'}>
       <div className="">
         <div className='row mb-2'>
           <div className="col">
@@ -221,18 +220,18 @@ export function EditableProfile(
           </div>
         </div>
       </div>
-    </CardRow>
-    <CardRow title={'Email'}>
+    </FormRow>
+    <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
-    </CardRow>
-    <CardRow title={'Phone'}>
+    </FormRow>
+    <FormRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
         placeholder={'Phone Number'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
-    </CardRow>
-    <CardRow title={'Notifications'}>
+    </FormRow>
+    <FormRow title={'Notifications'}>
       <div className='row mt-2'>
         <div className="col-auto">
           <div className="form-check">
@@ -255,12 +254,12 @@ export function EditableProfile(
           </div>
         </div>
       </div>
-    </CardRow>
-  </React.Fragment>
+    </FormRow>
+  </>
 }
 
 /**
- *
+ * Row of readonly data, where the title takes the leftmost portion and the values are on the rightmost.
  */
 export function ReadOnlyRow(
   { title, values }: {
@@ -268,32 +267,32 @@ export function ReadOnlyRow(
     values: string[]
   }
 ) {
-  return <CardRow title={title}>
+  return <FormRow title={title}>
     {(isEmpty(values) || values.every(isEmpty)) && <p className="fst-italic mb-0 mt-2 text-muted">None provided</p>}
     {
       values.filter(val => !isEmpty(val)).map((val, idx) => (
         <p key={idx} className={`mb-0 ${idx == 0 ? 'mt-2' : ''}`}>{val}</p>
       ))
     }
-  </CardRow>
+  </FormRow>
 }
 
 /**
- *
+ * One row of the profile's data.
  */
-export function CardRow(
+export function FormRow(
   { title, children }: {
     title: string,
     children: React.ReactNode
   }
 ) {
-  return <React.Fragment>
+  return <>
     <div className="w-25 fw-bold mb-4 mt-2">
       {title}
     </div>
     <div className="w-75 mb-4">
       {children}
     </div>
-  </React.Fragment>
+  </>
 }
 
