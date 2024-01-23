@@ -57,7 +57,7 @@ test('displays updates before submitting', async () => {
   await userEvent.clear(screen.getByPlaceholderText('City'))
   await userEvent.type(screen.getByPlaceholderText('City'), 'London')
 
-  await userEvent.click(screen.getByText('Save'))
+  await userEvent.click(screen.getByText('Next: Add Justification'))
 
   // they are broken up by a fontawesome arrow, but if you just say exact: false,
   // screen figures it out
@@ -91,11 +91,29 @@ test('profile update is sent appropriately with justification', async () => {
   await userEvent.clear(screen.getByPlaceholderText('City'))
   await userEvent.type(screen.getByPlaceholderText('City'), 'London')
 
-  await userEvent.click(screen.getByText('Save'))
+  await userEvent.click(screen.getByText('Next: Add Justification'))
 
-  await userEvent.type(screen.getByPlaceholderText('Justification'), 'A really great reason')
+  await userEvent.type(screen.getByPlaceholderText('Why are you making this change?'), 'A really great reason')
 
-  await userEvent.click(screen.getByText('Confirm Save'))
+  await userEvent.click(screen.getByText('Save & Complete Change'))
 
-  // TODO: check spy
+  expect(Api.updateProfileForEnrollee)
+    .toHaveBeenCalledWith(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      enrollee.shortcode,
+      {
+        justification: 'A really great reason',
+        profile: {
+          ...enrollee.profile,
+          givenName: 'James',
+          familyName: 'Bond',
+          mailingAddress: {
+            ...enrollee.profile.mailingAddress,
+            city: 'London'
+          }
+        }
+      }
+    )
 })

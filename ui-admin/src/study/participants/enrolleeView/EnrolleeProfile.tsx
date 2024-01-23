@@ -1,19 +1,21 @@
-import React, {useState} from 'react'
-import {faPencil} from '@fortawesome/free-solid-svg-icons'
+import React, { useState } from 'react'
+import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, {Enrollee, Profile} from 'api/api'
+import Api, { Enrollee, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
-import {StudyEnvContextT} from '../../StudyEnvironmentRouter'
-import {dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate} from '../../../util/timeUtils'
-import {cloneDeep, isEmpty} from 'lodash'
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '../../../util/timeUtils'
+import { cloneDeep, isEmpty } from 'lodash'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyAndSaveModal from '../JustifyAndSaveModal'
-import {findDifferencesBetweenObjects} from '../../../util/objectUtils'
+import { findDifferencesBetweenObjects } from '../../../util/objectUtils'
+import { Store } from 'react-notifications-component'
+import { failureNotification, successNotification } from '../../../util/notifications'
 
 /**
  * shows the enrollee profile and allows editing from the admin side
  */
-export default function EnrolleeProfile({enrollee, studyEnvContext, onUpdate}:
+export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
                                           {
                                             enrollee: Enrollee,
                                             studyEnvContext: StudyEnvContextT,
@@ -25,14 +27,20 @@ export default function EnrolleeProfile({enrollee, studyEnvContext, onUpdate}:
   const [showJustifyAndSaveModal, setShowJustifyAndSaveModal] = useState<boolean>(false)
 
   const saveProfile = async (justification: string) => {
-    await Api.updateProfileForEnrollee(
-      studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      enrollee.shortcode,
-      {justification, profile: editedProfile})
+    try {
+      await Api.updateProfileForEnrollee(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        enrollee.shortcode,
+        { justification, profile: editedProfile })
 
-    onUpdate()
+      Store.addNotification(successNotification('Successfully updated enrollee profile.'))
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not update enrollee profile.'))
+    } finally {
+      onUpdate()
+    }
   }
 
   const onProfileUpdate = (profileUpdate: React.SetStateAction<Profile>) => {
@@ -45,17 +53,17 @@ export default function EnrolleeProfile({enrollee, studyEnvContext, onUpdate}:
   return <div>
     <div className="card w-75 border shadow-sm mb-3">
       <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
-        <div className="fw-bold lead">Profile</div>
+        <div className="fw-bold lead">{editMode ? 'Edit Profile' : 'Profile'}</div>
         {!editMode && <button className="mx-2 btn btn-light text-primary" onClick={() => setEditMode(true)}>
-            <FontAwesomeIcon icon={faPencil} className={'me-2'}/>
+          <FontAwesomeIcon icon={faPencil} className={'me-2'}/>
             Edit
         </button>}
         {editMode && <div className="flex-grow-1 d-flex justify-content-end">
-            <button className="btn btn-primary mx-2 " disabled={!hasBeenEdited}
-                    onClick={() => setShowJustifyAndSaveModal(true)}>
+          <button className="btn btn-primary mx-2 " disabled={!hasBeenEdited}
+            onClick={() => setShowJustifyAndSaveModal(true)}>
                 Next: Add Justification
-            </button>
-            <button className="btn btn-outline-primary" onClick={() => setEditMode(false)}>Cancel</button>
+          </button>
+          <button className="btn btn-outline-primary" onClick={() => setEditMode(false)}>Cancel</button>
         </div>}
       </div>
       <div className="card-body d-flex flex-row flex-wrap">
@@ -76,7 +84,7 @@ export default function EnrolleeProfile({enrollee, studyEnvContext, onUpdate}:
     }
 
     <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
-                          studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
+      studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
   </div>
 }
 
@@ -84,7 +92,7 @@ export default function EnrolleeProfile({enrollee, studyEnvContext, onUpdate}:
  *
  */
 export function ReadOnlyProfile(
-  {profile}: {
+  { profile }: {
     profile: Profile
   }
 ) {
@@ -108,7 +116,7 @@ export function ReadOnlyProfile(
  *
  */
 export function EditableProfile(
-  {profile, setProfile}: {
+  { profile, setProfile }: {
     profile: Profile,
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
@@ -159,13 +167,13 @@ export function EditableProfile(
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
-                 placeholder={'Given Name'}
-                 onChange={e => onStringFieldChange('givenName', e.target.value)}/>
+            placeholder={'Given Name'}
+            onChange={e => onStringFieldChange('givenName', e.target.value)}/>
         </div>
         <div className='col'>
           <input className="form-control" type="text" value={profile.familyName || ''}
-                 placeholder={'Family Name'}
-                 onChange={e => onStringFieldChange('familyName', e.target.value)}/>
+            placeholder={'Family Name'}
+            onChange={e => onStringFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
     </CardRow>
@@ -173,9 +181,9 @@ export function EditableProfile(
       <div className='row'>
         <div className="col">
           <input className="form-control" type="date"
-                 value={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
-                 placeholder={'Birth Date'}
-                 onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
+            value={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
+            placeholder={'Birth Date'}
+            onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
         </div>
         <div className="col"/>
       </div>
@@ -186,52 +194,52 @@ export function EditableProfile(
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street1 || ''}
-                   placeholder={'Street 1'}
-                   onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
+              placeholder={'Street 1'}
+              onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street2 || ''}
-                   placeholder={'Street 2'}
-                   onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
+              placeholder={'Street 2'}
+              onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.city || ''}
-                   placeholder={'City'}
-                   onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
+              placeholder={'City'}
+              onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.state || ''}
-                   placeholder={'State'}
-                   onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
+              placeholder={'State'}
+              onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
           </div>
         </div>
         <div className='row'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.postalCode || ''}
-                   placeholder={'Postal Code'}
-                   onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
+              placeholder={'Postal Code'}
+              onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.country || ''}
-                   placeholder={'Country'}
-                   onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
+              placeholder={'Country'}
+              onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
           </div>
         </div>
       </div>
     </CardRow>
     <CardRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
-             placeholder={'Contact Email'}
-             onChange={e => onStringFieldChange('contactEmail', e.target.value)}/>
+        placeholder={'Contact Email'}
+        onChange={e => onStringFieldChange('contactEmail', e.target.value)}/>
     </CardRow>
     <CardRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
-             placeholder={'Phone Number'}
-             onChange={e => onStringFieldChange('phoneNumber', e.target.value)}/>
+        placeholder={'Phone Number'}
+        onChange={e => onStringFieldChange('phoneNumber', e.target.value)}/>
     </CardRow>
     <CardRow title={'Notifications'}>
       <div className='row mt-2'>
@@ -239,7 +247,7 @@ export function EditableProfile(
           <div className="form-check">
 
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmail} id="doNotEmailCheckbox"
-                   onChange={e => onBooleanFieldChange('doNotEmail', e.target.checked)}/>
+              onChange={e => onBooleanFieldChange('doNotEmail', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotEmailCheckbox">
               Do Not Email
             </label>
@@ -248,8 +256,8 @@ export function EditableProfile(
         <div className='col-auto'>
           <div className="form-check">
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmailSolicit}
-                   id="doNotSolicitCheckbox"
-                   onChange={e => onBooleanFieldChange('doNotEmailSolicit', e.target.checked)}/>
+              id="doNotSolicitCheckbox"
+              onChange={e => onBooleanFieldChange('doNotEmailSolicit', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
               Do Not Solicit
             </label>
@@ -264,7 +272,7 @@ export function EditableProfile(
  *
  */
 export function ReadOnlyRow(
-  {title, values}: {
+  { title, values }: {
     title: string,
     values: string[]
   }
@@ -283,7 +291,7 @@ export function ReadOnlyRow(
  *
  */
 export function CardRow(
-  {title, children}: {
+  { title, children }: {
     title: string,
     children: React.ReactNode
   }
