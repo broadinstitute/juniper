@@ -121,16 +121,7 @@ export function EditableProfile(
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
-  const onStringFieldChange = (field: string, value: string) => {
-    setProfile((oldVal: Profile) => {
-      return {
-        ...oldVal,
-        [field]: value
-      }
-    })
-  }
-
-  const onBooleanFieldChange = (field: string, value: boolean) => {
+  const onFieldChange = (field: string, value: string | boolean) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -168,12 +159,12 @@ export function EditableProfile(
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
             placeholder={'Given Name'}
-            onChange={e => onStringFieldChange('givenName', e.target.value)}/>
+            onChange={e => onFieldChange('givenName', e.target.value)}/>
         </div>
         <div className='col'>
           <input className="form-control" type="text" value={profile.familyName || ''}
             placeholder={'Family Name'}
-            onChange={e => onStringFieldChange('familyName', e.target.value)}/>
+            onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
     </CardRow>
@@ -234,12 +225,12 @@ export function EditableProfile(
     <CardRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'}
-        onChange={e => onStringFieldChange('contactEmail', e.target.value)}/>
+        onChange={e => onFieldChange('contactEmail', e.target.value)}/>
     </CardRow>
     <CardRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
         placeholder={'Phone Number'}
-        onChange={e => onStringFieldChange('phoneNumber', e.target.value)}/>
+        onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
     </CardRow>
     <CardRow title={'Notifications'}>
       <div className='row mt-2'>
@@ -247,7 +238,7 @@ export function EditableProfile(
           <div className="form-check">
 
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmail} id="doNotEmailCheckbox"
-              onChange={e => onBooleanFieldChange('doNotEmail', e.target.checked)}/>
+              onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotEmailCheckbox">
               Do Not Email
             </label>
@@ -257,7 +248,7 @@ export function EditableProfile(
           <div className="form-check">
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmailSolicit}
               id="doNotSolicitCheckbox"
-              onChange={e => onBooleanFieldChange('doNotEmailSolicit', e.target.checked)}/>
+              onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
               Do Not Solicit
             </label>
