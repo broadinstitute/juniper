@@ -26,13 +26,13 @@ export default function JustifyAndSaveModal({
     <Modal.Header closeButton>
       <Modal.Title>
         Add Justification
-        <p className={"fw-light small"}>Participant data requires additional justification for audit purposes.</p>
+        <p className={'fw-light small'}>Participant data requires additional justification for audit purposes.</p>
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <div className="border-start border-3 p-1 ps-2 border-warning w-75 ms-4 mb-4"
-           style={{backgroundColor: "#f2f2f2"}}>
-        <p className={"fw-bold mb-0"}>Pending Changes</p>
+        style={{ backgroundColor: '#f2f2f2' }}>
+        <p className={'fw-bold mb-0'}>Pending Changes</p>
         {changes.map((change, idx) =>
           <p key={idx} className="mb-0">
             {change.fieldName}: {change.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {change.newValue}
@@ -42,7 +42,7 @@ export default function JustifyAndSaveModal({
       <h6>Description:</h6>
       <textarea className="form-control" rows={3}
         required={true} value={justification}
-                placeholder={'Why are you making this change?'}
+        placeholder={'Why are you making this change?'}
         onChange={e => setJustification(e.target.value)}/>
     </Modal.Body>
     <Modal.Footer>
