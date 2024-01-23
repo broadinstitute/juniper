@@ -4,7 +4,11 @@ import { ObjectDiff } from 'util/objectUtils'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
-/** Renders a modal for an admin to submit a sample collection kit request. */
+/**
+ * Renders a modal which requires an admin to justify changes to a participant's data. The
+ * `changes` prop can be calculated by running `objectUtils.findDifferencesBetweenObjects`
+ * on the object before and after the changes.
+ */
 export default function JustifyChangesModal({
   saveWithJustification,
   onDismiss,
