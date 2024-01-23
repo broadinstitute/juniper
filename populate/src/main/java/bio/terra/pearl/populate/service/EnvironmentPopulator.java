@@ -21,7 +21,7 @@ public class EnvironmentPopulator extends BasePopulator<Environment, Environment
 
     @Override
     public Environment createNew(Environment popDto, FilePopulateContext context, boolean overwrite) {
-        return environmentService.create(popDto);
+        return environmentService.buildPersisted(popDto);
     }
 
     @Override

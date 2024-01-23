@@ -20,11 +20,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
+    @Transactional
     public void testApplyPortalConfigChanges() throws Exception {
         AdminUser user = adminUserFactory.buildPersisted("testApplyPortalConfigChanges", true);
         Portal portal = portalFactory.buildPersisted("testApplyPortalConfigChanges");
@@ -44,6 +46,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testPublishesSurveyPortalChanges() throws Exception {
         AdminUser user = adminUserFactory.buildPersisted("testPublishesSurveyPortalChanges", true);
         Portal portal = portalFactory.buildPersisted("testPublishesSurveyPortalChanges");
@@ -63,6 +66,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testApplyAlertChanges() throws Exception {
         ParticipantDashboardAlert alert = ParticipantDashboardAlert.builder()
                 .title("No activities left!")

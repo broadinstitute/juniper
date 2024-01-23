@@ -27,10 +27,7 @@ public class EnvironmentFactory {
      * if the given environment exists, and either return it or a new one as needed.
      */
     public Environment buildPersisted(Environment.EnvironmentBuilder builder, String testName) {
-        Optional<Environment> environment = environmentService.findOneByName(builder.build().getName());
-        if (environment.isPresent()) {
-            return environment.get();
-        }
-        return environmentService.create(builder.build());
+
+        return environmentService.buildPersisted(builder, testName);
     }
 }

@@ -136,6 +136,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testGetSurveyQuestionDefinitions() {
         Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
         String surveyContent = """
@@ -183,6 +184,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testProcessDerivedQuestions() {
         Survey survey = new Survey();
         String surveyContent = """

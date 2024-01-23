@@ -53,7 +53,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
-        this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
+        this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
@@ -91,7 +91,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             envConfig = studyEnvironmentConfigService.create(envConfig);
             studyEnv.setStudyEnvironmentConfigId(envConfig.getId());
         }
-        StudyEnvironment newEnv = dao.create(studyEnv);
+        List<StudyEnvironment> studyEnvironmentList = dao.findByStudy(studyEnv.getStudyId());
+        Optional<StudyEnvironment> maybeNewEnv = studyEnvironmentList.stream()
+                .filter(studyEnvironment -> studyEnvironment.getEnvironmentName().equals(studyEnv.getEnvironmentName())).findAny();
+        StudyEnvironment newEnv = maybeNewEnv.isEmpty() ? dao.create(studyEnv) : maybeNewEnv.get();
         for (StudyEnvironmentSurvey studyEnvironmentSurvey : studyEnv.getConfiguredSurveys()) {
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);

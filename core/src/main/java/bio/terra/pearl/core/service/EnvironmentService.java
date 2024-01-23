@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.EnvironmentName;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnvironmentService extends ImmutableEntityService<Environment, EnvironmentDao> {
@@ -15,5 +16,15 @@ public class EnvironmentService extends ImmutableEntityService<Environment, Envi
 
     public Optional<Environment> findOneByName(EnvironmentName name) {
         return dao.findByName(name);
+    }
+
+    @Transactional
+    public Environment buildPersisted(Environment.EnvironmentBuilder builder, String testName) {
+        return dao.buildPersisted(builder, testName);
+    }
+
+    @Transactional
+    public Environment buildPersisted(Environment environment) {
+        return dao.buildPersisted(environment);
     }
 }

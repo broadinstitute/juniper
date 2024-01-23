@@ -6,6 +6,8 @@ import bio.terra.pearl.core.model.participant.Profile;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -13,6 +15,7 @@ public class ProfileDaoTests extends BaseSpringBootTest {
     @Autowired
     ProfileDao profileDao;
     @Test
+    @Transactional
     public void testLocalDateSaves() {
        Profile profile = Profile.builder()
                .familyName("smith")
