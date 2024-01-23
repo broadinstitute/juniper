@@ -3,5 +3,6 @@
   "bodyPopulateFile": "studyConsent.html",
   "subject": "Thank you!",
   "stableId": "hd_hd_studyConsent",
-  "version": 1
+  "version": 1,
+  "publishedVersion": 1
 }

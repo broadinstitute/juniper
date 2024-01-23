@@ -3,5 +3,6 @@
   "bodyPopulateFile": "surveyReminder.html",
   "subject": "Please come back to finish your study activities",
   "stableId": "hd_hd_reminderSurvey",
-  "version": 1
+  "version": 1,
+  "publishedVersion": 1
 }

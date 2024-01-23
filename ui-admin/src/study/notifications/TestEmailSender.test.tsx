@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 
-import { mockNotificationConfig } from 'test-utils/mocking-utils'
+import { mockTrigger } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import TestEmailSender from './TestEmailSender'
@@ -12,7 +12,7 @@ test('replaces the email with the username', async () => {
           <MockUserProvider user={{ ...mockAdminUser(false), username: 'admin@user.com' }}>
             <TestEmailSender studyEnvParams={{ portalShortcode: 'portal', envName: 'irb', studyShortcode: 'study' }}
               onDismiss={jest.fn()}
-              trigger={mockNotificationConfig()}/>
+              trigger={mockTrigger()}/>
           </MockUserProvider>
         )
   render(RoutedComponent)

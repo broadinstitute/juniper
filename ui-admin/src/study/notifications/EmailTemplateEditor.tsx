@@ -4,10 +4,15 @@ import { EmailTemplate } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getImageBaseUrl } from 'api/api'
 
+export type EmailTemplateEditorProps = {
+  emailTemplate: EmailTemplate,
+  portalShortcode: string,
+  updateEmailTemplate: (emailTemplate: EmailTemplate) => void
+}
+
 /** Enables editing an email with design/preview modes */
-export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate, portalShortcode }: {
-    emailTemplate: EmailTemplate, portalShortcode: string, updateEmailTemplate: (emailTemplate: EmailTemplate) => void
-}) {
+export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate, portalShortcode }:
+  EmailTemplateEditorProps) {
   const emailEditorRef = useRef<EditorRef>(null)
   // wrapper so that the unlayer event handler always accesses the latest state when updating
   const emailTemplateRef = useRef(emailTemplate)
