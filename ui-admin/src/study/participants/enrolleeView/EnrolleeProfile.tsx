@@ -130,6 +130,7 @@ export function EditableProfile(
   }
 
   const onDateFieldChange = (field: string, date: Date | null) => {
+    console.log(date?.getFullYear())
     const asJavaLocalDate: number[] | undefined = date ? jsDateToJavaLocalDate(date) : undefined
 
     setProfile((oldVal: Profile) => {
@@ -171,13 +172,12 @@ export function EditableProfile(
       <div className='row'>
         <div className="col">
           <input className="form-control" type="date"
-            value={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
-            placeholder={'Birth Date'}
+            defaultValue={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
+            placeholder={'Birth Date'} max={'9999-12-31'}
             onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
         </div>
         <div className="col"/>
       </div>
-      {/*onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>*/}
     </FormRow>
     <FormRow title={'Primary Address'}>
       <div className="">
