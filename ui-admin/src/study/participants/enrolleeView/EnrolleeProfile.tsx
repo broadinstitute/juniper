@@ -130,7 +130,6 @@ export function EditableProfile(
   }
 
   const onDateFieldChange = (field: string, date: Date | null) => {
-    console.log(date?.getFullYear())
     const asJavaLocalDate: number[] | undefined = date ? jsDateToJavaLocalDate(date) : undefined
 
     setProfile((oldVal: Profile) => {
