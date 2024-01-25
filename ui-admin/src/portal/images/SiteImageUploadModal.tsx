@@ -11,7 +11,7 @@ import { useFileUploadButton } from 'util/uploadUtils'
 
 
 export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
-export const allowedDocumentTypes = ['pdf']
+export const allowedDocumentTypes = ['pdf', 'json']
 const FILE_TYPE_REGEX = new RegExp(
   `^(?:image\\/(?:${allowedImageTypes.join('|')}))|(?:application\\/(?:${allowedDocumentTypes.join('|')}))$`
 )
