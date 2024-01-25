@@ -30,10 +30,15 @@ public class SiteImageController implements SiteImageApi {
 
   private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {
     if (imageOpt.isPresent()) {
+      MediaType contentType;
       SiteImage image = imageOpt.get();
-      MediaType contentType =
-          MediaType.parseMediaType(
-              URLConnection.guessContentTypeFromName(image.getCleanFileName()));
+      if (image.getCleanFileName().endsWith(".json")) {
+        contentType = MediaType.APPLICATION_JSON;
+      } else {
+        contentType =
+            MediaType.parseMediaType(
+                URLConnection.guessContentTypeFromName(image.getCleanFileName()));
+      }
       return ResponseEntity.ok()
           .contentType(contentType)
           .body(new ByteArrayResource(image.getData()));
