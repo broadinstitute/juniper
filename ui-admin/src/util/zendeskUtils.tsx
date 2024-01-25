@@ -3,14 +3,16 @@ import React from 'react'
 /** keys representating a bit of user-facing documentation */
 export enum DocsKey {
     HOME_PAGE = 'HOME_PAGE',
-    PREREG_SURVEYS = 'PREREG_SURVEYS'
+    PREREG_SURVEYS = 'PREREG_SURVEYS',
+    SURVEY_EDIT = 'SURVEY_EDIT'
 }
 
 /** mapping of a docs key to a zendesk page */
 const ZENDESK_PAGES: Record<DocsKey, string> = {
   HOME_PAGE: 'https://broad-juniper.zendesk.com',
   // eslint-disable-next-line max-len
-  PREREG_SURVEYS: 'https://broad-juniper.zendesk.com/hc/en-us/articles/19922803461915-How-do-I-create-a-Pre-registration-survey-'
+  PREREG_SURVEYS: 'https://broad-juniper.zendesk.com/hc/en-us/articles/19922803461915-How-do-I-create-a-Pre-registration-survey-',
+  SURVEY_EDIT: 'https://broad-juniper.zendesk.com/hc/en-us/articles/19885357297691-How-do-I-create-and-edit-surveys'
 }
 
 /** gets the url for a given documentation key */

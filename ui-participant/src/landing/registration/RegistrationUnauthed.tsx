@@ -5,6 +5,7 @@ import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
+import { defaultSurvey } from '@juniper/ui-core'
 
 /** This registration survey is a hardcoded survey--will be deprecated soon */
 const registrationSurvey = {
@@ -34,6 +35,7 @@ const registrationSurvey = {
 
 const now = Date.now() / 1000
 const registrationSurveyModel: Survey = {
+  ...defaultSurvey,
   id: '11111111-1111-1111-1111-111111111111',
   name: 'Registration',
   stableId: 'pearlDefaultRegistration',

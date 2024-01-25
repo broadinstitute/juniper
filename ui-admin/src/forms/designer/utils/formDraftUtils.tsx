@@ -1,7 +1,7 @@
 import { VersionedForm } from '@juniper/ui-core'
+import { SaveableFormProps } from 'study/surveys/SurveyView'
 
-export type FormDraft = {
-  content: string
+export type FormDraft = SaveableFormProps & {
   date: number
 }
 

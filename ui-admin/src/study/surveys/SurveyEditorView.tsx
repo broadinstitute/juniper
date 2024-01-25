@@ -13,13 +13,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FormOptions from './FormOptions'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
+import { SaveableFormProps } from './SurveyView'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
-  onSave: (update: { content: string }) => Promise<void>
+  onSave: (update: SaveableFormProps) => Promise<void>
   isConsentForm?: boolean
 }
 
@@ -75,7 +76,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
     setSaving(true)
     try {
-      await onSave({ content: draft?.content })
+      await onSave(draft)
       //Once we've persisted the form draft to the database, there's no need to keep it in local storage.
       //Future drafts will have different FORM_DRAFT_KEYs anyway, as they're based on the form version number.
       deleteDraft({ formDraftKey: FORM_DRAFT_KEY })
@@ -105,9 +106,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               </span> }
               )
             </span>
-            <button className="btn btn-secondary" onClick={() => setShowAdvancedOptions(true)}>
-              Options <FontAwesomeIcon icon={faGear}/>
-            </button>
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
@@ -171,11 +169,17 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
+        <Button variant="light" className="border" onClick={() => setShowAdvancedOptions(true)}>
+          Options <FontAwesomeIcon icon={faGear}/>
+        </Button>
         { showAdvancedOptions && <FormOptions
           studyEnvContext={studyEnvContext}
           visibleVersionPreviews={visibleVersionPreviews}
           setVisibleVersionPreviews={setVisibleVersionPreviews}
-          form={{ ...currentForm, content: draft?.content || currentForm.content }}
+          workingForm={{ ...currentForm, ...draft }}
+          updateWorkingForm={(props: SaveableFormProps) => {
+            setDraft({ ...draft, ...props, date: Date.now() })
+          }}
           isDirty={!!draft}
           onDismiss={() => setShowAdvancedOptions(false)}
           isConsentForm={isConsentForm}/>
@@ -188,7 +192,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         onChange={(newValidationErrors, newContent) => {
           if (isEmpty(newValidationErrors)) {
             setShowErrors(false)
-            setDraft({ content: JSON.stringify(newContent), date: Date.now() })
+            setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
           }
           setValidationErrors(newValidationErrors)
         }}

@@ -88,7 +88,7 @@ public class SurveyTaskDispatcher {
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .blocksHub(studySurvey.getSurvey().isRequired())
+                .blocksHub(survey.isRequired())
                 .taskOrder(studySurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())

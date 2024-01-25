@@ -275,7 +275,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
-      summary: Updates a configured survey, such as by updating to a new version of the survey
+      summary: Updates a configured survey, such as by changing order or deactivating
       tags: [ configuredSurvey ]
       operationId: patch
       parameters:
@@ -289,6 +289,25 @@ paths:
       responses:
         '200':
           description: saved configuredSurvey object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}/replace:
+    post:
+      summary: Replaces a configured survey with a different one, deactivates the old one
+      tags: [ configuredSurvey ]
+      operationId: replace
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: saved new configuredSurvey object
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
