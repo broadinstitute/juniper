@@ -181,8 +181,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
             setDraft({ ...draft, ...props, date: Date.now() })
           }}
           isDirty={!!draft}
-          onDismiss={() => setShowAdvancedOptions(false)}
-          isConsentForm={isConsentForm}/>
+          onDismiss={() => setShowAdvancedOptions(false)}/>
         }
       </div>
       <FormContentEditor

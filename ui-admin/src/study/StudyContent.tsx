@@ -13,7 +13,6 @@ import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 import { renderPageHeader } from 'util/pageUtils'
-import Api from 'api/api'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 
@@ -40,14 +39,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .sort((a, b) => a.surveyOrder - b.surveyOrder)
   currentEnv.configuredConsents
     .sort((a, b) => a.consentOrder - b.consentOrder)
-
-  const updateConfiguredSurvey = async (surveyConfig: StudyEnvironmentSurvey) => {
-    setIsLoading(true)
-    await Api.updateConfiguredSurvey(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode, currentEnv.environmentName, surveyConfig)
-    await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
-    setIsLoading(false)
-  }
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Forms & Surveys') }
@@ -119,7 +110,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   const survey = surveyConfig.survey
                   return <SurveyListItem key={index} survey={survey} surveyConfig={surveyConfig}
                     setSelectedSurveyConfig={setSelectedSurveyConfig}
-                    updateConfiguredSurvey={updateConfiguredSurvey}
                     setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                     setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                     showArchiveSurveyModal={showArchiveSurveyModal}
@@ -145,7 +135,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   const survey = surveyConfig.survey
                   return <SurveyListItem key={index} survey={survey} surveyConfig={surveyConfig}
                     setSelectedSurveyConfig={setSelectedSurveyConfig}
-                    updateConfiguredSurvey={updateConfiguredSurvey}
                     setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                     setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                     showArchiveSurveyModal={showArchiveSurveyModal}
@@ -192,14 +181,12 @@ type SurveyListItemProps = {
     setShowDeleteSurveyModal: (show: boolean) => void,
   showArchiveSurveyModal: boolean,
     setShowArchiveSurveyModal: (show: boolean) => void,
-
-    updateConfiguredSurvey: (surveyConfig: StudyEnvironmentSurvey) => void
 }
 
 const SurveyListItem = (props: SurveyListItemProps) => {
   const {
     survey, surveyConfig, isReadOnlyEnv,
-    setSelectedSurveyConfig, setShowDeleteSurveyModal, updateConfiguredSurvey, setShowArchiveSurveyModal,
+    setSelectedSurveyConfig, setShowDeleteSurveyModal, setShowArchiveSurveyModal,
     showDeleteSurveyModal, showArchiveSurveyModal
   } = props
   return <li className="p-1 d-flex align-items-center">
