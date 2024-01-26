@@ -121,7 +121,12 @@ export type Profile = {
   doNotEmailSolicit: boolean,
   mailingAddress: MailingAddress,
   phoneNumber: string,
-  birthDate: number[]
+  birthDate?: number[]
+}
+
+export type ProfileUpdateDto = {
+  justification: string,
+  profile: Profile
 }
 
 export type MailingAddress = {
@@ -163,7 +168,8 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
-  responsibleAdminUserId?: string
+  responsibleAdminUserId?: string,
+  justification?: string
 }
 
 export type KitType = {
@@ -751,6 +757,20 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updateProfileForEnrollee(
+    portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string, profile: ProfileUpdateDto
+  ):
+    Promise<Profile> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/profiles/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(profile),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createParticipantNote(portalShortcode: string,
     studyShortcode: string,
     envName: string,
@@ -869,15 +889,14 @@ export default {
   },
 
   async testTrigger(portalShortcode: string, studyShortcode: string, envName: string,
-    triggerId: string, enrolleeRuleData: object): Promise<Trigger> {
+    triggerId: string, enrolleeRuleData: object): Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${triggerId}`
       + `/test`
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
     })
-    return await this.processJsonResponse(response)
   },
 
   async deleteTrigger(portalShortcode: string, studyShortcode: string, envName: string,
