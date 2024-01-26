@@ -121,7 +121,12 @@ export type Profile = {
   doNotEmailSolicit: boolean,
   mailingAddress: MailingAddress,
   phoneNumber: string,
-  birthDate: number[]
+  birthDate?: number[]
+}
+
+export type ProfileUpdateDto = {
+  justification: string,
+  profile: Profile
 }
 
 export type MailingAddress = {
@@ -163,7 +168,8 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
-  responsibleAdminUserId?: string
+  responsibleAdminUserId?: string,
+  justification?: string
 }
 
 export type KitType = {
@@ -760,6 +766,20 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateProfileForEnrollee(
+    portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string, profile: ProfileUpdateDto
+  ):
+    Promise<Profile> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/profiles/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(profile),
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 

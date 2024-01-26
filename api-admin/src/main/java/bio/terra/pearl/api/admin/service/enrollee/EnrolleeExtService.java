@@ -39,46 +39,47 @@ public class EnrolleeExtService {
   }
 
   public List<EnrolleeSearchResult> search(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       List<SqlSearchableFacet> facets) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
   public List<EnrolleeSearchFacet> getSearchFacets(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeSearchService.getFacets(studyShortcode, environmentName);
   }
 
   public List<Enrollee> findForKitManagement(
-      AdminUser user,
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     return enrolleeService.findForKitManagement(studyShortcode, environmentName);
   }
 
-  public Enrollee findWithAdminLoad(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+  public Enrollee findWithAdminLoad(AdminUser operator, String enrolleeShortcode) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return enrolleeService.loadForAdminView(enrollee);
   }
 
-  public List<DataChangeRecord> findDataChangeRecords(AdminUser user, String enrolleeShortcode) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+  public List<DataChangeRecord> findDataChangeRecords(
+      AdminUser operator, String enrolleeShortcode) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return dataChangeRecordService.findByEnrollee(enrollee.getId());
   }
 
-  public WithdrawnEnrollee withdrawEnrollee(AdminUser user, String enroleeShortcode)
+  public WithdrawnEnrollee withdrawEnrollee(AdminUser operator, String enrolleeShortcode)
       throws JsonProcessingException {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enroleeShortcode);
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
   }
 }

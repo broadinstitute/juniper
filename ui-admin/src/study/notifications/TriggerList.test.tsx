@@ -1,9 +1,9 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 
-import { mockNotificationConfig, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockTrigger, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import NotificationContent from './NotificationContent'
+import TriggerList from './TriggerList'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
@@ -11,7 +11,7 @@ import { ReactNotifications } from 'react-notifications-component'
 test('renders routable config list', async () => {
   const studyEnvContext = mockStudyEnvContext()
   const enrollEmailConfig = {
-    ...mockNotificationConfig(),
+    ...mockTrigger(),
     id: 'event1',
     triggerType: 'EVENT',
     eventType: 'STUDY_ENROLLMENT'
@@ -19,13 +19,13 @@ test('renders routable config list', async () => {
   const triggers = [
     enrollEmailConfig,
     {
-      ...mockNotificationConfig(),
+      ...mockTrigger(),
       id: 'reminder1',
       triggerType: 'TASK_REMINDER',
       taskType: 'CONSENT'
     },
     {
-      ...mockNotificationConfig(),
+      ...mockTrigger(),
       id: 'reminder2',
       triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
@@ -39,7 +39,7 @@ test('renders routable config list', async () => {
   const { RoutedComponent, router } =
       setupRouterTest(<>
         <ReactNotifications/>
-        <NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
+        <TriggerList studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
       </>)
   render(RoutedComponent)
   expect(screen.getByText('Participant email configuration')).toBeInTheDocument()
@@ -54,21 +54,21 @@ test('renders routable config list', async () => {
 test('allows deletion of notification config', async () => {
   const studyEnvContext = mockStudyEnvContext()
   const consentConfig = {
-    ...mockNotificationConfig(),
+    ...mockTrigger(),
     id: 'reminder1',
     triggerType: 'TASK_REMINDER',
     taskType: 'CONSENT'
   }
   const notificationConfigs = [
     {
-      ...mockNotificationConfig(),
+      ...mockTrigger(),
       id: 'event1',
       triggerType: 'EVENT',
       eventType: 'STUDY_ENROLLMENT'
     },
     consentConfig,
     {
-      ...mockNotificationConfig(),
+      ...mockTrigger(),
       id: 'reminder2',
       triggerType: 'TASK_REMINDER',
       taskType: 'SURVEY'
@@ -83,7 +83,7 @@ test('allows deletion of notification config', async () => {
   const { RoutedComponent } =
     setupRouterTest(<>
       <ReactNotifications/>
-      <NotificationContent studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
+      <TriggerList studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}/>
     </>)
   render(RoutedComponent)
 

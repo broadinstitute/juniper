@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "data_change_record_justification"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column: { name: justification, type: text }
