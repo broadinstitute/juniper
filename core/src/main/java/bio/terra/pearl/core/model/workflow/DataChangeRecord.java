@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.workflow;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class DataChangeRecord extends BaseEntity {
     private UUID portalEnvironmentId; // id of the associated portal, for operations not tied to an enrollee
     private UUID responsibleUserId; // id of the user making the change, if it was a participant
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
+    private String systemProcess; // if the change was the result of an automatic process, store Class+method here
     private UUID enrolleeId; // id of impacted enrollee (may be null)
     private UUID portalParticipantUserId; // id of the impacted portal participant user
     private UUID operationId; // unique id to group operations

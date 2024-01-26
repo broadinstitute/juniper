@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -49,10 +50,14 @@ public class SurveyTaskDispatcher {
                 enrolleeEvent.getPortalParticipantUser(),
                 enrolleeEvent.getEnrolleeRuleData(),
                 studyEnvSurveys);
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .systemProcess(getClass().getSimpleName() + ".createSurveyTasks")
+                .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
+                .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
         for (ParticipantTask task : tasksToAdd) {
             log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
                     task.getTaskType(), task.getTargetStableId());
-            task = participantTaskService.create(task);
+            task = participantTaskService.create(task, auditInfo);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
         }
     }

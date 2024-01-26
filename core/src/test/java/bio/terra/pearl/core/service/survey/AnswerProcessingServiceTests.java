@@ -16,6 +16,7 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -101,7 +102,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
 
         List<Profile> before = profileService.findAll();
         answerProcessingService.processAllAnswerMappings(answers,
-                new ArrayList<>(), null, UUID.randomUUID(), null, null);
+                new ArrayList<>(), null, DataAuditInfo.builder().build());
         List<Profile> after = profileService.findAll();
 
         // no profiles were added or removed, in other words, no-op
@@ -182,9 +183,11 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
                 answers,
                 mappings,
                 enrolleeBundle.portalParticipantUser(),
-                enrolleeBundle.portalParticipantUser().getParticipantUserId(),
-                enrolleeBundle.enrollee().getId(),
-                survey.getId());
+                DataAuditInfo.builder()
+                        .responsibleUserId(enrolleeBundle.portalParticipantUser().getParticipantUserId())
+                        .enrolleeId(enrolleeBundle.enrollee().getId())
+                        .surveyId(survey.getId())
+                        .build());
 
         Profile after = profileService.loadWithMailingAddress(enrolleeBundle.portalParticipantUser().getProfileId()).orElseThrow();
 

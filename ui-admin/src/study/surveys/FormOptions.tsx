@@ -51,23 +51,27 @@ export default function FormOptions({
     </Modal.Header>
     <Modal.Body>
       { isSurvey &&
-        <label className="form-label d-block">
-          <input type="checkbox" checked={(workingForm as Survey).required}
-            onChange={e => updateWorkingForm({
-              ...workingForm, required: e.target.checked
-            })}
-          /> Required
-        </label>
+        <div>
+          <h3 className="h5">Configuration</h3>
+          <label className="form-label d-block">
+            <input type="checkbox" checked={(workingForm as Survey).required}
+              onChange={e => updateWorkingForm({
+                ...workingForm, required: e.target.checked
+              })}
+            /> Required
+          </label>
+          <Button variant="primary" onClick={onDismiss}>
+            Ok
+          </Button>
+          <hr/>
+        </div>
+
       }
-      <Button variant="primary" onClick={onDismiss}>
-        Ok
-      </Button>
-      <hr/>
+      <h3 className="h5">Actions</h3>
       <Button variant="secondary" title="Download the current contents of the JSON Editor as a file"
         onClick={downloadJSON}>
         <FontAwesomeIcon icon={faDownload}/> Download JSON
       </Button>
-      <hr/>
       <VersionSelector studyEnvContext={studyEnvContext}
         workingForm={workingForm}
         visibleVersionPreviews={visibleVersionPreviews}
@@ -127,7 +131,11 @@ export const VersionSelector = ({
   const selectedOpt = versionOpts.find(opt => opt.value === selectedVersion)
 
   return <LoadingSpinner isLoading={isLoading}>
-    <label htmlFor={selectId} className="mt-3 d-block">Other versions</label>
+    <div className="d-flex align-items-baseline">
+      <label htmlFor={selectId} className="mt-3 d-block">Other versions</label>
+      <InfoPopup content={<span>Viewing as a preview will open a new tab in the current editor.
+        Opening in read-only mode will allow you to view the full editor in an entirely new browser tab.</span>}/>
+    </div>
     <Select inputId={selectId} options={versionOpts} value={selectedOpt} onChange={opt =>
       setSelectedVersion(opt?.value)}/>
     <div className="flex ps-4 pt-2">
@@ -156,8 +164,7 @@ export const VersionSelector = ({
       >
         Open read-only editor <FontAwesomeIcon icon={faArrowRightFromBracket}/>
       </a>
-      <p className="fst-italic fw-light">(Viewing as a preview will open a new tab in the current editor.
-        Opening in read-only mode will allow you to view the full editor in an entirely new browser tab.)</p>
+
     </div>
   </LoadingSpinner>
 }
