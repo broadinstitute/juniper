@@ -16,9 +16,13 @@ import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,6 +43,10 @@ public class RegistrationService {
     private EventService eventService;
     private ObjectMapper objectMapper;
 
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final int LENGTH = 10;
+    private final Random random = new SecureRandom();
+
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
@@ -56,7 +64,9 @@ public class RegistrationService {
         this.objectMapper = objectMapper;
     }
 
-    /** Creates a preregistration survey record for a user who is not signed in */
+    /**
+     * Creates a preregistration survey record for a user who is not signed in
+     */
     @Transactional
     public PreregistrationResponse createAnonymousPreregistration(
             String portalShortcode,
@@ -77,10 +87,6 @@ public class RegistrationService {
     public Optional<PreregistrationResponse> find(UUID preRegResponseId) {
         return preregistrationResponseDao.find(preRegResponseId);
     }
-
-
-    public record RegistrationResult(ParticipantUser participantUser,
-                                     PortalParticipantUser portalParticipantUser) {}
 
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
@@ -125,6 +131,32 @@ public class RegistrationService {
         return new RegistrationResult(user, ppUser);
     }
 
+    public RegistrationResult registerGovernedUser(String portalShortcode, ParticipantUser proxy) {
+        PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
+        ParticipantUser mainUser = new ParticipantUser();
+        mainUser.setEnvironmentName(proxy.getEnvironmentName());
+        String mainUserName = proxy.getUsername() + "-proxied-";
+        String guid = generateGUID(mainUserName, proxy.getEnvironmentName());
+        mainUser.setUsername(mainUserName + guid);
+        mainUser = participantUserService.create(mainUser);
+
+        PortalParticipantUser ppUser = new PortalParticipantUser();
+        ppUser.setPortalEnvironmentId(portalEnv.getId());
+        ppUser.setParticipantUserId(mainUser.getId());
+
+        Profile profile = new Profile();
+        profile.setContactEmail(mainUser.getUsername());
+        profile.setGivenName("Governed by proxy "+proxy.getUsername());
+        profile.setFamilyName("Governed by proxy "+proxy.getUsername());
+        ppUser.setProfile(profile);
+
+        ppUser = portalParticipantUserService.create(ppUser);
+
+        eventService.publishPortalRegistrationEvent(mainUser, ppUser, portalEnv);
+        log.info("Governed user registration: userId: {}, portal: {}", mainUser.getId(), portalShortcode);
+        return new RegistrationResult(mainUser, ppUser);
+    }
+
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {
         if (preRegResponseId == null) {
             throw new IllegalArgumentException("Preregistration response was not provided");
@@ -140,13 +172,32 @@ public class RegistrationService {
         return preRegResponse;
     }
 
+    public String generateGUID(String prefix, EnvironmentName environmentName) {
+        StringBuilder sb = new StringBuilder(LENGTH);
+        for (int i = 0; i < LENGTH; i++) {
+            sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+        }
+        while(!participantUserService.findOne(prefix + sb.toString(), environmentName).isEmpty()){
+            sb = new StringBuilder(LENGTH);
+            for (int i = 0; i < LENGTH; i++) {
+                sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+            }
+        }
+        return sb.toString();
+    }
+
+    public record RegistrationResult(ParticipantUser participantUser,
+                                     PortalParticipantUser portalParticipantUser) {
+    }
+
     @SuperBuilder
     @NoArgsConstructor
     public static class RequiredRegistrationInfo {
         @Getter
         @Setter
         private String firstName;
-        @Getter @Setter
+        @Getter
+        @Setter
         private String lastName;
         @Getter
         @Setter

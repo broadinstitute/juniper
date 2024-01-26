@@ -22,6 +22,7 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -52,8 +53,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null);
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null, false);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
         assertThat(enrollee.getParticipantUserId(), equalTo(userBundle.user().getId()));
@@ -89,9 +92,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentSurveyService.create(studyEnvSurvey);
 
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll(userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null);
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null, false);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(hubResponse.getProfile(), notNullValue());
         // Because the study environment had a consent attached, a consent task should be created on enrollment
@@ -144,6 +149,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ParticipantUserFactory participantUserFactory;
     @Autowired
     private StudyService studyService;
+    @Autowired
+    private PortalService portalService;
     @Autowired
     private EnrolleeService enrolleeService;
 

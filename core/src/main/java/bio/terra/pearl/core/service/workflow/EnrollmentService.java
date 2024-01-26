@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.workflow;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -11,8 +12,10 @@ import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -37,6 +40,9 @@ public class EnrollmentService {
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
     private EnrolleeService enrolleeService;
+    private PortalService portalService;
+    private EnrolleeRelationService enrolleeRelationService;
+    private RegistrationService registrationService;
     private EventService eventService;
     private ObjectMapper objectMapper;
 
@@ -46,7 +52,10 @@ public class EnrollmentService {
                              EnrolleeRuleService enrolleeRuleService,
                              StudyEnvironmentConfigService studyEnvironmentConfigService,
                              EnrolleeService enrolleeService,
-                             EventService eventService, ObjectMapper objectMapper) {
+                             EventService eventService, ObjectMapper objectMapper,
+                             RegistrationService registrationService,
+                             PortalService portalService,
+                             EnrolleeRelationService enrolleeRelationService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -55,6 +64,9 @@ public class EnrollmentService {
         this.eventService = eventService;
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
+        this.registrationService = registrationService;
+        this.portalService = portalService;
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     /** confirms that the preEnrollmentResponse exists and had not yet already been used to create an enrollee */
@@ -83,8 +95,8 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public HubResponse<Enrollee> enroll(ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
-                                            String studyShortcode, UUID preEnrollResponseId) {
+    public HubResponse<Enrollee> enroll(String portalShortcode, ParticipantUser user, PortalParticipantUser ppUser, EnvironmentName envName,
+                                            String studyShortcode, UUID preEnrollResponseId, boolean isProxy) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
@@ -93,14 +105,22 @@ public class EnrollmentService {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
+        Enrollee enrollee;
+        if (isProxy) {
+            log.info("here 1");
+            enrollee = enrollGovernedUser( portalShortcode, user, studyEnv, ppUser, preEnrollResponseId);
+            log.info("here 2");
+        }
+        else {
+            enrollee = Enrollee.builder()
+                    .studyEnvironmentId(studyEnv.getId())
+                    .participantUserId(user.getId())
+                    .profileId(ppUser.getProfileId())
+                    .preEnrollmentResponseId(preEnrollResponseId)
+                    .build();
+            enrollee = enrolleeService.create(enrollee);
 
-        Enrollee enrollee = Enrollee.builder()
-                .studyEnvironmentId(studyEnv.getId())
-                .participantUserId(user.getId())
-                .profileId(ppUser.getProfileId())
-                .preEnrollmentResponseId(preEnrollResponseId)
-                .build();
-        enrollee = enrolleeService.create(enrollee);
+        }
 
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
@@ -112,6 +132,33 @@ public class EnrollmentService {
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
+    }
+
+    private Enrollee enrollGovernedUser(String portalShortcode, ParticipantUser proxyUser, StudyEnvironment studyEnv, PortalParticipantUser ppUser, UUID preEnrollResponseId) {
+        // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
+        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(portalShortcode, proxyUser);
+        log.info("Governed user {} registered", registrationResult.participantUser().getId());
+        ParticipantUser mainUser = registrationResult.participantUser();
+        PortalParticipantUser ppMainUser = registrationResult.portalParticipantUser();
+        Enrollee enrollee = Enrollee.builder()
+                .studyEnvironmentId(studyEnv.getId())
+                .participantUserId(mainUser.getId())
+                .profileId(ppMainUser.getProfileId())
+                .preEnrollmentResponseId(preEnrollResponseId)
+                .build();
+        enrollee = enrolleeService.create(enrollee);
+
+        EnrolleeRelation enrolleeRelation = EnrolleeRelation.builder()
+                .enrolleeId(enrollee.getId())
+                .participantUserId(proxyUser.getId())
+                .relationshipType(EnrolleeRelation.RelationshipType.PROXY)
+                .relationshipId(UUID.randomUUID())
+                .isProxy(true)
+                .build();
+
+        enrolleeRelationService.create(enrolleeRelation);
+        return  enrollee;
+
     }
 
     private PreEnrollmentResponse validatePreEnrollResponse(StudyEnvironment studyEnv,

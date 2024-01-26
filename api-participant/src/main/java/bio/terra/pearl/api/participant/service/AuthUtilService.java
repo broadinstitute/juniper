@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -16,30 +17,43 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthUtilService {
   private EnrolleeService enrolleeService;
+  private EnrolleeRelationService enrolleeRelationService;
   private PortalService portalService;
   private PortalParticipantUserService portalParticipantUserService;
 
   public AuthUtilService(
       EnrolleeService enrolleeService,
       PortalService portalService,
-      PortalParticipantUserService portalParticipantUserService) {
+      PortalParticipantUserService portalParticipantUserService,
+      EnrolleeRelationService enrolleeRelationService) {
     this.enrolleeService = enrolleeService;
     this.portalService = portalService;
     this.portalParticipantUserService = portalParticipantUserService;
+    this.enrolleeRelationService = enrolleeRelationService;
   }
 
   /**
    * returns the enrollee if the user is authorized to access/modify it, throws an error otherwise
    */
   public Enrollee authParticipantUserToEnrollee(UUID participantUserId, String enrolleeShortcode) {
-    // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add
-    // proxies
     Optional<Enrollee> enrolleeOpt =
         enrolleeService.findByEnrolleeId(participantUserId, enrolleeShortcode);
     if (enrolleeOpt.isEmpty()) {
-      throw new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode));
+      return authParticipantUserToGovernedEnrollees(participantUserId, enrolleeShortcode);
     }
     return enrolleeOpt.get();
+  }
+
+  private Enrollee authParticipantUserToGovernedEnrollees(
+      UUID participantUserId, String enrolleeShortcode) {
+    Optional<Enrollee> governedEnrolee =
+        enrolleeRelationService.findGovernedEnrollees(participantUserId).stream()
+            .filter(enrollee -> enrollee.getShortcode().equals(enrolleeShortcode))
+            .findAny();
+    if (governedEnrolee.isEmpty()) {
+      throw new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode));
+    }
+    return governedEnrolee.get();
   }
 
   /** confirms the participant can access resources from the given portal */

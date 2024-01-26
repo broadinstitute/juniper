@@ -7,15 +7,12 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jdbi.v3.core.Jdbi;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,6 +85,10 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     public Optional<Enrollee> findByParticipantUserId(UUID userId, UUID studyEnvironmentId) {
         return findByTwoProperties("participant_user_id", userId,
                 "study_environment_id", studyEnvironmentId);
+    }
+
+    public Optional<Enrollee> findByEnrolleeId(UUID enrolleeId) {
+        return findByProperty("enrollee_id", enrolleeId);
     }
 
     public Optional<Enrollee> findByEnrolleeId(UUID userId, UUID enrolleeId) {

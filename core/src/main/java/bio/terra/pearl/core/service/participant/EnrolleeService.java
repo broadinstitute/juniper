@@ -96,6 +96,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
+    public Optional<Enrollee> findOneByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrolleeId(enrolleeId);
+    }
 
     public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);

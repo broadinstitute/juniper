@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_enum_relationship
+      author: pegah
+      changes:
+        - sql:
+            sql: CREATE TYPE relationship AS ENUM ('proxy', 'guardian', 'parent', 'mother', 'father', 'other');
+  - changeSet:
+      id: "proxy_data_model"
+      author: pegah
+      changes:
+        - createTable:
+            tableName: enrollee_relation
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: participant_user_id, type: uuid, constraints: {#participant user id is the user who is the proxy but not the enrollee
+                nullable: false, foreignKeyName: fk_participant_enrollee_relation_participant_user, references: participant_user(id)} }
+              - column:  { name: enrollee_id, type: uuid, constraints: { #enrollee id is the id of the user who is actually enrolled in the study
+                nullable: false, foreignKeyName: fk_enrollee_enrollee_relation_participant_user, references: enrollee(id)
+              }  }
+              - column: { name: relationship_id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false} }
+              - column: { name: relationship_type, type: relationship, constraints: { nullable: false} }
+              - column: { name: proxy, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: beginDate, type: datetime, defaultValue: now(), defaultValueComputed: true, constraints: { nullable: false } }
+              - column: { name: endDate, type: datetime, constraints: { nullable: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
