@@ -21,7 +21,6 @@ type SurveyEditorViewProps = {
   readOnly?: boolean
   onCancel: () => void
   onSave: (update: SaveableFormProps) => Promise<void>
-  isConsentForm?: boolean
 }
 
 /** renders a survey for editing/viewing */
@@ -31,8 +30,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     currentForm,
     readOnly = false,
     onCancel,
-    onSave,
-    isConsentForm
+    onSave
   } = props
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
