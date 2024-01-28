@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -57,6 +58,30 @@ public class SurveyExtService {
     List<Survey> surveysInPortal =
         surveys.stream().filter(survey -> portal.getId().equals(survey.getPortalId())).toList();
     return surveysInPortal;
+  }
+
+  public List<StudyEnvironmentSurvey> findWithSurveyNoContent(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName envName,
+      String stableId,
+      Boolean active,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
+        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    List<UUID> studyEnvIds =
+        studyEnvIds =
+            studyEnvironmentService
+                .findByStudy(portalStudy.getStudyId())
+                // if no envName is specified, include all environments, otherwise just include the
+                // specified one
+                .stream()
+                .filter(
+                    studyEnv -> envName == null || studyEnv.getEnvironmentName().equals(envName))
+                .map(StudyEnvironment::getId)
+                .toList();
+    return studyEnvironmentSurveyService.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
   }
 
   public Survey create(String portalShortcode, Survey survey, AdminUser operator) {

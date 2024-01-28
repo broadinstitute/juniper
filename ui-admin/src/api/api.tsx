@@ -1,7 +1,7 @@
 import {
   AlertTrigger,
   ConsentForm,
-  ConsentResponse,
+  ConsentResponse, EnvironmentName,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -19,6 +19,7 @@ import {
 } from '@juniper/ui-core'
 import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
+import queryString from 'query-string'
 
 export type {
   Answer,
@@ -642,6 +643,15 @@ export default {
   async getSurveyVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
     const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/metadata`,
       this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async findConfiguredSurveys(portalShortcode: string, studyShortcode: string,
+    envName?: EnvironmentName, active?: boolean, stableId?: string): Promise<StudyEnvironmentSurvey[]> {
+    const params = queryString.stringify({ envName, active, stableId })
+    const url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}`
+    + `/configuredSurveys/findWithNoContent?${params}`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

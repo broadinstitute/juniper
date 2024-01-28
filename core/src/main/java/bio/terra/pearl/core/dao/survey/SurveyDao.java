@@ -38,10 +38,14 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         return findAllByProperty("portal_id", portalId);
     }
 
-    public List<Survey> findByPortalIdNoContent(UUID portalId) {
+    /** get all the surveys, but without the content populated */
+    public List<Survey> findAllNoContent(List<UUID> ids) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select id, name, version, stable_id from survey where portal_id = :portalId;")
-                        .bind("portalId", portalId)
+                handle.createQuery("""
+                        select id, name, version, published_version, stable_id 
+                        from survey 
+                        where id IN (<ids>);""")
+                        .bindList("ids", ids)
                         .mapTo(clazz)
                         .list()
         );

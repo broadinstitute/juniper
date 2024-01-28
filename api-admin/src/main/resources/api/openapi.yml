@@ -241,6 +241,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/configuredSurveys/findWithNoContent:
+    get:
+      summary: Lists all the configured surveys for a study
+      tags: [ configuredSurvey ]
+      operationId: findWithNoContent
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: query, required: false, schema: { type: string } }
+        - { name: stableId, in: query, required: false, schema: { type: string } }
+        - { name: active, in: query, required: false, schema: { type: string, format: boolean} }
+      responses:
+        '200':
+          description: list of all the configured surveys for a study
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys:
     post:
       summary: Creates a configured survey in a study environment

@@ -281,15 +281,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     }
 
     protected List<T> findAllByTwoProperties(String column1Name, Object column1Value,
-                                             String column2Name, List<Object> column2Values) {
+                                             String column2Name, Collection<?> column2Values) {
         if (column2Values.isEmpty()) {
             return List.of();
         }
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
-                                + " and " + column2Name + " IN <:column2Value>;")
+                                + " and " + column2Name + " IN (<column2Values>);")
                         .bind("column1Value", column1Value)
-                        .bind("column2Value", column2Values)
+                        .bindList("column2Values", column2Values)
                         .mapTo(clazz)
                         .list()
         );

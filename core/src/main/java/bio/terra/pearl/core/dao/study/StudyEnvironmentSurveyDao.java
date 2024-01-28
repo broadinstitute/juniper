@@ -9,14 +9,18 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.Query;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironmentSurvey> {
     private SurveyDao surveyDao;
-    public StudyEnvironmentSurveyDao(Jdbi jdbi, SurveyDao surveyDao) {
+    private StudyEnvironmentDao studyEnvironmentDao;
+    public StudyEnvironmentSurveyDao(Jdbi jdbi, SurveyDao surveyDao, @Lazy StudyEnvironmentDao studyEnvironmentDao) {
         super(jdbi);
         this.surveyDao = surveyDao;
+        this.studyEnvironmentDao = studyEnvironmentDao;
     }
 
     @Override
@@ -26,38 +30,6 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
 
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         deleteByProperty("study_environment_id", studyEnvId);
-    }
-
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, Boolean active) {
-        if (active != null) {
-            return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,
-                    "active", active,
-                    "survey_order", "ASC");
-        } else {
-            return findAllByPropertySorted("study_environment_id", studyEnvId, "survey_order", "ASC");
-        }
-    }
-
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
-        return findAllByStudyEnvIdWithSurvey(studyEnvId, true);
-    }
-
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvironmentId(UUID studyEnvId, boolean active) {
-        return findAllByTwoPropertiesSorted("study_environment_id", studyEnvId,
-                            "active", active,
-                             "survey_order", "ASC");
-    }
-
-    /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
-    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId, Boolean active) {
-        List<StudyEnvironmentSurvey> studyEnvSurvs = findAllByStudyEnvironmentId(studyEnvId, active);
-        List<UUID> surveyIds = studyEnvSurvs.stream().map(ses -> ses.getSurveyId()).collect(Collectors.toList());
-        List<Survey> surveys = surveyDao.findAll(surveyIds);
-        for (StudyEnvironmentSurvey ses : studyEnvSurvs) {
-            ses.setSurvey(surveys.stream().filter(survey -> survey.getId().equals(ses.getSurveyId()))
-                    .findFirst().get());
-        }
-        return studyEnvSurvs;
     }
 
     public List<StudyEnvironmentSurvey> findBySurveyId(UUID surveyId) {
@@ -85,18 +57,55 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
     }
 
     public List<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String surveyStableId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("""
+        return findAll(List.of(studyEnvId), surveyStableId, true);
+    }
+
+    public List<StudyEnvironmentSurvey> findAll(List<UUID> studyEnvIds, String surveyStableId, Boolean active) {
+        return jdbi.withHandle(handle -> {
+                Query query = handle.createQuery("""
                                 select %s from %s a
                                     join survey on survey.id = a.survey_id
-                                    where survey.stable_id = :stableId
-                                    and a.study_environment_id = :studyEnvId
-                                    and a.active = true;
-                                """.formatted(prefixedGetQueryColumns("a"), tableName))
+                                    where a.study_environment_id IN (<studyEnvIds>)
+                                    %s
+                                    %s
+                                    order by survey.stable_id asc, survey_order asc;
+                                """.formatted(
+                                        prefixedGetQueryColumns("a"),
+                                        tableName,
+                                        surveyStableId != null ? " and survey.stable_id = :stableId" : "",
+                                        active != null ? " and a.active = :active" : ""))
                         .bind("stableId", surveyStableId)
-                        .bind("studyEnvId", studyEnvId)
-                        .mapTo(clazz)
-                        .list()
-        );
+                        .bindList("studyEnvIds", studyEnvIds);
+                if (active != null) {
+                    query = query.bind("active", active);
+                }
+                if (surveyStableId != null) {
+                    query = query.bind("stableId", surveyStableId);
+                }
+                return query.mapTo(clazz)
+                        .list();
+        });
+    }
+
+    /** gets all the study environment surveys and attaches the relevant survey objects in a batch */
+    public List<StudyEnvironmentSurvey> findAllWithSurvey(UUID studyEnvId, Boolean active) {
+        List<StudyEnvironmentSurvey> studyEnvSurvs = findAll(List.of(studyEnvId), null, active);
+        attachSurveys(studyEnvSurvs, true);
+        return studyEnvSurvs;
+    }
+
+    public List<StudyEnvironmentSurvey> findAllWithSurveyNoContent(List<UUID> studyEnvironmentIds, String stableId, Boolean active) {
+        List<StudyEnvironmentSurvey> studyEnvSurveys = findAll(studyEnvironmentIds, stableId, active);
+        attachSurveys(studyEnvSurveys, false);
+        return studyEnvSurveys;
+    }
+
+    protected void attachSurveys(List<StudyEnvironmentSurvey> studyEnvSurveys, boolean withContent) {
+        List<UUID> surveyIds = studyEnvSurveys.stream().map(ses -> ses.getSurveyId()).collect(Collectors.toList());
+        List<Survey> surveys = withContent ? surveyDao.findAll(surveyIds) : surveyDao.findAllNoContent(surveyIds);
+        for (StudyEnvironmentSurvey ses : studyEnvSurveys) {
+            ses.setSurvey(surveys.stream().filter(survey -> survey.getId().equals(ses.getSurveyId()))
+                    .findFirst().orElseThrow());
+        }
     }
 }

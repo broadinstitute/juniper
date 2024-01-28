@@ -6,9 +6,11 @@ export type Study = {
   studyEnvironments: StudyEnvironment[]
 }
 
+export type EnvironmentName = 'sandbox' | 'irb' | 'live'
+
 export type StudyEnvironment = {
   id: string
-  environmentName: string
+  environmentName: EnvironmentName
   studyEnvironmentConfig: StudyEnvironmentConfig
   preEnrollSurvey?: Survey
   preEnrollSurveyId?: string
@@ -30,6 +32,12 @@ export type StudyEnvironmentSurvey = {
   survey: Survey
   surveyOrder: number
   studyEnvironmentId?: string
+  lastUpdatedAt?: number
+  createdAt?: number
+}
+
+export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
+  envName: EnvironmentName
 }
 
 export type StudyEnvironmentConsent = {
