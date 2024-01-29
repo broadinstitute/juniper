@@ -108,7 +108,8 @@ public class KitExtService {
       String studyShortcode,
       EnvironmentName environmentName)
       throws PepperApiException, PepperParseException {
-    PortalStudy portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+    PortalStudy portalStudy =
+        authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     Study study = studyService.find(portalStudy.getStudyId()).get();
     kitRequestService.syncKitStatusesForStudyEnv(study, environmentName);
   }

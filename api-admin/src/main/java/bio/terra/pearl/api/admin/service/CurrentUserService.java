@@ -3,10 +3,9 @@ package bio.terra.pearl.api.admin.service;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.Optional;
-
-import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.stereotype.Service;
 
 @Service

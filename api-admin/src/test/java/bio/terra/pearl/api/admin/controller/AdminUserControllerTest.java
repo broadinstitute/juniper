@@ -83,7 +83,8 @@ public class AdminUserControllerTest {
   public void testGetReturnsFoundAdminUser() {
     UUID userId = UUID.randomUUID();
     AdminUser adminUser = AdminUser.builder().id(userId).username("tester").build();
-    AdminUserDto expectedAdminUserDto = new AdminUserDto().id(userId).superuser(false).username("tester");
+    AdminUserDto expectedAdminUserDto =
+        new AdminUserDto().id(userId).superuser(false).username("tester");
     when(adminUserExtService.get(userId, null)).thenReturn(Optional.of(adminUser));
     ResponseEntity<AdminUserDto> response = adminUserController.get(userId);
 
@@ -117,7 +118,8 @@ public class AdminUserControllerTest {
     when(mockPortalAdminUserRoleService.setRoles(userId, roleNames)).thenReturn(roleNames);
     RoleList expectedRoleList = new RoleList().roles(roleNames);
 
-    ResponseEntity<RoleList> response = adminUserController.setRoles(userId, new RoleList().roles(roleNames));
+    ResponseEntity<RoleList> response =
+        adminUserController.setRoles(userId, new RoleList().roles(roleNames));
 
     assertThat(response, equalTo(ResponseEntity.ok(expectedRoleList)));
     verify(mockPortalAdminUserRoleService).setRoles(userId, roleNames);

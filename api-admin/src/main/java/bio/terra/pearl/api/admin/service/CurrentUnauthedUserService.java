@@ -5,11 +5,10 @@ import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
-
-import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,12 +41,12 @@ public class CurrentUnauthedUserService {
   }
 
   public Optional<AdminUserWithPermissions> tokenLogin(String token) {
-      String email = getEmailFromToken(token);
+    String email = getEmailFromToken(token);
     return adminUserService.findByUsernameWithPermissions(email);
   }
 
   public void logout(String token) {
-      String email = getEmailFromToken(token);
+    String email = getEmailFromToken(token);
     Optional<AdminUser> userOpt = adminUserService.findByUsername(email);
     userOpt.ifPresent(
         user -> {
@@ -57,7 +56,7 @@ public class CurrentUnauthedUserService {
   }
 
   protected String getEmailFromToken(String token) {
-      DecodedJWT decodedJWT = JWT.decode(token);
+    DecodedJWT decodedJWT = JWT.decode(token);
     return decodedJWT.getClaim("email").asString();
   }
 }

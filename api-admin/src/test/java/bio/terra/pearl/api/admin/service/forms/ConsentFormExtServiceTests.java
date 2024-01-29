@@ -55,7 +55,8 @@ public class ConsentFormExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testUpdateConfiguredConsentAuth(TestInfo testInfo) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(testInfo), false);
-    StudyEnvironmentFactory.StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
+    StudyEnvironmentFactory.StudyEnvironmentBundle envBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
 
     // auths to portal
     Assertions.assertThrows(

@@ -38,7 +38,8 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testSendAdHocNotification() throws Exception {
     AdminUser user = AdminUser.builder().superuser(true).build();
-    EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testSendAdHocNotification");
+    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+        enrolleeFactory.buildWithPortalUser("testSendAdHocNotification");
     Portal portal = portalService.find(enrolleeBundle.portalId()).get();
     Study study =
         studyService
@@ -64,7 +65,8 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
         customMessages,
         config.getId());
 
-    List<Notification> notifications = notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    List<Notification> notifications =
+        notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
     assertThat(notifications, hasSize(1));
     assertThat(
         notifications.get(0),
