@@ -1,7 +1,8 @@
 package bio.terra.pearl.api.admin.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.MockAuthServiceAlwaysRejects;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,10 +51,10 @@ public class MailingServiceExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void deleteMailingListContact() throws Exception {
+  public void deleteMailingListContact(TestInfo info) throws Exception {
     PortalEnvironment portalEnvironment =
-        portalEnvironmentFactory.buildPersisted("deleteMailingListContact");
-    AdminUser adminUser = adminUserFactory.buildPersisted("deleteMailingListContact", true);
+        portalEnvironmentFactory.buildPersisted(getTestName(info));
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info), true);
     Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
     MailingListContact contact =
         mailingListService.create(

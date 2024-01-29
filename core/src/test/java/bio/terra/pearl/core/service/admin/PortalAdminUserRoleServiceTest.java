@@ -6,16 +6,19 @@ import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
+import org.hamcrest.Matcher;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.UUID;
-import org.hamcrest.Matcher;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
@@ -42,8 +45,8 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesThrowsWhenRoleNotFound() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRolesThrowsWhenRoleNotFound");
+    public void testSetRolesThrowsWhenRoleNotFound(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
 
         assertThrows(RoleNotFoundException.class, () -> {
             portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("unknown"));
@@ -52,8 +55,8 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesReturnsEffectiveRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
+    public void testSetRolesReturnsEffectiveRoles(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         var role1 = roleService.create(Role.builder().name("one").build());
         var role2 = roleService.create(Role.builder().name("two").build());
 
@@ -66,8 +69,8 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesSavesRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
+    public void testSetRolesSavesRoles(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         var role1 = roleService.create(Role.builder().name("one").build());
         var role2 = roleService.create(Role.builder().name("two").build());
 
@@ -84,8 +87,8 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesReplacesExistingRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
+    public void testSetRolesReplacesExistingRoles(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         roleService.create(Role.builder().name("old").build());
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("old"));
         var newRole = roleService.create(Role.builder().name("new").build());

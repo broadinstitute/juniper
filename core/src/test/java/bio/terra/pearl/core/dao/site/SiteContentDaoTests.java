@@ -2,16 +2,20 @@ package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.site.SiteContentFactory;
-import bio.terra.pearl.core.model.site.*;
+import bio.terra.pearl.core.model.site.HtmlPage;
+import bio.terra.pearl.core.model.site.HtmlSection;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
+import bio.terra.pearl.core.model.site.NavbarItem;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.site.SiteContentService;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class SiteContentDaoTests extends BaseSpringBootTest {
     @Autowired
@@ -24,7 +28,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAttachChildren() {
+    public void testAttachChildren(TestInfo info) {
         HtmlSection helloSection = HtmlSection.builder()
                 .rawContent("helloSection").build();
         HtmlSection goodbyeSection = HtmlSection.builder()
@@ -48,7 +52,7 @@ public class SiteContentDaoTests extends BaseSpringBootTest {
                 .navbarItems(Arrays.asList(navbarItem)).build();
 
         SiteContent content = siteContentFactory
-                .builderWithDependencies("testSiteContentCrud")
+                .builderWithDependencies(getTestName(info))
                 .localizedSiteContents(List.of(lsc))
                 .build();
         SiteContent savedContent = siteContentService.create(content);

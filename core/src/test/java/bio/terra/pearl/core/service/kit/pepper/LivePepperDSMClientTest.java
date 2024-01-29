@@ -185,10 +185,10 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatus() throws Exception {
+    public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
         PepperKit kitStatus = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy1")
+                .juniperKitId(getTestName(info) + "1")
                 .build();
         PepperKit[] kits = { kitStatus };
         var pepperResponse = PepperKitStatusResponse.builder()
@@ -209,14 +209,14 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatusByStudy() throws Exception {
+    public void testFetchKitStatusByStudy(TestInfo info) throws Exception {
 
         // Arrange
         PepperKit kitStatus1 = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy_kit1")
+                .juniperKitId(getTestName(info) + "_kit1")
                 .build();
         PepperKit kitStatus2 = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy_kit2")
+                .juniperKitId(getTestName(info) + "_kit2")
                 .build();
         PepperKit[] kits = { kitStatus1, kitStatus2 };
         var pepperResponse = PepperKitStatusResponse.builder()

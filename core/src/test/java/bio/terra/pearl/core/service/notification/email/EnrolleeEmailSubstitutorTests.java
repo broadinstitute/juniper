@@ -14,12 +14,12 @@ import bio.terra.pearl.core.service.notification.substitutors.EnrolleeEmailSubst
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import org.apache.commons.text.StringSubstitutor;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.startsWith;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
@@ -61,7 +61,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void studyNameVariablesAreReplaced() {
+    public void studyNameVariablesAreReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
@@ -70,23 +70,23 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
                 .build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("envConfigVariablesAreReplaced")
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
-        Study study = Study.builder().name("testStudyName").build();
+        Study study = Study.builder().name(getTestName(info)).build();
         Portal portal = Portal.builder().build();
         var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, study, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("welcome to ${study.name}"),
-                equalTo("welcome to testStudyName"));
+                equalTo("welcome to " + getTestName(info)));
     }
 
     @Test
-    public void testDashLinkVariablesReplaced() {
+    public void testDashLinkVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testDashLinkVariablesReplaced")
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").build();
 
@@ -104,14 +104,14 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testMailLinkVariablesReplaced() {
+    public void testMailLinkVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@test.edu")
                 .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testMailLinkVariablesReplaced")
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").build();
 
@@ -122,14 +122,14 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testImageVariablesReplaced() {
+    public void testImageVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
-        PortalEnvironment portalEnv = portalEnvironmentFactory.builder("testImageVariablesReplaced")
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
         Portal portal = Portal.builder().name("PortalA").shortcode("foo").build();
 

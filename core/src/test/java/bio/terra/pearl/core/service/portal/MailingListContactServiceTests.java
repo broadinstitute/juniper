@@ -5,12 +5,14 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.portal.MailingListContactFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.portal.MailingListContact;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class MailingListContactServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -22,11 +24,11 @@ public class MailingListContactServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCrud() {
-        var portalEnv = portalEnvironmentFactory.buildPersisted("testMailingListCrud");
-        var portalEnv2 = portalEnvironmentFactory.buildPersisted("testMailingListCrud");
+    public void testCrud(TestInfo info) {
+        var portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        var portalEnv2 = portalEnvironmentFactory.buildPersisted(getTestName(info));
 
-        MailingListContact contact = mailingListContactFactory.builder("testMailingListCrud")
+        MailingListContact contact = mailingListContactFactory.builder(getTestName(info))
                 .portalEnvironmentId(portalEnv.getId()).build();
         var savedContact = mailingListContactService.create(contact);
         DaoTestUtils.assertGeneratedProperties(savedContact);

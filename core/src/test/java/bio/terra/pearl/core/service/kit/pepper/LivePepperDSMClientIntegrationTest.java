@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +16,11 @@ import java.util.UUID;
 
 import static com.github.seregamorph.hamcrest.MoreMatchers.where;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.everyItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -33,10 +38,10 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @Disabled("Avoid creating endless test data in dev DSM")
     @Transactional
     @IntegrationTest
-    public void testSendKitRequest() throws Exception {
-        var enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
+    public void testSendKitRequest(TestInfo info) throws Exception {
+        var enrollee = enrolleeFactory.buildPersisted(getTestName(info));
         var kitType = kitTypeDao.findByName("SALIVA").get();
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, PepperKitStatus.CREATED,
+        var kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.CREATED,
                 kitType.getId());
         kitRequest.setKitType(kitType);
         var address = PepperKitAddress.builder()
@@ -55,9 +60,9 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
     @Transactional
     @IntegrationTest
-    public void testSendKitRequestParsesPepperError() throws Exception {
-        var enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee);
+    public void testSendKitRequestParsesPepperError(TestInfo info) throws Exception {
+        var enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        var kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         var address = PepperKitAddress.builder()
                 .firstName("Juniper")
                 .lastName("Testerson")

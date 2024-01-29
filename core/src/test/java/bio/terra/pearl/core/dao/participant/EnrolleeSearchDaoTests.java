@@ -21,19 +21,25 @@ import bio.terra.pearl.core.service.participant.search.facets.CombinedStableIdFa
 import bio.terra.pearl.core.service.participant.search.facets.IntRangeFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StableIdStringFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
-import bio.terra.pearl.core.service.participant.search.facets.sql.*;
+import bio.terra.pearl.core.service.participant.search.facets.sql.KeywordFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ParticipantTaskFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileAgeFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.ProfileFacetSqlGenerator;
+import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   @Autowired
@@ -53,11 +59,11 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testEmptySearch() {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testEmptySearch");
-    var enrollee = enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
-    StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted("testEmptySearch");
-    enrolleeFactory.buildPersisted("testEmptySearch", studyEnv2);
+  public void testEmptySearch(TestInfo info) {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+    var enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+    StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted(getTestName(info));
+    enrolleeFactory.buildPersisted(getTestName(info), studyEnv2);
     ParticipantUser participantUser = participantUserService.find(enrollee.getParticipantUserId()).get();
     participantUser.setLastLogin(Instant.now());
     participantUserService.update(participantUser);
@@ -72,12 +78,12 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testKitRequestStatusReturn() throws Exception {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKitRequestStatusSearch");
-    var enrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
-    var kitEnrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
+  public void testKitRequestStatusReturn(TestInfo info) throws Exception {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+    var enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+    var kitEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
 
-    kitRequestFactory.buildPersisted("testKitRequestStatusSearch", kitEnrollee);
+    kitRequestFactory.buildPersisted(getTestName(info), kitEnrollee);
 
     var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(2));
@@ -91,12 +97,12 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testProfileSearch() {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testProfileSearch");
+  public void testProfileSearch(TestInfo info) {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
     Profile profile = Profile.builder().sexAtBirth("male").build();
-    Enrollee maleEnrollee = enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile);
+    Enrollee maleEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile);
     Profile profile2 = Profile.builder().sexAtBirth("female").build();
-    enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile2);
+    enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile2);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
         "sexAtBirth", List.of("male")), new ProfileFacetSqlGenerator());
@@ -108,15 +114,15 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testKeywordSearchGivenFamilyName() {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKeywordSearch");
+  public void testKeywordSearchGivenFamilyName(TestInfo info) {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
 
     Profile profile = Profile.builder().givenName("mark").familyName("stewart").build();
-    Enrollee markGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile);
+    Enrollee markGivenNameEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile);
     Profile profile2 = Profile.builder().givenName("matt").familyName("stover").build();
-    Enrollee mattGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile2);
+    Enrollee mattGivenNameEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile2);
     Profile profile3 = Profile.builder().givenName("steve").familyName("mallory").build();
-    Enrollee steveGivenNameEnrollee = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile3);
+    Enrollee steveGivenNameEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile3);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of("mark")), new KeywordFacetSqlGenerator());
@@ -138,13 +144,13 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testKeywordSearchEmailShortcode() {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKeywordSearch");
+  public void testKeywordSearchEmailShortcode(TestInfo info) {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
 
     Profile profile = Profile.builder().contactEmail("m@a.com").build();
-    Enrollee maEmail = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile);
+    Enrollee maEmail = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile);
     Profile profile2 = Profile.builder().contactEmail("foo@a.com").familyName("stover").build();
-    Enrollee fooEmail = enrolleeFactory.buildPersisted("testKeywordSearch", studyEnv, profile2);
+    Enrollee fooEmail = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile2);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of(maEmail.getShortcode())), new KeywordFacetSqlGenerator());
@@ -160,12 +166,12 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testProfileAgeSearch() {
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testProfileSearch");
+  public void testProfileAgeSearch(TestInfo info) {
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
     Profile profile = Profile.builder().birthDate(LocalDate.of(2011, 1, 1)).build();
-    Enrollee youngEnrollee = enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile);
+    Enrollee youngEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile);
     Profile profile2 = Profile.builder().birthDate(LocalDate.of(1940, 1, 1)).build();
-    Enrollee oldEnrollee = enrolleeFactory.buildPersisted("testProfileSearch", studyEnv, profile2);
+    Enrollee oldEnrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnv, profile2);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new IntRangeFacetValue(
         "age", 0, 40), new ProfileAgeFacetSqlGenerator());
@@ -187,23 +193,23 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testTaskSearch() throws Exception {
-    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testTaskSearch", EnvironmentName.live );
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testTaskSearch");
+  public void testTaskSearch(TestInfo info) throws Exception {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live);
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
     // enrollee who has completed both surveys
-    var doneEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testTaskSearch", portalEnv, studyEnv);
+    var doneEnrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(doneEnrolleeBundle, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
     participantTaskFactory.buildPersisted(doneEnrolleeBundle, "otherSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
     // enrollee who has only  one survey in progress
-    var inProgressEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    var inProgressEnrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(inProgressEnrolleeBundle, "bigSurvey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
     // enrollee with no tasks
-    var untaskedEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    var untaskedEnrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
     // enrollee who has only completed the big survey
-    var oneSurveyEnrollee = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    var oneSurveyEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(oneSurveyEnrollee, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",

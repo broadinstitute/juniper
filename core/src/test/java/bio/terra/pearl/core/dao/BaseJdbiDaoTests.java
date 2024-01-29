@@ -8,15 +8,9 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.survey.Survey;
 import lombok.Getter;
 import lombok.Setter;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +18,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 
 public class BaseJdbiDaoTests extends BaseSpringBootTest {
     /** we use the portalDao to test base capability since it doesn't have any required foreign keys */
@@ -131,7 +135,7 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
         var portal2 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
 
         // Act
-        var stream = portalDao.streamAllByProperty("name", "testStreamAllByProperty");
+        var stream = portalDao.streamAllByProperty("name", getTestName(testInfo));
         var foundPortals = stream.toList();
 
         // Assert

@@ -3,14 +3,14 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -18,22 +18,27 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import java.time.Duration;
-import java.util.List;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+
 public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
-    public void testFindByStatusAndTimeOneTask() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTime");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTime");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTime", portalEnv, studyEnv);
+    public void testFindByStatusAndTimeOneTask(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
         ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
         // check status filtering
@@ -73,11 +78,11 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testFindByStatusAndTimeMultiTasks() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTimeMulti");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTimeMulti");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
-        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    public void testFindByStatusAndTimeMultiTasks(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
         ParticipantTask task1_1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
         ParticipantTask task1_2 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);

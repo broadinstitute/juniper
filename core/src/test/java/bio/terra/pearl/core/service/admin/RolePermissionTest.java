@@ -5,12 +5,15 @@ import bio.terra.pearl.core.factory.admin.PermissionFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.model.admin.RolePermission;
-import java.util.List;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class RolePermissionTest extends BaseSpringBootTest {
 
@@ -34,8 +37,8 @@ public class RolePermissionTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testAddRole() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testAddRole");
+    public void testAddRole(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         var roleName = "testAddRole.role";
         var role = roleFactory.buildPersisted(roleName);
 
@@ -46,10 +49,10 @@ public class RolePermissionTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testAdminUserWithMultipleRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testAdminUserWithMultipleRoles");
-        var roleName1 = "testAdminUserWithMultipleRoles.role1";
-        var roleName2 = "testAdminUserWithMultipleRoles.role2";
+    public void testAdminUserWithMultipleRoles(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        var roleName1 = getTestName(info) + ".role1";
+        var roleName2 = getTestName(info) + ".role2";
         var role1 = roleFactory.buildPersisted(roleName1);
         var role2 = roleFactory.buildPersisted(roleName2);
 
@@ -61,9 +64,9 @@ public class RolePermissionTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRemoveRole() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testRemoveRole");
-        var roleName = "testRemoveRole.role";
+    public void testRemoveRole(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        var roleName = getTestName(info) + ".role";
         var role = roleFactory.buildPersisted(roleName);
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
 
@@ -74,11 +77,11 @@ public class RolePermissionTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testAddRemovePermission() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testUserHasPermission");
-        var roleName = "testUserHasPermission.role";
+    public void testAddRemovePermission(TestInfo info) {
+        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        var roleName = getTestName(info) + ".role";
         var role = roleFactory.buildPersisted(roleName);
-        var permissionName = "testUserHasPermission.permission";
+        var permissionName = getTestName(info) + "permission";
         var permission = permissionFactory.buildPersisted(permissionName);
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
 

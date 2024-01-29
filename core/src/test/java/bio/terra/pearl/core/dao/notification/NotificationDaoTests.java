@@ -4,15 +4,18 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.Trigger;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Map;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 
 public class NotificationDaoTests extends BaseSpringBootTest {
   @Autowired
@@ -24,8 +27,8 @@ public class NotificationDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testBasicCrud() {
-    Trigger trigger = triggerFactory.buildPersisted("testBasicConfigCrud");
+  public void testBasicCrud(TestInfo info) {
+    Trigger trigger = triggerFactory.buildPersisted(getTestName(info));
     Notification notification = Notification.builder()
         .deliveryType(trigger.getDeliveryType())
         .triggerId(trigger.getId())
@@ -37,8 +40,8 @@ public class NotificationDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testSavesCustomMessages() throws Exception {
-    Trigger trigger = triggerFactory.buildPersisted("testSavesMessagesCrud");
+  public void testSavesCustomMessages(TestInfo info) throws Exception {
+    Trigger trigger = triggerFactory.buildPersisted(getTestName(info));
     var messageMap = Map.of("foo", "bar", "baz", "boo");
     Notification notification = Notification.builder()
         .deliveryType(trigger.getDeliveryType())

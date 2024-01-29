@@ -14,27 +14,30 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class MetricsDaoTest extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testStudyEnrollmentMetrics() {
-    StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted("testStudyEnrollmentMetrics");
-    enrolleeFactory.buildPersisted("testStudyEnrollmentMetrics", studyEnvironment);
-    var builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
+  public void testStudyEnrollmentMetrics(TestInfo info) {
+    StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+    enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+    var builder = enrolleeFactory.builderWithDependencies(getTestName(info), studyEnvironment)
         .createdAt(Instant.now().minus(Duration.ofDays(4)));
     // The superBuilder 'createdAt' method returns the type of builder the property is contained in, so we have to recast
     enrolleeFactory.buildPersisted((Enrollee.EnrolleeBuilder) builder);
@@ -61,10 +64,10 @@ public class MetricsDaoTest extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testStudyConsentedMetric() {
-    StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted("testStudyEnrollmentMetrics");
-    enrolleeFactory.buildPersisted("testStudyEnrollmentMetrics", studyEnvironment);
-    var builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
+  public void testStudyConsentedMetric(TestInfo info) {
+    StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+    enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+    var builder = enrolleeFactory.builderWithDependencies(getTestName(info), studyEnvironment)
         .consented(true);
     enrolleeFactory.buildPersisted((Enrollee.EnrolleeBuilder) builder);
     var rangeMetrics = metricsDao.studyConsentedEnrollees(studyEnvironment.getId(),
@@ -75,27 +78,27 @@ public class MetricsDaoTest extends BaseSpringBootTest {
   /** Tests counting of both required and all completion metrics */
   @Test
   @Transactional
-  public void testStudySurveyMetric() {
-    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testEnrollAndConsent");
-    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testEnrollAndConsent");
+  public void testStudySurveyMetric(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+    StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
 
-    Survey survey = surveyFactory.buildPersisted("testStudySurveyMetric");
+    Survey survey = surveyFactory.buildPersisted(getTestName(info));
     StudyEnvironmentSurvey studyEnvSurvey = StudyEnvironmentSurvey.builder().surveyId(survey.getId()).studyEnvironmentId(studyEnv.getId())
         .survey(survey)
         .required(true).build();
     studyEnvironmentSurveyService.create(studyEnvSurvey);
 
-    Survey optionalSurvey = surveyFactory.buildPersisted("testStudySurveyMetric");
+    Survey optionalSurvey = surveyFactory.buildPersisted(getTestName(info));
     StudyEnvironmentSurvey optStudyEnvSurvey = StudyEnvironmentSurvey.builder()
         .survey(optionalSurvey).surveyId(survey.getId()).studyEnvironmentId(studyEnv.getId()).build();
     studyEnvironmentSurveyService.create(optStudyEnvSurvey);
 
-    Enrollee enrollee1 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser1 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee1, portalEnv);
-    Enrollee enrollee2 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser2 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee2, portalEnv);
-    Enrollee enrollee3 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser3 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee3, portalEnv);
+    Enrollee enrollee1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+    var ppUser1 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee1, portalEnv);
+    Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+    var ppUser2 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee2, portalEnv);
+    Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+    var ppUser3 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee3, portalEnv);
 
     var task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
     task.setStatus(TaskStatus.COMPLETE);

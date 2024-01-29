@@ -8,6 +8,7 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,8 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testRegisterWithNoPreReg() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testRegisterWithNoPreReg");
+    public void testRegisterWithNoPreReg(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
         String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
         RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,

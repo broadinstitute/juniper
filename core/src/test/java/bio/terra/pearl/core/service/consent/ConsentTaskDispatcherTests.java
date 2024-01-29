@@ -12,15 +12,18 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
     @Autowired
@@ -29,7 +32,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
     private ConsentFormFactory consentFormFactory;
 
     @Test
-    public void testBuildConsentTasks() {
+    public void testBuildConsentTasks(TestInfo info) {
         StudyEnvironment studyEnv = StudyEnvironment.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -45,7 +48,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .portalParticipantUser(ppUser)
                 .build();
         EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
-        ConsentForm consent = consentFormFactory.builder("testBuildConsentTasks").build();
+        ConsentForm consent = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentForm(consent)
                 .eligibilityRule(null)
@@ -74,7 +77,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testMultipleOrderedConsentTasks() {
+    public void testMultipleOrderedConsentTasks(TestInfo info) {
         StudyEnvironment studyEnv = StudyEnvironment.builder()
                 .id(UUID.randomUUID())
                 .build();
@@ -90,14 +93,14 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .portalParticipantUser(ppUser)
                 .build();
         EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
-        ConsentForm consent1 = consentFormFactory.builder("testBuildConsentTasks1").build();
+        ConsentForm consent1 = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent1 = StudyEnvironmentConsent.builder()
                 .consentForm(consent1)
                 .eligibilityRule(null)
                 .consentOrder(1)
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
-        ConsentForm consent2 = consentFormFactory.builder("testBuildConsentTasks2").build();
+        ConsentForm consent2 = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent2 = StudyEnvironmentConsent.builder()
                 .consentForm(consent2)
                 .consentOrder(2)

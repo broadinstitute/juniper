@@ -9,19 +9,18 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import bio.terra.pearl.core.service.kit.pepper.StubPepperDSMClient;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.notNullValue;
-
-import java.util.Collection;
 
 class StubPepperDSMClientTest extends BaseSpringBootTest {
     @Autowired
@@ -29,18 +28,18 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatus() throws Exception {
+    public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
-        var study = studyFactory.buildPersisted("testFetchKitStatus");
-        environmentFactory.buildPersisted("testFetchKitStatus", EnvironmentName.sandbox);
+        var study = studyFactory.buildPersisted(getTestName(info));
+        environmentFactory.buildPersisted(getTestName(info), EnvironmentName.sandbox);
         var studyEnvironment = studyEnvironmentService.create(
-                studyEnvironmentFactory.builder("testFetchKitStatus")
+                studyEnvironmentFactory.builder(getTestName(info))
                         .studyId(study.getId())
                         .environmentName(EnvironmentName.sandbox)
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
-        var enrollee = enrolleeFactory.buildPersisted("testFetchKitStatus", studyEnvironment);
-        var kit = kitRequestFactory.buildPersisted("testFetchKitStatus", enrollee);
+        var enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        var kit = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
 
         // Act
         var kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
