@@ -33,6 +33,10 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
                 "question_stable_id", questionStableId);
     }
 
+    public List<Answer> findByQuestionStableId(String questionStableId) {
+        return findAllByProperty("question_stable_id", questionStableId);
+    }
+
     public List<Answer> findByResponseAndQuestions(UUID surveyResponseId, List<String> questionStableIds) {
         if (questionStableIds.isEmpty()) {
             // short circuit this case because bindList errors if list is empty

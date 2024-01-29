@@ -1,9 +1,12 @@
 package bio.terra.pearl.core.dao.metrics;
 
 import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
+import bio.terra.pearl.core.model.metrics.SurveyAnswerDatum;
 import bio.terra.pearl.core.model.metrics.TimeRange;
 import java.util.List;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.survey.Answer;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
@@ -20,6 +23,7 @@ public class MetricsDao {
   public MetricsDao(Jdbi jdbi) {
     this.jdbi = jdbi;
     jdbi.registerRowMapper(BasicMetricDatum.class, BeanMapper.of(BasicMetricDatum.class));
+    jdbi.registerRowMapper(Answer.class, BeanMapper.of(Answer.class));
   }
 
   public List<BasicMetricDatum> studyEnrollments(UUID studyEnvironmentId, TimeRange range) {
@@ -89,6 +93,24 @@ public class MetricsDao {
             .bind("studyEnvironmentId", studyEnvironmentId)
             .bindBean(range)
             .mapToBean(BasicMetricDatum.class)
+            .list()
+    );
+  }
+
+  public List<Answer> surveyQuestionResponses(String surveyStableId, String questionStableId, TimeRange range) {
+    return jdbi.withHandle(handle ->
+        handle.createQuery("""
+            select *
+             from answer 
+             where survey_stable_id = :surveyStableId
+             and question_stable_id = :questionStableId
+             and %s
+             order by created_at asc;
+             """.formatted(getTimeRangeQueryString("created_at", range)))
+            .bind("surveyStableId", surveyStableId)
+            .bind("questionStableId", questionStableId)
+            .bindBean(range)
+            .mapToBean(Answer.class)
             .list()
     );
   }

@@ -270,8 +270,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .kitTypeId(kitType.getId())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestPopDto.getStatus())
-                .externalKit(kitRequestPopDto.getExternalKitJson().toString())
-                .externalKitFetchedAt(Instant.now())
+//                .externalKit(kitRequestPopDto.getExternalKitJson().toString())
+//                .externalKitFetchedAt(Instant.now())
                 .build();
         kitRequest = kitRequestService.create(kitRequest);
         if (kitRequestPopDto.getCreatedAt() != null) {
@@ -449,17 +449,17 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private void populateKitRequests(EnrolleePopDto popDto) {
-        popDto.getKitRequestDtos().forEach(kitDto -> {
-            try {
-                KitRequestStatus kitRequestStatus = PopulateUtils.randomItem(Arrays.asList(KitRequestStatus.values()));
-                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalKitJson().toString(), PepperKit.class);
-                pepperRequest.setCurrentStatus(kitRequestStatus.toString());
-                generateFakeDates(kitDto, kitRequestStatus, pepperRequest);
-                kitDto.setExternalKitJson(objectMapper.valueToTree(pepperRequest));
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+//        popDto.getKitRequestDtos().forEach(kitDto -> {
+//            try {
+//                KitRequestStatus kitRequestStatus = PopulateUtils.randomItem(Arrays.asList(KitRequestStatus.values()));
+//                PepperKit pepperRequest = objectMapper.readValue(kitDto.getExternalKitJson().toString(), PepperKit.class);
+//                pepperRequest.setCurrentStatus(kitRequestStatus.toString());
+//                generateFakeDates(kitDto, kitRequestStatus, pepperRequest);
+//                kitDto.setExternalKitJson(objectMapper.valueToTree(pepperRequest));
+//            } catch (JsonProcessingException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
     }
 
     private static void generateFakeDates(KitRequestPopDto kitDto, KitRequestStatus status, PepperKit pepperRequest) {
