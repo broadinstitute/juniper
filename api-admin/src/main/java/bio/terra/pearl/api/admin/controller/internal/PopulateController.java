@@ -6,6 +6,12 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.PopulateExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.populate.service.AdminConfigPopulator;
+import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,21 +44,21 @@ public class PopulateController implements PopulateApi {
   @Override
   public ResponseEntity<Object> populateBaseSeed() {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj = populateExtService.populateBaseSeed(user);
+    BaseSeedPopulator.SetupStats populatedObj = populateExtService.populateBaseSeed(user);
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateAdminConfig(Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj = populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
+    AdminConfigPopulator.AdminConfigStats populatedObj = populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populatePortal(String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj =
+    Portal populatedObj =
         populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
@@ -60,7 +66,7 @@ public class PopulateController implements PopulateApi {
   @Override
   public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj =
+    Portal populatedObj =
         populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
@@ -69,7 +75,7 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Object> populateSiteContent(
       String portalShortcode, String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj =
+    SiteContent populatedObj =
         populateExtService.populateSiteContent(
             portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
@@ -79,7 +85,7 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Object> populateSurvey(
       String portalShortcode, String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj =
+    Survey populatedObj =
         populateExtService.populateSurvey(
             portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
@@ -94,7 +100,7 @@ public class PopulateController implements PopulateApi {
       Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
-    var populatedObj =
+    Enrollee populatedObj =
         populateExtService.populateEnrollee(
             portalShortcode,
             environmentName,

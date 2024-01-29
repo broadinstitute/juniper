@@ -4,11 +4,13 @@ import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -29,6 +31,7 @@ import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -261,10 +264,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
     /** creates the kit request in the DB and attaches it to the passed-in enrollee object */
     private KitRequest populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
-        var adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
-        var kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
-        var sentToAddress = KitRequestService.makePepperKitAddress(profile);
-        var kitRequest = KitRequest.builder()
+        AdminUser adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
+        KitType kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
+        PepperKitAddress sentToAddress = KitRequestService.makePepperKitAddress(profile);
+        KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
@@ -390,7 +393,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
         }
-        var profileWithAddress = profileService.loadWithMailingAddress(profile.getId()).get();
+        Profile profileWithAddress = profileService.loadWithMailingAddress(profile.getId()).get();
         for (KitRequestPopDto kitRequestPopDto : popDto.getKitRequestDtos()) {
             populateKitRequest(enrollee, profileWithAddress, kitRequestPopDto);
         }

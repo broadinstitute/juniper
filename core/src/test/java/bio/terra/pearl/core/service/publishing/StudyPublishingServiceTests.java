@@ -8,8 +8,10 @@ import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
@@ -38,14 +40,14 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
 
-        var irbConfig = studyEnvironmentConfigService.find(irbEnv.getStudyEnvironmentConfigId()).get();
+        StudyEnvironmentConfig irbConfig = studyEnvironmentConfigService.find(irbEnv.getStudyEnvironmentConfigId()).get();
         irbConfig.setPassword("foobar");
         irbConfig.setPasswordProtected(true);
         studyEnvironmentConfigService.update(irbConfig);
 
         diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
 
-        var liveConfig = studyEnvironmentConfigService.find(liveEnv.getStudyEnvironmentConfigId()).get();
+        StudyEnvironmentConfig liveConfig = studyEnvironmentConfigService.find(liveEnv.getStudyEnvironmentConfigId()).get();
         assertThat(liveConfig.getPassword(), equalTo("foobar"));
         assertThat(liveConfig.isPasswordProtected(), equalTo(true));
     }
@@ -78,7 +80,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
         Survey survey = surveyFactory.buildPersisted(testName);
-        var surveyConfig = studyEnvironmentSurveyService.create(StudyEnvironmentSurvey.builder()
+        StudyEnvironmentSurvey surveyConfig = studyEnvironmentSurveyService.create(StudyEnvironmentSurvey.builder()
                 .surveyId(survey.getId())
                 .studyEnvironmentId(irbEnv.getId())
                 .build());
@@ -118,8 +120,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     }
 
     private void diffAndApplyChanges(String studyShortcode, EnvironmentName src, EnvironmentName dest) throws Exception {
-        var changes = portalDiffService.diffStudyEnvs(studyShortcode, src, dest);
-        var loadedLiveEnv = portalDiffService.loadStudyEnvForProcessing(studyShortcode, dest);
+        StudyEnvironmentChange changes = portalDiffService.diffStudyEnvs(studyShortcode, src, dest);
+        StudyEnvironment loadedLiveEnv = portalDiffService.loadStudyEnvForProcessing(studyShortcode, dest);
         studyPublishingService.applyChanges(loadedLiveEnv, changes, null);
     }
 

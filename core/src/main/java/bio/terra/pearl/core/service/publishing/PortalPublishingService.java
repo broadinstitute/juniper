@@ -88,7 +88,7 @@ public class PortalPublishingService {
             studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
         }
 
-        var changeRecord = PortalEnvironmentChangeRecord.builder()
+        PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
                 .adminUserId(user.getId())
                 .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
                 .build();

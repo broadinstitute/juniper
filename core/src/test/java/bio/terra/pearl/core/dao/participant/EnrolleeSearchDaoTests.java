@@ -10,6 +10,7 @@ import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -55,14 +56,14 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   @Transactional
   public void testEmptySearch() {
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testEmptySearch");
-    var enrollee = enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
+    Enrollee enrollee = enrolleeFactory.buildPersisted("testEmptySearch", studyEnv);
     StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted("testEmptySearch");
     enrolleeFactory.buildPersisted("testEmptySearch", studyEnv2);
     ParticipantUser participantUser = participantUserService.find(enrollee.getParticipantUserId()).get();
     participantUser.setLastLogin(Instant.now());
     participantUserService.update(participantUser);
 
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
 
@@ -74,17 +75,17 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   @Transactional
   public void testKitRequestStatusReturn() throws Exception {
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted("testKitRequestStatusSearch");
-    var enrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
-    var kitEnrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
+    Enrollee enrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
+    Enrollee kitEnrollee = enrolleeFactory.buildPersisted("testKitRequestStatusSearch", studyEnv);
 
     kitRequestFactory.buildPersisted("testKitRequestStatusSearch", kitEnrollee);
 
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(2));
-    var kitEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(kitEnrollee.getShortcode()))
+    EnrolleeSearchResult kitEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(kitEnrollee.getShortcode()))
             .findFirst().get();
     assertThat(kitEnrolleeResult.getMostRecentKitStatus(), equalTo(KitRequestStatus.CREATED));
-    var otherEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(enrollee.getShortcode()))
+    EnrolleeSearchResult otherEnrolleeResult = result.stream().filter(esr -> esr.getEnrollee().getShortcode().equals(enrollee.getShortcode()))
         .findFirst().get();
     assertThat(otherEnrolleeResult.getMostRecentKitStatus(), equalTo(null));
   }
@@ -100,7 +101,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
         "sexAtBirth", List.of("male")), new ProfileFacetSqlGenerator());
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(maleEnrollee.getShortcode()));
     assertThat(result.get(0).getProfile().getSexAtBirth(), equalTo("male"));
@@ -120,7 +121,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of("mark")), new KeywordFacetSqlGenerator());
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(markGivenNameEnrollee.getShortcode()));
 
@@ -148,7 +149,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new StringFacetValue(
             "keyword", List.of(maEmail.getShortcode())), new KeywordFacetSqlGenerator());
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(maEmail.getShortcode()));
 
@@ -169,7 +170,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new IntRangeFacetValue(
         "age", 0, 40), new ProfileAgeFacetSqlGenerator());
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(youngEnrollee.getShortcode()));
 
@@ -191,24 +192,24 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testTaskSearch", EnvironmentName.live );
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testTaskSearch");
     // enrollee who has completed both surveys
-    var doneEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testTaskSearch", portalEnv, studyEnv);
+    EnrolleeFactory.EnrolleeBundle doneEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testTaskSearch", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(doneEnrolleeBundle, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
     participantTaskFactory.buildPersisted(doneEnrolleeBundle, "otherSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
     // enrollee who has only  one survey in progress
-    var inProgressEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    EnrolleeFactory.EnrolleeBundle inProgressEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(inProgressEnrolleeBundle, "bigSurvey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
     // enrollee with no tasks
-    var untaskedEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    EnrolleeFactory.EnrolleeBundle untaskedEnrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
     // enrollee who has only completed the big survey
-    var oneSurveyEnrollee = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    EnrolleeFactory.EnrolleeBundle oneSurveyEnrollee = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
     participantTaskFactory.buildPersisted(oneSurveyEnrollee, "bigSurvey", TaskStatus.COMPLETE, TaskType.SURVEY);
 
     SqlSearchableFacet facet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
         List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
-    var result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of(facet));
     assertThat(result, hasSize(2));
     assertThat(result.stream().map(resultMap -> resultMap.getEnrollee().getShortcode()).toList(),
         hasItems(doneEnrolleeBundle.enrollee().getShortcode(),oneSurveyEnrollee.enrollee().getShortcode() ));
@@ -216,7 +217,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     SqlSearchableFacet otherFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
         List.of(new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
 
-    var otherResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(otherFacet));
+    List<EnrolleeSearchResult> otherResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(otherFacet));
     assertThat(otherResult, hasSize(1));
     assertThat(otherResult.get(0).getEnrollee().getShortcode(), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
 
@@ -224,7 +225,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     SqlSearchableFacet bothSurveyFacet = new SqlSearchableFacet(new CombinedStableIdFacetValue("status",
         List.of(new StableIdStringFacetValue("status", "bigSurvey", List.of("COMPLETE")),
             new StableIdStringFacetValue("status", "otherSurvey", List.of("COMPLETE")))), new ParticipantTaskFacetSqlGenerator());
-    var bothSurveyResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(bothSurveyFacet));
+    List<EnrolleeSearchResult> bothSurveyResult = enrolleeSearchDao.search(studyEnv.getId(), List.of(bothSurveyFacet));
     assertThat(bothSurveyResult, hasSize(1));
     assertThat(bothSurveyResult.get(0).getEnrollee().getShortcode(), equalTo(doneEnrolleeBundle.enrollee().getShortcode()));
   }

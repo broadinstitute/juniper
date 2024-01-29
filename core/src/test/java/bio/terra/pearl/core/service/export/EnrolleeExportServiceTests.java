@@ -52,7 +52,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee1 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
-        var exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
         List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, 2);
 
         assertThat(exportMaps, hasSize(2));
@@ -173,7 +173,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .build());
         surveyFactory.attachToEnv(survey2, studyEnv.getId(), true);
 
-        var exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(exportModuleInfo, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));

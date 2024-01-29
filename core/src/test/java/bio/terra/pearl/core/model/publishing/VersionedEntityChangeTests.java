@@ -10,7 +10,7 @@ public class VersionedEntityChangeTests {
     public void testSourceDestConstructor() {
         Survey source = Survey.builder().stableId("blah").version(2).build();
         Survey dest = Survey.builder().stableId("blah").version(1).build();
-        var changeRecord = new VersionedEntityChange(source, dest);
+        VersionedEntityChange changeRecord = new VersionedEntityChange(source, dest);
         assertThat(changeRecord, equalTo(new VersionedEntityChange(
                 "blah", 1, "blah", 2
         )));
@@ -21,7 +21,7 @@ public class VersionedEntityChangeTests {
     public void testSourceDestConstructorHandlesNullDest() {
         Survey source = Survey.builder().stableId("blah").version(1).build();
         Survey dest = null;
-        var changeRecord = new VersionedEntityChange(source, dest);
+        VersionedEntityChange changeRecord = new VersionedEntityChange(source, dest);
         assertThat(changeRecord, equalTo(new VersionedEntityChange(
                 null, null, "blah", 1
         )));
@@ -30,7 +30,7 @@ public class VersionedEntityChangeTests {
     public void testSourceDestConstructorHandlesNullSource() {
         Survey source = null;
         Survey dest = Survey.builder().stableId("blah").version(1).build();
-        var changeRecord = new VersionedEntityChange(source, dest);
+        VersionedEntityChange changeRecord = new VersionedEntityChange(source, dest);
         assertThat(changeRecord, equalTo(new VersionedEntityChange(
                 "blah", 1, null, null
         )));

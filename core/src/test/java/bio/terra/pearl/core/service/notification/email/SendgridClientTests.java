@@ -28,7 +28,7 @@ public class SendgridClientTests extends BaseSpringBootTest {
     EmailTemplate emailTemplate = EmailTemplate.builder()
         .body("hello ${adminUsername}")
         .subject("Welcome to Juniper ${loginLink}").build();
-    var contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
+    NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths);
 
     Mail email = sendgridClient.buildEmail(contextInfo, "admin@admin.com", "us@broad.org", "Broad", substitutor);
