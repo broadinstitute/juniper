@@ -9,30 +9,25 @@ import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTa
 import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
 import { findDifferencesBetweenObjects, ObjectDiff } from '../../util/objectUtils'
+import { isEmpty } from 'lodash'
+import ExpandableText from '../../components/ExpandableText'
 
 
 // some records contain whole objects, so we want
 // to manually look into the object to see what
 // fields changed, which could more than one field
-const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataChangeRecord> => {
+const calcChanges = (record: DataChangeRecord): ObjectDiff[] => {
   try {
-    const newObject: { [index: string]: object } = JSON.parse(record.newValue)
-    const oldObject: { [index: string]: object } = JSON.parse(record.oldValue)
+    const newObject: { [index: string]: object } = isEmpty(record.newValue) ? {} : JSON.parse(record.newValue)
+    const oldObject: { [index: string]: object } = isEmpty(record.newValue) ? {} : JSON.parse(record.oldValue)
 
-    if ((newObject && typeof newObject === 'object') || (oldObject && typeof oldObject === 'object')) {
-      const diffs: ObjectDiff[] = findDifferencesBetweenObjects(oldObject, newObject)
-
-      return diffs.map<DataChangeRecord>((diff: ObjectDiff) => {
-        return {
-          ...record,
-          ...diff
-        }
-      })
+    if ((newObject && typeof newObject === 'object') && (oldObject && typeof oldObject === 'object')) {
+      return findDifferencesBetweenObjects(oldObject, newObject)
     }
 
-    return [record]
+    return [{ oldValue: record.oldValue, newValue: record.newValue, fieldName: record.fieldName || '' }]
   } catch (e: unknown) {
-    return [record]
+    return [{ oldValue: record.oldValue, newValue: record.newValue, fieldName: record.fieldName || '' }]
   }
 }
 
@@ -43,6 +38,8 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
   const [notifications, setNotifications] = useState<DataChangeRecord[]>([])
 
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+
+  const [adminNames] = useState<Map<string, string>>(new Map)
 
   const columns: ColumnDef<DataChangeRecord>[] = [
     {
@@ -55,26 +52,33 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
       accessorKey: 'modelName'
     },
     {
-      header: 'Field',
-      accessorKey: 'fieldName'
-    },
-    {
-      header: 'Update',
-      cell: ({ row }) => (
-        <div>
-          {row.original.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {row.original.newValue}
-        </div>
-      )
+      header: 'Updates',
+      cell: ({ row }) => {
+        const changes = calcChanges(row.original)
+        return (
+          <div>
+            {changes.map((change, idx) =>
+              <p key={idx} className="mb-0">
+                {change.fieldName}: {change.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {change.newValue}
+              </p>
+            )}
+          </div>
+        )
+      }
     },
     {
       header: 'Justification',
-      accessorKey: 'justification'
+      accessorKey: 'justification',
+      cell: ({ row }) => <ExpandableText text={row.original.justification || ''} maxLen={60}/>
     },
     {
       header: 'Source',
-      cell: ({ row }) => (
-        row.original.responsibleUserId ? 'Participant' : 'Admin'
-      )
+      accessorFn: originalRow => {
+        if (originalRow.responsibleAdminUserId) {
+          return `Admin (${adminNames.get(originalRow.responsibleAdminUserId)})`
+        }
+        return 'Participant'
+      }
     }
   ]
 
@@ -93,13 +97,19 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
 
 
   const { isLoading } = useLoadingEffect(async () => {
-    const response = await Api.fetchEnrolleeChangeRecords(
-      portal.shortcode,
-      study.shortcode,
-      currentEnv.environmentName,
-      enrollee.shortcode
-    )
-    setNotifications(response.flatMap(flattenDataChangeRecords))
+    const [dataChangeRecords, adminUsers] = await Promise.all([
+      await Api.fetchEnrolleeChangeRecords(
+        portal.shortcode,
+        study.shortcode,
+        currentEnv.environmentName,
+        enrollee.shortcode
+      ),
+      Api.fetchAdminUsers()
+    ])
+    adminUsers.forEach(adminUser => {
+      adminNames.set(adminUser.id, adminUser.username.split('@')[0])
+    })
+    setNotifications(dataChangeRecords)
   }, [enrollee.shortcode])
   return <div>
     <h5>Audit history</h5>

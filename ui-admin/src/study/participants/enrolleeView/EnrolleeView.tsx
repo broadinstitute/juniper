@@ -7,6 +7,7 @@ import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
 import EnrolleeConsentView from '../consent/EnrolleeConsentView'
 import PreEnrollmentView from '../survey/PreEnrollmentView'
 import EnrolleeTimeline from './EnrolleeTimeline'
+import NewEnrolleeTimeline from './NewEnrolleeTimeline'
 import DataChangeRecords from '../DataChangeRecords'
 import EnrolleeProfile from './EnrolleeProfile'
 import ParticipantTaskView from './ParticipantTaskView'
@@ -180,7 +181,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 <CollapsableMenu header={'History & Advanced'} headerClass="text-black" content={
                   <ul className="list-unstyled">
                     <li className="mb-2">
-                      <NavLink to="timeline" className={getLinkCssClasses}>Timeline</NavLink>
+                      <NavLink to="newtimeline" className={getLinkCssClasses}>Timeline</NavLink>
                     </li>
                     <li className="mb-2">
                       <NavLink to="tasks" className={getLinkCssClasses}>Task list</NavLink>
@@ -219,6 +220,9 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 </Route>
                 <Route path="timeline" element={
                   <EnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>
+                }/>
+                <Route path="newtimeline" element={
+                  <NewEnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
                 <Route path="changeRecords" element={
                   <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext}/>
