@@ -96,13 +96,22 @@ export function ReadOnlyProfile(
   }
 ) {
   const mailingAddress = profile.mailingAddress
+
   return <>
-    <ReadOnlyRow title={'Name'} values={[`${profile.givenName} ${profile.familyName}`]}/>
+    <ReadOnlyRow title={'Name'}
+      values={[
+        !isEmpty(profile.givenName) || !isEmpty(profile.familyName)
+          ? `${profile.givenName || ''} ${profile.familyName || ''}`
+          : ''
+      ]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyRow title={'Primary Address'} values={[
       mailingAddress.street1,
       mailingAddress.street2,
-      `${mailingAddress.city}, ${mailingAddress.state} ${mailingAddress.postalCode}`
+      (!isEmpty(mailingAddress.city) || !isEmpty(mailingAddress.state) || !isEmpty(mailingAddress.postalCode))
+        ? `${mailingAddress.city || '(not provided)'}, ` +
+        `${mailingAddress.state || '(not provided)'} ${mailingAddress.postalCode || '(not provided)'}`
+        : ''
     ]}/>
     <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
