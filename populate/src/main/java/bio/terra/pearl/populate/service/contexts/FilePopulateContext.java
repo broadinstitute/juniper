@@ -44,7 +44,7 @@ public class FilePopulateContext {
     }
 
     public FilePopulateContext newFrom(String relativeFilePath) {
-        var popContext = new FilePopulateContext(applyRelativePath(relativeFilePath));
+        FilePopulateContext popContext = new FilePopulateContext(applyRelativePath(relativeFilePath));
         popContext.populatedFileEntities = this.populatedFileEntities;
         popContext.isFromTempDir = this.isFromTempDir;
         return popContext;

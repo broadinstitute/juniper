@@ -4,6 +4,8 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -106,8 +108,8 @@ public class KitExtService {
       String studyShortcode,
       EnvironmentName environmentName)
       throws PepperApiException, PepperParseException {
-    var portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    var study = studyService.find(portalStudy.getStudyId()).get();
+      PortalStudy portalStudy = authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+      Study study = studyService.find(portalStudy.getStudyId()).get();
     kitRequestService.syncKitStatusesForStudyEnv(study, environmentName);
   }
 }

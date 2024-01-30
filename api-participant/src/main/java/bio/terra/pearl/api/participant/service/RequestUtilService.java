@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -32,7 +33,7 @@ public class RequestUtilService {
 
   /** gets the user from the request, throwing an exception if not present */
   public ParticipantUser requireUser(HttpServletRequest request) {
-    var token = requireToken(request);
+      String token = requireToken(request);
     Optional<ParticipantUser> userOpt = getUserFromRequest(request);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
@@ -41,7 +42,7 @@ public class RequestUtilService {
   }
 
   public Optional<ParticipantUser> getUserFromRequest(HttpServletRequest request) {
-    var token = tokenFromRequest(request);
+      String token = tokenFromRequest(request);
     if (token == null) {
       return Optional.empty();
     }
@@ -49,9 +50,9 @@ public class RequestUtilService {
   }
 
   protected Optional<ParticipantUser> getUserFromToken(HttpServletRequest request, String token) {
-    var envName = environmentNameFromRequest(request);
-    var decodedJWT = JWT.decode(token);
-    var email = decodedJWT.getClaim("email").asString();
+      EnvironmentName envName = environmentNameFromRequest(request);
+      DecodedJWT decodedJWT = JWT.decode(token);
+      String email = decodedJWT.getClaim("email").asString();
     return currentUserService.findByUsername(email, envName);
   }
 

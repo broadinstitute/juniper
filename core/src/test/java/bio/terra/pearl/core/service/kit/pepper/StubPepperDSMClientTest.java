@@ -8,6 +8,9 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.junit.jupiter.api.Test;
@@ -30,19 +33,19 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
-        var study = studyFactory.buildPersisted(getTestName(info));
+        Study study = studyFactory.buildPersisted(getTestName(info));
         environmentFactory.buildPersisted(getTestName(info), EnvironmentName.sandbox);
-        var studyEnvironment = studyEnvironmentService.create(
+        StudyEnvironment studyEnvironment = studyEnvironmentService.create(
                 studyEnvironmentFactory.builder(getTestName(info))
                         .studyId(study.getId())
                         .environmentName(EnvironmentName.sandbox)
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
-        var enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
-        var kit = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        KitRequest kit = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
 
         // Act
-        var kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
+        PepperKit kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
 
         // Assert
         assertThat(kitStatus, hasProperty("currentStatus", equalTo("SENT")));
@@ -52,15 +55,15 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
     @Test
     public void testFetchKitStatusByStudy(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        var study = studyFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(testName);
         environmentFactory.buildPersisted(testName, EnvironmentName.sandbox);
-        var studyEnvironment = studyEnvironmentService.create(
+        StudyEnvironment studyEnvironment = studyEnvironmentService.create(
                 studyEnvironmentFactory.builder(testName)
                         .studyId(study.getId())
                         .environmentName(EnvironmentName.sandbox)
                         .studyEnvironmentConfig(new StudyEnvironmentConfig())
                         .build());
-        var enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(testName, studyEnvironment);
         // when current request status is SENT, the stub client bumps that to RECEIVED
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrollee, PepperKitStatus.SENT);
 

@@ -4,6 +4,9 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.PermissionFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
+import bio.terra.pearl.core.model.admin.Permission;
+import bio.terra.pearl.core.model.admin.PortalAdminUser;
+import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.admin.RolePermission;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -38,9 +41,9 @@ public class RolePermissionTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testAddRole(TestInfo info) {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
-        var roleName = "testAddRole.role";
-        var role = roleFactory.buildPersisted(roleName);
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        String roleName = "testAddRole.role";
+        Role role = roleFactory.buildPersisted(roleName);
 
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
 
@@ -50,11 +53,11 @@ public class RolePermissionTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testAdminUserWithMultipleRoles(TestInfo info) {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
-        var roleName1 = getTestName(info) + ".role1";
-        var roleName2 = getTestName(info) + ".role2";
-        var role1 = roleFactory.buildPersisted(roleName1);
-        var role2 = roleFactory.buildPersisted(roleName2);
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        String roleName1 = getTestName(info) + ".role1";
+        String roleName2 = getTestName(info) + ".role2";
+        Role role1 = roleFactory.buildPersisted(roleName1);
+        Role role2 = roleFactory.buildPersisted(roleName2);
 
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName1, roleName2));
 
@@ -65,9 +68,9 @@ public class RolePermissionTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testRemoveRole(TestInfo info) {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
-        var roleName = getTestName(info) + ".role";
-        var role = roleFactory.buildPersisted(roleName);
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        String roleName = getTestName(info) + ".role";
+        Role role = roleFactory.buildPersisted(roleName);
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
 
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of());
@@ -78,16 +81,16 @@ public class RolePermissionTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testAddRemovePermission(TestInfo info) {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
-        var roleName = getTestName(info) + ".role";
-        var role = roleFactory.buildPersisted(roleName);
-        var permissionName = getTestName(info) + "permission";
-        var permission = permissionFactory.buildPersisted(permissionName);
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        String roleName = getTestName(info) + ".role";
+        Role role = roleFactory.buildPersisted(roleName);
+        String permissionName = getTestName(info) + "permission";
+        Permission permission = permissionFactory.buildPersisted(permissionName);
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(roleName));
 
         assertThat(portalAdminUserService.userHasPermission(portalAdminUser.getId(), permissionName), equalTo(false));
 
-        var rolePermission = new RolePermission();
+        RolePermission rolePermission = new RolePermission();
         rolePermission.setRoleId(role.getId());
         rolePermission.setPermissionId(permission.getId());
         rolePermissionService.create(rolePermission);

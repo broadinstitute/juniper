@@ -50,7 +50,7 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
      * each other and how we whitelabel.
      */
     String token = requestUtilService.requireToken(request);
-    var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+      EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
     CurrentUserService.UserWithEnrollees userOpt =
         unauthedUserService.unauthedRefresh(token, portalShortcode, environmentName);

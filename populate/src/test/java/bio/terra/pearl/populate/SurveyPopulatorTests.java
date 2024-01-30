@@ -6,6 +6,7 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import bio.terra.pearl.populate.service.SurveyPopulator;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -56,7 +58,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         // check that answer mappings populate too
         assertThat(fetchedSurvey.getAnswerMappings().size(), greaterThan(0));
 
-        var questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(fetchedSurvey.getId());
+        List<SurveyQuestionDefinition> questionDefs = surveyQuestionDefinitionDao.findAllBySurveyId(fetchedSurvey.getId());
         assertThat(questionDefs, hasSize(53));
     }
 

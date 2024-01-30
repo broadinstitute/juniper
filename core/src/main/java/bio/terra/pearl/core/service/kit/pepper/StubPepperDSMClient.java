@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -70,7 +71,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     @Override
     public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) {
         log.info("STUB fetching status by study");
-        var studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
+        StudyEnvironment studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {
             PepperKit pepperKit = PepperKit.builder()
                 .juniperKitId(kit.getId().toString())

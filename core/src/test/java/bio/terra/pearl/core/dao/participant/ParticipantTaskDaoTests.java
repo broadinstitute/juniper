@@ -38,29 +38,29 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     public void testFindByStatusAndTimeOneTask(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
         ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
         // check status filtering
-        var tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> tasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
         assertThat(tasks, hasSize(1));
 
-        var inProgressTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> inProgressTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.IN_PROGRESS));
         assertThat(inProgressTasks, hasSize(0));
 
-        var inProgressAndNewTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> inProgressAndNewTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW, TaskStatus.IN_PROGRESS));
         assertThat(inProgressAndNewTasks, hasSize(1));
 
-        var minsAgoTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> minsAgoTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofMinutes(5), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
         assertThat(minsAgoTasks, hasSize(0));
 
 
         // Now check that it filters out tasks if there is a recent notification
-        var trigger = triggerFactory.buildPersisted(Trigger.builder()
+        Trigger trigger = triggerFactory.buildPersisted(Trigger.builder()
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .triggerType(TriggerType.TASK_REMINDER),
                                 studyEnv.getId(), portalEnv.getId());
@@ -68,10 +68,10 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
                 notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
-        var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
         assertThat(tasksRecentNotification, hasSize(0));
-        var tasksAfterStaleNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> tasksAfterStaleNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), newTask1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(-10), List.of(TaskStatus.NEW));
         assertThat(tasksAfterStaleNotification, hasSize(1));
     }
@@ -81,25 +81,25 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
     public void testFindByStatusAndTimeMultiTasks(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
-        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
         ParticipantTask task1_1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
         ParticipantTask task1_2 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
         ParticipantTask task1_3 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.COMPLETE, TaskType.CONSENT);
         ParticipantTask task2_1 = participantTaskFactory.buildPersisted(enrolleeBundle2, TaskStatus.NEW, TaskType.CONSENT);
 
-        var enrolleeTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> enrolleeTasks = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1), List.of(TaskStatus.NEW));
         // should contain both enrollees
         assertThat(enrolleeTasks, hasSize(2));
-        var enrollee1tasks = enrolleeTasks.stream().filter(et ->
+        ParticipantTaskDao.EnrolleeWithTasks enrollee1tasks = enrolleeTasks.stream().filter(et ->
                 et.getEnrolleeId().equals(enrolleeBundle.enrollee().getId())).findFirst().get();
         assertThat(enrollee1tasks.getTaskTargetNames(), hasSize(2));
         assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
 
         // Now check that it filters out tasks if there is a recent notification
-        var trigger = triggerFactory.buildPersisted(Trigger.builder()
+        Trigger trigger = triggerFactory.buildPersisted(Trigger.builder()
                         .deliveryType(NotificationDeliveryType.EMAIL)
                         .triggerType(TriggerType.TASK_REMINDER),
                 studyEnv.getId(), portalEnv.getId());
@@ -107,7 +107,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
                 notificationFactory.builder(enrolleeBundle, trigger).deliveryStatus(NotificationDeliveryStatus.SENT)
         );
 
-        var tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
+        List<ParticipantTaskDao.EnrolleeWithTasks> tasksRecentNotification = participantTaskDao.findByStatusAndTime(studyEnv.getId(), task1_1.getTaskType(),
                 Duration.ofSeconds(0), Duration.ofHours(1), Duration.ofSeconds(1000), List.of(TaskStatus.NEW));
         assertThat(tasksRecentNotification, hasSize(1));
         assertThat(tasksRecentNotification.get(0).getEnrolleeId(), equalTo(enrolleeBundle2.enrollee().getId())); // only the second enrollee's task should appear
@@ -119,8 +119,8 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         String testName = getTestName(testInfo);
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
-        var enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle2 = enrolleeFactory.buildWithPortalUser(testName, portalEnv, studyEnv);
 
         participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_1", "task_name1", TaskStatus.NEW, TaskType.CONSENT);
         participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_2", "task_name2", TaskStatus.NEW, TaskType.SURVEY);

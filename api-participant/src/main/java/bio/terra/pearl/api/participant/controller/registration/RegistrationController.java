@@ -40,8 +40,8 @@ public class RegistrationController implements RegistrationApi {
   @Override
   public ResponseEntity<Object> register(
       String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
-    var environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    var token = requestUtilService.requireToken(request);
+      EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+      String token = requestUtilService.requireToken(request);
     registrationService.register(
         portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     CurrentUserService.UserWithEnrollees userWithEnrollees =
@@ -54,7 +54,7 @@ public class RegistrationController implements RegistrationApi {
       String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    var registrationResult =
+      RegistrationService.RegistrationResult registrationResult =
         registrationService.register(
             portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     // log in the user if not already

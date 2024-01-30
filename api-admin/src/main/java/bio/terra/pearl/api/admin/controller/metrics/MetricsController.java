@@ -6,9 +6,12 @@ import bio.terra.pearl.api.admin.service.MetricsExtService;
 import bio.terra.pearl.core.dao.metrics.MetricName;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Controller
 public class MetricsController implements MetricsApi {
@@ -31,7 +34,7 @@ public class MetricsController implements MetricsApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     MetricName metric = MetricName.valueOf(metricName.toUpperCase());
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    var result =
+      List<BasicMetricDatum> result =
         metricsExtService.loadMetrics(
             adminUser, portalShortcode, studyShortcode, environmentName, metric);
     return ResponseEntity.ok(result);

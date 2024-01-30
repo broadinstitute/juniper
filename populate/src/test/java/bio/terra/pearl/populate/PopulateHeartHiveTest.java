@@ -56,7 +56,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
 
             EnrolleeFactory.EnrolleeBundle prodEnrollee = enrolleeFactory.buildWithPortalUser("testPopulateHeartHive", liveEnv, liveStudyEnv);
             // confirm we can't populate with overwrite if the liveEnrollee isn't withdrawn
-            var savepoint = status.createSavepoint();
+            Object savepoint = status.createSavepoint();
             Assertions.assertThrows(UnsupportedOperationException.class, () -> {
                 portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
             });

@@ -76,7 +76,7 @@ public class ParticipantNoteDaoTests extends BaseSpringBootTest {
         .creatingAdminUserId(adminUser.getId())
         .text("test text 234")
         .build();
-    var savedNote = participantNoteDao.create(note);
+      ParticipantNote savedNote = participantNoteDao.create(note);
     DaoTestUtils.assertGeneratedProperties(savedNote);
   }
 }

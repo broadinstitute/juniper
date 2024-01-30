@@ -42,7 +42,7 @@ public class NotificationDaoTests extends BaseSpringBootTest {
   @Transactional
   public void testSavesCustomMessages(TestInfo info) throws Exception {
     Trigger trigger = triggerFactory.buildPersisted(getTestName(info));
-    var messageMap = Map.of("foo", "bar", "baz", "boo");
+      Map<String, String> messageMap = Map.of("foo", "bar", "baz", "boo");
     Notification notification = Notification.builder()
         .deliveryType(trigger.getDeliveryType())
         .triggerId(trigger.getId())

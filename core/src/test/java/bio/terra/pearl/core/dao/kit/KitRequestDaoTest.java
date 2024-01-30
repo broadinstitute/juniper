@@ -7,8 +7,12 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -33,9 +37,9 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testCreatSampleKit(TestInfo info) {
-        var adminUser = adminUserFactory.buildPersisted(getTestName(info));
-        var enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-        var kitType = kitTypeFactory.buildPersisted(getTestName(info));
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
 
         KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
@@ -59,14 +63,14 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
     @Test
     public void testFindByStatus(TestInfo info) throws Exception {
         // Arrange
-        var adminUser = adminUserFactory.buildPersisted(getTestName(info));
-        var studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
-        var enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
-        var kitType = kitTypeFactory.buildPersisted(getTestName(info));
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
 
         Function<KitRequestStatus, KitRequest> makeKit = status -> {
             try {
-                var kit = kitRequestFactory.builder(getTestName(info) + " " + status.name())
+                KitRequest kit = kitRequestFactory.builder(getTestName(info) + " " + status.name())
                         .creatingAdminUserId(adminUser.getId())
                         .enrolleeId(enrollee.getId())
                         .kitTypeId(kitType.getId())
@@ -77,14 +81,14 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
                 throw new RuntimeException(e);
             }
         };
-        var incompleteKits = Stream.of(KitRequestStatus.CREATED, KitRequestStatus.SENT).map(makeKit).toList();
-        var completeKits = Stream.of(KitRequestStatus.RECEIVED, KitRequestStatus.ERRORED).map(makeKit).toList();
+        List<KitRequest> incompleteKits = Stream.of(KitRequestStatus.CREATED, KitRequestStatus.SENT).map(makeKit).toList();
+        List<KitRequest> completeKits = Stream.of(KitRequestStatus.RECEIVED, KitRequestStatus.ERRORED).map(makeKit).toList();
 
         // Act
-        var fetchedIncompleteKits = kitRequestDao.findByStatus(
+        List<KitRequest> fetchedIncompleteKits = kitRequestDao.findByStatus(
                 studyEnvironment.getId(),
                 List.of(KitRequestStatus.CREATED, KitRequestStatus.SENT));
-        var fetchedCompleteKits = kitRequestDao.findByStatus(
+        List<KitRequest> fetchedCompleteKits = kitRequestDao.findByStatus(
                 studyEnvironment.getId(),
                 List.of(KitRequestStatus.RECEIVED, KitRequestStatus.ERRORED));
 
@@ -96,30 +100,30 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testFindByStudyEnvironment(TestInfo info) throws Exception {
-        var adminUser = adminUserFactory.buildPersisted(getTestName(info));
-        var kitType = kitTypeFactory.buildPersisted(getTestName(info));
-        var studyEnvironment1 = studyEnvironmentFactory.buildPersisted(getTestName(info));
-        var studyEnvironment2 = studyEnvironmentFactory.buildPersisted(getTestName(info));
-        var enrollee1 = enrolleeFactory.buildPersisted(getTestName(info) + " 1", studyEnvironment1);
-        var enrollee2 = enrolleeFactory.buildPersisted(getTestName(info) + " 2", studyEnvironment2);
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment1 = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment2 = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(getTestName(info) + " 1", studyEnvironment1);
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info) + " 2", studyEnvironment2);
 
-        var kit1 = kitRequestFactory.builder(getTestName(info) + " 1")
+        KitRequest kit1 = kitRequestFactory.builder(getTestName(info) + " 1")
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee1.getId())
                 .kitTypeId(kitType.getId())
                 .build();
         kit1 = kitRequestDao.create(kit1);
-        var kit2 = kitRequestFactory.builder(getTestName(info) + " 2")
+        KitRequest kit2 = kitRequestFactory.builder(getTestName(info) + " 2")
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee2.getId())
                 .kitTypeId(kitType.getId())
                 .build();
         kit2 = kitRequestDao.create(kit2);
 
-        var kits1 = kitRequestDao.findByStudyEnvironment(studyEnvironment1.getId());
+        List<KitRequest> kits1 = kitRequestDao.findByStudyEnvironment(studyEnvironment1.getId());
         assertThat(kits1, contains(kit1));
 
-        var kits2 = kitRequestDao.findByStudyEnvironment(studyEnvironment2.getId());
+        List<KitRequest> kits2 = kitRequestDao.findByStudyEnvironment(studyEnvironment2.getId());
         assertThat(kits2, contains(kit2));
     }
 

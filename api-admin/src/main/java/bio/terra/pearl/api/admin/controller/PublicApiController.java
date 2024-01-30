@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Map;
+
 @Controller
 public class PublicApiController implements PublicApi {
   private final StatusService statusService;
@@ -50,13 +52,13 @@ public class PublicApiController implements PublicApi {
 
   @Override
   public ResponseEntity<Object> getConfig() {
-    var config = configExtService.getConfigMap();
+      Map<String, String> config = configExtService.getConfigMap();
     return ResponseEntity.ok(config);
   }
 
   @GetMapping(value = "/config.json")
   public ModelAndView getConfigJson() {
-    var config = configExtService.getConfigMap();
+      Map<String, String> config = configExtService.getConfigMap();
     return new ModelAndView("config.json").addAllObjects(config);
   }
 

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserExtService adminUserExtService;
 
@@ -22,14 +24,14 @@ public class AdminUserExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testGetAllSucceedsWithSuperuser() {
-    var result = adminUserExtService.getAll(AdminUser.builder().superuser(true).build());
+      List<AdminUser> result = adminUserExtService.getAll(AdminUser.builder().superuser(true).build());
     Assertions.assertNotNull(result);
   }
 
   @Test
   @Transactional
   public void testCreateSuperuserFailsForRegularUser() {
-    var userToCreate = new AdminUserExtService.NewAdminUser("foo", true, null);
+      AdminUserExtService.NewAdminUser userToCreate = new AdminUserExtService.NewAdminUser("foo", true, null);
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () ->

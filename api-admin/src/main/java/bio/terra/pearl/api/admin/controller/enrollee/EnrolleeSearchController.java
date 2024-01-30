@@ -6,6 +6,7 @@ import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
+import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.service.participant.search.facets.FacetValueFactory;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,7 +52,7 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
     } catch (Exception e) {
       return ResponseEntity.unprocessableEntity().body(e.getMessage());
     }
-    var results =
+      List<EnrolleeSearchResult> results =
         enrolleeExtService.search(
             adminUser, portalShortcode, studyShortcode, environmentName, facetValues);
     return ResponseEntity.ok(results);

@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service.enrollee;
 
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
@@ -40,7 +41,7 @@ public class ParticipantNoteExtService {
       UUID assignedAdminUserId) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     if (participantNote.getKitRequestId() != null) {
-      var kitRequest = kitRequestService.find(participantNote.getKitRequestId()).get();
+        KitRequest kitRequest = kitRequestService.find(participantNote.getKitRequestId()).get();
       if (kitRequest.getEnrolleeId().equals(enrollee.getId())) {
         throw new IllegalArgumentException("kit request does not match enrollee");
       }
