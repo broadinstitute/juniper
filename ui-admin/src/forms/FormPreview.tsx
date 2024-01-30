@@ -18,7 +18,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
-    model.locale = 'es'
+    model.locale = 'default'
     return model
   })
   const forceUpdate = useForceUpdate()

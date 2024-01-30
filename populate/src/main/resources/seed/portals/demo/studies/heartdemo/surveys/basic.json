@@ -714,7 +714,11 @@
             },
             "isRequired": true,
             "showOtherItem": true,
-            "otherText": "Other",
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
             "otherPlaceholder": {
               "default": "Please specify",
               "es": "Por favor especifica",
@@ -733,86 +737,468 @@
               "dev": "DEV_Prefer not to answer"
             },
             "choices": [
-              {"text": "Bangladesh", "value": "bangladesh"},
-              {"text": "Bhutan", "value": "bhutan"},
-              {"text": "India", "value": "india"},
-              {"text": "Maldives", "value": "maldives"},
-              {"text": "Nepal", "value": "nepal"},
-              {"text": "Pakistan", "value": "pakistan"},
-              {"text": "Sri Lanka", "value": "sriLanka"}
+              {
+                "text": {
+                  "default": "Bangladesh",
+                  "es": "Bangladesh",
+                  "dev": "DEV_Bangladesh"
+                },
+                "value": "bangladesh"
+              },
+              {
+                "text": {
+                  "default": "Bhutan",
+                  "es": "Bután",
+                  "dev": "DEV_Bhutan"
+                },
+                "value": "bhutan"
+              },
+              {
+                "text": {
+                  "default": "India",
+                  "es": "India",
+                  "dev": "DEV_India"
+                },
+                "value": "india"
+              },
+              {
+                "text": {
+                  "default": "Maldives",
+                  "es": "Maldivas",
+                  "dev": "DEV_Maldives"
+                },
+                "value": "maldives"
+              },
+              {
+                "text": {
+                  "default": "Nepal",
+                  "es": "Nepal",
+                  "dev": "DEV_Nepal"
+                },
+                "value": "nepal"
+              },
+              {
+                "text": {
+                  "default": "Pakistan",
+                  "es": "Pakistán",
+                  "dev": "DEV_Pakistan"
+                },
+                "value": "pakistan"
+              },
+              {
+                "text": {
+                  "default": "Sri Lanka",
+                  "es": "Sri Lanka",
+                  "dev": "DEV_Sri Lanka"
+                },
+                "value": "sriLanka"
+              }
             ]
           },{
             "name": "hd_hd_basic_bangladeshRegion",
             "type": "checkbox",
-            "title": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "title": {
+              "default": "From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+              "es": "De BANGLADESH: Por favor elige el/los estado(s) y/o territorio(s) de la unión con el/los que tú o tu familia se identifican. Marca todas las que correspondan.",
+              "dev": "DEV_From BANGLADESH: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply."
+            },
             "isRequired": true,
             "visibleIf": "{hd_hd_basic_nationalIdentity} contains 'bangladesh'",
             "showOtherItem": true,
-            "otherText": "Other",
-            "otherErrorText": "A description is required for choices of 'other'",
-            "otherPlaceholder": "Please specify",
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "showNoneItem": true,
             "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "choices": [
-              {"text": "Barisal", "value": "barisal"},
-              {"text": "Chittagong", "value": "chittagong"},
-              {"text": "Dhaka", "value": "dhaka"},
-              {"text": "Khulna", "value": "khulna"},
-              {"text": "Mymensingh", "value": "mymensingh"},
-              {"text": "Rajshahi", "value": "rajshahi"},
-              {"text": "Sylhet", "value": "sylhet"}
+              {
+                "text": {
+                  "default": "Barisal",
+                  "es": "Barisal",
+                  "dev": "DEV_Barisal"
+                },
+                "value": "barisal"
+              },
+              {
+                "text": {
+                  "default": "Chittagong",
+                  "es": "Chittagong",
+                  "dev": "DEV_Chittagong"
+                },
+                "value": "chittagong"
+              },
+              {
+                "text": {
+                  "default": "Dhaka",
+                  "es": "Dhaka",
+                  "dev": "DEV_Dhaka"
+                },
+                "value": "dhaka"
+              },
+              {
+                "text": {
+                  "default": "Khulna",
+                  "es": "Khulna",
+                  "dev": "DEV_Khulna"
+                },
+                "value": "khulna"
+              },
+              {
+                "text": {
+                  "default": "Mymensingh",
+                  "es": "Mymensingh",
+                  "dev": "DEV_Mymensingh"
+                },
+                "value": "mymensingh"
+              },
+              {
+                "text": {
+                  "default": "Rajshahi",
+                  "es": "Rajshahi",
+                  "dev": "DEV_Rajshahi"
+                },
+                "value": "rajshahi"
+              },
+              {
+                "text": {
+                  "default": "Sylhet",
+                  "es": "Sylhet",
+                  "dev": "DEV_Sylhet"
+                },
+                "value": "sylhet"
+              }
             ]
           },{
             "name": "hd_hd_basic_indiaRegion",
             "type": "checkbox",
-            "title": "From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "title": {
+              "default": "From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+              "es": "De INDIA: Por favor elige el/los estado(s) y/o territorio(s) de la unión con el/los que tú o tu familia se identifican. Marca todas las que correspondan.",
+              "dev": "DEV_From INDIA: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply."
+            },
             "isRequired": true,
             "visibleIf": "{hd_hd_basic_nationalIdentity} contains 'india'",
             "showOtherItem": true,
-            "otherText": "Other",
-            "otherErrorText": "A description is required for choices of 'other'",
-            "otherPlaceholder": "Please specify",
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "showNoneItem": true,
             "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "choices": [
-              {"text": "Andhra Pradesh", "value": "andhraPradesh"},
-              {"text": "Arunachal Pradesh", "value": "arunachalPradesh"},
-              {"text": "Assam", "value": "assam"},
-              {"text": "Bihar", "value": "bihar"},
-              {"text": "Chhattisgarh", "value": "chhattisgarh"},
-              {"text": "Goa", "value": "goa"},
-              {"text": "Gujarat", "value": "gujarat"},
-              {"text": "Haryana", "value": "haryana"},
-              {"text": "Himachal Pradesh", "value": "himachalPradesh"},
-              {"text": "Jharkhand", "value": "jharkhand"},
-              {"text": "Karnataka", "value": "karnataka"},
-              {"text": "Kerala", "value": "kerala"},
-              {"text": "Madhya Pradesh", "value": "madhyaPradesh"},
-              {"text": "Maharashtra", "value": "maharashtra"},
-              {"text": "Manipur", "value": "manipur"},
-              {"text": "Meghalaya", "value": "meghalaya"},
-              {"text": "Mizoram", "value": "mizoram"},
-              {"text": "Nagaland", "value": "nagaland"},
-              {"text": "Odisha", "value": "odisha"},
-              {"text": "Punjab", "value": "punjab"},
-              {"text": "Rajasthan", "value": "rajasthan"},
-              {"text": "Sikkim", "value": "sikkim"},
-              {"text": "Tamil Nadu", "value": "tamilNadu"},
-              {"text": "Telangana", "value": "telangana"},
-              {"text": "Tripura", "value": "tripura"},
-              {"text": "Uttar Pradesh", "value": "uttarPradesh"},
-              {"text": "Uttarakhand", "value": "uttarakhand"},
-              {"text": "West Bengal", "value": "westBengal"},
-              {"text": "Andaman and Nicobar Islands", "value": "andamanAndNicobarIslands"},
-              {"text": "Chandigarh", "value": "chandigarh"},
-              {"text": "Dadra Nagar Haveli and Daman Diu", "value": "dadraNagarHaveliAndDamanDiu"},
-              {"text": "Delhi", "value": "delhi"},
-              {"text": "Jammu & Kashmir", "value": "jammuKashmir"},
-              {"text": "Ladakh", "value": "ladakh"},
-              {"text": "Lakshadweep", "value": "lakshadweep"},
-              {"text": "Puducherry", "value": "puducherry"}
+              {
+                "text": {
+                  "default": "Andhra Pradesh",
+                  "es": "Andhra Pradesh",
+                  "dev": "DEV_Andhra Pradesh"
+                },
+                "value": "andhraPradesh"
+              },
+              {
+                "text": {
+                  "default": "Arunachal Pradesh",
+                  "es": "Arunachal Pradesh",
+                  "dev": "DEV_Arunachal Pradesh"
+                },
+                "value": "arunachalPradesh"
+              },
+              {
+                "text": {
+                  "default": "Assam",
+                  "es": "Assam",
+                  "dev": "DEV_Assam"
+                },
+                "value": "assam"
+              },
+              {
+                "text": {
+                  "default": "Bihar",
+                  "es": "Bihar",
+                  "dev": "DEV_Bihar"
+                },
+                "value": "bihar"
+              },
+              {
+                "text": {
+                  "default": "Chhattisgarh",
+                  "es": "Chhattisgarh",
+                  "dev": "DEV_Chhattisgarh"
+                },
+                "value": "chhattisgarh"
+              },
+              {
+                "text": {
+                  "default": "Goa",
+                  "es": "Goa",
+                  "dev": "DEV_Goa"
+                },
+                "value": "goa"
+              },
+              {
+                "text": {
+                  "default": "Gujarat",
+                  "es": "Gujarat",
+                  "dev": "DEV_Gujarat"
+                },
+                "value": "gujarat"
+              },
+              {
+                "text": {
+                  "default": "Haryana",
+                  "es": "Haryana",
+                  "dev": "DEV_Haryana"
+                },
+                "value": "haryana"
+              },
+              {
+                "text": {
+                  "default": "Himachal Pradesh",
+                  "es": "Himachal Pradesh",
+                  "dev": "DEV_Himachal Pradesh"
+                },
+                "value": "himachalPradesh"
+              },
+              {
+                "text": {
+                  "default": "Jharkhand",
+                  "es": "Jharkhand",
+                  "dev": "DEV_Jharkhand"
+                },
+                "value": "jharkhand"
+              },
+              {
+                "text": {
+                  "default": "Karnataka",
+                  "es": "Karnataka",
+                  "dev": "DEV_Karnataka"
+                },
+                "value": "karnataka"
+              },
+              {
+                "text": {
+                  "default": "Madhya Pradesh",
+                  "es": "Madhya Pradesh",
+                  "dev": "DEV_Madhya Pradesh"
+                },
+                "value": "madhyaPradesh"
+              },
+              {
+                "text": {
+                  "default": "Maharashtra",
+                  "es": "Maharashtra",
+                  "dev": "DEV_Maharashtra"
+                },
+                "value": "maharashtra"
+              },
+              {
+                "text": {
+                  "default": "Manipur",
+                  "es": "Manipur",
+                  "dev": "DEV_Manipur"
+                },
+                "value": "manipur"
+              },
+              {
+                "text": {
+                  "default": "Meghalaya",
+                  "es": "Meghalaya",
+                  "dev": "DEV_Meghalaya"
+                },
+                "value": "meghalaya"
+              },
+              {
+                "text": {
+                  "default": "Mizoram",
+                  "es": "Mizoram",
+                  "dev": "DEV_Mizoram"
+                },
+                "value": "mizoram"
+              },
+              {
+                "text": {
+                  "default": "Nagaland",
+                  "es": "Nagaland",
+                  "dev": "DEV_Nagaland"
+                },
+                "value": "nagaland"
+              },
+              {
+                "text": {
+                  "default": "Odisha",
+                  "es": "Odisha",
+                  "dev": "DEV_Odisha"
+                },
+                "value": "odisha"
+              },
+              {
+                "text": {
+                  "default": "Punjab",
+                  "es": "Punjab",
+                  "dev": "DEV_Punjab"
+                },
+                "value": "punjab"
+              },
+              {
+                "text": {
+                  "default": "Rajasthan",
+                  "es": "Rajasthan",
+                  "dev": "DEV_Rajasthan"
+                },
+                "value": "rajasthan"
+              },
+              {
+                "text": {
+                  "default": "Sikkim",
+                  "es": "Sikkim",
+                  "dev": "DEV_Sikkim"
+                },
+                "value": "sikkim"
+              },
+              {
+                "text": {
+                  "default": "Tamil Nadu",
+                  "es": "Tamil Nadu",
+                  "dev": "DEV_Tamil Nadu"
+                },
+                "value": "tamilNadu"
+              },
+              {
+                "text": {
+                  "default": "Telangana",
+                  "es": "Telangana",
+                  "dev": "DEV_Telangana"
+                },
+                "value": "telangana"
+              },
+              {
+                "text": {
+                  "default": "Tripura",
+                  "es": "Tripura",
+                  "dev": "DEV_Tripura"
+                },
+                "value": "tripura"
+              },
+              {
+                "text": {
+                  "default": "Uttar Pradesh",
+                  "es": "Uttar Pradesh",
+                  "dev": "DEV_Uttar Pradesh"
+                },
+                "value": "uttarPradesh"
+              },
+              {
+                "text": {
+                  "default": "Uttarakhand",
+                  "es": "Uttarakhand",
+                  "dev": "DEV_Uttarakhand"
+                },
+                "value": "uttarakhand"
+              },
+              {
+                "text": {
+                  "default": "West Bengal",
+                  "es": "West Bengal",
+                  "dev": "DEV_West Bengal"
+                },
+                "value": "westBengal"
+              },
+              {
+                "text": {
+                  "default": "Andaman and Nicobar Islands",
+                  "es": "Islas Andaman y Nicobar",
+                  "dev": "DEV_Andaman and Nicobar Islands"
+                },
+                "value": "andamanAndNicobarIslands"
+              },
+              {
+                "text": {
+                  "default": "Chandigarh",
+                  "es": "Chandigarh",
+                  "dev": "DEV_Chandigarh"
+                },
+                "value": "chandigarh"
+              },
+              {
+                "text": {
+                  "default": "Dadra Nagar Haveli and Daman Diu",
+                  "es": "Dadra Nagar Haveli y Daman Diu",
+                  "dev": "DEV_Dadra Nagar Haveli and Daman Diu"
+                },
+                "value": "dadraNagarHaveliAndDamanDiu"
+              },
+              {
+                "text": {
+                  "default": "Delhi",
+                  "es": "Delhi",
+                  "dev": "DEV_Delhi"
+                },
+                "value": "delhi"
+              },
+              {
+                "text": {
+                  "default": "Jammu & Kashmir",
+                  "es": "Jammu y Cachemira",
+                  "dev": "DEV_Jammu & Kashmir"
+                },
+                "value": "jammuKashmir"
+              },
+              {
+                "text": {
+                  "default": "Ladakh",
+                  "es": "Ladakh",
+                  "dev": "DEV_Ladakh"
+                },
+                "value": "ladakh"
+              },
+              {
+                "text": {
+                  "default": "Lakshadweep",
+                  "es": "Lakshadweep",
+                  "dev": "DEV_Lakshadweep"
+                },
+                "value": "lakshadweep"
+              },
+              {
+                "text": {
+                  "default": "Puducherry",
+                  "es": "Puducherry",
+                  "dev": "DEV_Puducherry"
+                },
+                "value": "puducherry"
+              }
             ]
           },{
             "name": "hd_hd_basic_pakistanRegion",
@@ -848,13 +1234,62 @@
               "dev": "DEV_Prefer not to answer"
             },
             "choices": [
-              {"text": "Azad Jammu and Kashmir", "value": "azadJammuAndKashmir"},
-              {"text": "Balochistan", "value": "balochistan"},
-              {"text": "Gilgit-Baltistan", "value": "gilgitBaltistan"},
-              {"text": "The Islamabad Capital Territory", "value": "theIslamabadCapitalTerritory"},
-              {"text": "Khyber Pakhtunkhwa", "value": "khyberPakhtunkhwa"},
-              {"text": "Punjab", "value": "punjab"},
-              {"text": "Sindh", "value": "sindh"}
+              {
+                "text": {
+                  "default": "Azad Jammu and Kashmir",
+                  "es": "Azad Jammu y Cachemira",
+                  "dev": "DEV_Azad Jammu and Kashmir"
+                },
+                "value": "azadJammuAndKashmir"
+              },
+              {
+                "text": {
+                  "default": "Balochistan",
+                  "es": "Baluchistán",
+                  "dev": "DEV_Balochistan"
+                },
+                "value": "balochistan"
+              },
+              {
+                "text": {
+                  "default": "Gilgit-Baltistan",
+                  "es": "Gilgit-Baltistán",
+                  "dev": "DEV_Gilgit-Baltistan"
+                },
+                "value": "gilgitBaltistan"
+              },
+              {
+                "text": {
+                  "default": "The Islamabad Capital Territory",
+                  "es": "El Territorio Capital de Islamabad",
+                  "dev": "DEV_The Islamabad Capital Territory"
+                },
+                "value": "theIslamabadCapitalTerritory"
+              },
+              {
+                "text": {
+                  "default": "Khyber Pakhtunkhwa",
+                  "es": "Khyber Pakhtunkhwa",
+                  "dev": "DEV_Khyber Pakhtunkhwa"
+                },
+                "value": "khyberPakhtunkhwa"
+              },
+              {
+                "text": {
+                  "default": "Punjab",
+                  "es": "Punjab",
+                  "dev": "DEV_Punjab"
+                },
+                "value": "punjab"
+              },
+              {
+                "text": {
+                  "default": "Sindh",
+                  "es": "Sindh",
+                  "dev": "DEV_Sindh"
+                },
+                "value": "sindh"
+              }
             ]
           },{
             "name": "hd_hd_basic_asianLanguage",
@@ -889,34 +1324,230 @@
               "dev": "DEV_Prefer not to answer"
             },
             "choices": [
-              {"text": "Assamese", "value": "assamese"},
-              {"text": "Balochi", "value": "balochi"},
-              {"text": "Bengali", "value": "bengali"},
-              {"text": "Bodo", "value": "bodo"},
-              {"text": "Dhivehi", "value": "dhivehi"},
-              {"text": "Dogri", "value": "dogri"},
-              {"text": "Dzongkha", "value": "dzongkha"},
-              {"text": "English", "value": "english"},
-              {"text": "Gujarati", "value": "gujarati"},
-              {"text": "Hindi", "value": "hindi"},
-              {"text": "Kannada", "value": "kannada"},
-              {"text": "Kashmiri", "value": "kashmiri"},
-              {"text": "Konkani", "value": "konkani"},
-              {"text": "Maithili", "value": "maithili"},
-              {"text": "Malayalam", "value": "malayalam"},
-              {"text": "Manipur (Meitei)", "value": "manipurMeitei"},
-              {"text": "Marathi", "value": "marathi"},
-              {"text": "Nepali", "value": "nepali"},
-              {"text": "Odia (Oriya)", "value": "odiaOriya"},
-              {"text": "Pashto", "value": "pashto"},
-              {"text": "Punjabi", "value": "punjabi"},
-              {"text": "Sanskrit", "value": "sanskrit"},
-              {"text": "Santali", "value": "santali"},
-              {"text": "Sindhi", "value": "sindhi"},
-              {"text": "Sinhala", "value": "sinhala"},
-              {"text": "Tamil", "value": "tamil"},
-              {"text": "Telugu", "value": "telugu"},
-              {"text": "Urdu", "value": "urdu"}
+              {
+                "text": {
+                  "default": "Assamese",
+                  "es": "Asamés",
+                  "dev": "DEV_Assamese"
+                },
+                "value": "assamese"
+              },
+              {
+                "text": {
+                  "default": "Balochi",
+                  "es": "Baluchi",
+                  "dev": "DEV_Balochi"
+                },
+                "value": "balochi"
+              },
+              {
+                "text": {
+                  "default": "Bengali",
+                  "es": "Bengalí",
+                  "dev": "DEV_Bengali"
+                },
+                "value": "bengali"
+              },
+              {
+                "text": {
+                  "default": "Bodo",
+                  "es": "Bodo",
+                  "dev": "DEV_Bodo"
+                },
+                "value": "bodo"
+              },
+              {
+                "text": {
+                  "default": "Dhivehi",
+                  "es": "Divehi",
+                  "dev": "DEV_Dhivehi"
+                },
+                "value": "dhivehi"
+              },
+              {
+                "text": {
+                  "default": "Dogri",
+                  "es": "Dogri",
+                  "dev": "DEV_Dogri"
+                },
+                "value": "dogri"
+              },
+              {
+                "text": {
+                  "default": "Dzongkha",
+                  "es": "Dzongkha",
+                  "dev": "DEV_Dzongkha"
+                },
+                "value": "dzongkha"
+              },
+              {
+                "text": {
+                  "default": "English",
+                  "es": "Inglés",
+                  "dev": "DEV_English"
+                },
+                "value": "english"
+              },
+              {
+                "text": {
+                  "default": "Gujarati",
+                  "es": "Gujarati",
+                  "dev": "DEV_Gujarati"
+                },
+                "value": "gujarati"
+              },
+              {
+                "text": {
+                  "default": "Hindi",
+                  "es": "Hindi",
+                  "dev": "DEV_Hindi"
+                },
+                "value": "hindi"
+              },
+              {
+                "text": {
+                  "default": "Kannada",
+                  "es": "Canarés",
+                  "dev": "DEV_Kannada"
+                },
+                "value": "kannada"
+              },
+              {
+                "text": {
+                  "default": "Kashmiri",
+                  "es": "Cachemiro",
+                  "dev": "DEV_Kashmiri"
+                },
+                "value": "kashmiri"
+              },
+              {
+                "text": {
+                  "default": "Konkani",
+                  "es": "Konkani",
+                  "dev": "DEV_Konkani"
+                },
+                "value": "konkani"
+              },
+              {
+                "text": {
+                  "default": "Maithili",
+                  "es": "Maithili",
+                  "dev": "DEV_Maithili"
+                },
+                "value": "maithili"
+              },
+              {
+                "text": {
+                  "default": "Malayalam",
+                  "es": "Malayalam",
+                  "dev": "DEV_Malayalam"
+                },
+                "value": "malayalam"
+              },
+              {
+                "text": {
+                  "default": "Manipur (Meitei)",
+                  "es": "Manipur (Meitei)",
+                  "dev": "DEV_Manipur (Meitei)"
+                },
+                "value": "manipurMeitei"
+              },
+              {
+                "text": {
+                  "default": "Marathi",
+                  "es": "Marathi",
+                  "dev": "DEV_Marathi"
+                },
+                "value": "marathi"
+              },
+              {
+                "text": {
+                  "default": "Nepali",
+                  "es": "Nepalí",
+                  "dev": "DEV_Nepali"
+                },
+                "value": "nepali"
+              },
+              {
+                "text": {
+                  "default": "Odia (Oriya)",
+                  "es": "Odia (Oriya)",
+                  "dev": "DEV_Odia (Oriya)"
+                },
+                "value": "odiaOriya"
+              },
+              {
+                "text": {
+                  "default": "Pashto",
+                  "es": "Pastún",
+                  "dev": "DEV_Pashto"
+                },
+                "value": "pashto"
+              },
+              {
+                "text": {
+                  "default": "Punjabi",
+                  "es": "Punjabi",
+                  "dev": "DEV_Punjabi"
+                },
+                "value": "punjabi"
+              },
+              {
+                "text": {
+                  "default": "Sanskrit",
+                  "es": "Sánscrito",
+                  "dev": "DEV_Sanskrit"
+                },
+                "value": "sanskrit"
+              },
+              {
+                "text": {
+                  "default": "Santali",
+                  "es": "Santali",
+                  "dev": "DEV_Santali"
+                },
+                "value": "santali"
+              },
+              {
+                "text": {
+                  "default": "Sindhi",
+                  "es": "Sindhi",
+                  "dev": "DEV_Sindhi"
+                },
+                "value": "sindhi"
+              },
+              {
+                "text": {
+                  "default": "Sinhala",
+                  "es": "Cingalés",
+                  "dev": "DEV_Sinhala"
+                },
+                "value": "sinhala"
+              },
+              {
+                "text": {
+                  "default": "Tamil",
+                  "es": "Tamil",
+                  "dev": "DEV_Tamil"
+                },
+                "value": "tamil"
+              },
+              {
+                "text": {
+                  "default": "Telugu",
+                  "es": "Telugu",
+                  "dev": "DEV_Telugu"
+                },
+                "value": "telugu"
+              },
+              {
+                "text": {
+                  "default": "Urdu",
+                  "es": "Urdu",
+                  "dev": "DEV_Urdu"
+                },
+                "value": "urdu"
+              }
             ]
           }
         ]
@@ -1662,15 +2293,78 @@
             },
             "noneValue": "preferNoAnswer",
             "choices": [
-              {"text": "Buddhist", "value": "buddhist"},
-              {"text": "Christian", "value": "christian"},
-              {"text": "Hindu", "value": "hindu"},
-              {"text": "Jain", "value": "jain"},
-              {"text": "Jewish", "value": "jewish"},
-              {"text": "Muslim", "value": "muslim"},
-              {"text": "Sikh", "value": "sikh"},
-              {"text": "Zoroastrian", "value": "zoroastrian"},
-              {"text": "Atheist/Agnostic", "value": "atheistAgnostic"}
+              {
+                "text": {
+                  "default": "Buddhist",
+                  "es": "Budista",
+                  "dev": "DEV_Buddhist"
+                },
+                "value": "buddhist"
+              },
+              {
+                "text": {
+                  "default": "Christian",
+                  "es": "Cristiano",
+                  "dev": "DEV_Christian"
+                },
+                "value": "christian"
+              },
+              {
+                "text": {
+                  "default": "Hindu",
+                  "es": "Hindú",
+                  "dev": "DEV_Hindu"
+                },
+                "value": "hindu"
+              },
+              {
+                "text": {
+                  "default": "Jain",
+                  "es": "Jainista",
+                  "dev": "DEV_Jain"
+                },
+                "value": "jain"
+              },
+              {
+                "text": {
+                  "default": "Jewish",
+                  "es": "Judío",
+                  "dev": "DEV_Jewish"
+                },
+                "value": "jewish"
+              },
+              {
+                "text": {
+                  "default": "Muslim",
+                  "es": "Musulmán",
+                  "dev": "DEV_Muslim"
+                },
+                "value": "muslim"
+              },
+              {
+                "text": {
+                  "default": "Sikh",
+                  "es": "Sij",
+                  "dev": "DEV_Sikh"
+                },
+                "value": "sikh"
+              },
+              {
+                "text": {
+                  "default": "Zoroastrian",
+                  "es": "Zoroástrico",
+                  "dev": "DEV_Zoroastrian"
+                },
+                "value": "zoroastrian"
+              },
+              {
+                "text": {
+                  "default": "Atheist/Agnostic",
+                  "es": "Ateo/Agnóstico",
+                  "dev": "DEV_Atheist/Agnostic"
+                },
+                "value": "atheistAgnostic"
+              }
             ]
           },{
             "name": "hd_hd_basic_howImportantReligion",
