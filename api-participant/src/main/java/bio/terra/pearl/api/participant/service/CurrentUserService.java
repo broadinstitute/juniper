@@ -63,7 +63,7 @@ public class CurrentUserService {
   protected UserWithEnrollees loadByToken(
       String token, String portalShortcode, EnvironmentName environmentName) {
     DecodedJWT decodedJWT = JWT.decode(token);
-      String email = decodedJWT.getClaim("email").asString();
+    String email = decodedJWT.getClaim("email").asString();
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(email, environmentName);
     if (userOpt.isEmpty()) {
       log.info("User not found for environment {}. (Portal: {})", environmentName, portalShortcode);

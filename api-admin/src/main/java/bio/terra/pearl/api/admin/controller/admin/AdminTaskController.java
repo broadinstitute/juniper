@@ -42,7 +42,7 @@ public class AdminTaskController implements AdminTaskApi {
     if (!StringUtils.isBlank(include)) {
       includedRelations = List.of(include.split(","));
     }
-      AdminTaskService.AdminTaskListDto tasks =
+    AdminTaskService.AdminTaskListDto tasks =
         adminTaskExtService.getByStudyEnvironment(
             portalShortcode, studyShortcode, environmentName, includedRelations, user);
     return ResponseEntity.ok(tasks);
@@ -53,7 +53,7 @@ public class AdminTaskController implements AdminTaskApi {
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-      List<AdminTask> tasks = adminTaskExtService.getByEnrollee(enrolleeShortcode, user);
+    List<AdminTask> tasks = adminTaskExtService.getByEnrollee(enrolleeShortcode, user);
     return ResponseEntity.ok(tasks);
   }
 

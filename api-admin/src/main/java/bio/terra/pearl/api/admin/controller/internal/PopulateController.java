@@ -44,21 +44,22 @@ public class PopulateController implements PopulateApi {
   @Override
   public ResponseEntity<Object> populateBaseSeed() {
     AdminUser user = authUtilService.requireAdminUser(request);
-      BaseSeedPopulator.SetupStats populatedObj = populateExtService.populateBaseSeed(user);
+    BaseSeedPopulator.SetupStats populatedObj = populateExtService.populateBaseSeed(user);
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populateAdminConfig(Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-      AdminConfigPopulator.AdminConfigStats populatedObj = populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
+    AdminConfigPopulator.AdminConfigStats populatedObj =
+        populateExtService.populateAdminConfig(user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
   public ResponseEntity<Object> populatePortal(String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-      Portal populatedObj =
+    Portal populatedObj =
         populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
@@ -66,7 +67,7 @@ public class PopulateController implements PopulateApi {
   @Override
   public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip) {
     AdminUser user = authUtilService.requireAdminUser(request);
-      Portal populatedObj =
+    Portal populatedObj =
         populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
   }
@@ -75,7 +76,7 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Object> populateSiteContent(
       String portalShortcode, String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-      SiteContent populatedObj =
+    SiteContent populatedObj =
         populateExtService.populateSiteContent(
             portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
@@ -85,7 +86,7 @@ public class PopulateController implements PopulateApi {
   public ResponseEntity<Object> populateSurvey(
       String portalShortcode, String filePathName, Boolean overwrite) {
     AdminUser user = authUtilService.requireAdminUser(request);
-      Survey populatedObj =
+    Survey populatedObj =
         populateExtService.populateSurvey(
             portalShortcode, filePathName, user, Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
@@ -100,7 +101,7 @@ public class PopulateController implements PopulateApi {
       Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
-      Enrollee populatedObj =
+    Enrollee populatedObj =
         populateExtService.populateEnrollee(
             portalShortcode,
             environmentName,

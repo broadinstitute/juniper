@@ -55,9 +55,9 @@ public class BaseStatusService {
   @VisibleForTesting
   void checkStatus() {
     if (configuration.enabled()) {
-        SystemStatus newStatus = new SystemStatus();
+      SystemStatus newStatus = new SystemStatus();
       try {
-          Map<String, SystemStatusSystems> systems =
+        Map<String, SystemStatusSystems> systems =
             statusCheckMap.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().get()));
         newStatus.setOk(systems.values().stream().allMatch(SystemStatusSystems::isOk));

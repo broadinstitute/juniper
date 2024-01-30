@@ -33,7 +33,7 @@ public class RequestUtilService {
 
   /** gets the user from the request, throwing an exception if not present */
   public ParticipantUser requireUser(HttpServletRequest request) {
-      String token = requireToken(request);
+    String token = requireToken(request);
     Optional<ParticipantUser> userOpt = getUserFromRequest(request);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found");
@@ -42,7 +42,7 @@ public class RequestUtilService {
   }
 
   public Optional<ParticipantUser> getUserFromRequest(HttpServletRequest request) {
-      String token = tokenFromRequest(request);
+    String token = tokenFromRequest(request);
     if (token == null) {
       return Optional.empty();
     }
@@ -50,9 +50,9 @@ public class RequestUtilService {
   }
 
   protected Optional<ParticipantUser> getUserFromToken(HttpServletRequest request, String token) {
-      EnvironmentName envName = environmentNameFromRequest(request);
-      DecodedJWT decodedJWT = JWT.decode(token);
-      String email = decodedJWT.getClaim("email").asString();
+    EnvironmentName envName = environmentNameFromRequest(request);
+    DecodedJWT decodedJWT = JWT.decode(token);
+    String email = decodedJWT.getClaim("email").asString();
     return currentUserService.findByUsername(email, envName);
   }
 

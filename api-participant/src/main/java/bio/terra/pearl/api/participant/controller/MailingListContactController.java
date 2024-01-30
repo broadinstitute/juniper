@@ -37,7 +37,7 @@ public class MailingListContactController implements MailingListContactApi {
         mailingListContactExtService.createOrGet(
             body.getEmail(), body.getName(), portalShortcode, envName, participantUserOpt);
     // convert to a DTO to avoid leaking when the contact was first created
-      MailingListContactDto dto = new MailingListContactDto();
+    MailingListContactDto dto = new MailingListContactDto();
     dto.setEmail(contact.getEmail());
     dto.setName(contact.getName());
     return ResponseEntity.ok(dto);

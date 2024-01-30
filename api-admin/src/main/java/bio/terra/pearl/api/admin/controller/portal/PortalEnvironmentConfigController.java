@@ -35,7 +35,7 @@ public class PortalEnvironmentConfigController implements PortalEnvironmentConfi
     PortalEnvironmentConfig config =
         objectMapper.convertValue(configObj, PortalEnvironmentConfig.class);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-      PortalEnvironmentConfig updatedConfig =
+    PortalEnvironmentConfig updatedConfig =
         portalExtService.updateConfig(portalShortcode, environmentName, config, user);
     return ResponseEntity.ok(updatedConfig);
   }

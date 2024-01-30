@@ -39,7 +39,7 @@ public class ConsentFormExtServiceTests extends BaseSpringBootTest {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(testInfo), true);
 
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
-      ConsentForm.ConsentFormBuilder builder =
+    ConsentForm.ConsentFormBuilder builder =
         consentFormFactory.builderWithDependencies(getTestName(testInfo)).portalId(portal.getId());
     ConsentForm form = consentFormFactory.buildPersisted(builder);
 
@@ -55,7 +55,8 @@ public class ConsentFormExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testUpdateConfiguredConsentAuth(TestInfo testInfo) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(testInfo), false);
-      StudyEnvironmentFactory.StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
+    StudyEnvironmentFactory.StudyEnvironmentBundle envBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.irb);
 
     // auths to portal
     Assertions.assertThrows(
@@ -98,7 +99,7 @@ public class ConsentFormExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void testCreateConfiguredConsentAuth(TestInfo testInfo) {
     AdminUser user = adminUserFactory.buildPersisted(getTestName(testInfo), false);
-      StudyEnvironmentFactory.StudyEnvironmentBundle envBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle envBundle =
         studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.live);
 
     // auths to portal

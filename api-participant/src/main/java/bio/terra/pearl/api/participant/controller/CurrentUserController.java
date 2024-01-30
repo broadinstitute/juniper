@@ -27,7 +27,7 @@ public class CurrentUserController implements CurrentUserApi {
   @Override
   public ResponseEntity<Object> tokenLogin(String portalShortcode, String envName) {
     String token = requestUtilService.requireToken(request);
-      EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     CurrentUserService.UserWithEnrollees userWithEnrollees =
         currentUserService.tokenLogin(token, portalShortcode, environmentName);
     return ResponseEntity.ok(userWithEnrollees);
@@ -36,7 +36,7 @@ public class CurrentUserController implements CurrentUserApi {
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
     String token = requestUtilService.requireToken(request);
-      EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     CurrentUserService.UserWithEnrollees userOpt =
         currentUserService.refresh(token, portalShortcode, environmentName);
     return ResponseEntity.ok(userOpt);

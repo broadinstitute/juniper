@@ -52,7 +52,7 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
     } catch (Exception e) {
       return ResponseEntity.unprocessableEntity().body(e.getMessage());
     }
-      List<EnrolleeSearchResult> results =
+    List<EnrolleeSearchResult> results =
         enrolleeExtService.search(
             adminUser, portalShortcode, studyShortcode, environmentName, facetValues);
     return ResponseEntity.ok(results);

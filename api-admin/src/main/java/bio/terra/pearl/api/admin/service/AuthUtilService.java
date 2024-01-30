@@ -57,8 +57,8 @@ public class AuthUtilService {
   /** gets the user from the request, throwing an exception if not present */
   public AdminUser requireAdminUser(HttpServletRequest request) {
     String token = bearerTokenFactory.from(request).getToken();
-      DecodedJWT decodedJWT = JWT.decode(token);
-      String email = decodedJWT.getClaim("email").asString();
+    DecodedJWT decodedJWT = JWT.decode(token);
+    String email = decodedJWT.getClaim("email").asString();
     Optional<AdminUser> userOpt = adminUserService.findByUsername(email);
     if (userOpt.isEmpty()) {
       throw new UnauthorizedException("User not found: " + email);

@@ -11,7 +11,6 @@ import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +48,8 @@ public class EnrolleeController implements EnrolleeApi {
   public ResponseEntity<Object> listChangeRecords(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-      List<DataChangeRecord> records = enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
+    List<DataChangeRecord> records =
+        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(records);
   }
 
@@ -58,7 +58,8 @@ public class EnrolleeController implements EnrolleeApi {
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     try {
-        WithdrawnEnrollee withdrawn = enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
+      WithdrawnEnrollee withdrawn =
+          enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
       return ResponseEntity.ok(new WithdrawnResponse(withdrawn.getId()));
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
@@ -71,7 +72,7 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-      List<Enrollee> enrollees =
+    List<Enrollee> enrollees =
         enrolleeExtService.findForKitManagement(
             adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(enrollees);

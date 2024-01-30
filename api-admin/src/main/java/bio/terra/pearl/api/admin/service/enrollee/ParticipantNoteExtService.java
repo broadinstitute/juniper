@@ -41,7 +41,7 @@ public class ParticipantNoteExtService {
       UUID assignedAdminUserId) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     if (participantNote.getKitRequestId() != null) {
-        KitRequest kitRequest = kitRequestService.find(participantNote.getKitRequestId()).get();
+      KitRequest kitRequest = kitRequestService.find(participantNote.getKitRequestId()).get();
       if (kitRequest.getEnrolleeId().equals(enrollee.getId())) {
         throw new IllegalArgumentException("kit request does not match enrollee");
       }

@@ -44,7 +44,7 @@ public class TriggerController implements TriggerApi {
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-      List<Trigger> configs =
+    List<Trigger> configs =
         triggerExtService.findForStudy(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(configs);
   }

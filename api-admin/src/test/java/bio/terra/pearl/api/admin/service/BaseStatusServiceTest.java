@@ -13,9 +13,9 @@ class BaseStatusServiceTest {
 
   @Test
   void getCurrentStatus() {
-      StatusCheckConfiguration config = new StatusCheckConfiguration(true, 0, 0, 10);
+    StatusCheckConfiguration config = new StatusCheckConfiguration(true, 0, 0, 10);
     BaseStatusService service = new BaseStatusService(config);
-      SystemStatusSystems status = new SystemStatusSystems().ok(true);
+    SystemStatusSystems status = new SystemStatusSystems().ok(true);
     service.registerStatusCheck("test", () -> status);
     assertThat(service.getCurrentStatus(), is(new SystemStatus().ok(false)));
     service.checkStatus();

@@ -28,7 +28,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
   @Test
   public void testUpdateProfileForEnrolleeFailsIfNotInPortal(TestInfo info) {
-      StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
     Enrollee enrollee =
@@ -50,7 +50,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
   @Test
   public void testUpdateProfileForEnrollee(TestInfo info) {
-      StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
     Enrollee enrollee =

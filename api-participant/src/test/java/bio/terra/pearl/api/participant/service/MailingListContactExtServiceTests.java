@@ -25,7 +25,7 @@ public class MailingListContactExtServiceTests extends BaseSpringBootTest {
   public void testGetOrCreate(TestInfo info) {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     String shortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-      MailingListContact contact =
+    MailingListContact contact =
         mailingListContactExtService.createOrGet(
             "test1@test.com",
             "fakename",
@@ -35,7 +35,7 @@ public class MailingListContactExtServiceTests extends BaseSpringBootTest {
     DaoTestUtils.assertGeneratedProperties(contact);
 
     // check you can create again with same info
-      MailingListContact contact2 =
+    MailingListContact contact2 =
         mailingListContactExtService.createOrGet(
             "test1@test.com", "fakename", shortcode, portalEnv.getEnvironmentName(), null);
     DaoTestUtils.assertGeneratedProperties(contact2);

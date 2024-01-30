@@ -76,7 +76,7 @@ public class NotificationExtService {
         enrolleeRuleService.fetchData(
             enrollees.stream().map(enrollee -> enrollee.getId()).toList());
     NotificationContextInfo context = notificationDispatcher.loadContextInfo(config);
-      for (EnrolleeRuleData enrolleeRuleDatum : enrolleeRuleData) {
+    for (EnrolleeRuleData enrolleeRuleDatum : enrolleeRuleData) {
       notificationDispatcher.dispatchNotification(
           config, enrolleeRuleDatum, context, customMessages);
     }
