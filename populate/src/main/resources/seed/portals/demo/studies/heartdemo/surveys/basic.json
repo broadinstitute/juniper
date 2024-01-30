@@ -24,7 +24,11 @@
     "questionStableId": "hd_hd_basic_birthSex", "targetType": "PROFILE", "targetField": "sexAtBirth", "mapType": "STRING_TO_STRING"
   }],
   "jsonContent": {
-    "title": "The Basics",
+    "title": {
+      "default": "The Basics",
+      "es": "Los Basicos",
+      "dev": "DEV_The Basics"
+    },
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
     "pages": [
@@ -36,7 +40,11 @@
               {
                 "type": "html",
                 "name": "hd_hd_basic_intro",
-                "html": "<h2>About You</h2><p>Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. If you do not want to answer, please select “Prefer not to answer” and move to the next question.</p>"
+                "html": {
+                  "default": "<h2>About You</h2><p>Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. If you do not want to answer, please select “Prefer not to answer” and move to the next question.</p>",
+                  "es": "<h2>Sobre ti</h2><p>Por favor, responde cada pregunta lo más honestamente posible. No hay respuestas correctas o incorrectas a ninguna de las preguntas. Buscamos tus propias respuestas, y no lo que crees que tus médicos, familiares o amigos quieren que digas. Si no quieres responder, selecciona “Prefiero no responder” y pasa a la siguiente pregunta.</p>",
+                  "dev": "<h2>DEV_About You</h2><p>DEV_Please answer each question as honestly as possible. There are no right or wrong answers to any of the questions. We are looking for your own answers, and not what you think your doctors, family, or friends want you to say. If you do not want to answer, please select “Prefer not to answer” and move to the next question.</p>"
+                }
               }
             ]
           },
@@ -46,17 +54,29 @@
               {
                 "name": "hd_hd_basic_firstName",
                 "type": "text",
-                "title": "First name",
+                "title": {
+                  "default": "First name",
+                  "es": "Nombre",
+                  "dev": "DEV_First name"
+                },
                 "isRequired": true
               }, {
                 "name": "hd_hd_basic_lastName",
                 "type": "text",
-                "title": "Last name",
+                "title": {
+                  "default": "Last name",
+                  "es": "Apellido",
+                  "dev": "DEV_Last name"
+                },
                 "isRequired": true
               }, {
                 "name": "hd_hd_basic_middleInitial",
                 "type": "text",
-                "title": "Middle initial",
+                "title": {
+                  "default": "Middle initial",
+                  "es": "Inicial del segundo nombre",
+                  "dev": "DEV_Middle initial"
+                },
                 "maxLength": 1,
                 "size": 1
               }
@@ -64,28 +84,48 @@
           },{
             "name": "hd_hd_basic_dateOfBirth",
             "type": "text",
-            "title": "Date of Birth",
+            "title": {
+              "default": "Date of Birth",
+              "es": "Fecha de nacimiento",
+              "dev": "DEV_Date of Birth"
+            },
             "inputMask": "datetime",
             "inputFormat": "mm/dd/yyyy",
             "isRequired": true
           }, {
             "name": "hd_hd_basic_mghPatient",
             "type": "radiogroup",
-            "title": "Are you a patient, current or former, of Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and/or other Mass General Brigham institutions)?",
+            "title": {
+                "default": "Are you a patient, current or former, of Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and/or other Mass General Brigham institutions)?",
+                "es": "¿Eres paciente, actual o anterior, de Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital y/o otras instituciones de Mass General Brigham)?",
+                "dev": "DEV_Are you a patient, current or former, of Mass General Brigham (Massachusetts General Hospital, Brigham & Women’s Hospital, and/or other Mass General Brigham institutions)?"
+            },
             "isRequired": true,
             "choices": [
               {
-                "text": "Yes",
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                },
                 "value": "yes"
               }, {
-                "text": "No",
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                },
                 "value": "no"
               }
             ]
           }, {
             "name": "hd_hd_basic_height",
             "type": "dropdown",
-            "title": "Height ",
+            "title": {
+              "default": "Height",
+              "es": "Altura",
+              "dev": "DEV_Height"
+            },
             "isRequired": true,
             "choices": [
               {"text": "3' 0\" (91cm)", "value": "91"},
@@ -148,12 +188,23 @@
               {"text": "7' 9\" (236cm)", "value": "236"},
               {"text": "7' 10\" (239cm)", "value": "239"},
               {"text": "7' 11\" (241cm)", "value": "241"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }, {
             "name": "hd_hd_basic_weight",
             "type": "dropdown",
-            "title": "Weight ",
+            "title": {
+              "default": "Weight",
+              "es": "Peso",
+              "dev": "DEV_Weight"
+            },
             "isRequired": true,
             "choices": [
               {"text": "60lbs (27kg)", "value": "27"},
@@ -265,117 +316,422 @@
               {"text": "590lbs (268kg)", "value": "268"},
               {"text": "595lbs (270kg)", "value": "270"},
               {"text": "600lbs (272kg)", "value": "272"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },
           {
             "name": "hd_hd_basic_birthSex",
             "type": "radiogroup",
-            "title": "What was your biological sex assigned at birth?",
+            "title": {
+              "default": "What was your biological sex assigned at birth?",
+              "es": "¿Cuál fue tu sexo biológico asignado al nacer?",
+              "dev": "DEV_What was your biological sex assigned at birth?"
+            },
             "isRequired": true,
             "showOtherItem": true,
-            "otherErrorText": "A description is required",
-            "otherText": "None of these describe me",
-            "otherPlaceholder": "Please describe",
+            "otherErrorText": {
+              "default": "A description is required",
+              "es": "Se requiere una descripción",
+              "dev": "DEV_A description is required"
+            },
+            "otherText": {
+              "default": "None of these describe me",
+              "es": "Ninguna de estas me describe",
+              "dev": "DEV_None of these describe me"
+            },
+            "otherPlaceholder": {
+              "default": "Please describe",
+              "es": "Por favor describe",
+              "dev": "DEV_Please describe"
+            },
             "choices": [
-              {"text": "Female", "value": "female"},
-              {"text": "Male", "value": "male"},
-              {"text": "Intersex", "value": "intersex"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Female",
+                  "es": "Femenino",
+                  "dev":"DEV_Female"
+                },
+                "value": "female"
+              },
+              {
+                "text": {
+                  "default": "Male",
+                  "es": "Masculino",
+                  "dev": "DEV_Male"
+                },
+                "value": "male"
+              },
+              {
+                "text": {
+                  "default": "Intersex",
+                  "es": "Intersexual",
+                  "dev": "DEV_Intersex"
+                },
+                "value": "intersex"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }, {
             "name": "hd_hd_basic_gender",
             "type": "radiogroup",
-            "title": "Which term best describes your gender identity? (Check all that apply) ",
+            "title": {
+              "default": "Which term best describes your gender identity? (Check all that apply)",
+              "es": "¿Qué término describe mejor tu identidad de género? (Marca todas las que correspondan)",
+              "dev": "DEV_Which term best describes your gender identity? (Check all that apply)"
+            },
             "isRequired": true,
             "showOtherItem": true,
-            "otherErrorText": "A description is required",
-            "otherText": "None of these describe me, and I’d like to write my own description",
-            "otherPlaceholder": "Please describe",
+            "otherErrorText": {
+              "default": "A description is required",
+              "es": "Se requiere una descripción",
+              "dev": "DEV_A description is required"
+            },
+            "otherText": {
+              "default": "None of these describe me, and I’d like to write my own description",
+              "es": "Ninguna de estas me describe, y me gustaría escribir mi propia descripción",
+              "dev": "DEV_None of these describe me, and I’d like to write my own description"
+            },
+            "otherPlaceholder": {
+              "default": "Please describe",
+              "es": "Por favor describe",
+              "dev": "DEV_Please describe"
+            },
             "choices": [
-              {"text": "Man", "value": "man"},
-              {"text": "Woman", "value": "woman"},
-              {"text": "Non-binary", "value": "nonBinary"},
-              {"text": "Transgender", "value": "transgender"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Man",
+                  "es": "Hombre",
+                  "dev": "DEV_Man"
+                },
+                "value": "man"
+              },
+              {
+                "text": {
+                  "default": "Woman",
+                  "es": "Mujer",
+                  "dev": "DEV_Woman"
+                },
+                "value": "woman"
+              },
+              {
+                "text": {
+                  "default": "Non-binary",
+                  "es": "No binario",
+                  "dev": "DEV_Non-binary"
+                },
+                "value": "nonBinary"
+              },
+              {
+                "text": {
+                  "default": "Transgender",
+                  "es": "Transgénero",
+                  "dev": "DEV_Transgender"
+                },
+                "value": "transgender"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }, {
             "name": "hd_hd_basic_sexualOrientation",
             "type": "checkbox",
-            "title": "Which of the following best represents how you think of yourself? (Check all that apply)",
+            "title": {
+              "default": "Which of the following best represents how you think of yourself? (Check all that apply)",
+              "es": "¿Cuál de las siguientes opciones mejor representa cómo te identificas? (Marca todas las que correspondan)",
+              "dev": "DEV_Which of the following best represents how you think of yourself? (Check all that apply)"
+            },
             "isRequired": true,
             "showNoneItem": true,
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "noneValue": "preferNoAnswer",
             "choices": [
-              {"text": "Bisexual", "value": "bisexual"},
-              {"text": "Gay", "value": "gay"},
-              {"text": "Lesbian", "value": "lesbian"},
-              {"text": "Straight/Heterosexual", "value": "straightHeterosexual"},
-              {"text": "None of these describe me, and I’d like to see additional options", "value": "noneOfThese"}
+              {
+                "text": {
+                  "default": "Bisexual",
+                  "es": "Bisexual",
+                  "dev": "DEV_Bisexual"
+                },
+                "value": "bisexual"
+              },
+              {
+                "text": {
+                  "default": "Gay",
+                  "es": "Gay",
+                  "dev": "DEV_Gay"
+                },
+                "value": "gay"
+              },
+              {
+                "text": {
+                  "default": "Lesbian",
+                  "es": "Lesbiana",
+                  "dev": "DEV_Lesbian"
+                },
+                "value": "lesbian"
+              },
+              {
+                "text": {
+                  "default": "Straight/Heterosexual",
+                  "es": "Heterosexual",
+                  "dev": "DEV_Straight/Heterosexual"
+                },
+                "value": "straightHeterosexual"
+              },
+              {
+                "text": {
+                  "default": "None of these describe me, and I’d like to see additional options",
+                  "es": "Ninguna de estas me describe, y me gustaría ver opciones adicionales",
+                  "dev": "DEV_None of these describe me, and I’d like to see additional options"
+                },
+                "value": "noneOfThese"
+              }
             ]
           }, {
             "name": "hd_hd_basic_sexualOrientationFollowUp",
             "type": "checkbox",
-            "title": "Are any of these a closer description of how you think of yourself? (Check all that apply)",
+            "title": {
+              "default": "Are any of these a closer description of how you think of yourself? (Check all that apply)",
+              "es": "¿Alguna de estas opciones es una descripción más cercana de cómo te identificas? (Marca todas las que correspondan)",
+              "dev": "DEV_Are any of these a closer description of how you think of yourself? (Check all that apply)"
+            },
             "visibleIf": "{hd_hd_basic_sexualOrientation} contains 'noneOfThese'",
             "showOtherItem": true,
-            "otherErrorText": "A description is required",
-            "otherText": "No, I mean something else",
-            "otherPlaceholder": "Please specify",
+            "otherErrorText": {
+              "default": "A description is required",
+              "es": "Se requiere una descripción",
+              "dev": "DEV_A description is required"
+            },
+            "otherText": {
+              "default": "No, I mean something else",
+              "es": "No, me refiero a otra cosa",
+              "dev": "DEV_No, I mean something else"
+            },
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "choices": [
-              {"text": "Queer", "value": "queer"},
-              {"text": "Polysexual, omnisexual, sapiosexual, or pansexual", "value": "polysexualOmnisexualSapiosexualOrPansexual"},
-              {"text": "Asexual", "value": "asexual"},
-              {"text": "Have not figured out or are in the process of figuring out your sexuality", "value": "haveNotFiguredOut"},
-              {"text": "Mostly straight, but sometimes attracted to people of your own sex", "value": "mostlyStraight"},
-              {"text": "Do not think of yourself as having sexuality", "value": "doNotThinkOfSexuality"},
-              {"text": "Do not use labels to identify yourself", "value": "doNotUseLabels"},
-              {"text": "Don’t know the answer", "value": "dontKnow"}
+              {
+                "text": {
+                  "default": "Queer",
+                  "es": "Queer",
+                  "dev": "DEV_Queer"
+                },
+                "value": "queer"
+              },
+              {
+                "text": {
+                  "default": "Polysexual, omnisexual, sapiosexual, or pansexual",
+                  "es": "Polisexual, omnisexual, sapiosexual o pansexual",
+                  "dev": "DEV_Polysexual, omnisexual, sapiosexual, or pansexual"
+                },
+                "value": "polysexualOmnisexualSapiosexualOrPansexual"
+              },
+              {
+                "text": {
+                  "default": "Asexual",
+                  "es": "Asexual",
+                  "dev": "DEV_Asexual"
+                },
+                "value": "asexual"
+              },
+              {
+                "text": {
+                  "default": "Have not figured out or are in the process of figuring out your sexuality",
+                  "es": "No he descubierto o estoy en el proceso de descubrir mi sexualidad",
+                  "dev": "DEV_Have not figured out or are in the process of figuring out your sexuality"
+                },
+                "value": "haveNotFiguredOut"
+              },
+              {
+                "text": {
+                  "default": "Mostly straight, but sometimes attracted to people of your own sex",
+                  "es": "Mayormente heterosexual, pero a veces atraído por personas de mi mismo sexo",
+                  "dev": "DEV_Mostly straight, but sometimes attracted to people of your own sex"
+                },
+                "value": "mostlyStraight"
+              },
+              {
+                "text": {
+                  "default": "Do not think of yourself as having sexuality",
+                  "es": "No me considero como alguien que tenga sexualidad",
+                  "dev": "DEV_Do not think of yourself as having sexuality"
+                },
+                "value": "doNotThinkOfSexuality"
+              },
+              {
+                "text": {
+                  "default": "Do not use labels to identify yourself",
+                  "es": "No uso etiquetas para identificarme",
+                  "dev": "DEV_Do not use labels to identify yourself"
+                },
+                "value": "doNotUseLabels"
+              },
+              {
+                "text": {
+                  "default": "Don’t know the answer",
+                  "es": "No sé la respuesta",
+                  "dev": "DEV_Don’t know the answer"
+                },
+                "value": "dontKnow"
+              }
             ]
           },{
             "name": "ethnicityNote",
             "type": "html",
-            "html": "<b>Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>"
+            "html": {
+              "default": "<b>Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>",
+              "es": "<b>Nota, eres elegible para este estudio porque te identificas como del sur de Asia, definido como ascendencia de Bangladesh, Bután, India, Maldivas, Nepal, Pakistán y/o Sri Lanka.</b>",
+              "dev": "<b>DEV_Note, you are eligible for this study because you identify as South Asian, defined as ancestry from Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and/or Sri Lanka.</b>"
+            }
           }, {
             "name": "hd_hd_basic_otherEthnicity",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "Outside of South Asian ethnicity, do you identify with other racial/ethnic categories?",
+            "title": {
+              "default": "Outside of South Asian ethnicity, do you identify with other racial/ethnic categories?",
+              "es": "Aparte de la etnicidad del sur de Asia, ¿te identificas con otras categorías raciales/étnicas?",
+              "dev": "DEV_Outside of South Asian ethnicity, do you identify with other racial/ethnic categories?"
+            },
             "choices": [
-              {"text": "No, I only identify with South Asian ethnicity.", "value": "no"},
-              {"text": "Yes", "value": "yes"}
+              {
+                "text": {
+                  "default": "No, I only identify with South Asian ethnicity.",
+                  "es": "No, solo me identifico con la etnicidad del sur de Asia.",
+                  "dev": "DEV_No, I only identify with South Asian ethnicity."
+                },
+                "value": "no"
+              },
+              {
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                },
+                "value": "yes"
+              }
             ]
           }, {
             "name": "hd_hd_basic_otherEthnicityDetail",
             "type": "checkbox",
-            "title": "Check all that apply.",
+            "title": {
+              "default": "Check all that apply.",
+              "es": "Marca todas las que correspondan.",
+              "dev": "DEV_Check all that apply."
+            },
             "visibleIf": "{hd_hd_basic_otherEthnicity} = 'yes'",
             "isRequired": true,
             "showNoneItem": true,
             "noneValue": "notListed",
-            "noneText": "Not listed",
+            "noneText": {
+              "default": "Not listed",
+              "es": "No está en la lista",
+              "dev": "DEV_Not listed"
+            },
             "hideNumber": true,
             "choices": [
-              {"text": "African American/Black", "value": "black"},
-              {"text": "Caucasian/White", "value": "white"},
-              {"text": "East or Southeast Asian", "value": "eastOrSoutheastAsian"},
-              {"text": "Hispanic or Latino/a", "value": "hispanic"},
-              {"text": "Native American (American Indian or Alaska Native)", "value": "nativeAmerican"},
-              {"text": "Native Hawaiian or Other Pacific Islander", "value": "pacificIslander"}
+              {
+                "text": {
+                  "default": "African American/Black",
+                  "es": "Afroamericano/Negro",
+                  "dev": "DEV_African American/Black"
+                },
+                "value": "black"
+              },
+              {
+                "text": {
+                  "default": "Caucasian/White",
+                  "es": "Caucásico/Blanco",
+                  "dev": "DEV_Caucasian/White"
+                },
+                "value": "white"
+              },
+              {
+                "text": {
+                  "default": "East or Southeast Asian",
+                  "es": "Asiático del Este o del Sureste",
+                  "dev": "DEV_East or Southeast Asian"
+                },
+                "value": "eastOrSoutheastAsian"
+              },
+              {
+                "text": {
+                  "default": "Hispanic or Latino/a",
+                  "es": "Hispano o Latino/a",
+                  "dev": "DEV_Hispanic or Latino/a"
+                },
+                "value": "hispanic"
+              },
+              {
+                "text": {
+                  "default": "Native American (American Indian or Alaska Native)",
+                  "es": "Nativo Americano (Indio Americano o Nativo de Alaska)",
+                  "dev": "DEV_Native American (American Indian or Alaska Native)"
+                },
+                "value": "nativeAmerican"
+              },
+              {
+                "text": {
+                  "default": "Native Hawaiian or Other Pacific Islander",
+                  "es": "Nativo Hawaiano u Otro Isleño del Pacífico",
+                  "dev": "DEV_Native Hawaiian or Other Pacific Islander"
+                },
+                "value": "pacificIslander"
+              }
             ]
           },{
             "name": "hd_hd_basic_nationalIdentity",
             "type": "checkbox",
-            "title": "With which of the following South Asian nations do you or your family identify? Check all that apply.",
+            "title": {
+              "default": "With which of the following South Asian nations do you or your family identify? Check all that apply.",
+              "es": "¿Con cuál de las siguientes naciones del sur de Asia te identificas tú o tu familia? Marca todas las que correspondan.",
+              "dev": "DEV_With which of the following South Asian nations do you or your family identify? Check all that apply."
+            },
             "isRequired": true,
             "showOtherItem": true,
             "otherText": "Other",
-            "otherPlaceholder": "Please specify",
-            "otherErrorText": "A description is required for choices of 'other'",
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
             "showNoneItem": true,
             "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "choices": [
               {"text": "Bangladesh", "value": "bangladesh"},
               {"text": "Bhutan", "value": "bhutan"},
@@ -462,15 +818,35 @@
             "name": "hd_hd_basic_pakistanRegion",
             "type": "checkbox",
             "isRequired": true,
-            "title": "From PAKISTAN: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+            "title": {
+              "default": "From PAKISTAN: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply.",
+              "es": "De PAKISTÁN: Elige los estados y/o territorios de la unión con los que tú o tu familia se identifican. Marca todas las que correspondan.",
+              "dev": "DEV_From PAKISTAN: Please choose which state(s) and/or union territories you or your family identifies with. Check all that apply."
+            },
             "visibleIf": "{hd_hd_basic_nationalIdentity} contains 'pakistan'",
             "showOtherItem": true,
-            "otherErrorText": "A description is required for choices of 'other'",
-            "otherText": "Other",
-            "otherPlaceholder": "Please specify",
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "showNoneItem": true,
             "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "choices": [
               {"text": "Azad Jammu and Kashmir", "value": "azadJammuAndKashmir"},
               {"text": "Balochistan", "value": "balochistan"},
@@ -483,15 +859,35 @@
           },{
             "name": "hd_hd_basic_asianLanguage",
             "type": "checkbox",
-            "title": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply. ",
+            "title": {
+              "default": "Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply.",
+              "es": "¿Cuál(es) de los idiomas nacionales del sur de Asia considerarías tu “lengua materna” o con la que más se identifica tu familia? Marca todas las que correspondan.",
+              "dev": "DEV_Which of the national language(s) in South Asia would you consider to be your “mother tongue”, or most identified with your family? Check all that apply."
+            },
             "isRequired": true,
             "showOtherItem": true,
-            "otherErrorText": "A description is required for choices of 'other'",
-            "otherText": "Other",
-            "otherPlaceholder": "Please specify",
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
+            "otherPlaceholder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "showNoneItem": true,
             "noneValue": "preferNoAnswer",
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "choices": [
               {"text": "Assamese", "value": "assamese"},
               {"text": "Balochi", "value": "balochi"},
@@ -532,24 +928,40 @@
               {
                 "type": "html",
                 "name": "hd_hd_basic_mailingIntro",
-                "html": "<h2>Mailing Address</h2><p>We ask this so that we may send you a saliva collection kit.</p>"
+                "html": {
+                    "default": "<h2>Mailing Address</h2><p>We ask this so that we may send you a saliva collection kit.</p>",
+                    "es": "<h2>Dirección postal</h2><p>Te preguntamos esto para poder enviarte un kit de recolección de saliva.</p>",
+                    "dev": "<h2>DEV_Mailing Address</h2><p>We ask this so that we may send you a saliva collection kit.</p>"
+                }
               }
             ]
           },
           {
             "name": "hd_hd_basic_streetAddress",
             "type": "text",
-            "title": "Address",
+            "title": {
+              "default": "Street Address",
+              "es": "Dirección",
+              "dev": "DEV_Street Address"
+            },
             "isRequired": true
           }, {
             "name": "hd_hd_basic_city",
             "type": "text",
-            "title": "City",
+            "title": {
+              "default": "City",
+              "es": "Ciudad",
+              "dev": "DEV_City"
+            },
             "isRequired": true
           }, {
             "name": "hd_hd_basic_state",
             "type": "dropdown",
-            "title": "State",
+            "title": {
+              "default": "State",
+              "es": "Estado",
+              "dev": "DEV_State"
+            },
             "isRequired": true,
             "choices": [
               {"text": "Alaska", "value": "AK"},
@@ -612,7 +1024,11 @@
           }, {
             "name": "hd_hd_basic_zip",
             "type": "text",
-            "title": "ZIP Code (5 digits)",
+            "title": {
+              "default": "ZIP Code (5 digits)",
+              "es": "Código postal (5 dígitos)",
+              "dev": "DEV_ZIP Code (5 digits)"
+            },
             "maxLength": 5,
             "size": "5",
             "inputType": "text",
@@ -620,7 +1036,11 @@
           }, {
             "name": "hd_hd_basic_phoneNumber",
             "type": "text",
-            "title": "Preferred Phone Number",
+            "title": {
+              "default": "Preferred Phone Number",
+              "es": "Número de teléfono preferido",
+              "dev": "DEV_Preferred Phone Number"
+            },
             "inputMask": "phone",
             "inputFormat": "999-999-9999",
             "isRequired": true
@@ -634,76 +1054,259 @@
               {
                 "type": "html",
                 "name": "hd_hd_basic_livingIntro",
-                "html": "<h2>Living in the United States, Citizenship, Parents, and Relationship Status</h2>"
+                "html": {
+                    "default": "<h2>Living in the United States, Citizenship, Parents, and Relationship Status</h2>",
+                    "es": "<h2>Viviendo en los Estados Unidos, ciudadanía, padres y estado de relación</h2>",
+                    "dev": "<h2>DEV_Living in the United States, Citizenship, Parents, and Relationship Status</h2>"
+                }
               }
             ]
           },{
             "name": "hd_hd_basic_settledOtherRegions",
             "type": "checkbox",
-            "title": "Have any generations of your family settled in any of the following regions? Check all that apply.",
+            "title": {
+              "default": "Have any generations of your family settled in any of the following regions? Check all that apply.",
+              "es": "¿Alguna generación de tu familia se ha establecido en alguna de las siguientes regiones? Marca todas las que correspondan.",
+              "dev": "DEV_Have any generations of your family settled in any of the following regions? Check all that apply."
+            },
             "isRequired": true,
             "showNoneItem": true,
             "noneValue": "none",
-            "noneText": "None of the above",
+            "noneText": {
+              "default": "None of the above",
+              "es": "Ninguna de las anteriores",
+              "dev": "DEV_None of the above"
+            },
             "choices": [
-              {"text": "Africa (Nigeria, South Africa, Uganda)", "value": "africa"},
-              {"text": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)", "value":  "asiaPacific"},
-              {"text": "Canada", "value": "canada"},
-              {"text": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)", "value": "carribean"},
-              {"text": "Europe", "value": "europe"},
-              {"text": "Middle East", "value": "middleEast"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Africa (Nigeria, South Africa, Uganda)",
+                  "es": "África (Nigeria, Sudáfrica, Uganda)",
+                  "dev": "DEV_Africa (Nigeria, South Africa, Uganda)"
+                },
+                "value": "africa"
+              },
+              {
+                "text": {
+                  "default": "Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)",
+                  "es": "Islas de Asia/Pacífico (Fiji, Indonesia, Malasia y/o Singapur)",
+                  "dev": "DEV_Asia/Pacific Islands (Fiji, Indonesia, Malaysia, and/or Singapore)"
+                },
+                "value": "asiaPacific"
+              },
+              {
+                "text": {
+                  "default": "Canada",
+                  "es": "Canadá",
+                  "dev": "DEV_Canada"
+                },
+                "value": "canada"
+              },
+              {
+                "text": {
+                  "default": "Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)",
+                  "es": "Caribe (Guyana, Jamaica, Surinam y Trinidad & Tobago)",
+                  "dev": "DEV_Caribbean (Guyana, Jamaica, Suriname, and Trinidad & Tobago)"
+                },
+                "value": "carribean"
+              },
+              {
+                "text": {
+                  "default": "Europe",
+                  "es": "Europa",
+                  "dev": "DEV_Europe"
+                },
+                "value": "europe"
+              },
+              {
+                "text": {
+                  "default": "Middle East",
+                  "es": "Medio Oriente",
+                  "dev": "DEV_Middle East"
+                },
+                "value": "middleEast"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_continuousGenerations",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "We are interested in learning more about the South Asian Diaspora. Which of the following best applies to you?",
+            "title": {
+              "default": "We are interested in learning more about the South Asian Diaspora. Which of the following best applies to you?",
+              "es": "Estamos interesados en aprender más sobre la diáspora del sur de Asia. ¿Cuál de las siguientes opciones se aplica mejor a ti?",
+              "dev": "DEV_We are interested in learning more about the South Asian Diaspora. Which of the following best applies to you?"
+            },
             "choices": [
-              {"text": "My great-grandparents or an older generation were the first to leave South Asia.", "value": "greatGrandparentsOrOlderLeft"},
-              {"text": "My grandparents were the first to leave South Asia.", "value": "grandparentsLeft"},
-              {"text": "My parents were the first to leave South Asia.", "value": "parentsLeft"},
-              {"text": "I was the first to leave South Asia.", "value": "firstToLeave"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "My great-grandparents or an older generation were the first to leave South Asia.",
+                  "es": "Mis bisabuelos o una generación más antigua fueron los primeros en dejar el sur de Asia.",
+                  "dev": "DEV_My great-grandparents or an older generation were the first to leave South Asia."
+                },
+                "value": "greatGrandparentsOrOlderLeft"
+              },
+              {
+                "text": {
+                  "default": "My grandparents were the first to leave South Asia.",
+                  "es": "Mis abuelos fueron los primeros en dejar el sur de Asia.",
+                  "dev": "DEV_My grandparents were the first to leave South Asia."
+                },
+                "value": "grandparentsLeft"
+              },
+              {
+                "text": {
+                  "default": "My parents were the first to leave South Asia.",
+                  "es": "Mis padres fueron los primeros en dejar el sur de Asia.",
+                  "dev": "DEV_My parents were the first to leave South Asia."
+                },
+                "value": "parentsLeft"
+              },
+              {
+                "text": {
+                  "default": "I was the first to leave South Asia.",
+                  "es": "Yo fui el primero en dejar el sur de Asia.",
+                  "dev": "DEV_I was the first to leave South Asia."
+                },
+                "value": "firstToLeave"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_citizenship",
             "type": "checkbox",
             "isRequired": true,
-            "title": "What is your citizenship status?",
-            "description": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
+            "title": {
+              "default": "What is your citizenship status?",
+              "es": "¿Cuál es tu estatus de ciudadanía?",
+              "dev": "DEV_What is your citizenship status?"
+            },
+            "description": {
+              "default": "This type of question helps us to ensure we are surveying a diverse group of South Asians in the US",
+              "es": "Este tipo de pregunta nos ayuda a asegurarnos de que estamos encuestando a un grupo diverso de surasiáticos en los Estados Unidos",
+              "dev": "DEV_This type of question helps us to ensure we are surveying a diverse group of South Asians in the US"
+            },
             "choices": [
-              {"text": "US citizen", "value": "usCitizen"},
-              {"text": "Non-US citizenship", "value": "nonUSCitizenship"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "US citizen",
+                  "es": "Ciudadano de los EE.UU.",
+                  "dev": "DEV_US citizen"
+                },
+                "value": "usCitizen"
+              },
+              {
+                "text": {
+                  "default": "Non-US citizenship",
+                  "es": "Ciudadanía no estadounidense",
+                  "dev": "DEV_Non-US citizenship"
+                },
+                "value": "nonUSCitizenship"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_citizenship_us",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "Which of the following best describes your US citizenship status?",
+            "title": {
+              "default": "Which of the following best describes your US citizenship status?",
+              "es": "¿Cuál de las siguientes opciones describe mejor tu estatus de ciudadanía de los EE.UU.?",
+              "dev": "DEV_Which of the following best describes your US citizenship status?"
+            },
             "visibleIf": "{hd_hd_basic_citizenship} contains 'usCitizen'",
             "choices": [
-              {"text": "I am a US citizen by birth", "value": "usBornCitizen"},
-              {"text": "I am a naturalized US citizen", "value": "naturalizedUSCitizen"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "I am a US citizen by birth",
+                  "es": "Soy ciudadano de los EE.UU. por nacimiento",
+                  "dev": "DEV_I am a US citizen by birth"
+                },
+                "value": "usBornCitizen"
+              },
+              {
+                "text": {
+                  "default": "I am a naturalized US citizen",
+                  "es": "Soy un ciudadano estadounidense naturalizado",
+                  "dev": "DEV_I am a naturalized US citizen"
+                },
+                "value": "naturalizedUSCitizen"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_residencyInUS",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "When did you arrive the in the US?",
+            "title": {
+              "default": "When did you arrive the in the US?",
+              "es": "¿Cuándo llegaste a los EE.UU.?",
+              "dev": "DEV_When did you arrive the in the US?"
+            },
             "choices": [
-              {"text": "I was born in the US", "value": "bornInTheUs"},
-              {"text": "I came to the US after I was born", "value": "cameToTheUs"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "I was born in the US",
+                  "es": "Nací en los EE.UU.",
+                  "dev": "DEV_I was born in the US"
+                },
+                "value": "bornInTheUs"
+              },
+              {
+                "text": {
+                  "default": "I came to the US after I was born",
+                  "es": "Llegué a los EE.UU. después de nacer",
+                  "dev": "DEV_I came to the US after I was born"
+                },
+                "value": "cameToTheUs"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_yearCameToUS",
             "type": "dropdown",
             "isRequired": true,
             "visibleIf": "{hd_hd_basic_residencyInUS} = 'cameToTheUs'",
-            "title": "In what year did you come to live in the United States?",
+            "title": {
+              "default": "In what year did you come to live in the United States?",
+              "es": "¿En qué año viniste a vivir a los Estados Unidos?",
+              "dev": "DEV_In what year did you come to live in the United States?"
+            },
             "choices": [
               {"text": "1920", "value": "1920"},
               {"text": "1921", "value": "1921"},
@@ -810,50 +1413,178 @@
               {"text": "2022", "value": "2022"},
               {"text": "2023", "value": "2023"},
               {"text": "2024", "value": "2024"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_parentsRelated",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "Are your parents related by blood? ",
+            "title": {
+              "default": "Are your parents related by blood?",
+              "es": "¿Tus padres están relacionados por sangre?",
+              "dev": "DEV_Are your parents related by blood?"
+            },
             "choices": [
-              {"text": "Yes", "value": "yes"},
-              {"text": "No", "value": "no"},
-              {"text": "Not sure", "value": "unsure"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                },
+                "value": "yes"
+              },
+              {
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                },
+                "value": "no"
+              },
+              {
+                "text": {
+                  "default": "Not sure",
+                  "es": "No estoy seguro",
+                  "dev": "DEV_Not sure"
+                },
+                "value": "unsure"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_parentsRelatedHow",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "How were your parents related? ",
+            "title": {
+              "default": "How were your parents related?",
+              "es": "¿Cómo estaban relacionados tus padres?",
+              "dev": "DEV_How were your parents related?"
+            },
             "visibleIf": "{hd_hd_basic_parentsRelated} = 'yes'",
             "choices": [
-              {"text": "First cousins", "value": "firstCousins"},
-              {"text": "Other relationship", "value": "otherRelationship"},
-              {"text": "Not sure", "value": "unsure"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "First cousins",
+                  "es": "Primos hermanos",
+                  "dev": "DEV_First cousins"
+                },
+                "value": "firstCousins"
+              },
+              {
+                "text": {
+                  "default": "Other relationship",
+                  "es": "Otra relación",
+                  "dev": "DEV_Other relationship"
+                },
+                "value": "otherRelationship"
+              },
+              {
+                "text": {
+                  "default": "Not sure",
+                  "es": "No estoy seguro",
+                  "dev": "DEV_Not sure"
+                },
+                "value": "unsure"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_maritalStatus",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "What is your marital status? ",
+            "title": {
+              "default": "What is your marital status?",
+              "es": "¿Cuál es tu estado civil?",
+              "dev": "DEV_What is your marital status?"
+            },
             "choices": [
-              {"text": "Single", "value": "single"},
-              {"text": "Married", "value": "married"},
-              {"text": "Long-term partner/domestic partnership", "value": "longTermPartner"},
-              {"text": "Divorced/Separated", "value": "divorcedSeparated"},
-              {"text": "Widowed", "value": "widowed"},
-              {"text": "Other", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Single",
+                  "es": "Soltero",
+                  "dev": "DEV_Single"
+                },
+                "value": "single"
+              },
+              {
+                "text": {
+                  "default": "Married",
+                  "es": "Casado",
+                  "dev": "DEV_Married"
+                },
+                "value": "married"
+              },
+              {
+                "text": {
+                  "default": "Long-term partner/domestic partnership",
+                  "es": "Pareja de largo plazo/unión doméstica",
+                  "dev": "DEV_Long-term partner/domestic partnership"
+                },
+                "value": "longTermPartner"
+              },
+              {
+                "text": {
+                  "default": "Divorced/Separated",
+                  "es": "Divorciado/Separado",
+                  "dev": "DEV_Divorced/Separated"
+                },
+                "value": "divorcedSeparated"
+              },
+              {
+                "text": {
+                  "default": "Widowed",
+                  "es": "Viudo",
+                  "dev": "DEV_Widowed"
+                },
+                "value": "widowed"
+              },
+              {
+                "text": {
+                  "default": "Other",
+                  "es": "Otro",
+                  "dev": "DEV_Other"
+                },
+                "value": "other"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_otherPeopleAtHome",
             "type": "dropdown",
             "isRequired": true,
-            "title": "Not including yourself, how many other people live at home with you?",
+            "title": {
+              "default": "Not including yourself, how many other people live at home with you?",
+              "es": "Sin incluirte a ti mismo, ¿cuántas otras personas viven en casa contigo?",
+              "dev": "DEV_Not including yourself, how many other people live at home with you?"
+            },
             "choices": [
               {"text": "0", "value": "0"},
               {"text": "1", "value": "1"},
@@ -871,7 +1602,14 @@
               {"text": "13", "value": "13"},
               {"text": "14", "value": "14"},
               {"text": "15", "value": "15"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
@@ -883,21 +1621,45 @@
               {
                 "type": "html",
                 "name": "hd_hd_basic_religionIntro",
-                "html": "<h2>Religion and Spirituality</h2>"
+                "html": {
+                    "default": "<h2>Religion and Spirituality</h2>",
+                    "es": "<h2>Religión y espiritualidad</h2>",
+                    "dev": "<h2>DEV_Religion and Spirituality</h2>"
+                }
               }
             ]
           },
           {
             "name": "hd_hd_basic_religiousBackground",
             "type": "checkbox",
-            "title": "Which best describe(s) your religious background? Check all that apply.",
+            "title": {
+              "default": "Which best describe(s) your religious background? Check all that apply.",
+              "es": "¿Cuál(es) describe(n) mejor tu trasfondo religioso? Marca todas las que correspondan.",
+              "dev": "DEV_Which best describe(s) your religious background? Check all that apply."
+            },
             "isRequired": true,
             "showOtherItem": true,
-            "otherText": "Other",
-            "otherErrorText": "A description is required for choices of 'other'",
-            "otherPlaceholder": "Please specify",
+            "otherText": {
+              "default": "Other",
+              "es": "Otro",
+              "dev": "DEV_Other"
+            },
+            "otherErrorText": {
+              "default": "A description is required for choices of 'other'",
+              "es": "Se requiere una descripción para las opciones de 'otro'",
+              "dev": "DEV_A description is required for choices of 'other'"
+            },
+            "otherPlaceHolder": {
+              "default": "Please specify",
+              "es": "Por favor especifica",
+              "dev": "DEV_Please specify"
+            },
             "showNoneItem": true,
-            "noneText": "Prefer not to answer",
+            "noneText": {
+              "default": "Prefer not to answer",
+              "es": "Prefiero no responder",
+              "dev": "DEV_Prefer not to answer"
+            },
             "noneValue": "preferNoAnswer",
             "choices": [
               {"text": "Buddhist", "value": "buddhist"},
@@ -913,14 +1675,53 @@
           },{
             "name": "hd_hd_basic_howImportantReligion",
             "type": "radiogroup",
-            "title": "How important is religion in your life? ",
+            "title": {
+              "default": "How important is religion in your life?",
+              "es": "¿Qué tan importante es la religión en tu vida?",
+              "dev": "DEV_How important is religion in your life?"
+            },
             "isRequired": true,
             "choices": [
-              {"text": "Very important", "value": "veryImportant"},
-              {"text": "Somewhat important", "value": "somewhatImportant"},
-              {"text": "A little important", "value": "aLittleImportant"},
-              {"text": "Not at all important", "value": "notAtAllImportant"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Very important",
+                  "es": "Muy importante",
+                  "dev": "DEV_Very important"
+                },
+                "value": "veryImportant"
+              },
+              {
+                "text": {
+                  "default": "Somewhat important",
+                  "es": "Algo importante",
+                  "dev": "DEV_Somewhat important"
+                },
+                "value": "somewhatImportant"
+              },
+              {
+                "text": {
+                  "default": "A little important",
+                  "es": "Poco importante",
+                  "dev": "DEV_A little important"
+                },
+                "value": "aLittleImportant"
+              },
+              {
+                "text": {
+                  "default": "Not at all important",
+                  "es": "Nada importante",
+                  "dev": "DEV_Not at all important"
+                },
+                "value": "notAtAllImportant"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
@@ -932,7 +1733,11 @@
               {
                 "type": "html",
                 "name": "hd_hd_basic_eductationWorkIntro",
-                "html": "<h2>School, Employment, Income, and Housing</h2>"
+                "html": {
+                  "default": "<h2>School, Employment, Income, and Housing</h2>",
+                  "es": "<h2>Escuela, empleo, ingresos y vivienda</h2>",
+                  "dev": "<h2>DEV_School, Employment, Income, and Housing</h2>"
+                }
               }
             ]
           },
@@ -940,75 +1745,337 @@
             "name": "hd_hd_basic_educationLevel",
             "type": "radiogroup",
             "isRequired": true,
-            "title": "What is the highest grade or year of school you completed? ",
+            "title": {
+              "default": "What is the highest grade or year of school you completed?",
+              "es": "¿Cuál es el grado o año más alto de la escuela que completaste?",
+              "dev": "DEV_What is the highest grade or year of school you completed?"
+            },
             "choices": [
-              {"text": "Never attended school or only attended kindergarten", "value": "neverAttendedSchool"},
-              {"text": "Grades 1 through 4 (Primary)", "value": "primary"},
-              {"text": "Grades 5 through 8 (Middle school)", "value": "middleSchool"},
-              {"text": "Grades 9 through 11 (Some high school)", "value": "someHighSchool"},
-              {"text": "Grade 12 or GED (High school graduate)", "value": "highSchoolGraduate"},
-              {"text": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)", "value": "someCollege"},
-              {"text": "College 4 years or more (College graduate)", "value": "collegeGraduate"},
-              {"text": "Advanced degree (Master’s, Doctorate, etc.)", "value": "advancedDegree"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Never attended school or only attended kindergarten",
+                  "es": "Nunca asistió a la escuela o solo asistió al jardín de infantes",
+                  "dev": "DEV_Never attended school or only attended kindergarten"
+                },
+                "value": "neverAttendedSchool"
+              },
+              {
+                "text": {
+                  "default": "Grades 1 through 4 (Primary)",
+                  "es": "Grados 1 a 4 (Primaria)",
+                  "dev": "DEV_Grades 1 through 4 (Primary)"
+                },
+                "value": "primary"
+              },
+              {
+                "text": {
+                  "default": "Grades 5 through 8 (Middle school)",
+                  "es": "Grados 5 a 8 (Secundaria)",
+                  "dev": "DEV_Grades 5 through 8 (Middle school)"
+                },
+                "value": "middleSchool"
+              },
+              {
+                "text": {
+                  "default": "Grades 9 through 11 (Some high school)",
+                  "es": "Grados 9 a 11 (Algo de secundaria)",
+                  "dev": "DEV_Grades 9 through 11 (Some high school)"
+                },
+                "value": "someHighSchool"
+              },
+              {
+                "text": {
+                  "default": "Grade 12 or GED (High school graduate)",
+                  "es": "Grado 12 o GED (Graduado de secundaria)",
+                  "dev": "DEV_Grade 12 or GED (High school graduate)"
+                },
+                "value": "highSchoolGraduate"
+              },
+              {
+                "text": {
+                  "default": "1 to 3 years after high school (Some college, Associate’s degree, or technical school)",
+                  "es": "1 a 3 años después de la secundaria (Algo de universidad, título de asociado o escuela técnica)",
+                  "dev": "DEV_1 to 3 years after high school (Some college, Associate’s degree, or technical school)"
+                },
+                "value": "someCollege"
+              },
+              {
+                "text": {
+                  "default": "College 4 years or more (College graduate)",
+                  "es": "Universidad 4 años o más (Graduado universitario)",
+                  "dev": "DEV_College 4 years or more (College graduate)"
+                },
+                "value": "collegeGraduate"
+              },
+              {
+                "text": {
+                  "default": "Advanced degree (Master’s, Doctorate, etc.)",
+                  "es": "Grado avanzado (Maestría, Doctorado, etc.)",
+                  "dev": "DEV_Advanced degree (Master’s, Doctorate, etc.)"
+                },
+                "value": "advancedDegree"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },
           {
             "name": "hd_hd_basic_employmentStatus",
             "type": "checkbox",
-            "title": "What is your current employment status? Check all that apply. ",
+            "title": {
+              "default": "What is your current employment status? Check all that apply. ",
+              "es": "¿Cuál es tu estado de empleo actual? Marca todas las que correspondan.",
+              "dev": "DEV_What is your current employment status? Check all that apply. "
+            },
             "isRequired": true,
             "showNoneItem": true,
-            "noneText": "None of the above",
+            "noneText": {
+              "default": "None of the above",
+              "es": "Ninguna de las anteriores",
+              "dev": "DEV_None of the above"
+            },
             "noneValue": "noneOfAbove",
             "choices": [
-              {"text": "Paid employment or self employed", "value": "paidEmploymentOrSelfEmployed"},
-              {"text": "Retired", "value": "retired"},
-              {"text": "Unemployed and looking for work", "value": "unemployedAndLooking"},
-              {"text": "Looking after home or family", "value": "lookingAfterHomeOrFamily"},
-              {"text": "Unable to work due to sickness or disability", "value": "unableToWork"},
-              {"text": "Full or Part Time student", "value": "fullOrPartTimeStudent"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Paid employment or self employed",
+                  "es": "Empleo remunerado o autónomo",
+                  "dev": "DEV_Paid employment or self employed"
+                },
+                "value": "paidEmploymentOrSelfEmployed"
+              },
+              {
+                "text": {
+                  "default": "Retired",
+                  "es": "Jubilado",
+                  "dev": "DEV_Retired"
+                },
+                "value": "retired"
+              },
+              {
+                "text": {
+                  "default": "Unemployed and looking for work",
+                  "es": "Desempleado y buscando trabajo",
+                  "dev": "DEV_Unemployed and looking for work"
+                },
+                "value": "unemployedAndLooking"
+              },
+              {
+                "text": {
+                  "default": "Looking after home or family",
+                  "es": "Cuidando el hogar o la familia",
+                  "dev": "DEV_Looking after home or family"
+                },
+                "value": "lookingAfterHomeOrFamily"
+              },
+              {
+                "text": {
+                  "default": "Unable to work due to sickness or disability",
+                  "es": "Incapaz de trabajar debido a enfermedad o discapacidad",
+                  "dev": "DEV_Unable to work due to sickness or disability"
+                },
+                "value": "unableToWork"
+              },
+              {
+                "text": {
+                  "default": "Full or Part Time student",
+                  "es": "Estudiante a tiempo completo o parcial",
+                  "dev": "DEV_Full or Part Time student"
+                },
+                "value": "fullOrPartTimeStudent"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_householdIncome",
             "type": "radiogroup",
-            "title": "One of the things we're trying to understand is how people's income may affect their use of health services.\n\nWhat is your annual household income from all sources? Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.",
+            "title": {
+              "default": "One of the things we're trying to understand is how people's income may affect their use of health services.\n\nWhat is your annual household income from all sources? Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income.",
+              "es": "Una de las cosas que estamos tratando de entender es cómo el ingreso de las personas puede afectar su uso de los servicios de salud.\n\n¿Cuál es tu ingreso anual del hogar de todas las fuentes? El ingreso del hogar incluye tu ingreso más el ingreso de todos los miembros de la familia en tu hogar durante el último año calendario. Incluye todos los salarios y otras fuentes de ingresos.",
+              "dev": "DEV_One of the things we're trying to understand is how people's income may affect their use of health services.\n\nWhat is your annual household income from all sources? Household income includes your income plus the income of all family members in your household for the last calendar year. Include all wages and other sources of income."
+            },
             "isRequired": true,
             "choices": [
-              {"text": "Less than $25,000", "value": "lessThan25k"},
-              {"text": "$25,000-$49,999", "value": "25to49k"},
-              {"text": "$50,000-$99,999", "value": "50to99k"},
-              {"text": "$100,000-$199,999", "value": "100kTo199k"},
-              {"text": "$200,000-$999,999", "value": "200kTo1m"},
-              {"text": "More than $1,000,000", "value": "moreThan1m"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Less than $25,000",
+                  "es": "Menos de $25,000",
+                  "dev": "DEV_Less than $25,000"
+                },
+                "value": "lessThan25k"
+              },
+              {
+                "text": {
+                  "default": "$25,000-$49,999",
+                  "es": "$25,000-$49,999",
+                  "dev": "DEV_$25,000-$49,999"
+                },
+                "value": "25to49k"
+              },
+              {
+                "text": {
+                  "default": "$50,000-$99,999",
+                  "es": "$50,000-$99,999",
+                  "dev": "DEV_$50,000-$99,999"
+                },
+                "value": "50to99k"
+              },
+              {
+                "text": {
+                  "default": "$100,000-$199,999",
+                  "es": "$100,000-$199,999",
+                  "dev": "DEV_$100,000-$199,999"
+                },
+                "value": "100kTo199k"
+              },
+              {
+                "text": {
+                  "default": "$200,000-$999,999",
+                  "es": "$200,000-$999,999",
+                  "dev": "DEV_$200,000-$999,999"
+                },
+                "value": "200kTo1m"
+              },
+              {
+                "text": {
+                  "default": "More than $1,000,000",
+                  "es": "Más de $1,000,000",
+                  "dev": "DEV_More than $1,000,000"
+                },
+                "value": "moreThan1m"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_ownOrRent",
             "type": "radiogroup",
-            "title": "Do you own or rent the place where you live? ",
+            "title": {
+              "default": "Do you own or rent the place where you live? ",
+              "es": "¿Eres dueño o inquilino del lugar donde vives?",
+              "dev": "DEV_Do you own or rent the place where you live? "
+            },
             "isRequired": true,
             "choices": [
-              {"text": "Own", "value": "own"},
-              {"text": "Rent", "value": "rent"},
-              {"text": "Live with family (I am not the homeowner and do not pay rent)", "value": "liveWithFamily"},
-              {"text": "Other arrangement", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "Own",
+                  "es": "Propio",
+                  "dev": "DEV_Own"
+                },
+                "value": "own"
+              },
+              {
+                "text": {
+                  "default": "Rent",
+                  "es": "Alquiler",
+                  "dev": "DEV_Rent"
+                },
+                "value": "rent"
+              },
+              {
+                "text": {
+                  "default": "Live with family (I am not the homeowner and do not pay rent)",
+                  "es": "Vivo con la familia (No soy el dueño de la casa y no pago alquiler)",
+                  "dev": "DEV_Live with family (I am not the homeowner and do not pay rent)"
+                },
+                "value": "liveWithFamily"
+              },
+              {
+                "text": {
+                  "default": "Other arrangement",
+                  "es": "Otro arreglo",
+                  "dev": "DEV_Other arrangement"
+                },
+                "value": "other"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           },{
             "name": "hd_hd_basic_currentLivingLocation",
             "type": "radiogroup",
-            "title": "Where are you currently living? ",
+            "title": {
+              "default": "Where are you currently living? ",
+              "es": "¿Dónde vives actualmente?",
+              "dev": "DEV_Where are you currently living? "
+            },
             "isRequired": true,
             "visibleIf": "{hd_hd_basic_ownOrRent} = 'other'",
             "choices": [
-              {"text": "With a friend/roommate", "value": "friendRoommate"},
-              {"text": "In a group home, nursing home, or other residential facility", "value": "residentialFacility"},
-              {"text": "Emergency shelter/homeless shelter", "value": "shelter"},
-              {"text": "Anywhere outside (e.g., street, vehicle, abandoned building)", "value": "anywhereOutside"},
-              {"text": "Other", "value": "other"},
-              {"text": "Prefer not to answer", "value": "preferNoAnswer"}
+              {
+                "text": {
+                  "default": "With a friend/roommate",
+                  "es": "Con un amigo/compañero de cuarto",
+                  "dev": "DEV_With a friend/roommate"
+                },
+                "value": "friendRoommate"
+              },
+              {
+                "text": {
+                  "default": "In a group home, nursing home, or other residential facility",
+                  "es": "En un hogar grupal, hogar de ancianos u otra instalación residencial",
+                  "dev": "DEV_In a group home, nursing home, or other residential facility"
+                },
+                "value": "residentialFacility"
+              },
+              {
+                "text": {
+                  "default": "Emergency shelter/homeless shelter",
+                  "es": "Refugio de emergencia/refugio para personas sin hogar",
+                  "dev": "DEV_Emergency shelter/homeless shelter"
+                },
+                "value": "shelter"
+              },
+              {
+                "text": {
+                  "default": "Anywhere outside (e.g., street, vehicle, abandoned building)",
+                  "es": "Cualquier lugar al aire libre (por ejemplo, calle, vehículo, edificio abandonado)",
+                  "dev": "DEV_Anywhere outside (e.g., street, vehicle, abandoned building)"
+                },
+                "value": "anywhereOutside"
+              },
+              {
+                "text": {
+                  "default": "Other",
+                  "es": "Otro",
+                  "dev": "DEV_Other"
+                },
+                "value": "other"
+              },
+              {
+                "text": {
+                  "default": "Prefer not to answer",
+                  "es": "Prefiero no responder",
+                  "dev": "DEV_Prefer not to answer"
+                },
+                "value": "preferNoAnswer"
+              }
             ]
           }
         ]
