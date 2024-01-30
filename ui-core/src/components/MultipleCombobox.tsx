@@ -16,8 +16,10 @@ type MultipleComboboxProps<ComboboxItem> = {
   onChange?: (value: ComboboxItem[]) => void
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Renders a multiple selection combobox. This virtualizes the options list to support
+ * many more options than a normal React-select would, while remaining performant.
+ */
 export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<ComboboxItem>) => {
   const { id, initialValue, itemToString, options, choicesByUrl, placeholder, onChange } = props
   const [optionsList, setOptionsList] = useState<ComboboxItem[]>([])

@@ -12,8 +12,13 @@ import { useFileUploadButton } from 'util/uploadUtils'
 
 export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
 export const allowedDocumentTypes = ['pdf', 'json']
+export const allowedTextTypes = ['csv', 'plain']
 const FILE_TYPE_REGEX = new RegExp(
-  `^(?:image\\/(?:${allowedImageTypes.join('|')}))|(?:application\\/(?:${allowedDocumentTypes.join('|')}))$`
+  [
+    `^(?:image\\/(${allowedImageTypes.join('|')}))`,
+    `(?:application\\/(${allowedDocumentTypes.join('|')}))`,
+    `(?:text\\/(${allowedTextTypes.join('|')}))$`
+  ].join('|')
 )
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteImageUploadModal({
@@ -42,7 +47,7 @@ export default function SiteImageUploadModal({
     const version = existingImage?.version ? existingImage.version + 1 : 1
     doApiLoad(async () => {
       await Api.uploadPortalImage(portalContext.portal.shortcode, fileName, version, file)
-      Store.addNotification(successNotification('image saved'))
+      Store.addNotification(successNotification('file uploaded'))
       onSubmit()
     }, { setIsLoading })
   }
