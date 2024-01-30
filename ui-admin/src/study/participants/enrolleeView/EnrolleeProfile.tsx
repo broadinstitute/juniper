@@ -157,12 +157,12 @@ export function EditableProfile(
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
-            placeholder={'Given Name'}
+            placeholder={'Given Name'} aria-label={'Given Name'}
             onChange={e => onFieldChange('givenName', e.target.value)}/>
         </div>
         <div className='col'>
           <input className="form-control" type="text" value={profile.familyName || ''}
-            placeholder={'Family Name'}
+            placeholder={'Family Name'} aria-label={'Family Name'}
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
@@ -172,7 +172,7 @@ export function EditableProfile(
         <div className="col">
           <input className="form-control" type="date"
             defaultValue={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
-            placeholder={'Birth Date'} max={'9999-12-31'}
+            placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
             onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
         </div>
         <div className="col"/>
@@ -183,38 +183,38 @@ export function EditableProfile(
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street1 || ''}
-              placeholder={'Street 1'}
+              placeholder={'Street 1'} aria-label={'Street 1'}
               onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street2 || ''}
-              placeholder={'Street 2'}
+              placeholder={'Street 2'} aria-label={'Street 2'}
               onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.city || ''}
-              placeholder={'City'}
+              placeholder={'City'} aria-label={'City'}
               onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.state || ''}
-              placeholder={'State'}
+              placeholder={'State'} aria-label={'State'}
               onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
           </div>
         </div>
         <div className='row'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.postalCode || ''}
-              placeholder={'Postal Code'}
+              placeholder={'Postal Code'} aria-label={'Postal Code'}
               onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.country || ''}
-              placeholder={'Country'}
+              placeholder={'Country'} aria-label={'Country'}
               onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
           </div>
         </div>
@@ -222,12 +222,12 @@ export function EditableProfile(
     </FormRow>
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
-        placeholder={'Contact Email'}
+        placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
     </FormRow>
     <FormRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
-        placeholder={'Phone Number'}
+        placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
     </FormRow>
     <FormRow title={'Notifications'}>
@@ -236,6 +236,7 @@ export function EditableProfile(
           <div className="form-check">
 
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmail} id="doNotEmailCheckbox"
+              aria-label={'Do Not Email'}
               onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotEmailCheckbox">
               Do Not Email
@@ -245,7 +246,7 @@ export function EditableProfile(
         <div className='col-auto'>
           <div className="form-check">
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmailSolicit}
-              id="doNotSolicitCheckbox"
+              id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
               onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
               Do Not Solicit
@@ -322,7 +323,7 @@ export function FormRow(
   }
 ) {
   return <>
-    <div className="w-25 fw-bold mb-4 mt-2">
+    <div className="w-25 fw-bold mb-4 mt-2" aria-label={title}>
       {title}
     </div>
     <div className="w-75 mb-4">
