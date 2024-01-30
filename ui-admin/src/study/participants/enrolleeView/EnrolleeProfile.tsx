@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, Profile } from 'api/api'
+import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
@@ -100,19 +100,10 @@ export function ReadOnlyProfile(
   return <>
     <ReadOnlyRow title={'Name'}
       values={[
-        !isEmpty(profile.givenName) || !isEmpty(profile.familyName)
-          ? `${profile.givenName || ''} ${profile.familyName || ''}`
-          : ''
+        `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
       ]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
-    <ReadOnlyRow title={'Primary Address'} values={[
-      mailingAddress.street1,
-      mailingAddress.street2,
-      (!isEmpty(mailingAddress.city) || !isEmpty(mailingAddress.state) || !isEmpty(mailingAddress.postalCode))
-        ? `${mailingAddress.city || '(not provided)'}, ` +
-        `${mailingAddress.state || '(not provided)'} ${mailingAddress.postalCode || '(not provided)'}`
-        : ''
-    ]}/>
+    <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
     <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'On' : 'Off']}/>
@@ -283,6 +274,42 @@ export function ReadOnlyRow(
       ))
     }
   </FormRow>
+}
+
+/**
+ * Displays the given mailing address as a row within the profile
+ */
+export function ReadOnlyMailingAddress(
+  {
+    title,
+    mailingAddress
+  }: {
+    title: string,
+    mailingAddress: MailingAddress
+  }
+) {
+  // creates the last row, formatted like: 'City, State 12345'
+  // If city or state is not present, it will format like: 'State 12345' or 'City 12345'
+  const createCityStatePostalRow = () => {
+    const outPieces: string[] = []
+    if (!isEmpty(mailingAddress.city) && !isEmpty(mailingAddress.state)) {
+      outPieces.push(`${mailingAddress.city}, ${mailingAddress.state}`)
+    } else if (!isEmpty(mailingAddress.city)) {
+      outPieces.push(mailingAddress.city)
+    } else if (!isEmpty(mailingAddress.state)) {
+      outPieces.push(mailingAddress.state)
+    }
+
+    outPieces.push(mailingAddress.postalCode || '')
+
+    return outPieces.join(' ').trim()
+  }
+  return <ReadOnlyRow title={title} values={[
+    mailingAddress.street1 || '',
+    mailingAddress.street2 || '',
+    createCityStatePostalRow(),
+    mailingAddress.country || ''
+  ]}/>
 }
 
 /**
