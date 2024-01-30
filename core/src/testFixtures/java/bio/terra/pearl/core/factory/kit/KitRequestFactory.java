@@ -30,7 +30,7 @@ public class KitRequestFactory {
 
 
     public KitRequest.KitRequestBuilder builder(String testName) throws JsonProcessingException {
-        var address = PepperKitAddress.builder()
+        PepperKitAddress address = PepperKitAddress.builder()
                 .lastName(testName + "last name")
                 .build();
         return KitRequest.builder()
@@ -40,14 +40,14 @@ public class KitRequestFactory {
 
     public KitRequest buildPersisted(String testName, Enrollee enrollee) throws JsonProcessingException {
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        var kitRequest = buildPersisted(testName, enrollee, PepperKitStatus.CREATED, kitType.getId());
+        KitRequest kitRequest = buildPersisted(testName, enrollee, PepperKitStatus.CREATED, kitType.getId());
         kitRequest.setKitType(kitType);
         return kitRequest;
     }
 
     public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKitStatus pepperKitStatus) throws JsonProcessingException {
         KitType kitType = kitTypeFactory.buildPersisted(testName);
-        var kitRequest = buildPersisted(testName, enrollee, pepperKitStatus, kitType.getId());
+        KitRequest kitRequest = buildPersisted(testName, enrollee, pepperKitStatus, kitType.getId());
         kitRequest.setKitType(kitType);
         return kitRequest;
     }
@@ -72,7 +72,7 @@ public class KitRequestFactory {
     public KitRequest buildPersisted(String testName, Enrollee enrollee, PepperKit pepperKit,
                                      UUID kitTypeId, UUID adminUserId)
         throws JsonProcessingException {
-        var kitRequest = builder(testName)
+        KitRequest kitRequest = builder(testName)
             .creatingAdminUserId(adminUserId)
             .enrolleeId(enrollee.getId())
             .kitTypeId(kitTypeId)

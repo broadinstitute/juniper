@@ -36,7 +36,7 @@ public class MailingServiceExtServiceTests extends BaseSpringBootTest {
 
   @Test
   public void mailingListRequiresAuth() {
-    var listExtService =
+    MailingListExtService listExtService =
         new MailingListExtService(new MockAuthServiceAlwaysRejects(), null, null, null, null);
     // testing that this exception is thrown even when everything else is null is a good check that
     // no work is done prior to auth

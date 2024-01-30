@@ -6,6 +6,7 @@ import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -61,7 +62,7 @@ public class EnrolleeExportService {
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
-        var enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.limit());
+        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.limit());
         BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleFormatters, enrolleeMaps);
         exporter.export(os);
     }
@@ -127,7 +128,7 @@ public class EnrolleeExportService {
         List<ModuleFormatter> moduleFormatters = new ArrayList<>();
         for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
             List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
-            var surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
+            List<SurveyQuestionDefinition> surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
             moduleFormatters.add(new SurveyFormatter(exportOptions, surveysOfStableId.getKey(), surveys, surveyQuestionDefinitions, objectMapper));
         }
 

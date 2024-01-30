@@ -42,7 +42,7 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
     public void testEnrolleeDelete() {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTimeMulti", EnvironmentName.irb );
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTimeMulti");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
         enrolleeService.delete(enrolleeBundle.enrollee().getId(), CascadeProperty.EMPTY_SET);
         assertThat(enrolleeService.find(enrolleeBundle.enrollee().getId()).isPresent(), equalTo(false));
@@ -53,7 +53,7 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
     public void testEnrolleeCannotDeleteLive() {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTimeMulti", EnvironmentName.live );
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTimeMulti");
-        var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
 
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             enrolleeService.delete(enrolleeBundle.enrollee().getId(), CascadeProperty.EMPTY_SET);

@@ -75,9 +75,9 @@ public class PortalDiffService {
     }
 
     public PortalEnvironmentChange diffPortalEnvs(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
-        var preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
-        var siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
-        var envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
+        VersionedEntityChange<Survey> preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
+        VersionedEntityChange<SiteContent> siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
+        List<ConfigChange> envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
                 destEnv.getPortalEnvironmentConfig(), CONFIG_IGNORE_PROPS);
         ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = diffConfigLists(sourceEnv.getTriggers(),
                 destEnv.getTriggers(),
@@ -142,7 +142,7 @@ public class PortalDiffService {
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
-        var triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
+        List<Trigger> triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
         triggerService.attachTemplates(triggers);
         portalEnv.setTriggers(triggers);
 
@@ -161,7 +161,7 @@ public class PortalDiffService {
         List<VersionedConfigChange<T>> changedRecords = new ArrayList<>();
         List<C> addedConfigs = new ArrayList<>();
         for (C sourceConfig : sourceConfigs) {
-            var matchedConfig = unmatchedDestConfigs.stream().filter(
+            C matchedConfig = unmatchedDestConfigs.stream().filter(
                     destConfig -> isVersionedConfigMatch(sourceConfig, destConfig))
                     .findAny().orElse(null);
             if (matchedConfig == null) {
@@ -170,7 +170,7 @@ public class PortalDiffService {
                 // this remove only works if the config has an ID, since that's how BaseEntity equality works
                 // that's fine, since we're only working with already-persisted entities in this list.
                 unmatchedDestConfigs.remove(matchedConfig);
-                var changeRecord = new VersionedConfigChange<T>(
+                VersionedConfigChange<T> changeRecord = new VersionedConfigChange<T>(
                         sourceConfig.getId(), matchedConfig.getId(),
                         ConfigChange.allChanges(sourceConfig, matchedConfig, ignoreProps),
                         new VersionedEntityChange<T>(sourceConfig.versionedEntity(), matchedConfig.versionedEntity())
@@ -202,11 +202,11 @@ public class PortalDiffService {
     }
 
     public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, StudyEnvironment sourceEnv, StudyEnvironment destEnv) throws Exception {
-        var envConfigChanges = ConfigChange.allChanges(
+        List<ConfigChange> envConfigChanges = ConfigChange.allChanges(
                 sourceEnv.getStudyEnvironmentConfig(),
                 destEnv.getStudyEnvironmentConfig(),
                 CONFIG_IGNORE_PROPS);
-        var preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
+        VersionedEntityChange<Survey> preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
         ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> consentChanges = diffConfigLists(
                 sourceEnv.getConfiguredConsents(),
                 destEnv.getConfiguredConsents(),

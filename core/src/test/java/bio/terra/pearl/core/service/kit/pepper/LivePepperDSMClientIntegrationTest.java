@@ -5,12 +5,16 @@ import bio.terra.pearl.core.IntegrationTest;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.UUID;
 
 import static com.github.seregamorph.hamcrest.MoreMatchers.where;
@@ -34,12 +38,12 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @Transactional
     @IntegrationTest
     public void testSendKitRequest() throws Exception {
-        var enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
-        var kitType = kitTypeDao.findByName("SALIVA").get();
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, PepperKitStatus.CREATED,
+        Enrollee enrollee = enrolleeFactory.buildPersisted("testSendKitRequest");
+        KitType kitType = kitTypeDao.findByName("SALIVA").get();
+        KitRequest kitRequest = kitRequestFactory.buildPersisted("testSendKitRequest", enrollee, PepperKitStatus.CREATED,
                 kitType.getId());
         kitRequest.setKitType(kitType);
-        var address = PepperKitAddress.builder()
+        PepperKitAddress address = PepperKitAddress.builder()
                 .firstName("Juniper")
                 .lastName("Testerson")
                 .street1("415 Main Street")
@@ -49,16 +53,16 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
 
-        var sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
+        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
         assertThat(sendKitResponse.getCurrentStatus(), equalTo("Kit without label"));
     }
 
     @Transactional
     @IntegrationTest
     public void testSendKitRequestParsesPepperError() throws Exception {
-        var enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
-        var kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee);
-        var address = PepperKitAddress.builder()
+        Enrollee enrollee = enrolleeFactory.buildPersisted("testSendKitRequestParsesPepperError");
+        KitRequest kitRequest = kitRequestFactory.buildPersisted("testSendKitRequestParsesPepperError", enrollee);
+        PepperKitAddress address = PepperKitAddress.builder()
                 .firstName("Juniper")
                 .lastName("Testerson")
                 .street1("123 Fake Street")
@@ -79,7 +83,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @IntegrationTest
     public void testGetKitStatusUnknownKit() throws Exception {
         // Arrange
-        var kitId = UUID.randomUUID();
+        UUID kitId = UUID.randomUUID();
 
         // "Act"
         Executable act = () -> {
@@ -99,10 +103,10 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         Pepper response from previous successful kit request:
         {"kits":[{"error":false,"juniperKitId":"09f5651b-f6e3-4489-a5e7-ffd10700a724","dsmShippingLabel":"RR2V2LTG967LVHP","participantId":"KGGMPK","labelByEmail":"","scanByEmail":"","deactivationByEmail":"","trackingScanBy":"","errorMessage":"","discardBy":""}],"isError":false}
          */
-        var kitId = "09f5651b-f6e3-4489-a5e7-ffd10700a724";
+        String kitId = "09f5651b-f6e3-4489-a5e7-ffd10700a724";
 
         // Act
-        var status = livePepperDSMClient.fetchKitStatus(UUID.fromString(kitId));
+        PepperKit status = livePepperDSMClient.fetchKitStatus(UUID.fromString(kitId));
 
         // Assert
         assertThat(status.getJuniperKitId(), equalTo(kitId));
@@ -114,7 +118,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         // No arrange; assumes that DSM contains some kits to find
 
         // Act
-        var statuses = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE);
+        Collection<PepperKit> statuses = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE);
 
         // Assert
         assertThat(statuses, not(statuses.isEmpty()));

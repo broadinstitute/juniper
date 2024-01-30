@@ -37,7 +37,7 @@ public class RoleService extends ImmutableEntityService<Role, RoleDao> {
         Role savedRole = dao.create(role);
         for (String permissionName : permissionNames) {
             Permission perm = permissionService.findByName(permissionName).get();
-            var rolePerm = rolePermissionService.create(RolePermission.builder()
+            RolePermission rolePerm = rolePermissionService.create(RolePermission.builder()
                     .roleId(savedRole.getId())
                     .permissionId(perm.getId())
                     .build());

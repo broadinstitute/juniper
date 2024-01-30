@@ -24,12 +24,12 @@ public class KitTypeFactory {
     }
 
     public KitType buildPersisted(String testName) {
-        var kitType = builder(testName).build();
+        KitType kitType = builder(testName).build();
         return kitTypeDao.create(kitType);
     }
 
     public void attachTypeToEnvironment(UUID kitTypeId, UUID studyEnvId) {
-        var studyEnvironmentKitType = StudyEnvironmentKitType.builder()
+        StudyEnvironmentKitType studyEnvironmentKitType = StudyEnvironmentKitType.builder()
                 .studyEnvironmentId(studyEnvId)
                 .kitTypeId(kitTypeId)
                 .build();
