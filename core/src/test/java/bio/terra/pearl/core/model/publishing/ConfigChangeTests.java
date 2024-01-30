@@ -6,14 +6,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 public class ConfigChangeTests {
     @Test
     public void testSourceDestConstructor() throws Exception {
         PortalEnvironmentConfig sourceConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("foo@blah.com").build();
-        var destConfig = PortalEnvironmentConfig.builder()
+        PortalEnvironmentConfig destConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
+        ConfigChange changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.newValue(), equalTo("foo@blah.com"));
         assertThat(changeRecord.oldValue(), equalTo("blah@blah.com"));
     }
@@ -21,26 +23,26 @@ public class ConfigChangeTests {
     @Test
     public void testHandlesNullSource() throws Exception {
         PortalEnvironmentConfig sourceConfig = null;
-        var destConfig = PortalEnvironmentConfig.builder()
+        PortalEnvironmentConfig destConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
+        ConfigChange changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.newValue(), equalTo(null));
         assertThat(changeRecord.oldValue(), equalTo("blah@blah.com"));
     }
 
     @Test
     public void testHandlesNullDest() throws Exception {
-        var sourceConfig = PortalEnvironmentConfig.builder()
+        PortalEnvironmentConfig sourceConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("blah@blah.com").build();;
         PortalEnvironmentConfig destConfig = null;
-        var changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
+        ConfigChange changeRecord = new ConfigChange(sourceConfig, destConfig, "emailSourceAddress");
         assertThat(changeRecord.oldValue(), equalTo(null));
         assertThat(changeRecord.newValue(), equalTo("blah@blah.com"));
     }
 
     @Test
     public void testAllChanges() throws Exception {
-        var sourceConfig = PortalEnvironmentConfig.builder()
+        PortalEnvironmentConfig sourceConfig = PortalEnvironmentConfig.builder()
                 .acceptingRegistration(true)
                 .participantHostname("foo")
                 .emailSourceAddress("blah@blah.com").build();;
@@ -48,7 +50,7 @@ public class ConfigChangeTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
+        List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(2));
         assertThat(changeRecords, hasItems(
@@ -64,7 +66,7 @@ public class ConfigChangeTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
+        List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
@@ -84,7 +86,7 @@ public class ConfigChangeTests {
                 .acceptingRegistration(false)
                 .participantHostname("bar")
                 .emailSourceAddress("blah@blah.com").build();
-        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
+        List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(6));
         assertThat(changeRecords, hasItems(
@@ -101,7 +103,7 @@ public class ConfigChangeTests {
     public void testAllChangesHandlesDoubleNull() throws Exception {
         PortalEnvironmentConfig sourceConfig = null;;
         PortalEnvironmentConfig destConfig = null;
-        var changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
+        List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
         assertThat(changeRecords, hasSize(0));
     }

@@ -78,7 +78,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
         SiteContent savedContent = siteContentService.create(content);
         DaoTestUtils.assertGeneratedProperties(savedContent);
 
-        var savedLsc = savedContent.getLocalizedSiteContents().get(0);
+        LocalizedSiteContent savedLsc = savedContent.getLocalizedSiteContents().get(0);
         savedLsc.getNavbarItems().get(0).setHref("url2.com");
         savedLsc.getLandingPage().getSections().get(0).setRawContent("goodbye");
         SiteContent originalContent = siteContentService.find(savedContent.getId()).get();
@@ -89,12 +89,12 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
         DaoTestUtils.assertGeneratedProperties(updatedContent);
         assertThat(updatedContent.getId(), not(equalTo(savedContent.getId())));
         assertThat(updatedContent.getVersion(), equalTo(originalContent.getVersion() + 1));
-        var updatedLsc = updatedContent.getLocalizedSiteContents().get(0);
+        LocalizedSiteContent updatedLsc = updatedContent.getLocalizedSiteContents().get(0);
         assertThat(updatedLsc.getNavbarItems().get(0).getHref(), equalTo("url2.com"));
         assertThat(updatedLsc.getLandingPage().getSections().get(0).getRawContent(), equalTo("goodbye"));
 
         // confirm original was not changed
-        var originalLsc = originalContent.getLocalizedSiteContents().get(0);
+        LocalizedSiteContent originalLsc = originalContent.getLocalizedSiteContents().get(0);
         assertThat(originalLsc.getNavbarItems().get(0).getHref(), equalTo("url1.com"));
         assertThat(originalLsc.getLandingPage().getSections().get(0).getRawContent(), equalTo("hello"));
     }

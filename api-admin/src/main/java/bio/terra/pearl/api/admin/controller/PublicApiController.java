@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.model.VersionProperties;
 import bio.terra.pearl.api.admin.service.ConfigExtService;
 import bio.terra.pearl.api.admin.service.StatusService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +51,13 @@ public class PublicApiController implements PublicApi {
 
   @Override
   public ResponseEntity<Object> getConfig() {
-    var config = configExtService.getConfigMap();
+    Map<String, String> config = configExtService.getConfigMap();
     return ResponseEntity.ok(config);
   }
 
   @GetMapping(value = "/config.json")
   public ModelAndView getConfigJson() {
-    var config = configExtService.getConfigMap();
+    Map<String, String> config = configExtService.getConfigMap();
     return new ModelAndView("config.json").addAllObjects(config);
   }
 

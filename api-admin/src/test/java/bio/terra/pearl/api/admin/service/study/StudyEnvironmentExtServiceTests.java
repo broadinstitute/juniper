@@ -25,7 +25,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void updateConfigAuthsToStudy() {
-    var studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
     AdminUser operator = adminUserFactory.buildPersisted("updateConfigAuthsToStudy", false);
     Assertions.assertThrows(
@@ -43,7 +43,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void updateConfigAllowsSuperuser() {
-    var studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAllowsSuperuser", EnvironmentName.irb);
     AdminUser superUser = adminUserFactory.buildPersisted("updateConfigAllowsSuperuser", true);
     studyEnvironmentExtService.updateConfig(
@@ -53,7 +53,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
         EnvironmentName.irb,
         StudyEnvironmentConfig.builder().password("test456").build());
 
-    var updatedConfig =
+    StudyEnvironmentConfig updatedConfig =
         studyEnvironmentConfigService
             .find(studyEnvBundle.getStudyEnv().getStudyEnvironmentConfigId())
             .get();

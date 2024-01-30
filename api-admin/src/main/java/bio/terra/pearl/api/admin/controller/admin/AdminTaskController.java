@@ -6,6 +6,7 @@ import bio.terra.pearl.api.admin.service.admin.AdminTaskExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.AdminTask;
+import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -41,7 +42,7 @@ public class AdminTaskController implements AdminTaskApi {
     if (!StringUtils.isBlank(include)) {
       includedRelations = List.of(include.split(","));
     }
-    var tasks =
+    AdminTaskService.AdminTaskListDto tasks =
         adminTaskExtService.getByStudyEnvironment(
             portalShortcode, studyShortcode, environmentName, includedRelations, user);
     return ResponseEntity.ok(tasks);
@@ -52,7 +53,7 @@ public class AdminTaskController implements AdminTaskApi {
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    var tasks = adminTaskExtService.getByEnrollee(enrolleeShortcode, user);
+    List<AdminTask> tasks = adminTaskExtService.getByEnrollee(enrolleeShortcode, user);
     return ResponseEntity.ok(tasks);
   }
 

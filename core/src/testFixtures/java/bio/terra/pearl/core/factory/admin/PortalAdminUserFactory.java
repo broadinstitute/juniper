@@ -28,20 +28,20 @@ public class PortalAdminUserFactory {
     }
 
     public PortalAdminUser.PortalAdminUserBuilder builderWithDependencies(String testName) {
-        var adminUser = adminUserFactory.buildPersisted(testName);
-        var portal = portalFactory.buildPersisted(testName);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
         return PortalAdminUser.builder().adminUserId(adminUser.getId()).portalId(portal.getId());
     }
 
     public PortalAdminUser buildPersisted(String testName) {
-        var portalAdminUser = builderWithDependencies(testName).build();
+        PortalAdminUser portalAdminUser = builderWithDependencies(testName).build();
         return portalAdminUserService.create(portalAdminUser);
     }
 
     public List<PortalAdminUser> buildPersistedWithPortals(String testName, List<Portal> portals) {
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
         List<PortalAdminUser> portalUsers = new ArrayList<>();
-        for (var portal: portals) {
+        for (Portal portal : portals) {
             portalUsers.add(portalAdminUserService.create(PortalAdminUser.builder()
                     .adminUserId(adminUser.getId())
                     .portalId(portal.getId())

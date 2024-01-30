@@ -61,7 +61,7 @@ public class AdminUserControllerTest {
 
   @Test
   public void testGetReturnsBadRequestWhenIdIsNotUuid() throws Exception {
-    var request = get(getEndpoint.formatted("not-a-uuid"));
+    MockHttpServletRequestBuilder request = get(getEndpoint.formatted("not-a-uuid"));
 
     ResultActions result = mockMvc.perform(request);
 
@@ -73,7 +73,7 @@ public class AdminUserControllerTest {
     when(adminUserExtService.get(any(), any())).thenReturn(Optional.empty());
     UUID uuid = UUID.randomUUID();
 
-    var result = adminUserController.get(uuid);
+    ResponseEntity<AdminUserDto> result = adminUserController.get(uuid);
 
     assertThat(result, equalTo(ResponseEntity.notFound().build()));
     verify(adminUserExtService).get(uuid, null);
@@ -81,25 +81,26 @@ public class AdminUserControllerTest {
 
   @Test
   public void testGetReturnsFoundAdminUser() {
-    var userId = UUID.randomUUID();
-    var adminUser = AdminUser.builder().id(userId).username("tester").build();
-    var expectedAdminUserDto = new AdminUserDto().id(userId).superuser(false).username("tester");
+    UUID userId = UUID.randomUUID();
+    AdminUser adminUser = AdminUser.builder().id(userId).username("tester").build();
+    AdminUserDto expectedAdminUserDto =
+        new AdminUserDto().id(userId).superuser(false).username("tester");
     when(adminUserExtService.get(userId, null)).thenReturn(Optional.of(adminUser));
-    var response = adminUserController.get(userId);
+    ResponseEntity<AdminUserDto> response = adminUserController.get(userId);
 
     assertThat(response, equalTo(ResponseEntity.ok(expectedAdminUserDto)));
   }
 
   @Test
   public void testGetAllErrorsIfAuthFails() {
-    var response = adminUserController.getAll();
+    ResponseEntity<Object> response = adminUserController.getAll();
     when(authUtilService.requireAdminUser(any())).thenThrow(PermissionDeniedException.class);
     Assertions.assertThrows(PermissionDeniedException.class, () -> adminUserController.getAll());
   }
 
   @Test
   public void testGetByPortalErrorsIfAuthFails() {
-    var response = adminUserController.getAll();
+    ResponseEntity<Object> response = adminUserController.getAll();
     when(authUtilService.requireAdminUser(any())).thenThrow(PermissionDeniedException.class);
     Assertions.assertThrows(
         PermissionDeniedException.class, () -> adminUserController.getByPortal("whatever"));
@@ -112,12 +113,13 @@ public class AdminUserControllerTest {
 
   @Test
   public void testSetRolesReturnsNoContentForGoodRequest() {
-    var userId = UUID.randomUUID();
-    var roleNames = List.of("one", "two");
+    UUID userId = UUID.randomUUID();
+    List<String> roleNames = List.of("one", "two");
     when(mockPortalAdminUserRoleService.setRoles(userId, roleNames)).thenReturn(roleNames);
-    var expectedRoleList = new RoleList().roles(roleNames);
+    RoleList expectedRoleList = new RoleList().roles(roleNames);
 
-    var response = adminUserController.setRoles(userId, new RoleList().roles(roleNames));
+    ResponseEntity<RoleList> response =
+        adminUserController.setRoles(userId, new RoleList().roles(roleNames));
 
     assertThat(response, equalTo(ResponseEntity.ok(expectedRoleList)));
     verify(mockPortalAdminUserRoleService).setRoles(userId, roleNames);
@@ -145,7 +147,7 @@ public class AdminUserControllerTest {
    */
   @Test
   public void testValidationExceptionReturnsBadRequest() throws Exception {
-    var userId = UUID.randomUUID();
+    UUID userId = UUID.randomUUID();
     doThrow(new UserNotFoundException(userId))
         .when(mockPortalAdminUserRoleService)
         .setRoles(any(), anyList());

@@ -33,7 +33,7 @@ public class EnrolleeReminderServiceTests extends BaseSpringBootTest {
   public void testConsentReminders() {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testConsentReminders");
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testConsentReminders");
-    var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testConsentReminders", portalEnv, studyEnv);
+    EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testConsentReminders", portalEnv, studyEnv);
     ParticipantTask newTask1 = participantTaskFactory.buildPersisted(enrolleeBundle, TaskStatus.NEW, TaskType.CONSENT);
 
     Trigger config = Trigger.builder()

@@ -27,7 +27,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
     ObjectMapper objectMapper;
     @Test
     public void testBasicExport() throws Exception {
-        var sampleFormatter = new EnrolleeFormatter(new ExportOptions());
+        EnrolleeFormatter sampleFormatter = new EnrolleeFormatter(new ExportOptions());
         // replace the formatters with a simple set we control
         sampleFormatter.getItemFormatters().clear();
         sampleFormatter.getItemFormatters().add(new PropertyItemFormatter<Enrollee>("shortcode", Enrollee.class));
@@ -42,7 +42,7 @@ public class TsvExporterTests extends BaseSpringBootTest {
     @Test
     public void testSplitColumnsExport() throws Exception {
         ExportOptions opts = ExportOptions.builder().splitOptionsIntoColumns(true).build();
-        var surveyFormatter = new SurveyFormatter(opts, "survey", List.of(Survey.builder().stableId("survey").build()), List.of(), objectMapper);
+        SurveyFormatter surveyFormatter = new SurveyFormatter(opts, "survey", List.of(Survey.builder().stableId("survey").build()), List.of(), objectMapper);
         // replace the formatters with a simple set we control
         surveyFormatter.getItemFormatters().clear();
         surveyFormatter.getItemFormatters().add(

@@ -6,10 +6,12 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.study.StudyEnvironmentExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -63,7 +65,7 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser adminUser = requestService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    var kitTypes =
+    List<KitType> kitTypes =
         studyEnvExtService.getKitTypes(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(kitTypes);
   }

@@ -23,7 +23,7 @@ public class StudyEnvironmentKitTypeService extends CrudService<StudyEnvironment
     }
 
     public List<KitType> findKitTypesByStudyEnvironmentId(UUID studyEnvId) {
-        var studyKitTypes = dao.findByStudyEnvironmentId(studyEnvId);
+        List<StudyEnvironmentKitType> studyKitTypes = dao.findByStudyEnvironmentId(studyEnvId);
         return kitTypeDao.findAll(studyKitTypes.stream().map(StudyEnvironmentKitType::getKitTypeId).toList());
     }
 
