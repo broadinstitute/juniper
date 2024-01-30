@@ -31,6 +31,7 @@ public class DataChangeRecord extends BaseEntity {
     private UUID modelId; // id of the object corresponding to the audit record
     private String modelName; // either a class (like Profile) or a stableId of a survey
     private String fieldName; // either a property of a class (like givenName) or a survey question stableId
+    private String justification; // if an admin changes a participant's responses, a justification is needed
     private String oldValue;
     private String newValue;
     public static DataChangeRecord.DataChangeRecordBuilder fromAuditInfo(DataAuditInfo auditInfo) {
@@ -40,6 +41,7 @@ public class DataChangeRecord extends BaseEntity {
                 .operationId(auditInfo.getOperationId())
                 .enrolleeId(auditInfo.getEnrolleeId())
                 .portalParticipantUserId(auditInfo.getPortalParticipantUserId())
-                .surveyId(auditInfo.getSurveyId());
+                .surveyId(auditInfo.getSurveyId())
+                .justification(auditInfo.getJustification());
     }
 }

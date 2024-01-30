@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import React, { useRef, useState } from 'react'
 import { Overlay, Tooltip } from 'react-bootstrap'
 import { Placement } from 'react-bootstrap/types'
+import { faEllipsisV, faCircle } from '@fortawesome/free-solid-svg-icons'
 
 type ButtonVariant =
   | 'primary'
@@ -114,4 +115,17 @@ export const IconButton = (props: IconButtonProps) => {
       <FontAwesomeIcon icon={icon} />
     </Button>
   )
+}
+
+/**
+ *
+ */
+export const EllipsisDropdownButton = (props: ButtonProps & {'aria-label': string}) => {
+  return <Button tooltip={props['aria-label']} data-bs-toggle="dropdown" aria-expanded="false"
+    {...props}>
+    <span className="fa-stack">
+      <FontAwesomeIcon icon={faCircle} className="fa-stack-2x"/>
+      <FontAwesomeIcon icon={faEllipsisV} className="fa-stack"/>
+    </span>
+  </Button>
 }

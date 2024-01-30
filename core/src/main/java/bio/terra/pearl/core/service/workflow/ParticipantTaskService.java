@@ -32,7 +32,7 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
     }
 
     public List<ParticipantTask> findTasksByStudyAndTarget(UUID studyEnvId, List<String> targetStableIds) {
-        return findTasksByStudyAndTarget(studyEnvId, targetStableIds);
+        return dao.findTasksByStudyAndTarget(studyEnvId, targetStableIds);
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId);}

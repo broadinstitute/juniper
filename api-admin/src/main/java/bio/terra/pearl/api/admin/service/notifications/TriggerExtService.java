@@ -194,8 +194,10 @@ public class TriggerExtService {
     newConfig.setStudyEnvironmentId(studyEnvironment.getId());
     newConfig.setPortalEnvironmentId(portalEnvironment.getId());
     if (newConfig.getEmailTemplate() != null && newConfig.getEmailTemplateId() == null) {
-      // this is a new email template, set the portal appropriately
+      // this is a new email template, set the portal appropriately, and clear published versions
       newConfig.getEmailTemplate().setPortalId(portalEnvironment.getPortalId());
+      newConfig.getEmailTemplate().cleanForCopying();
+      newConfig.getEmailTemplate().setPublishedVersion(null);
     }
     Trigger savedConfig = triggerService.create(newConfig);
     return savedConfig;

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -19,19 +20,37 @@ public class ParticipantTaskExtService {
   private ParticipantTaskService participantTaskService;
   private StudyEnvironmentService studyEnvironmentService;
   private AuthUtilService authUtilService;
+  private EnrolleeService enrolleeService;
 
   public ParticipantTaskExtService(
       ParticipantTaskService participantTaskService,
       StudyEnvironmentService studyEnvironmentService,
-      AuthUtilService authUtilService) {
+      AuthUtilService authUtilService,
+      EnrolleeService enrolleeService) {
     this.participantTaskService = participantTaskService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.authUtilService = authUtilService;
+    this.enrolleeService = enrolleeService;
+  }
+
+  public List<ParticipantTask> findAll(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      String stableId,
+      AdminUser operator) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService
+            .findByStudy(studyShortcode, environmentName)
+            .orElseThrow(StudyEnvironmentMissing::new);
+    return participantTaskService.findTasksByStudyAndTarget(studyEnv.getId(), List.of(stableId));
   }
 
   /**
    * applies the task updates to the given environment. Returns a list of the updated tasks This is
-   * assumed to be a relatively rare operation, so this is not optimized for performance.
+   * assumed to be a relatively rare operation, so this is not particularly optimized for
+   * performance.
    */
   public List<ParticipantTask> updateTasks(
       String portalShortcode,
@@ -52,8 +71,8 @@ public class ParticipantTaskExtService {
         participantTasks.stream()
             .filter(
                 task ->
-                    // participant filtering is not optimized at all -- but it's expected that will
-                    // be a rare occurrence
+                    // take the task for updating if either we're updating all tasks, or if it's in
+                    // the user list
                     updateDto.updateAll()
                         || updateDto
                             .portalParticipantUserIds()
@@ -71,6 +90,7 @@ public class ParticipantTaskExtService {
         updatedTasks.add(updatedTask);
       }
     }
+
     return updatedTasks;
   }
 
@@ -81,6 +101,9 @@ public class ParticipantTaskExtService {
     if (updateSpec.updateFromVersion() == null
         || updateSpec.updateFromVersion().equals(task.getTargetAssignedVersion())) {
       task.setTargetAssignedVersion(updateSpec.updateToVersion());
+      if (updateSpec.newStatus() != null) {
+        task.setStatus(updateSpec.newStatus());
+      }
       DataAuditInfo auditInfo =
           DataAuditInfo.builder()
               .enrolleeId(task.getEnrolleeId())

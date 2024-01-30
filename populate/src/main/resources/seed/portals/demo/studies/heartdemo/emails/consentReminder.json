@@ -3,5 +3,6 @@
   "bodyPopulateFile": "consentReminder.html",
   "subject": "Reminder: Please complete the ${study.name} Consent form",
   "stableId": "hd_hd_reminderConsent",
-  "version": 1
+  "version": 1,
+  "publishedVersion": 1
 }

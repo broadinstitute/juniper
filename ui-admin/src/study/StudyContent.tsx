@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 
-import { StudyEnvContextT } from './StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT } from './StudyEnvironmentRouter'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
@@ -8,7 +8,7 @@ import CreateSurveyModal from './surveys/CreateSurveyModal'
 import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
-import { EnvironmentName, StudyEnvironmentSurvey, StudyEnvironmentSurveyNamed, SurveyType } from '@juniper/ui-core'
+import { StudyEnvironmentSurvey, StudyEnvironmentSurveyNamed, SurveyType } from '@juniper/ui-core'
 import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
@@ -18,7 +18,7 @@ import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { doApiLoad, useLoadingEffect } from '../api/api-utils'
 import _uniq from 'lodash/uniq'
-import SurveyEnvironmentDetailModal from './surveys/SurveyEnvironmentDetailModal'
+import SurveyEnvironmentTable from './surveys/SurveyEnvironmentTable'
 
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -127,7 +127,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Research Surveys</h6>
             <div className="flex-grow-1 pt-3">
-              <SurveyTable stableIds={researchSurveyStableIds}
+              <SurveyEnvironmentTable stableIds={researchSurveyStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurvey={updateConfiguredSurvey}
@@ -148,7 +149,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Outreach</h6>
             <div className="flex-grow-1 pt-3">
-              <SurveyTable stableIds={outreachSurveyStableIds}
+              <SurveyEnvironmentTable stableIds={outreachSurveyStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
                 updateConfiguredSurvey={updateConfiguredSurvey}
@@ -185,71 +187,5 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   </div>
 }
 
-type SurveyTableProps = {
-  stableIds: string[]
-  configuredSurveys: StudyEnvironmentSurveyNamed[]
-  setSelectedSurveyConfig: (config: StudyEnvironmentSurvey) => void
-  showDeleteSurveyModal: boolean
-  setShowDeleteSurveyModal: (show: boolean) => void
-  showArchiveSurveyModal: boolean
-  setShowArchiveSurveyModal: (show: boolean) => void
-  updateConfiguredSurvey: (surveyConfig: StudyEnvironmentSurvey) => void
-}
-
-
-const SurveyTable = (props: SurveyTableProps) => {
-  return <table>
-    <thead>
-      <tr>
-        <td></td>
-        {['sandbox', 'irb', 'live'].map(envName => <td key={envName} className="p-2">{envName}</td>)}
-      </tr>
-    </thead>
-    <tbody>
-      { props.stableIds.map(stableId => <SurveyListItem key={stableId} stableId={stableId} {...props}/>)}
-    </tbody>
-  </table>
-}
-
-type SurveyListItemProps = SurveyTableProps & {
-  stableId: string
-}
-
-const SurveyListItem = (props: SurveyListItemProps) => {
-  const [detailEnv, setDetailEnv] = useState<EnvironmentName>()
-  const {
-    stableId, configuredSurveys,
-    setSelectedSurveyConfig, setShowDeleteSurveyModal, updateConfiguredSurvey, setShowArchiveSurveyModal,
-    showDeleteSurveyModal, showArchiveSurveyModal
-  } = props
-  const surveyName = configuredSurveys.find(config => config.survey.stableId === stableId)?.survey?.name
-  if (!surveyName) {
-    return null
-  }
-  const envNames: EnvironmentName[] = ['sandbox', 'irb', 'live']
-  return <tr>
-    <td>
-      <Link to={`surveys/${stableId}`}>
-        {surveyName}
-      </Link>
-    </td>
-    { envNames.map(envName => {
-      const envConfig = configuredSurveys
-        .find(config => config.envName === envName && config.survey.stableId === stableId)
-      return <td key={envName}>
-        {envConfig && <Button variant="secondary" onClick={() => setDetailEnv(envName)} >
-          v{envConfig.survey.version}
-        </Button> }
-        {!envConfig && <span className="fst-italic fw-light">n/a</span>}
-      </td>
-    })}
-    { detailEnv && <SurveyEnvironmentDetailModal
-      stableId={stableId}
-      envName={detailEnv}
-      configuredSurveys={configuredSurveys}
-      onDismiss={() => setDetailEnv(undefined)}
-    />}
-  </tr>
-}
 
 export default StudyContent

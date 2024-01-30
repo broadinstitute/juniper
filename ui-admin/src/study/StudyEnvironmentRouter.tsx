@@ -20,16 +20,17 @@ import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
-import NotificationContent from './notifications/NotificationContent'
+import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteImageList from '../portal/images/SiteImageList'
 import PreRegView from './surveys/PreRegView'
 import DashboardSettings from 'dashboard/DashboardSettings'
+import { EnvironmentName } from '@juniper/ui-core'
 
 export type StudyEnvParams = {
   studyShortcode: string
-  envName: string
+  envName: EnvironmentName
   portalShortcode: string
 }
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
@@ -87,7 +88,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       />
     </NavBreadcrumb>
     <Routes>
-      <Route path="notificationContent/*" element={<NotificationContent studyEnvContext={studyEnvContext}
+      <Route path="notificationContent/*" element={<TriggerList studyEnvContext={studyEnvContext}
         portalContext={portalContext}/>}/>
       <Route path="alerts" element={<DashboardSettings studyEnvContext={studyEnvContext}
         portalContext={portalContext}/>}/>

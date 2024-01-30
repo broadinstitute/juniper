@@ -11,21 +11,20 @@ import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import { saveBlobAsDownload } from 'util/downloadUtils'
 import { SaveableFormProps } from './SurveyView'
-import { DocsKey, ZendeskLink } from '../../util/zendeskUtils'
-import InfoPopup from '../../components/forms/InfoPopup'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import InfoPopup from 'components/forms/InfoPopup'
 
 /** component for selecting versions of a form */
 export default function FormOptions({
   studyEnvContext, workingForm, updateWorkingForm, onDismiss, isDirty,
-  visibleVersionPreviews, setVisibleVersionPreviews, isConsentForm = false
+  visibleVersionPreviews, setVisibleVersionPreviews
 }:
                                           {studyEnvContext: StudyEnvContextT, workingForm: VersionedForm,
                                             isDirty: boolean,
                                             updateWorkingForm: (props: SaveableFormProps) => void,
                                             onDismiss: () => void
                                             visibleVersionPreviews: VersionedForm[],
-                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void,
-                                          isConsentForm?: boolean}) {
+                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
   const stableId = workingForm.stableId
 
   const downloadJSON = () => {

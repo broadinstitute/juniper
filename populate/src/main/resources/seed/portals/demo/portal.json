@@ -44,7 +44,11 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio"
+      },
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/siteContent-2/siteContent.json"
       }
     },{
       "environmentName": "live",
@@ -52,7 +56,11 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
+        "initialized": true,
+        "emailSourceAddress": "support@juniper.terra.bio"
+      },
+      "siteContentPopDto": {
+        "populateFileName": "siteContent/siteContent-1/siteContent.json"
       }
     }
   ],

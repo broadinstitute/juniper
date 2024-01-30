@@ -43,4 +43,15 @@ public class ParticipantTaskController implements ParticipantTaskApi {
             portalShortcode, studyShortcode, environmentName, updateDto, operator);
     return ResponseEntity.ok(participantTasks);
   }
+
+  @Override
+  public ResponseEntity<Object> findAll(
+      String portalShortcode, String studyShortcode, String envName, String targetStableId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<ParticipantTask> participantTasks =
+        participantTaskExtService.findAll(
+            portalShortcode, studyShortcode, environmentName, targetStableId, operator);
+    return ResponseEntity.ok(participantTasks);
+  }
 }

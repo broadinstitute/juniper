@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +20,16 @@ public class EnrolleeController implements EnrolleeApi {
   private AuthUtilService authUtilService;
   private EnrolleeExtService enrolleeExtService;
   private HttpServletRequest request;
+  private ObjectMapper objectMapper;
 
   public EnrolleeController(
       AuthUtilService authUtilService,
       EnrolleeExtService enrolleeExtService,
+      ObjectMapper objectMapper,
       HttpServletRequest request) {
     this.authUtilService = authUtilService;
     this.enrolleeExtService = enrolleeExtService;
+    this.objectMapper = objectMapper;
     this.request = request;
   }
 

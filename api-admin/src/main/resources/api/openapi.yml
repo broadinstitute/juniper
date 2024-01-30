@@ -626,6 +626,22 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/findAll:
+    get:
+      summary: finds the given tasks
+      tags: [ participantTask ]
+      operationId: findAll
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: targetStableId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: ParticipantTask objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/updateAll:
     post:
       summary: Updates the specified tasks to the specified versions
@@ -705,6 +721,26 @@ paths:
       responses:
         '200':
           description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/profiles/byEnrollee/{enrolleeShortcode}:
+    put:
+      summary: Update this enrollee's profile
+      tags: [ profile ]
+      operationId: updateProfileForEnrollee
+      requestBody:
+        required: true
+        description: profile with all desired changes
+        content: { application/json: { schema: { type: object } } }
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Updated profile
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
