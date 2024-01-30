@@ -11,7 +11,12 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -65,21 +70,45 @@ public class MetricsExtService {
         metricsDao.surveyQuestionResponses(
             surveyStableId, questionStableId, new TimeRange(null, null));
 
-
     return answers.stream()
-        .map(
+        .flatMap(
             answer -> {
-              SurveyAnswerDatum datum =
-                  SurveyAnswerDatum.builder()
-                      .booleanValue(answer.getBooleanValue())
-                      .numberValue(answer.getNumberValue())
-                      .stringValue(answer.getStringValue())
-                      .time(answer.getCreatedAt())
-                      .objectValue(answer.getObjectValue())
-                      .build();
-              return datum;
+              if (answer.getObjectValue() != null) {
+                // Assuming the objectValue is a List<String>
+                ObjectMapper objectMapper = new ObjectMapper();
+                List<String> stringValues;
+                try {
+                  stringValues =
+                      objectMapper.readValue(
+                          (String) answer.getObjectValue(), new TypeReference<List<String>>() {});
+                } catch (JsonProcessingException e) {
+                  throw new RuntimeException(e);
+                }
+                return stringValues.stream()
+                    .map(
+                        stringValue -> {
+                          SurveyAnswerDatum datum =
+                              SurveyAnswerDatum.builder()
+                                  .booleanValue(answer.getBooleanValue())
+                                  .numberValue(answer.getNumberValue())
+                                  .stringValue(stringValue)
+                                  .time(answer.getCreatedAt())
+                                  .build();
+                          return datum;
+                        });
+              } else {
+                SurveyAnswerDatum datum =
+                    SurveyAnswerDatum.builder()
+                        .booleanValue(answer.getBooleanValue())
+                        .numberValue(answer.getNumberValue())
+                        .stringValue(answer.getStringValue())
+                        .time(answer.getCreatedAt())
+                        .objectValue(answer.getObjectValue())
+                        .build();
+                return Stream.of(datum);
+              }
             })
-        .toList();
+        .collect(Collectors.toList());
   }
 
   public List<String> listMetricFields(

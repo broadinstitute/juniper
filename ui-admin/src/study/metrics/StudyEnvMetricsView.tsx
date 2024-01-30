@@ -9,7 +9,7 @@ import { LabeledDateRangeMode, MetricDateRange, modeToDateRange } from './metric
 import MetricDateRangeModal from './MetricDateRangeModal'
 import SurveyInsightsView from './SurveyInsightsView'
 
-export type MetricChartType = 'line' | 'pie'
+export type MetricChartType = 'line' | 'pie' | 'bar'
 
 export type MetricInfo = {
   name: string,
