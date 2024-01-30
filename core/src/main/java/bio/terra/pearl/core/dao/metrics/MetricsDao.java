@@ -100,16 +100,40 @@ public class MetricsDao {
   public List<Answer> surveyQuestionResponses(String surveyStableId, String questionStableId, TimeRange range) {
     return jdbi.withHandle(handle ->
         handle.createQuery("""
-            select *
-             from answer 
-             where survey_stable_id = :surveyStableId
-             and question_stable_id = :questionStableId
-             and %s
-             order by created_at asc;
-             """.formatted(getTimeRangeQueryString("created_at", range)))
+WITH ranked_answers AS (
+  SELECT
+    id,
+    enrollee_id,
+    string_value,
+    boolean_value,
+    number_value,
+    object_value,
+    survey_response_id,
+    question_stable_id,
+    survey_version,
+    ROW_NUMBER() OVER (PARTITION BY enrollee_id ORDER BY survey_version DESC) AS row_num
+  FROM
+    answer
+  WHERE
+    survey_stable_id = :surveyStableId
+    and question_stable_id = :questionStableId
+)
+SELECT
+  id,
+  enrollee_id,
+  string_value,
+  boolean_value,
+  number_value,
+  object_value,
+  survey_response_id,
+  question_stable_id,
+  survey_version
+FROM
+  ranked_answers
+WHERE
+  row_num = 1;""")
             .bind("surveyStableId", surveyStableId)
             .bind("questionStableId", questionStableId)
-            .bindBean(range)
             .mapToBean(Answer.class)
             .list()
     );

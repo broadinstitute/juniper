@@ -7,10 +7,14 @@ import { Button } from 'components/forms/Button'
 import MetricView from './MetricView'
 import { LabeledDateRangeMode, MetricDateRange, modeToDateRange } from './metricUtils'
 import MetricDateRangeModal from './MetricDateRangeModal'
+import SurveyInsightsView from './SurveyInsightsView'
+
+export type MetricChartType = 'line' | 'pie'
 
 export type MetricInfo = {
   name: string,
   title: string,
+  type: MetricChartType
   tooltip?: string
 }
 
@@ -18,11 +22,12 @@ const metricMetadata: MetricInfo[] = [
   {
     name: 'STUDY_ENROLLMENT',
     title: 'Accounts Registered',
+    type: 'line',
     tooltip: 'Users who have completed the pre-registration form and created an account.'
   },
-  { name: 'STUDY_ENROLLEE_CONSENTED', title: 'Consents Completed' },
-  { name: 'STUDY_REQUIRED_SURVEY_COMPLETION', title: 'Required Surveys Completed' },
-  { name: 'STUDY_SURVEY_COMPLETION', title: 'Total Surveys Completed' }
+  { name: 'STUDY_ENROLLEE_CONSENTED', title: 'Consents Completed', type: 'line' },
+  { name: 'STUDY_REQUIRED_SURVEY_COMPLETION', title: 'Required Surveys Completed', type: 'line' },
+  { name: 'STUDY_SURVEY_COMPLETION', title: 'Total Surveys Completed', type: 'line' }
 ]
 
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
@@ -72,6 +77,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
           dateRange={dateRange}
           dateRangeMode={selectedDateRangeMode}/>
       })}
+      <SurveyInsightsView studyEnvContext={studyEnvContext}/>
     </div>
   </div>
 }

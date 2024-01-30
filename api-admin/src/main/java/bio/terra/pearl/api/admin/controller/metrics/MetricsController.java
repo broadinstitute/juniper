@@ -59,4 +59,15 @@ public class MetricsController implements MetricsApi {
             questionStableId);
     return ResponseEntity.ok(result);
   }
+
+  @Override
+  public ResponseEntity<Object> listMetricFields(
+      String portalShortcode, String studyShortcode, String envName, String surveyStableId) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    List<String> result =
+        metricsExtService.listMetricFields(
+            adminUser, portalShortcode, studyShortcode, environmentName, surveyStableId);
+    return ResponseEntity.ok(result);
+  }
 }

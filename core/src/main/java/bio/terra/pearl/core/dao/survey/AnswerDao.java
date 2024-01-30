@@ -53,6 +53,16 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     }
 
+    public List<String> findBySurveyStableId(String surveyStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select distinct question_stable_id from " + tableName
+                                   + " where survey_stable_id = :surveyStableId")
+                        .bind("surveyStableId", surveyStableId)
+                        .mapTo(String.class)
+                        .list()
+        );
+    }
+
     public List<Answer> findByEnrolleeAndSurvey(UUID enrolleeId, String surveyStableId) {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "survey_stable_id", surveyStableId);
     }

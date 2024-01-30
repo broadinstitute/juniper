@@ -61,11 +61,11 @@ public class MetricsExtService {
       String surveyStableId,
       String questionStableId) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
     List<Answer> answers =
         metricsDao.surveyQuestionResponses(
             surveyStableId, questionStableId, new TimeRange(null, null));
+
+
     return answers.stream()
         .map(
             answer -> {
@@ -80,5 +80,16 @@ public class MetricsExtService {
               return datum;
             })
         .toList();
+  }
+
+  public List<String> listMetricFields(
+      AdminUser user,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      String surveyStableId) {
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    // TODO: actually scope this to the environment
+    return answerService.findDistinctQuestionStableIdsBySurvey(surveyStableId);
   }
 }

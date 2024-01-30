@@ -30,6 +30,10 @@ public class AnswerService extends CrudService<Answer, AnswerDao> {
         return dao.findByEnrolleeAndSurvey(enrolleeID, surveyStableId);
     }
 
+    public List<String> findDistinctQuestionStableIdsBySurvey(String surveyStableId) {
+        return dao.findBySurveyStableId(surveyStableId);
+    }
+
     public void deleteByResponseId(UUID responseId) {
         dao.deleteByResponseId(responseId);
     }
