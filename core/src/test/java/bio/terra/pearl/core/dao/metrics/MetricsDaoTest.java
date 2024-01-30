@@ -6,13 +6,16 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
 import bio.terra.pearl.core.model.metrics.TimeRange;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -34,14 +37,14 @@ public class MetricsDaoTest extends BaseSpringBootTest {
   public void testStudyEnrollmentMetrics() {
     StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted("testStudyEnrollmentMetrics");
     enrolleeFactory.buildPersisted("testStudyEnrollmentMetrics", studyEnvironment);
-    var builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
+    BaseEntity.BaseEntityBuilder builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
         .createdAt(Instant.now().minus(Duration.ofDays(4)));
     // The superBuilder 'createdAt' method returns the type of builder the property is contained in, so we have to recast
     enrolleeFactory.buildPersisted((Enrollee.EnrolleeBuilder) builder);
     List<BasicMetricDatum> metrics = metricsDao.studyEnrollments(studyEnvironment.getId(), new TimeRange(null, null));
     assertThat(metrics, hasSize(2));
 
-    var oneDayAgo = Instant.now().minus(Duration.ofDays(1));
+    Instant oneDayAgo = Instant.now().minus(Duration.ofDays(1));
 
     List<BasicMetricDatum> rangeMetrics = metricsDao.studyEnrollments(studyEnvironment.getId(),
         new TimeRange(oneDayAgo, null));
@@ -64,10 +67,10 @@ public class MetricsDaoTest extends BaseSpringBootTest {
   public void testStudyConsentedMetric() {
     StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted("testStudyEnrollmentMetrics");
     enrolleeFactory.buildPersisted("testStudyEnrollmentMetrics", studyEnvironment);
-    var builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
+    Enrollee.EnrolleeBuilder builder = enrolleeFactory.builderWithDependencies("testStudyEnrollmentMetrics", studyEnvironment)
         .consented(true);
     enrolleeFactory.buildPersisted((Enrollee.EnrolleeBuilder) builder);
-    var rangeMetrics = metricsDao.studyConsentedEnrollees(studyEnvironment.getId(),
+    List<BasicMetricDatum> rangeMetrics = metricsDao.studyConsentedEnrollees(studyEnvironment.getId(),
         new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(1));
   }
@@ -91,19 +94,19 @@ public class MetricsDaoTest extends BaseSpringBootTest {
     studyEnvironmentSurveyService.create(optStudyEnvSurvey);
 
     Enrollee enrollee1 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser1 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee1, portalEnv);
+    PortalParticipantUser ppUser1 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee1, portalEnv);
     Enrollee enrollee2 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser2 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee2, portalEnv);
+    PortalParticipantUser ppUser2 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee2, portalEnv);
     Enrollee enrollee3 = enrolleeFactory.buildPersisted("testStudySurveyMetric", studyEnv);
-    var ppUser3 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee3, portalEnv);
+    PortalParticipantUser ppUser3 = portalParticipantUserFactory.buildPersisted("testStudySurveyMetric", enrollee3, portalEnv);
 
-    var task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
+    ParticipantTask task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
     task.setStatus(TaskStatus.COMPLETE);
     participantTaskService.create(task);
     participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee2, ppUser2));
-    var taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3));
+    ParticipantTask taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3));
 
-    var rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
+    List<BasicMetricDatum> rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(1));
     taskToUpdate.setStatus(TaskStatus.COMPLETE);
     participantTaskService.update(taskToUpdate);

@@ -17,12 +17,12 @@ public class RoleFactory {
     }
 
     public Role buildPersisted(String testName) {
-        var role = builder(testName).build();
+        Role role = builder(testName).build();
         return roleService.create(role);
     }
 
     public Role buildPersisted(String testName, List<String> permissions) {
-        var role = builder(testName).build();
+        Role role = builder(testName).build();
         return roleService.create(role, permissions);
     }
 }

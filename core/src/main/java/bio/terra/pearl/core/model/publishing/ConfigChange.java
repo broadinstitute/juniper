@@ -31,7 +31,7 @@ public record ConfigChange(String propertyName, Object oldValue, Object newValue
                 .filter(name -> !ignoreProperties.contains(name)).toList();
         List<ConfigChange> records = new ArrayList<>();
         for (String propertyName : propertyNames) {
-            var record = new ConfigChange(source, dest, propertyName);
+            ConfigChange record = new ConfigChange(source, dest, propertyName);
             // if the new value is different than the old, add the record
             if (!Objects.equals(record.newValue, record.oldValue)) {
                 records.add(record);

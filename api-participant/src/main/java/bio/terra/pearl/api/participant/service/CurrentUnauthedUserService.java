@@ -46,14 +46,14 @@ public class CurrentUnauthedUserService {
   }
 
   protected ParticipantUser updateUnauthedUserToken(ParticipantUser user) {
-    var newToken = generateFakeJwtToken(user.getUsername());
+    String newToken = generateFakeJwtToken(user.getUsername());
     user.setToken(newToken);
     user.setLastLogin(Instant.now());
     return participantUserDao.update(user);
   }
 
   String generateFakeJwtToken(String username) {
-    var token = UUID.randomUUID();
+    UUID token = UUID.randomUUID();
     return JWT.create()
         .withClaim("token", token.toString())
         .withClaim("email", username)

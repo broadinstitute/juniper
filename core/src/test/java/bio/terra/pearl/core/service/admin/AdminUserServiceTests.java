@@ -8,6 +8,8 @@ import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
+import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
@@ -74,14 +76,14 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testLoadWithPermissions() {
-        var permission1 = permissionFactory.buildPersisted("testLoadWithPerms.perm1");
-        var permission2 = permissionFactory.buildPersisted("testLoadWithPerms.perm2");
-        var role1 = roleFactory.buildPersisted("testLoadWithPerms", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm2"));
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testLoadWithPermissions");
+        Permission permission1 = permissionFactory.buildPersisted("testLoadWithPerms.perm1");
+        Permission permission2 = permissionFactory.buildPersisted("testLoadWithPerms.perm2");
+        Role role1 = roleFactory.buildPersisted("testLoadWithPerms", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm2"));
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted("testLoadWithPermissions");
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName()));
 
         AdminUser adminUser = adminUserService.find(portalAdminUser.getAdminUserId()).get();
-        var loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
+        AdminUserWithPermissions loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
 
         assertThat(loadedUser.user().getId(), equalTo(adminUser.getId()));
         assertThat(loadedUser.portalPermissions().values(), hasSize(1));
@@ -91,8 +93,8 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         ) );
 
         // does not include permissions/roles not given to the user
-        var permission3 = permissionFactory.buildPersisted("testLoadWithPerms.perm3");
-        var role2 = roleFactory.buildPersisted("testLoadWithPermsRole2", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm3"));
+        Permission permission3 = permissionFactory.buildPersisted("testLoadWithPerms.perm3");
+        Role role2 = roleFactory.buildPersisted("testLoadWithPermsRole2", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm3"));
         loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(2));
 
@@ -116,7 +118,7 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         Portal emptyPortal = portalFactory.buildPersisted("testGetByPortal");
         Role role = roleFactory.buildPersisted("testGetByPortal");
 
-        var savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
+        PortalAdminUser savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
             .adminUserId(savedPortalUser.getId())
             .portalId(portal.getId()).build());
         portalAdminUserService.create(PortalAdminUser.builder()

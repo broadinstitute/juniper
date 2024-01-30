@@ -7,6 +7,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.ConstraintViolation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ import jakarta.validation.Validator;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -47,7 +49,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     @Override
     public PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
     throws PepperApiException, PepperParseException {
-        var request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
@@ -58,8 +60,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     @Override
     public PepperKit fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException {
-        var request = buildAuthedGetRequest("kitstatus/juniperKit/%s".formatted(kitRequestId));
-        var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedGetRequest("kitstatus/juniperKit/%s" .formatted(kitRequestId));
+        PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperApiException("Expected a single result from fetchKitStatus by ID (%s), got %d".formatted(
                     kitRequestId, response.getKits().length));
@@ -69,8 +71,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     @Override
     public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException {
-        var request = buildAuthedGetRequest("kitstatus/study/%s".formatted(makePepperStudyName(studyShortcode)));
-        var response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedGetRequest("kitstatus/study/%s" .formatted(makePepperStudyName(studyShortcode)));
+        PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());
     }
 
@@ -79,7 +81,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     private String makeKitRequestBody(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
-        var juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
+        PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
                 .build();
@@ -120,8 +122,8 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     private String generateDsmJwt() {
-        var now = System.currentTimeMillis();
-        var fifteenMinutes = 15 * 60 * 1000;
+        long now = System.currentTimeMillis();
+        int fifteenMinutes = 15 * 60 * 1000;
         return JWT.create()
                 .withIssuer(pepperDSMConfig.getIssuerClaim())
                 .withExpiresAt(Instant.ofEpochMilli(now + fifteenMinutes))
@@ -187,7 +189,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
                 return Mono.just(new ResponseAndBody<T>(clazz.cast(body), body));
             }
             try {
-                var object = objectMapper.readValue(body, clazz);
+                T object = objectMapper.readValue(body, clazz);
                 return Mono.just(new ResponseAndBody<T>(object, body));
             } catch (JsonProcessingException e) {
                  throw new PepperParseException(
@@ -199,7 +201,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
 
     /** Validate returned object based on javax.validation annotations. */
     private <T> ResponseAndBody<T> validate(ResponseAndBody<T> responseAndBody, Class<T> clazz) throws PepperParseException {
-        var violations = validator.validate(responseAndBody.responseObj);
+        Set<ConstraintViolation<T>> violations = validator.validate(responseAndBody.responseObj);
         if (!violations.isEmpty()) {
             String validationMsg = violations.stream()
                     .map(violation -> "%s %s".formatted(

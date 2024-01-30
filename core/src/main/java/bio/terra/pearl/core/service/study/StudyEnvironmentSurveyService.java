@@ -40,7 +40,7 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String stableId) {
-        var configs = dao.findActiveBySurvey(studyEnvId, stableId);
+        List<StudyEnvironmentSurvey> configs = dao.findActiveBySurvey(studyEnvId, stableId);
         // we don't yet have robust support for having multiple surveys with the same stableId configured for an
         // environment.  For now, just pick one
         return configs.stream().findFirst();

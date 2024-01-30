@@ -91,7 +91,7 @@ public class RegistrationService {
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
                                        String email, UUID preRegResponseId) {
-        var info = RequiredRegistrationInfo.builder().email(email).build();
+        RequiredRegistrationInfo info = RequiredRegistrationInfo.builder().email(email).build();
         return register(portalShortcode, environmentName, preRegResponseId, info);
     }
 

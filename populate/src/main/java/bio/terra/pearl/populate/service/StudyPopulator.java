@@ -5,9 +5,11 @@ import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
@@ -114,7 +116,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             preEnrollmentResponseDao.create(response);
         }
         for (String kitTypeName : studyPopEnv.getKitTypeNames()) {
-            var kitType = kitTypeDao.findByName(kitTypeName).get();
+            KitType kitType = kitTypeDao.findByName(kitTypeName).get();
             studyEnvironmentKitTypeDao.create(StudyEnvironmentKitType.builder()
                     .studyEnvironmentId(savedEnv.getId())
                     .kitTypeId(kitType.getId())
@@ -175,7 +177,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             PortalEnvironment destPortalEnv = portalEnvironmentService
                     .findOne(context.getPortalShortcode(), EnvironmentName.sandbox).get();
             try {
-                var studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
+                StudyEnvironmentChange studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
                 studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
             } catch (Exception e) {
