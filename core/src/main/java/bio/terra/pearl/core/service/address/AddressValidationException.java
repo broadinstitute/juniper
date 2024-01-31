@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.service.address;
 
-import bio.terra.pearl.core.service.kit.pepper.PepperErrorResponse;
+import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
 /**
@@ -8,13 +8,12 @@ import org.springframework.http.HttpStatusCode;
  *  RuntimeException in order to be correctly handled within `onStatus` of webClient.retrieve().
  *  See e.g. https://medium.com/nerd-for-tech/webclient-error-handling-made-easy-4062dcf58c49
  */
+@Getter
 public class AddressValidationException extends RuntimeException {
-    private PepperErrorResponse errorResponse;
     private HttpStatusCode httpStatusCode;
 
     public AddressValidationException(String message, HttpStatusCode httpStatusCode) {
         super(message);
         this.httpStatusCode = httpStatusCode;
-        this.errorResponse = null;
     }
 }
