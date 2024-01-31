@@ -49,6 +49,28 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
   }
 
   @Override
+  public ResponseEntity<Object> replace(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      UUID studyEnvSurveyId,
+      Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    StudyEnvironmentSurvey newStudyEnvSurvey =
+        objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
+    newStudyEnvSurvey =
+        surveyExtService.replace(
+            portalShortcode,
+            studyShortcode,
+            environmentName,
+            studyEnvSurveyId,
+            newStudyEnvSurvey,
+            operator);
+    return ResponseEntity.ok(newStudyEnvSurvey);
+  }
+
+  @Override
   public ResponseEntity<Object> create(
       String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);

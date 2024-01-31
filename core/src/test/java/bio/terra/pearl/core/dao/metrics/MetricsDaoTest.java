@@ -87,8 +87,7 @@ public class MetricsDaoTest extends BaseSpringBootTest {
 
     Survey survey = surveyFactory.buildPersisted(getTestName(info));
     StudyEnvironmentSurvey studyEnvSurvey = StudyEnvironmentSurvey.builder().surveyId(survey.getId()).studyEnvironmentId(studyEnv.getId())
-        .survey(survey)
-        .required(true).build();
+        .survey(survey).build();
     studyEnvironmentSurveyService.create(studyEnvSurvey);
 
     Survey optionalSurvey = surveyFactory.buildPersisted(getTestName(info));

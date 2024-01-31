@@ -5,11 +5,13 @@ import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -24,27 +26,30 @@ public class SurveyExtService {
   private SurveyService surveyService;
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
   private StudyEnvironmentService studyEnvironmentService;
+  private PortalEnvironmentService portalEnvironmentService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
       SurveyService surveyService,
       StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-      StudyEnvironmentService studyEnvironmentService) {
+      StudyEnvironmentService studyEnvironmentService,
+      PortalEnvironmentService portalEnvironmentService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     this.studyEnvironmentService = studyEnvironmentService;
+    this.portalEnvironmentService = portalEnvironmentService;
   }
 
-  public Survey get(String portalShortcode, String stableId, int version, AdminUser adminUser) {
-    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+  public Survey get(String portalShortcode, String stableId, int version, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     Survey survey = authUtilService.authSurveyToPortal(portal, stableId, version);
     surveyService.attachAnswerMappings(survey);
     return survey;
   }
 
-  public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser adminUser) {
-    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+  public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     // This is used to populate the version selector in the admin UI. It's not necessary
     // to return the surveys with any content or answer mappings, the response will
     // be too large. Instead, just get the individual versions as content is needed.
@@ -54,8 +59,8 @@ public class SurveyExtService {
     return surveysInPortal;
   }
 
-  public Survey create(String portalShortcode, Survey survey, AdminUser adminUser) {
-    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+  public Survey create(String portalShortcode, Survey survey, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     List<Survey> existing = surveyService.findByStableId(survey.getStableId());
     if (existing.size() > 0) {
       throw new IllegalArgumentException("A survey with that stableId already exists");
@@ -66,8 +71,8 @@ public class SurveyExtService {
   }
 
   @Transactional
-  public void delete(String portalShortcode, String surveyStableId, AdminUser adminUser) {
-    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+  public void delete(String portalShortcode, String surveyStableId, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     // Find all of the versions of the specified survey that are in the specified portal
     List<Survey> existingVersions =
         surveyService.findByStableId(surveyStableId).stream()
@@ -113,8 +118,8 @@ public class SurveyExtService {
     }
   }
 
-  public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser adminUser) {
-    Portal portal = authUtilService.authUserToPortal(adminUser, portalShortcode);
+  public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     return surveyService.createNewVersion(portal.getId(), survey);
   }
 
@@ -123,8 +128,9 @@ public class SurveyExtService {
       String studyShortcode,
       EnvironmentName envName,
       StudyEnvironmentSurvey surveyToConfigure,
-      AdminUser user) {
-    authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, surveyToConfigure, user);
+      AdminUser operator) {
+    authConfiguredSurveyRequest(
+        portalShortcode, envName, studyShortcode, surveyToConfigure, operator);
     return studyEnvironmentSurveyService.create(surveyToConfigure);
   }
 
@@ -133,10 +139,11 @@ public class SurveyExtService {
       String studyShortcode,
       EnvironmentName envName,
       UUID configuredSurveyId,
-      AdminUser user) {
+      AdminUser operator) {
     StudyEnvironmentSurvey configuredSurvey =
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
-    authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, configuredSurvey, user);
+    authConfiguredSurveyRequest(
+        portalShortcode, envName, studyShortcode, configuredSurvey, operator);
     studyEnvironmentSurveyService.deactivate(configuredSurveyId);
   }
 
@@ -145,11 +152,46 @@ public class SurveyExtService {
       EnvironmentName envName,
       String studyShortcode,
       StudyEnvironmentSurvey updatedObj,
-      AdminUser user) {
-    authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, updatedObj, user);
+      AdminUser operator) {
+    authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, updatedObj, operator);
     StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
     BeanUtils.copyProperties(updatedObj, existing);
     return studyEnvironmentSurveyService.update(existing);
+  }
+
+  /**
+   * deactivates the studyEnvironmentSurvey with studyEnvrionmentSurveyId, and adds a new config as
+   * specified in the update object. Note that the portalEnvironmentId and studyEnvironmentId will
+   * be set from the portalShortcode and studyShortcode params.
+   */
+  @Transactional
+  public StudyEnvironmentSurvey replace(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      UUID studyEnvironmentSurveyId,
+      StudyEnvironmentSurvey update,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalEnvironment portalEnvironment =
+        portalEnvironmentService.findOne(portalShortcode, environmentName).get();
+    StudyEnvironment studyEnv =
+        authConfiguredSurveyRequest(
+            portalShortcode, environmentName, studyShortcode, update, operator);
+    StudyEnvironmentSurvey existing =
+        studyEnvironmentSurveyService
+            .find(studyEnvironmentSurveyId)
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "No existing StudyEnvironmentSurvey with id " + studyEnvironmentSurveyId));
+    verifyStudyEnvironmentSurvey(existing, studyEnv);
+    StudyEnvironmentSurvey newConfig =
+        studyEnvironmentSurveyService.create(update.cleanForCopying());
+    // after creating the new config, deactivate the old config
+    existing.setActive(false);
+    studyEnvironmentSurveyService.update(existing);
+    return newConfig;
   }
 
   /**
@@ -162,8 +204,8 @@ public class SurveyExtService {
       EnvironmentName envName,
       String studyShortcode,
       StudyEnvironmentSurvey updatedObj,
-      AdminUser user) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
     if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException(
@@ -174,5 +216,14 @@ public class SurveyExtService {
           "Study environment id in request body does not belong to this study");
     }
     return studyEnv;
+  }
+
+  /** confirms the given config is associated with the given study */
+  private void verifyStudyEnvironmentSurvey(
+      StudyEnvironmentSurvey config, StudyEnvironment studyEnvironment) {
+    if (!studyEnvironment.getId().equals(config.getStudyEnvironmentId())) {
+      throw new IllegalArgumentException(
+          "existing studyEnvironmentSurvey does not match the study environment");
+    }
   }
 }

@@ -10,6 +10,7 @@ import {
   Profile,
   Survey
 } from 'api/api'
+import { defaultSurvey } from '@juniper/ui-core'
 
 
 /** gets a mock ParticipantUser */
@@ -74,6 +75,7 @@ export const mockParticipantTask = (taskType: ParticipantTaskType, status: Parti
  */
 export const mockSurvey = (stableId: string): Survey => {
   return {
+    ...defaultSurvey,
     id: 'survey1',
     createdAt: 0,
     lastUpdatedAt: 0,
