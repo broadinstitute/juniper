@@ -11,7 +11,7 @@ import { Button, EllipsisDropdownButton } from '../../components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
 
 export type SurveyTableProps = {
-  stableIds: string[],
+  stableIds: string[], // the stableIds of surveys to show in the table
   studyEnvParams: StudyEnvParams,
   configuredSurveys: StudyEnvironmentSurveyNamed[]
   setSelectedSurveyConfig: (config: StudyEnvironmentSurvey) => void
