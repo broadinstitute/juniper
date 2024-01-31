@@ -60,9 +60,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
 
   const researchSurveyStableIds =  _uniq(configuredSurveys
     .filter(configSurvey => configSurvey.survey.surveyType === 'RESEARCH')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
     .map(configSurvey => configSurvey.survey.stableId))
   const outreachSurveyStableIds =  _uniq(configuredSurveys
     .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
     .map(configSurvey => configSurvey.survey.stableId))
 
   return <div className="container-fluid px-4 py-2">
@@ -118,29 +120,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                   </li>
                 }) }
                 <li>
-                  { !isReadOnlyEnv && <Button variant="secondary" data-testid={'addConsent'} onClick={() => {
-                    setShowCreateConsentModal(!showCreateConsentModal)
-                  }}>
-                    <FontAwesomeIcon icon={faPlus}/> Add
-                  </Button>
-                  }
-                </li>
-              </ul>
-            </div>
-          </li>
-          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
-            <h2 className="h6">Consent forms</h2>
-            <div className="flex-grow-1 pt-3">
-              <ul className="list-unstyled">
-                { currentEnv.configuredConsents.map((config, index) => {
-                  const consentForm = config.consentForm
-                  return <li key={index}>
-                    <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
-                      {consentForm.name} <span className="detail">v{consentForm.version}</span>
-                    </Link>
-                  </li>
-                }) }
-                <li>
                   { !isReadOnlyEnv && <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
                     setShowCreateConsentModal(!showCreateConsentModal)
                   }}>
@@ -164,7 +143,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
               />
               <div>
-                <Button variant="secondary" data-testid={'addOutreachSurvey'} onClick={() => {
+                <Button variant="secondary" data-testid={'addResearchSurvey'} onClick={() => {
                   setCreateSurveyType('RESEARCH')
                 }}>
                   <FontAwesomeIcon icon={faPlus}/> Add

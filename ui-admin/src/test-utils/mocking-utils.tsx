@@ -12,7 +12,7 @@ import {
   ParticipantNote, PepperKit,
   Portal,
   PortalStudy, SiteImageMetadata,
-  StudyEnvironmentConsent, SurveyResponse
+  StudyEnvironmentConsent, SurveyResponse, StudyEnvironment
 } from 'api/api'
 import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey, ParticipantTaskStatus } from '@juniper/ui-core'
 
@@ -127,10 +127,8 @@ export const mockSurveyVersionsList: () => Survey[] = () => ([
 ])
 
 /** returns a simple studyEnvContext object for use/extension in tests */
-export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
-  study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
-  portal: { shortcode: 'portalCode', id: 'portalId', portalStudies: [], portalEnvironments: [], name: 'Fake portal' },
-  currentEnv: {
+export const mockStudyEnvContext: () => StudyEnvContextT = () => {
+  const sandboxEnv: StudyEnvironment = {
     environmentName: 'sandbox',
     id: 'studyEnvId',
     configuredConsents: [mockConfiguredConsent()],
@@ -142,9 +140,24 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
       passwordProtected: false,
       acceptingEnrollment: true
     }
-  },
-  currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
-})
+  }
+  return {
+    study: {
+      name: 'Fake study',
+      studyEnvironments: [sandboxEnv],
+      shortcode: 'fakeStudy'
+    },
+    portal: {
+      shortcode: 'portalCode',
+      id: 'portalId',
+      portalStudies: [],
+      portalEnvironments: [],
+      name: 'Fake portal'
+    },
+    currentEnv: sandboxEnv,
+    currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
+  }
+}
 
 /**
  *
