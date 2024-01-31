@@ -207,4 +207,58 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertThat(answerService.findByResponse(savedResponse.getId()), hasSize(2));
     }
 
+    @Test
+    @Transactional
+    public void testCompletedSurveyResponseCannotBeUpdatedToIncomplete(TestInfo testInfo) {
+        // create a survey and an enrollee with one survey task
+        String testName = getTestName(testInfo);
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(testName);
+        Survey survey = surveyFactory.buildPersisted(testName);
+        StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
+
+        ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
+        task = participantTaskService.create(task);
+        assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
+
+        // create a response complete flag set to true
+        SurveyResponse response = SurveyResponse.builder()
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .creatingParticipantUserId(enrolleeBundle.enrollee().getParticipantUserId())
+                .surveyId(survey.getId())
+                .complete(true) // set the response to complete
+                .answers(List.of())
+                .build();
+
+        surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+
+        // check that the task response was created and task status updated to complete
+        task = participantTaskService.find(task.getId()).orElseThrow();
+        assertThat(task.getStatus(), equalTo(TaskStatus.COMPLETE));
+
+        // check that the SurveyResponse is marked as complete
+        SurveyResponse savedResponse = surveyResponseService.findByEnrolleeId(enrolleeBundle.enrollee().getId()).get(0);
+        assertThat(savedResponse.isComplete(), equalTo(true));
+
+        // create a response with complete flag set to false
+        response = SurveyResponse.builder()
+                .enrolleeId(enrolleeBundle.enrollee().getId())
+                .creatingParticipantUserId(enrolleeBundle.enrollee().getParticipantUserId())
+                .surveyId(survey.getId())
+                .complete(false) // set the response to incomplete
+                .answers(List.of())
+                .build();
+
+        surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+
+        // check that the task status remains complete
+        task = participantTaskService.find(task.getId()).orElseThrow();
+        assertThat(task.getStatus(), equalTo(TaskStatus.COMPLETE));
+
+        // check that the SurveyResponse is still marked as complete
+        savedResponse = surveyResponseService.findByEnrolleeId(enrolleeBundle.enrollee().getId()).get(0);
+        assertThat(savedResponse.isComplete(), equalTo(true));
+    }
+
 }
