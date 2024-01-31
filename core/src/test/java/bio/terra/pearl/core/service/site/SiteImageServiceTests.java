@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 public class SiteImageServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -54,7 +55,7 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testFindMetadataByPortal(TestInfo testInfo) {
-        SiteImage image = siteImageFactory.builderWithDependencies("testFindMetadataByPortal")
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(testInfo))
                 .data("imageData".getBytes()).build();
         SiteImage savedImage = siteImageService.create(image);
         Portal emptyPortal = portalFactory.buildPersisted(getTestName(testInfo));
@@ -67,8 +68,8 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAddsCleanFileName() {
-        SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageAddsCleanFileName")
+    public void testAddsCleanFileName(TestInfo info) {
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(info))
                 .cleanFileName(null)
                 .build();
         SiteImage savedImage = siteImageService.create(image);
@@ -77,9 +78,9 @@ public class SiteImageServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSanitizesCleanFileName() {
-        String dirtyFileName = "testSanitizesCleanFileName with spaces.png";
-        SiteImage image = siteImageFactory.builderWithDependencies("testSanitizesCleanFileName")
+    public void testSanitizesCleanFileName(TestInfo info) {
+        String dirtyFileName = getTestName(info) + " with spaces.png";
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(info))
                 .cleanFileName(dirtyFileName)
                 .build();
         SiteImage savedImage = siteImageService.create(image);

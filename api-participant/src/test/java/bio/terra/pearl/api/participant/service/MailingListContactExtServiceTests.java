@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,8 @@ public class MailingListContactExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testGetOrCreate() {
-    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testMailingListCreate");
+  public void testGetOrCreate(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     String shortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
     MailingListContact contact =
         mailingListContactExtService.createOrGet(

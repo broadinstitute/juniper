@@ -7,12 +7,14 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class AnswerDaoTests extends BaseSpringBootTest {
   @Autowired
@@ -24,8 +26,8 @@ public class AnswerDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testEmptyAnswerSaves() {
-    SurveyResponse response = surveyResponseFactory.buildPersisted("testAnswerValuesSave");
+  public void testEmptyAnswerSaves(TestInfo info) {
+    SurveyResponse response = surveyResponseFactory.buildPersisted(getTestName(info));
     Answer stringAnswer = Answer.builder()
         .enrolleeId(response.getEnrolleeId())
         .questionStableId("whatevs")
@@ -42,8 +44,8 @@ public class AnswerDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testAnswerValuesSave() {
-    SurveyResponse response = surveyResponseFactory.buildPersisted("testAnswerValuesSave");
+  public void testAnswerValuesSave(TestInfo info) {
+    SurveyResponse response = surveyResponseFactory.buildPersisted(getTestName(info));
     Answer stringAnswer = answerForResponse(response, "q1")
         .stringValue("test1234")
         .build();

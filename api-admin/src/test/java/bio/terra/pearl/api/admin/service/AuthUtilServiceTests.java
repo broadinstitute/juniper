@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +31,9 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authUserToPortalRejectsUsersNotInPortal() {
-    AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
-    Portal portal = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal");
+  public void authUserToPortalRejectsUsersNotInPortal(TestInfo info) {
+    AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
@@ -40,7 +41,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
         });
 
     // now add the user to a second portal
-    Portal portal2 = portalFactory.buildPersisted("authAdminToPortalRejectsUsersNotInPortal2");
+    Portal portal2 = portalFactory.buildPersisted(getTestName(info));
     portalAdminUserService.create(
         PortalAdminUser.builder().adminUserId(user.getId()).portalId(portal2.getId()).build());
     // confirm user can access second portal
@@ -59,8 +60,8 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authUserToPortalRejectsNotFoundPortal() {
-    AdminUser user = adminUserFactory.buildPersisted("authAdminToPortalRejectsNotFoundPortal");
+  public void authUserToPortalRejectsNotFoundPortal(TestInfo info) {
+    AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
@@ -70,11 +71,11 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void authUserToPortalAllowsSuperUser() {
+  public void authUserToPortalAllowsSuperUser(TestInfo info) {
     AdminUser user =
         adminUserFactory.buildPersisted(
-            adminUserFactory.builder("authAdminToPortalAllowsSuperUser").superuser(true));
-    Portal portal = portalFactory.buildPersisted("authAdminToPortalAllowsSuperUser");
+            adminUserFactory.builder(getTestName(info)).superuser(true));
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     assertThat(authUtilService.authUserToPortal(user, portal.getShortcode()), notNullValue());
   }
 

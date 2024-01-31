@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,8 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testAuthToEnrolleeAllowsIfParticipant() {
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testAuthToEnrolleeAllowsIfParticipant");
+  public void testAuthToEnrolleeAllowsIfParticipant(TestInfo info) {
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
     Enrollee authEnrollee =
         authUtilService.authParticipantUserToEnrollee(
             enrollee.getParticipantUserId(), enrollee.getShortcode());
@@ -34,14 +35,12 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testAuthToEnrolleeDisallowsIfNotParticipant() {
-    Enrollee enrollee =
-        enrolleeFactory.buildPersisted("testAuthToEnrolleeDisallowsIfNotParticipant");
+  public void testAuthToEnrolleeDisallowsIfNotParticipant(TestInfo info) {
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
     StudyEnvironment studyEnv =
         studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
     ParticipantUser otherUser =
-        participantUserFactory.buildPersisted(
-            studyEnv.getEnvironmentName(), "testAuthToEnrolleeDisallowsIfNotParticipant");
+        participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), getTestName(info));
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> {

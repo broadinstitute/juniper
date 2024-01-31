@@ -3,12 +3,15 @@ package bio.terra.pearl.core.service.site;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.site.SiteContentFactory;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.site.*;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.hamcrest.Matchers;
+import bio.terra.pearl.core.model.site.HtmlPage;
+import bio.terra.pearl.core.model.site.HtmlSection;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
+import bio.terra.pearl.core.model.site.NavbarItem;
+import bio.terra.pearl.core.model.site.NavbarItemType;
+import bio.terra.pearl.core.model.site.SiteContent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +19,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -29,7 +31,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSiteContentCrud() {
+    public void testSiteContentCrud(TestInfo info) {
         HtmlSection section = HtmlSection.builder()
                 .rawContent("hello").build();
         HtmlPage landingPage = HtmlPage.builder()
@@ -40,7 +42,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
                 .landingPage(landingPage).build();
 
         SiteContent content = siteContentFactory
-                .builderWithDependencies("testSiteContentCrud")
+                .builderWithDependencies(getTestName(info))
                 .localizedSiteContents(List.of(lsc))
                 .build();
 
@@ -56,7 +58,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSiteContentCreateNewVersion() {
+    public void testSiteContentCreateNewVersion(TestInfo info) {
         HtmlSection section = HtmlSection.builder()
                 .rawContent("hello").build();
         HtmlPage landingPage = HtmlPage.builder()
@@ -71,7 +73,7 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
                 .landingPage(landingPage).build();
 
         SiteContent content = siteContentFactory
-                .builderWithDependencies("testSiteContentCrud")
+                .builderWithDependencies(getTestName(info))
                 .localizedSiteContents(List.of(lsc))
                 .build();
 
@@ -101,8 +103,8 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAssignPublishedVersion() {
-        SiteContent form = siteContentFactory.buildPersisted("testPublishConsent");
+    public void testAssignPublishedVersion(TestInfo info) {
+        SiteContent form = siteContentFactory.buildPersisted(getTestName(info));
         siteContentService.assignPublishedVersion(form.getId());
         form = siteContentService.find(form.getId()).get();
         assertThat(form.getPublishedVersion(), equalTo(1));

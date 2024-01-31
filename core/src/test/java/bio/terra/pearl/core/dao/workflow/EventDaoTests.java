@@ -6,6 +6,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,8 +72,8 @@ public class EventDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testFullEventCreation() {
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testFullEventCreation");
+    public void testFullEventCreation(TestInfo info) {
+        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
 
         Event event = Event
                 .builder()

@@ -34,8 +34,8 @@ import static org.hamcrest.Matchers.hasSize;
 public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
-    public void testApplyStudyConfigChanges() throws Exception {
-        String testName = "testApplyStudyConfigChanges";
+    public void testApplyStudyConfigChanges(TestInfo info) throws Exception {
+        String testName = getTestName(info);
         Study study = studyFactory.buildPersisted(testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
@@ -103,8 +103,8 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testApplyChangesConsents() throws Exception {
-        String testName = "testApplyChangesConsents";
+    public void testApplyChangesConsents(TestInfo info) throws Exception {
+        String testName = getTestName(info);
         Study study = studyFactory.buildPersisted(testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
