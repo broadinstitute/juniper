@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +13,6 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-@Slf4j
 public class AddressValidationResultDto {
     // If false, property indicates strong failure -
     // the address was incomplete or invalid and an
