@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +25,10 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void updateConfigAuthsToStudy() {
+  public void updateConfigAuthsToStudy(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
-    AdminUser operator = adminUserFactory.buildPersisted("updateConfigAuthsToStudy", false);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
@@ -42,10 +43,10 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void updateConfigAllowsSuperuser() {
+  public void updateConfigAllowsSuperuser(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAllowsSuperuser", EnvironmentName.irb);
-    AdminUser superUser = adminUserFactory.buildPersisted("updateConfigAllowsSuperuser", true);
+    AdminUser superUser = adminUserFactory.buildPersisted(getTestName(info), true);
     studyEnvironmentExtService.updateConfig(
         superUser,
         studyEnvBundle.getPortal().getShortcode(),

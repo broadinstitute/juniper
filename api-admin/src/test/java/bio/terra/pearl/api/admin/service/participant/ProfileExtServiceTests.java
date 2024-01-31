@@ -35,7 +35,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
         enrolleeFactory.buildPersisted(
             getTestName(info), studyEnvBundle.getStudyEnv(), Profile.builder().build());
 
-    AdminUser operator = adminUserFactory.buildPersisted("updateConfigAuthsToStudy", false);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
 
     Assertions.assertThrows(
         PermissionDeniedException.class,

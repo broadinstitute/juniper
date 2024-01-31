@@ -3,32 +3,40 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerType;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -116,7 +124,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         Survey survey = surveyService.find(surveyResponse.getSurveyId()).get();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         PortalParticipantUser ppUser = portalParticipantUserFactory
-                .buildPersisted("testSurveyResponseUpdateAnswers", savedResponse.getEnrolleeId());
+                .buildPersisted(getTestName(testInfo), savedResponse.getEnrolleeId());
 
         List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
         surveyResponseService.createOrUpdateAnswers(updatedAnswers, savedResponse, survey, ppUser);

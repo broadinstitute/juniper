@@ -8,20 +8,19 @@ import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
-import { faClockRotateLeft, faDownload, faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationCircle, faGear } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import VersionSelector from './VersionSelector'
+import FormOptions from './FormOptions'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
-import { saveBlobAsDownload } from 'util/downloadUtils'
+import { SaveableFormProps } from './SurveyView'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
   currentForm: VersionedForm
   readOnly?: boolean
   onCancel: () => void
-  onSave: (update: { content: string }) => Promise<void>
-  isConsentForm?: boolean
+  onSave: (update: SaveableFormProps) => Promise<void>
 }
 
 /** renders a survey for editing/viewing */
@@ -31,8 +30,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     currentForm,
     readOnly = false,
     onCancel,
-    onSave,
-    isConsentForm
+    onSave
   } = props
 
   const FORM_DRAFT_KEY = getFormDraftKey({ form: currentForm })
@@ -45,7 +43,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   //for them to know if the version of the survey they're seeing are from a draft or are actually published.
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
-  const [showVersionSelector, setShowVersionSelector] = useState(false)
+  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
   const [showErrors, setShowErrors] = useState(false)
 
@@ -76,7 +74,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
     setSaving(true)
     try {
-      await onSave({ content: draft?.content })
+      await onSave(draft)
       //Once we've persisted the form draft to the database, there's no need to keep it in local storage.
       //Future drafts will have different FORM_DRAFT_KEYs anyway, as they're based on the form version number.
       deleteDraft({ formDraftKey: FORM_DRAFT_KEY })
@@ -106,28 +104,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               </span> }
               )
             </span>
-            <button className="btn btn-secondary" onClick={() => setShowVersionSelector(true)}>
-              <FontAwesomeIcon icon={faClockRotateLeft}/> History
-            </button>
-            <Button variant="secondary"
-              disabled={!isEmpty(validationErrors)}
-              tooltip={isEmpty(validationErrors) ?
-                'Download the current contents of the JSON Editor as a JSON file.' :
-                'The form contains invalid JSON. Please correct the errors before downloading.'
-              }
-              onClick={() => {
-                const content = draft?.content || currentForm.content
-                // To get this formatted nicely and not as one giant line, need to parse
-                // this as an object and then stringify the result.
-                const blob = new Blob(
-                  [JSON.stringify(JSON.parse(content), null, 2)],
-                  { type: 'application/json' })
-                const filename = !draft ? `${currentForm.stableId}_v${currentForm.version}.json` :
-                  `${currentForm.stableId}_v${currentForm.version}_draft_${Date.now()}.json`
-                saveBlobAsDownload(blob, filename)
-              }}>
-              <FontAwesomeIcon icon={faDownload}/> Download JSON
-            </Button>
           </h5>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
@@ -191,14 +167,19 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
-        { showVersionSelector && <VersionSelector
+        <Button variant="light" className="border" onClick={() => setShowAdvancedOptions(true)}>
+          Options <FontAwesomeIcon icon={faGear}/>
+        </Button>
+        { showAdvancedOptions && <FormOptions
           studyEnvContext={studyEnvContext}
           visibleVersionPreviews={visibleVersionPreviews}
           setVisibleVersionPreviews={setVisibleVersionPreviews}
-          stableId={currentForm.stableId}
-          setShow={setShowVersionSelector}
-          show={showVersionSelector}
-          isConsentForm={isConsentForm}/>
+          workingForm={{ ...currentForm, ...draft }}
+          updateWorkingForm={(props: SaveableFormProps) => {
+            setDraft({ ...draft, ...props, date: Date.now() })
+          }}
+          isDirty={!!draft}
+          onDismiss={() => setShowAdvancedOptions(false)}/>
         }
       </div>
       <FormContentEditor
@@ -208,7 +189,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         onChange={(newValidationErrors, newContent) => {
           if (isEmpty(newValidationErrors)) {
             setShowErrors(false)
-            setDraft({ content: JSON.stringify(newContent), date: Date.now() })
+            setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
           }
           setValidationErrors(newValidationErrors)
         }}

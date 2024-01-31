@@ -44,10 +44,10 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testUserLoginIfPresent() {
-    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testUserLogin");
+  public void testUserLoginIfPresent(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     ParticipantUserFactory.ParticipantUserAndPortalUser userBundle =
-        participantUserFactory.buildPersisted(portalEnv, "testUserLogin");
+        participantUserFactory.buildPersisted(portalEnv, getTestName(info));
     String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
     String token = generateFakeJwtToken(userBundle.user().getUsername());
 

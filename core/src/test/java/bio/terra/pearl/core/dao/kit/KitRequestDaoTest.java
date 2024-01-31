@@ -15,6 +15,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +24,10 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class KitRequestDaoTest extends BaseSpringBootTest {
 
@@ -32,10 +36,10 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testCreatSampleKit() {
-        AdminUser adminUser = adminUserFactory.buildPersisted("testCreatSampleKit");
-        Enrollee enrollee = enrolleeFactory.buildPersisted("testCreatSampleKit");
-        KitType kitType = kitTypeFactory.buildPersisted("testCreatSampleKit");
+    public void testCreatSampleKit(TestInfo info) {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
 
         KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUser.getId())
@@ -57,16 +61,16 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFindByStatus() throws Exception {
+    public void testFindByStatus(TestInfo info) throws Exception {
         // Arrange
-        AdminUser adminUser = adminUserFactory.buildPersisted("testFindIncompleteKits");
-        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted("testUpdateAllKitStatuses");
-        Enrollee enrollee = enrolleeFactory.buildPersisted("testFindIncompleteKits", studyEnvironment);
-        KitType kitType = kitTypeFactory.buildPersisted("testFindIncompleteKits");
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
 
         Function<KitRequestStatus, KitRequest> makeKit = status -> {
             try {
-                KitRequest kit = kitRequestFactory.builder("testFindIncompleteKits " + status.name())
+                KitRequest kit = kitRequestFactory.builder(getTestName(info) + " " + status.name())
                         .creatingAdminUserId(adminUser.getId())
                         .enrolleeId(enrollee.getId())
                         .kitTypeId(kitType.getId())
@@ -95,21 +99,21 @@ public class KitRequestDaoTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFindByStudyEnvironment() throws Exception {
-        AdminUser adminUser = adminUserFactory.buildPersisted("testFindByStudyEnvironment");
-        KitType kitType = kitTypeFactory.buildPersisted("testFindByStudyEnvironment");
-        StudyEnvironment studyEnvironment1 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 1");
-        StudyEnvironment studyEnvironment2 = studyEnvironmentFactory.buildPersisted("testFindByStudyEnvironment 2");
-        Enrollee enrollee1 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 1", studyEnvironment1);
-        Enrollee enrollee2 = enrolleeFactory.buildPersisted("testFindByStudyEnvironment 2", studyEnvironment2);
+    public void testFindByStudyEnvironment(TestInfo info) throws Exception {
+        AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+        KitType kitType = kitTypeFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment1 = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnvironment2 = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrollee1 = enrolleeFactory.buildPersisted(getTestName(info) + " 1", studyEnvironment1);
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(getTestName(info) + " 2", studyEnvironment2);
 
-        KitRequest kit1 = kitRequestFactory.builder("testFindByStudyEnvironment 1")
+        KitRequest kit1 = kitRequestFactory.builder(getTestName(info) + " 1")
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee1.getId())
                 .kitTypeId(kitType.getId())
                 .build();
         kit1 = kitRequestDao.create(kit1);
-        KitRequest kit2 = kitRequestFactory.builder("testFindByStudyEnvironment 2")
+        KitRequest kit2 = kitRequestFactory.builder(getTestName(info) + " 2")
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee2.getId())
                 .kitTypeId(kitType.getId())

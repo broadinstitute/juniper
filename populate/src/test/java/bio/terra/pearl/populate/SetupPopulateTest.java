@@ -24,7 +24,6 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     BaseSeedPopulator baseSeedPopulator;
     private List<String> tablesToTruncate = Arrays.asList("admin_user", "environment");
 
-    @BeforeAll
     public void cleanTables() {
         jdbi.withHandle(handle ->
                 handle.execute("TRUNCATE " + String.join(",", tablesToTruncate) + " CASCADE")
@@ -34,6 +33,7 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testSetup() throws IOException {
+        cleanTables();
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
         Assertions.assertEquals(BaseSeedPopulator.ADMIN_USERS_TO_POPULATE.size(), setupStats.getNumAdminUsers());
         Assertions.assertEquals(BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE.size(), setupStats.getNumEnvironments());

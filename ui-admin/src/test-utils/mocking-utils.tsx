@@ -14,7 +14,7 @@ import {
   PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
-import { Survey, ParticipantTask, ParticipantTaskType } from '@juniper/ui-core'
+import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -79,6 +79,7 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
 
 /** returns a simple survey object for use/extension in tests */
 export const mockSurvey: () => Survey = () => ({
+  ...defaultSurvey,
   id: 'surveyId1',
   stableId: 'survey1',
   version: 1,

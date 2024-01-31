@@ -6,14 +6,19 @@ import {  StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
 import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 
-import { failureNotification, successNotification } from 'util/notifications'
+import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useLoadingEffect } from '../../api/api-utils'
+import { doApiLoad, useLoadingEffect } from '../../api/api-utils'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
   version?: string
+}
+
+export type SaveableFormProps = {
+  content: string,
+  required?: boolean
 }
 
 /** Handles logic for updating study environment surveys */
@@ -24,24 +29,22 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
 
   const [currentSurvey, setCurrentSurvey] = useState(survey)
   /** saves the survey as a new version */
-  async function createNewVersion({ content: updatedTextContent }: { content: string }): Promise<void> {
-    try {
+  async function createNewVersion(saveableProps: SaveableFormProps): Promise<void> {
+    doApiLoad(async () => {
       const updatedSurvey = await Api.createNewSurveyVersion(
         portal.shortcode,
-        { ...currentSurvey, content: updatedTextContent }
+        { ...currentSurvey, ...saveableProps }
       )
       const configuredSurvey = currentEnv.configuredSurveys
         .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
       const updatedConfig = { ...configuredSurvey, surveyId: updatedSurvey.id, survey: updatedSurvey }
-      const updatedConfiguredSurvey = await Api.updateConfiguredSurvey(portal.shortcode,
-        study.shortcode, currentEnv.environmentName, updatedConfig)
+      const updatedConfiguredSurvey = await Api.replaceConfiguredSurvey(portal.shortcode,
+        study.shortcode, currentEnv.environmentName, configuredSurvey.id, updatedConfig)
       Store.addNotification(successNotification(
         `Updated ${currentEnv.environmentName} to version ${updatedSurvey.version}`
       ))
       updateSurveyFromServer(updatedSurvey, updatedConfiguredSurvey)
-    } catch (e) {
-      Store.addNotification(failureNotification(`save failed`))
-    }
+    })
   }
 
   /** Syncs the survey with one from the server */

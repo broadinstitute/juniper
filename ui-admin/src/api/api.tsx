@@ -242,7 +242,8 @@ export type Config = {
   participantUiHostname: string,
   participantApiHostname: string,
   adminUiHostname: string,
-  adminApiHostname: string
+  adminApiHostname: string,
+  deploymentZone: string
 }
 
 export type MailingListContact = {
@@ -546,6 +547,18 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(survey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string, oldId: string,
+    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}`
+      + `/configuredSurveys/${oldId}/replace`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
   },

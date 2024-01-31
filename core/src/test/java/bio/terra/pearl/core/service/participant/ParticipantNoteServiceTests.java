@@ -7,11 +7,13 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class ParticipantNoteServiceTests extends BaseSpringBootTest {
   @Autowired
@@ -23,9 +25,9 @@ public class ParticipantNoteServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testBasicNoteCrud() {
-    AdminUser adminUser = adminUserFactory.buildPersisted("testBasicNoteCrud");
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testBaseNoteCrud");
+  public void testBasicNoteCrud(TestInfo info) {
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
     ParticipantNote note = ParticipantNote.builder()
         .enrolleeId(enrollee.getId())
         .creatingAdminUserId(adminUser.getId())
