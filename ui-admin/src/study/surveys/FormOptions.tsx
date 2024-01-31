@@ -44,8 +44,7 @@ export default function FormOptions({
       <Modal.Title>{workingForm.name} <InfoPopup placement="bottom" content={<div>
         See the &quot;Options&quot; section in
         our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
-        more detail.  Note that you need to  &quot;Save&quot; the survey
-        for any changes to options on this page to take effect.
+        more detail.
       </div>}/></Modal.Title>
     </Modal.Header>
     <Modal.Body>
@@ -59,12 +58,12 @@ export default function FormOptions({
               })}
             /> Required
           </label>
-          <Button variant="primary" onClick={onDismiss}>
-            Ok
-          </Button>
+          <div className="fw-light fst-italic">
+            Note that you need to  &quot;Save&quot; the survey
+            for any changes to options to take effect.
+          </div>
           <hr/>
         </div>
-
       }
       <h3 className="h5">Actions</h3>
       <Button variant="secondary" title="Download the current contents of the JSON Editor as a file"
@@ -78,6 +77,11 @@ export default function FormOptions({
         isConsentForm={!isSurvey}
         onDismiss={onDismiss}/>
     </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={onDismiss}>
+        Done
+      </Button>
+    </Modal.Footer>
   </Modal>
 }
 
@@ -150,9 +154,7 @@ export const VersionSelector = ({
       >
         View preview
       </Button>
-      <a href={`${studyEnvFormsPath(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
+      <a href={`${studyEnvFormsPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
         studyEnvContext.currentEnv.environmentName
       )}/${isConsentForm ? 'consentForms' : 'surveys'}/${stableId}/${selectedVersion}?readOnly=true`}
       className="btn btn-secondary"

@@ -1,4 +1,4 @@
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
   Answer,
@@ -14,7 +14,7 @@ import {
   PortalStudy, SiteImageMetadata,
   StudyEnvironmentConsent, SurveyResponse
 } from 'api/api'
-import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey } from '@juniper/ui-core'
+import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey, ParticipantTaskStatus } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -447,4 +447,39 @@ export const mockSiteImage = (): SiteImageMetadata => {
     cleanFileName: 'fileName.png',
     version: 1
   }
+}
+
+/** mock research survey task */
+export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
+  return {
+    id: randomId('task'),
+    enrolleeId: randomId('enrollee'),
+    portalParticipantUserId: randomId('ppUser'),
+    targetName: 'Survey 1',
+    targetStableId: 'researchSurvey1',
+    targetAssignedVersion: 1,
+    studyEnvironmentId: randomId('studyEnv'),
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    status,
+    taskType,
+    taskOrder: 0,
+    blocksHub: true
+  }
+}
+
+/**
+ *
+ */
+export const mockStudyEnvParams = (): StudyEnvParams => {
+  return {
+    portalShortcode: 'foo',
+    studyShortcode: 'bar',
+    envName: 'sandbox'
+  }
+}
+
+/** random ids to be used in place of guids */
+export const randomId = (prefix: string): string => {
+  return `${prefix}${Math.floor(Math.random() * 1000)}`
 }

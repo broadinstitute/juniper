@@ -8,9 +8,17 @@ import { studyShortcodeFromPath } from '../study/StudyRouter'
 import { useNavContext } from './NavContextProvider'
 import { StudySidebar } from './StudySidebar'
 import CollapsableMenu from './CollapsableMenu'
+import { Config } from '../api/api'
+
+const ZONE_COLORS: { [index: string]: string } = {
+  'demo': 'rgb(70 143 124)', // dark green
+  'local': 'rgb(23 26 30)', // grey
+  'prod': '#333F52' // blue (default)
+}
+
 
 /** renders the left navbar of admin tool */
-const AdminSidebar = () => {
+const AdminSidebar = ({ config }: { config: Config }) => {
   const [open, setOpen] = useState(true)
   const { user } = useUser()
   const params = useParams()
@@ -29,7 +37,9 @@ const AdminSidebar = () => {
   }
   const currentStudy = studyList.find(study => study.shortcode === studyShortcode)
 
-  return <div style={{ backgroundColor: '#333F52', minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
+  const color = ZONE_COLORS[config.deploymentZone] || ZONE_COLORS['prod']
+
+  return <div style={{ backgroundColor: color, minHeight: '100vh', minWidth: open ? '250px' : '50px' }}
     className="p-2 pt-3">
 
     {!open &&  <button onClick={() => setOpen(!open)} title="toggle sidebar" className="btn btn-link text-white">

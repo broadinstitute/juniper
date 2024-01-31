@@ -153,7 +153,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         SurveyResponse response;
         if (taskResponseId != null) {
             response = dao.find(taskResponseId).get();
-            response.setComplete(responseDto.isComplete());
+            // don't allow the response to be marked incomplete if it's already complete
+            if(!response.isComplete()) {
+                response.setComplete(responseDto.isComplete());
+            }
             // to enable simultaneous editing with page-saving, update this to be a merge, rather than a set
             response.setResumeData(responseDto.getResumeData());
             dao.update(response);

@@ -8,6 +8,8 @@ import './print.css'
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'
 
+import { Config } from 'api/api'
+
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
 import { ProtectedRoute } from 'login/ProtectedRoute'
 import AdminNavbar from 'navbar/AdminNavbar'
@@ -54,7 +56,7 @@ function App() {
                   <Routes>
                     <Route path="/">
                       <Route element={<ProtectedRoute>
-                        <NavContextProvider><PageFrame/></NavContextProvider>
+                        <NavContextProvider><PageFrame config={config}/></NavContextProvider>
                       </ProtectedRoute>}>
                         <Route path="populate/*" element={<PopulateRouteSelect/>}/>
                         <Route path="users" element={<UserList/>}/>
@@ -79,10 +81,10 @@ function App() {
 }
 
 /** Renders the navbar and footer for the page */
-function PageFrame() {
+function PageFrame({ config }: { config: Config }) {
   return (
     <div className="d-flex">
-      <AdminSidebar/>
+      <AdminSidebar config={config}/>
       <div className="flex-grow-1 d-flex flex-column" style={{ backgroundColor: '#fff' }}>
         <AdminNavbar/>
         <Outlet/>

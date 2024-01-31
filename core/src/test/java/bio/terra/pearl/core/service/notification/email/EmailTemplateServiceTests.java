@@ -2,11 +2,9 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
-import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +19,8 @@ public class EmailTemplateServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAssignPublishedVersion() {
-        EmailTemplate form = emailTemplateFactory.buildPersisted("testAssignPublishedVersion");
+    public void testAssignPublishedVersion(TestInfo info) {
+        EmailTemplate form = emailTemplateFactory.buildPersisted(getTestName(info));
         assertThat(form.getPublishedVersion(), equalTo(null));
         emailTemplateService.assignPublishedVersion(form.getId());
         form = emailTemplateService.find(form.getId()).get();

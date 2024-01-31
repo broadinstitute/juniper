@@ -28,14 +28,14 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
   @Test
   public void testUpdateProfileForEnrolleeFailsIfNotInPortal(TestInfo info) {
-    var studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
     Enrollee enrollee =
         enrolleeFactory.buildPersisted(
             getTestName(info), studyEnvBundle.getStudyEnv(), Profile.builder().build());
 
-    AdminUser operator = adminUserFactory.buildPersisted("updateConfigAuthsToStudy", false);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
 
     Assertions.assertThrows(
         PermissionDeniedException.class,
@@ -50,7 +50,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
   @Test
   public void testUpdateProfileForEnrollee(TestInfo info) {
-    var studyEnvBundle =
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
 
     Enrollee enrollee =

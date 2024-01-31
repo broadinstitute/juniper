@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.portal;
 import bio.terra.pearl.core.dao.portal.PortalEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -109,7 +110,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
-        var triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
+        List<Trigger> triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
         triggerService.attachTemplates(triggers);
         portalEnv.setTriggers(triggers);
 

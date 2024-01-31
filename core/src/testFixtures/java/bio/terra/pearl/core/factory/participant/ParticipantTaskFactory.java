@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.factory.participant;
 
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -25,6 +26,7 @@ public class ParticipantTaskFactory {
 
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
                                         String targetName, TaskStatus status, TaskType type) {
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("ParticipantTaskFactory.buildPersisted").build();
     ParticipantTask task = ParticipantTask.builder()
         .status(status)
         .enrolleeId(enrolleeBundle.enrollee().getId())
@@ -34,6 +36,6 @@ public class ParticipantTaskFactory {
         .targetName(targetName)
         .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
         .build();
-    return participantTaskService.create(task);
+    return participantTaskService.create(task, auditInfo);
   }
 }

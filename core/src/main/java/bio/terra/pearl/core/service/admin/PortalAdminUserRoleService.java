@@ -1,8 +1,10 @@
 package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserRoleDao;
+import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
+import bio.terra.pearl.core.model.admin.RolePermission;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
@@ -55,8 +57,8 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
      */
     @Transactional
     public List<String> setRoles(UUID portalAdminUserId, List<String> roleNames) throws ValidationException {
-        var portalAdminUser = portalAdminUserService.find(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
-        var roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
+        PortalAdminUser portalAdminUser = portalAdminUserService.find(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        List<Role> roles = roleNames.stream().map(roleName -> roleService.findByName(roleName).orElseThrow(() -> new RoleNotFoundException(roleName))).toList();
 
         dao.deleteByPortalAdminUserId(portalAdminUser.getId());
         roles.forEach(role -> {
@@ -68,11 +70,11 @@ public class PortalAdminUserRoleService extends ImmutableEntityService<PortalAdm
     }
 
     public List<PortalAdminUserRole> findByPortalAdminUserIdWithRolesAndPermissions(UUID portalAdminUserId) {
-        var portalAdminUserRoles = dao.findByPortalAdminUserId(portalAdminUserId);
+        List<PortalAdminUserRole> portalAdminUserRoles = dao.findByPortalAdminUserId(portalAdminUserId);
         portalAdminUserRoles.forEach(portalAdminUserRole -> {
             roleService.findOne(portalAdminUserRole.getRoleId())
                     .ifPresent(role -> {
-                        var rolePermissions = rolePermissionService.findByRole(role.getId());
+                        List<RolePermission> rolePermissions = rolePermissionService.findByRole(role.getId());
                         rolePermissions.forEach(rolePermission -> {
                             permissionService.find(rolePermission.getPermissionId()).ifPresent(permission -> {
                                 role.getPermissions().add(permission);

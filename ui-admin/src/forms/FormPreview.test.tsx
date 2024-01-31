@@ -1,5 +1,5 @@
 /* eslint-disable jest/expect-expect */
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -102,6 +102,60 @@ describe('FormPreview', () => {
         // Still on the first page.
         screen.getByText('First question')
         screen.getByText('Response required.')
+      })
+    })
+
+    describe('locale input', () => {
+      const localizedFormContent = {
+        title: {
+          default: 'Test survey',
+          es: 'Encuesta de prueba'
+        },
+        pages: [
+          {
+            elements: [
+              {
+                name: 'test_firstName',
+                type: 'text',
+                title: {
+                  default: 'First name',
+                  es: 'Nombre'
+                },
+                isRequired: true
+              },
+              {
+                name: 'test_lastName',
+                type: 'text',
+                title: {
+                  default: 'Last name',
+                  es: 'Apellido'
+                },
+                isRequired: true
+              }
+            ]
+          }
+        ]
+      }
+
+      it('defaults to English', () => {
+        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+
+        screen.getByText('First name')
+        screen.getByText('Last name')
+      })
+
+      it('can switch to Spanish', async () => {
+        const user = userEvent.setup()
+
+        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+
+        const localeInput = screen.getByLabelText('Locale')
+        await act(() => user.type(localeInput, 'es'))
+
+        waitFor(() => {
+          screen.getByText('Nombre')
+          screen.getByText('Apellido')
+        })
       })
     })
 

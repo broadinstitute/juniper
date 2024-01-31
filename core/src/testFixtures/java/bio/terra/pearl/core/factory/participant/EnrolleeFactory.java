@@ -70,7 +70,7 @@ public class EnrolleeFactory {
     /** saves the given profile and creates an enrollee with that profile attached */
     public Enrollee buildPersisted(String testName, StudyEnvironment studyEnv, Profile profile) {
         Profile savedProfile = profileService.create(profile, DataAuditInfo.builder().build());
-        var builder = builderWithDependencies(testName, studyEnv)
+        Enrollee.EnrolleeBuilder builder = builderWithDependencies(testName, studyEnv)
             .profileId(savedProfile.getId());
         return buildPersisted(builder);
     }

@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.service;
 import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,8 @@ public class CurrentUserService {
   }
 
   protected Optional<AdminUserWithPermissions> loadByToken(String token) {
-    var decodedJWT = JWT.decode(token);
-    var email = decodedJWT.getClaim("email").asString();
+    DecodedJWT decodedJWT = JWT.decode(token);
+    String email = decodedJWT.getClaim("email").asString();
     return adminUserService.findByUsernameWithPermissions(email);
   }
 

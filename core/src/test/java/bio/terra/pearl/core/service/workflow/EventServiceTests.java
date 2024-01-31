@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +28,9 @@ public class EventServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPersistsEnrolleeConsentEvent() {
+    public void testPersistsEnrolleeConsentEvent(TestInfo info) {
 
-        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeConsentEvent");
+        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeConsentEvent(
                 bundle.enrollee(),
@@ -99,10 +100,10 @@ public class EventServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPersistsPublishPortalRegistrationEvent() {
+    public void testPersistsPublishPortalRegistrationEvent(TestInfo info) {
 
         EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsPublishPortalRegistrationEvent");
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testPersistsPublishPortalRegistrationEvent");
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         Assertions.assertEquals(0, eventService.findAll().size());
 
         eventService.publishPortalRegistrationEvent(

@@ -11,49 +11,53 @@ import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
-    public void testApplyPortalConfigChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testApplyPortalConfigChanges", true);
-        Portal portal = portalFactory.buildPersisted("testApplyPortalConfigChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.live, portal.getId());
+    public void testApplyPortalConfigChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
 
-        var irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
+        PortalEnvironmentConfig irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
         irbConfig.setPassword("foobar");
         irbConfig.setEmailSourceAddress("info@demo.com");
         portalEnvironmentConfigService.update(irbConfig);
 
-        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        PortalEnvironmentChange changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
         portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
-        var liveConfig = portalEnvironmentConfigService.find(liveEnv.getPortalEnvironmentConfigId()).get();
+        PortalEnvironmentConfig liveConfig = portalEnvironmentConfigService.find(liveEnv.getPortalEnvironmentConfigId()).get();
         assertThat(liveConfig.getPassword(), equalTo("foobar"));
         assertThat(liveConfig.getEmailSourceAddress(), equalTo("info@demo.com"));
     }
 
     @Test
-    public void testPublishesSurveyPortalChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testPublishesSurveyPortalChanges", true);
-        Portal portal = portalFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        Survey survey = surveyFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.live, portal.getId());
+    public void testPublishesSurveyPortalChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
         irbEnv.setPreRegSurveyId(survey.getId());
         portalEnvironmentService.update(irbEnv);
 
-        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        PortalEnvironmentChange changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
         portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
 
         PortalEnvironment updatedLiveEnv = portalEnvironmentService.find(liveEnv.getId()).get();

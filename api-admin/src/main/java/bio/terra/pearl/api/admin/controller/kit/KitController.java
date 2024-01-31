@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -81,8 +82,9 @@ public class KitController implements KitApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    var enrolleeShortcodes = Arrays.asList(objectMapper.convertValue(body, String[].class));
-    var result =
+    List<String> enrolleeShortcodes =
+        Arrays.asList(objectMapper.convertValue(body, String[].class));
+    KitExtService.KitRequestListResponse result =
         kitExtService.requestKits(
             adminUser,
             portalShortcode,

@@ -29,9 +29,9 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
     }
 
     public Optional<PortalAdminUser> findOneWithRolesAndPermissions(UUID portalAdminUserId) {
-        var portalAdminUserOpt = dao.find(portalAdminUserId);
+        Optional<PortalAdminUser> portalAdminUserOpt = dao.find(portalAdminUserId);
         return portalAdminUserOpt.map(portalAdminUser -> {
-            var portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
+            List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
             portalAdminUserRoles.forEach((PortalAdminUserRole portalAdminUserRole) -> {
                 portalAdminUser.getRoles().add(portalAdminUserRole.getRole());
             });
@@ -40,12 +40,12 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
     }
 
     public boolean userHasRole(UUID portalAdminUserId, String roleName) {
-        var portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        PortalAdminUser portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         return portalAdminUser.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
     }
 
     public boolean userHasPermission(UUID portalAdminUserId, String permissionName) {
-        var portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
+        PortalAdminUser portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         return portalAdminUser.getRoles().stream().anyMatch(role -> {
             return role.getPermissions().stream().anyMatch(permission -> {
                 return permission.getName().equals(permissionName);

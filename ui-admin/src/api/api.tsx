@@ -243,7 +243,8 @@ export type Config = {
   participantUiHostname: string,
   participantApiHostname: string,
   adminUiHostname: string,
-  adminApiHostname: string
+  adminApiHostname: string,
+  deploymentZone: string
 }
 
 export type MailingListContact = {

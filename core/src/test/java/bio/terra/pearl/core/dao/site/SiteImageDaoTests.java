@@ -4,12 +4,16 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.site.SiteImageFactory;
 import bio.terra.pearl.core.model.site.SiteImage;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class SiteImageDaoTests extends BaseSpringBootTest {
     @Autowired
@@ -19,8 +23,8 @@ public class SiteImageDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCrud() {
-        SiteImage image = siteImageFactory.builderWithDependencies("testSiteImageCrud").build();
+    public void testCrud(TestInfo info) {
+        SiteImage image = siteImageFactory.builderWithDependencies(getTestName(info)).build();
         SiteImage savedImage = siteImageDao.create(image);
         DaoTestUtils.assertGeneratedProperties(savedImage);
 

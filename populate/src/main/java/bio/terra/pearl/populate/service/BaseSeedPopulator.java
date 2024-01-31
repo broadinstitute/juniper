@@ -53,7 +53,7 @@ public class BaseSeedPopulator {
         for (String file : ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(file), false);
         }
-        var configStats = adminConfigPopulator.populate(true);
+        AdminConfigPopulator.AdminConfigStats configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())
                 .numEnvironments(environmentService.count())

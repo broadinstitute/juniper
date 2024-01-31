@@ -26,26 +26,35 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
-    public void testEnroll() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testEnroll");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testEnroll");
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testEnroll");
+    public void testEnroll(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted("testEnroll");
+        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(info));
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentFormId(consent.getId())
                 .studyEnvironmentId(studyEnv.getId())
@@ -69,20 +78,20 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     /** test of enroll -> consent -> survey */
     @Test
     @Transactional
-    public void testParticipantWorkflow() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testEnrollAndConsent");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testEnrollAndConsent");
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testEnrollAndConsent");
+    public void testParticipantWorkflow(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
 
 
-        ConsentForm consent = consentFormFactory.buildPersisted("testEnrollAndConsent");
+        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(info));
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentFormId(consent.getId())
                 .studyEnvironmentId(studyEnv.getId())
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        Survey survey = surveyFactory.buildPersisted("testEnrollAndConsent");
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
         StudyEnvironmentSurvey studyEnvSurvey = StudyEnvironmentSurvey.builder()
                 .surveyId(survey.getId())
                 .studyEnvironmentId(studyEnv.getId())

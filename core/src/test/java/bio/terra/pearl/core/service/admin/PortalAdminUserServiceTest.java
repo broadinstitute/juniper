@@ -1,11 +1,5 @@
 package bio.terra.pearl.core.service.admin;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
@@ -13,8 +7,15 @@ import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.portal.Portal;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class PortalAdminUserServiceTest extends BaseSpringBootTest {
@@ -33,13 +34,12 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testRemoveUserFromPortal() {
-        String testName = "testRemoveUserFromPortal";
+    public void testRemoveUserFromPortal(TestInfo info) {
         // set up a user in two portals
-        Portal portal1 = portalFactory.buildPersisted(testName);
-        Portal portal2 = portalFactory.buildPersisted(testName);
+        Portal portal1 = portalFactory.buildPersisted(getTestName(info));
+        Portal portal2 = portalFactory.buildPersisted(getTestName(info));
         List<PortalAdminUser> portalUsers =
-                portalAdminUserFactory.buildPersistedWithPortals(testName, List.of(portal1, portal2));
+                portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal1, portal2));
         PortalAdminUser user1Portal1 = portalUsers.get(0);
         PortalAdminUser user1Portal2 = portalUsers.get(1);
 

@@ -18,6 +18,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
+    model.locale = 'default'
     return model
   })
   const forceUpdate = useForceUpdate()
@@ -31,11 +32,13 @@ export const FormPreview = (props: FormPreviewProps) => {
         <FormPreviewOptions
           value={{
             ignoreValidation: surveyModel.ignoreValidation,
-            showInvisibleElements: surveyModel.showInvisibleElements
+            showInvisibleElements: surveyModel.showInvisibleElements,
+            locale: surveyModel.locale
           }}
-          onChange={({ ignoreValidation, showInvisibleElements }) => {
+          onChange={({ ignoreValidation, showInvisibleElements, locale }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
+            surveyModel.locale = locale
             forceUpdate()
           }}
         />

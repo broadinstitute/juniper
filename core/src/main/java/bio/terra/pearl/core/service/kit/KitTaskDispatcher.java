@@ -28,7 +28,7 @@ public class KitTaskDispatcher {
 
     @EventListener
     @Order(DispatcherOrder.KIT_TASK)
-    public void handleSentEvent(KitSentEvent kitSentEvent) {
+    public void handleEvent(KitSentEvent kitSentEvent) {
         Enrollee enrollee = kitSentEvent.getEnrollee();
         UUID portalParticipantUserId = kitSentEvent.getPortalParticipantUser().getId();
         KitRequest kitRequest = kitSentEvent.getKitRequest();
@@ -48,7 +48,7 @@ public class KitTaskDispatcher {
 
     @EventListener
     @Order(DispatcherOrder.KIT_TASK)
-    public void handleReceivedEvent(KitReceivedEvent kitEvent) {
+    public void handleEvent(KitReceivedEvent kitEvent) {
         Enrollee enrollee = kitEvent.getEnrollee();
         KitRequest kitRequest = kitEvent.getKitRequest();
         Optional<ParticipantTask> task = participantTaskService.findByKitRequestId(kitRequest.getId());

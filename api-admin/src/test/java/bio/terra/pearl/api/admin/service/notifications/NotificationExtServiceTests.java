@@ -9,7 +9,11 @@ import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -21,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,9 +41,10 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testSendAdHocNotification() throws Exception {
+  public void testSendAdHocNotification(TestInfo info) throws Exception {
     AdminUser user = AdminUser.builder().superuser(true).build();
-    var enrolleeBundle = enrolleeFactory.buildWithPortalUser("testSendAdHocNotification");
+    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+        enrolleeFactory.buildWithPortalUser(getTestName(info));
     Portal portal = portalService.find(enrolleeBundle.portalId()).get();
     Study study =
         studyService
@@ -54,7 +60,7 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
                 .triggerType(TriggerType.AD_HOC),
             studyEnv.getId(),
             enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
-    var customMessages = Map.of("adHocMessage", "hello!");
+    Map<String, String> customMessages = Map.of("adHocMessage", "hello!");
     notificationExtService.sendAdHoc(
         user,
         portal.getShortcode(),
@@ -64,7 +70,8 @@ public class NotificationExtServiceTests extends BaseSpringBootTest {
         customMessages,
         config.getId());
 
-    var notifications = notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
+    List<Notification> notifications =
+        notificationService.findByEnrolleeId(enrolleeBundle.enrollee().getId());
     assertThat(notifications, hasSize(1));
     assertThat(
         notifications.get(0),

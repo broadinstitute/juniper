@@ -8,15 +8,9 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
-import java.time.Instant;
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.survey.Survey;
 import lombok.Getter;
 import lombok.Setter;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Stream;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 
 public class BaseJdbiDaoTests extends BaseSpringBootTest {
     /** we use the portalDao to test base capability since it doesn't have any required foreign keys */
@@ -40,7 +45,7 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     public void testGenerateInsertFields() {
         SimpleModelDao testDao = new SimpleModelDao(null);
         List<String> fields = testDao.insertFields;
-        var expectedFields = new String[]{"createdAt", "lastUpdatedAt", "boolField",
+        String[] expectedFields = new String[]{"createdAt", "lastUpdatedAt", "boolField",
                 "intField", "doubleField", "stringField", "uuidField", "instantField"};
         assertThat(fields.toString(), fields, containsInAnyOrder(expectedFields));
     }
@@ -127,12 +132,12 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     @Transactional
     public void testStreamAllByProperty(TestInfo testInfo) {
         // Arrange
-        var portal1 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
-        var portal2 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
+        Portal portal1 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
+        Portal portal2 = portalDao.create(portalFactory.builder("").name(getTestName(testInfo)).build());
 
         // Act
-        var stream = portalDao.streamAllByProperty("name", "testStreamAllByProperty");
-        var foundPortals = stream.toList();
+        Stream<Portal> stream = portalDao.streamAllByProperty("name", getTestName(testInfo));
+        List<Portal> foundPortals = stream.toList();
 
         // Assert
         assertThat(foundPortals, contains(portal1, portal2));

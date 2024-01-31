@@ -13,6 +13,7 @@ import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 import { renderPageHeader } from 'util/pageUtils'
+
 import Api from 'api/api'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -20,10 +21,12 @@ import { doApiLoad, useLoadingEffect } from '../api/api-utils'
 import _uniq from 'lodash/uniq'
 import SurveyEnvironmentTable from './surveys/SurveyEnvironmentTable'
 
+
 /** renders the main configuration page for a study environment */
 function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { currentEnv } = studyEnvContext
   const portalContext = useContext(PortalContext) as PortalContextT
+
 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
@@ -84,7 +87,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                         <li>
                           <button className="dropdown-item"
                             onClick={() => alert('To remove a pre-enroll survey, contact support')}>
-                            Remove
+                          Remove
                           </button>
                         </li>
                       </ul>
@@ -100,6 +103,29 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 <FontAwesomeIcon icon={faPlus}/> Add
               </Button>
               }
+            </div>
+          </li>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
+            <h2 className="h6">Consent forms</h2>
+            <div className="flex-grow-1 pt-3">
+              <ul className="list-unstyled">
+                { currentEnv.configuredConsents.map((config, index) => {
+                  const consentForm = config.consentForm
+                  return <li key={index}>
+                    <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
+                      {consentForm.name} <span className="detail">v{consentForm.version}</span>
+                    </Link>
+                  </li>
+                }) }
+                <li>
+                  { !isReadOnlyEnv && <Button variant="secondary" data-testid={'addConsent'} onClick={() => {
+                    setShowCreateConsentModal(!showCreateConsentModal)
+                  }}>
+                    <FontAwesomeIcon icon={faPlus}/> Add
+                  </Button>
+                  }
+                </li>
+              </ul>
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
