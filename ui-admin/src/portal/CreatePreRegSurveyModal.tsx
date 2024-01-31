@@ -11,6 +11,7 @@ import { PortalEnvContext } from './PortalRouter'
 import { useFormCreationNameFields } from 'study/surveys/useFormCreationNameFields'
 import { StudyEnvParams, studyEnvPreRegPath, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
 import { DocsKey, ZendeskLink } from '../util/zendeskUtils'
+import { defaultSurvey } from '@juniper/ui-core'
 
 const EXAMPLE_PREREG_TEMPLATE = `
 {
@@ -81,6 +82,7 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
     await doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(portalEnvContext.portal.shortcode,
         {
+          ...defaultSurvey,
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: 'RESEARCH',
           content: EXAMPLE_PREREG_TEMPLATE, name: formName, stableId: formStableId
         })

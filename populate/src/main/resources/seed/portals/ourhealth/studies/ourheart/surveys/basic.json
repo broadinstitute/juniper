@@ -3,6 +3,7 @@
   "version": 1,
   "name": "The Basics",
   "footer": "Resources used for this survey:\n * All of Us\n * US2020 Census\n * NHANES\n * GenIUSS group (Gender Identity in U.S. Surveillance)\n * National Health Interview Survey (NHIS)\n * Behavioral Risk Factor Surveillance System (BRFSS)\n * NHCHC\n * OurHealth",
+  "required": true,
   "answerMappings": [
     {
       "questionStableId": "oh_oh_basic_firstName",

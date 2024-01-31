@@ -65,7 +65,7 @@ public class SurveyTaskDispatcher {
                                             List<StudyEnvironmentSurvey> studyEnvSurveys) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentSurvey studySurvey : studyEnvSurveys) {
-            if (isEligibleForSurvey(studySurvey.getEligibilityRule(), enrolleeRuleData)) {
+            if (isEligibleForSurvey(studySurvey.getSurvey().getEligibilityRule(), enrolleeRuleData)) {
                 ParticipantTask task = buildTask(studySurvey, studySurvey.getSurvey(), enrollee, portalParticipantUser);
                 if (!isDuplicateTask(studySurvey, task, enrollee.getParticipantTasks())) {
                     tasks.add(task);
@@ -88,7 +88,7 @@ public class SurveyTaskDispatcher {
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .blocksHub(studySurvey.isRequired())
+                .blocksHub(survey.isRequired())
                 .taskOrder(studySurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())
@@ -119,11 +119,11 @@ public class SurveyTaskDispatcher {
      * a new one
      */
     public static boolean isRecurrenceWindowOpen(StudyEnvironmentSurvey studySurvey, ParticipantTask pastTask) {
-        if (!studySurvey.isRecur()) {
+        if (!studySurvey.getSurvey().isRecur()) {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(studySurvey.getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
+                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
         return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 

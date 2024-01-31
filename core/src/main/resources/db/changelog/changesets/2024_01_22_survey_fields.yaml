@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: "survey_fields"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: eligibility_rule, type: text }
+              - column: { name: required, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: allow_admin_edit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: allow_participant_start, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: allow_participant_reedit, type: boolean, defaultValueBoolean: true, constraints: { nullable: false } }
+              - column: { name: prepopulate, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: recur, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }
+              - column: { name: recurrence_interval_days, type: integer }
+              - column: { name: days_after_eligible, type: integer }
+        - sql:
+            sql: |
+              update survey set 
+                eligibility_rule = study_environment_survey.eligibility_rule, 
+                allow_admin_edit = study_environment_survey.allow_admin_edit, 
+                allow_participant_start = study_environment_survey.allow_participant_start, 
+                allow_participant_reedit = study_environment_survey.allow_participant_reedit,
+                prepopulate = study_environment_survey.prepopulate, 
+                recur = study_environment_survey.recur, 
+                recurrence_interval_days = study_environment_survey.recurrence_interval_days, 
+                days_after_eligible = study_environment_survey.days_after_eligible, 
+                required = study_environment_survey.required
+              from study_environment_survey
+              where survey.id = study_environment_survey.survey_id;
+        - dropColumn:
+            tableName: study_environment_survey
+            columns:
+              - column: { name: eligibility_rule }
+              - column: { name: allow_admin_edit }
+              - column: { name: allow_participant_start }
+              - column: { name: allow_participant_reedit }
+              - column: { name: prepopulate }
+              - column: { name: recur }
+              - column: { name: recurrence_interval_days }
+              - column: { name: days_after_eligible }
+              - column: { name: required }
+        - addColumn:
+            tableName: trigger
+            columns:
+              - column: { name: survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_trigger_survey, references: survey(id) }
+              }
+        - dropColumn:  # this was previously unused, and we now link to the survey itself
+            tableName: trigger
+            columnName: task_target_stable_id

@@ -550,6 +550,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string, oldId: string,
+    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}`
+      + `/configuredSurveys/${oldId}/replace`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredSurvey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`
     const response = await fetch(url, this.getGetInit())
