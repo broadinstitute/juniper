@@ -73,14 +73,15 @@ const SurveyListItem = (props: SurveyListItemProps) => {
       const envConfig = configuredSurveys
         .find(config => config.envName === envName && config.survey.stableId === stableId)
       return <td key={envName} >
-        {envConfig && <div className="d-flex">
+        {envConfig && <div className="d-flex align-items-center">
           <Button variant="secondary" onClick={() => setDetailEnv(envName)}>
               v{envConfig.survey.version}
-            { (envConfig.survey.version !== liveVersion) &&
-              <span className="text-black fw-bold" title="this version is not in the live environment"> *</span>}
           </Button>
-          { (envName === 'sandbox') &&  <div className="nav-item dropdown ms-1">
-            <EllipsisDropdownButton aria-label="configure survey menu"/>
+          { (envConfig.survey.version !== liveVersion) &&
+            <span className="badge bg-dark-subtle text-black rounded-5 fw-normal"
+              title="this version is not in the live environment">unpublished</span>}
+          { (envName === 'sandbox') &&  <div className="nav-item dropdown ms-auto">
+            <EllipsisDropdownButton aria-label="configure survey menu" className="ms-auto"/>
             <div className="dropdown-menu">
               <ul className="list-unstyled">
                 <li>
