@@ -70,6 +70,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
       </div>
     </div>
     <div className="row my-4 w-75">
+      <SurveyInsightsView studyEnvContext={studyEnvContext}/>
       { metricMetadata.map(metric => {
         return <MetricView key={metric.name}
           studyEnvContext={studyEnvContext}
@@ -77,7 +78,6 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
           dateRange={dateRange}
           dateRangeMode={selectedDateRangeMode}/>
       })}
-      <SurveyInsightsView studyEnvContext={studyEnvContext}/>
     </div>
   </div>
 }
