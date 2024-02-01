@@ -35,7 +35,7 @@ test('logs JS exceptions', async () => {
 // See JN-840
 test('handles metrics with circular reference', async () => {
   const logSpy = jest.spyOn(Api, 'log').mockImplementation(jest.fn())
-  const metricsObj: Record<string, any> = { stuff: 1, things: 'blah' }
+  const metricsObj: Record<string, unknown> = { stuff: 1, things: 'blah' }
   metricsObj.circular = metricsObj
 
   logVitals(metricsObj)
