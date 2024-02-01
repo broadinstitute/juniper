@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.model.address;
 
-import bio.terra.pearl.core.model.participant.MailingAddress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

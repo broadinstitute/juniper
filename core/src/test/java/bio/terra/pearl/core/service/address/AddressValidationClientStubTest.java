@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.address;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
-import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.factory.participant;
 
-import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 

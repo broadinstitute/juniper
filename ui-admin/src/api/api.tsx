@@ -138,6 +138,14 @@ export type MailingAddress = {
   postalCode: string
 }
 
+export type AddressValidationResult = {
+  valid: boolean,
+  suggestedAddress?: MailingAddress,
+  missingComponents?: string[],
+  unresolvedTokens?: string[],
+  sessionId: string
+}
+
 export type Notification = {
   id: string,
   triggerId: string,
@@ -784,6 +792,22 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async validateAddress(
+    address: MailingAddress, sessionId?: string
+  ): Promise<AddressValidationResult> {
+    const params = new URLSearchParams({})
+    if (sessionId) {
+      params.set('sessionId', sessionId)
+    }
+    const url = `${baseAddressUrl()}/validate?${params}`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async createParticipantNote(portalShortcode: string,
     studyShortcode: string,
     envName: string,
@@ -1277,4 +1301,9 @@ function baseStudyEnvUrlFromParams(studyEnvParams: StudyEnvParams) {
 /** base api path for populate api calls */
 function basePopulateUrl() {
   return `${API_ROOT}/internal/v1/populate`
+}
+
+/** base api path for address api calls */
+function baseAddressUrl() {
+  return `${API_ROOT}/address/v1`
 }

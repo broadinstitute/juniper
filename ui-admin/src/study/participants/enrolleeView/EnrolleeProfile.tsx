@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, Profile } from 'api/api'
+import Api, { AddressValidationResult, Enrollee, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
@@ -12,6 +12,7 @@ import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
+import LoadingSpinner from '../../../util/LoadingSpinner'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -90,7 +91,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 /**
  * Read only view of the profile.
  */
-export function ReadOnlyProfile(
+function ReadOnlyProfile(
   { profile }: {
     profile: Profile
   }
@@ -114,12 +115,22 @@ export function ReadOnlyProfile(
 /**
  * Editable profile, providing the update to `setProfile` on each change.
  */
-export function EditableProfile(
+function EditableProfile(
   { profile, setProfile }: {
     profile: Profile,
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
+  const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+
+  const validateAddress = () => {
+    doApiLoad(async () => {
+      const results = await Api.validateAddress(profile.mailingAddress, addressValidationResults?.sessionId)
+      console.log(results)
+      setAddressValidationResults(results)
+    }, { setIsLoading: setIsLoadingValidation })
+  }
   const onFieldChange = (field: string, value: string | boolean) => {
     setProfile((oldVal: Profile) => {
       return {
@@ -218,6 +229,11 @@ export function EditableProfile(
               onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
           </div>
         </div>
+        <LoadingSpinner isLoading={isLoadingValidation}>
+          <button className="btn btn-link" onClick={validateAddress}>Validate</button>
+        </LoadingSpinner>
+        {addressValidationResults?.suggestedAddress && <p>Todo - suggest modal</p>}
+        {addressValidationResults && <p>{addressValidationResults.valid ? 'True' : 'False'}</p>}
       </div>
     </FormRow>
     <FormRow title={'Email'}>
@@ -260,7 +276,7 @@ export function EditableProfile(
 /**
  * Row of readonly data, where the title takes the leftmost portion and the values are on the rightmost.
  */
-export function ReadOnlyRow(
+function ReadOnlyRow(
   { title, values }: {
     title: string,
     values: string[]
@@ -279,7 +295,7 @@ export function ReadOnlyRow(
 /**
  * One row of the profile's data.
  */
-export function FormRow(
+function FormRow(
   { title, children }: {
     title: string,
     children: React.ReactNode
@@ -294,4 +310,3 @@ export function FormRow(
     </div>
   </>
 }
-

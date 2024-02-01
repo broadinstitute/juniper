@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.address;
 
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
-import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatusCode;
