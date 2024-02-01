@@ -1,0 +1,172 @@
+{
+  "title": "",
+  "sectionDtos": [{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "title": "Ayúdenos a comprender el riesgo de enfermedades cardiovasculares entre las poblaciones del sur de Asia.",
+      "blurb": "La demostración Heart Study estudia la información genética y de salud de los asiáticos del sur que viven en los Estados Unidos para prevenir y controlar mejor el riesgo de enfermedades cardiovasculares.",
+      "fullWidth": true,
+      "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
+      "imagePosition": "right",
+      "background": "linear-gradient(270deg, #8587E3 0%, #95ADCC 100%)",
+      "buttons": [
+        {
+          "text": "Conviértase en participante",
+          "type": "join",
+          "studyShortcode": "ourheart"
+        }
+      ],
+      "logos": [
+        {
+          "cleanFileName": "broad_logo.png",
+          "version": 1,
+          "alt": "Logotipo del Instituto Broad",
+          "style": { "height": "40px" }
+        },
+        {
+          "cleanFileName": "mgh_logo.png",
+          "version": 1,
+          "alt": "Logotipo del Hospital General de Massachusetts",
+          "style": { "height": "40px" }
+        }
+      ]
+    }
+  },{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "background": "#F2F2F2",
+      "title": "¿Por qué es necesario esto?",
+      "blurb": "Aunque los asiáticos del sur representan el 23% de la población mundial y tienen el doble de riesgo de enfermedad cardiovascular en comparación con los europeos, están **significativamente subrepresentados en estudios e investigaciones genéticas**. Los conjuntos de datos disponibles son limitados en tamaño, diversidad cultural y representación diaspórica.",
+      "fullWidth": true,
+      "buttons": [
+        {"text": "Antecedentes científicos",
+          "type": "internalLink",
+          "href": "/background"
+        }
+      ],
+      "imagePosition": "left",
+      "imageWidthPercentage": 34,
+      "image": {"cleanFileName": "idea_bulb.png", "version": 1, "alt": "", "className": "p-3 p-lg-5"}
+    }
+  },{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "title": "Who can join?",
+      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+      "fullWidth": true,
+      "buttons": [
+        {"text": "Get Started",
+          "type": "join",
+          "studyShortcode": "ourheart"
+        }
+      ],
+      "image": {"cleanFileName": "people_laughing.jpg", "alt": "", "version": 1},
+      "imagePosition": "left"
+    }
+  },{
+    "sectionType": "STEP_OVERVIEW",
+    "sectionConfigJson": {
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+      "title": "How to Participate",
+      "steps": [{
+        "image": {"cleanFileName": "step_1.png", "version": 1, "alt": ""},
+        "duration": "1 minute",
+        "blurb": "Answer eligibility questions and create your account."
+      },{
+        "image": {"cleanFileName": "step_2.png", "version": 1, "alt": ""},
+        "duration": "5 minutes",
+        "blurb": "Read the consent form and decide if you’d like to join the study."
+      },{
+        "image": {"cleanFileName": "step_3.png", "version": 1, "alt": ""},
+        "duration": "25-45 minutes",
+        "blurb": "Answer survey questions about you and your health."
+      },{
+        "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
+        "duration": "5 minutes",
+        "blurb": "Provide your mailing address so we can send a sample donation kit."
+      }],
+      "buttons": [
+        {"text": "Learn More About Participation",
+          "type": "internalLink",
+          "href": "/participation"
+        }
+      ]
+    }
+  },{
+    "sectionType": "FAQ",
+    "anchorRef": "faq",
+    "sectionConfigJson": {
+      "backgroundColor": "#f2f2f2",
+      "blurb": "If your question is not answered below, you can call or email our study staff at **[617&#x2011;724&#x2011;1240](tel:+16177241240)** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+      "showToggleAllButton": false,
+      "questions": [
+        {
+          "question": "What is the OurHealth study?",
+          "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+        },
+        {
+          "question": "Why are we doing this study?",
+          "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been underrepresented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
+        },
+        {
+          "question": "How can I participate?",
+          "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/ourheart/join)."
+        },
+        {
+          "question": "What does OurHealth do with the data?",
+          "answer": "Only data and/or specimens necessary for study conduct will be collected. The electronic data collected will be maintained in a secure location with appropriate protections including password protection, encryption, and/or physical security measures (locked files/areas). The specimens collected will be maintained in a secure location with appropriate protections (e.g. locked storage spaces, laboratory areas). Data and specimens will only be shared with individuals who are members of the IRB-approved research team or approved for sharing as described in the IRB protocol. Identifiers will be coded and access to files linking identifiers with coded data or specimens will be limited to the minimal necessary members of the research team. All staff are trained on and will follow the Mass General Brigham policies and procedures for maintaining appropriate confidentiality of research data and specimens. All electronic communication with participants will comply with Mass General Brigham secure communication policies."
+        }]
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "backgroundColor": "#F2F2F2",
+      "buttons": [{
+        "type": "internalLink",
+        "text": "More FAQs",
+        "href": "/faq"
+      }]
+    }
+  },{
+    "sectionType": "SOCIAL_MEDIA",
+    "sectionConfigJson": {
+      "twitterHandle": "ourhealthstudy",
+      "instagramHandle": "ourhealthstudy",
+      "facebookHandle": "ourhealthstudy",
+      "paddingBottom": 0
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "title": "Stay informed",
+      "blurb": "Sign up for our mailing list or follow us on social media.",
+      "buttons": [{
+        "type": "mailingList",
+        "text": "Join Mailing List"
+      }]
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "image": {
+        "cleanFileName": "globe_and_hearts.png",
+        "version": 1,
+        "alt": ""
+      },
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+      "paddingBottom": 0
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "title": "You can make an impact",
+      "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
+      "buttons": [{
+        "type": "join",
+        "text": "Join OurHealth",
+        "studyShortcode": "ourheart"
+      }],
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+    }
+  }]
+}

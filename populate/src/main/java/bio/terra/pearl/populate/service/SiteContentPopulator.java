@@ -53,6 +53,19 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
         navItem.setHtmlPage(parseHtmlPageDto(navItem.getHtmlPageDto()));
     }
 
+    private void initializeLandingPage(LocalizedSiteContentPopDto lscPopDto, FilePopulateContext context) throws IOException {
+        if (lscPopDto.getLandingPageFileName() != null) {
+            String landingPagePopString = filePopulateService.readFile(lscPopDto.getLandingPageFileName(), context);
+            HtmlPagePopDto landingPagePopDto = objectMapper.readValue(landingPagePopString, HtmlPagePopDto.class);
+            for (HtmlSectionPopDto sectionPopDto : landingPagePopDto.getSectionDtos()) {
+                initializeHtmlSectionDto(sectionPopDto);
+            }
+            landingPagePopDto.getSections().clear();
+            landingPagePopDto.getSections().addAll(landingPagePopDto.getSectionDtos());
+            lscPopDto.setLandingPage(landingPagePopDto);
+        }
+    }
+
     private void initializeFooterConfig(LocalizedSiteContentPopDto lscPopDto, FilePopulateContext context) throws IOException {
         if (lscPopDto.getFooterSectionFile() != null) {
             String footerPopString = filePopulateService.readFile(lscPopDto.getFooterSectionFile(), context);
@@ -70,15 +83,18 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
     protected void preProcessDto(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
+        System.out.println("SiteContentPopulator.preProcessDto: popDto.getLocalizedSiteContentDtos() = " + popDto.getLocalizedSiteContentDtos());
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
-            lsc.setLandingPage(parseHtmlPageDto(lsc.getLandingPage()));
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
                 initializeNavItem(navItem, context);
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
             initializeFooterConfig(lsc, context);
+            initializeLandingPage(lsc, context);
         }
+
+        System.out.println(popDto.getLocalizedSiteContentDtos());
 
         popDto.getLocalizedSiteContents().clear();
         popDto.getLocalizedSiteContents().addAll(popDto.getLocalizedSiteContentDtos());

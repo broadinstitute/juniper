@@ -28,7 +28,7 @@ const landingPageOption = { label: 'Landing page', value: 'Landing page' }
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
-  loadSiteContent: (stableId: string, version: number) => void
+  loadSiteContent: (stableId: string, version: number, language?: string) => void
   createNewVersion: (content: SiteContent) => void
   switchToVersion: (id: string, stableId: string, version: number) => void
   portalEnvContext: PortalEnvContext
@@ -41,7 +41,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
   const { portalEnv } = portalEnvContext
-  const selectedLanguage = 'en'
+  const [selectedLanguage, setSelectedLanguage] = useState('en')
   const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
@@ -190,6 +190,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               onClick={() => setShowVersionSelector(!showVersionSelector)}>
               <FontAwesomeIcon icon={faClockRotateLeft}/> History
             </button> }
+            <Select
+              value={{ label: selectedLanguage, value: selectedLanguage }}
+              onChange={e => {
+                setSelectedLanguage(e?.value ?? 'en')
+                loadSiteContent(siteContent.stableId, siteContent.version, e?.value)
+              }}
+              options={[{ label: 'en', value: 'en' }, { label: 'es', value: 'es' }]}
+            />
             <Button variant="secondary" className="ms-5" onClick={participantViewClick}>
               Participant view <FontAwesomeIcon icon={faExternalLink}/>
             </Button>
