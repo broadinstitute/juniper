@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, Profile } from 'api/api'
+import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
@@ -96,14 +96,14 @@ export function ReadOnlyProfile(
   }
 ) {
   const mailingAddress = profile.mailingAddress
+
   return <>
-    <ReadOnlyRow title={'Name'} values={[`${profile.givenName} ${profile.familyName}`]}/>
+    <ReadOnlyRow title={'Name'}
+      values={[
+        `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
+      ]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
-    <ReadOnlyRow title={'Primary Address'} values={[
-      mailingAddress.street1,
-      mailingAddress.street2,
-      `${mailingAddress.city}, ${mailingAddress.state} ${mailingAddress.postalCode}`
-    ]}/>
+    <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
     <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'On' : 'Off']}/>
@@ -157,12 +157,12 @@ export function EditableProfile(
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
-            placeholder={'Given Name'}
+            placeholder={'Given Name'} aria-label={'Given Name'}
             onChange={e => onFieldChange('givenName', e.target.value)}/>
         </div>
         <div className='col'>
           <input className="form-control" type="text" value={profile.familyName || ''}
-            placeholder={'Family Name'}
+            placeholder={'Family Name'} aria-label={'Family Name'}
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
@@ -172,7 +172,7 @@ export function EditableProfile(
         <div className="col">
           <input className="form-control" type="date"
             defaultValue={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
-            placeholder={'Birth Date'} max={'9999-12-31'}
+            placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
             onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
         </div>
         <div className="col"/>
@@ -183,38 +183,38 @@ export function EditableProfile(
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street1 || ''}
-              placeholder={'Street 1'}
+              placeholder={'Street 1'} aria-label={'Street 1'}
               onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.street2 || ''}
-              placeholder={'Street 2'}
+              placeholder={'Street 2'} aria-label={'Street 2'}
               onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
           </div>
         </div>
         <div className='row mb-2'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.city || ''}
-              placeholder={'City'}
+              placeholder={'City'} aria-label={'City'}
               onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.state || ''}
-              placeholder={'State'}
+              placeholder={'State'} aria-label={'State'}
               onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
           </div>
         </div>
         <div className='row'>
           <div className="col">
             <input className="form-control" type="text" value={profile.mailingAddress.postalCode || ''}
-              placeholder={'Postal Code'}
+              placeholder={'Postal Code'} aria-label={'Postal Code'}
               onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
           </div>
           <div className='col'>
             <input className="form-control" type="text" value={profile.mailingAddress.country || ''}
-              placeholder={'Country'}
+              placeholder={'Country'} aria-label={'Country'}
               onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
           </div>
         </div>
@@ -222,12 +222,12 @@ export function EditableProfile(
     </FormRow>
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
-        placeholder={'Contact Email'}
+        placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
     </FormRow>
     <FormRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
-        placeholder={'Phone Number'}
+        placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
     </FormRow>
     <FormRow title={'Notifications'}>
@@ -236,6 +236,7 @@ export function EditableProfile(
           <div className="form-check">
 
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmail} id="doNotEmailCheckbox"
+              aria-label={'Do Not Email'}
               onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotEmailCheckbox">
               Do Not Email
@@ -245,7 +246,7 @@ export function EditableProfile(
         <div className='col-auto'>
           <div className="form-check">
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmailSolicit}
-              id="doNotSolicitCheckbox"
+              id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
               onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
               Do Not Solicit
@@ -277,6 +278,42 @@ export function ReadOnlyRow(
 }
 
 /**
+ * Displays the given mailing address as a row within the profile
+ */
+export function ReadOnlyMailingAddress(
+  {
+    title,
+    mailingAddress
+  }: {
+    title: string,
+    mailingAddress: MailingAddress
+  }
+) {
+  // creates the last row, formatted like: 'City, State 12345'
+  // If city or state is not present, it will format like: 'State 12345' or 'City 12345'
+  const createCityStatePostalRow = () => {
+    const outPieces: string[] = []
+    if (!isEmpty(mailingAddress.city) && !isEmpty(mailingAddress.state)) {
+      outPieces.push(`${mailingAddress.city}, ${mailingAddress.state}`)
+    } else if (!isEmpty(mailingAddress.city)) {
+      outPieces.push(mailingAddress.city)
+    } else if (!isEmpty(mailingAddress.state)) {
+      outPieces.push(mailingAddress.state)
+    }
+
+    outPieces.push(mailingAddress.postalCode || '')
+
+    return outPieces.join(' ').trim()
+  }
+  return <ReadOnlyRow title={title} values={[
+    mailingAddress.street1 || '',
+    mailingAddress.street2 || '',
+    createCityStatePostalRow(),
+    mailingAddress.country || ''
+  ]}/>
+}
+
+/**
  * One row of the profile's data.
  */
 export function FormRow(
@@ -286,7 +323,7 @@ export function FormRow(
   }
 ) {
   return <>
-    <div className="w-25 fw-bold mb-4 mt-2">
+    <div className="w-25 fw-bold mb-4 mt-2" aria-label={title}>
       {title}
     </div>
     <div className="w-75 mb-4">
