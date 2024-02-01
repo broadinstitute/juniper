@@ -13,6 +13,7 @@
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.5.2",
+    "@types/json-stringify-safe": "^5.0.3",
     "@types/node": "^16.11.58",
     "chokidar-cli": "^3.0.0",
     "eslint": "^8.23.0",
@@ -29,5 +30,8 @@
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 e2e-tests ui-admin/src ui-core/src ui-participant/src"
+  },
+  "dependencies": {
+    "json-stringify-safe": "^5.0.1"
   }
 }
