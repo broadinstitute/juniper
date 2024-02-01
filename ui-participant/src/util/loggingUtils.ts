@@ -39,10 +39,19 @@ export type ErrorEventDetail = {
 
 /** specific helper function for logging an error */
 export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
-  log({
-    eventType: 'ERROR',
-    eventName: 'jserror',
-    eventDetail: `${stringify(detail)}\n${window.location.href}`,
-    stackTrace
-  })
+  if (detail.message.startsWith('Object.hasOwn is not')) {
+    alert('Your browser does not support this page. ' +
+      'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
+    log({
+      eventType: 'INFO', eventName: 'js-compatibility',
+      eventDetail: detail.message
+    })
+  } else {
+    log({
+      eventType: 'ERROR',
+      eventName: 'jserror',
+      eventDetail: `${stringify(detail)}\n${window.location.href}`,
+      stackTrace
+    })
+  }
 }
