@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,7 +35,8 @@ public class GlobalExceptionHandler {
     IllegalArgumentException.class,
     NoHandlerFoundException.class,
     ValidationException.class,
-    BadRequestException.class
+    BadRequestException.class,
+    HttpMessageNotReadableException.class
   })
   public ResponseEntity<ErrorReport> badRequestExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.BAD_REQUEST, request);
