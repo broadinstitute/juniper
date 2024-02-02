@@ -11,23 +11,19 @@ import org.springframework.stereotype.Component;
 public class EnvironmentFactory {
     @Autowired
     EnvironmentService environmentService;
-    public Environment.EnvironmentBuilder builder(String testName) {
-        return Environment.builder().name(EnvironmentName.sandbox);
-    }
 
     public Environment buildPersisted(String testName) {
-        return buildPersisted(builder(testName), testName);
+        return buildPersisted(testName, EnvironmentName.sandbox);
     }
 
     public Environment buildPersisted(String testName, EnvironmentName envName) {
-        return buildPersisted(Environment.builder().name(envName), testName);
+        Optional<Environment> environment = environmentService.findOneByName(envName);
+        if (environment.isPresent()) {
+            return environment.get();
+        }
+        return environmentService.create(Environment.builder().name(envName).build());
     }
 
-    /** since there are only 3 possible environments, we can't always return a fresh one.  check to see
-     * if the given environment exists, and either return it or a new one as needed.
-     */
-    public Environment buildPersisted(Environment.EnvironmentBuilder builder, String testName) {
 
-        return environmentService.buildPersisted(builder, testName);
-    }
+
 }

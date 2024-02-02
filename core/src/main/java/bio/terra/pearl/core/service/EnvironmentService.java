@@ -18,13 +18,4 @@ public class EnvironmentService extends ImmutableEntityService<Environment, Envi
         return dao.findByName(name);
     }
 
-    @Transactional
-    public Environment buildPersisted(Environment.EnvironmentBuilder builder, String testName) {
-        return dao.buildPersisted(builder, testName);
-    }
-
-    @Transactional
-    public Environment buildPersisted(Environment environment) {
-        return dao.buildPersisted(environment);
-    }
 }

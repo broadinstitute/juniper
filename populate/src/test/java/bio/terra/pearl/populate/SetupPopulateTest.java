@@ -19,21 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SetupPopulateTest extends BaseSpringBootTest {
     @Autowired
-    private Jdbi jdbi;
-    @Autowired
     BaseSeedPopulator baseSeedPopulator;
-    private List<String> tablesToTruncate = Arrays.asList("admin_user", "environment");
-
-    public void cleanTables() {
-        jdbi.withHandle(handle ->
-                handle.execute("TRUNCATE " + String.join(",", tablesToTruncate) + " CASCADE")
-        );
-    }
 
     @Test
     @Transactional
     public void testSetup() throws IOException {
-        cleanTables();
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
         Assertions.assertEquals(BaseSeedPopulator.ADMIN_USERS_TO_POPULATE.size(), setupStats.getNumAdminUsers());
         Assertions.assertEquals(BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE.size(), setupStats.getNumEnvironments());
