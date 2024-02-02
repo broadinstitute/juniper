@@ -2,11 +2,7 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;

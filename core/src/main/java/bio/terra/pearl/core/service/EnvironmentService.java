@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.EnvironmentName;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnvironmentService extends ImmutableEntityService<Environment, EnvironmentDao> {
