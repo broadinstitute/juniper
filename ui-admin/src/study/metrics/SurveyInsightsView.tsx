@@ -57,7 +57,7 @@ export default function SurveyInsightsView({ studyEnvContext }: {
     selectedOption: selectedChartTypeOption, selectInputId: selectChartTypeInputId
   } =
     useReactSingleSelect(
-      ['line', 'pie', 'bar'],
+      ['pie', 'bar'],
       (chartType: MetricChartType) => ({ label: chartType, value: chartType }),
       setChartType,
       chartType)
@@ -123,6 +123,7 @@ export default function SurveyInsightsView({ studyEnvContext }: {
                 />
                 <label htmlFor={selectChartTypeInputId} className='mt-3'>Chart Type</label>
                 <Select
+                  className={'mb-5'}
                   inputId={selectChartTypeInputId}
                   value={selectedChartTypeOption}
                   options={chartTypeOptions}
