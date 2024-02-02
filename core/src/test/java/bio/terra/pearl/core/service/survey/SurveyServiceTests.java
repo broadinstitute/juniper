@@ -144,8 +144,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testGetSurveyQuestionDefinitions() {
-        Survey survey = surveyFactory.buildPersisted("testPublishSurvey");
+    public void testGetSurveyQuestionDefinitions(TestInfo info) {
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
         String surveyContent = """
                 {
                 	"title": "The Basics",

@@ -31,11 +31,11 @@ import static org.hamcrest.Matchers.equalTo;
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
-    public void testApplyPortalConfigChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testApplyPortalConfigChanges", true);
-        Portal portal = portalFactory.buildPersisted("testApplyPortalConfigChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.live, portal.getId());
+    public void testApplyPortalConfigChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
 
         PortalEnvironmentConfig irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
         irbConfig.setPassword("foobar");
@@ -51,12 +51,12 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPublishesSurveyPortalChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testPublishesSurveyPortalChanges", true);
-        Portal portal = portalFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        Survey survey = surveyFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.live, portal.getId());
+    public void testPublishesSurveyPortalChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
         irbEnv.setPreRegSurveyId(survey.getId());
         portalEnvironmentService.update(irbEnv);
 
