@@ -13,6 +13,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -40,7 +41,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
         UUID kitRequestId = kitRequest.getId();
         when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.empty());
 
-        when(mockTaskService.create(any(ParticipantTask.class))).thenAnswer(invocation -> {
+        when(mockTaskService.create(any(ParticipantTask.class), any(DataAuditInfo.class))).thenAnswer(invocation -> {
             ParticipantTask task = (ParticipantTask) invocation.getArguments()[0];
             assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
             verifyTask(task, enrolleeBundle, kitRequestId);
@@ -55,7 +56,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
 
         KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
         taskDispatcher.handleEvent(kitEvent);
-        verify(mockTaskService).create(any(ParticipantTask.class));
+        verify(mockTaskService).create(any(ParticipantTask.class), any(DataAuditInfo.class));
     }
 
     @Test
@@ -70,7 +71,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
                 enrolleeBundle.portalParticipantUser().getId());
         when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.of(participantTask));
 
-        when(mockTaskService.update(any(ParticipantTask.class))).thenAnswer(invocation -> {
+        when(mockTaskService.update(any(ParticipantTask.class), any(DataAuditInfo.class))).thenAnswer(invocation -> {
             ParticipantTask task = (ParticipantTask) invocation.getArguments()[0];
             assertThat(task.getStatus(), equalTo(TaskStatus.COMPLETE));
             verifyTask(task, enrolleeBundle, kitRequestId);
@@ -86,7 +87,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
 
         KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
         taskDispatcher.handleEvent(kitEvent);
-        verify(mockTaskService).update(any(ParticipantTask.class));
+        verify(mockTaskService).update(any(ParticipantTask.class), any(DataAuditInfo.class));
     }
 
     @Test
@@ -101,7 +102,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
                 enrolleeBundle.portalParticipantUser().getId());
         when(mockTaskService.findByKitRequestId(kitRequestId)).thenReturn(Optional.of(participantTask));
 
-        when(mockTaskService.update(any(ParticipantTask.class))).thenAnswer(invocation -> {
+        when(mockTaskService.update(any(ParticipantTask.class), any(DataAuditInfo.class))).thenAnswer(invocation -> {
             ParticipantTask task = (ParticipantTask) invocation.getArguments()[0];
             assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
             verifyTask(task, enrolleeBundle, kitRequestId);
@@ -116,7 +117,7 @@ class KitTaskDispatcherTest extends BaseSpringBootTest {
 
         KitTaskDispatcher taskDispatcher = new KitTaskDispatcher(mockTaskService);
         taskDispatcher.handleEvent(kitEvent);
-        verify(mockTaskService).update(any(ParticipantTask.class));
+        verify(mockTaskService).update(any(ParticipantTask.class), any(DataAuditInfo.class));
     }
 
     private KitRequest buildKitRequest(EnrolleeFactory.EnrolleeBundle enrolleeBundle) {

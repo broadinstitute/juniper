@@ -11,18 +11,22 @@ import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
@@ -33,14 +37,14 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.irb, portal.getId());
         PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.live, portal.getId());
 
-        var irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
+        PortalEnvironmentConfig irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
         irbConfig.setPassword("foobar");
         irbConfig.setEmailSourceAddress("info@demo.com");
         portalEnvironmentConfigService.update(irbConfig);
 
-        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        PortalEnvironmentChange changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
         portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
-        var liveConfig = portalEnvironmentConfigService.find(liveEnv.getPortalEnvironmentConfigId()).get();
+        PortalEnvironmentConfig liveConfig = portalEnvironmentConfigService.find(liveEnv.getPortalEnvironmentConfigId()).get();
         assertThat(liveConfig.getPassword(), equalTo("foobar"));
         assertThat(liveConfig.getEmailSourceAddress(), equalTo("info@demo.com"));
     }
@@ -56,7 +60,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
         irbEnv.setPreRegSurveyId(survey.getId());
         portalEnvironmentService.update(irbEnv);
 
-        var changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        PortalEnvironmentChange changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
         portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);
 
         PortalEnvironment updatedLiveEnv = portalEnvironmentService.find(liveEnv.getId()).get();

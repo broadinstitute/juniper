@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +78,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         // Arrange
-        var unexpectedJsonBody = "{\"unexpected\": \"boom\"}";
+        String unexpectedJsonBody = "{\"unexpected\": \"boom\"}";
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         // "Act"
@@ -94,7 +96,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
-        var unexpectedJsonBody = """
+        String unexpectedJsonBody = """
                 {
                   "errorMessage": "unknown kit",
                   "value": "12345",
@@ -122,8 +124,8 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kitRequest = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
         PepperKitAddress address = PepperKitAddress.builder().build();
 
-        var kitId = "111-222-333";
-        var errorMessage = "UNABLE_TO_VERIFY_ADDRESS";
+        String kitId = "111-222-333";
+        String errorMessage = "UNABLE_TO_VERIFY_ADDRESS";
         mockPepperResponse(
                 HttpStatus.BAD_REQUEST,
                 objectMapper.writeValueAsString(PepperErrorResponse.builder()
@@ -133,7 +135,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         ));
 
         // Assert
-        var pepperException = assertThrows(PepperApiException.class,
+        PepperApiException pepperException = assertThrows(PepperApiException.class,
                 () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address)
         );
         assertThat(pepperException.getMessage(), containsString(kitId));
@@ -148,14 +150,14 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         PepperKitAddress address = PepperKitAddress.builder().build();
 
         // Arrange
-        var errorResponseBody = "Internal server error";
+        String errorResponseBody = "Internal server error";
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
 
         // "Act"
         Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
 
         // Assert
-        var pepperException = assertThrows(PepperApiException.class, act);
+        PepperApiException pepperException = assertThrows(PepperApiException.class, act);
         assertThat(pepperException.getMessage(), containsString(errorResponseBody));
     }
 
@@ -185,21 +187,21 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatus() throws Exception {
+    public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
         PepperKit kitStatus = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy1")
+                .juniperKitId(getTestName(info) + "1")
                 .build();
         PepperKit[] kits = { kitStatus };
-        var pepperResponse = PepperKitStatusResponse.builder()
+        PepperKitStatusResponse pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)
                 .build();
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
 
         // Act
-        var kitId = UUID.randomUUID();
-        var fetchedKitStatus = client.fetchKitStatus(kitId);
+        UUID kitId = UUID.randomUUID();
+        PepperKit fetchedKitStatus = client.fetchKitStatus(kitId);
 
         // Assert
         assertThat(fetchedKitStatus, equalTo(kitStatus));
@@ -209,25 +211,25 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testFetchKitStatusByStudy() throws Exception {
+    public void testFetchKitStatusByStudy(TestInfo info) throws Exception {
 
         // Arrange
         PepperKit kitStatus1 = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy_kit1")
+                .juniperKitId(getTestName(info) + "_kit1")
                 .build();
         PepperKit kitStatus2 = PepperKit.builder()
-                .juniperKitId("testFetchKitStatusByStudy_kit2")
+                .juniperKitId(getTestName(info) + "_kit2")
                 .build();
         PepperKit[] kits = { kitStatus1, kitStatus2 };
-        var pepperResponse = PepperKitStatusResponse.builder()
+        PepperKitStatusResponse pepperResponse = PepperKitStatusResponse.builder()
                 .kits(kits)
                 .isError(false)
                 .build();
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
 
         // Act
-        var studyShortcode = "test_study";
-        var fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
+        String studyShortcode = "test_study";
+        Collection<PepperKit> fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
 
         // Assert
         assertThat(fetchedKitStatuses.size(), equalTo(2));
@@ -243,7 +245,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     }
 
     private void verifyRequestForPath(String path) throws Exception {
-        var recordedRequest = mockWebServer.takeRequest(5, TimeUnit.SECONDS);
+        RecordedRequest recordedRequest = mockWebServer.takeRequest(5, TimeUnit.SECONDS);
         assertThat(recordedRequest.getPath(), equalTo(path));
         assertThat(recordedRequest.getHeader("Authorization"), matchesRegex("Bearer .+"));
     }

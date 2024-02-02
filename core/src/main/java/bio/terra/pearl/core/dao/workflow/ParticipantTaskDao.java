@@ -95,7 +95,11 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         );
     }
 
-    public List<EnrolleeTasks> findTasksByStudy(UUID studyEnvironmentId) {
+    /**
+     * returns the unique task names associated witht he given study environment, useful for e.g. populating
+     * a dropdown
+     */
+    public List<EnrolleeTasks> findTaskNamesByStudy(UUID studyEnvironmentId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select distinct target_stable_id, target_name from " + tableName +
                                 " where study_environment_id = :studyEnvironmentId")
@@ -104,6 +108,11 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                         .list()
         );
     }
+
+    public List<ParticipantTask> findTasksByStudyAndTarget(UUID studyEnvironmentId, List<String> targetStableIds) {
+        return findAllByTwoProperties("study_environment_id", studyEnvironmentId, "target_stable_id", targetStableIds);
+    }
+
 
     public Optional<ParticipantTask> findByKitRequestId(UUID kitRequestId) {
         return findByProperty("kit_request_id", kitRequestId);

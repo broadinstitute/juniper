@@ -2,20 +2,24 @@ package bio.terra.pearl.core.service.admin;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.exception.RoleNotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
+import org.hamcrest.Matcher;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.UUID;
-import org.hamcrest.Matcher;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
@@ -42,8 +46,8 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesThrowsWhenRoleNotFound() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRolesThrowsWhenRoleNotFound");
+    public void testSetRolesThrowsWhenRoleNotFound(TestInfo info) {
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
 
         assertThrows(RoleNotFoundException.class, () -> {
             portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("unknown"));
@@ -52,12 +56,12 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesReturnsEffectiveRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
-        var role1 = roleService.create(Role.builder().name("one").build());
-        var role2 = roleService.create(Role.builder().name("two").build());
+    public void testSetRolesReturnsEffectiveRoles(TestInfo info) {
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        Role role1 = roleService.create(Role.builder().name("one").build());
+        Role role2 = roleService.create(Role.builder().name("two").build());
 
-        var savedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"));
+        List<String> savedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"));
 
         PortalAdminUserRole portalAdminUserRole1 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role1.getId()).build();
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role2.getId()).build();
@@ -66,14 +70,14 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesSavesRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
-        var role1 = roleService.create(Role.builder().name("one").build());
-        var role2 = roleService.create(Role.builder().name("two").build());
+    public void testSetRolesSavesRoles(TestInfo info) {
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
+        Role role1 = roleService.create(Role.builder().name("one").build());
+        Role role2 = roleService.create(Role.builder().name("two").build());
 
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("one", "two"));
 
-        var rolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
+        List<PortalAdminUserRole> rolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
         PortalAdminUserRole portalAdminUserRole1 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role1.getId()).build();
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(role2.getId()).build();
         assertThat(rolesForAdminUser, containsInAnyOrder(
@@ -84,18 +88,18 @@ public class PortalAdminUserRoleServiceTest extends BaseSpringBootTest {
 
     @Transactional
     @Test
-    public void testSetRolesReplacesExistingRoles() {
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testSetRoles");
+    public void testSetRolesReplacesExistingRoles(TestInfo info) {
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         roleService.create(Role.builder().name("old").build());
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("old"));
-        var newRole = roleService.create(Role.builder().name("new").build());
+        Role newRole = roleService.create(Role.builder().name("new").build());
 
-        var updatedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("new"));
+        List<String> updatedAdminUserRoles = portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of("new"));
 
         PortalAdminUserRole portalAdminUserRole2 = PortalAdminUserRole.builder().portalAdminUserId(portalAdminUser.getId()).roleId(newRole.getId()).build();
         assertThat(updatedAdminUserRoles, containsInAnyOrder("new"));
 
-        var updatedRolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
+        List<PortalAdminUserRole> updatedRolesForAdminUser = portalAdminUserRoleService.getRolesForAdminUser(portalAdminUser.getId());
         assertThat(updatedRolesForAdminUser, containsInAnyOrder(matchingPortalAdminUserRole(portalAdminUserRole2)));
     }
 }

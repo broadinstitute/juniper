@@ -5,16 +5,23 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
+import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -26,8 +33,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCreateSurvey() {
-        Survey survey = surveyFactory.builder("testPublishSurvey").build();
+    public void testCreateSurvey(TestInfo info) {
+        Survey survey = surveyFactory.builder(getTestName(info)).build();
         survey.setCreatedAt(null);
         survey.setLastUpdatedAt(null);
         Survey savedSurvey = surveyService.create(survey);
@@ -40,8 +47,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCreateSurveyWithMappings() {
-        Survey survey = surveyFactory.builder("testPublishSurvey").build();
+    public void testCreateSurveyWithMappings(TestInfo info) {
+        Survey survey = surveyFactory.builder(getTestName(info)).build();
         AnswerMapping answerMapping = AnswerMapping.builder()
                 .questionStableId("qStableId")
                 .targetField("givenName")
@@ -59,8 +66,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCreateNewVersion() {
-        Survey survey = surveyFactory.buildPersisted("testCreateNewVersion");
+    public void testCreateNewVersion(TestInfo info) {
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
         String oldContent = survey.getContent();
         String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);
@@ -78,8 +85,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAssignPublishedVersion() {
-        Survey survey = surveyFactory.buildPersisted("testAssignPublishedVersion");
+    public void testAssignPublishedVersion(TestInfo info) {
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
         surveyService.assignPublishedVersion(survey.getId());
         survey = surveyService.find(survey.getId()).get();
         assertThat(survey.getPublishedVersion(), equalTo(1));
@@ -100,15 +107,15 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCreateNewVersionWithMappings() {
+    public void testCreateNewVersionWithMappings(TestInfo info) {
         AnswerMapping answerMapping = AnswerMapping.builder()
                 .questionStableId("qStableId")
                 .targetField("givenName")
                 .mapType(AnswerMappingMapType.STRING_TO_STRING)
                 .targetType(AnswerMappingTargetType.PROFILE)
                 .build();
-        Survey survey = surveyFactory.buildPersisted("testPublishSurvey", List.of(answerMapping));
-        AdminUser user = adminUserFactory.buildPersisted("testPublishSurvey");
+        Survey survey = surveyFactory.buildPersisted(getTestName(info), List.of(answerMapping));
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
         String oldContent = survey.getContent();
         String newContent = String.format("{\"pages\":[],\"title\":\"%s\"}", RandomStringUtils.randomAlphabetic(6));
         survey.setContent(newContent);

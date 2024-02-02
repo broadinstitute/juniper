@@ -36,8 +36,8 @@
         "populateFileName": "surveys/preEnroll.json"
       },
       "configuredSurveyDtos": [
-        {"populateFileName": "surveys/basic.json", "required": true},
-        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/basic.json"},
+        {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},

@@ -6,9 +6,12 @@ export type Study = {
   studyEnvironments: StudyEnvironment[]
 }
 
+export type EnvironmentName = 'sandbox' | 'irb' | 'live'
+export const ENVIRONMENT_NAMES: EnvironmentName[] =  ['sandbox', 'irb', 'live']
+
 export type StudyEnvironment = {
   id: string
-  environmentName: string
+  environmentName: EnvironmentName
   studyEnvironmentConfig: StudyEnvironmentConfig
   preEnrollSurvey?: Survey
   preEnrollSurveyId?: string
@@ -29,14 +32,13 @@ export type StudyEnvironmentSurvey = {
   surveyId: string
   survey: Survey
   surveyOrder: number
-  required: boolean
-  recur: boolean
-  recurrenceIntervalDays: number
-  allowAdminEdit: boolean
-  allowParticipantStart: boolean
-  allowParticipantReedit: boolean
-  prepopulate: boolean,
   studyEnvironmentId?: string
+  lastUpdatedAt?: number
+  createdAt?: number
+}
+
+export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
+  envName: EnvironmentName
 }
 
 export type StudyEnvironmentConsent = {

@@ -1,4 +1,4 @@
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
   Answer,
@@ -12,9 +12,9 @@ import {
   ParticipantNote, PepperKit,
   Portal,
   PortalStudy, SiteImageMetadata,
-  StudyEnvironmentConsent, SurveyResponse
+  StudyEnvironmentConsent, SurveyResponse, StudyEnvironment
 } from 'api/api'
-import { Survey, ParticipantTask, ParticipantTaskType } from '@juniper/ui-core'
+import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey, ParticipantTaskStatus } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -79,6 +79,7 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
 
 /** returns a simple survey object for use/extension in tests */
 export const mockSurvey: () => Survey = () => ({
+  ...defaultSurvey,
   id: 'surveyId1',
   stableId: 'survey1',
   version: 1,
@@ -126,10 +127,8 @@ export const mockSurveyVersionsList: () => Survey[] = () => ([
 ])
 
 /** returns a simple studyEnvContext object for use/extension in tests */
-export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
-  study: { name: 'Fake study', studyEnvironments: [], shortcode: 'fakeStudy' },
-  portal: { shortcode: 'portalCode', id: 'portalId', portalStudies: [], portalEnvironments: [], name: 'Fake portal' },
-  currentEnv: {
+export const mockStudyEnvContext: () => StudyEnvContextT = () => {
+  const sandboxEnv: StudyEnvironment = {
     environmentName: 'sandbox',
     id: 'studyEnvId',
     configuredConsents: [mockConfiguredConsent()],
@@ -141,9 +140,24 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => ({
       passwordProtected: false,
       acceptingEnrollment: true
     }
-  },
-  currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
-})
+  }
+  return {
+    study: {
+      name: 'Fake study',
+      studyEnvironments: [sandboxEnv],
+      shortcode: 'fakeStudy'
+    },
+    portal: {
+      shortcode: 'portalCode',
+      id: 'portalId',
+      portalStudies: [],
+      portalEnvironments: [],
+      name: 'Fake portal'
+    },
+    currentEnv: sandboxEnv,
+    currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'
+  }
+}
 
 /**
  *
@@ -446,4 +460,39 @@ export const mockSiteImage = (): SiteImageMetadata => {
     cleanFileName: 'fileName.png',
     version: 1
   }
+}
+
+/** mock research survey task */
+export const mockParticipantTask = (taskType: ParticipantTaskType, status: ParticipantTaskStatus): ParticipantTask => {
+  return {
+    id: randomId('task'),
+    enrolleeId: randomId('enrollee'),
+    portalParticipantUserId: randomId('ppUser'),
+    targetName: 'Survey 1',
+    targetStableId: 'researchSurvey1',
+    targetAssignedVersion: 1,
+    studyEnvironmentId: randomId('studyEnv'),
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    status,
+    taskType,
+    taskOrder: 0,
+    blocksHub: true
+  }
+}
+
+/**
+ *
+ */
+export const mockStudyEnvParams = (): StudyEnvParams => {
+  return {
+    portalShortcode: 'foo',
+    studyShortcode: 'bar',
+    envName: 'sandbox'
+  }
+}
+
+/** random ids to be used in place of guids */
+export const randomId = (prefix: string): string => {
+  return `${prefix}${Math.floor(Math.random() * 1000)}`
 }

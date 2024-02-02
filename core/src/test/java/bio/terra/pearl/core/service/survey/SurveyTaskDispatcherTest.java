@@ -8,6 +8,7 @@ import java.util.Set;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
     @Test
     void testIsDuplicateTask() {
+        Survey survey = Survey.builder().recur(false).build();
         StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
-                .recur(false)
+                .survey(survey)
                 .build();
         ParticipantTask surveyTask1 = ParticipantTask.builder()
                 .targetStableId("TASK_1")
@@ -46,8 +48,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
     @Test
     void testOutreachIsDuplicate() {
+        Survey survey = Survey.builder().recur(false).build();
         StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
-                .recur(false)
+                .survey(survey)
                 .build();
         ParticipantTask outreachTask1 = ParticipantTask.builder()
                 .targetStableId("oh_outsideAdvert")

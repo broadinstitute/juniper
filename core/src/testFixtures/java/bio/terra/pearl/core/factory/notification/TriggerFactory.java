@@ -26,7 +26,7 @@ public class TriggerFactory {
 
     public Trigger buildPersisted(String testName) {
         PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName);
-        var builder = Trigger.builder()
+        Trigger.TriggerBuilder<?, ? extends Trigger.TriggerBuilder<?, ?>> builder = Trigger.builder()
             .portalEnvironmentId(portalEnvironment.getId())
             .triggerType(TriggerType.EVENT)
             .deliveryType(NotificationDeliveryType.EMAIL);

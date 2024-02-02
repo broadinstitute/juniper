@@ -9,7 +9,8 @@ const uninitializedConfig = {
   participantUiHostname: 'uninitialized',
   participantApiHostname: 'uninitialized',
   adminUiHostname: 'uninitialized',
-  adminApiHostname: 'uninitialized'
+  adminApiHostname: 'uninitialized',
+  deploymentZone: 'uninitialized'
 }
 
 const ConfigContext = React.createContext<Config>(uninitializedConfig)

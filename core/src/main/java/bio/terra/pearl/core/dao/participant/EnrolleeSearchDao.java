@@ -53,7 +53,7 @@ public class EnrolleeSearchDao {
   }
 
   protected List<EnrolleeSearchResult> search(UUID studyEnvId, List<SqlSearchableFacet> facets) {
-    var result =  jdbi.withHandle(handle -> {
+      List<EnrolleeSearchResult> result = jdbi.withHandle(handle -> {
       String queryString = generateSearchQueryString(facets);
       Query query = handle.createQuery(queryString);
       query.bind("studyEnvironmentId", studyEnvId);
@@ -84,7 +84,7 @@ public class EnrolleeSearchDao {
   }
 
   protected String generateSearchQueryString(List<SqlSearchableFacet> facets) {
-    var facetsGroupByTable = new HashMap<String, List<SqlSearchableFacet>>();
+      HashMap<String, List<SqlSearchableFacet>> facetsGroupByTable = new HashMap<String, List<SqlSearchableFacet>>();
     facets.stream()
         // filter out enrollee and profile -- those will already be included
         .filter(facet -> !List.of("enrollee", "profile").contains(facet.getTableName()))

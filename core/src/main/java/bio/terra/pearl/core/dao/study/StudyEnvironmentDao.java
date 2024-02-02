@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.notification.TriggerDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
@@ -91,13 +92,13 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     public StudyEnvironment attachAllContent(StudyEnvironment studyEnv) {
         UUID studyEnvId = studyEnv.getId();
         studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao.find(studyEnv.getStudyEnvironmentConfigId()).get());
-        studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllByStudyEnvIdWithSurvey(studyEnvId));
+        studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllWithSurvey(studyEnvId, true));
         if (studyEnv.getPreEnrollSurveyId() != null) {
             studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
         }
         studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
                 .findAllByStudyEnvIdWithConsent(studyEnvId));
-        var triggers = triggerDao.findByStudyEnvironmentId(studyEnvId, true);
+        List<Trigger> triggers = triggerDao.findByStudyEnvironmentId(studyEnvId, true);
         triggerDao.attachTemplates(triggers);
         studyEnv.setTriggers(triggers);
         return studyEnv;

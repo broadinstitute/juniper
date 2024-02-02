@@ -2,11 +2,16 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
-import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -18,11 +23,13 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -64,7 +71,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                     .body("family name ${profile.familyName}")
                     .subject("Welcome ${profile.givenName}").build();
 
-        var contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
         Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
         assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
         assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
@@ -75,9 +82,9 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEmailSendOrSkip() {
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
-        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
+    public void testEmailSendOrSkip(TestInfo info) {
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
         Trigger config = triggerFactory.buildPersisted(Trigger.builder()
                 .emailTemplateId(emailTemplate.getId())
                 .deliveryType(NotificationDeliveryType.EMAIL)
@@ -89,9 +96,9 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     }
 
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
-        var notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        var ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
-        var contextInfo = new NotificationContextInfo(null, null, null, null, null);
+        Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build());
+        NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         // The email send should fail due to sendgrid not being configured
@@ -101,7 +108,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build());
-        var contextInfo = new NotificationContextInfo(null, null, null,null, null);
+        NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
         assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));

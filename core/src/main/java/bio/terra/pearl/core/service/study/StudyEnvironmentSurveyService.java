@@ -16,16 +16,16 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvId(UUID studyEnvId, Boolean active) {
-        return dao.findAllByStudyEnvironmentId(studyEnvId, active);
+        return dao.findAll(List.of(studyEnvId), null, active);
     }
 
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId) {
-        return dao.findAllByStudyEnvIdWithSurvey(studyEnvId, true);
+        return dao.findAllWithSurvey(studyEnvId, true);
     }
 
     public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurvey(UUID studyEnvId, Boolean active) {
-        return dao.findAllByStudyEnvIdWithSurvey(studyEnvId, active);
+        return dao.findAllWithSurvey(studyEnvId, active);
     }
 
     public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, UUID surveyId) {
@@ -40,7 +40,7 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
     }
 
     public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String stableId) {
-        var configs = dao.findActiveBySurvey(studyEnvId, stableId);
+        List<StudyEnvironmentSurvey> configs = dao.findActiveBySurvey(studyEnvId, stableId);
         // we don't yet have robust support for having multiple surveys with the same stableId configured for an
         // environment.  For now, just pick one
         return configs.stream().findFirst();
@@ -48,6 +48,10 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
 
     public List<StudyEnvironmentSurvey> findBySurveyId(UUID surveyId) {
         return dao.findBySurveyId(surveyId);
+    }
+
+    public List<StudyEnvironmentSurvey> findAllWithSurveyNoContent(List<UUID> studyEnvIds, String stableId, Boolean active) {
+        return dao.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
     }
 
     public void deleteBySurveyId(UUID surveyId) {

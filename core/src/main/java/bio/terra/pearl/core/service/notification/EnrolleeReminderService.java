@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.notification;
 
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -43,10 +44,10 @@ public class EnrolleeReminderService {
 
     public void sendTaskReminders(StudyEnvironment studyEnv) {
         log.info("querying enrollee reminder queries for study environment {} ({})", studyEnv.getId(), studyEnv.getEnvironmentName());
-        var allEnvConfigs = triggerService.findByStudyEnvironmentId(studyEnv.getId(), true);
-        var reminderConfigs = allEnvConfigs.stream().filter(config ->
+        List<Trigger> allEnvConfigs = triggerService.findByStudyEnvironmentId(studyEnv.getId(), true);
+        List<Trigger> reminderConfigs = allEnvConfigs.stream().filter(config ->
                 config.getTriggerType().equals(TriggerType.TASK_REMINDER)).toList();
-        for (var reminderConfig : reminderConfigs) {
+        for (Trigger reminderConfig : reminderConfigs) {
             sendTaskReminders(studyEnv, reminderConfig);
         }
     }
@@ -57,7 +58,7 @@ public class EnrolleeReminderService {
         Duration timeSinceLastNotification = Duration.ofMinutes(trigger.getReminderIntervalMinutes());
         long maxReminders = trigger.getMaxNumReminders() <= 0 ? 100000 : trigger.getMaxNumReminders();
         Duration maxTimeSinceCreation = timeSinceCreation.plus(timeSinceLastNotification.multipliedBy(maxReminders));
-        var enrolleesWithTasks = participantTaskQueryService
+        List<ParticipantTaskDao.EnrolleeWithTasks> enrolleesWithTasks = participantTaskQueryService
                 .findIncompleteByTime(studyEnv.getId(),
                         trigger.getTaskType(),
                         timeSinceCreation,
@@ -70,9 +71,9 @@ public class EnrolleeReminderService {
         List<EnrolleeRuleData> enrolleeData = enrolleeRuleService
                 .fetchData(enrolleesWithTasks.stream().map(ewt -> ewt.getEnrolleeId()).toList());
 
-        var envContext = notificationDispatcher.loadContextInfo(trigger);
+        NotificationContextInfo envContext = notificationDispatcher.loadContextInfo(trigger);
 
-        for (var enrolleeWithTask : enrolleesWithTasks) {
+        for (ParticipantTaskDao.EnrolleeWithTasks enrolleeWithTask : enrolleesWithTasks) {
             // this isn't an optimized match -- we're assuming the number of reminders we send on any given run for a single
             // config will likely be < 100
             EnrolleeRuleData ruleData = enrolleeData.stream()

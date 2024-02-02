@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.consent;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -62,8 +63,12 @@ public class ConsentTaskDispatcher {
         List<ParticipantTask> tasks = buildTasks(enrolleeEvent.getEnrollee(), enrolleeEvent.getEnrolleeRuleData(),
                 enrolleeEvent.getPortalParticipantUser().getId(),
                 studyEnvConsents);
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), "updateConsentTasks"))
+                .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
+                .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
         for (ParticipantTask task : tasks) {
-            task = participantTaskService.create(task);
+            task = participantTaskService.create(task, auditInfo);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
         }
         updateEnrolleeConsented(enrolleeEvent.getEnrollee(), enrolleeEvent.getEnrollee().getParticipantTasks());

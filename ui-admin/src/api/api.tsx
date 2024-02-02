@@ -1,7 +1,7 @@
 import {
   AlertTrigger,
   ConsentForm,
-  ConsentResponse,
+  ConsentResponse, EnvironmentName,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -19,6 +19,7 @@ import {
 } from '@juniper/ui-core'
 import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
+import queryString from 'query-string'
 
 export type {
   Answer,
@@ -121,7 +122,12 @@ export type Profile = {
   doNotEmailSolicit: boolean,
   mailingAddress: MailingAddress,
   phoneNumber: string,
-  birthDate: number[]
+  birthDate?: number[]
+}
+
+export type ProfileUpdateDto = {
+  justification: string,
+  profile: Profile
 }
 
 export type MailingAddress = {
@@ -163,7 +169,8 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
-  responsibleAdminUserId?: string
+  responsibleAdminUserId?: string,
+  justification?: string
 }
 
 export type KitType = {
@@ -236,7 +243,8 @@ export type Config = {
   participantUiHostname: string,
   participantApiHostname: string,
   adminUiHostname: string,
-  adminApiHostname: string
+  adminApiHostname: string,
+  deploymentZone: string
 }
 
 export type MailingListContact = {
@@ -363,6 +371,20 @@ export type KitRequestListResponse = {
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
 }
+
+export type ParticipantTaskUpdateDto = {
+  updates: TaskUpdateSpec[]
+  portalParticipantUserIds?: string[]
+  updateAll: boolean // if true, the portalParticipantUserIds list will be ignored and all participants will be updated
+}
+
+export type TaskUpdateSpec ={
+    targetStableId: string
+    updateToVersion: number
+    updateFromVersion?: number // if absent, any other versions will be updated
+    newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
+}
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -553,6 +575,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string, oldId: string,
+    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}`
+      + `/configuredSurveys/${oldId}/replace`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(configuredSurvey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`
     const response = await fetch(url, this.getGetInit())
@@ -601,10 +635,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
+  async createConfiguredConsent(portalShortcode: string, studyShortcode: string, envName: string,
     configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredConsents`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredConsents`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -616,7 +649,7 @@ export default {
 
   async updateStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string,
     studyEnvUpdate: StudyEnvironmentUpdate): Promise<StudyEnvironmentUpdate> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}`
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
@@ -627,7 +660,7 @@ export default {
 
   async updateStudyEnvironmentConfig(portalShortcode: string, studyShortcode: string, envName: string,
     studyEnvConfigUpdate: StudyEnvironmentConfig): Promise<StudyEnvironmentConfig> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/env/${envName}/config`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/config`
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
@@ -642,10 +675,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+  async findConfiguredSurveys(portalShortcode: string, studyShortcode: string,
+    envName?: EnvironmentName, active?: boolean, stableId?: string): Promise<StudyEnvironmentSurvey[]> {
+    const params = queryString.stringify({ envName, active, stableId })
+    const url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}`
+    + `/configuredSurveys/findWithNoContent?${params}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredSurveys`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -655,10 +696,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+  async removeConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurveyId: string): Promise<Response> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredSurveys/${configuredSurveyId}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurveyId}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
@@ -666,15 +706,33 @@ export default {
     return await this.processResponse(response)
   },
 
-  async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+  async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
     configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredSurveys/${configuredSurvey.id}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurvey.id}`
 
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(configuredSurvey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async findTasksForStableId(portalShortcode: string, studyShortcode: string,
+    envName: string, targetStableId: string): Promise<ParticipantTask[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/participantTasks/findAll` +
+      `?${queryString.stringify({ targetStableId })}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateParticipantTaskVersions(portalShortcode: string, studyShortcode: string,
+    envName: string, update: ParticipantTaskUpdateDto): Promise<ParticipantTask[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/participantTasks/updateAll`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(update)
     })
     return await this.processJsonResponse(response)
   },
@@ -757,6 +815,20 @@ export default {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async updateProfileForEnrollee(
+    portalShortcode: string, studyShortcode: string, envName: string,
+    enrolleeShortcode: string, profile: ProfileUpdateDto
+  ):
+    Promise<Profile> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/profiles/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(profile),
+      headers: this.getInitHeaders()
+    })
     return await this.processJsonResponse(response)
   },
 
@@ -878,15 +950,14 @@ export default {
   },
 
   async testTrigger(portalShortcode: string, studyShortcode: string, envName: string,
-    triggerId: string, enrolleeRuleData: object): Promise<Trigger> {
+    triggerId: string, enrolleeRuleData: object): Promise<Response> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${triggerId}`
       + `/test`
-    const response = await fetch(url, {
+    return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(enrolleeRuleData)
     })
-    return await this.processJsonResponse(response)
   },
 
   async deleteTrigger(portalShortcode: string, studyShortcode: string, envName: string,

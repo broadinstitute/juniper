@@ -26,10 +26,11 @@ import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteImageList from '../portal/images/SiteImageList'
 import PreRegView from './surveys/PreRegView'
 import DashboardSettings from 'dashboard/DashboardSettings'
+import { EnvironmentName } from '@juniper/ui-core'
 
 export type StudyEnvParams = {
   studyShortcode: string
-  envName: string
+  envName: EnvironmentName
   portalShortcode: string
 }
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }

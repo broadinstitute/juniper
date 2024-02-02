@@ -5,11 +5,23 @@ import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import AdminSidebar from './AdminSidebar'
 import userEvent from '@testing-library/user-event'
+import { Config } from '../api/api'
 
+
+const testConfig: Config = {
+  b2cTenantName: '',
+  adminApiHostname: '',
+  adminUiHostname: '',
+  b2cClientId: '',
+  b2cPolicyName: '',
+  participantApiHostname: '',
+  participantUiHostname: '',
+  deploymentZone: 'live'
+}
 test('renders the superuser menu for superusers', async () => {
   const { RoutedComponent } = setupRouterTest(
     <MockUserProvider user={mockAdminUser(true)}>
-      <AdminSidebar/>
+      <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
   expect(screen.getByText('Superuser functions')).toBeInTheDocument()
@@ -18,7 +30,7 @@ test('renders the superuser menu for superusers', async () => {
 test('menu components collapse on click', async () => {
   const { RoutedComponent } = setupRouterTest(
     <MockUserProvider user={mockAdminUser(true)}>
-      <AdminSidebar/>
+      <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
   expect(screen.getByText('All users')).toBeVisible()
@@ -31,7 +43,7 @@ test('menu components collapse on click', async () => {
 test('does not render the superuser menu for  regular users', async () => {
   const { RoutedComponent } = setupRouterTest(
     <MockUserProvider user={mockAdminUser(false)}>
-      <AdminSidebar/>
+      <AdminSidebar config={testConfig}/>
     </MockUserProvider>)
   render(RoutedComponent)
   expect(screen.queryByText('Superuser functions')).toBeNull()

@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +20,9 @@ public class SiteImageExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void imageListAuthsToPortal() {
-    AdminUser operator = adminUserFactory.buildPersisted("imageListAuthsToPortal", false);
-    Portal portal = portalFactory.buildPersisted("imageListAuthsToPortal");
+  public void imageListAuthsToPortal(TestInfo info) {
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
@@ -31,9 +32,9 @@ public class SiteImageExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void uploadAuthsToPortal() {
-    AdminUser operator = adminUserFactory.buildPersisted("uploadAuthsToPortal", false);
-    Portal portal = portalFactory.buildPersisted("uploadAuthsToPortal");
+  public void uploadAuthsToPortal(TestInfo info) {
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {

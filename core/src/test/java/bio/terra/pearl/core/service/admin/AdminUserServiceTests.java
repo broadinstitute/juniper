@@ -8,20 +8,27 @@ import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.AdminUserWithPermissions;
+import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.CascadeProperty;
-import java.util.List;
-import java.util.Optional;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class AdminUserServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -45,8 +52,8 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCrud() {
-        AdminUser user = adminUserFactory.builder("testAdminUserCrud").build();
+    public void testCrud(TestInfo info) {
+        AdminUser user = adminUserFactory.builder(getTestName(info)).build();
         AdminUser savedUser = adminUserService.create(user);
         DaoTestUtils.assertGeneratedProperties(savedUser);
 
@@ -59,8 +66,8 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCaseInsensitiveLookup() {
-        AdminUser user = adminUserFactory.builder("testAdminUserCrud")
+    public void testCaseInsensitiveLookup(TestInfo info) {
+        AdminUser user = adminUserFactory.builder(getTestName(info))
                 .username("MixedCaseName@test.co" + RandomStringUtils.randomNumeric(3))
                 .build();
         adminUserService.create(user);
@@ -73,26 +80,27 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testLoadWithPermissions() {
-        var permission1 = permissionFactory.buildPersisted("testLoadWithPerms.perm1");
-        var permission2 = permissionFactory.buildPersisted("testLoadWithPerms.perm2");
-        var role1 = roleFactory.buildPersisted("testLoadWithPerms", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm2"));
-        var portalAdminUser = portalAdminUserFactory.buildPersisted("testLoadWithPermissions");
+    public void testLoadWithPermissions(TestInfo info) {
+        Permission permission1 = permissionFactory.buildPersisted(getTestName(info) + "1");
+        Permission permission2 = permissionFactory.buildPersisted(getTestName(info) + "2");
+        Role role1 = roleFactory.buildPersisted(getTestName(info), List.of(permission1.getName(), permission2.getName()));
+        PortalAdminUser portalAdminUser = portalAdminUserFactory.buildPersisted(getTestName(info));
         portalAdminUserRoleService.setRoles(portalAdminUser.getId(), List.of(role1.getName()));
 
         AdminUser adminUser = adminUserService.find(portalAdminUser.getAdminUserId()).get();
-        var loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
+        AdminUserWithPermissions loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
 
         assertThat(loadedUser.user().getId(), equalTo(adminUser.getId()));
         assertThat(loadedUser.portalPermissions().values(), hasSize(1));
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(2));
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasItems(
-                "testLoadWithPerms.perm1", "testLoadWithPerms.perm2"
+                permission1.getName(), permission2.getName()
         ) );
 
         // does not include permissions/roles not given to the user
-        var permission3 = permissionFactory.buildPersisted("testLoadWithPerms.perm3");
-        var role2 = roleFactory.buildPersisted("testLoadWithPermsRole2", List.of("testLoadWithPerms.perm1", "testLoadWithPerms.perm3"));
+        Permission permission3 = permissionFactory.buildPersisted(getTestName(info) + "3");
+        Role role2 = roleFactory.buildPersisted(getTestName(info) + "2",
+                List.of(permission1.getName(), permission3.getName()));
         loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(2));
 
@@ -101,22 +109,22 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         loadedUser = adminUserService.findByUsernameWithPermissions(adminUser.getUsername()).get();
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasSize(3));
         assertThat(loadedUser.portalPermissions().get(portalAdminUser.getPortalId()), hasItems(
-                "testLoadWithPerms.perm1", "testLoadWithPerms.perm2", "testLoadWithPerms.perm3"
+                permission1.getName(), permission2.getName(), permission3.getName()
         ) );
     }
 
     @Test
     @Transactional
-    public void testGetByPortal() {
-        AdminUser savedPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
-        AdminUser savedNonPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
-        AdminUser savedOtherPortalUser = adminUserService.create(adminUserFactory.builder("testGetByPortal").build());
-        Portal portal = portalFactory.buildPersisted("testGetByPortal");
-        Portal otherPortal = portalFactory.buildPersisted("testGetByPortal");
-        Portal emptyPortal = portalFactory.buildPersisted("testGetByPortal");
-        Role role = roleFactory.buildPersisted("testGetByPortal");
+    public void testGetByPortal(TestInfo info) {
+        AdminUser savedPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
+        AdminUser savedNonPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
+        AdminUser savedOtherPortalUser = adminUserService.create(adminUserFactory.builder(getTestName(info)).build());
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        Portal otherPortal = portalFactory.buildPersisted(getTestName(info));
+        Portal emptyPortal = portalFactory.buildPersisted(getTestName(info));
+        Role role = roleFactory.buildPersisted(getTestName(info));
 
-        var savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
+        PortalAdminUser savedPortalAdminUser = portalAdminUserService.create(PortalAdminUser.builder()
             .adminUserId(savedPortalUser.getId())
             .portalId(portal.getId()).build());
         portalAdminUserService.create(PortalAdminUser.builder()

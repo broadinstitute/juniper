@@ -54,7 +54,7 @@ public class AdminUserDao extends BaseMutableJdbiDao<AdminUser> {
                         .list()
         );
         // transform the list of UUIDs and permissions into a map
-        var permissionMap = new HashMap<UUID, HashSet<String>>();
+        HashMap<UUID, HashSet<String>> permissionMap = new HashMap<UUID, HashSet<String>>();
         portalPermissions.stream().forEach(portalPerm -> {
             HashSet<String> perms = permissionMap.get(portalPerm.portalId);
             if (perms == null) {

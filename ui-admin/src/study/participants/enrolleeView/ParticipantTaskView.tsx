@@ -17,7 +17,11 @@ const columns: ColumnDef<ParticipantTask>[] = [{
   accessorKey: 'taskType'
 }, {
   header: 'Item',
-  accessorKey: 'targetName'
+  id: 'targetName',
+  cell: info => <span>
+    {info.row.original.targetName}
+    <span className="fw-light fst-italic"> v{info.row.original.targetAssignedVersion}</span>
+  </span>
 }, {
   header: 'status',
   accessorKey: 'status'

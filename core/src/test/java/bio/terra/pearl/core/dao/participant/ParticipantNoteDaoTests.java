@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.participant.ParticipantNote;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,8 @@ public class ParticipantNoteDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testNoteEnrolleeConstraint() {
-    AdminUser adminUser = adminUserFactory.buildPersisted("testNoteAdminUserConstraint");
+  public void testNoteEnrolleeConstraint(TestInfo info) {
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
 
     ParticipantNote note = ParticipantNote.builder()
         .creatingAdminUserId(adminUser.getId())
@@ -37,8 +38,8 @@ public class ParticipantNoteDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testNoteAdminUserConstraint() {
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testNoteEnrolleeConstraint");
+  public void testNoteAdminUserConstraint(TestInfo info) {
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
     ParticipantNote note = ParticipantNote.builder()
         .enrolleeId(enrollee.getId())
@@ -51,9 +52,9 @@ public class ParticipantNoteDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testNoteTextConstraint() {
-    AdminUser adminUser = adminUserFactory.buildPersisted("testNoteTextConstraint");
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testNoteTextConstraint");
+  public void testNoteTextConstraint(TestInfo info) {
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
     ParticipantNote note = ParticipantNote.builder()
         .enrolleeId(enrollee.getId())
@@ -66,16 +67,16 @@ public class ParticipantNoteDaoTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testNoteCrud() {
-    AdminUser adminUser = adminUserFactory.buildPersisted("testNoteCrud");
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testNoteCrud");
+  public void testNoteCrud(TestInfo info) {
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info));
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
     ParticipantNote note = ParticipantNote.builder()
         .enrolleeId(enrollee.getId())
         .creatingAdminUserId(adminUser.getId())
         .text("test text 234")
         .build();
-    var savedNote = participantNoteDao.create(note);
+      ParticipantNote savedNote = participantNoteDao.create(note);
     DaoTestUtils.assertGeneratedProperties(savedNote);
   }
 }

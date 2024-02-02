@@ -10,13 +10,14 @@ import CreateNewStudyModal from './study/CreateNewStudyModal'
 import { useUser } from './user/UserProvider'
 import DeleteStudyModal from './study/adminTasks/DeleteStudyModal'
 import { Study } from '@juniper/ui-core/build/types/study'
-
+import CreateNewCohortModal from './study/CreateNewCohortModal'
 
 /** Shows a user the list of portals available to them */
 function HomePage() {
   const { portalList, reload } = useNavContext()
   const { user } = useUser()
   const [showNewStudyModal, setShowNewStudyModal] = useState(false)
+  const [showNewCohortModal, setShowNewCohortModal] = useState(false)
   const [showDeleteStudyModal, setShowDeleteStudyModal] = useState(false)
   const [selectedStudy, setSelectedStudy] = useState<Study>()
 
@@ -67,8 +68,12 @@ function HomePage() {
       { user.superuser && <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Add a study
       </Button> }
+      { user.superuser && <Button variant='secondary' onClick={() => setShowNewCohortModal(true)}>
+        <FontAwesomeIcon icon={faPlus}/> Create a cohort
+      </Button> }
     </div>
     { showNewStudyModal && <CreateNewStudyModal onDismiss={() => setShowNewStudyModal(false)}/> }
+    { showNewCohortModal && <CreateNewCohortModal onDismiss={() => setShowNewCohortModal(false)}/> }
   </div>
 }
 

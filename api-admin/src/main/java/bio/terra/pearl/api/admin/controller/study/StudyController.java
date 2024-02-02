@@ -33,7 +33,8 @@ public class StudyController implements StudyApi {
   @Override
   public ResponseEntity<Object> create(String portalShortcode, Object body) {
     AdminUser operator = requestService.requireAdminUser(request);
-    var studyDto = objectMapper.convertValue(body, StudyExtService.StudyCreationDto.class);
+    StudyExtService.StudyCreationDto studyDto =
+        objectMapper.convertValue(body, StudyExtService.StudyCreationDto.class);
     Study study = studyExtService.create(portalShortcode, studyDto, operator);
     return ResponseEntity.ok(study);
   }

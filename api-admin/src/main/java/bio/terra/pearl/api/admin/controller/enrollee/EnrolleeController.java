@@ -6,8 +6,12 @@ import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +23,16 @@ public class EnrolleeController implements EnrolleeApi {
   private AuthUtilService authUtilService;
   private EnrolleeExtService enrolleeExtService;
   private HttpServletRequest request;
+  private ObjectMapper objectMapper;
 
   public EnrolleeController(
       AuthUtilService authUtilService,
       EnrolleeExtService enrolleeExtService,
+      ObjectMapper objectMapper,
       HttpServletRequest request) {
     this.authUtilService = authUtilService;
     this.enrolleeExtService = enrolleeExtService;
+    this.objectMapper = objectMapper;
     this.request = request;
   }
 
@@ -41,7 +48,8 @@ public class EnrolleeController implements EnrolleeApi {
   public ResponseEntity<Object> listChangeRecords(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    var records = enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
+    List<DataChangeRecord> records =
+        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
     return ResponseEntity.ok(records);
   }
 
@@ -50,7 +58,8 @@ public class EnrolleeController implements EnrolleeApi {
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     try {
-      var withdrawn = enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
+      WithdrawnEnrollee withdrawn =
+          enrolleeExtService.withdrawEnrollee(adminUser, enrolleeShortcode);
       return ResponseEntity.ok(new WithdrawnResponse(withdrawn.getId()));
     } catch (JsonProcessingException e) {
       return ResponseEntity.internalServerError().body(e.getMessage());
@@ -63,7 +72,7 @@ public class EnrolleeController implements EnrolleeApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    var enrollees =
+    List<Enrollee> enrollees =
         enrolleeExtService.findForKitManagement(
             adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(enrollees);

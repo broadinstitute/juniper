@@ -44,14 +44,15 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testUserLoginIfPresent() {
-    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testUserLogin");
-    var userBundle = participantUserFactory.buildPersisted(portalEnv, "testUserLogin");
+  public void testUserLoginIfPresent(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+    ParticipantUserFactory.ParticipantUserAndPortalUser userBundle =
+        participantUserFactory.buildPersisted(portalEnv, getTestName(info));
     String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
     String token = generateFakeJwtToken(userBundle.user().getUsername());
 
     try {
-      var loadedUser =
+      CurrentUserService.UserWithEnrollees loadedUser =
           currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
       assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
       assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
@@ -79,7 +80,8 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     String testName = getTestName(testInfo);
     PortalEnvironment portalEnv1 =
         portalEnvironmentFactory.buildPersisted(testName, EnvironmentName.sandbox);
-    var userBundle = participantUserFactory.buildPersisted(portalEnv1, testName);
+    ParticipantUserFactory.ParticipantUserAndPortalUser userBundle =
+        participantUserFactory.buildPersisted(portalEnv1, testName);
 
     PortalEnvironment portalEnv2 =
         portalEnvironmentFactory.buildPersisted(testName + "2", EnvironmentName.sandbox);
@@ -96,7 +98,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
   }
 
   private String generateFakeJwtToken(String username) {
-    var token = UUID.randomUUID();
+    UUID token = UUID.randomUUID();
     return JWT.create()
         .withClaim("token", token.toString())
         .withClaim("email", username)
