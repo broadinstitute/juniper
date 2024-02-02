@@ -32,7 +32,9 @@ public class ParticipantTaskFactory {
 
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
                                         String targetName, TaskStatus status, TaskType type) {
-    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("ParticipantTaskFactory.buildPersisted").build();
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+            DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
+    ).build();
     ParticipantTask task = ParticipantTask.builder()
         .status(status)
         .enrolleeId(enrolleeBundle.enrollee().getId())
@@ -47,7 +49,9 @@ public class ParticipantTaskFactory {
 
   /** auto-sets the enrollee and environment-related fields, otherwise builds the task as provided */
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, ParticipantTask.ParticipantTaskBuilder builder) {
-    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess("ParticipantTaskFactory.buildPersisted").build();
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+            DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
+    ).build();
     ParticipantTask task = builder
             .enrolleeId(enrolleeBundle.enrollee().getId())
             .studyEnvironmentId(enrolleeBundle.enrollee().getStudyEnvironmentId())

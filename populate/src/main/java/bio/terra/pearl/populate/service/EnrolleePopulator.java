@@ -163,7 +163,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .systemProcess(getClass().getSimpleName() + ".populateResponse").build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(),  ".populateResponse")).build();
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
@@ -262,7 +262,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .systemProcess(getClass().getSimpleName() + ".populateTask").build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(),".populateTask")).build();
         if (taskDto.getTargetName() == null) {
             taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(),
                     taskDto.getTargetAssignedVersion()));

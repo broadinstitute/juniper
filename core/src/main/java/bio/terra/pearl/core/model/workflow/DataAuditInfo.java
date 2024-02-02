@@ -37,5 +37,9 @@ public class DataAuditInfo {
     // you should reuse this object for each)
     @Builder.Default
     private UUID operationId = UUID.randomUUID();
+
+    public static String systemProcessName(Class clazz, String methodName) {
+        return "%s.%s".formatted(clazz.getSimpleName(), methodName);
+    }
 }
 

@@ -64,7 +64,7 @@ public class ConsentTaskDispatcher {
                 enrolleeEvent.getPortalParticipantUser().getId(),
                 studyEnvConsents);
         DataAuditInfo auditInfo = DataAuditInfo.builder()
-                .systemProcess(getClass().getSimpleName() + ".updateConsentTasks")
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), "updateConsentTasks"))
                 .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
                 .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
         for (ParticipantTask task : tasks) {

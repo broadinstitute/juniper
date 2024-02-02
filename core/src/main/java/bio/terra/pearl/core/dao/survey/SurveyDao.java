@@ -40,6 +40,9 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
 
     /** get all the surveys, but without the content populated */
     public List<Survey> findAllNoContent(List<UUID> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                         select id, name, version, published_version, stable_id 

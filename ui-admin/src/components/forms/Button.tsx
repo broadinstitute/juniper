@@ -118,7 +118,7 @@ export const IconButton = (props: IconButtonProps) => {
 }
 
 /**
- *
+ * button for an ellipsis "More actions" menu
  */
 export const EllipsisDropdownButton = (props: ButtonProps & {'aria-label': string}) => {
   return <Button tooltip={props['aria-label']} data-bs-toggle="dropdown"

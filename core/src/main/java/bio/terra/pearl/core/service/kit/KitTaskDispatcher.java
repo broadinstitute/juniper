@@ -35,7 +35,7 @@ public class KitTaskDispatcher {
         Optional<ParticipantTask> task = participantTaskService.findByKitRequestId(kitRequest.getId());
         DataAuditInfo auditInfo = DataAuditInfo.builder().enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUserId)
-                .systemProcess(getClass().getSimpleName() + ".handleSentEvent").build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), ".handleSentEvent")).build();
         if (task.isPresent()) {
             resetTask(task.get(), enrollee, portalParticipantUserId, auditInfo);
             return;
@@ -61,7 +61,7 @@ public class KitTaskDispatcher {
         participantTask.setStatus(TaskStatus.COMPLETE);
         DataAuditInfo auditInfo = DataAuditInfo.builder().enrolleeId(enrollee.getId())
                 .portalParticipantUserId(kitEvent.getPortalParticipantUser().getId())
-                .systemProcess(getClass().getSimpleName() + ".handleReceivedEvent").build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), "handleReceivedEvent")).build();
 
         participantTaskService.update(participantTask, auditInfo);
     }
