@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -21,6 +22,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
@@ -32,6 +34,8 @@ import java.util.List;
 import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,6 +146,88 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     }
 
 
+    @Test
+    @Transactional
+    public void testGovernedUserEnrollment(){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testGovernedUserEnrollment");
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testGovernedUserEnrollment");
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testGovernedUserEnrollment");
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
+        ConsentForm consent = consentFormFactory.buildPersisted("testGovernedUserEnrollment");
+        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
+                .consentFormId(consent.getId())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        studyEnvironmentConsentService.create(studyEnvConsent);
+
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+        Enrollee enrollee = hubResponse.getEnrollee();
+        assertThat(enrollee.getShortcode(), notNullValue());
+        Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
+        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).size(), 1);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getEnrolleeId(), enrollee.getId());
+        assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), contains(enrollee));
+
+        // Because the study environment had a consent attached, a consent task should be created on enrollment
+        assertThat(enrollee.getParticipantTasks(), hasSize(1));
+        assertThat(enrollee.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
+        assertThat(enrollee.isConsented(), equalTo(false));
+    }
+
+    @Test
+    @Transactional
+    public void testProxyEnrollingMultipleChild(){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testProxyEnrollingMultipleChild");
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testProxyEnrollingMultipleChild");
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testProxyEnrollingMultipleChild");
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
+        ConsentForm consent = consentFormFactory.buildPersisted("testProxyEnrollingMultipleChild");
+        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
+                .consentFormId(consent.getId())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        studyEnvironmentConsentService.create(studyEnvConsent);
+
+        HubResponse hubResponse1 = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+
+        HubResponse hubResponse2 = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
+                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+        Enrollee enrollee1 = hubResponse1.getEnrollee();
+        Enrollee enrollee2 = hubResponse2.getEnrollee();
+        assertThat(enrollee1.getShortcode(), notNullValue());
+        assertThat(enrollee2.getShortcode(), notNullValue());
+        Assertions.assertNotEquals(enrollee1.getShortcode(), enrollee2.getShortcode());
+        Assertions.assertNotEquals(enrollee1.getParticipantUserId(), enrollee2.getParticipantUserId());
+        Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
+        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).size(), 2);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getEnrolleeId(), enrollee1.getId());
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(1).getEnrolleeId(), enrollee2.getId());
+        Assertions.assertEquals(enrolleeService.findByStudyEnvironment(studyEnv.getId()).size(), 2);
+        Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee1)));
+        Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee2)));
+
+        // Because the study environment had a consent attached, a consent task should be created on enrollment
+        assertThat(enrollee1.getParticipantTasks(), hasSize(1));
+        assertThat(enrollee2.getParticipantTasks(), hasSize(1));
+        assertThat(enrollee1.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
+        assertThat(enrollee2.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
+        assertThat(enrollee1.isConsented(), equalTo(false));
+        assertThat(enrollee2.isConsented(), equalTo(false));
+    }
+
+
 
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
@@ -156,6 +242,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Autowired
     private EnrollmentService enrollmentService;
+
+    @Autowired
+    private EnrolleeRelationService enrolleeRelationService;
 
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;

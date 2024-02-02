@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 
 import java.util.*;
@@ -88,7 +89,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     }
 
     public Optional<Enrollee> findByEnrolleeId(UUID enrolleeId) {
-        return findByProperty("enrollee_id", enrolleeId);
+        return findByProperty("id", enrolleeId);
     }
 
     public Optional<Enrollee> findByEnrolleeId(UUID userId, UUID enrolleeId) {
@@ -114,4 +115,5 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     public void updateConsented(UUID enrolleeId, boolean consented) {
         updateProperty(enrolleeId, "consented", consented);
     }
+
 }

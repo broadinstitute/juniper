@@ -20,15 +20,10 @@ import lombok.experimental.SuperBuilder;
 public class EnrolleeRelation extends BaseEntity {
     private UUID participantUserId;
     private UUID enrolleeId;
-    private UUID relationshipId;
     private RelationshipType relationshipType;
-    private boolean isProxy;
     @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default
     private List<ConsentResponse> consentResponses = new ArrayList<>();
 
-    public enum RelationshipType{
-        PROXY, OTHER;
-    }
 }

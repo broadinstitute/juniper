@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
+import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
@@ -18,6 +19,7 @@ import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
+import bio.terra.pearl.core.service.participant.search.ParticipantUtilService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
@@ -57,6 +59,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
+    private ParticipantUtilService participantUtilService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -73,7 +76,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
-                           AdminTaskService adminTaskService, SecureRandom secureRandom) {
+                           AdminTaskService adminTaskService, SecureRandom secureRandom,
+                           ParticipantUtilService participantUtilService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -91,15 +95,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.kitRequestService = kitRequestService;
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
+        this.participantUtilService = participantUtilService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-    public Optional<Enrollee> findOneByEnrolleeId(UUID enrolleeId) {
-        return dao.findByEnrolleeId(enrolleeId);
-    }
-
     public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
     }
@@ -239,6 +240,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public Enrollee create(Enrollee enrollee) {
         if (enrollee.getShortcode() == null) {
             enrollee.setShortcode(generateShortcode());
+            enrollee.setShortcode(participantUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH,
+                    PARTICIPANT_SHORTCODE_ALLOWED_CHARS, dao::findOneByShortcode));
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),

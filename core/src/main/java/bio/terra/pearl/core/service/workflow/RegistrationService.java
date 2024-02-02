@@ -9,8 +9,10 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.search.ParticipantUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -35,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RegistrationService {
     private SurveyService surveyService;
+    private ParticipantUtilService participantUtilService;
     private PortalEnvironmentService portalEnvService;
     private PreregistrationResponseDao preregistrationResponseDao;
     private AnswerProcessingService answerProcessingService;
@@ -43,7 +46,7 @@ public class RegistrationService {
     private EventService eventService;
     private ObjectMapper objectMapper;
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final int LENGTH = 10;
     private final Random random = new SecureRandom();
 
@@ -53,7 +56,8 @@ public class RegistrationService {
                                AnswerProcessingService answerProcessingService,
                                ParticipantUserService participantUserService,
                                PortalParticipantUserService portalParticipantUserService,
-                               EventService eventService, ObjectMapper objectMapper) {
+                               EventService eventService, ObjectMapper objectMapper,
+                               ParticipantUtilService participantUtilService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -62,6 +66,7 @@ public class RegistrationService {
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
         this.objectMapper = objectMapper;
+        this.participantUtilService = participantUtilService;
     }
 
     /**
@@ -135,9 +140,9 @@ public class RegistrationService {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
         ParticipantUser mainUser = new ParticipantUser();
         mainUser.setEnvironmentName(proxy.getEnvironmentName());
-        String mainUserName = proxy.getUsername() + "-proxied-";
-        String guid = generateGUID(mainUserName, proxy.getEnvironmentName());
-        mainUser.setUsername(mainUserName + guid);
+        String guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS, participantUserService::findOne, proxy.getEnvironmentName() , proxy.getUsername()+"-");
+        String mainUserName = "%s-proxied".formatted(guid);
+        mainUser.setUsername(mainUserName);
         mainUser = participantUserService.create(mainUser);
 
         PortalParticipantUser ppUser = new PortalParticipantUser();

@@ -1,15 +1,11 @@
 package bio.terra.pearl.core.dao.participant;
 
+import javax.management.relation.RelationType;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
-import bio.terra.pearl.core.dao.kit.KitRequestDao;
-import bio.terra.pearl.core.dao.kit.KitTypeDao;
-import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
-import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
-import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -27,5 +23,9 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
 
     public List<EnrolleeRelation> findByParticipantUserId(UUID participantUserId){
         return findAllByProperty("participant_user_id", participantUserId);
+    }
+
+    public Optional<EnrolleeRelation> findByParticipantUserId(UUID participantUserId, RelationType type) {
+        return findByTwoProperties("participant_user_id", participantUserId, "relationship_type", type);
     }
 }

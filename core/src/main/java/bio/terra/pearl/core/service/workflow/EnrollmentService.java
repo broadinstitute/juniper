@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
@@ -107,9 +108,7 @@ public class EnrollmentService {
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
         Enrollee enrollee;
         if (isProxy) {
-            log.info("here 1");
             enrollee = enrollGovernedUser( portalShortcode, user, studyEnv, ppUser, preEnrollResponseId);
-            log.info("here 2");
         }
         else {
             enrollee = Enrollee.builder()
@@ -151,9 +150,7 @@ public class EnrollmentService {
         EnrolleeRelation enrolleeRelation = EnrolleeRelation.builder()
                 .enrolleeId(enrollee.getId())
                 .participantUserId(proxyUser.getId())
-                .relationshipType(EnrolleeRelation.RelationshipType.PROXY)
-                .relationshipId(UUID.randomUUID())
-                .isProxy(true)
+                .relationshipType(RelationshipType.PROXY)
                 .build();
 
         enrolleeRelationService.create(enrolleeRelation);

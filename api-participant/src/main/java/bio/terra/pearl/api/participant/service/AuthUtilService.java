@@ -46,14 +46,12 @@ public class AuthUtilService {
 
   private Enrollee authParticipantUserToGovernedEnrollees(
       UUID participantUserId, String enrolleeShortcode) {
-    Optional<Enrollee> governedEnrolee =
-        enrolleeRelationService.findGovernedEnrollees(participantUserId).stream()
-            .filter(enrollee -> enrollee.getShortcode().equals(enrolleeShortcode))
-            .findAny();
-    if (governedEnrolee.isEmpty()) {
-      throw new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode));
-    }
-    return governedEnrolee.get();
+    return enrolleeRelationService.findGovernedEnrollees(participantUserId, null).stream()
+        .filter(enrollee -> enrollee.getShortcode().equals(enrolleeShortcode))
+        .findFirst()
+        .orElseThrow(
+            () ->
+                new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode)));
   }
 
   /** confirms the participant can access resources from the given portal */

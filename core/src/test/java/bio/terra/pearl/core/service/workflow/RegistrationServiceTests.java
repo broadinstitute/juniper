@@ -32,4 +32,23 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(username, result.participantUser().getUsername());
         Assertions.assertTrue(participantUserService.findOne(username, portalEnv.getEnvironmentName()).isPresent());
     }
+
+    @Test
+    @Transactional
+    public void testRegisterForGovernedUser() {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testRegisterForGovernedUser");
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
+        String proxyUsername = "test-proxy" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
+        RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
+                portalEnv.getEnvironmentName(), proxyUsername, null);
+
+
+        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(portalShortcode,
+                result.participantUser());
+        Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUsername));
+        Assertions.assertTrue(participantUserService.findOne(proxyUsername, portalEnv.getEnvironmentName()).isPresent());
+        Assertions.assertNotEquals(proxyUsername, registerGovernedUser.participantUser().getUsername());
+        Assertions.assertTrue(participantUserService.findOne(registerGovernedUser.participantUser().getUsername(), portalEnv.getEnvironmentName()).isPresent());
+    }
 }
