@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { AddressValidationResult, Enrollee, Profile } from 'api/api'
+import Api, { AddressValidationResult, Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
-import { cloneDeep, isEmpty } from 'lodash'
+import { cloneDeep, isEmpty, isNil } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
 import { findDifferencesBetweenObjects } from 'util/objectUtils'
@@ -121,16 +121,6 @@ function EditableProfile(
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
-  const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
-  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
-
-  const validateAddress = () => {
-    doApiLoad(async () => {
-      const results = await Api.validateAddress(profile.mailingAddress, addressValidationResults?.sessionId)
-      console.log(results)
-      setAddressValidationResults(results)
-    }, { setIsLoading: setIsLoadingValidation })
-  }
   const onFieldChange = (field: string, value: string | boolean) => {
     setProfile((oldVal: Profile) => {
       return {
@@ -189,53 +179,9 @@ function EditableProfile(
         <div className="col"/>
       </div>
     </FormRow>
-    <FormRow title={'Primary Address'}>
-      <div className="">
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.street1 || ''}
-              placeholder={'Street 1'}
-              onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.street2 || ''}
-              placeholder={'Street 2'}
-              onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.city || ''}
-              placeholder={'City'}
-              onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
-          </div>
-          <div className='col'>
-            <input className="form-control" type="text" value={profile.mailingAddress.state || ''}
-              placeholder={'State'}
-              onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.postalCode || ''}
-              placeholder={'Postal Code'}
-              onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
-          </div>
-          <div className='col'>
-            <input className="form-control" type="text" value={profile.mailingAddress.country || ''}
-              placeholder={'Country'}
-              onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
-          </div>
-        </div>
-        <LoadingSpinner isLoading={isLoadingValidation}>
-          <button className="btn btn-link" onClick={validateAddress}>Validate</button>
-        </LoadingSpinner>
-        {addressValidationResults?.suggestedAddress && <p>Todo - suggest modal</p>}
-        {addressValidationResults && <p>{addressValidationResults.valid ? 'True' : 'False'}</p>}
-      </div>
-    </FormRow>
+    <EditMailingAddressRow
+      title={'Primary Address'} mailingAddress={profile.mailingAddress}
+      onMailingAddressFieldChange={onMailingAddressFieldChange}/>
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'}
@@ -309,4 +255,90 @@ function FormRow(
       {children}
     </div>
   </>
+}
+
+
+function EditMailingAddressRow(
+  {
+    title, mailingAddress, onMailingAddressFieldChange
+  }: {
+    title: string, mailingAddress: MailingAddress, onMailingAddressFieldChange: (field: string, value: string) => void
+  }
+) {
+  const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+
+  const validateAddress = () => {
+    doApiLoad(async () => {
+      const results = await Api.validateAddress(mailingAddress, addressValidationResults?.sessionId)
+      console.log(results)
+      setAddressValidationResults(results)
+    }, { setIsLoading: setIsLoadingValidation })
+  }
+
+  const isMissingAddressComponent = (component: string) => {
+    if (isNil(addressValidationResults) || isNil(addressValidationResults.missingComponents)) {
+      return false
+    }
+
+    return addressValidationResults.missingComponents.includes(component)
+  }
+
+  return <FormRow title={title}>
+    <div className="">
+      <div className='row mb-2'>
+        <div className="col">
+          <input
+            className={`form-control ${isMissingAddressComponent('street_address') ? 'is-invalid' : ''}`}
+            type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
+            onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
+        </div>
+      </div>
+      <div className='row mb-2'>
+        <div className="col">
+          <input
+            className={`form-control ${isMissingAddressComponent('street_address') ? 'is-invalid' : ''}`}
+            type="text" value={mailingAddress.street2 || ''}
+            placeholder={'Street 2'}
+            onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
+        </div>
+      </div>
+      <div className='row mb-2'>
+        <div className="col">
+          <input
+            className={`form-control ${isMissingAddressComponent('locality') ? 'is-invalid' : ''}`}
+            type="text" value={mailingAddress.city || ''}
+            placeholder={'City'}
+            onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
+        </div>
+        <div className='col'>
+          <input
+            className={
+              `form-control ${isMissingAddressComponent('administrative_area_level_1') ? 'is-invalid' : ''}`
+            }
+            type="text" value={mailingAddress.state || ''} placeholder={'State'}
+            onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
+        </div>
+      </div>
+      <div className='row'>
+        <div className="col">
+          <input
+            className={`form-control ${isMissingAddressComponent('postal_code') ? 'is-invalid' : ''}`}
+            type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
+            onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
+        </div>
+        <div className='col'>
+          <input
+            className={`form-control ${isMissingAddressComponent('country') ? 'is-invalid' : ''}`}
+            type="text" value={mailingAddress.country || ''} placeholder={'Country'}
+            onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
+        </div>
+      </div>
+      <LoadingSpinner isLoading={isLoadingValidation}>
+        <button className="btn btn-link" onClick={validateAddress}>Validate</button>
+      </LoadingSpinner>
+      {addressValidationResults?.suggestedAddress && <p>Todo - suggest modal</p>}
+      {addressValidationResults && <p>{addressValidationResults.valid ? 'True' : 'False'}</p>}
+    </div>
+  </FormRow>
 }
