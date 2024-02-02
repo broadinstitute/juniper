@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CrudService;
 import java.time.Instant;
@@ -9,15 +10,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import bio.terra.pearl.core.service.DataAuditedService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-public class ParticipantTaskService extends CrudService<ParticipantTask, ParticipantTaskDao> {
-    public ParticipantTaskService(ParticipantTaskDao dao) {
-        super(dao);
+public class ParticipantTaskService extends DataAuditedService<ParticipantTask, ParticipantTaskDao> {
+    public ParticipantTaskService(ParticipantTaskDao dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
+        super(dao, dataChangeRecordService, objectMapper);
     }
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
@@ -26,6 +29,10 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
 
     public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(List<UUID> enrolleeIds) {
         return dao.findByEnrolleeIds(enrolleeIds);
+    }
+
+    public List<ParticipantTask> findTasksByStudyAndTarget(UUID studyEnvId, List<String> targetStableIds) {
+        return dao.findTasksByStudyAndTarget(studyEnvId, targetStableIds);
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId);}
@@ -44,19 +51,10 @@ public class ParticipantTaskService extends CrudService<ParticipantTask, Partici
 
     @Transactional
     @Override
-    public ParticipantTask create(ParticipantTask task) {
-        ParticipantTask savedTask = dao.create(task);
-        log.info("ParticipantTask created - id: {}, targetStableId: {}, enrolleeId: {}",
-                task.getId(), task.getTargetStableId(), task.getEnrolleeId());
-        return savedTask;
-    }
-
-    @Transactional
-    @Override
-    public ParticipantTask update(ParticipantTask task) {
+    public ParticipantTask update(ParticipantTask task, DataAuditInfo dataAuditInfo) {
         if (task.getStatus().isTerminalStatus() && task.getCompletedAt() == null) {
             task.setCompletedAt(Instant.now());
         }
-        return dao.update(task);
+        return super.update(task, dataAuditInfo);
     }
 }

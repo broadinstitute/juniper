@@ -19,12 +19,12 @@ export default function FormOptions({
   studyEnvContext, workingForm, updateWorkingForm, onDismiss, isDirty,
   visibleVersionPreviews, setVisibleVersionPreviews
 }:
-  {studyEnvContext: StudyEnvContextT, workingForm: VersionedForm,
-    isDirty: boolean,
-    updateWorkingForm: (props: SaveableFormProps) => void,
-    onDismiss: () => void
-    visibleVersionPreviews: VersionedForm[],
-    setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
+                                          {studyEnvContext: StudyEnvContextT, workingForm: VersionedForm,
+                                            isDirty: boolean,
+                                            updateWorkingForm: (props: SaveableFormProps) => void,
+                                            onDismiss: () => void
+                                            visibleVersionPreviews: VersionedForm[],
+                                            setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
   const stableId = workingForm.stableId
 
   const downloadJSON = () => {

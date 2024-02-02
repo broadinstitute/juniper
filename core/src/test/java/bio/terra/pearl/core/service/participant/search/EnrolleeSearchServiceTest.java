@@ -32,7 +32,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
             ParticipantTaskDao.EnrolleeTasks.builder().targetName("Consent").targetStableId("consent").build(),
             ParticipantTaskDao.EnrolleeTasks.builder().targetName("Survey").targetStableId("survey").build()
         );
-        when(mockParticipantTaskDao.findTasksByStudy(any())).thenReturn(tasks);
+        when(mockParticipantTaskDao.findTaskNamesByStudy(any())).thenReturn(tasks);
 
         StudyEnvironment studyEnvironment = StudyEnvironment.builder().studyId(UUID.randomUUID()).build();
         EnrolleeSearchFacet facet = searchService.getTaskFacet(studyEnvironment);

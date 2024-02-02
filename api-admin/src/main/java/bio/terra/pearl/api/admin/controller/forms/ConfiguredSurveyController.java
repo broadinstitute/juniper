@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,27 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
     this.request = request;
     this.objectMapper = objectMapper;
     this.surveyExtService = surveyExtService;
+  }
+
+  /**
+   * gets all StudyEnvironmentSurveys for the given study, along with their associated Survey (minus
+   * content)
+   */
+  @Override
+  public ResponseEntity<Object> findWithNoContent(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String stableId,
+      String active) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName =
+        envName != null ? EnvironmentName.valueOfCaseInsensitive(envName) : null;
+    Boolean activeVal = active != null ? Boolean.valueOf(active) : null;
+    List<StudyEnvironmentSurvey> studyEnvSurveys =
+        surveyExtService.findWithSurveyNoContent(
+            portalShortcode, studyShortcode, environmentName, stableId, activeVal, operator);
+    return ResponseEntity.ok(studyEnvSurveys);
   }
 
   @Override

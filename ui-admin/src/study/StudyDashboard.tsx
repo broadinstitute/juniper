@@ -85,7 +85,7 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
 
 /** indicates that an environment is not yet initialized */
 function EnvironmentEmptyMessage({ studyEnv }: {studyEnv: StudyEnvironment}) {
-  if (studyEnv.environmentName === 'IRB') {
+  if (studyEnv.environmentName === 'irb') {
     return <div>
       <h6 className="mt-2"><i>Not yet configured</i></h6>  <br/>
       Once you have finished setting up and testing your <Link to={`env/sandbox`}>Sandbox</Link> environment,

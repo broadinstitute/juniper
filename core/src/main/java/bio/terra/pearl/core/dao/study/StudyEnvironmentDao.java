@@ -92,7 +92,7 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     public StudyEnvironment attachAllContent(StudyEnvironment studyEnv) {
         UUID studyEnvId = studyEnv.getId();
         studyEnv.setStudyEnvironmentConfig(studyEnvironmentConfigDao.find(studyEnv.getStudyEnvironmentConfigId()).get());
-        studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllByStudyEnvIdWithSurvey(studyEnvId));
+        studyEnv.setConfiguredSurveys(studyEnvironmentSurveyDao.findAllWithSurvey(studyEnvId, true));
         if (studyEnv.getPreEnrollSurveyId() != null) {
             studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
         }

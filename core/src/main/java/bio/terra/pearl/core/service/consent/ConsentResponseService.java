@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.model.consent.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -73,7 +74,11 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
         // now update the task status and response id
         task.setStatus(response.isConsented() ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
         task.setConsentResponseId(response.getId());
-        participantTaskService.update(task);
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .responsibleUserId(participantUserId)
+                .portalParticipantUserId(ppUser.getId())
+                .enrolleeId(enrollee.getId()).build();
+        participantTaskService.update(task, auditInfo);
 
         EnrolleeConsentEvent event = eventService.publishEnrolleeConsentEvent(enrollee, response, ppUser);
         logger.info("ConsentResponse submitted: enrollee: {}, formStableId: {}, formVersion: {}",

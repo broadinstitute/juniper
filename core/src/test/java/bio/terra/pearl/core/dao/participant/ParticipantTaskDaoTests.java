@@ -127,7 +127,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         participantTaskFactory.buildPersisted(enrolleeBundle, "stable_id_3", "task_name3", TaskStatus.COMPLETE, TaskType.CONSENT);
         participantTaskFactory.buildPersisted(enrolleeBundle2, "stable_id_1", "task_name1", TaskStatus.COMPLETE, TaskType.SURVEY);
 
-        List<ParticipantTaskDao.EnrolleeTasks> enrolleeTasks = participantTaskDao.findTasksByStudy(studyEnv.getId());
+        List<ParticipantTaskDao.EnrolleeTasks> enrolleeTasks = participantTaskDao.findTaskNamesByStudy(studyEnv.getId());
         assertThat(enrolleeTasks, hasSize(3));
         assertThat(enrolleeTasks.stream().map(ParticipantTaskDao.EnrolleeTasks::getTargetStableId).toList(),
                 containsInAnyOrder("stable_id_1", "stable_id_2", "stable_id_3"));

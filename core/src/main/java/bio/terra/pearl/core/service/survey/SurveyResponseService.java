@@ -4,10 +4,7 @@ import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -123,12 +120,19 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto);
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .responsibleUserId(participantUserId)
+                .enrolleeId(enrollee.getId())
+                .surveyId(survey.getId())
+                .portalParticipantUserId(ppUser.getId())
+                .build();
+
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
-                survey.getAnswerMappings(), ppUser, participantUserId, enrollee.getId(), survey.getId());
+                survey.getAnswerMappings(), ppUser, auditInfo);
 
         // now update the task status and response id
-        updateTaskToResponse(task, response, updatedAnswers);
+        updateTaskToResponse(task, response, updatedAnswers, auditInfo);
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
@@ -171,7 +175,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,
-                                                   List<Answer> updatedAnswers) {
+                                                   List<Answer> updatedAnswers, DataAuditInfo auditInfo) {
         task.setSurveyResponseId(response.getId());
         if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
             if (response.isComplete()) {
@@ -183,7 +187,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 task.setStatus(TaskStatus.IN_PROGRESS);
             }
         }
-        return participantTaskService.update(task);
+        return participantTaskService.update(task, auditInfo);
     }
 
     /** Creates and attaches the answers to the response. */

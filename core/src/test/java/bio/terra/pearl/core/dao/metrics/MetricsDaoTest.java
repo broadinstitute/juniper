@@ -15,6 +15,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -101,17 +102,17 @@ public class MetricsDaoTest extends BaseSpringBootTest {
       PortalParticipantUser ppUser2 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee2, portalEnv);
     Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
       PortalParticipantUser ppUser3 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee3, portalEnv);
-
       ParticipantTask task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
     task.setStatus(TaskStatus.COMPLETE);
-    participantTaskService.create(task);
-    participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee2, ppUser2));
-      ParticipantTask taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3));
+      DataAuditInfo auditInfo = getAuditInfo(info);
+    participantTaskService.create(task, auditInfo);
+    participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee2, ppUser2), auditInfo);
+    ParticipantTask taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3), auditInfo);
 
       List<BasicMetricDatum> rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(1));
     taskToUpdate.setStatus(TaskStatus.COMPLETE);
-    participantTaskService.update(taskToUpdate);
+    participantTaskService.update(taskToUpdate, auditInfo);
     rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(2));
   }

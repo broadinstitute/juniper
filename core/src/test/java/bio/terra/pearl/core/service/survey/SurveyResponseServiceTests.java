@@ -167,7 +167,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 
         ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
-        task = participantTaskService.create(task);
+        task = participantTaskService.create(task, getAuditInfo(testInfo));
         assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
 
         // create a response with no answers
@@ -217,7 +217,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 
         ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
-        task = participantTaskService.create(task);
+        task = participantTaskService.create(task, getAuditInfo(testInfo));
         assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
 
         // create a response complete flag set to true

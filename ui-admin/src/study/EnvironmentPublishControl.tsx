@@ -58,7 +58,7 @@ function EnvironmentPublishControl({ destEnv, study, publishFunc }: {destEnv: St
         <div className="text-center mt-4">
           <p>This will copy all content from the {sourceEnvName} environment to the {destEnvName} environment,
             including surveys, consent forms, and home page content.</p>
-          { destEnvName === 'LIVE' && <p>
+          { destEnvName === 'live' && <p>
             This is <b>making changes to the live research environment</b>!
             All content should be approved by your IRB prior to performing this action.
           </p> }
