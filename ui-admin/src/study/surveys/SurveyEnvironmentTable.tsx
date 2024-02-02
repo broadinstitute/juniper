@@ -55,6 +55,7 @@ export default function SurveyEnvironmentTable(props: SurveyTableProps) {
   },
   ...ENVIRONMENT_NAMES.map((envName): ColumnDef<SurveyEnvTableRow> => ({
     header: envName,
+    enableSorting: false,
     id: envName,
     cell: ({ row }) => <SurveyTableEnvColumn rowInfo={row.original} {...props} envName={envName}/>
   }))], [dependencyString])
