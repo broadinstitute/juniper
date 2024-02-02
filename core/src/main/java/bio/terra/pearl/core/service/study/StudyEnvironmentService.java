@@ -91,10 +91,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             envConfig = studyEnvironmentConfigService.create(envConfig);
             studyEnv.setStudyEnvironmentConfigId(envConfig.getId());
         }
-        List<StudyEnvironment> studyEnvironmentList = dao.findByStudy(studyEnv.getStudyId());
-        Optional<StudyEnvironment> maybeNewEnv = studyEnvironmentList.stream()
-                .filter(studyEnvironment -> studyEnvironment.getEnvironmentName().equals(studyEnv.getEnvironmentName())).findAny();
-        StudyEnvironment newEnv = maybeNewEnv.isEmpty() ? dao.create(studyEnv) : maybeNewEnv.get();
+        StudyEnvironment newEnv = dao.create(studyEnv);
         for (StudyEnvironmentSurvey studyEnvironmentSurvey : studyEnv.getConfiguredSurveys()) {
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);
