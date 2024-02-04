@@ -656,7 +656,25 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: updated PArticipantTask objects
+          description: updated ParticipantTask objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/assignToEnrollees:
+    post:
+      summary: Assigns the specified tasks according to the passed-in ParticipantTaskAssignDto
+      tags: [ participantTask ]
+      operationId: assignToEnrollees
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: updated ParticipantTask objects
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

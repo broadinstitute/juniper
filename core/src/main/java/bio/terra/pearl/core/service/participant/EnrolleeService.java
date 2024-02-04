@@ -250,6 +250,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
     }
 
+    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
+                                     String targetStableId,
+                                     Integer targetAssignedVersion) {
+        return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
+    }
+
     /** It's possible there are snazzier ways to get postgres to generate this for us,
      * but for now, just keep trying strings until we get a unique one
      * returns null if we couldn't generate one.

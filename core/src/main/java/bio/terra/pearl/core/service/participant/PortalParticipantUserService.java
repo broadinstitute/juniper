@@ -88,6 +88,10 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
                 new IllegalStateException("No portal participant user found for enrollee %s".formatted(enrollee.getShortcode())));
     }
 
+    public List<PortalParticipantUser> findByProfileIds(List<UUID> profileIds) {
+        return dao.findByProfileIds(profileIds);
+    }
+
     @Override @Transactional
     public void delete(UUID portalParticipantUserId, Set<CascadeProperty> cascades) {
         PortalParticipantUser ppUser = dao.find(portalParticipantUserId).get();

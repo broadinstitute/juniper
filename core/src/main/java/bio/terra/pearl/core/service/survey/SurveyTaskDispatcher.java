@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -9,18 +10,22 @@ import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.workflow.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
-import bio.terra.pearl.core.service.workflow.DispatcherOrder;
-import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
+
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -33,60 +38,128 @@ import org.springframework.stereotype.Service;
 public class SurveyTaskDispatcher {
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private ParticipantTaskService participantTaskService;
+    private EnrolleeService enrolleeService;
+    private PortalParticipantUserService portalParticipantUserService;
+    private EnrolleeRuleService enrolleeRuleService;
+
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                                 ParticipantTaskService participantTaskService) {
+                                ParticipantTaskService participantTaskService,
+                                EnrolleeService enrolleeService,
+                                PortalParticipantUserService portalParticipantUserService,
+                                EnrolleeRuleService enrolleeRuleService) {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.participantTaskService = participantTaskService;
+        this.enrolleeService = enrolleeService;
+        this.portalParticipantUserService = portalParticipantUserService;
+        this.enrolleeRuleService = enrolleeRuleService;
+    }
+
+
+    public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
+                                        UUID studyEnvironmentId,
+                                        AdminUser operator) {
+        List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
+        StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
+                .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
+                        .stream().findFirst().orElseThrow(() -> new NotFoundException("Could not find active survey to assign tasks"));
+        List<UUID> profileIds = enrollees.stream().map(Enrollee::getProfileId).toList();
+        List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByProfileIds(profileIds);
+        if (ppUsers.size() != enrollees.size()) {
+            throw new IllegalStateException("Task dispatch failed: Portal participant user not matched to enrollee");
+        }
+        List<EnrolleeRuleData> enrolleeRuleDatas = enrolleeRuleService.fetchData(enrollees.stream().map(Enrollee::getId).toList());
+
+        UUID auditOperationId = UUID.randomUUID();
+        List<ParticipantTask> createdTasks = new ArrayList<>();
+        for (int i = 0; i < enrollees.size(); i++) {
+            Optional<ParticipantTask> taskOpt;
+            if (assignDto.overrideEligibility()) {
+                taskOpt = Optional.of(buildTask(enrollees.get(i), ppUsers.get(i),
+                        studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
+            } else {
+                taskOpt = buildTaskIfApplicable(enrollees.get(i), ppUsers.get(i), enrolleeRuleDatas.get(i),
+                        studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
+            }
+            if (taskOpt.isPresent()) {
+                DataAuditInfo auditInfo = DataAuditInfo.builder()
+                        .responsibleAdminUserId(operator.getId())
+                        .portalParticipantUserId(ppUsers.get(i).getId())
+                        .operationId(auditOperationId)
+                        .enrolleeId(enrollees.get(i).getId()).build();
+
+                ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
+                log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
+                        task.getTaskType(), task.getTargetStableId());
+                createdTasks.add(task);
+            }
+        }
+        return createdTasks;
+    }
+
+    protected List<Enrollee> findMatchingEnrollees(ParticipantTaskAssignDto assignDto,
+                                                   UUID studyEnvironmentId) {
+        if (assignDto.assignAllUnassigned()) {
+            return enrolleeService.findUnassignedToTask(studyEnvironmentId,
+                    assignDto.targetStableId(), assignDto.targetAssignedVersion());
+        } else {
+            return enrolleeService.findAll(assignDto.enrolleeIds());
+        }
     }
 
     /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
-    public void createSurveyTasks(EnrolleeEvent enrolleeEvent) {
-        List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
-                .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
-        List<ParticipantTask> tasksToAdd = buildTasks(enrolleeEvent.getEnrollee(),
-                enrolleeEvent.getPortalParticipantUser(),
-                enrolleeEvent.getEnrolleeRuleData(),
-                studyEnvSurveys);
+    public void createSurveyTasks(EnrolleeCreationEvent enrolleeEvent) {
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .systemProcess(getClass().getSimpleName() + ".createSurveyTasks")
                 .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
                 .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
-        for (ParticipantTask task : tasksToAdd) {
-            log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
-                    task.getTaskType(), task.getTargetStableId());
-            task = participantTaskService.create(task, auditInfo);
-            enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
-        }
-    }
+        List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
+                .findAllByStudyEnvIdWithSurvey(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
 
-    /** builds the survey tasks, does not add them to the event or persist them,
-     * studyEnvSurveys must each have the Survey attached */
-    public List<ParticipantTask> buildTasks(Enrollee enrollee,
-                                            PortalParticipantUser portalParticipantUser,
-                                            EnrolleeRuleData enrolleeRuleData,
-                                            List<StudyEnvironmentSurvey> studyEnvSurveys) {
-        List<ParticipantTask> tasks = new ArrayList<>();
-        for (StudyEnvironmentSurvey studySurvey : studyEnvSurveys) {
-            if (isEligibleForSurvey(studySurvey.getSurvey().getEligibilityRule(), enrolleeRuleData)) {
-                ParticipantTask task = buildTask(studySurvey, studySurvey.getSurvey(), enrollee, portalParticipantUser);
-                if (!isDuplicateTask(studySurvey, task, enrollee.getParticipantTasks())) {
-                    tasks.add(task);
+        for (StudyEnvironmentSurvey studyEnvSurvey: studyEnvSurveys) {
+            if (studyEnvSurvey.getSurvey().isAssignToAllNewEnrollees()) {
+                Optional<ParticipantTask> taskOpt = buildTaskIfApplicable(enrolleeEvent.getEnrollee(),
+                        enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeRuleData(),
+                        studyEnvSurvey, studyEnvSurvey.getSurvey());
+                if (taskOpt.isPresent()) {
+                    ParticipantTask task = taskOpt.get();
+                    log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
+                            task.getTaskType(), task.getTargetStableId());
+                    task = participantTaskService.create(task, auditInfo);
+                    enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
                 }
             }
         }
-        return tasks;
+    }
+
+    /** builds any survey tasks that the enrollee is eligible for that are not duplicates
+     *  Does not add them to the event or persist them.
+     *  */
+    public Optional<ParticipantTask> buildTaskIfApplicable(Enrollee enrollee,
+                                                      PortalParticipantUser portalParticipantUser,
+                                                      EnrolleeRuleData enrolleeRuleData,
+                                                      StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
+        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeRuleData)) {
+            ParticipantTask task = buildTask(enrollee, portalParticipantUser, studyEnvSurvey, studyEnvSurvey.getSurvey());
+            if (!isDuplicateTask(studyEnvSurvey, task, enrollee.getParticipantTasks())) {
+                return Optional.of(task);
+            }
+        }
+        return Optional.empty();
     }
 
     public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
         return RuleEvaluator.evaluateEnrolleeRule(eligibilityRule, enrolleeRuleData);
     }
 
-    /** builds a task for the given survey -- does NOT evaluate the rule */
-    public ParticipantTask buildTask(StudyEnvironmentSurvey studySurvey, Survey survey,
-                                     Enrollee enrollee, PortalParticipantUser portalParticipantUser) {
+    /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */
+    public ParticipantTask buildTask(Enrollee enrollee, PortalParticipantUser portalParticipantUser,
+                                     StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
+        if (!studyEnvSurvey.getSurveyId().equals(survey.getId())) {
+            throw new IllegalArgumentException("Survey does not match StudyEnvironmentSurvey");
+        }
         TaskType taskType = SurveyType.OUTREACH.equals(survey.getSurveyType()) ?
                 TaskType.OUTREACH : TaskType.SURVEY;
         ParticipantTask task = ParticipantTask.builder()
@@ -94,7 +167,7 @@ public class SurveyTaskDispatcher {
                 .portalParticipantUserId(portalParticipantUser.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
                 .blocksHub(survey.isRequired())
-                .taskOrder(studySurvey.getSurveyOrder())
+                .taskOrder(studyEnvSurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())
                 .taskType(taskType)

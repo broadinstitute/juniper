@@ -1,0 +1,49 @@
+{
+  "stableId": "hd_hd_sandbox",
+  "version": 1,
+  "name": "Sandbox survey",
+  "assignToAllNewEnrollees": false,
+  "jsonContent": {
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "hd_hd_sandbox_intro",
+                "type": "html",
+                "html": "<p>This is a draft survey that is only in the sandbox environment initially.  It's not assigned by default so that it can simulate a freshly created survey</p>"
+              }
+            ]
+          },
+          {
+            "name": "hd_hd_sandbox_colorChoid",
+            "type": "radiogroup",
+            "title": "What color is your parachute?",
+            "choices": [
+              {
+                "text": "Red",
+                "value": "red"
+              },
+              {
+                "text": "Green",
+                "value": "green"
+              },
+              {
+                "text": "Blue",
+                "value": "blue"
+              },
+              {
+                "text": "Clear",
+                "value": "clear"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
