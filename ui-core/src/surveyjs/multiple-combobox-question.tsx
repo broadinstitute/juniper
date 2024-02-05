@@ -100,7 +100,7 @@ export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
         onChange={selectedItems => {
           this.question.value = selectedItems.map(item => item.value)
         }}
-        options={options}
+        choices={options}
         choicesByUrl={this.choicesByUrl?.url}
         placeholder={this.placeholder}
       />

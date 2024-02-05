@@ -15,7 +15,7 @@ describe('MultipleCombobox', () => {
       id={'test'}
       itemToString={(item: ItemValue) => item.text}
       placeholder={'Select an option'}
-      options={[]} />)
+      choices={[]} />)
 
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(screen.getByLabelText('toggle menu')).toBeInTheDocument()
@@ -29,7 +29,7 @@ describe('MultipleCombobox', () => {
       id={'test'}
       itemToString={(item: ItemValue) => item.text}
       placeholder={'Select an option'}
-      options={[]}
+      choices={[]}
       choicesByUrl={'/test.json'} />)
 
     expect(fetchSpy).toHaveBeenCalledWith('/test.json')
