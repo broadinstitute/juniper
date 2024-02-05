@@ -51,11 +51,12 @@
   },{
     "sectionType": "HERO_WITH_IMAGE",
     "sectionConfigJson": {
-      "title": "Who can join?",
-      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+      "title": "¿Quién puede participar?",
+      "blurb": "Cualquier persona que:\n\n* Viva en los Estados Unidos\n * Mayor de 18 años\n * Cómodo completando encuestas en inglés\n * De ascendencia del sur de Asia*\n\n&nbsp;\n\n*Ascendencia auto-identificada de uno de los países del sur de Asia definidos por la Asociación Americana del Corazón como Bangladesh, Bután, India, las Maldivas, Nepal, Pakistán y Sri Lanka.",
       "fullWidth": true,
       "buttons": [
-        {"text": "Get Started",
+        {
+          "text": "Comience",
           "type": "join",
           "studyShortcode": "ourheart"
         }
@@ -67,26 +68,27 @@
     "sectionType": "STEP_OVERVIEW",
     "sectionConfigJson": {
       "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
-      "title": "How to Participate",
+      "title": "Cómo participar",
       "steps": [{
         "image": {"cleanFileName": "step_1.png", "version": 1, "alt": ""},
         "duration": "1 minute",
-        "blurb": "Answer eligibility questions and create your account."
+        "blurb": "Responda preguntas de elegibilidad y cree su cuenta."
       },{
         "image": {"cleanFileName": "step_2.png", "version": 1, "alt": ""},
         "duration": "5 minutes",
-        "blurb": "Read the consent form and decide if you’d like to join the study."
+        "blurb": "Lea el formulario de consentimiento y decida si desea unirse al estudio."
       },{
         "image": {"cleanFileName": "step_3.png", "version": 1, "alt": ""},
         "duration": "25-45 minutes",
-        "blurb": "Answer survey questions about you and your health."
+        "blurb": "Responda preguntas sobre usted y su salud."
       },{
         "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
         "duration": "5 minutes",
-        "blurb": "Provide your mailing address so we can send a sample donation kit."
+        "blurb": "Proporcione su dirección para que podamos enviar un kit de donación de muestra."
       }],
       "buttons": [
-        {"text": "Learn More About Participation",
+        {
+          "text": "Más información sobre la participación",
           "type": "internalLink",
           "href": "/participation"
         }
@@ -97,24 +99,24 @@
     "anchorRef": "faq",
     "sectionConfigJson": {
       "backgroundColor": "#f2f2f2",
-      "blurb": "If your question is not answered below, you can call or email our study staff at **[617&#x2011;724&#x2011;1240](tel:+16177241240)** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+      "blurb": "Si su pregunta no se responde a continuación, puede llamar o enviar un correo electrónico a nuestro personal de estudio al **[617&#x2011;724&#x2011;1240](tel:+16177241240)** o **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
       "showToggleAllButton": false,
       "questions": [
         {
-          "question": "What is the OurHealth study?",
-          "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+          "question": "¿Qué es el estudio OurHealth?",
+          "answer": "OurHealth es una iniciativa de investigación sin fines de lucro que permite a las personas que se identifican como del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
         },
         {
-          "question": "Why are we doing this study?",
-          "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been underrepresented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. OurHealth aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
+          "question": "¿Por qué estamos haciendo este estudio?",
+          "answer": "Las personas de ascendencia del sur de Asia están desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentados en estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo que aumenta la enfermedad cardiovascular, lo que destaca una conciencia pero una brecha de conocimiento distinta. OurHealth tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
         },
         {
-          "question": "How can I participate?",
-          "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/ourheart/join)."
+          "question": "¿Cómo puedo participar?",
+          "answer": "Si tiene más de 18 años, vive en los Estados Unidos y se identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/ourheart/join)."
         },
         {
-          "question": "What does OurHealth do with the data?",
-          "answer": "Only data and/or specimens necessary for study conduct will be collected. The electronic data collected will be maintained in a secure location with appropriate protections including password protection, encryption, and/or physical security measures (locked files/areas). The specimens collected will be maintained in a secure location with appropriate protections (e.g. locked storage spaces, laboratory areas). Data and specimens will only be shared with individuals who are members of the IRB-approved research team or approved for sharing as described in the IRB protocol. Identifiers will be coded and access to files linking identifiers with coded data or specimens will be limited to the minimal necessary members of the research team. All staff are trained on and will follow the Mass General Brigham policies and procedures for maintaining appropriate confidentiality of research data and specimens. All electronic communication with participants will comply with Mass General Brigham secure communication policies."
+          "question": "¿Qué hace OurHealth con los datos?",
+          "answer": "Los datos recopilados se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos."
         }]
     }
   },{
@@ -123,7 +125,7 @@
       "backgroundColor": "#F2F2F2",
       "buttons": [{
         "type": "internalLink",
-        "text": "More FAQs",
+        "text": "Más preguntas frecuentes",
         "href": "/faq"
       }]
     }
@@ -138,11 +140,11 @@
   },{
     "sectionType": "HERO_CENTERED",
     "sectionConfigJson": {
-      "title": "Stay informed",
-      "blurb": "Sign up for our mailing list or follow us on social media.",
+      "title": "Manténgase informado",
+      "blurb": "Regístrese en nuestra lista de correo o síganos en las redes sociales.",
       "buttons": [{
         "type": "mailingList",
-        "text": "Join Mailing List"
+        "text": "Unirse a la lista de correo"
       }]
     }
   },{
@@ -159,11 +161,11 @@
   },{
     "sectionType": "HERO_CENTERED",
     "sectionConfigJson": {
-      "title": "You can make an impact",
-      "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
+      "title": "Usted puede marcar la diferencia",
+      "blurb": "Con su ayuda, los pacientes pueden ser la fuerza impulsora detrás de la investigación cardiovascular transformadora.",
       "buttons": [{
         "type": "join",
-        "text": "Join OurHealth",
+        "text": "Únase a OurHealth",
         "studyShortcode": "ourheart"
       }],
       "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
