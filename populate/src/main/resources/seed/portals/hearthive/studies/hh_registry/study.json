@@ -158,7 +158,11 @@
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
-    "enrolleeFiles" : [ ],
+    "enrolleeFiles" : [
+      "enrollees/gertrudeElion.json",
+      "enrollees/newEnrollee.json",
+      "enrollees/consentedEnrollee.json"
+    ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "populateFileName" : "../../surveys/registrationForm-29.json"
