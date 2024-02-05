@@ -34,5 +34,21 @@
     },{
       "populateFileName": "es/faq.json"
     }]
+  },{
+    "language": "dv",
+    "navLogoCleanFileName": "juniper-demo-logo.png",
+    "navLogoVersion": 1,
+    "primaryBrandColor": "rgb(40, 90, 133)",
+    "footerSectionFile": "dv/footerSection.json",
+    "landingPageFileName": "dv/landingPage.json",
+    "navbarItemDtos": [{
+      "populateFileName": "dv/aboutUs.json"
+    },{
+      "populateFileName": "dv/participation.json"
+    },{
+      "populateFileName": "dv/scientificBackground.json"
+    },{
+      "populateFileName": "dv/faq.json"
+    }]
   }]
 }
