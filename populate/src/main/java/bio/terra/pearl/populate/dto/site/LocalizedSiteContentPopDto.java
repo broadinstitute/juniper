@@ -11,7 +11,7 @@ import java.util.List;
 @Getter @Setter
 @NoArgsConstructor
 public class LocalizedSiteContentPopDto extends LocalizedSiteContent {
-    private HtmlPagePopDto landingPage;
+    private String landingPageFileName;
     private List<NavbarItemPopDto> navbarItemDtos = new ArrayList<>();
     private String footerSectionFile;
 }
