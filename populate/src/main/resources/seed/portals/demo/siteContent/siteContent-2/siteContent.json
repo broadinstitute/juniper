@@ -35,20 +35,20 @@
       "populateFileName": "es/faq.json"
     }]
   },{
-    "language": "dv",
+    "language": "dev",
     "navLogoCleanFileName": "juniper-demo-logo.png",
     "navLogoVersion": 1,
     "primaryBrandColor": "rgb(40, 90, 133)",
-    "footerSectionFile": "dv/footerSection.json",
-    "landingPageFileName": "dv/landingPage.json",
+    "footerSectionFile": "dev/footerSection.json",
+    "landingPageFileName": "dev/landingPage.json",
     "navbarItemDtos": [{
-      "populateFileName": "dv/aboutUs.json"
+      "populateFileName": "dev/aboutUs.json"
     },{
-      "populateFileName": "dv/participation.json"
+      "populateFileName": "dev/participation.json"
     },{
-      "populateFileName": "dv/scientificBackground.json"
+      "populateFileName": "dev/scientificBackground.json"
     },{
-      "populateFileName": "dv/faq.json"
+      "populateFileName": "dev/faq.json"
     }]
   }]
 }

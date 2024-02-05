@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Api, { HtmlSection, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -28,7 +28,7 @@ const landingPageOption = { label: 'Landing page', value: 'Landing page' }
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
-  loadSiteContent: (stableId: string, version: number, language?: string) => void
+  loadSiteContent: (stableId: string, version: number) => void
   createNewVersion: (content: SiteContent) => void
   switchToVersion: (id: string, stableId: string, version: number) => void
   portalEnvContext: PortalEnvContext
@@ -41,26 +41,20 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
   const { portalEnv } = portalEnvContext
+  const selectedLanguage = 'en'
   const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
-  const [selectedLanguage, setSelectedLanguage] = useState(workingContent.localizedSiteContents[0].language)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
   const [showDeletePageModal, setShowDeletePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
-  const [localContent, setLocalContent] = useState<LocalSiteContent | undefined>(
-    workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage))
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const zoneConfig = useConfig()
-
-  useEffect(() => {
-    const newLocalContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
-    setLocalContent(newLocalContent)
-  }, [workingContent, selectedLanguage])
 
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
@@ -173,7 +167,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
 
-  const isEditable = !readOnly && portalEnv.environmentName === 'sandbox' && (selectedLanguage === 'en')
+  const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
   const currentNavBarItem = selectedNavOpt.value ? navBarInternalItems
     .find(navItem => navItem.text === selectedNavOpt.value) : null
@@ -205,9 +199,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         {
           isEditable && <div className="d-flex flex-grow-1">
             <Button className="ms-auto me-md-2" variant="primary"
-              disabled={readOnly || hasInvalidSection ||
-                  (initialContent === workingContent) ||
-                  (selectedLanguage !== siteContent.defaultLanguage)}
+              disabled={readOnly || hasInvalidSection || (initialContent === workingContent)}
               tooltipPlacement={'left'}
               tooltip={(() => {
                 if (initialContent === workingContent) {
@@ -238,15 +230,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
-          <Select
-            className="ms-2"
-            value={{ label: selectedLanguage, value: selectedLanguage }}
-            onChange={e => {
-              setSelectedLanguage(e?.value ?? 'en')
-              loadSiteContent(siteContent.stableId, siteContent.version, e?.value)
-            }}
-            options={[{ label: 'en', value: 'en' }, { label: 'es', value: 'es' }, { label: 'dv', value: 'dv' }]}
-          />
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}
@@ -298,9 +281,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               <div>
                 {pageToRender &&
                     <ApiProvider api={previewApi}>
-                      <HtmlPageEditView
-                        htmlPage={pageToRender}
-                        readOnly={readOnly || (selectedLanguage !== workingContent.defaultLanguage)}
+                      <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
                         siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                         footerSection={localContent.footerSection} updateFooter={updateFooter}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
