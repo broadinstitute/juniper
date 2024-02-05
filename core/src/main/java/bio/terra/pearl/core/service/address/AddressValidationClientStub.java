@@ -24,9 +24,9 @@ public class AddressValidationClientStub implements AddressValidationClient {
      * Stubbed client allows you to test various possible states of address validation.
      * <br>
      * State 1: Invalid address
-     * - Put the word "BAD" in street1, e.g. 123 Bad St
+     * - Put the word "BAD" in street1, e.g. 123 Bad St, or leave it empty
      * - All the tokens in street1 will be considered unresolved
-     * - Example missing component data will be returned
+     * - Example missing component data will be returned based on simple rules
      * - Real-world responses are not guaranteed have missingComponents or unresolvedTokens
      * <br>
      * State 2: Improvable address
@@ -44,7 +44,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
     @Override
     public AddressValidationResultDto validate(UUID sessionId, MailingAddress address) throws AddressValidationException {
 
-        if (address.getStreet1().contains(BAD_ADDRESS_INDICATOR)) {
+        if (address.getStreet1().contains(BAD_ADDRESS_INDICATOR) || address.getStreet1().isEmpty()) {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
@@ -78,7 +78,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
                     errorCode = 500;
                 }
             } catch (Exception e) {
-                // ignore; default to 404
+                // ignore; default to 500
             }
             throw new AddressValidationException(
                     "Failed to run address validation",
@@ -91,13 +91,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
     }
 
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {
-        List<AddressComponent> missingComponents = new ArrayList<>();
-
-        if (StringUtils.isEmpty(addr.getStreet1())) {
-            missingComponents.add(AddressComponent.STREET_NAME);
-            missingComponents.add(AddressComponent.STREET_TYPE);
-            missingComponents.add(AddressComponent.HOUSE_NUMBER);
-        }
+        List<AddressComponent> missingComponents = new ArrayList<>(findMissingComponentsInStreet1(addr.getStreet1()));
 
         if (StringUtils.isEmpty(addr.getPostalCode())) {
             missingComponents.add(AddressComponent.POSTAL_CODE);
@@ -113,6 +107,35 @@ public class AddressValidationClientStub implements AddressValidationClient {
 
         if (StringUtils.isEmpty(addr.getState())) {
             missingComponents.add(AddressComponent.STATE_PROVINCE);
+        }
+
+        return missingComponents;
+    }
+
+    private static final List<String> possibleStreetTypes = List.of(
+            "st", "street", "ln", "lane", "rd", "road", "way", "avenue", "ave", "drive", "dr"
+    );
+
+    private List<AddressComponent> findMissingComponentsInStreet1(String street1) {
+        List<AddressComponent> missingComponents = new ArrayList<>();
+
+        if (StringUtils.isEmpty(street1)) {
+            missingComponents.add(AddressComponent.STREET_NAME);
+            missingComponents.add(AddressComponent.STREET_TYPE);
+            missingComponents.add(AddressComponent.HOUSE_NUMBER);
+            return missingComponents;
+        }
+
+        String[] splitStreet1 = StringUtils.split(street1);
+
+        try {
+            Integer.parseInt(splitStreet1[0]);
+        } catch (NumberFormatException e) {
+            missingComponents.add(AddressComponent.HOUSE_NUMBER);
+        }
+
+        if (!possibleStreetTypes.contains(splitStreet1[splitStreet1.length - 1].toLowerCase())) {
+            missingComponents.add(AddressComponent.STREET_TYPE);
         }
 
         return missingComponents;

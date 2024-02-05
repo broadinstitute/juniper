@@ -1,4 +1,4 @@
-import { AddressComponent, AddressValidationResult } from 'src/types/address'
+import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
 import { isNil } from 'lodash'
 
 
@@ -16,7 +16,7 @@ const ADDR_COMPONENT_TO_NAME = {
   'HOUSE_NUMBER': 'House Number',
   'STREET_NAME': 'Street Name',
   'COUNTRY': 'Country',
-  'POSTAL_CODE': 'Postal/ZIP Code',
+  'POSTAL_CODE': 'Postal Code',
   'SUBPREMISE': 'Unit Number',
   'STREET_TYPE': 'Street Type',
   'STATE_PROVINCE': 'State/Province'
@@ -24,10 +24,10 @@ const ADDR_COMPONENT_TO_NAME = {
 
 
 /**
- *
+ * Determines whether a field should be in an error state based on the address validation result.
  */
 export function isAddressFieldValid(
-  validation: AddressValidationResult | undefined, field: string, val: string
+  validation: AddressValidationResult | undefined, field: keyof MailingAddress, val: string
 ) : boolean {
   if (validation?.valid) {
     return true
@@ -50,7 +50,8 @@ export function isAddressFieldValid(
 }
 
 /**
- *
+ * Creates a list of strings where each string is a simple explanation of the validation results, e.g.:
+ * 'Address is missing the state field. Please fill it out and try again.'
  */
 export function explainAddressValidationResults(validation: AddressValidationResult | undefined) : string[] {
   const out = []
@@ -59,15 +60,41 @@ export function explainAddressValidationResults(validation: AddressValidationRes
     const missingComponentNames = validation
       .missingComponents
       .map(comp => ADDR_COMPONENT_TO_NAME[comp])
+      .map(val => val.toLowerCase())
       .filter(val => !isNil(val))
 
     if (missingComponentNames.length > 0) {
-      out.push(`The address is missing: ${missingComponentNames.join(', ')}`)
+      if (missingComponentNames.length === 1) {
+        out.push(
+          `The address is missing the ${
+            missingComponentNames[0]
+          }. Please add this information and try again.`)
+      } else {
+        out.push(
+          `The address is missing the ${
+            missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
+          } and ${
+            missingComponentNames[missingComponentNames.length - 1]
+          }. Please add this information and try again.`)
+      }
     }
   }
 
   if (validation?.unresolvedTokens && validation.unresolvedTokens.length > 0) {
-    out.push(`Could not resolve: ${validation.unresolvedTokens.join(', ')}`)
+    const unresolvedTokens = validation.unresolvedTokens
+    if (unresolvedTokens.length === 1) {
+      out.push(
+        `A part of the address ('${
+          unresolvedTokens[0]
+        }') could not be verified. Please correct it and try again.`)
+    } else {
+      out.push(
+        `Some parts of the address ('${
+          unresolvedTokens.slice(0, unresolvedTokens.length - 1).join(',\' \'')
+        }' and '${
+          unresolvedTokens[unresolvedTokens.length - 1]
+        }') could not be verified. Please correct them and try again.`)
+    }
   }
 
   return out

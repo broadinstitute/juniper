@@ -15,5 +15,5 @@ export type AddressValidationResult = {
   suggestedAddress?: MailingAddress,
   missingComponents?: AddressComponent[],
   unresolvedTokens?: string[],
-  sessionId: string
+  sessionId?: string
 }

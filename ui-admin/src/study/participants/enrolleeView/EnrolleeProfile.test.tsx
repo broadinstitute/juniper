@@ -117,3 +117,101 @@ test('profile update is sent appropriately with justification', async () => {
       }
     )
 })
+
+test('shows error message on address validation', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+    valid: false,
+    missingComponents: ['STREET_NAME']
+  }))
+
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+
+  const { RoutedComponent } = setupRouterTest(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Edit', { exact: false }))
+  await waitFor(() => {
+    expect(screen.getByPlaceholderText('Given Name')).toBeInTheDocument()
+  })
+
+  await userEvent.click(screen.getByText('Validate'))
+
+  // starting part of the error
+  expect(screen.getByText('The address is missing the', { exact: false })).toBeInTheDocument()
+
+  // makes the field red
+  const streetClasses = screen.getByPlaceholderText('Street 1').className
+  expect(streetClasses).toContain('is-invalid')
+
+  const countryClasses = screen.getByPlaceholderText('Country').className
+  expect(countryClasses).not.toContain('is-invalid')
+  expect(countryClasses).not.toContain('is-valid')
+})
+
+test('shows modal on improvable address validation', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+    valid: true,
+    suggestedAddress: {
+      street1: '415 Main St',
+      city: 'Cambridge',
+      country: 'USA',
+      postalCode: '02142',
+      street2: '',
+      state: 'MA'
+    }
+  }))
+
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+
+  const { RoutedComponent } = setupRouterTest(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Edit', { exact: false }))
+  await waitFor(() => {
+    expect(screen.getByPlaceholderText('Given Name')).toBeInTheDocument()
+  })
+
+  await userEvent.click(screen.getByText('Validate'))
+
+  expect(screen.getByText('We think there might be some improvements which could be made to your address',
+    { exact: false })).toBeInTheDocument()
+})
+
+test('makes all fields green upon positive validation', async () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+    valid: true
+  }))
+
+  const studyEnvContext = mockStudyEnvContext()
+  const enrollee = mockEnrollee()
+
+  const { RoutedComponent } = setupRouterTest(
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+    }}/>)
+  render(RoutedComponent)
+
+  await userEvent.click(screen.getByText('Edit', { exact: false }))
+  await waitFor(() => {
+    expect(screen.getByPlaceholderText('Given Name')).toBeInTheDocument()
+  })
+
+  await userEvent.click(screen.getByText('Validate'))
+
+  const classes = screen.getByPlaceholderText('Street 1').className
+  expect(classes).toContain('is-valid')
+})

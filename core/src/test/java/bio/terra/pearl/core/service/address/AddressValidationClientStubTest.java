@@ -31,7 +31,7 @@ class AddressValidationClientStubTest extends BaseSpringBootTest {
     }
 
     @Test
-    public void testInvalidAddressResponse() {
+    public void testBasicInvalidAddressResponse() {
         UUID sessionId = UUID.randomUUID();
         AddressValidationResultDto result = clientStub.validate(
                 sessionId,
@@ -46,6 +46,46 @@ class AddressValidationClientStubTest extends BaseSpringBootTest {
 
         Assertions.assertEquals(List.of("123", "BAD", "St"), result.getUnresolvedTokens());
         Assertions.assertEquals(List.of(AddressComponent.CITY), result.getMissingComponents());
+    }
+
+    @Test
+    public void testInvalidStreetResponse() {
+        UUID sessionId = UUID.randomUUID();
+        AddressValidationResultDto result = clientStub.validate(
+                sessionId,
+                MailingAddress
+                        .builder().street1("BAD St").state("CO").country("USA").postalCode("12345").build());
+
+        Assertions.assertFalse(result.isValid());
+
+        Assertions.assertEquals(List.of("BAD", "St"), result.getUnresolvedTokens());
+        Assertions.assertEquals(List.of(AddressComponent.HOUSE_NUMBER, AddressComponent.CITY), result.getMissingComponents());
+
+        result = clientStub.validate(
+                sessionId,
+                MailingAddress
+                        .builder().street1("123 BAD").state("CO").country("USA").postalCode("12345").build());
+
+        Assertions.assertFalse(result.isValid());
+
+        Assertions.assertEquals(List.of("123", "BAD"), result.getUnresolvedTokens());
+        Assertions.assertEquals(
+                List.of(AddressComponent.STREET_TYPE, AddressComponent.CITY),
+                result.getMissingComponents());
+
+        result = clientStub.validate(
+                sessionId,
+                MailingAddress
+                        .builder().street1("").state("CO").country("USA").postalCode("12345").build());
+
+        Assertions.assertFalse(result.isValid());
+
+        Assertions.assertEquals(List.of(), result.getUnresolvedTokens());
+        Assertions.assertEquals(List.of(
+                AddressComponent.STREET_NAME, AddressComponent.STREET_TYPE,
+                AddressComponent.HOUSE_NUMBER, AddressComponent.CITY
+        ), result.getMissingComponents());
+
     }
 
     @Test

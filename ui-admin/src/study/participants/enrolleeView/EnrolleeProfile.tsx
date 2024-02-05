@@ -5,7 +5,7 @@ import Api, { AddressValidationResult, Enrollee, MailingAddress, Profile } from 
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
-import { cloneDeep, isEmpty } from 'lodash'
+import { cloneDeep, isEmpty, isNil } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
 import { findDifferencesBetweenObjects } from 'util/objectUtils'
@@ -123,7 +123,7 @@ function EditableProfile(
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
-  const onFieldChange = (field: string, value: string | boolean) => {
+  const onFieldChange = (field: keyof Profile, value: string | boolean) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -132,7 +132,7 @@ function EditableProfile(
     })
   }
 
-  const onDateFieldChange = (field: string, date: Date | null) => {
+  const onDateFieldChange = (field: keyof Profile, date: Date | null) => {
     const asJavaLocalDate: number[] | undefined = date ? jsDateToJavaLocalDate(date) : undefined
 
     setProfile((oldVal: Profile) => {
@@ -143,7 +143,7 @@ function EditableProfile(
     })
   }
 
-  const onMailingAddressFieldChange = (field: string, value: string) => {
+  const onMailingAddressFieldChange = (field: keyof MailingAddress, value: string) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -307,7 +307,7 @@ function EditMailingAddressRow(
   }: {
     title: string,
     mailingAddress: MailingAddress,
-    onMailingAddressFieldChange: (field: string, value: string) => void,
+    onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
     setMailingAddress: (update: MailingAddress) => void
   }
 ) {
@@ -315,7 +315,7 @@ function EditMailingAddressRow(
   const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
 
-  const onFieldChange = (field: string, value: string) => {
+  const onFieldChange = (field: keyof MailingAddress, value: string) => {
     if (!hasChangedSinceValidation.includes(field)) {
       setHasChangedSinceValidation(val => val.concat([field]))
     }
@@ -332,6 +332,10 @@ function EditMailingAddressRow(
   }
 
   const formatClassName = (field: keyof MailingAddress) => {
+    if (addressValidationResults?.valid === true && isNil(addressValidationResults.suggestedAddress)) {
+      return 'form-control is-valid'
+    }
+
     if (!hasChangedSinceValidation.includes(field)
       && !isAddressFieldValid(addressValidationResults, field, mailingAddress[field])) {
       return 'form-control is-invalid'
@@ -340,11 +344,17 @@ function EditMailingAddressRow(
     return 'form-control'
   }
 
+  const clearSuggestedAddress = () => {
+    setAddressValidationResults(val => {
+      return {
+        ...(val || {}), // technically it could be undefined but should be impossible when this is called
+        valid: true,
+        suggestedAddress: undefined
+      }
+    })
+  }
 
-  // TODO: make missing components highlight only the appropriate fields
-  // TODO: make invalid tokens highlight only the appropriate fields
-  // could do the ^ with a utility helper - isAddressFieldInvalid(AddressValidationDto, field string, val string)
-  // TODO: make a utility function which will create a human-readable message for why it didn't work
+
   return <FormRow title={title}>
     <div className="">
       <div className='row mb-2'>
@@ -375,7 +385,7 @@ function EditMailingAddressRow(
         <div className='col'>
           <input
             className={formatClassName('state')}
-            type="text" value={mailingAddress.state || ''} placeholder={'State'}
+            type="text" value={mailingAddress.state || ''} placeholder={'State/Province'}
             onChange={e => onFieldChange('state', e.target.value)}/>
         </div>
       </div>
@@ -407,14 +417,16 @@ function EditMailingAddressRow(
                   ...addressValidationResults.suggestedAddress
                 })
               }
-              setAddressValidationResults(undefined)
+              // since we saved the address, we should clear it
+              // from the address validation results so the modal
+              // goes away
+              clearSuggestedAddress()
             }}
             deny={() => {
-              setAddressValidationResults(undefined)
-              // do nothing on deny - keep the old address
+              clearSuggestedAddress()
             }}
             onDismiss={() => {
-              setAddressValidationResults(undefined)
+              clearSuggestedAddress()
             }}
           />}
       {!addressValidationResults?.valid && explainAddressValidationResults(addressValidationResults)

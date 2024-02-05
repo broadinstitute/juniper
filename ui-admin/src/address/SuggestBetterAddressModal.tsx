@@ -8,7 +8,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 
 const irrelevantFields = ['createdAt', 'lastUpdatedAt', 'id']
 /**
- *
+ * Suggests an improved address which the user may override or accept.
  */
 export default function SuggestBetterAddressModal(
   {
