@@ -21,6 +21,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
+    @Transactional
     public void testApplyPortalConfigChanges(TestInfo info) throws Exception {
         AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
         Portal portal = portalFactory.buildPersisted(getTestName(info));
@@ -48,6 +50,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testPublishesSurveyPortalChanges(TestInfo info) throws Exception {
         AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
         Portal portal = portalFactory.buildPersisted(getTestName(info));
@@ -67,6 +70,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testApplyAlertChanges() throws Exception {
         ParticipantDashboardAlert alert = ParticipantDashboardAlert.builder()
                 .title("No activities left!")

@@ -16,4 +16,5 @@ public class EnvironmentService extends ImmutableEntityService<Environment, Envi
     public Optional<Environment> findOneByName(EnvironmentName name) {
         return dao.findByName(name);
     }
+
 }
