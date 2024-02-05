@@ -21,4 +21,5 @@ public class EnvironmentDao extends BaseJdbiDao<Environment> {
     public Optional<Environment> findByName(EnvironmentName environmentName) {
         return findByProperty("name", environmentName.toString());
     }
+
 }

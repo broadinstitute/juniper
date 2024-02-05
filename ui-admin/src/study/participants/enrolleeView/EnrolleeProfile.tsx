@@ -99,14 +99,14 @@ function ReadOnlyProfile(
   }
 ) {
   const mailingAddress = profile.mailingAddress
+
   return <>
-    <ReadOnlyRow title={'Name'} values={[`${profile.givenName} ${profile.familyName}`]}/>
+    <ReadOnlyRow title={'Name'}
+      values={[
+                   `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
+      ]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
-    <ReadOnlyRow title={'Primary Address'} values={[
-      mailingAddress.street1,
-      mailingAddress.street2,
-      `${mailingAddress.city}, ${mailingAddress.state} ${mailingAddress.postalCode}`
-    ]}/>
+    <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
     <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'On' : 'Off']}/>
@@ -160,12 +160,12 @@ function EditableProfile(
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
-            placeholder={'Given Name'}
+            placeholder={'Given Name'} aria-label={'Given Name'}
             onChange={e => onFieldChange('givenName', e.target.value)}/>
         </div>
         <div className='col'>
           <input className="form-control" type="text" value={profile.familyName || ''}
-            placeholder={'Family Name'}
+            placeholder={'Family Name'} aria-label={'Family Name'}
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
@@ -175,7 +175,7 @@ function EditableProfile(
         <div className="col">
           <input className="form-control" type="date"
             defaultValue={javaLocalDateToJsDate(profile.birthDate)?.toISOString().split('T')[0] || ''}
-            placeholder={'Birth Date'} max={'9999-12-31'}
+            placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
             onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
         </div>
         <div className="col"/>
@@ -190,12 +190,12 @@ function EditableProfile(
     />
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
-        placeholder={'Contact Email'}
+        placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
     </FormRow>
     <FormRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
-        placeholder={'Phone Number'}
+        placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
     </FormRow>
     <FormRow title={'Notifications'}>
@@ -204,6 +204,7 @@ function EditableProfile(
           <div className="form-check">
 
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmail} id="doNotEmailCheckbox"
+              aria-label={'Do Not Email'}
               onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotEmailCheckbox">
               Do Not Email
@@ -213,7 +214,7 @@ function EditableProfile(
         <div className='col-auto'>
           <div className="form-check">
             <input className="form-check-input" type="checkbox" checked={profile.doNotEmailSolicit}
-              id="doNotSolicitCheckbox"
+              id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
               onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
             <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
               Do Not Solicit
@@ -245,6 +246,42 @@ function ReadOnlyRow(
 }
 
 /**
+ * Displays the given mailing address as a row within the profile
+ */
+export function ReadOnlyMailingAddress(
+  {
+    title,
+    mailingAddress
+  }: {
+    title: string,
+    mailingAddress: MailingAddress
+  }
+) {
+  // creates the last row, formatted like: 'City, State 12345'
+  // If city or state is not present, it will format like: 'State 12345' or 'City 12345'
+  const createCityStatePostalRow = () => {
+    const outPieces: string[] = []
+    if (!isEmpty(mailingAddress.city) && !isEmpty(mailingAddress.state)) {
+      outPieces.push(`${mailingAddress.city}, ${mailingAddress.state}`)
+    } else if (!isEmpty(mailingAddress.city)) {
+      outPieces.push(mailingAddress.city)
+    } else if (!isEmpty(mailingAddress.state)) {
+      outPieces.push(mailingAddress.state)
+    }
+
+    outPieces.push(mailingAddress.postalCode || '')
+
+    return outPieces.join(' ').trim()
+  }
+  return <ReadOnlyRow title={title} values={[
+    mailingAddress.street1 || '',
+    mailingAddress.street2 || '',
+    createCityStatePostalRow(),
+    mailingAddress.country || ''
+  ]}/>
+}
+
+/**
  * One row of the profile's data.
  */
 function FormRow(
@@ -254,7 +291,7 @@ function FormRow(
   }
 ) {
   return <>
-    <div className="w-25 fw-bold mb-4 mt-2">
+    <div className="w-25 fw-bold mb-4 mt-2" aria-label={title}>
       {title}
     </div>
     <div className="w-75 mb-4">

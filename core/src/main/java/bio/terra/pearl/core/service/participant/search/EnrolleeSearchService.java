@@ -6,7 +6,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 
 import java.util.LinkedHashMap;
@@ -44,7 +43,7 @@ public class EnrolleeSearchService {
     }
 
     protected EnrolleeSearchFacet getTaskFacet(StudyEnvironment studyEnvironment) {
-        List<ParticipantTaskDao.EnrolleeTasks> tasks = participantTaskDao.findTasksByStudy(studyEnvironment.getId());
+        List<ParticipantTaskDao.EnrolleeTasks> tasks = participantTaskDao.findTaskNamesByStudy(studyEnvironment.getId());
 
         EnrolleeSearchFacet tasksFacet = new EnrolleeSearchFacet("status",
                 EnrolleeSearchFacet.FacetType.ENTITY_OPTIONS, "participantTask", "Task status");

@@ -39,7 +39,7 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         Portal portal1 = portalFactory.buildPersisted(getTestName(info));
         Portal portal2 = portalFactory.buildPersisted(getTestName(info));
         List<PortalAdminUser> portalUsers =
-                portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal1, portal2));
+                portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal1, portal2)).portalAdminUsers();
         PortalAdminUser user1Portal1 = portalUsers.get(0);
         PortalAdminUser user1Portal2 = portalUsers.get(1);
 
@@ -70,11 +70,11 @@ public class PortalAdminUserServiceTest extends BaseSpringBootTest {
         Portal portal1 = portalFactory.buildPersisted(testName);
         Portal portal2 = portalFactory.buildPersisted(testName);
         List<PortalAdminUser> portalUsers1 =
-                portalAdminUserFactory.buildPersistedWithPortals(testName, List.of(portal1, portal2));
+                portalAdminUserFactory.buildPersistedWithPortals(testName, List.of(portal1, portal2)).portalAdminUsers();
         PortalAdminUser user1Portal1 = portalUsers1.get(0);
         PortalAdminUser user1Portal2 = portalUsers1.get(1);
 
-        List<PortalAdminUser> portalUsers2 = portalAdminUserFactory.buildPersistedWithPortals(testName, List.of(portal1));
+        List<PortalAdminUser> portalUsers2 = portalAdminUserFactory.buildPersistedWithPortals(testName, List.of(portal1)).portalAdminUsers();
         PortalAdminUser user2 = portalUsers2.get(0);
 
         // add roles for all

@@ -35,5 +35,4 @@ public class AddressValidationResultDto {
     // When validating the same address over and over again,
     // use the same sessionId
     private UUID sessionId;
-
 }

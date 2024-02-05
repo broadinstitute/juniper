@@ -1,29 +1,31 @@
 import React from 'react'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import StudyContent from './StudyContent'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import { setupRouterTest } from '../test-utils/router-testing-utils'
+import Api from '../api/api'
 
 test('renders surveys in-order', async () => {
   const studyEnvContext = mockStudyEnvContext()
-  studyEnvContext.currentEnv.configuredSurveys = [
+  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([
     {
-      ...mockConfiguredSurvey(), surveyOrder: 2,
+      ...mockConfiguredSurvey(), surveyOrder: 2, studyEnvironmentId: studyEnvContext.currentEnv.id,
       survey: {
         ...mockSurvey(), name: 'Second survey'
       }
     },
     {
-      ...mockConfiguredSurvey(), surveyOrder: 1,
+      ...mockConfiguredSurvey(), surveyOrder: 1, studyEnvironmentId: studyEnvContext.currentEnv.id,
       survey: {
         ...mockSurvey(), name: 'First survey'
       }
     }
-  ]
+  ]))
 
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
+  await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const html = document.body.innerHTML
   const a = html.search('First survey')
   const b = html.search('Second survey')
@@ -32,10 +34,10 @@ test('renders surveys in-order', async () => {
 
 test('renders a Create Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
-
+  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([]))
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
-
+  await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const addSurveyButton = screen.getByTestId('addResearchSurvey')
   fireEvent.click(addSurveyButton)
   expect(screen.getByText('Create New Research Survey')).toBeInTheDocument()
@@ -45,10 +47,10 @@ test('renders a Create Survey modal', async () => {
 
 test('renders a Create Outreach Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
-
+  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([]))
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
-
+  await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   const addSurveyButton = screen.getByTestId('addOutreachSurvey')
   fireEvent.click(addSurveyButton)
   expect(screen.getByText('Create New Outreach')).toBeInTheDocument()

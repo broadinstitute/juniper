@@ -49,12 +49,11 @@ public class AnswerProcessingService {
      * */
     @Transactional
     public void processAllAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
-                                         PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
-                                                           UUID surveyId) {
+                                         PortalParticipantUser ppUser, DataAuditInfo auditInfo) {
         if (mappings.isEmpty()) {
             return;
         }
-        processProfileAnswerMappings(answers, mappings, ppUser, responsibleUserId, enrolleeId, surveyId);
+        processProfileAnswerMappings(answers, mappings, ppUser, auditInfo);
     }
 
     /**
@@ -63,8 +62,7 @@ public class AnswerProcessingService {
      */
     @Transactional
     public void processProfileAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
-                                             PortalParticipantUser ppUser, UUID responsibleUserId, UUID enrolleeId,
-                                             UUID surveyId) {
+                                             PortalParticipantUser ppUser, DataAuditInfo auditInfo) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
         if (profileMappings.isEmpty() || !hasTargetedChanges(profileMappings, answers, AnswerMappingTargetType.PROFILE)) {
@@ -74,14 +72,7 @@ public class AnswerProcessingService {
         mapValuesToType(answers, profileMappings,
                 profile, AnswerMappingTargetType.PROFILE);
 
-        profileService.updateWithMailingAddress(profile,
-                DataAuditInfo
-                        .builder()
-                        .enrolleeId(enrolleeId)
-                        .portalParticipantUserId(ppUser.getId())
-                        .responsibleUserId(responsibleUserId)
-                        .surveyId(surveyId)
-                        .build());
+        profileService.updateWithMailingAddress(profile, auditInfo);
     }
 
     /**

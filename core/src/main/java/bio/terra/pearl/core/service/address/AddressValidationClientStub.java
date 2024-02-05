@@ -93,28 +93,29 @@ public class AddressValidationClientStub implements AddressValidationClient {
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {
         List<AddressComponent> missingComponents = new ArrayList<>();
 
-        if (addr.getStreet1().isEmpty()) {
+        if (StringUtils.isEmpty(addr.getStreet1())) {
             missingComponents.add(AddressComponent.STREET_NAME);
             missingComponents.add(AddressComponent.STREET_TYPE);
             missingComponents.add(AddressComponent.HOUSE_NUMBER);
         }
 
-        if (addr.getPostalCode().isEmpty()) {
+        if (StringUtils.isEmpty(addr.getPostalCode())) {
             missingComponents.add(AddressComponent.POSTAL_CODE);
         }
 
-        if (addr.getCity().isEmpty()) {
+        if (StringUtils.isEmpty(addr.getCity())) {
             missingComponents.add(AddressComponent.CITY);
         }
 
-        if (addr.getCountry().isEmpty()) {
+        if (StringUtils.isEmpty(addr.getCountry())) {
             missingComponents.add(AddressComponent.COUNTRY);
         }
 
-        if (addr.getState().isEmpty()) {
+        if (StringUtils.isEmpty(addr.getState())) {
             missingComponents.add(AddressComponent.STATE_PROVINCE);
         }
 
         return missingComponents;
     }
+
 }

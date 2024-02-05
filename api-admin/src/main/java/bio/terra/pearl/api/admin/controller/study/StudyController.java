@@ -38,4 +38,11 @@ public class StudyController implements StudyApi {
     Study study = studyExtService.create(portalShortcode, studyDto, operator);
     return ResponseEntity.ok(study);
   }
+
+  @Override
+  public ResponseEntity<Void> delete(String portalShortCode, String studyShortcode) {
+    AdminUser operator = requestService.requireAdminUser(request);
+    studyExtService.delete(portalShortCode, studyShortcode, operator);
+    return ResponseEntity.noContent().build();
+  }
 }

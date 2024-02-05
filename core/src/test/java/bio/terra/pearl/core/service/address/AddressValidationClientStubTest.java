@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.address;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.model.address.AddressComponent;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +45,7 @@ class AddressValidationClientStubTest extends BaseSpringBootTest {
         Assertions.assertEquals(sessionId, result.getSessionId());
 
         Assertions.assertEquals(List.of("123", "BAD", "St"), result.getUnresolvedTokens());
-        Assertions.assertEquals(List.of("street", "country", "postal_code"), result.getMissingComponents());
+        Assertions.assertEquals(List.of(AddressComponent.CITY), result.getMissingComponents());
     }
 
     @Test

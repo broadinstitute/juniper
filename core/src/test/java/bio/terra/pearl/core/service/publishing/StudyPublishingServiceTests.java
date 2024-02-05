@@ -98,7 +98,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         liveSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(liveEnv.getId());
         assertThat(liveSurveys, hasSize(0));
         // confirm the deactivated config is still there
-        assertThat(studyEnvironmentSurveyDao.findAllByStudyEnvironmentId(liveEnv.getId(), false), hasSize(1));
+        assertThat(studyEnvironmentSurveyDao.findAll(List.of(liveEnv.getId()), null, false), hasSize(1));
     }
 
     @Test

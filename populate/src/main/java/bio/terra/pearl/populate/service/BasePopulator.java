@@ -31,13 +31,14 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
 
     public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {
         D popDto = readValue(fileString);
-        return populateFromDto(popDto, context, overwrite);
+        return this.populateFromDto(popDto, context, overwrite);
     }
 
     public D readValue(String popDtoString) throws IOException {
         return objectMapper.readValue(popDtoString, getDtoClazz());
     }
 
+    @Transactional
     public T populateFromDto(D popDto, P context, boolean overwrite) throws IOException {
         preProcessDto(popDto, context);
         Optional<T> existingObjOpt = findFromDto(popDto, context);

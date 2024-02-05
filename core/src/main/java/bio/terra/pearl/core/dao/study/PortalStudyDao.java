@@ -71,4 +71,8 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
     public void deleteByPortalId(UUID portalId) {
         deleteByProperty("portal_id", portalId);
     }
+
+    public void deleteByStudyId(UUID studyId) {
+        deleteByProperty("study_id", studyId);
+    }
 }

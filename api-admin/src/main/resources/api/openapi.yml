@@ -241,6 +241,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/configuredSurveys/findWithNoContent:
+    get:
+      summary: Lists all the configured surveys for a study
+      tags: [ configuredSurvey ]
+      operationId: findWithNoContent
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: query, required: false, schema: { type: string } }
+        - { name: stableId, in: query, required: false, schema: { type: string } }
+        - { name: active, in: query, required: false, schema: { type: string, format: boolean} }
+      responses:
+        '200':
+          description: list of all the configured surveys for a study
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys:
     post:
       summary: Creates a configured survey in a study environment
@@ -474,6 +491,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}:
+    delete:
+      summary: deletes a study from all envs
+      tags: [ study ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '204':
+          description: no content
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kitTypes:
     get:
       summary: Gets the kit types for a study
@@ -606,6 +636,40 @@ paths:
       responses:
         '200':
           description: BasicMetricDatum objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/findAll:
+    get:
+      summary: finds the given tasks
+      tags: [ participantTask ]
+      operationId: findAll
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: targetStableId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: ParticipantTask objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/updateAll:
+    post:
+      summary: Updates the specified tasks to the specified versions
+      tags: [ participantTask ]
+      operationId: updateAll
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: updated PArticipantTask objects
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

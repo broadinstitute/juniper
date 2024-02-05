@@ -26,6 +26,7 @@ import java.util.UUID;
 public class DataAuditInfo {
     private UUID responsibleUserId;
     private UUID responsibleAdminUserId;
+    private String systemProcess; // if the change was the result of an automatic process, store Class+method here
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
@@ -36,4 +37,9 @@ public class DataAuditInfo {
     // you should reuse this object for each)
     @Builder.Default
     private UUID operationId = UUID.randomUUID();
+
+    public static String systemProcessName(Class clazz, String methodName) {
+        return "%s.%s".formatted(clazz.getSimpleName(), methodName);
+    }
 }
+

@@ -16,7 +16,7 @@ import TableClientPagination from 'util/TablePagination'
 import { Modal } from 'react-bootstrap'
 import SiteImageUploadModal, { allowedImageTypes } from './SiteImageUploadModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 
@@ -73,6 +73,17 @@ export default function SiteImageList({ portalContext, portalEnv }:
     cell: ({ row: { original: image } }) => <button onClick={() => updateImage(image)}
       className="btn btn-secondary">
       update
+    </button>
+  }, {
+    header: '',
+    id: 'copy',
+    cell: ({ row: { original: image } }) => <button onClick={() => {
+      navigator.clipboard.writeText(getImageUrl(portalContext.portal.shortcode,
+        image.cleanFileName,
+        image.version))
+    }}
+    className="btn btn-secondary">
+      <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Copy Path
     </button>
   }]
 

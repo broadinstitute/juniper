@@ -160,6 +160,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             Answer answer = convertAnswerPopDto(answerPopDto);
             response.getAnswers().add(answer);
         }
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .enrolleeId(enrollee.getId())
+                .portalParticipantUserId(ppUser.getId())
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(),  ".populateResponse")).build();
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
@@ -171,7 +175,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                  * doesn't match the latest, update the task so it's as if the task had been assigned to the prior versipm
                  */
                 task.setTargetAssignedVersion(responsePopDto.getSurveyVersion());
-                participantTaskService.update(task);
+                participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
                     .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
@@ -255,11 +259,15 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         taskDto.setEnrolleeId(enrollee.getId());
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         taskDto.setPortalParticipantUserId(ppUser.getId());
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .enrolleeId(enrollee.getId())
+                .portalParticipantUserId(ppUser.getId())
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(),".populateTask")).build();
         if (taskDto.getTargetName() == null) {
             taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(),
                     taskDto.getTargetAssignedVersion()));
         }
-        participantTaskService.create(taskDto);
+        participantTaskService.create(taskDto, auditInfo);
     }
 
     /** creates the kit request in the DB and attaches it to the passed-in enrollee object */
