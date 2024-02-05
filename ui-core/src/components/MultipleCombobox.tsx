@@ -10,37 +10,37 @@ type MultipleComboboxProps<ComboboxItem> = {
   id?: string
   initialValue?: ComboboxItem[]
   itemToString: (item: ComboboxItem) => string
-  choices?: ComboboxItem[]
+  options: ComboboxItem[]
   choicesByUrl?: string
   placeholder?: string
   onChange?: (value: ComboboxItem[]) => void
 }
 
 /**
- * Renders a multiple selection combobox. This virtualizes the choices list to support
- * many more choices than a normal React-select would, while remaining performant.
+ * Renders a multiple selection combobox. This virtualizes the options list to support
+ * many more options than a normal React-select would, while remaining performant.
  */
 export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<ComboboxItem>) => {
-  const { id, initialValue, itemToString, choices, choicesByUrl, placeholder, onChange } = props
-  const [choicesList, setChoicesList] = useState<ComboboxItem[]>([])
+  const { id, initialValue, itemToString, options, choicesByUrl, placeholder, onChange } = props
+  const [optionsList, setOptionsList] = useState<ComboboxItem[]>([])
 
   const loadChoicesByUrl = async (choicesByUrl: string) => {
     const response = await fetch(choicesByUrl)
     if (response.ok) {
       const jsonResponse = await response.json()
       const choices = jsonResponse.map((item: string) => ({ value: item, text: item }))
-      setChoicesList(choices)
+      setOptionsList(choices)
     } else {
-      setChoicesList([])
+      setOptionsList([])
     }
   }
 
   useEffect(() => {
-    // Load choices from choicesByUrl if provided, otherwise use any choices that were provided in the question JSON.
+    // Load options from choicesByUrl if provided, otherwise use any options that were provided in the question JSON.
     if (choicesByUrl) {
       loadChoicesByUrl(choicesByUrl)
     } else {
-      setChoicesList(choices || [])
+      setOptionsList(options)
     }
   }, [])
 
@@ -56,8 +56,8 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
 
   // Filter options to those that match input value.
   const items = useMemo(
-    () => choicesList.filter(item => itemToString(item).toLowerCase().includes(trimStart(inputValue.toLowerCase()))),
-    [choicesList, inputValue, itemToString]
+    () => optionsList.filter(item => itemToString(item).toLowerCase().includes(trimStart(inputValue.toLowerCase()))),
+    [optionsList, inputValue, itemToString]
   )
 
   // Store width of items in the combobox menu. This will be used to calculate

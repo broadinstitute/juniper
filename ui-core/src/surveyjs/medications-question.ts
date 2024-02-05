@@ -8,6 +8,6 @@ ComponentCollection.Instance.add({
   questionJSON: {
     type: 'multiplecombobox',
     placeholder: 'Select medications',
-    choices: medications.map(medication => ({ value: medication, text: medication }))
+    options: medications.map(medication => ({ value: medication, text: medication }))
   }
 })
