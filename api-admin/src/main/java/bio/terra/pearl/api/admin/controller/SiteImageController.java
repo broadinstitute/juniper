@@ -69,6 +69,8 @@ public class SiteImageController implements SiteImageApi {
       SiteImage image = imageOpt.get();
       if (image.getCleanFileName().endsWith(".ico")) {
         contentType = MediaType.valueOf("image/x-icon");
+      } else if (image.getCleanFileName().endsWith(".json")) {
+        contentType = MediaType.APPLICATION_JSON;
       } else {
         contentType =
             MediaType.parseMediaType(

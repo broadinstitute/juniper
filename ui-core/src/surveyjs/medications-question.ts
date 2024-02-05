@@ -6,7 +6,7 @@ ComponentCollection.Instance.add({
   name: 'medications',
   title: 'Medications',
   questionJSON: {
-    type: 'multiple-combobox',
+    type: 'multiplecombobox',
     placeholder: 'Select medications',
     options: medications.map(medication => ({ value: medication, text: medication }))
   }
