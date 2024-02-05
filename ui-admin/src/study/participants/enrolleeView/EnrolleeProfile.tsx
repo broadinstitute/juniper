@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
 import Api, { AddressValidationResult, Enrollee, MailingAddress, Profile } from 'api/api'
@@ -13,6 +13,7 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import LoadingSpinner from '../../../util/LoadingSpinner'
+import SuggestBetterAddressModal from '../../../address/SuggestBetterAddressModal'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -181,7 +182,11 @@ function EditableProfile(
     </FormRow>
     <EditMailingAddressRow
       title={'Primary Address'} mailingAddress={profile.mailingAddress}
-      onMailingAddressFieldChange={onMailingAddressFieldChange}/>
+      onMailingAddressFieldChange={onMailingAddressFieldChange}
+      setMailingAddress={mailingAddr => setProfile(profile => {
+        return { ...profile, mailingAddress: mailingAddr }
+      })}
+    />
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'}
@@ -260,19 +265,27 @@ function FormRow(
 
 function EditMailingAddressRow(
   {
-    title, mailingAddress, onMailingAddressFieldChange
+    title, mailingAddress, onMailingAddressFieldChange, setMailingAddress
   }: {
-    title: string, mailingAddress: MailingAddress, onMailingAddressFieldChange: (field: string, value: string) => void
+    title: string,
+    mailingAddress: MailingAddress,
+    onMailingAddressFieldChange: (field: string, value: string) => void,
+    setMailingAddress: (update: MailingAddress) => void
   }
 ) {
   const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
   const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+  const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<boolean>(false)
+
+  useEffect(() => {
+    setHasChangedSinceValidation(true)
+  }, [mailingAddress])
 
   const validateAddress = () => {
     doApiLoad(async () => {
       const results = await Api.validateAddress(mailingAddress, addressValidationResults?.sessionId)
-      console.log(results)
       setAddressValidationResults(results)
+      setHasChangedSinceValidation(false)
     }, { setIsLoading: setIsLoadingValidation })
   }
 
@@ -284,12 +297,31 @@ function EditMailingAddressRow(
     return addressValidationResults.missingComponents.includes(component)
   }
 
+  const formatClassName = (component: string) => {
+    if (!hasChangedSinceValidation && !isNil(addressValidationResults)) {
+      if (addressValidationResults.valid && isNil(addressValidationResults.suggestedAddress)) {
+        return 'form-control is-valid'
+      }
+
+      if (!addressValidationResults.valid || isMissingAddressComponent(component)) {
+        return 'form-control is-invalid'
+      }
+    }
+
+    return 'form-control'
+  }
+
+
+  // TODO: make missing components highlight only the appropriate fields
+  // TODO: make invalid tokens highlight only the appropriate fields
+  // could do the ^ with a utility helper - isAddressFieldInvalid(AddressValidationDto, field string, val string)
+  // TODO: make a utility function which will create a human-readable message for why it didn't work
   return <FormRow title={title}>
     <div className="">
       <div className='row mb-2'>
         <div className="col">
           <input
-            className={`form-control ${isMissingAddressComponent('street_address') ? 'is-invalid' : ''}`}
+            className={formatClassName('street_address')}
             type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
             onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
         </div>
@@ -297,7 +329,7 @@ function EditMailingAddressRow(
       <div className='row mb-2'>
         <div className="col">
           <input
-            className={`form-control ${isMissingAddressComponent('street_address') ? 'is-invalid' : ''}`}
+            className={formatClassName('street_address')}
             type="text" value={mailingAddress.street2 || ''}
             placeholder={'Street 2'}
             onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
@@ -306,16 +338,14 @@ function EditMailingAddressRow(
       <div className='row mb-2'>
         <div className="col">
           <input
-            className={`form-control ${isMissingAddressComponent('locality') ? 'is-invalid' : ''}`}
+            className={formatClassName('locality')}
             type="text" value={mailingAddress.city || ''}
             placeholder={'City'}
             onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
         </div>
         <div className='col'>
           <input
-            className={
-              `form-control ${isMissingAddressComponent('administrative_area_level_1') ? 'is-invalid' : ''}`
-            }
+            className={formatClassName('administrative_area_level_1')}
             type="text" value={mailingAddress.state || ''} placeholder={'State'}
             onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
         </div>
@@ -323,13 +353,13 @@ function EditMailingAddressRow(
       <div className='row'>
         <div className="col">
           <input
-            className={`form-control ${isMissingAddressComponent('postal_code') ? 'is-invalid' : ''}`}
+            className={formatClassName('postal_code')}
             type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
             onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
         </div>
         <div className='col'>
           <input
-            className={`form-control ${isMissingAddressComponent('country') ? 'is-invalid' : ''}`}
+            className={formatClassName('country')}
             type="text" value={mailingAddress.country || ''} placeholder={'Country'}
             onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
         </div>
@@ -337,8 +367,24 @@ function EditMailingAddressRow(
       <LoadingSpinner isLoading={isLoadingValidation}>
         <button className="btn btn-link" onClick={validateAddress}>Validate</button>
       </LoadingSpinner>
-      {addressValidationResults?.suggestedAddress && <p>Todo - suggest modal</p>}
-      {addressValidationResults && <p>{addressValidationResults.valid ? 'True' : 'False'}</p>}
+      {addressValidationResults?.suggestedAddress &&
+          <SuggestBetterAddressModal
+            inputtedAddress={mailingAddress}
+            improvedAddress={addressValidationResults.suggestedAddress}
+            accept={() => {
+              if (addressValidationResults && addressValidationResults.suggestedAddress) {
+                setMailingAddress(addressValidationResults.suggestedAddress)
+              }
+              setAddressValidationResults(undefined)
+            }}
+            deny={() => {
+              setAddressValidationResults(undefined)
+              // do nothing on deny - keep the old address
+            }}
+            onDismiss={() => {
+              setAddressValidationResults(undefined)
+            }}
+          />}
     </div>
   </FormRow>
 }

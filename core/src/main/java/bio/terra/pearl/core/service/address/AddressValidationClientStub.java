@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.address;
 
+import bio.terra.pearl.core.model.address.AddressComponent;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
-                    .missingComponents(List.of("street", "country", "postal_code")) // junk example data
+                    .missingComponents(List.of(AddressComponent.AddressComponent.STREET_NAME)) // junk example data
                     .unresolvedTokens(List.of(StringUtils.split(address.getStreet1())))
                     .sessionId(sessionId)
                     .build();

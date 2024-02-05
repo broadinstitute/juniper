@@ -26,9 +26,7 @@ public class AddressValidationResultDto {
 
     // Components which were missing from
     // an invalid address
-    // see: https://developers.google.com/maps/documentation/places/web-service/supported_types#table2
-    //      for possible values
-    private List<String> missingComponents;
+    private List<AddressComponent> missingComponents;
 
     // Raw string values of things that were not able to
     // resolve, e.g. "12345678" in "12345678 Main St"
@@ -37,4 +35,5 @@ public class AddressValidationResultDto {
     // When validating the same address over and over again,
     // use the same sessionId
     private UUID sessionId;
+
 }
