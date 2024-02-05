@@ -332,7 +332,9 @@ function EditMailingAddressRow(
   }
 
   const formatClassName = (field: keyof MailingAddress) => {
-    if (addressValidationResults?.valid === true && isNil(addressValidationResults.suggestedAddress)) {
+    if (!hasChangedSinceValidation.includes(field)
+      && addressValidationResults?.valid === true
+      && isNil(addressValidationResults.suggestedAddress)) {
       return 'form-control is-valid'
     }
 
