@@ -55,7 +55,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const zoneConfig = useConfig()
-
   if (!localContent) {
     return <div>no content for language {selectedLanguage}</div>
   }

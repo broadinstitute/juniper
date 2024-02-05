@@ -84,13 +84,13 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
+            initializeLandingPage(lsc, context);
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
                 initializeNavItem(navItem, context);
             }
             lsc.getNavbarItems().clear();
             lsc.getNavbarItems().addAll(lsc.getNavbarItemDtos());
             initializeFooterConfig(lsc, context);
-            initializeLandingPage(lsc, context);
         }
 
         popDto.getLocalizedSiteContents().clear();
