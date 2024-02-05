@@ -83,7 +83,6 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
     protected void preProcessDto(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
-        System.out.println("SiteContentPopulator.preProcessDto: popDto.getLocalizedSiteContentDtos() = " + popDto.getLocalizedSiteContentDtos());
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
                 initializeNavItem(navItem, context);
@@ -93,8 +92,6 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
             initializeFooterConfig(lsc, context);
             initializeLandingPage(lsc, context);
         }
-
-        System.out.println(popDto.getLocalizedSiteContentDtos());
 
         popDto.getLocalizedSiteContents().clear();
         popDto.getLocalizedSiteContents().addAll(popDto.getLocalizedSiteContentDtos());
