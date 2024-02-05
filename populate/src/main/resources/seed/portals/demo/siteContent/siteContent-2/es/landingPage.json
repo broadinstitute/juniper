@@ -71,19 +71,19 @@
       "title": "Cómo participar",
       "steps": [{
         "image": {"cleanFileName": "step_1.png", "version": 1, "alt": ""},
-        "duration": "1 minute",
+        "duration": "1 minuto",
         "blurb": "Responda preguntas de elegibilidad y cree su cuenta."
       },{
         "image": {"cleanFileName": "step_2.png", "version": 1, "alt": ""},
-        "duration": "5 minutes",
+        "duration": "5 minutos",
         "blurb": "Lea el formulario de consentimiento y decida si desea unirse al estudio."
       },{
         "image": {"cleanFileName": "step_3.png", "version": 1, "alt": ""},
-        "duration": "25-45 minutes",
+        "duration": "25-45 minutos",
         "blurb": "Responda preguntas sobre usted y su salud."
       },{
         "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
-        "duration": "5 minutes",
+        "duration": "5 minutos",
         "blurb": "Proporcione su dirección para que podamos enviar un kit de donación de muestra."
       }],
       "buttons": [

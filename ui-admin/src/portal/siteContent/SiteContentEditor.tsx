@@ -173,7 +173,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
 
-  const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
+  const isEditable = !readOnly && portalEnv.environmentName === 'sandbox' && (selectedLanguage === 'en')
 
   const currentNavBarItem = selectedNavOpt.value ? navBarInternalItems
     .find(navItem => navItem.text === selectedNavOpt.value) : null
@@ -298,7 +298,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               <div>
                 {pageToRender &&
                     <ApiProvider api={previewApi}>
-                      <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                      <HtmlPageEditView
+                        htmlPage={pageToRender}
+                        readOnly={readOnly || (selectedLanguage !== workingContent.defaultLanguage)}
                         siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                         footerSection={localContent.footerSection} updateFooter={updateFooter}
                         updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
