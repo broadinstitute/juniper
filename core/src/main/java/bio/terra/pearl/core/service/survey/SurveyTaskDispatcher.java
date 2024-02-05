@@ -78,7 +78,8 @@ public class SurveyTaskDispatcher {
                 taskOpt = Optional.of(buildTask(enrollees.get(i), ppUsers.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
             } else {
-                taskOpt = buildTaskIfApplicable(enrollees.get(i), ppUsers.get(i), enrolleeRuleDatas.get(i),
+                List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
+                taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleDatas.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
             }
             if (taskOpt.isPresent()) {
@@ -101,7 +102,7 @@ public class SurveyTaskDispatcher {
                                                    UUID studyEnvironmentId) {
         if (assignDto.assignAllUnassigned()) {
             return enrolleeService.findUnassignedToTask(studyEnvironmentId,
-                    assignDto.targetStableId(), assignDto.targetAssignedVersion());
+                    assignDto.targetStableId(), null);
         } else {
             return enrolleeService.findAll(assignDto.enrolleeIds());
         }
@@ -121,6 +122,7 @@ public class SurveyTaskDispatcher {
         for (StudyEnvironmentSurvey studyEnvSurvey: studyEnvSurveys) {
             if (studyEnvSurvey.getSurvey().isAssignToAllNewEnrollees()) {
                 Optional<ParticipantTask> taskOpt = buildTaskIfApplicable(enrolleeEvent.getEnrollee(),
+                        enrolleeEvent.getEnrollee().getParticipantTasks(),
                         enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeRuleData(),
                         studyEnvSurvey, studyEnvSurvey.getSurvey());
                 if (taskOpt.isPresent()) {
@@ -138,12 +140,13 @@ public class SurveyTaskDispatcher {
      *  Does not add them to the event or persist them.
      *  */
     public Optional<ParticipantTask> buildTaskIfApplicable(Enrollee enrollee,
+                                                      List<ParticipantTask> existingEnrolleeTasks,
                                                       PortalParticipantUser portalParticipantUser,
                                                       EnrolleeRuleData enrolleeRuleData,
                                                       StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
         if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeRuleData)) {
             ParticipantTask task = buildTask(enrollee, portalParticipantUser, studyEnvSurvey, studyEnvSurvey.getSurvey());
-            if (!isDuplicateTask(studyEnvSurvey, task, enrollee.getParticipantTasks())) {
+            if (!isDuplicateTask(studyEnvSurvey, task, existingEnrolleeTasks)) {
                 return Optional.of(task);
             }
         }

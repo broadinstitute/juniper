@@ -125,7 +125,7 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
           { basicTableLayout(table, { tableClass: 'table table-striped align-middle' })}
           <div className="d-flex">
             <Button variant="secondary" outline={true} onClick={assignSurveyTasks}>
-            Assign to all
+            Assign to {studyEnvParams.envName} participants
             </Button>
             <InfoPopup content={`Assign ${surveyName} to all participants in the ${studyEnvParams.envName} 
               environment who are eligible.`}/>
