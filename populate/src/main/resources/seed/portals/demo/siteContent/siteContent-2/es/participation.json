@@ -2,31 +2,31 @@
   "itemType": "INTERNAL",
   "text": "Participation",
   "htmlPageDto": {
-    "title": "Participation",
+    "title": "Participación",
     "path": "participation",
     "sectionDtos": [{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
-        "title": "Participation",
+        "title": "Participación",
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
       }
     },{
       "sectionType": "PARTICIPATION_DETAIL",
       "sectionConfigJson": {
-        "title": "Provide consent for the study",
-        "timeIndication": "5 minutes",
-        "stepNumberText": "STEP 1",
-        "blurb": "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later.",
+        "title": "Proporcionar consentimiento para el estudio",
+        "timeIndication": "5 minutos",
+        "stepNumberText": "PASO 1",
+        "blurb": "Esta sección consta de varias páginas, pero siéntase libre de tomarse su tiempo. Su progreso se guardará automáticamente para que pueda volver más tarde.",
         "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
     },{
       "sectionType": "PARTICIPATION_DETAIL",
       "sectionConfigJson": {
-        "title": "Respond to surveys about yourself",
-        "timeIndication": "45+ minutes",
-        "stepNumberText": "STEP 2",
-        "blurb": "In these surveys, we ask questions about your background, lifestyle, and medical history, among others. Your progress will be automatically saved so please feel free to finish at your convenience.",
+        "title": "Responder encuestas sobre usted",
+        "timeIndication": "45+ minutos",
+        "stepNumberText": "PASO 2",
+        "blurb": "En estas encuestas, hacemos preguntas sobre su historial médico, estilo de vida y antecedentes, entre otros. Su progreso se guardará automáticamente, así que siéntase libre de terminar cuando le convenga.",
         "background": "#F2F2F2",
         "image": { "cleanFileName": "survey_step.png", "version": 1, "alt": "" },
         "imagePosition": "left"
@@ -34,36 +34,36 @@
     },{
       "sectionType": "PARTICIPATION_DETAIL",
       "sectionConfigJson": {
-        "title": "Provide a saliva sample (possible)",
-        "timeIndication": "10 minutes",
-        "stepNumberText": "STEP 3",
-        "blurb": "We may send you a kit to collect a sample of your saliva. We will study these samples to help improve our understanding of cardiovascular risk.",
+        "title": "Proporcionar una muestra de saliva (posible)",
+        "timeIndication": "10 minutos",
+        "stepNumberText": "PASO 3",
+        "blurb": "Es posible que le enviemos un kit para recolectar una muestra de su saliva. Estudiaremos estas muestras para ayudar a mejorar nuestra comprensión del riesgo cardiovascular.",
         "image": { "cleanFileName": "saliva_step.png", "version": 1, "alt": "" },
         "imagePosition": "right"
       }
     },{
       "sectionType": "PARTICIPATION_DETAIL",
       "sectionConfigJson": {
-        "title": "Stay involved",
-        "timeIndication": "Ongoing",
-        "stepNumberText": "STEP 4",
-        "blurb": "Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
+        "title": "Manténgase involucrado",
+        "timeIndication": "En curso",
+        "stepNumberText": "PASO 4",
+        "blurb": "Con el tiempo, le proporcionaremos actualizaciones regulares sobre el estado de la investigación y compartiremos cualquier descubrimiento que nos haya permitido hacer. También es posible que le hagamos preguntas adicionales sobre su experiencia para ayudar con futuros estudios; queremos saber qué es importante para usted.",
         "image": { "cleanFileName": "engagement_step.png", "version": 1, "alt": "" },
         "imagePosition": "left",
         "background": "#F2F2F2",
         "actionButton": {
           "type": "mailingList",
-          "text": "Join Mailing List"
+          "text": "Unirse a la lista de correo"
         }
       }
     },{
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
-        "title": "You can make an impact",
-        "blurb": "With your help, patients can be the driving force behind transformative cardiovascular research.",
+        "title": "Puede tener un impacto",
+        "blurb": "Con su ayuda, los pacientes pueden ser la fuerza impulsora detrás de una investigación cardiovascular transformadora.",
         "buttons": [{
           "type": "join",
-          "text": "Join OurHealth",
+          "text": "Únete a OurHealth",
           "studyShortcode": "ourheart"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
