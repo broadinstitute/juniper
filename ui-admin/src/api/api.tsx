@@ -1,7 +1,9 @@
 import {
+  AddressValidationResult,
   AlertTrigger,
   ConsentForm,
   ConsentResponse,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -22,6 +24,7 @@ import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 
 export type {
   Answer,
+  AddressValidationResult,
   ConsentForm,
   ConsentResponse,
   HtmlPage,
@@ -32,6 +35,7 @@ export type {
   NavbarItemInternalAnchor,
   NavbarItemMailingList,
   NavbarItemExternal,
+  MailingAddress,
   Trigger,
   ParticipantTask,
   Portal,
@@ -127,23 +131,6 @@ export type Profile = {
 export type ProfileUpdateDto = {
   justification: string,
   profile: Profile
-}
-
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
-}
-
-export type AddressValidationResult = {
-  valid: boolean,
-  suggestedAddress?: MailingAddress,
-  missingComponents?: string[],
-  unresolvedTokens?: string[],
-  sessionId: string
 }
 
 export type Notification = {

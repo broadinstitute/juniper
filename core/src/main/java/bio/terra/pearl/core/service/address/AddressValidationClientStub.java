@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,7 +48,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
-                    .missingComponents(List.of(AddressComponent.AddressComponent.STREET_NAME)) // junk example data
+                    .missingComponents(findMissingComponents(address))
                     .unresolvedTokens(List.of(StringUtils.split(address.getStreet1())))
                     .sessionId(sessionId)
                     .build();
@@ -63,6 +64,8 @@ public class AddressValidationClientStub implements AddressValidationClient {
                                     .state("MA")
                                     .country("USA")
                                     .postalCode("02142")
+                                    .createdAt(null)
+                                    .lastUpdatedAt(null)
                                     .build())
                     .sessionId(sessionId)
                     .build();
@@ -85,5 +88,33 @@ public class AddressValidationClientStub implements AddressValidationClient {
 
 
         return AddressValidationResultDto.builder().valid(true).sessionId(sessionId).build();
+    }
+
+    private List<AddressComponent> findMissingComponents(MailingAddress addr) {
+        List<AddressComponent> missingComponents = new ArrayList<>();
+
+        if (addr.getStreet1().isEmpty()) {
+            missingComponents.add(AddressComponent.STREET_NAME);
+            missingComponents.add(AddressComponent.STREET_TYPE);
+            missingComponents.add(AddressComponent.HOUSE_NUMBER);
+        }
+
+        if (addr.getPostalCode().isEmpty()) {
+            missingComponents.add(AddressComponent.POSTAL_CODE);
+        }
+
+        if (addr.getCity().isEmpty()) {
+            missingComponents.add(AddressComponent.CITY);
+        }
+
+        if (addr.getCountry().isEmpty()) {
+            missingComponents.add(AddressComponent.COUNTRY);
+        }
+
+        if (addr.getState().isEmpty()) {
+            missingComponents.add(AddressComponent.STATE_PROVINCE);
+        }
+
+        return missingComponents;
     }
 }

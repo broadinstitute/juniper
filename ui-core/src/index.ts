@@ -7,10 +7,12 @@ export * from './types/landingPageConfig'
 export * from './types/portal'
 export * from './types/study'
 export * from './types/task'
+export * from './types/address'
 
 export * from './autoSaveUtils'
 export * from './reactUtils'
 export * from './surveyUtils'
+export * from './addressUtils'
 export * from './waitForImages'
 
 export * from './participant/dashboard/Alert'
