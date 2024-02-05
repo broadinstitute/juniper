@@ -1,0 +1,42 @@
+{
+  "stableId" : "basics",
+  "version" : 3,
+  "name" : "Registration Information",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "text",
+        "name" : "firstname",
+        "title" : "First Name",
+        "description" : "",
+        "isRequired" : true,
+        "inputType" : "text"
+      }, {
+        "type" : "text",
+        "name" : "lastname",
+        "startWithNewLine" : false,
+        "title" : "Last Name",
+        "description" : "",
+        "isRequired" : true,
+        "inputType" : "text"
+      }, {
+        "type" : "text",
+        "name" : "addressline1",
+        "title" : "Address Line 1",
+        "description" : "",
+        "isRequired" : false,
+        "inputType" : "text"
+      }, {
+        "type" : "text",
+        "name" : "birthdate",
+        "title" : "Date of birth",
+        "isRequired" : true,
+        "inputType" : "date"
+      } ]
+    }, {
+      "elements" : [ ]
+    } ]
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "stableId" : "registrationForm",
+  "version" : 12,
+  "name" : "Registration_Form",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "title" : "cardiomyopathy registration",
+    "logoPosition" : "right",
+    "pages" : [ {
+      "name" : "page1",
+      "elements" : [ {
+        "type" : "html",
+        "name" : "descriptionText",
+        "html" : "<h3 class=\"text-center fw-bold\">\nWelcome to the Heart Hive!\n&nbsp;\n\nPlease complete this short form to join the registry</p>\n\n</h3>\n\n"
+      }, {
+        "type" : "radiogroup",
+        "name" : "hh_prereg",
+        "title" : "Please select one of the options",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "I have been diagnosed with cardiomyopathy",
+          "value" : "cm"
+        }, {
+          "text" : "I have a family history of cardiomyopathy, not have not been diagnosed with cardiomyopathy",
+          "value" : "fx"
+        }, {
+          "text" : "I have had genetic testing which revealed an inherited risks for cardiomyopathy",
+          "value" : "genetic_risk_of_cm"
+        }, {
+          "text" : "I have been diagnosed with myocarditis",
+          "value" : "myoc"
+        }, {
+          "text" : "None of the above",
+          "value" : "none"
+        } ]
+      }, {
+        "type" : "checkbox",
+        "name" : "privacy_notice",
+        "title" : "I have read/understood how my data will be used as described in the privacy notice ",
+        "description" : "<link here to privacy notice>",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "yes"
+        } ]
+      } ]
+    } ],
+    "calculatedValues" : [ {
+      "name" : "qualified",
+      "expression" : "({hh_prereg} = 'cm' or {hh_prereg} = 'fx' or {hh_prereg} = 'myoc' or {hh_prereg} = 'genetic_risk_of_cm') and {privacy_notice} = 'yes'",
+      "includeIntoResult" : true
+    } ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "stableId" : "registrationForm",
+  "version" : 2,
+  "name" : "Registration_Form",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ ]
+    } ]
+  }
+}

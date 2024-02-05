@@ -1,0 +1,944 @@
+{
+  "stableId" : "baseline",
+  "version" : 31,
+  "name" : "Baseline",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "name" : "cardiomyopathy",
+        "title" : "What type of cardiomyopathy have you been diagnosed with?",
+        "questionTemplateName" : "cm_type"
+      }, {
+        "type" : "radiogroup",
+        "name" : "FHX",
+        "title" : "Does anyone else in your family (blood relatives) have cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "No",
+          "value" : "0"
+        }, {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "Don't Know",
+          "value" : "2"
+        } ]
+      }, {
+        "type" : "text",
+        "name" : "FHX_TOTAL",
+        "title" : "In total how many people in your family (blood relatives) have cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "inputType" : "number",
+        "min" : 1,
+        "max" : 50,
+        "visibleIf" : "{FHX}=\"1\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "FHX_SAMETYPE",
+        "title" : "Does anyone else in your family (blood relatives) have the same type of cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "No",
+          "value" : "0"
+        }, {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "Don't Know",
+          "value" : "2"
+        } ]
+      }, {
+        "type" : "panel",
+        "elements" : [ {
+          "type" : "text",
+          "name" : "FHX_WHO_SON",
+          "title" : "Son",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_DAUGHTER",
+          "title" : "Daughter",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_BROTHER",
+          "title" : "Brother",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_SISTER",
+          "title" : "Sister",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_FATHER",
+          "title" : "Father",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 1,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_MOTHER",
+          "title" : "Mother",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 1,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_GRANDFATHER",
+          "title" : "Grandfather",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 2,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_GRANDMOTHER",
+          "title" : "Grandmother",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 2,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_AUNT",
+          "title" : "Aunt",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_UNCLE",
+          "title" : "Uncle",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_NIECE",
+          "title" : "Niece",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_NEPHEW",
+          "title" : "Nephew",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "FHX_WHO_FIRST_COUS",
+          "title" : "First cousin",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "max" : 20,
+          "visibleIf" : "{FHX}=\"1\""
+        } ]
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "CAD",
+        "title" : "CAD",
+        "description" : "",
+        "isRequired" : false,
+        "html" : "Coronary artery disease - a problem with the blood supply to the heart, e.g. due to narrowing, furring, or blockage of the arteries or blood vessels supplying the heart - can cause cardiomyopathy. Please select the following that apply to you:"
+      }, {
+        "type" : "panel",
+        "elements" : [ {
+          "type" : "radiogroup",
+          "name" : "CAD.NARROWING",
+          "title" : "You have narrowed or blocked arteries or blood vessels around your heart",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.IHD",
+          "title" : "You have ischaemic heart disease",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.ICM",
+          "title" : "Your cardiomyopathy is due to a problem with the blood supply to the heart (ischaemia or ischaemic heart disease)",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.NORMAL",
+          "title" : "The blood supply to your heart is normal",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.PCA",
+          "title" : "Had a heart bypass graft (CABG)",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.STENT",
+          "title" : "Had an angiogram and procedure to open a blocked artery or blood vessel to the heart (PCI or PCA)",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.THROMBOLYSIS",
+          "title" : "Had thrombolysis (clot-busting injection) for a heart attack",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.NORMALANGIO",
+          "title" : "An angiogram that showed the blood supply to your heart was normal?",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "radiogroup",
+          "name" : "CAD.OTHEREXCLUDE",
+          "title" : "Any other tests that showed you do not have any narrowing or blockage of arteries or blood vessels around your heart",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          } ]
+        }, {
+          "type" : "text",
+          "name" : "CAD.OTHEREXCLUDE.TEXT",
+          "title" : "Please provide details",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "text",
+          "visibleIf" : "{CAD.OTHEREXCLUDE}=\"1\""
+        } ]
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "html",
+        "name" : "VALVE_explainer",
+        "title" : "VALVE",
+        "description" : "",
+        "isRequired" : false,
+        "html" : "Heart valve problems (narrowed or leaky valves) can cause cardiomyopathy. Sometimes cardiomyopathy can lead to heart valve problems. If you have a heart valve problem, it is helpful to know if it started before or after your cardiomyopathy. "
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE",
+        "title" : "Have you ever had any kind of heart valve problem, now or in the past?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "No",
+          "value" : "0"
+        }, {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "Don't Know",
+          "value" : "2"
+        } ]
+      }, {
+        "name" : "VALVE_PRIOR",
+        "title" : "Have you ever had any kind of heart valve problem before your cardiomyopathy, or been told that your valve problem caused your cardiomyopathy?",
+        "questionTemplateName" : "radio_yes_no_dk",
+        "visibleIf" : "{VALVE}=\"1\" or {VALVE}=\"2\" "
+      }, {
+        "type" : "html",
+        "name" : "VALVE_TYPE_EXPLAINER",
+        "title" : "ValveType",
+        "description" : "",
+        "isRequired" : false,
+        "html" : "There are four chambers in your heart and the valves make sure that the blood flows through them in one direction.\n\nIf the valve does not close properly, it will allow blood to leak backwards. This is called valve incompetence, or regurgitation, or a leaky valve.\n\nIf your valve does not open fully, it will obstruct the flow of blood. This is called valve stenosis or narrowing.\n",
+        "visibleIf" : "{VALVE_PRIOR}=\"1\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_AORTIC",
+        "title" : "VALVE_AORTIC\tYour Aortic valve opens to allow blood to flow from your heart to your aorta, the main blood vessel supplying your body.  Please select the option that best describes your aortic valve:",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Normal",
+          "value" : "1"
+        }, {
+          "text" : "Leaky, Incompetent or Regurgitation",
+          "value" : "2"
+        }, {
+          "text" : "Narrow or Stenosis",
+          "value" : "3"
+        }, {
+          "text" : "Don't Know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_PRIOR}=\"1\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_MITRAL",
+        "title" : "Your Mitral valve opens to allow blood to flow between the chambers (left atrium and left ventricle) of your heart.  Please select the option that best describes your mitral valve:",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Normal",
+          "value" : "1"
+        }, {
+          "text" : "Leaky, Incompetent or Regurgitation",
+          "value" : "2"
+        }, {
+          "text" : "Narrow or Stenosis",
+          "value" : "3"
+        }, {
+          "text" : "Don't Know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_PRIOR}=\"1\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_PULMONARY",
+        "title" : "our Pulmonary valve opens to allow blood to flow from your heart to your lungs.  Please select the option that best describes your pulmonary valve:",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Normal",
+          "value" : "1"
+        }, {
+          "text" : "Leaky, Incompetent or Regurgitation",
+          "value" : "2"
+        }, {
+          "text" : "Narrow or Stenosis",
+          "value" : "3"
+        }, {
+          "text" : "Don't Know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_PRIOR}=\"1\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_AR_GRADE",
+        "title" : "Valve problems can be very variable.   It is helpful to know how leaky your aortic valve is (or if it has been treated how leaky it was).",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_AORTIC} = \"2\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_AS_GRADE",
+        "title" : "Valve problems can be very variable.   Valve problems can be very variable.   It is helpful to know how narrowed your aortic valve is (or if it has been treated how narrowed it was).",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_AORTIC} = \"3\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_MR_GRADE",
+        "title" : "Valve problems can be very variable.   It is helpful to know how leaky your mitral valve is (or if it has been treated how leaky it was).",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_MITRAL} = \"2\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_MS_GRADE",
+        "title" : "Valve problems can be very variable.   It is helpful to know how narrowed your mitral valve is (or if it has been treated how narrowed it was). Which of the following best matches the description of your mitral valve problem?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_MITRAL} = \"3\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_PR_GRADE",
+        "title" : "Valve problems can be very variable.   It is helpful to know how leaky your pulmonary valve is (or if it has been treated how leaky it was).",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_PULMONARY} = \"2\""
+      }, {
+        "type" : "radiogroup",
+        "name" : "VALVE_PS_GRADE",
+        "title" : "Valve problems can be very variable. It is helpful to know how narrowed your pulmonary  valve is (or if it has been treated how narrowed it was). Which of the following best matches the description of your mitral valve problem?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Mild, trivial or trace",
+          "value" : "1"
+        }, {
+          "text" : "Moderate or significant",
+          "value" : "2"
+        }, {
+          "text" : "Severe",
+          "value" : "3"
+        }, {
+          "text" : "Don't know",
+          "value" : "4"
+        } ],
+        "visibleIf" : "{VALVE_PULMONARY} = \"3\""
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "panel",
+        "elements" : [ {
+          "type" : "html",
+          "name" : "CHD_explainer",
+          "title" : "CHD_text",
+          "description" : "",
+          "isRequired" : false,
+          "html" : "Congenital heart disease (for example a hole in the heart) changes the way blood flows through the heart. This can change the shape and function of the chambers of the heart leading to cardiomyopathy"
+        }, {
+          "type" : "radiogroup",
+          "name" : "CHD",
+          "title" : "Have you been diagnosed with congenital heart disease, or did you need surgery on your heart as a child?",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "No",
+            "value" : "0"
+          }, {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "Don't Know",
+            "value" : "2"
+          } ]
+        }, {
+          "type" : "text",
+          "name" : "CHD_TEXT",
+          "title" : "If yes, please provide details",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "text",
+          "visibleIf" : "{CHD}= \"1\""
+        } ]
+      }, {
+        "name" : "HTN",
+        "title" : "Have you been diagnosed with high blood pressure?",
+        "questionTemplateName" : "radio_yes_no_dk"
+      }, {
+        "type" : "radiogroup",
+        "name" : "HTN_ORDER",
+        "title" : "Which was diagnosed first, your cardiomyopathy or your high blood pressure?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Cardiomyopathy",
+          "value" : "1"
+        }, {
+          "text" : "High blood pressure",
+          "value" : "2"
+        } ]
+      }, {
+        "type" : "radiogroup",
+        "name" : "CHOL",
+        "title" : "Have you been diagnosed with high cholesterol?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "I have never had high cholesterol",
+          "value" : "0"
+        }, {
+          "text" : "I used to have high cholesterol, but it is well controlled now",
+          "value" : "1"
+        }, {
+          "text" : "I currently have high cholesterol",
+          "value" : "2"
+        } ]
+      }, {
+        "type" : "panel",
+        "elements" : [ {
+          "name" : "DIABETES",
+          "title" : "Have you been diagnosed with diabetes?",
+          "questionTemplateName" : "radio_yes_no_dk"
+        }, {
+          "type" : "text",
+          "name" : "DIABETES_AGE",
+          "title" : "How old were you when your diabetes was diagnosed?  ",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "number",
+          "min" : 0,
+          "max" : 120,
+          "visibleIf" : "{DIABETES}=\"1\""
+        }, {
+          "name" : "DIABETES_MONOGENIC",
+          "title" : "Have you been diagnosed with an inherited or genetic form of diabetes?",
+          "visibleIf" : "{DIABETES}='1'",
+          "questionTemplateName" : "radio_yes_no_dk"
+        }, {
+          "type" : "radiogroup",
+          "name" : "DIABETES_TREATMENT",
+          "title" : "How is your diabetes treated? Please check all that apply",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Insulin",
+            "value" : "1"
+          }, {
+            "text" : "Medication/ tablets",
+            "value" : "2"
+          }, {
+            "text" : "Diet",
+            "value" : "3"
+          } ],
+          "visibleIf" : "{DIABETES}='1'"
+        }, {
+          "type" : "radiogroup",
+          "name" : "DIABETES_INSULIN_START ",
+          "title" : "How soon after your diabetes diagnosis did you start using insulin on a regular basis?  Please select one answer that best describes your treatment",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Immediately, and I continue to use insulin",
+            "value" : "1"
+          }, {
+            "text" : "Immediately, but only for a few days or weeks until my sugars were controlled and then I stopped.",
+            "value" : "2"
+          }, {
+            "text" : "Within the first year",
+            "value" : "3"
+          }, {
+            "text" : "After a year or more",
+            "value" : "4"
+          }, {
+            "text" : "I have only been given insulin in an emergency",
+            "value" : "5"
+          } ],
+          "showOtherItem" : true,
+          "otherText" : "Other",
+          "otherPlaceholder" : "Please specify",
+          "otherErrorText" : "A description is required for choices of \"other\".",
+          "visibleIf" : "{DIABETES_TREATMENT}='1'"
+        } ]
+      }, {
+        "name" : "RENAL",
+        "title" : "Do you have kidney disease or kidney failure (renal failure)? ",
+        "questionTemplateName" : "radio_yes_no_dk"
+      }, {
+        "type" : "panel",
+        "elements" : [ {
+          "name" : "CANCER",
+          "title" : "Have you ever had cancer? \n",
+          "questionTemplateName" : "radio_yes_no_dk"
+        }, {
+          "type" : "radiogroup",
+          "name" : "CANCER_SEQUENCE",
+          "title" : "Which was diagnosed first, your cardiomyopathy or your cancer?",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Cardiomyopathy",
+            "value" : "cardiomyopathy"
+          }, {
+            "text" : "Cancer",
+            "value" : "cancer"
+          } ],
+          "visibleIf" : "{CANCER} = \"1\""
+        }, {
+          "type" : "radiogroup",
+          "name" : "CANCER_TYPE ",
+          "title" : "What type of cancer did you have? Please check all that apply.",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Breast",
+            "value" : "breast"
+          }, {
+            "text" : "Colon (bowel)",
+            "value" : "colonBowel"
+          }, {
+            "text" : "Gastro (stomach)",
+            "value" : "gastroStomach"
+          }, {
+            "text" : "Lymphoma",
+            "value" : "lymphoma"
+          }, {
+            "text" : "Leukaemia ",
+            "value" : "leukaemia"
+          }, {
+            "text" : "Lung",
+            "value" : "lung"
+          }, {
+            "text" : "Myeloma",
+            "value" : "myeloma"
+          }, {
+            "text" : "Testicular",
+            "value" : "testicular"
+          }, {
+            "text" : "Ovary",
+            "value" : "ovary"
+          }, {
+            "text" : "Renal (kidney)",
+            "value" : "renalKidney"
+          } ],
+          "showOtherItem" : true,
+          "otherText" : "Other",
+          "otherPlaceholder" : "Please specify",
+          "otherErrorText" : "A description is required for choices of \"other\".",
+          "visibleIf" : "{CANCER} = \"1\""
+        }, {
+          "type" : "radiogroup",
+          "name" : "CANCER_CHEMO\t",
+          "title" : "Did you have chemotherapy?",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          }, {
+            "text" : "Don't know",
+            "value" : "2"
+          } ],
+          "visibleIf" : "{CANCER}=\"1\""
+        }, {
+          "type" : "text",
+          "name" : "CANCER_CHEMO_TEXT\t",
+          "title" : "If yes, please enter the name of each chemotherapy you received:",
+          "description" : "",
+          "isRequired" : false,
+          "inputType" : "text",
+          "visibleIf" : "{CANCER}=\"1\" and {CANCER_CHEMO}=\"1\""
+        }, {
+          "type" : "radiogroup",
+          "name" : "CANCER_RADIOTHERAPY_CHEST\t",
+          "title" : "Did you have radiotherapy to your chest?",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "2"
+          }, {
+            "text" : "Don't know",
+            "value" : "3"
+          } ],
+          "visibleIf" : "{CANCER}=\"1\""
+        }, {
+          "type" : "radiogroup",
+          "name" : "CANCER_RADIOTHERAPY_HEART\t",
+          "title" : "Was your heart included in the radiation field or were you told the radiotherapy could affect your heart?",
+          "description" : "",
+          "isRequired" : false,
+          "choices" : [ {
+            "text" : "Yes",
+            "value" : "1"
+          }, {
+            "text" : "No",
+            "value" : "0"
+          }, {
+            "text" : "Don't know",
+            "value" : "2"
+          } ],
+          "visibleIf" : "{CANCER}=\"1\""
+        } ]
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "radiogroup",
+        "name" : "PREGNANT\t",
+        "title" : "Have you ever been pregnant?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "No",
+          "value" : "0"
+        } ]
+      }, {
+        "type" : "dropdown",
+        "name" : "OFFSPRING\t",
+        "title" : "How many children have you had?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "0",
+          "value" : "0"
+        }, {
+          "text" : "1",
+          "value" : "1"
+        }, {
+          "text" : "2",
+          "value" : "2"
+        }, {
+          "text" : "3",
+          "value" : "3"
+        }, {
+          "text" : "4",
+          "value" : "4"
+        }, {
+          "text" : "5",
+          "value" : "5"
+        }, {
+          "text" : "6",
+          "value" : "6"
+        }, {
+          "text" : "7",
+          "value" : "7"
+        }, {
+          "text" : "8",
+          "value" : "8"
+        }, {
+          "text" : "9",
+          "value" : "9"
+        }, {
+          "text" : "10",
+          "value" : "10"
+        }, {
+          "text" : "11",
+          "value" : "11"
+        }, {
+          "text" : "12",
+          "value" : "12"
+        }, {
+          "text" : "13",
+          "value" : "13"
+        }, {
+          "text" : "14",
+          "value" : "14"
+        }, {
+          "text" : "15",
+          "value" : "15"
+        }, {
+          "text" : "16",
+          "value" : "16"
+        }, {
+          "text" : "17",
+          "value" : "17"
+        }, {
+          "text" : "18",
+          "value" : "18"
+        }, {
+          "text" : "19",
+          "value" : "19"
+        }, {
+          "text" : "20",
+          "value" : "20"
+        } ],
+        "visibleIf" : "{PREGNANT}=1"
+      } ]
+    } ],
+    "questionTemplates" : [ {
+      "type" : "radiogroup",
+      "name" : "cm_type",
+      "title" : "Cardiomyopathy type?",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "DCM - Dilated Cardiomyopathy ",
+        "value" : "dcm"
+      }, {
+        "text" : "HCM - Hypertrophic Cardiomyopathy ",
+        "value" : "hcm"
+      }, {
+        "text" : "ACM or ARVC - Arrhythmogenic Cardiomyopathy, Arrhythmogenic Right Ventricular Cardiomyopathy ",
+        "value" : "acm"
+      }, {
+        "text" : "LVNC - Left Ventricular Non-Compaction",
+        "value" : "lvnc"
+      }, {
+        "text" : "Ischaemic Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Restrictive Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Takotsubo (stress-related)",
+        "value" : "takotsubo"
+      }, {
+        "text" : "Peripartum cardiomyopathy ",
+        "value" : "PPCM"
+      }, {
+        "text" : "Unknown or Undefined type",
+        "value" : "unknown"
+      } ],
+      "showOtherItem" : true,
+      "otherText" : "Other",
+      "otherPlaceholder" : "Please specify",
+      "otherErrorText" : "A description is required for choices of \"other\"."
+    }, {
+      "type" : "radiogroup",
+      "name" : "radio_yes_no_dk",
+      "title" : "default",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "No",
+        "value" : "0"
+      }, {
+        "text" : "Yes",
+        "value" : "1"
+      }, {
+        "text" : "Don't Know",
+        "value" : "2"
+      } ]
+    } ]
+  }
+}

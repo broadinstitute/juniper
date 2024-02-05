@@ -1,0 +1,49 @@
+{
+  "stableId" : "baseline",
+  "version" : 2,
+  "name" : "Baseline",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ ],
+    "questionTemplates" : [ {
+      "type" : "radiogroup",
+      "name" : "cm_type",
+      "title" : "Cardiomyopathy type?",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "DCM - Dilated Cardiomyopathy ",
+        "value" : "dcm"
+      }, {
+        "text" : "HCM - Hypertrophic Cardiomyopathy ",
+        "value" : "hcm"
+      }, {
+        "text" : "ACM/ARVC - Arrhythmogenic Cardiomyopathy/Arrhythmogenic Right Ventricular Cardiomyopathy ",
+        "value" : "acm"
+      }, {
+        "text" : "LVNC - Left Ventricular Non-Compaction",
+        "value" : "lvnc"
+      }, {
+        "text" : "Ischaemic Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Restrictive Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Takotsubo (stress-related)",
+        "value" : "takotsubo"
+      }, {
+        "text" : "Peripartum cardiomyopathy ",
+        "value" : "PPCM"
+      }, {
+        "text" : "Unknown or Undefined type",
+        "value" : "unknown"
+      } ],
+      "showOtherItem" : true,
+      "otherText" : "Other",
+      "otherPlaceholder" : "Please specify",
+      "otherErrorText" : "A description is required for choices of \"other\"."
+    } ]
+  }
+}

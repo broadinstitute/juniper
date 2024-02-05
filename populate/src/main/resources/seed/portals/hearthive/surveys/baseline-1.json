@@ -1,0 +1,10 @@
+{
+  "stableId" : "baseline",
+  "version" : 1,
+  "name" : "Baseline",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}

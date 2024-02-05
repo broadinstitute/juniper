@@ -1,0 +1,36 @@
+{
+  "stableId" : "hh_cmyop_preEnroll",
+  "version" : 1,
+  "name" : "Pre-registration",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "title" : "cardiomyopathy pre-registration",
+    "logoPosition" : "right",
+    "pages" : [ {
+      "name" : "page1",
+      "elements" : [ {
+        "type" : "html",
+        "name" : "descriptionText",
+        "html" : "<h3 class=\"text-center fw-bold\">We would like to invite you to join the HeartHive Cardiomyopathy study which has been set up by Imperial College London!</h3>\n\n"
+      }, {
+        "type" : "radiogroup",
+        "name" : "hh_cmyop_prereg_dx",
+        "title" : "Have you been diagnosed with cardiomyopathy",
+        "isRequired" : true,
+        "choices" : [ {
+          "value" : "yes",
+          "text" : "Yes"
+        }, {
+          "value" : "no",
+          "text" : "No"
+        } ]
+      } ]
+    } ],
+    "calculatedValues" : [ {
+      "name" : "qualified",
+      "expression" : "{hh_cmyop_prereg_dx} = 'yes'",
+      "includeIntoResult" : true
+    } ]
+  }
+}

@@ -1,0 +1,299 @@
+{
+  "name" : "Heart Hive",
+  "shortcode" : "hh_registry",
+  "studyPortals" : [ ],
+  "surveyFiles" : [ ],
+  "consentFormFiles" : [ ],
+  "emailTemplateFiles" : [ ],
+  "studyEnvironmentDtos" : [ {
+    "environmentName" : "sandbox",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : true
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 0,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-27.json"
+    }, {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 1,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-85.json"
+    }, {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 2,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/cureHeart-4.json"
+    } ],
+    "configuredConsentDtos" : [ {
+      "consentOrder" : 0,
+      "studyRequired" : true,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/marketingConsent-5.json"
+    } ],
+    "triggerDtos" : [ {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-1.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-2.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-2.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-3.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
+    }, {
+      "active" : false,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-3.json"
+    } ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "populateFileName" : "../../surveys/registrationForm-29.json"
+    }
+  }, {
+    "environmentName" : "irb",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : true,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : true
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 0,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-25.json"
+    }, {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 1,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/baseline-67.json"
+    } ],
+    "configuredConsentDtos" : [ {
+      "consentOrder" : 0,
+      "studyRequired" : true,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/marketingConsent-5.json"
+    } ],
+    "triggerDtos" : [ {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
+    } ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "populateFileName" : "../../surveys/registrationForm-29.json"
+    }
+  }, {
+    "environmentName" : "live",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : true
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ {
+      "active" : true,
+      "recur" : false,
+      "required" : false,
+      "recurrenceIntervalDays" : 0,
+      "surveyOrder" : 0,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "surveyVersion" : 0,
+      "populateFileName" : "../../surveys/basics-25.json"
+    } ],
+    "configuredConsentDtos" : [ {
+      "consentOrder" : 0,
+      "studyRequired" : true,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "consentVersion" : 0,
+      "populateFileName" : "../../surveys/marketingConsent-5.json"
+    } ],
+    "triggerDtos" : [ {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 43200,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_heartHiveEnrollment-4.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "../../emails/hearthive_consentReminder-4.json"
+    } ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "populateFileName" : "../../surveys/registrationForm-29.json"
+    }
+  } ]
+}

@@ -1,0 +1,10 @@
+{
+  "stableId" : "cureHeart",
+  "version" : 1,
+  "name" : "CureHeart",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "stableId" : "basic",
+  "version" : 1,
+  "name" : "Basic",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}

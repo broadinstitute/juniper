@@ -1,0 +1,82 @@
+{
+  "stableId" : "basics",
+  "version" : 4,
+  "name" : "Registration Information",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "type" : "text",
+        "name" : "firstname",
+        "title" : "First Name",
+        "description" : "",
+        "isRequired" : true,
+        "inputType" : "text"
+      }, {
+        "type" : "text",
+        "name" : "lastname",
+        "startWithNewLine" : false,
+        "title" : "Last Name",
+        "description" : "",
+        "isRequired" : true,
+        "inputType" : "text"
+      }, {
+        "type" : "text",
+        "name" : "birthdate",
+        "title" : "Date of birth",
+        "isRequired" : true,
+        "inputType" : "date"
+      }, {
+        "type" : "text",
+        "name" : "addressline1",
+        "title" : "Address Line 1",
+        "description" : "",
+        "isRequired" : false,
+        "inputType" : "text"
+      } ]
+    }, {
+      "elements" : [ {
+        "type" : "radiogroup",
+        "name" : "cardiomyopathy",
+        "title" : "Have you been diagnosed with cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "yes"
+        }, {
+          "text" : "No",
+          "value" : "no"
+        } ]
+      }, {
+        "type" : "radiogroup",
+        "name" : "fx_cardiomyopathy",
+        "title" : "Do you have a family history of cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "yes"
+        }, {
+          "text" : "No",
+          "value" : "no"
+        }, {
+          "text" : "Don't Know",
+          "value" : "dontKnow"
+        } ]
+      } ]
+    } ],
+    "questionTemplates" : [ {
+      "type" : "radiogroup",
+      "name" : "cm_type",
+      "title" : "Cardiomyopathy type?",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "Dilated Cardiomyopathy (DCM)",
+        "value" : "dcm"
+      } ]
+    } ]
+  }
+}

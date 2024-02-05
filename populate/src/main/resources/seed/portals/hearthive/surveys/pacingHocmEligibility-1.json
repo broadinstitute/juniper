@@ -1,0 +1,10 @@
+{
+  "stableId" : "pacingHocmEligibility",
+  "version" : 1,
+  "name" : "Pacing HOCM eligibility",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}

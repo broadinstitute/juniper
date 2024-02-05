@@ -1,7 +1,0 @@
-{
-  "name": "Enrollment email",
-  "bodyPopulateFile": "studyEnroll.html",
-  "subject": "Thank you for Signing Up!",
-  "stableId": "hh_cymop_studyEnroll",
-  "version": 1
-}
