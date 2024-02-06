@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
@@ -108,7 +109,7 @@ public class EnrollmentService {
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
         Enrollee enrollee;
         if (isProxy) {
-            enrollee = enrollGovernedUser( portalShortcode, user, studyEnv, ppUser, preEnrollResponseId);
+            enrollee = enrollGovernedUser( portalShortcode, user, studyEnv, preEnrollResponseId);
         }
         else {
             enrollee = Enrollee.builder()
@@ -133,15 +134,16 @@ public class EnrollmentService {
         return hubResponse;
     }
 
-    private Enrollee enrollGovernedUser(String portalShortcode, ParticipantUser proxyUser, StudyEnvironment studyEnv, PortalParticipantUser ppUser, UUID preEnrollResponseId) {
+    private Enrollee enrollGovernedUser(String portalShortcode, ParticipantUser proxyUser, StudyEnvironment studyEnv, UUID preEnrollResponseId) {
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(portalShortcode, proxyUser);
+        Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow();
         log.info("Governed user {} registered", registrationResult.participantUser().getId());
-        ParticipantUser mainUser = registrationResult.participantUser();
+        ParticipantUser governedUser = registrationResult.participantUser();
         PortalParticipantUser ppMainUser = registrationResult.portalParticipantUser();
         Enrollee enrollee = Enrollee.builder()
                 .studyEnvironmentId(studyEnv.getId())
-                .participantUserId(mainUser.getId())
+                .participantUserId(governedUser.getId())
                 .profileId(ppMainUser.getProfileId())
                 .preEnrollmentResponseId(preEnrollResponseId)
                 .build();
@@ -151,6 +153,7 @@ public class EnrollmentService {
                 .enrolleeId(enrollee.getId())
                 .participantUserId(proxyUser.getId())
                 .relationshipType(RelationshipType.PROXY)
+                .portalId(portal.getId())
                 .build();
 
         enrolleeRelationService.create(enrolleeRelation);

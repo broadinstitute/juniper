@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
@@ -19,7 +18,6 @@ import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.participant.search.ParticipantUtilService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
@@ -240,8 +238,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public Enrollee create(Enrollee enrollee) {
         if (enrollee.getShortcode() == null) {
             enrollee.setShortcode(generateShortcode());
-            enrollee.setShortcode(participantUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH,
-                    PARTICIPANT_SHORTCODE_ALLOWED_CHARS, dao::findOneByShortcode));
+
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
@@ -264,10 +261,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         int MAX_TRIES = 10;
         String shortcode = null;
         for (int tryNum = 0; tryNum < MAX_TRIES; tryNum++) {
-            String possibleShortcode = secureRandom
-                    .ints(PARTICIPANT_SHORTCODE_LENGTH, 0, PARTICIPANT_SHORTCODE_ALLOWED_CHARS.length())
-                    .mapToObj(i -> PARTICIPANT_SHORTCODE_ALLOWED_CHARS.charAt(i))
-                    .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
+            String possibleShortcode = participantUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH, PARTICIPANT_SHORTCODE_ALLOWED_CHARS);
             if (dao.findOneByShortcode(possibleShortcode).isEmpty()) {
                 shortcode = possibleShortcode;
                 break;

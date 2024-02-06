@@ -44,8 +44,7 @@ public class AuthUtilService {
     return enrolleeOpt.get();
   }
 
-  private Enrollee authParticipantUserToGovernedEnrollees(
-      UUID participantUserId, String enrolleeShortcode) {
+  private Enrollee authParticipantUserToGovernedEnrollees(UUID participantUserId, String enrolleeShortcode) {
     return enrolleeRelationService.findGovernedEnrollees(participantUserId, null).stream()
         .filter(enrollee -> enrollee.getShortcode().equals(enrolleeShortcode))
         .findFirst()

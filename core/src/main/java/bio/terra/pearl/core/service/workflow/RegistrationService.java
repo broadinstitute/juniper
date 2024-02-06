@@ -9,10 +9,9 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.search.ParticipantUtilService;
+import bio.terra.pearl.core.service.participant.ParticipantUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -47,6 +46,7 @@ public class RegistrationService {
     private ObjectMapper objectMapper;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String GOVERNED_USER_INDICATOR = "-proxied-";
     private static final int LENGTH = 10;
     private final Random random = new SecureRandom();
 
@@ -138,28 +138,28 @@ public class RegistrationService {
 
     public RegistrationResult registerGovernedUser(String portalShortcode, ParticipantUser proxy) {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
-        ParticipantUser mainUser = new ParticipantUser();
-        mainUser.setEnvironmentName(proxy.getEnvironmentName());
-        String guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS, participantUserService::findOne, proxy.getEnvironmentName() , proxy.getUsername()+"-");
-        String mainUserName = "%s-proxied".formatted(guid);
-        mainUser.setUsername(mainUserName);
-        mainUser = participantUserService.create(mainUser);
+        ParticipantUser governedUser = new ParticipantUser();
+        governedUser.setEnvironmentName(proxy.getEnvironmentName());
+        String guid = generateGUID(governedUser.getUsername(), proxy.getEnvironmentName());
+        String governedUserName = proxy.getUsername() + GOVERNED_USER_INDICATOR + guid;
+        governedUser.setUsername(governedUserName);
+        governedUser = participantUserService.create(governedUser);
 
         PortalParticipantUser ppUser = new PortalParticipantUser();
         ppUser.setPortalEnvironmentId(portalEnv.getId());
-        ppUser.setParticipantUserId(mainUser.getId());
+        ppUser.setParticipantUserId(governedUser.getId());
 
         Profile profile = new Profile();
-        profile.setContactEmail(mainUser.getUsername());
-        profile.setGivenName("Governed by proxy "+proxy.getUsername());
-        profile.setFamilyName("Governed by proxy "+proxy.getUsername());
+        profile.setContactEmail(governedUser.getUsername());
+        profile.setGivenName(null);
+        profile.setFamilyName(null);
         ppUser.setProfile(profile);
 
         ppUser = portalParticipantUserService.create(ppUser);
 
-        eventService.publishPortalRegistrationEvent(mainUser, ppUser, portalEnv);
-        log.info("Governed user registration: userId: {}, portal: {}", mainUser.getId(), portalShortcode);
-        return new RegistrationResult(mainUser, ppUser);
+        eventService.publishPortalRegistrationEvent(governedUser, ppUser, portalEnv);
+        log.info("Governed user registration: userId: {}, portal: {}", governedUser.getId(), portalShortcode);
+        return new RegistrationResult(governedUser, ppUser);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {
@@ -177,18 +177,12 @@ public class RegistrationService {
         return preRegResponse;
     }
 
-    public String generateGUID(String prefix, EnvironmentName environmentName) {
-        StringBuilder sb = new StringBuilder(LENGTH);
-        for (int i = 0; i < LENGTH; i++) {
-            sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+    public String generateGUID(String userName, EnvironmentName environmentName) {
+        String guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS);
+        while(!participantUserService.findOne(userName + guid, environmentName).isEmpty()){
+            guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS);
         }
-        while(!participantUserService.findOne(prefix + sb.toString(), environmentName).isEmpty()){
-            sb = new StringBuilder(LENGTH);
-            for (int i = 0; i < LENGTH; i++) {
-                sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
-            }
-        }
-        return sb.toString();
+        return guid;
     }
 
     public record RegistrationResult(ParticipantUser participantUser,

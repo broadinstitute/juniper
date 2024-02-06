@@ -169,9 +169,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.getShortcode(), notNullValue());
         Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).size(), 1);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getEnrolleeId(), enrollee.getId());
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).size(), 1);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getEnrolleeId(), enrollee.getId());
         assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), contains(enrollee));
 
         // Because the study environment had a consent attached, a consent task should be created on enrollment
@@ -210,10 +210,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), enrollee2.getParticipantUserId());
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).size(), 2);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(0).getEnrolleeId(), enrollee1.getId());
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserId(userBundle.user().getId()).get(1).getEnrolleeId(), enrollee2.getId());
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).size(), 2);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getEnrolleeId(), enrollee1.getId());
+        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(1).getEnrolleeId(), enrollee2.getId());
         Assertions.assertEquals(enrolleeService.findByStudyEnvironment(studyEnv.getId()).size(), 2);
         Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee1)));
         Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee2)));

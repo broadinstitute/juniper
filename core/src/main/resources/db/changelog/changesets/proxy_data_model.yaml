@@ -18,8 +18,8 @@ databaseChangeLog:
               - column: { name: participant_user_id, type: uuid, constraints: {#participant user id is the user who is the proxy but not the enrollee
                 nullable: false, foreignKeyName: fk_enrollee_relation_participant_user, references: participant_user(id)} }
               - column:  { name: enrollee_id, type: uuid, constraints: { #enrollee id is the id of the user who is actually enrolled in the study
-                nullable: false, foreignKeyName: fk_enrollee_relation_enrollee, references: enrollee(id)
-              }  }
+                nullable: false, foreignKeyName: fk_enrollee_relation_enrollee, references: enrollee(id)}  }
+              - column: { name: portal_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_enrollee_relation_portal, references: portal(id) } }
               - column: { name: relationship_type, type: varchar(40), constraints: { nullable: false} }
               - column: { name: beginDate, type: datetime, defaultValue: now(), defaultValueComputed: true, constraints: { nullable: false } }
               - column: { name: endDate, type: datetime, constraints: { nullable: true } }
