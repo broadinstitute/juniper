@@ -54,7 +54,8 @@ export const RedirectFromOAuth = () => {
 
           const email = auth.user.profile.email as string
           const accessToken = auth.user.access_token
-          const isProxy = true
+          //TODO this should change to true when a proxy is registering someone else
+          const isProxy = false
 
           // Register or login
           try {
