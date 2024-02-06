@@ -8,6 +8,12 @@ export type Portal = {
   shortcode: string
   portalEnvironments: PortalEnvironment[]
   portalStudies: PortalStudy[]
+  portalLanguages: PortalLanguage[]
+}
+
+export type PortalLanguage = {
+  languageCode: string
+  languageName: string
 }
 
 export type PortalStudy = {

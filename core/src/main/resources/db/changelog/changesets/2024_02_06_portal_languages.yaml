@@ -11,7 +11,7 @@ databaseChangeLog:
               - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
               - column: { name: language_code, type: text, constraints: { nullable: false } }
               - column: { name: language_name, type: text, constraints: { nullable: false } }
-              - column: { name: portal_id, type: uuid, constraints: { foreignKeyName: fk_portal_language_portal, references: portal(id), deleteCascade: true } }
+              - column: { name: portal_id, type: uuid, constraints: { foreignKeyName: fk_portal_language_portal, references: portal(id), deleteCascade: true, nullable: false } }
         - addUniqueConstraint:
             tableName: portal_language
             constraintName: portal_language_language_code_portal_id_key

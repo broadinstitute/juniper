@@ -14,7 +14,8 @@ export const mockPortal = (): Portal => {
     id: 'portal123',
     shortcode: 'mockportal',
     portalStudies: [],
-    portalEnvironments: [mockPortalEnvironment()]
+    portalEnvironments: [mockPortalEnvironment()],
+    portalLanguages: [{ languageCode: 'en', languageName: 'English' }]
   }
 }
 

@@ -2,10 +2,12 @@ package bio.terra.pearl.core.service.portal;
 
 import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
+import bio.terra.pearl.core.dao.portal.PortalLanguageDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalLanguage;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -40,6 +42,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private SiteContentService siteContentService;
     private EmailTemplateService emailTemplateService;
     private SiteImageService siteImageService;
+    //todo replace this with a service
+    private PortalLanguageDao portalLanguageDao;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
@@ -49,7 +53,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
-                         SiteImageService siteImageService) {
+                         SiteImageService siteImageService,
+                         PortalLanguageDao portalLanguageDao) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -62,6 +67,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
         this.siteImageService = siteImageService;
+        this.portalLanguageDao = portalLanguageDao;
     }
 
     @Transactional
@@ -128,6 +134,8 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                         PortalStudy.builder().study(study).build()
                 );
             }
+            List<PortalLanguage> portalLanguages = portalLanguageDao.findByPortalId(portal.getId());
+            portal.getPortalLanguages().addAll(portalLanguages);
         });
         return portalOpt;
     }

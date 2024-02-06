@@ -35,6 +35,8 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   const [isError, setIsError] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useSelectedLanguage()
 
+  console.log(envState?.portalLanguages)
+
   useEffect(() => {
     Api.getPortal(selectedLanguage).then(result => {
       setEnvState(result)

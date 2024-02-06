@@ -28,12 +28,7 @@ export default function Navbar(props: NavbarProps) {
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 
-  //todo: eventually we'll pull this list from the portal
-  const languageOptions = [
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Español' },
-    { code: 'dev', name: 'Developer' }
-  ]
+  const languageOptions = portalEnv.portal.portalLanguages
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -95,16 +90,16 @@ export default function Navbar(props: NavbarProps) {
               data-bs-toggle="dropdown"
             >
               <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
-              {languageOptions.find(l => l.code === selectedLanguage)?.name}
+              {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
               <span className="d-lg-none">{user.username}</span>
             </button>
             <div className="dropdown-menu dropdown-menu-end">
               {languageOptions.map((lang, index) => {
                 return (
                   <button key={index} className="dropdown-item" onClick={() => {
-                    changeLanguage(lang.code)
+                    changeLanguage(lang.languageCode)
                   }}>
-                    {lang.name}
+                    {lang.languageName}
                   </button>
                 )
               })}

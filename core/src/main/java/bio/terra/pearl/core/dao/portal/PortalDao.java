@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalLanguage;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import java.util.List;
 import java.util.Optional;
@@ -91,6 +92,9 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
             portalStudy.setStudy(studyDao.findOneFullLoad(portalStudy.getStudyId()).get());
             portal.getPortalStudies().add(portalStudy);
         }
+        List<PortalLanguage> portalLanguages = portalLanguageDao.findByPortalId(portal.getId());
+        portal.getPortalLanguages().addAll(portalLanguages);
+
         return portal;
     }
 
