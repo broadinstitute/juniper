@@ -4,7 +4,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString } from 'util/timeUtils'
+import { dateToDefaultString } from '@juniper/ui-core'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 

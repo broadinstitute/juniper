@@ -72,8 +72,25 @@ export type Enrollee = {
   surveyResponses: []
 }
 
+export type MailingAddress = {
+  street1: string,
+  street2: string,
+  city: string,
+  state: string,
+  country: string,
+  postalCode: string
+}
+
 export type Profile = {
-  sexAtBirth: string
+  givenName?: string,
+  familyName?: string,
+  contactEmail?: string,
+  doNotEmail?: boolean,
+  doNotEmailSolicit?: boolean,
+  mailingAddress?: MailingAddress,
+  phoneNumber?: string,
+  birthDate?: number[],
+  sexAtBirth?: string
 }
 
 export type KitRequest = {

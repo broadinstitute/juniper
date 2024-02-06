@@ -9,7 +9,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { basicTableLayout, useRoutableTablePaging } from 'util/tableUtils'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import { LoadedPortalContextT } from '../PortalProvider'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'

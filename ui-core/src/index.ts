@@ -11,6 +11,7 @@ export * from './types/task'
 export * from './autoSaveUtils'
 export * from './reactUtils'
 export * from './surveyUtils'
+export * from './timeUtils'
 export * from './waitForImages'
 
 export * from './participant/dashboard/Alert'

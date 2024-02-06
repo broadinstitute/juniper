@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { saveBlobAsDownload } from 'util/downloadUtils'
 import Api from 'api/api'
-import { currentIsoDate } from 'util/timeUtils'
+import { currentIsoDate } from '@juniper/ui-core'
 import { PortalShortcodeControl } from './PopulateControls'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Button } from 'components/forms/Button'

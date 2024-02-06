@@ -1,5 +1,5 @@
 import { cssVar, parseToRgb, tint } from 'polished'
-import React, { CSSProperties, Suspense, lazy, useEffect } from 'react'
+import React, { CSSProperties, lazy, Suspense, useEffect } from 'react'
 
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -23,6 +23,7 @@ import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider } from '@juniper/ui-core'
+import { ParticipantProfile } from './participant/ParticipantProfile'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -131,6 +132,10 @@ function App() {
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
                           <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
                           <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
+                          <Route path="/participant">
+                            <Route path="profile"
+                              element={<ProtectedRoute><ParticipantProfile/></ProtectedRoute>}/>
+                          </Route>
                           <Route path="*" element={<div>unmatched route</div>}/>
                         </Routes>
                       </Suspense>

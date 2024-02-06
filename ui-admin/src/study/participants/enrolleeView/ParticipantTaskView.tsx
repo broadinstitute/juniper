@@ -10,7 +10,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { tableHeader } from 'util/tableUtils'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 
 const columns: ColumnDef<ParticipantTask>[] = [{
   header: 'Task',
