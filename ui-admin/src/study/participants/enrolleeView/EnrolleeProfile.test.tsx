@@ -7,6 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { dateToDefaultString } from 'util/timeUtils'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
+import { Store } from 'react-notifications-component'
 
 
 test('renders enrollee profile', async () => {
@@ -70,6 +71,7 @@ test('profile update is sent appropriately with justification', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
   jest.spyOn(Api, 'updateProfileForEnrollee')
+  jest.spyOn(Store, 'addNotification').mockReturnValue('')
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
