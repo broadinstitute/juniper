@@ -280,6 +280,21 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected List<T> findAllByTwoProperties(String column1Name, Object column1Value,
+                                             String column2Name, Collection<?> column2Values) {
+        if (column2Values.isEmpty()) {
+            return List.of();
+        }
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
+                                + " and " + column2Name + " IN (<column2Values>);")
+                        .bind("column1Value", column1Value)
+                        .bindList("column2Values", column2Values)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     /**
      * query by ORing together pairs of values.  E.g., if you are trying to retreive a set of
      * surveys, and you have a stableId and a version for each, you can query for all of them at once.

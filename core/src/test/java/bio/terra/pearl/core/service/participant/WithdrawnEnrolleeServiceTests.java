@@ -5,11 +5,13 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
   @Autowired
@@ -21,8 +23,8 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testWithdraw() throws Exception {
-    Enrollee enrollee = enrolleeFactory.buildPersisted("testWithdraw");
+  public void testWithdraw(TestInfo info) throws Exception {
+    Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
     DaoTestUtils.assertGeneratedProperties(enrollee);
     WithdrawnEnrollee withdrawnEnrollee = withdrawnEnrolleeService.withdrawEnrollee(enrollee);
     DaoTestUtils.assertGeneratedProperties(withdrawnEnrollee);

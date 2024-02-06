@@ -55,7 +55,6 @@ function RawConsentView({ studyEnvContext, consent, readOnly = false }:
       readOnly={readOnly}
       onCancel={() => navigate(studyEnvFormsPath(portal.shortcode, study.shortcode, currentEnv.environmentName))}
       onSave={createNewVersion}
-      isConsentForm={true}
     />
   )
 }

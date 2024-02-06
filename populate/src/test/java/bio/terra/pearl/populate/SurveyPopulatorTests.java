@@ -12,19 +12,21 @@ import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import bio.terra.pearl.populate.service.SurveyPopulator;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 import org.apache.commons.lang3.RandomStringUtils;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.jdbi.v3.core.Jdbi;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 
 public class SurveyPopulatorTests extends BaseSpringBootTest {
     @Autowired
@@ -44,8 +46,8 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPopulateClean() throws IOException {
-        Portal portal = portalFactory.buildPersisted("testPopulateClean");
+    public void testPopulateClean(TestInfo info) throws IOException {
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
         String surveyFile = "portals/ourhealth/studies/ourheart/surveys/basic.json";
         PortalPopulateContext context =
                 new PortalPopulateContext(surveyFile, portal.getShortcode(), null, new HashMap<>(), false);
@@ -62,9 +64,9 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPopulateOverride() throws IOException {
-        Portal portal = portalFactory.buildPersisted("testPopulateClean");
-        String stableId = "testPopOver-" + RandomStringUtils.randomAlphabetic(5);
+    public void testPopulateOverride(TestInfo info) throws IOException {
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        String stableId = getTestName(info) + RandomStringUtils.randomAlphabetic(5);
         SurveyPopDto popDto1 = SurveyPopDto.builder()
                 .stableId(stableId)
                 .version(1)
@@ -91,9 +93,9 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testPopulateNoOverride() throws IOException {
-        Portal portal = portalFactory.buildPersisted("testPopulateNoOverride");
-        String stableId = "testPopNoOver-" + RandomStringUtils.randomAlphabetic(5);
+    public void testPopulateNoOverride(TestInfo info) throws IOException {
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        String stableId = getTestName(info) + RandomStringUtils.randomAlphabetic(5);
         SurveyPopDto popDto1 = SurveyPopDto.builder()
                 .stableId(stableId)
                 .version(1)

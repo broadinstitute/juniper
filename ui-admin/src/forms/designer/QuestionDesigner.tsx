@@ -111,7 +111,8 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
                   html: value
                 })
               }}
-            />}
+            />
+          }
         </>
       )}
 

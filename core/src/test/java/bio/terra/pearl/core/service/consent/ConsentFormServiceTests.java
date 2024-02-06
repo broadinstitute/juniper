@@ -5,10 +5,10 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.survey.Survey;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +24,8 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
     private ConsentFormService consentFormService;
     @Test
     @Transactional
-    public void testConsentCreate() {
-        ConsentForm consentForm = consentFormFactory.builder("testConsentCreate").build();
+    public void testConsentCreate(TestInfo info) {
+        ConsentForm consentForm = consentFormFactory.builder(getTestName(info)).build();
         ConsentForm savedForm = consentFormService.create(consentForm);
         Assertions.assertNotNull(savedForm.getId());
         Assertions.assertEquals(savedForm.getName(), consentForm.getName());
@@ -37,9 +37,9 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testCreateNewVersion() {
-        ConsentForm form = consentFormFactory.buildPersisted("testPublishConsent");
-        AdminUser user = adminUserFactory.buildPersisted("testPublishConsent");
+    public void testCreateNewVersion(TestInfo info) {
+        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info));
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
         String oldContent = form.getContent();
         String newContent = "totally different " + RandomStringUtils.randomAlphabetic(6);
         form.setContent(newContent);
@@ -57,8 +57,8 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAssignPublishedVersion() {
-        ConsentForm form = consentFormFactory.buildPersisted("testPublishConsent");
+    public void testAssignPublishedVersion(TestInfo info) {
+        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info));
         consentFormService.assignPublishedVersion(form.getId());
         form = consentFormService.find(form.getId()).get();
         assertThat(form.getPublishedVersion(), equalTo(1));

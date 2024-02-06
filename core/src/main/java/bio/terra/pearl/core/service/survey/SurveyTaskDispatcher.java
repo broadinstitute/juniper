@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -49,10 +50,14 @@ public class SurveyTaskDispatcher {
                 enrolleeEvent.getPortalParticipantUser(),
                 enrolleeEvent.getEnrolleeRuleData(),
                 studyEnvSurveys);
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .systemProcess(getClass().getSimpleName() + ".createSurveyTasks")
+                .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
+                .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
         for (ParticipantTask task : tasksToAdd) {
             log.info("Task creation: enrollee {}  -- task {}, target {}", enrolleeEvent.getEnrollee().getShortcode(),
                     task.getTaskType(), task.getTargetStableId());
-            task = participantTaskService.create(task);
+            task = participantTaskService.create(task, auditInfo);
             enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
         }
     }
@@ -65,7 +70,7 @@ public class SurveyTaskDispatcher {
                                             List<StudyEnvironmentSurvey> studyEnvSurveys) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentSurvey studySurvey : studyEnvSurveys) {
-            if (isEligibleForSurvey(studySurvey.getEligibilityRule(), enrolleeRuleData)) {
+            if (isEligibleForSurvey(studySurvey.getSurvey().getEligibilityRule(), enrolleeRuleData)) {
                 ParticipantTask task = buildTask(studySurvey, studySurvey.getSurvey(), enrollee, portalParticipantUser);
                 if (!isDuplicateTask(studySurvey, task, enrollee.getParticipantTasks())) {
                     tasks.add(task);
@@ -88,7 +93,7 @@ public class SurveyTaskDispatcher {
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
                 .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                .blocksHub(studySurvey.isRequired())
+                .blocksHub(survey.isRequired())
                 .taskOrder(studySurvey.getSurveyOrder())
                 .targetStableId(survey.getStableId())
                 .targetAssignedVersion(survey.getVersion())
@@ -119,11 +124,11 @@ public class SurveyTaskDispatcher {
      * a new one
      */
     public static boolean isRecurrenceWindowOpen(StudyEnvironmentSurvey studySurvey, ParticipantTask pastTask) {
-        if (!studySurvey.isRecur()) {
+        if (!studySurvey.getSurvey().isRecur()) {
             return false;
         }
         Instant pastCutoffTime = ZonedDateTime.now(ZoneOffset.UTC)
-                .minusDays(studySurvey.getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
+                .minusDays(studySurvey.getSurvey().getRecurrenceIntervalDays() - RECUR_TASK_BUFFER_DAYS).toInstant();
         return pastTask.getCreatedAt().isBefore(pastCutoffTime);
     }
 

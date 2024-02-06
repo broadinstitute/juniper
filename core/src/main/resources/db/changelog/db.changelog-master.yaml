@@ -180,6 +180,14 @@ databaseChangeLog:
       file: changesets/2024_01_22_data_change_record_justification.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_01_22_survey_fields.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_01_25_system_audit.yaml
+      relativeToChangelogFile: true
+
+
+  - include:
       file: changesets/proxy_data_model.yaml
       relativeToChangelogFile: true
 

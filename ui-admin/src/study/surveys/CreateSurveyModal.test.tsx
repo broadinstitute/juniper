@@ -5,6 +5,7 @@ import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-util
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
+import { defaultSurvey } from '@juniper/ui-core'
 
 describe('CreateSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {
@@ -95,6 +96,7 @@ describe('CreateSurveyModal', () => {
     await user.click(createButton)
     expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       {
+        ...defaultSurvey,
         blurb: 'Testing out the marketing blurb...',
         content: expect.stringContaining('{"pages":[{"elements":[{"type":"html","name":"outreach_content_'),
         createdAt: 0,
@@ -132,6 +134,7 @@ describe('CreateSurveyModal', () => {
     await user.click(createButton)
     expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       {
+        ...defaultSurvey,
         blurb: 'Testing out the screener blurb...',
         content: '{"pages":[]}',
         createdAt: 0,
@@ -168,16 +171,11 @@ describe('CreateSurveyModal', () => {
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
       {
-        allowAdminEdit: true,
-        allowParticipantReedit: true,
-        allowParticipantStart: true,
+
         id: '',
-        required: true,
-        prepopulate: false,
-        recurrenceIntervalDays: 0,
-        recur: false,
         studyEnvironmentId: studyEnvContext.currentEnv.id,
         survey: {
+          ...defaultSurvey,
           content: '{}',
           createdAt: 0,
           id: survey.id,

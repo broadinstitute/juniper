@@ -9,12 +9,17 @@ import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
-import java.util.List;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class ConsentResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -30,8 +35,8 @@ public class ConsentResponseServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testResponseCreate() {
-        ConsentResponse consentResponse = consentResponseFactory.builderWithDependencies("testResponseCreate")
+    public void testResponseCreate(TestInfo info) {
+        ConsentResponse consentResponse = consentResponseFactory.builderWithDependencies(getTestName(info))
                 .build();
         ConsentResponse savedResponse = consentResponseService.create(consentResponse);
         assertThat(savedResponse.getId(), notNullValue());

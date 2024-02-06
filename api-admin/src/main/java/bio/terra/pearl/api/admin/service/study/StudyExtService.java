@@ -4,11 +4,15 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -24,6 +28,7 @@ public class StudyExtService {
   private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
   private final StudyService studyService;
   private final PortalStudyService portalStudyService;
+  private final PortalService portalService;
   private final SiteContentService siteContentService;
 
   public StudyExtService(
@@ -31,12 +36,14 @@ public class StudyExtService {
       StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
       StudyService studyService,
       PortalStudyService portalStudyService,
-      SiteContentService siteContentService) {
+      SiteContentService siteContentService,
+      PortalService portalService) {
     this.authUtilService = authUtilService;
     this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     this.studyService = studyService;
     this.portalStudyService = portalStudyService;
     this.siteContentService = siteContentService;
+    this.portalService = portalService;
   }
 
   @Transactional
@@ -60,6 +67,35 @@ public class StudyExtService {
     newStudy = studyService.create(newStudy);
     portalStudyService.create(portal.getId(), newStudy.getId());
     return newStudy;
+  }
+
+  @Transactional
+  public void delete(String portalShortcode, String studyShortcode, AdminUser operator) {
+    if (!operator.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permission to delete studies");
+    }
+    Portal portal =
+        portalService
+            .findOneByShortcodeOrHostname(portalShortcode)
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Portal "
+                            + portalShortcode
+                            + " was not found as one of the portals for study "
+                            + studyShortcode));
+    PortalStudy portalStudy =
+        portalStudyService
+            .findStudyInPortal(studyShortcode, portal.getId())
+            .orElseThrow(
+                () ->
+                    new NotFoundException(
+                        "Portal "
+                            + portalShortcode
+                            + " was not found as one of the portals for study "
+                            + studyShortcode));
+    portalStudyService.deleteByStudyId(portalStudy.getStudyId());
+    studyService.delete(portalStudy.getStudyId(), CascadeProperty.EMPTY_SET);
   }
 
   /**

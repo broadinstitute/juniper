@@ -1,0 +1,70 @@
+{
+  "sectionType": "LINK_SECTIONS_FOOTER",
+  "sectionConfigJson": {
+    "itemSections": [{
+      "title": "OurHealth",
+      "items": [{
+        "type": "internalLink",
+        "text": "DEV_Home",
+        "href": "/"
+      },{
+        "type": "internalLink",
+        "text": "DEV_About Us",
+        "href": "/aboutUs"
+      },{
+        "type": "internalLink",
+        "text": "DEV_Participation",
+        "href": "/participation"
+      },{
+        "type": "internalLink",
+        "text": "DEV_Scientific Background",
+        "href": "/background"
+      },{
+        "type": "internalLink",
+        "text": "DEV_FAQ",
+        "href": "/faq"
+      }]
+    },{
+      "title": "Stay Informed",
+      "items": [{
+        "type": "mailingList",
+        "text": "DEV_Mailing List"
+      },{
+        "text": "Twitter",
+        "href": "https://twitter.com/ourhealthstudy"
+      },{
+        "text": "Instagram",
+        "href": "https://instagram.com/ourhealthstudy"
+      },{
+        "text": "Facebook",
+        "href": "https://facebook.com/ourhealthstudy"
+      }]
+    },{
+      "title": "DEV_Contact Us",
+      "items": [{
+        "text": "617-724-1240",
+        "href": "tel:617-724-1240"
+      },{
+        "text": "info@ourhealthstudy.org",
+        "href": "mailto:info@ourhealthstudy.org"
+      }]
+    },{
+      "title": "DEV_Donate",
+      "items": [{
+        "text": "Contribute funds",
+        "href": "mailto:info@ourhealthstudy.org"
+      }]
+    },{
+      "title": "DEV_For Participants",
+      "items": [{
+        "type": "internalLink",
+        "text": "DEV_Log In",
+        "href": "/hub"
+      },{
+        "type": "join",
+        "text": "DEV_Join OurHealth",
+        "studyShortcode": "ourheart"
+      }]
+    }]
+  }
+}

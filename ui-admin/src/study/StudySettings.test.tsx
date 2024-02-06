@@ -5,6 +5,7 @@ import { StudyEnvConfigView } from './StudySettings'
 import { mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import userEvent from '@testing-library/user-event'
+import { EnvironmentName } from '@juniper/ui-core'
 
 test('renders a study env. config', async () => {
   const portalContext = mockPortalContext()
@@ -36,7 +37,7 @@ test('updates display when study env. changes', async () => {
         ...studyEnvContext.currentEnv.studyEnvironmentConfig,
         password: 'newPass3'
       },
-      environmentName: 'irb'
+      environmentName: 'irb' as EnvironmentName
     }
   }
   rerender(<MockSuperuserProvider>

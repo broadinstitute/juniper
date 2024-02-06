@@ -7,7 +7,7 @@
     "studies/registry/study.json"
   ],
   "siteContentFiles": [
-    "siteContent.json"
+    "siteContent/siteContent.json"
   ],
   "portalEnvironmentDtos": [
     {
@@ -20,7 +20,7 @@
         "emailSourceAddress": "info@thehearthive.org"
       },
       "siteContentPopDto": {
-        "populateFileName": "siteContent.json"
+        "populateFileName": "siteContent/siteContent.json"
       },
       "participantUserFiles": [
         "participants/consentedEnrollee.json",

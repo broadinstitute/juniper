@@ -8,7 +8,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
-import { SurveyType } from '@juniper/ui-core'
+import { defaultSurvey, SurveyType } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faLightbulb, faUsersViewfinder } from '@fortawesome/free-solid-svg-icons'
@@ -38,6 +38,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
+          ...defaultSurvey,
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type, blurb: surveyBlurb,
           content: defaultTemplateJson, name: formName, stableId: formStableId
         })
@@ -46,14 +47,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
           studyEnvContext.study.shortcode,
           studyEnvContext.currentEnv.environmentName,
           {
-            allowAdminEdit: true,
-            allowParticipantReedit: true,
-            allowParticipantStart: true,
             id: '',
-            required: formRequired,
-            prepopulate: false,
-            recurrenceIntervalDays: 0,
-            recur: false,
             studyEnvironmentId: studyEnvContext.currentEnv.id,
             survey: createdSurvey,
             surveyId: createdSurvey.id,

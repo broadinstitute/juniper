@@ -53,7 +53,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
-        this.studyEnvironmentConfigService =  studyEnvironmentConfigService;
+        this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;

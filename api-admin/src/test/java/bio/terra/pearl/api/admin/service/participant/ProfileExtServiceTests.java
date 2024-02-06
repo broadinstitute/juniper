@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
@@ -27,6 +28,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
 
   @Test
+  @Transactional
   public void testUpdateProfileForEnrolleeFailsIfNotInPortal(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
@@ -35,7 +37,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
         enrolleeFactory.buildPersisted(
             getTestName(info), studyEnvBundle.getStudyEnv(), Profile.builder().build());
 
-    AdminUser operator = adminUserFactory.buildPersisted("updateConfigAuthsToStudy", false);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
 
     Assertions.assertThrows(
         PermissionDeniedException.class,
@@ -49,6 +51,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   }
 
   @Test
+  @Transactional
   public void testUpdateProfileForEnrollee(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);

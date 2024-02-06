@@ -2,11 +2,16 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.notification.EmailTemplateFactory;
-import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.notification.NotificationFactory;
+import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -18,11 +23,13 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -75,9 +82,9 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEmailSendOrSkip() {
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testShouldNotSendEmail");
-        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted("testShouldNotSendEmail", enrolleeBundle.portalId());
+    public void testEmailSendOrSkip(TestInfo info) {
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
         Trigger config = triggerFactory.buildPersisted(Trigger.builder()
                 .emailTemplateId(emailTemplate.getId())
                 .deliveryType(NotificationDeliveryType.EMAIL)

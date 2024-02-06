@@ -3,6 +3,7 @@ import React from 'react'
 type FormPreviewOptions = {
   ignoreValidation: boolean
   showInvisibleElements: boolean
+  locale: string
 }
 
 type FormPreviewOptionsProps = {
@@ -50,6 +51,21 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
       <p className="form-text">
         Show all questions, regardless of their visibility. Use this to review questions that
         would be hidden by survey branching logic.
+      </p>
+      <div className="form-group">
+        <label htmlFor="form-preview-locale">Locale</label>
+        <input
+          className="form-control"
+          id="form-preview-locale"
+          value={value.locale}
+          onChange={e => {
+            onChange({ ...value, locale: e.target.value })
+          }}
+        />
+      </div>
+      <p className="form-text">
+        The locale code to use when rendering the form. If the locale is not supported, the
+        form will default to English.
       </p>
     </div>
   )

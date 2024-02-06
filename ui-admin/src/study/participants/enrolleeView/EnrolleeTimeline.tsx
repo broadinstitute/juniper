@@ -52,10 +52,10 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       cell: info => instantToDefaultString(info.getValue() as number)
     },
     {
-      header: 'config',
-      accessorKey: 'notificationConfig',
+      header: 'trigger',
+      accessorKey: 'trigger',
       cell: info => info.getValue() && <Link
-        to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> config </Link>
+        to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> trigger </Link>
     }
   ]
 

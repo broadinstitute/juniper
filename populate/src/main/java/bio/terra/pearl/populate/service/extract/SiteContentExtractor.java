@@ -63,14 +63,18 @@ public class SiteContentExtractor {
             localPopDto.getNavbarItemDtos().add(convertNavbarItem(navbarItem, lsc, filePath, context));
         }
         if (lsc.getFooterSection() != null) {
-            String footerFile = "footer-%s.json".formatted(lsc.getLanguage());
+            String footerFile = "%s/footer.json".formatted(lsc.getLanguage());
             localPopDto.setFooterSectionFile(footerFile);
             HtmlSectionPopDto footerSectionPopDto = convertHtmlSection(lsc.getFooterSection());
             String footerAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(footerSectionPopDto);
             context.writeFileForEntity(filePath + "/" + footerFile, footerAsString, lsc.getFooterSection().getId());
         }
         if (lsc.getLandingPage() != null) {
-            localPopDto.setLandingPage(convertHtmlPage(lsc.getLandingPage()));
+            String landingPageFile = "%s/landingPage.json".formatted(lsc.getLanguage());
+            localPopDto.setLandingPageFileName(landingPageFile);
+            HtmlPagePopDto landingPagePopDto = convertHtmlPage(lsc.getLandingPage());
+            String landingPageAsString = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(landingPagePopDto);
+            context.writeFileForEntity(filePath + "/" + landingPageFile, landingPageAsString, lsc.getLandingPage().getId());
         }
         return localPopDto;
     }
@@ -78,7 +82,7 @@ public class SiteContentExtractor {
     public NavbarItemPopDto convertNavbarItem(NavbarItem navbarItem, LocalizedSiteContent lsc, String filePath, ExtractPopulateContext context) throws JsonProcessingException {
         NavbarItemPopDto navbarItemPopDto = new NavbarItemPopDto();
         if (navbarItem.getItemType().equals(NavbarItemType.INTERNAL)) {
-            String navbarFile = "page-%s-%s.json".formatted(navbarItem.getHtmlPage().getPath(), lsc.getLanguage());
+            String navbarFile = "%s/page-%s.json".formatted(lsc.getLanguage(), navbarItem.getHtmlPage().getPath());
             navbarItemPopDto.setPopulateFileName(navbarFile);
 
             NavbarItemPopDto itemFileDto = new NavbarItemPopDto();

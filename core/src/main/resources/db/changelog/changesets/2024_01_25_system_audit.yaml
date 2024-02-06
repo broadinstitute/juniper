@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: system_audit
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column:
+                  name: system_process
+                  type: text
+        - sql:
+            sql: alter table data_change_record drop constraint if exists chk_data_change_record_has_user
+        - sql: # addCheckConstraint is only available for LiquibasePro, so add this check via raw sql
+            sql: alter table data_change_record add constraint chk_data_change_record_has_user check (responsible_user_id != null or responsible_admin_user_id != null or system_process != null);
+

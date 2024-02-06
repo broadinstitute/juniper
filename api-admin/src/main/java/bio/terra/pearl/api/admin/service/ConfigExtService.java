@@ -34,17 +34,22 @@ public class ConfigExtService {
 
   private Map<String, String> buildConfigMap() {
     return Map.of(
-        "b2cTenantName", StringUtils.defaultIfEmpty(b2CConfiguration.tenantName(), ""),
-        "b2cClientId", StringUtils.defaultIfEmpty(b2CConfiguration.clientId(), ""),
-        "b2cPolicyName", StringUtils.defaultIfEmpty(b2CConfiguration.policyName(), ""),
+        "b2cTenantName",
+        StringUtils.defaultIfEmpty(b2CConfiguration.tenantName(), ""),
+        "b2cClientId",
+        StringUtils.defaultIfEmpty(b2CConfiguration.clientId(), ""),
+        "b2cPolicyName",
+        StringUtils.defaultIfEmpty(b2CConfiguration.policyName(), ""),
         "participantUiHostname",
-            StringUtils.defaultIfEmpty(applicationRoutingPaths.getParticipantUiHostname(), ""),
+        StringUtils.defaultIfEmpty(applicationRoutingPaths.getParticipantUiHostname(), ""),
         "participantApiHostname",
-            StringUtils.defaultIfEmpty(applicationRoutingPaths.getParticipantApiHostname(), ""),
+        StringUtils.defaultIfEmpty(applicationRoutingPaths.getParticipantApiHostname(), ""),
         "adminUiHostname",
-            StringUtils.defaultIfEmpty(applicationRoutingPaths.getAdminUiHostname(), ""),
+        StringUtils.defaultIfEmpty(applicationRoutingPaths.getAdminUiHostname(), ""),
         "adminApiHostname",
-            StringUtils.defaultIfEmpty(applicationRoutingPaths.getAdminApiHostname(), ""));
+        StringUtils.defaultIfEmpty(applicationRoutingPaths.getAdminApiHostname(), ""),
+        "deploymentZone",
+        StringUtils.defaultIfEmpty(applicationRoutingPaths.getDeploymentZone(), ""));
   }
 
   /**

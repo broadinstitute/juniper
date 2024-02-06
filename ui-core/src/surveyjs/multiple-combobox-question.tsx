@@ -10,7 +10,7 @@ import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui
 
 import { MultipleComboBox } from '../components/MultipleCombobox'
 
-const MultipleComboboxType = 'multiple-combobox'
+const MultipleComboboxType = 'multiplecombobox'
 
 export class QuestionMultipleComboboxModel extends Question {
   getType() {
@@ -32,6 +32,14 @@ export class QuestionMultipleComboboxModel extends Question {
   set placeholder(value) {
     this.setPropertyValue('placeholder', value)
   }
+
+  get choicesByUrl() {
+    return this.getPropertyValue('choicesByUrl')
+  }
+
+  set choicesByUrl(value) {
+    this.setPropertyValue('choicesByUrl', value)
+  }
 }
 
 ElementFactory.Instance.registerElement(MultipleComboboxType, name => {
@@ -46,6 +54,9 @@ Serializer.addClass(
     type: 'itemValues'
   }, {
     name: 'placeholder',
+    category: 'general'
+  }, {
+    name: 'choicesByUrl',
     category: 'general'
   }],
   () => new QuestionMultipleComboboxModel(''),
@@ -72,8 +83,12 @@ export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
     return this.question.placeholder
   }
 
+  get choicesByUrl() {
+    return this.question.choicesByUrl
+  }
+
   renderElement() {
-    const options: ItemValue[] = this.question.options
+    const options: ItemValue[] = this.question.options || []
     const value: string[] = this.question.value || []
     const initialSelectedItems = options.filter(opt => value.includes(opt.value))
 
@@ -86,6 +101,7 @@ export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
           this.question.value = selectedItems.map(item => item.value)
         }}
         options={options}
+        choicesByUrl={this.choicesByUrl?.url}
         placeholder={this.placeholder}
       />
     )

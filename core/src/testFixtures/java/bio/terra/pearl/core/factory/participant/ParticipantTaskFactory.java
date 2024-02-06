@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.factory.participant;
 
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -13,6 +14,12 @@ public class ParticipantTaskFactory {
   @Autowired
   ParticipantTaskService participantTaskService;
 
+  public static ParticipantTask.ParticipantTaskBuilder DEFAULT_BUILDER = ParticipantTask.builder()
+          .status(TaskStatus.NEW)
+          .taskType(TaskType.SURVEY)
+          .targetName("test")
+          .taskOrder(1);
+
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle,
                                                              TaskStatus status, TaskType type) {
     return buildPersisted(enrolleeBundle, null, status, type);
@@ -25,6 +32,9 @@ public class ParticipantTaskFactory {
 
   public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String targetStableId,
                                         String targetName, TaskStatus status, TaskType type) {
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+            DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
+    ).build();
     ParticipantTask task = ParticipantTask.builder()
         .status(status)
         .enrolleeId(enrolleeBundle.enrollee().getId())
@@ -34,6 +44,23 @@ public class ParticipantTaskFactory {
         .targetName(targetName)
         .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
         .build();
-    return participantTaskService.create(task);
+    return participantTaskService.create(task, auditInfo);
   }
+
+  /** auto-sets the enrollee and environment-related fields, otherwise builds the task as provided */
+  public ParticipantTask buildPersisted(EnrolleeFactory.EnrolleeBundle enrolleeBundle, ParticipantTask.ParticipantTaskBuilder builder) {
+    DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+            DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
+    ).build();
+    ParticipantTask task = builder
+            .enrolleeId(enrolleeBundle.enrollee().getId())
+            .studyEnvironmentId(enrolleeBundle.enrollee().getStudyEnvironmentId())
+            .portalParticipantUserId(enrolleeBundle.portalParticipantUser().getId())
+            .build();
+    return participantTaskService.create(task, auditInfo);
+  }
+
+
+
+
 }

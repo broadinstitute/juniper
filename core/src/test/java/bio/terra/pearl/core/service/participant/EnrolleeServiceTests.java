@@ -10,12 +10,14 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class EnrolleeServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -29,8 +31,8 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEnrolleeCreate() {
-        Enrollee enrollee = enrolleeFactory.builderWithDependencies("testEnrolleeCrud").build();
+    public void testEnrolleeCreate(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.builderWithDependencies(getTestName(info)).build();
         Enrollee savedEnrollee = enrolleeService.create(enrollee);
         DaoTestUtils.assertGeneratedProperties(savedEnrollee);
         Assertions.assertNotNull(savedEnrollee.getShortcode());
@@ -39,10 +41,10 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEnrolleeDelete() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTimeMulti", EnvironmentName.irb );
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTimeMulti");
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    public void testEnrolleeDelete(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
         enrolleeService.delete(enrolleeBundle.enrollee().getId(), CascadeProperty.EMPTY_SET);
         assertThat(enrolleeService.find(enrolleeBundle.enrollee().getId()).isPresent(), equalTo(false));
@@ -50,10 +52,10 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testEnrolleeCannotDeleteLive() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testFindByStatusAndTimeMulti", EnvironmentName.live );
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testFindByStatusAndTimeMulti");
-        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser("testFindByStatusAndTimeMulti", portalEnv, studyEnv);
+    public void testEnrolleeCannotDeleteLive(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv);
 
         Assertions.assertThrows(UnsupportedOperationException.class, () -> {
             enrolleeService.delete(enrolleeBundle.enrollee().getId(), CascadeProperty.EMPTY_SET);

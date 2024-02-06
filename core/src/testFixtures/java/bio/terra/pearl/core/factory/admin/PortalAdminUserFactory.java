@@ -38,7 +38,7 @@ public class PortalAdminUserFactory {
         return portalAdminUserService.create(portalAdminUser);
     }
 
-    public List<PortalAdminUser> buildPersistedWithPortals(String testName, List<Portal> portals) {
+    public AdminUserBundle buildPersistedWithPortals(String testName, List<Portal> portals) {
         AdminUser adminUser = adminUserFactory.buildPersisted(testName);
         List<PortalAdminUser> portalUsers = new ArrayList<>();
         for (Portal portal : portals) {
@@ -47,6 +47,8 @@ public class PortalAdminUserFactory {
                     .portalId(portal.getId())
                     .build()));
         }
-        return portalUsers;
+        return new AdminUserBundle(adminUser, portalUsers);
     }
+
+    public record AdminUserBundle(AdminUser user, List<PortalAdminUser> portalAdminUsers) {}
 }

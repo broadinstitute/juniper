@@ -18,20 +18,24 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 public class PortalPublishingServiceTests extends BaseSpringBootTest {
     @Test
-    public void testApplyPortalConfigChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testApplyPortalConfigChanges", true);
-        Portal portal = portalFactory.buildPersisted("testApplyPortalConfigChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testApplyPortalConfigChanges", EnvironmentName.live, portal.getId());
+    @Transactional
+    public void testApplyPortalConfigChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
 
         PortalEnvironmentConfig irbConfig = portalEnvironmentConfigService.find(irbEnv.getPortalEnvironmentConfigId()).get();
         irbConfig.setPassword("foobar");
@@ -46,12 +50,13 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
-    public void testPublishesSurveyPortalChanges() throws Exception {
-        AdminUser user = adminUserFactory.buildPersisted("testPublishesSurveyPortalChanges", true);
-        Portal portal = portalFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        Survey survey = surveyFactory.buildPersisted("testPublishesSurveyPortalChanges");
-        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.irb, portal.getId());
-        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted("testPublishesSurveyPortalChanges", EnvironmentName.live, portal.getId());
+    @Transactional
+    public void testPublishesSurveyPortalChanges(TestInfo info) throws Exception {
+        AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
+        PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
         irbEnv.setPreRegSurveyId(survey.getId());
         portalEnvironmentService.update(irbEnv);
 
@@ -65,6 +70,7 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     public void testApplyAlertChanges() throws Exception {
         ParticipantDashboardAlert alert = ParticipantDashboardAlert.builder()
                 .title("No activities left!")

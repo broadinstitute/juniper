@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.workflow.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -32,12 +33,14 @@ public class KitTaskDispatcher {
         UUID portalParticipantUserId = kitSentEvent.getPortalParticipantUser().getId();
         KitRequest kitRequest = kitSentEvent.getKitRequest();
         Optional<ParticipantTask> task = participantTaskService.findByKitRequestId(kitRequest.getId());
+        DataAuditInfo auditInfo = DataAuditInfo.builder().enrolleeId(enrollee.getId())
+                .portalParticipantUserId(portalParticipantUserId)
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), ".handleSentEvent")).build();
         if (task.isPresent()) {
-            resetTask(task.get(), enrollee, portalParticipantUserId);
+            resetTask(task.get(), enrollee, portalParticipantUserId, auditInfo);
             return;
         }
-
-        participantTaskService.create(buildTask(enrollee, kitRequest, portalParticipantUserId));
+        participantTaskService.create(buildTask(enrollee, kitRequest, portalParticipantUserId), auditInfo);
         log.info("Created kit task for enrollee {} with kit request {}",
                 enrollee.getShortcode(), kitRequest.getId());
     }
@@ -56,7 +59,11 @@ public class KitTaskDispatcher {
         }
         ParticipantTask participantTask = task.get();
         participantTask.setStatus(TaskStatus.COMPLETE);
-        participantTaskService.update(participantTask);
+        DataAuditInfo auditInfo = DataAuditInfo.builder().enrolleeId(enrollee.getId())
+                .portalParticipantUserId(kitEvent.getPortalParticipantUser().getId())
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), "handleReceivedEvent")).build();
+
+        participantTaskService.update(participantTask, auditInfo);
     }
 
     protected static ParticipantTask buildTask(Enrollee enrollee, KitRequest kitRequest, UUID portalParticipantUserId) {
@@ -85,7 +92,7 @@ public class KitTaskDispatcher {
      * @param enrollee enrollee associated with the event
      * @param portalParticipantUserId portal participant user id associated with the event
      */
-    protected void resetTask(ParticipantTask task, Enrollee enrollee, UUID portalParticipantUserId) {
+    protected void resetTask(ParticipantTask task, Enrollee enrollee, UUID portalParticipantUserId, DataAuditInfo auditInfo) {
         if (!(task.getEnrolleeId().equals(enrollee.getId())
                 && task.getPortalParticipantUserId().equals(portalParticipantUserId))) {
             log.error("Kit task already exists for enrollee {} kit request {}",
@@ -93,7 +100,7 @@ public class KitTaskDispatcher {
             return;
         }
         task.setStatus(TaskStatus.NEW);
-        participantTaskService.update(task);
+        participantTaskService.update(task, auditInfo);
         log.warn("Reset task for enrollee {} kit request {}",
                 enrollee.getShortcode(), task.getKitRequestId());
     }
