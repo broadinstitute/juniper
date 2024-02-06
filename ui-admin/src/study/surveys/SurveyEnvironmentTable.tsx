@@ -95,7 +95,7 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
       </Button>
       { (envConfig.survey.version !== rowInfo.liveVersion) &&
           <span className="badge bg-dark-subtle text-black rounded-5 fw-normal"
-            title="this version is not in the live environment">unpublished</span>}
+            title="this version is not in the live environment">not live</span>}
       { (envName === 'sandbox') &&  <div className="nav-item dropdown ms-auto">
         <EllipsisDropdownButton aria-label="configure survey menu" className="ms-auto"/>
         <div className="dropdown-menu">
