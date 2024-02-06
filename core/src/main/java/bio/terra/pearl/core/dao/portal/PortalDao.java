@@ -20,7 +20,6 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     private PortalStudyDao portalStudyDao;
     private StudyDao studyDao;
     private PortalAdminUserDao portalAdminUserDao;
-
     private PortalLanguageDao portalLanguageDao;
 
     @Override
