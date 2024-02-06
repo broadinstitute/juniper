@@ -21,15 +21,18 @@ public class EnrolleeRelationService extends CrudService<EnrolleeRelation, Enrol
         this.enrolleeService = enrolleeService;
     }
 
-    public List<EnrolleeRelation> findByParticipantUserId(UUID participantUserId) {
-        return dao.findByParticipantUserId(participantUserId);
+    public List<EnrolleeRelation> findByParticipantUserIdAndPortalId(UUID participantUserId, UUID portalId) {
+        return dao.findByParticipantUserIdAndPortalId(participantUserId, portalId);
+    }
+
+    public List<EnrolleeRelation> findByEnrolleeIdAndPortalId(UUID enrolleeId, UUID portalId) {
+        return dao.findByEnrolleeIdAndPortalId(enrolleeId, portalId);
     }
 
     public List<Enrollee> findGovernedEnrollees(UUID participantUserId, UUID portalId) {
         List<EnrolleeRelation> enrolleeRelations=
-                findByParticipantUserId(participantUserId).stream().filter(enrolleeRelation -> isProxy(enrolleeRelation))
+                findByParticipantUserIdAndPortalId(participantUserId, portalId).stream().filter(enrolleeRelation -> isProxy(enrolleeRelation))
                         .collect(Collectors.toList());
-        List<Enrollee> governedEnrollees = new ArrayList<>();
         return enrolleeService.findAll(enrolleeRelations.stream().map(EnrolleeRelation::getId).toList());
     }
 
