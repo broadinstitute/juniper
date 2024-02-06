@@ -27,3 +27,10 @@ export const useCookiesAcknowledged = (): [boolean, () => void] => {
   const [value, setValue] = useLocalStorage('cookiesAcknowledged')
   return [!!value, () => setValue('true')]
 }
+
+// TODO: Add JSDoc
+// eslint-disable-next-line jsdoc/require-jsdoc
+export const useSelectedLanguage = (): [string, (language: string) => void] => {
+  const [value, setValue] = useLocalStorage('selectedLanguage')
+  return [value || 'en', setValue]
+}

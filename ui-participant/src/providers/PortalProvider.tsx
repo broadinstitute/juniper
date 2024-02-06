@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Api, { LocalSiteContent, Portal, PortalEnvironment } from 'api/api'
+import { useSelectedLanguage } from '../browserPersistentState'
 
 
 /** current portal object context */
@@ -32,9 +33,10 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   const [envState, setEnvState] = useState<Portal | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useSelectedLanguage()
 
   useEffect(() => {
-    Api.getPortal().then(result => {
+    Api.getPortal(selectedLanguage).then(result => {
       setEnvState(result)
       setIsError(false)
       setIsLoading(false)

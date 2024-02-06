@@ -12,7 +12,7 @@ export default function PreRegistration({ registrationContext }: { registrationC
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey, SurveyComponent } =
-    useSurveyJSModel(survey, null, handleComplete, pager)
+    useSurveyJSModel(survey, null, handleComplete,  pager, 'en')
 
   /** submit the form */
   function handleComplete() {

@@ -187,9 +187,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getPortal(): Promise<Portal> {
+  async getPortal(selectedLanguage: string): Promise<Portal> {
     const { shortcodeOrHostname, envName } = currentEnvSpec
-    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}`
+    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?language=${selectedLanguage}`
     const response = await fetch(url, this.getGetInit())
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)

@@ -57,7 +57,7 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
   const { preRegResponseId } = registrationContext
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager, 'en')
   const { loginUser } = useUser()
   const navigate = useNavigate()
 

@@ -73,6 +73,7 @@ export function useSurveyJSModel(
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
+  language: string,
   profile?: Profile,
   opts: UseSurveyJsModelOpts = {}
 ) {
@@ -115,6 +116,7 @@ export function useSurveyJSModel(
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
+    // newSurveyModel.locale = language
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)

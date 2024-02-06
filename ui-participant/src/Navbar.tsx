@@ -1,4 +1,4 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
@@ -24,9 +24,16 @@ export default function Navbar(props: NavbarProps) {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
   const config = useConfig()
-  const { user, logoutUser } = useUser()
+  const { user, logoutUser, selectedLanguage, changeLanguage } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
+
+  //todo: eventually we'll pull this list from the portal
+  const languageOptions = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'dev', name: 'Developer' }
+  ]
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -77,6 +84,32 @@ export default function Navbar(props: NavbarProps) {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
+          <li className="nav-item dropdown d-flex flex-column">
+            <button
+              aria-expanded="false"
+              aria-label={user.username}
+              className={classNames(
+                navLinkClasses,
+                'btn btn-text dropdown-toggle text-start'
+              )}
+              data-bs-toggle="dropdown"
+            >
+              <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
+              {languageOptions.find(l => l.code === selectedLanguage)?.name}
+              <span className="d-lg-none">{user.username}</span>
+            </button>
+            <div className="dropdown-menu dropdown-menu-end">
+              {languageOptions.map((lang, index) => {
+                return (
+                  <button key={index} className="dropdown-item" onClick={() => {
+                    changeLanguage(lang.code)
+                  }}>
+                    {lang.name}
+                  </button>
+                )
+              })}
+            </div>
+          </li>
           {user.isAnonymous && (
             <>
               <li className="nav-item">
@@ -88,7 +121,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                  Log In
+                    Log In
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -100,7 +133,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to={getMainJoinLink(portalEnv.portal.portalStudies)}
                 >
-                  Join
+                    Join
                 </NavLink>
               </li>
             </>
@@ -116,7 +149,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                  Dashboard
+                    Dashboard
                 </Link>
               </li>
               <li className="nav-item dropdown d-flex flex-column">
@@ -129,7 +162,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   data-bs-toggle="dropdown"
                 >
-                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser} />
+                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser}/>
                   <span className="d-lg-none">{user.username}</span>
                 </button>
                 <div className="dropdown-menu dropdown-menu-end">
@@ -145,12 +178,12 @@ export default function Navbar(props: NavbarProps) {
                   >
                     {user.username}
                   </p>
-                  <hr className="dropdown-divider d-none d-lg-block" />
+                  <hr className="dropdown-divider d-none d-lg-block"/>
                   <button className="dropdown-item" onClick={doChangePassword}>
-                    Change Password
+                      Change Password
                   </button>
                   <button className="dropdown-item" onClick={doLogout}>
-                    Log Out
+                      Log Out
                   </button>
                 </div>
               </li>
@@ -174,7 +207,7 @@ const MailingListNavLink = (props: MailingListNavLinkProps) => {
         data-bs-toggle="modal"
         data-bs-target={`#${CSS.escape(modalId)}`}
       />
-      <MailingListModal id={modalId} />
+      <MailingListModal id={modalId}/>
     </>
   )
 }

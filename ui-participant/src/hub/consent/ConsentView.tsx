@@ -34,7 +34,8 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
                             form: ConsentForm, enrollee: Enrollee, isEditingPrevious: boolean
                             resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string
                           }) {
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
+  const { selectedLanguage } = useUser()
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager, selectedLanguage)
   const navigate = useNavigate()
   const { updateEnrollee } = useUser()
   if (surveyModel && isEditingPrevious) {
