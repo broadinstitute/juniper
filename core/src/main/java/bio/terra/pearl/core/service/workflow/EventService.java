@@ -9,6 +9,8 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
@@ -18,7 +20,8 @@ import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
-import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
+import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
+import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -61,7 +64,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         log.info("Kit status event for enrollee {}, studyEnv {}: status {} => {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 priorStatus, kitRequest.getStatus());
-        savePublishedEvent(EventClass.KIT_STATUS_EVENT, portalParticipantUser.getPortalEnvironmentId(), enrollee);
+        saveEvent(EventClass.KIT_STATUS_EVENT, portalParticipantUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -77,7 +80,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getConsentFormId(), response.isConsented());
-        savePublishedEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
+        saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -93,7 +96,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         log.info("survey event for enrollee {}, studyEnv {} - formId {}, completed {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getSurveyId(), response.isComplete());
-        savePublishedEvent(EventClass.ENROLLEE_SURVEY_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
+        saveEvent(EventClass.ENROLLEE_SURVEY_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -106,7 +109,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .newPortalUser(ppUser)
                 .portalEnvironment(portalEnv)
                 .build();
-        savePublishedEvent(EventClass.PORTAL_REGISTRATION_EVENT, portalEnv.getId(), null);
+        saveEvent(EventClass.PORTAL_REGISTRATION_EVENT, portalEnv.getId(), null);
         applicationEventPublisher.publishEvent(event);
         return event;
     }
@@ -118,16 +121,29 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .portalParticipantUser(ppUser)
                 .enrolleeRuleData(enrolleeRuleData)
                 .build();
-        savePublishedEvent(EventClass.ENROLLEE_CREATION_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
+        saveEvent(EventClass.ENROLLEE_CREATION_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(enrolleeEvent);
         return enrolleeEvent;
     }
 
+    public SurveyPublishedEvent publishSurveyPublishedEvent(UUID portalEnvId, UUID studyEnvId, Survey survey) {
+        SurveyPublishedEvent event = SurveyPublishedEvent.builder()
+                        .studyEnvironmentId(studyEnvId)
+                .surveyId(survey.getId())
+                .portalEnvironmentId(portalEnvId)
+                .eventClass(EventClass.SURVEY_PUBLISHED_EVENT)
+                .build();
+
+        dao.create(event);
+        applicationEventPublisher.publishEvent(event);
+        return event;
+    }
+
     /**
-     * Saves a record of the published event. If the event does not involve a specific enrollee/portalEnv,
+     * Saves a record of the event. If the event does not involve a specific enrollee/portalEnv,
      * they can be set to null.
      */
-    private void savePublishedEvent(EventClass eventClass,
+    private void saveEvent(EventClass eventClass,
                                     UUID portalEnvId,
                                     Enrollee enrollee) {
         Event.EventBuilder<?, ?> builder = Event.builder()

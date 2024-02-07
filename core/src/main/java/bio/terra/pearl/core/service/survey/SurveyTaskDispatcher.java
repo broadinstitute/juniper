@@ -1,12 +1,13 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
@@ -58,7 +60,7 @@ public class SurveyTaskDispatcher {
 
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
                                         UUID studyEnvironmentId,
-                                        AdminUser operator) {
+                                        ResponsibleEntity responsibleEntity) {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
@@ -84,11 +86,10 @@ public class SurveyTaskDispatcher {
             }
             if (taskOpt.isPresent()) {
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
-                        .responsibleAdminUserId(operator.getId())
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
-
+                auditInfo.setResponsibleEntity(responsibleEntity);
                 ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
                 log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
                         task.getTaskType(), task.getTargetStableId());
@@ -108,7 +109,7 @@ public class SurveyTaskDispatcher {
         }
     }
 
-    /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
+    /** survey tasks could be triggered by just about anything, sbut for now we just listen to EnrolleeCreation */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void createSurveyTasks(EnrolleeCreationEvent enrolleeEvent) {
@@ -135,6 +136,19 @@ public class SurveyTaskDispatcher {
             }
         }
     }
+
+    @EventListener
+    @Order(DispatcherOrder.SURVEY_TASK)
+    public void updateSurveyTaskVersions(SurveyPublishedEvent event) {
+        if (event.getSurvey().isAutoUpdateTaskAssignments()) {
+            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY,
+                    event.getSurvey().getStableId(),
+                    event.getSurvey().getVersion(),
+                    )
+
+        }
+    }
+
 
     /** builds any survey tasks that the enrollee is eligible for that are not duplicates
      *  Does not add them to the event or persist them.

@@ -1,9 +1,9 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.CrudService;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;

@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_survey_auto_update"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: assign_to_all_new_enrollees, type: boolean, defaultValueBoolean: true,
+                          constraints: { nullable: false }
+              }

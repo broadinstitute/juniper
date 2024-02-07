@@ -4,7 +4,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
@@ -66,7 +66,7 @@ public class ParticipantTaskExtService {
             .orElseThrow(StudyEnvironmentMissing::new);
 
     if (assignDto.taskType().equals(TaskType.SURVEY)) {
-      return surveyTaskDispatcher.assign(assignDto, studyEnv.getId(), operator);
+      return surveyTaskDispatcher.assign(assignDto, studyEnv.getId(), operator, null);
     }
     throw new UnsupportedOperationException(
         "task type %s not supported".formatted(assignDto.taskType()));

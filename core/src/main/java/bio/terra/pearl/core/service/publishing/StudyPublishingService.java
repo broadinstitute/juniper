@@ -20,6 +20,8 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
 import java.util.UUID;
+
+import bio.terra.pearl.core.service.workflow.EventService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,13 +36,14 @@ public class StudyPublishingService {
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private TriggerService triggerService;
     private EmailTemplateService emailTemplateService;
+    private EventService eventService;
 
     public StudyPublishingService(StudyEnvironmentConfigService studyEnvironmentConfigService,
                                   StudyEnvironmentService studyEnvironmentService, SurveyService surveyService,
                                   ConsentFormService consentFormService, StudyEnvironmentConsentService studyEnvironmentConsentService,
                                   StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                   TriggerService triggerService,
-                                  EmailTemplateService emailTemplateService) {
+                                  EmailTemplateService emailTemplateService, EventService eventService) {
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.surveyService = surveyService;
@@ -49,6 +52,7 @@ public class StudyPublishingService {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.triggerService = triggerService;
         this.emailTemplateService = emailTemplateService;
+        this.eventService = eventService;
     }
 
     /** the study environment must be fully hydrated by a call to loadStudyEnvForProcessing prior to passing in */
@@ -58,7 +62,7 @@ public class StudyPublishingService {
         applyChangesToStudyEnvConfig(destEnv, envChange.configChanges());
         applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges());
         applyChangesToConsents(destEnv, envChange.consentChanges());
-        applyChangesToSurveys(destEnv, envChange.surveyChanges());
+        applyChangesToSurveys(destEnv, envChange.surveyChanges(), destPortalEnvId);
         applyChangesToTriggers(destEnv, envChange.triggerChanges(), destPortalEnvId);
         return destEnv;
     }
@@ -105,12 +109,15 @@ public class StudyPublishingService {
     }
 
     private List<StudyEnvironmentSurvey> applyChangesToSurveys(StudyEnvironment destEnv,
-                                                                 ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> listChange) throws Exception {
+                                                                 ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> listChange,
+                                                               UUID destPortalEnvId) throws Exception {
         for(StudyEnvironmentSurvey config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
-            studyEnvironmentSurveyService.create(config.cleanForCopying());
-            destEnv.getConfiguredSurveys().add(config);
-            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, surveyService);
+            StudyEnvironmentSurvey newConfig = studyEnvironmentSurveyService.create(config.cleanForCopying());
+            newConfig.setSurvey(config.getSurvey());
+            destEnv.getConfiguredSurveys().add(newConfig);
+            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), newConfig, surveyService);
+            eventService.publishSurveyPublishedEvent(destPortalEnvId, destEnv.getId(), newConfig.getSurvey());
         }
         for(StudyEnvironmentSurvey config : listChange.removedItems()) {
             studyEnvironmentSurveyService.deactivate(config.getId());

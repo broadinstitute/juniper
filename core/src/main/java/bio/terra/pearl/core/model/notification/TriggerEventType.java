@@ -3,7 +3,7 @@ package bio.terra.pearl.core.model.notification;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitReceivedEvent;
 import bio.terra.pearl.core.service.kit.KitSentEvent;
-import bio.terra.pearl.core.service.survey.EnrolleeSurveyEvent;
+import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.BaseEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import bio.terra.pearl.core.service.workflow.PortalRegistrationEvent;
