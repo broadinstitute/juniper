@@ -98,6 +98,7 @@ export default function Navbar(props: NavbarProps) {
                 return (
                   <button key={index} className="dropdown-item" onClick={() => {
                     changeLanguage(lang.languageCode)
+                    portalEnv.reloadPortal()
                   }}>
                     {lang.languageName}
                   </button>
