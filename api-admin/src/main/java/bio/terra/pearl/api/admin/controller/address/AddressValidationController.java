@@ -21,9 +21,7 @@ public class AddressValidationController implements AddressValidationApi {
     this.objectMapper = objectMapper;
   }
 
-  /**
-   * Validates an address using either the stub or real client depending on configuration.
-   */
+  /** Validates an address using either the stub or real client depending on configuration. */
   @Override
   public ResponseEntity<Object> validate(Object body) {
     MailingAddress mailingAddress = objectMapper.convertValue(body, MailingAddress.class);

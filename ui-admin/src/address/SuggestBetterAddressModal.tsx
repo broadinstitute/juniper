@@ -30,7 +30,7 @@ export default function SuggestBetterAddressModal(
   const changes = findDifferencesBetweenObjects(inputtedAddress, improvedAddress)
     .filter(diff => !irrelevantFields.includes(diff.fieldName))
 
-  return <Modal show={true}>
+  return <Modal show={true} size={'lg'}>
     <Modal.Header>
       <Modal.Title>
         Is this the correct address?
@@ -38,8 +38,8 @@ export default function SuggestBetterAddressModal(
     </Modal.Header>
     <Modal.Body>
       <p>
-        Accept these improves to the address.
-        ${hasInferredComponents ? ' Some of these changes are required for a valid address.' : ''}
+        Please verify the improvements made to the address.
+        {hasInferredComponents ? ' Some of these changes are required for a valid address.' : ''}
       </p>
       <div className="border-start border-3 p-1 ps-2 border-info w-75 ms-4 mb-4"
         style={{ backgroundColor: '#f2f2f2' }}>

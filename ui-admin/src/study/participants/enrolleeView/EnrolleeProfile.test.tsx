@@ -125,7 +125,7 @@ test('shows error message on address validation', async () => {
   jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
   jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
     valid: false,
-    missingComponents: ['STREET_NAME']
+    invalidComponents: ['STREET_NAME']
   }))
 
   const studyEnvContext = mockStudyEnvContext()
@@ -145,15 +145,15 @@ test('shows error message on address validation', async () => {
   await userEvent.click(screen.getByText('Validate'))
 
   // starting part of the error
-  expect(screen.getByText('The address is missing the', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('could not be verified', { exact: false })).toBeInTheDocument()
 
   // makes the field red
   const streetClasses = screen.getByPlaceholderText('Street 1').className
   expect(streetClasses).toContain('is-invalid')
 
   const countryClasses = screen.getByPlaceholderText('Country').className
-  expect(countryClasses).not.toContain('is-invalid')
-  expect(countryClasses).not.toContain('is-valid')
+  expect(countryClasses.includes('is-invalid')).toBeFalsy()
+  expect(countryClasses.includes('is-valid')).toBeFalsy()
 })
 
 test('shows modal on improvable address validation', async () => {
@@ -187,7 +187,7 @@ test('shows modal on improvable address validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  expect(screen.getByText('We think there might be some improvements which could be made to your address',
+  expect(screen.getByText('Please verify the improvements made to the address',
     { exact: false })).toBeInTheDocument()
 })
 

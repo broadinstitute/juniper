@@ -1,5 +1,5 @@
 import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
-import { isNil } from 'lodash'
+import { isEmpty, isNil } from 'lodash'
 
 
 const FIELD_TO_ADDR_COMPONENTS : { [index: string]: AddressComponent[] } = {
@@ -34,7 +34,7 @@ export function isAddressFieldValid(
   }
 
   // not valid but no invalid component specified
-  if (!validation.valid && isNil(validation.invalidComponents)) {
+  if (!validation.valid && isEmpty(validation.invalidComponents)) {
     return false
   }
 
@@ -48,38 +48,48 @@ export function isAddressFieldValid(
   return true
 }
 
+
 /**
  * Creates a list of strings where each string is a simple explanation of the validation results, e.g.:
  * 'Address is missing the state field. Please fill it out and try again.'
  */
-export function explainAddressValidationResults(validation: AddressValidationResult | undefined) : string[] {
-  const out = []
+export function explainAddressValidationResults(
+  validation: AddressValidationResult | undefined
+): string[] {
+  const out: string[] = []
 
-  if (validation?.invalidComponents) {
-    const missingComponentNames = validation
-      .invalidComponents
-      .map(comp => ADDR_COMPONENT_TO_NAME[comp])
-      .map(val => val.toLowerCase())
-      .filter(val => !isNil(val))
+  if (!validation) {
+    return out
+  }
 
-    if (missingComponentNames.length > 0) {
-      if (missingComponentNames.length === 1) {
-        out.push(
-          `The address is missing the ${
+  const invalidComponents = validation.invalidComponents || []
+
+  const missingComponentNames = invalidComponents
+    .map(comp => ADDR_COMPONENT_TO_NAME[comp])
+    .map(val => val.toLowerCase())
+    .filter(val => !isNil(val))
+
+  if (missingComponentNames.length > 0) {
+    if (missingComponentNames.length === 1) {
+      out.push(
+        `The ${
             missingComponentNames[0]
-          }. Please add this information and try again.`)
-      } else {
-        out.push(
-          `The address is missing the ${
+        } field could not be verified. Please check and try again.`
+      )
+    } else {
+      out.push(
+        `The ${
             missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
           } and ${
             missingComponentNames[missingComponentNames.length - 1]
-          }. Please add this information and try again.`)
-      }
+        } fields could not be verified. Please check them and try again.`
+      )
     }
+  } else {
+    out.push(
+      `Your address could not be verified. Please verify that the information is correct and try again.`
+    )
   }
-
-  // todo: make better
 
   return out
 }

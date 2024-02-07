@@ -105,7 +105,7 @@ class AddressValidationClientStubTest extends BaseSpringBootTest {
         Assertions.assertEquals(result.getSuggestedAddress().getPostalCode(), "02142");
         Assertions.assertEquals(result.getSuggestedAddress().getCountry(), "USA");
 
-        Assertions.assertTrue(result.gethasInferredComponents());
+        Assertions.assertTrue(result.getHasInferredComponents());
     }
 
     @Test

@@ -6,10 +6,9 @@ import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class ConfigExtService {
@@ -21,10 +20,10 @@ public class ConfigExtService {
   private final AddressValidationConfig addressValidationConfig;
 
   public ConfigExtService(
-          B2CConfiguration b2CConfiguration,
-          ApplicationRoutingPaths applicationRoutingPaths,
-          LivePepperDSMClient.PepperDSMConfig pepperDSMConfig,
-          AddressValidationConfig addressValidationConfig) {
+      B2CConfiguration b2CConfiguration,
+      ApplicationRoutingPaths applicationRoutingPaths,
+      LivePepperDSMClient.PepperDSMConfig pepperDSMConfig,
+      AddressValidationConfig addressValidationConfig) {
     this.b2CConfiguration = b2CConfiguration;
     this.pepperDSMConfig = pepperDSMConfig;
     this.applicationRoutingPaths = applicationRoutingPaths;
@@ -67,22 +66,18 @@ public class ConfigExtService {
     }
     var configMap =
         Map.of(
-                "pepperDsmConfig",
-                Map.of(
-                        "useLiveDsm",
-                        pepperDSMConfig.useLiveDsm(),
-                        "secret",
-                        maskSecret(pepperDSMConfig.getSecret()),
-                        "issuerClaim",
-                        pepperDSMConfig.getIssuerClaim(),
-                        "basePath",
-                        pepperDSMConfig.getBasePath()),
-                "addressValidationConfig",
-                Map.of(
-                        "addressValidationClass",
-                        addressValidationConfig.getAddressValidationClass()
-                )
-        );
+            "pepperDsmConfig",
+            Map.of(
+                "useLiveDsm",
+                pepperDSMConfig.useLiveDsm(),
+                "secret",
+                maskSecret(pepperDSMConfig.getSecret()),
+                "issuerClaim",
+                pepperDSMConfig.getIssuerClaim(),
+                "basePath",
+                pepperDSMConfig.getBasePath()),
+            "addressValidationConfig",
+            Map.of("addressValidationClass", addressValidationConfig.getAddressValidationClass()));
     return configMap;
   }
 

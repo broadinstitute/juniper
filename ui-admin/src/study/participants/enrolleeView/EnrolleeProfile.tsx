@@ -1,20 +1,18 @@
 import React, { useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { AddressValidationResult, Enrollee, MailingAddress, Profile } from 'api/api'
+import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
-import { cloneDeep, isEmpty, isNil } from 'lodash'
+import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
 import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
-import LoadingSpinner from '../../../util/LoadingSpinner'
-import SuggestBetterAddressModal from '../../../address/SuggestBetterAddressModal'
-import { explainAddressValidationResults, isAddressFieldValid } from '@juniper/ui-core'
+import EditMailingAddress from '../../../address/EditMailingAddress'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -311,131 +309,10 @@ function EditMailingAddressRow(
     setMailingAddress: (update: MailingAddress) => void
   }
 ) {
-  const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
-  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
-  const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
-
-  const onFieldChange = (field: keyof MailingAddress, value: string) => {
-    if (!hasChangedSinceValidation.includes(field)) {
-      setHasChangedSinceValidation(val => val.concat([field]))
-    }
-
-    onMailingAddressFieldChange(field, value)
-  }
-
-  const validateAddress = () => {
-    doApiLoad(async () => {
-      const results = await Api.validateAddress(mailingAddress)
-      setAddressValidationResults(results)
-      setHasChangedSinceValidation([])
-    }, { setIsLoading: setIsLoadingValidation })
-  }
-
-  const formatClassName = (field: keyof MailingAddress) => {
-    if (!hasChangedSinceValidation.includes(field)
-      && addressValidationResults?.valid === true
-      && isNil(addressValidationResults.suggestedAddress)) {
-      return 'form-control is-valid'
-    }
-
-    if (!hasChangedSinceValidation.includes(field)
-      && !isAddressFieldValid(addressValidationResults, field, mailingAddress[field])) {
-      return 'form-control is-invalid'
-    }
-
-    return 'form-control'
-  }
-
-  const clearSuggestedAddress = () => {
-    setAddressValidationResults(val => {
-      return {
-        ...(val || {}), // technically it could be undefined but should be impossible when this is called
-        valid: true,
-        suggestedAddress: undefined
-      }
-    })
-  }
-
-
   return <FormRow title={title}>
-    <div className="">
-      <div className='row mb-2'>
-        <div className="col">
-          <input
-            className={formatClassName('street1')}
-            type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
-            onChange={e => onFieldChange('street1', e.target.value)}/>
-        </div>
-      </div>
-      <div className='row mb-2'>
-        <div className="col">
-          <input
-            className={formatClassName('street2')}
-            type="text" value={mailingAddress.street2 || ''}
-            placeholder={'Street 2'}
-            onChange={e => onFieldChange('street2', e.target.value)}/>
-        </div>
-      </div>
-      <div className='row mb-2'>
-        <div className="col">
-          <input
-            className={formatClassName('city')}
-            type="text" value={mailingAddress.city || ''}
-            placeholder={'City'}
-            onChange={e => onFieldChange('city', e.target.value)}/>
-        </div>
-        <div className='col'>
-          <input
-            className={formatClassName('state')}
-            type="text" value={mailingAddress.state || ''} placeholder={'State/Province'}
-            onChange={e => onFieldChange('state', e.target.value)}/>
-        </div>
-      </div>
-      <div className='row'>
-        <div className="col">
-          <input
-            className={formatClassName('postalCode')}
-            type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
-            onChange={e => onFieldChange('postalCode', e.target.value)}/>
-        </div>
-        <div className='col'>
-          <input
-            className={formatClassName('country')}
-            type="text" value={mailingAddress.country || ''} placeholder={'Country'}
-            onChange={e => onFieldChange('country', e.target.value)}/>
-        </div>
-      </div>
-      <LoadingSpinner isLoading={isLoadingValidation}>
-        <button className="btn btn-link" onClick={validateAddress}>Validate</button>
-      </LoadingSpinner>
-      {addressValidationResults?.suggestedAddress &&
-          <SuggestBetterAddressModal
-            inputtedAddress={mailingAddress}
-            improvedAddress={addressValidationResults.suggestedAddress}
-            hasInferredComponents={addressValidationResults.hasInferredComponents || false}
-            accept={() => {
-              if (addressValidationResults && addressValidationResults.suggestedAddress) {
-                setMailingAddress({
-                  ...mailingAddress,
-                  ...addressValidationResults.suggestedAddress
-                })
-              }
-              // since we saved the address, we should clear it
-              // from the address validation results so the modal
-              // goes away
-              clearSuggestedAddress()
-            }}
-            deny={() => {
-              clearSuggestedAddress()
-            }}
-            onDismiss={() => {
-              clearSuggestedAddress()
-            }}
-          />}
-      {!addressValidationResults?.valid && explainAddressValidationResults(addressValidationResults)
-        .map((explanation, idx) =>
-          <p key={idx} className="text-danger-emphasis">{explanation}</p>
-        )}
-    </div>
+    <EditMailingAddress
+      mailingAddress={mailingAddress}
+      onMailingAddressFieldChange={onMailingAddressFieldChange}
+      setMailingAddress={setMailingAddress}/>
   </FormRow>
 }
