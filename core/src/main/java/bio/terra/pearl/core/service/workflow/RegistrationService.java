@@ -46,7 +46,7 @@ public class RegistrationService {
     private ObjectMapper objectMapper;
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final String GOVERNED_USER_INDICATOR = "-proxied-";
+    private static final String GOVERNED_USER_INDICATOR = "%s-proxied-%s";
     private static final int LENGTH = 10;
     private final Random random = new SecureRandom();
 
@@ -140,8 +140,8 @@ public class RegistrationService {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
         ParticipantUser governedUser = new ParticipantUser();
         governedUser.setEnvironmentName(proxy.getEnvironmentName());
-        String guid = generateGUID(governedUser.getUsername(), proxy.getEnvironmentName());
-        String governedUserName = proxy.getUsername() + GOVERNED_USER_INDICATOR + guid;
+        String guid = generateGUID(proxy.getUsername(), proxy.getEnvironmentName());
+        String governedUserName = GOVERNED_USER_INDICATOR.formatted(proxy.getUsername(), guid);//a@b.com-proxied-guid
         governedUser.setUsername(governedUserName);
         governedUser = participantUserService.create(governedUser);
 
@@ -149,7 +149,11 @@ public class RegistrationService {
         ppUser.setPortalEnvironmentId(portalEnv.getId());
         ppUser.setParticipantUserId(governedUser.getId());
 
-        Profile profile = new Profile();
+        Profile profile =  Profile.builder()
+                .contactEmail(governedUser.getUsername())
+                .givenName(null)
+                .familyName(null)
+           .build();
         profile.setContactEmail(governedUser.getUsername());
         profile.setGivenName(null);
         profile.setFamilyName(null);

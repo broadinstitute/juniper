@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -217,12 +218,15 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee2.getShortcode(), notNullValue());
         Assertions.assertNotEquals(enrollee1.getShortcode(), enrollee2.getShortcode());
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), enrollee2.getParticipantUserId());
+        //participant user id for governed user and proxy user should differ
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
+        //assert that the proxy wasn't enrolled
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).size(), 2);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getEnrolleeId(), enrollee1.getId());
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(1).getEnrolleeId(), enrollee2.getId());
+        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId());
+        Assertions.assertEquals(proxyEnrolleeRelations.size(), 2);
+        Assertions.assertEquals(proxyEnrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(proxyEnrolleeRelations.get(0).getEnrolleeId(), enrollee1.getId());
+        Assertions.assertEquals(proxyEnrolleeRelations.get(1).getEnrolleeId(), enrollee2.getId());
         Assertions.assertEquals(enrolleeService.findByStudyEnvironment(studyEnv.getId()).size(), 2);
         Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee1)));
         Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee2)));

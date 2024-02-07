@@ -44,7 +44,6 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
         RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
                 portalEnv.getEnvironmentName(), proxyUsername, null);
 
-
         RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(portalShortcode,
                 result.participantUser());
         Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUsername));

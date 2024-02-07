@@ -88,10 +88,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                 "study_environment_id", studyEnvironmentId);
     }
 
-    public Optional<Enrollee> findByEnrolleeId(UUID enrolleeId) {
-        return findByProperty("id", enrolleeId);
-    }
-
     public Optional<Enrollee> findByEnrolleeId(UUID userId, UUID enrolleeId) {
         return findByTwoProperties("participant_user_id", userId, "id", enrolleeId);
     }
