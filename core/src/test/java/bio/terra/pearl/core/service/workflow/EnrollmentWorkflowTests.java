@@ -69,8 +69,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null, false);
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, false);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
         assertThat(enrollee.getParticipantUserId(), equalTo(userBundle.user().getId()));
@@ -109,8 +109,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null, false);
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,studyEnv.getEnvironmentName(), studyShortcode,
+                userBundle.user(), userBundle.ppUser(), null, false);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(hubResponse.getProfile(), notNullValue());
         // Because the study environment had a consent attached, a consent task should be created on enrollment
@@ -173,8 +173,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
         Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
@@ -207,11 +207,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse hubResponse1 = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+        HubResponse hubResponse1 = enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                 null, true);
 
-        HubResponse hubResponse2 = enrollmentService.enroll(portalShortcode, userBundle.user(), userBundle.ppUser(),
-                studyEnv.getEnvironmentName(), studyShortcode, null, true);
+        HubResponse hubResponse2 = enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                 null, true);
         Enrollee enrollee1 = hubResponse1.getEnrollee();
         Enrollee enrollee2 = hubResponse2.getEnrollee();
         assertThat(enrollee1.getShortcode(), notNullValue());

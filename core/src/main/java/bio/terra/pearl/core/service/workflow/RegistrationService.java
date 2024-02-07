@@ -11,7 +11,7 @@ import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.ParticipantUtilService;
+import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class RegistrationService {
     private SurveyService surveyService;
-    private ParticipantUtilService participantUtilService;
+    private RandomUtilService randomUtilService;
     private PortalEnvironmentService portalEnvService;
     private PreregistrationResponseDao preregistrationResponseDao;
     private AnswerProcessingService answerProcessingService;
@@ -45,9 +45,9 @@ public class RegistrationService {
     private EventService eventService;
     private ObjectMapper objectMapper;
 
-    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final String GOVERNED_USER_INDICATOR = "%s-proxied-%s";
-    private static final int LENGTH = 10;
+    private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
+    private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
     private final Random random = new SecureRandom();
 
     public RegistrationService(SurveyService surveyService,
@@ -57,7 +57,7 @@ public class RegistrationService {
                                ParticipantUserService participantUserService,
                                PortalParticipantUserService portalParticipantUserService,
                                EventService eventService, ObjectMapper objectMapper,
-                               ParticipantUtilService participantUtilService) {
+                               RandomUtilService randomUtilService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -66,7 +66,7 @@ public class RegistrationService {
         this.portalParticipantUserService = portalParticipantUserService;
         this.eventService = eventService;
         this.objectMapper = objectMapper;
-        this.participantUtilService = participantUtilService;
+        this.randomUtilService = randomUtilService;
     }
 
     /**
@@ -120,10 +120,11 @@ public class RegistrationService {
         ppUser.setPortalEnvironmentId(portalEnv.getId());
         ppUser.setParticipantUserId(user.getId());
 
-        Profile profile = new Profile();
-        profile.setContactEmail(info.getEmail());
-        profile.setGivenName(info.getFirstName());
-        profile.setFamilyName(info.getLastName());
+        Profile profile =  Profile.builder()
+                .contactEmail(info.getEmail())
+                .givenName(info.getFirstName())
+                .familyName(info.getLastName())
+                .build();
         ppUser.setProfile(profile);
 
         ppUser = portalParticipantUserService.create(ppUser);
@@ -140,30 +141,27 @@ public class RegistrationService {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
         ParticipantUser governedUser = new ParticipantUser();
         governedUser.setEnvironmentName(proxy.getEnvironmentName());
-        String guid = generateGUID(proxy.getUsername(), proxy.getEnvironmentName());
-        String governedUserName = GOVERNED_USER_INDICATOR.formatted(proxy.getUsername(), guid);//a@b.com-proxied-guid
+        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxy.getUsername(), proxy.getEnvironmentName());
+        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxy.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
         governedUser.setUsername(governedUserName);
         governedUser = participantUserService.create(governedUser);
 
-        PortalParticipantUser ppUser = new PortalParticipantUser();
-        ppUser.setPortalEnvironmentId(portalEnv.getId());
-        ppUser.setParticipantUserId(governedUser.getId());
+        PortalParticipantUser governedPpUser = new PortalParticipantUser();
+        governedPpUser.setPortalEnvironmentId(portalEnv.getId());
+        governedPpUser.setParticipantUserId(governedUser.getId());
 
-        Profile profile =  Profile.builder()
+        Profile governedProfile =  Profile.builder()
                 .contactEmail(governedUser.getUsername())
                 .givenName(null)
                 .familyName(null)
            .build();
-        profile.setContactEmail(governedUser.getUsername());
-        profile.setGivenName(null);
-        profile.setFamilyName(null);
-        ppUser.setProfile(profile);
+        governedPpUser.setProfile(governedProfile);
 
-        ppUser = portalParticipantUserService.create(ppUser);
+        governedPpUser = portalParticipantUserService.create(governedPpUser);
 
-        eventService.publishPortalRegistrationEvent(governedUser, ppUser, portalEnv);
+        eventService.publishPortalRegistrationEvent(governedUser, governedPpUser, portalEnv);
         log.info("Governed user registration: userId: {}, portal: {}", governedUser.getId(), portalShortcode);
-        return new RegistrationResult(governedUser, ppUser);
+        return new RegistrationResult(governedUser, governedPpUser);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {
@@ -181,10 +179,10 @@ public class RegistrationService {
         return preRegResponse;
     }
 
-    public String generateGUID(String userName, EnvironmentName environmentName) {
-        String guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS);
-        while(!participantUserService.findOne(userName + guid, environmentName).isEmpty()){
-            guid = participantUtilService.generateSecureRandomString(LENGTH, CHARACTERS);
+    public String generateGovernedUsernameSuffix(String proxyUserName, EnvironmentName environmentName) {
+        String guid = randomUtilService.generateSecureRandomString(GOVERNED_EMAIL_SUFFIX_LENGTH, GOVERNED_USERNAME_SUFFIX_CHARS);
+        while(!participantUserService.findOne(proxyUserName + guid, environmentName).isEmpty()){
+            guid = randomUtilService.generateSecureRandomString(GOVERNED_EMAIL_SUFFIX_LENGTH, GOVERNED_USERNAME_SUFFIX_CHARS);
         }
         return guid;
     }

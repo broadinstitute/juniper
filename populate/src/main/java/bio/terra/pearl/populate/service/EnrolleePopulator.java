@@ -379,8 +379,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         );
 
         if (popDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(context.getPortalShortcode(), attachedUser, ppUser,
-                    attachedEnv.getEnvironmentName(), context.getStudyShortcode(), popDto.getPreEnrollmentResponseId(), false);
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(context.getPortalShortcode(), attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
+                    attachedUser, ppUser, popDto.getPreEnrollmentResponseId(), false);
             enrollee = hubResponse.getEnrollee();
             tasks = hubResponse.getTasks();
             // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually

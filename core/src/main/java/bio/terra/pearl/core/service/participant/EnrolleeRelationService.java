@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.participant;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -8,9 +7,12 @@ import java.util.stream.Collectors;
 import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.CrudService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleeRelationService extends CrudService<EnrolleeRelation, EnrolleeRelationDao> {
@@ -38,5 +40,18 @@ public class EnrolleeRelationService extends CrudService<EnrolleeRelation, Enrol
 
     public boolean isProxy(EnrolleeRelation enrolleeRelation){
         return RelationshipType.PROXY.equals(enrolleeRelation.getRelationshipType());
+    }
+
+    @Transactional
+    public Enrollee newGovernedEnrolleeCreationRecord(Enrollee enrollee, Portal portal, ParticipantUser proxyUser) {
+        EnrolleeRelation enrolleeRelation = EnrolleeRelation.builder()
+                .enrolleeId(enrollee.getId())
+                .participantUserId(proxyUser.getId())
+                .relationshipType(RelationshipType.PROXY)
+                .portalId(portal.getId())
+                .build();
+
+        this.create(enrolleeRelation);
+        return  enrollee;
     }
 }

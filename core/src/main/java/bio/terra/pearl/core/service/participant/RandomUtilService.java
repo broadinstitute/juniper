@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ParticipantUtilService {
+public class RandomUtilService {
 
     private final SecureRandom secureRandom;
 
-    public ParticipantUtilService() {
+    public RandomUtilService() {
         this.secureRandom = new SecureRandom();
     }
 
@@ -21,8 +21,6 @@ public class ParticipantUtilService {
                 .ints(length, 0, allowedChars.length())
                 .mapToObj(i -> allowedChars.charAt(i))
                 .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
-
-
         return finalString;
     }
 }

@@ -1,20 +1,19 @@
 package bio.terra.pearl.core.service.participant;
 
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class ParticipantUtilServiceTest {
+class RandomUtilServiceTest {
 
-    private ParticipantUtilService participantUtilService = new ParticipantUtilService();
+    private RandomUtilService randomUtilService = new RandomUtilService();
 
     @Test
     void generateSecureRandomString_Success() {
         String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int length = 10;
 
-        String result = participantUtilService.generateSecureRandomString(length, allowedChars);
+        String result = randomUtilService.generateSecureRandomString(length, allowedChars);
         assertNotNull(result);
         assertEquals(10, result.length());
         for(char c: allowedChars.toCharArray()){
@@ -27,7 +26,7 @@ class ParticipantUtilServiceTest {
         String allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         int length = -1;
 
-        assertThrows(IllegalArgumentException.class, () -> participantUtilService.generateSecureRandomString(length, allowedChars));
+        assertThrows(IllegalArgumentException.class, () -> randomUtilService.generateSecureRandomString(length, allowedChars));
     }
 
 }
