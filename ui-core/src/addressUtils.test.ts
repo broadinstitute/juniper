@@ -49,7 +49,7 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The address is missing the country. Please add this information and try again.'
+      'The country field could not be verified. Please check and try again.'
     )
   })
   it('explains two missing components', () => {
@@ -63,7 +63,7 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The address is missing the country and city. Please add this information and try again.'
+      'The country and city fields could not be verified. Please check them and try again.'
     )
   })
   it('explains n missing components', () => {
@@ -77,7 +77,20 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The address is missing the country, city and unit number. Please add this information and try again.'
+      'The country, city and unit number fields could not be verified. Please check them and try again.'
+    )
+  })
+  it('explains 0 missing components', () => {
+    const validation: AddressValidationResult = {
+      valid: false
+    }
+
+    const explanation = explainAddressValidationResults(validation)
+
+    expect(explanation).toHaveLength(1)
+
+    expect(explanation[0]).toEqual(
+      'The address could not be verified. Please verify that the information is correct and try again.'
     )
   })
 })

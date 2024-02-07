@@ -87,7 +87,7 @@ export function explainAddressValidationResults(
     }
   } else {
     out.push(
-      `Your address could not be verified. Please verify that the information is correct and try again.`
+      `The address could not be verified. Please verify that the information is correct and try again.`
     )
   }
 
