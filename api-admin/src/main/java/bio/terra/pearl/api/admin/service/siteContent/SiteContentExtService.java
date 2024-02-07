@@ -33,7 +33,7 @@ public class SiteContentExtService {
 
   public SiteContent create(
       String portalShortcode, String stableId, SiteContent siteContent, AdminUser user) {
-    //TODO: Updating content for one version shouldn't destroy all other localizedSiteContents
+    // TODO: Updating content for one version shouldn't destroy all other localizedSiteContents
     //      We should carry forward the existing and unmodified localizedSiteContents
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     siteContent.setPortalId(portal.getId());

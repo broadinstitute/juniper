@@ -79,7 +79,8 @@ export default function Navbar(props: NavbarProps) {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
-          <li className="nav-item dropdown d-flex flex-column">
+          { /* if there are no language options, don't render the language dropdown */ }
+          { languageOptions.length > 0 && <li className="nav-item dropdown d-flex flex-column">
             <button
               aria-expanded="false"
               aria-label={user.username}
@@ -105,7 +106,7 @@ export default function Navbar(props: NavbarProps) {
                 )
               })}
             </div>
-          </li>
+          </li> }
           {user.isAnonymous && (
             <>
               <li className="nav-item">

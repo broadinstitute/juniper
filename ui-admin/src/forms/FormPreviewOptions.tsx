@@ -71,7 +71,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
         Show all questions, regardless of their visibility. Use this to review questions that
         would be hidden by survey branching logic.
       </p>
-      <div className="form-group">
+      { localeOptions.length > 0 && <><div className="form-group">
         <label htmlFor={selectLocaleInputId}>Language</label>
         <Select
           inputId={selectLocaleInputId}
@@ -85,7 +85,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
       <p className="form-text">
         The language to use when rendering the form. If the language is not supported for this form, the default
           language for the form will be used.
-      </p>
+      </p></> }
     </div>
   )
 }

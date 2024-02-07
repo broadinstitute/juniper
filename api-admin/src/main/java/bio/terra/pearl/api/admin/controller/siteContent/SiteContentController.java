@@ -35,7 +35,7 @@ public class SiteContentController implements SiteContentApi {
   public ResponseEntity<Object> get(
       String portalShortcode, String stableId, Integer version, String language) {
     if (StringUtils.isBlank(language)) {
-      //TODO: Switch this to use the default portal language
+      // TODO: Switch this to use the default portal language
       language = "en";
     }
     AdminUser adminUser = authUtilService.requireAdminUser(request);
