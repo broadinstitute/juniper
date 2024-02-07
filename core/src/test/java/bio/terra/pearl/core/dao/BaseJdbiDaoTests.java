@@ -25,10 +25,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 
 public class BaseJdbiDaoTests extends BaseSpringBootTest {
     /** we use the portalDao to test base capability since it doesn't have any required foreign keys */
@@ -141,5 +138,25 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
 
         // Assert
         assertThat(foundPortals, contains(portal1, portal2));
+    }
+
+    @Test
+    @Transactional
+    public void testFindByPropertyCollectionPreserveOrder(TestInfo testInfo) {
+        Portal portalA = portalDao.create(portalFactory.builder(getTestName(testInfo)).shortcode("A_Portal").build());
+        Portal portalB = portalDao.create(portalFactory.builder(getTestName(testInfo)).shortcode("B_Portal").build());
+        Portal portalC = portalDao.create(portalFactory.builder(getTestName(testInfo)).shortcode("C_Portal").build());
+
+        List<String> shortcodeList = List.of("A_Portal","B_Portal","C_Portal");
+        List<Portal> portals = portalDao.findAllByPropertyCollectionPreserveOrder("shortcode", shortcodeList);
+        assertThat(portals.stream().map(Portal::getShortcode).toList(), equalTo(shortcodeList));
+
+        shortcodeList = List.of("C_Portal","B_Portal", "A_Portal");
+        portals = portalDao.findAllByPropertyCollectionPreserveOrder("shortcode", shortcodeList);
+        assertThat(portals.stream().map(Portal::getShortcode).toList(), equalTo(shortcodeList));
+
+        shortcodeList = List.of("B_Portal", "A_Portal");
+        portals = portalDao.findAllByPropertyCollectionPreserveOrder("shortcode", shortcodeList);
+        assertThat(portals.stream().map(Portal::getShortcode).toList(), equalTo(shortcodeList));
     }
 }

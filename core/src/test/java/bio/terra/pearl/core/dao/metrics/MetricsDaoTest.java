@@ -102,12 +102,12 @@ public class MetricsDaoTest extends BaseSpringBootTest {
       PortalParticipantUser ppUser2 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee2, portalEnv);
     Enrollee enrollee3 = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
       PortalParticipantUser ppUser3 = portalParticipantUserFactory.buildPersisted(getTestName(info), enrollee3, portalEnv);
-      ParticipantTask task = surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee1, ppUser1);
+      ParticipantTask task = surveyTaskDispatcher.buildTask( enrollee1, ppUser1, studyEnvSurvey, studyEnvSurvey.getSurvey());
     task.setStatus(TaskStatus.COMPLETE);
       DataAuditInfo auditInfo = getAuditInfo(info);
     participantTaskService.create(task, auditInfo);
-    participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee2, ppUser2), auditInfo);
-    ParticipantTask taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(studyEnvSurvey, studyEnvSurvey.getSurvey(), enrollee3, ppUser3), auditInfo);
+    participantTaskService.create(surveyTaskDispatcher.buildTask(enrollee2, ppUser2, studyEnvSurvey, studyEnvSurvey.getSurvey()), auditInfo);
+    ParticipantTask taskToUpdate = participantTaskService.create(surveyTaskDispatcher.buildTask(enrollee3, ppUser3, studyEnvSurvey, studyEnvSurvey.getSurvey()), auditInfo);
 
       List<BasicMetricDatum> rangeMetrics = metricsDao.studyRequiredSurveyCompletions(studyEnv.getId(), new TimeRange(null, null));
     assertThat(rangeMetrics, hasSize(1));

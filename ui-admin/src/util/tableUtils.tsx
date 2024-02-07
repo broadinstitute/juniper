@@ -374,7 +374,8 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
  * such as headers, rows, etc. All configuration properties are optional.
  */
 export type BasicTableConfig = {
-  filterable?: boolean
+  filterable?: boolean,
+  tableClass?: string
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
@@ -385,7 +386,7 @@ const defaultBasicTableConfig = {
 /** helper function for simple table layouts */
 export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
-  return <table className="table table-striped">
+  return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
     <thead>
       <tr>
         {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
