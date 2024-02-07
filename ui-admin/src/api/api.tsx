@@ -829,13 +829,9 @@ export default {
   },
 
   async validateAddress(
-    address: MailingAddress, sessionId?: string
+    address: MailingAddress
   ): Promise<AddressValidationResult> {
-    const params = new URLSearchParams({})
-    if (sessionId) {
-      params.set('sessionId', sessionId)
-    }
-    const url = `${baseAddressUrl()}/validate?${params}`
+    const url = `${baseAddressUrl()}/validate`
     const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(address),

@@ -14,12 +14,14 @@ export default function SuggestBetterAddressModal(
   {
     inputtedAddress,
     improvedAddress,
+    hasInferredComponents,
     accept,
     deny,
     onDismiss
   } : {
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
+    hasInferredComponents: boolean,
     accept: () => void,
     deny: () => void,
     onDismiss: () => void
@@ -31,12 +33,13 @@ export default function SuggestBetterAddressModal(
   return <Modal show={true}>
     <Modal.Header>
       <Modal.Title>
-        Is this your address?
+        Is this the correct address?
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <p>
-        We think there might be some improvements which could be made to your address. Would you like to accept them?
+        Accept these improves to the address.
+        ${hasInferredComponents ? ' Some of these changes are required for a valid address.' : ''}
       </p>
       <div className="border-start border-3 p-1 ps-2 border-info w-75 ms-4 mb-4"
         style={{ backgroundColor: '#f2f2f2' }}>

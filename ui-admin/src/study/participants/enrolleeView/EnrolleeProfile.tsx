@@ -325,7 +325,7 @@ function EditMailingAddressRow(
 
   const validateAddress = () => {
     doApiLoad(async () => {
-      const results = await Api.validateAddress(mailingAddress, addressValidationResults?.sessionId)
+      const results = await Api.validateAddress(mailingAddress)
       setAddressValidationResults(results)
       setHasChangedSinceValidation([])
     }, { setIsLoading: setIsLoadingValidation })
@@ -412,6 +412,7 @@ function EditMailingAddressRow(
           <SuggestBetterAddressModal
             inputtedAddress={mailingAddress}
             improvedAddress={addressValidationResults.suggestedAddress}
+            hasInferredComponents={addressValidationResults.hasInferredComponents || false}
             accept={() => {
               if (addressValidationResults && addressValidationResults.suggestedAddress) {
                 setMailingAddress({

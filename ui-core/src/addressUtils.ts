@@ -27,21 +27,20 @@ const ADDR_COMPONENT_TO_NAME = {
  * Determines whether a field should be in an error state based on the address validation result.
  */
 export function isAddressFieldValid(
-  validation: AddressValidationResult | undefined, field: keyof MailingAddress, val: string
+  validation: AddressValidationResult | undefined, field: keyof MailingAddress
 ) : boolean {
-  if (validation?.valid) {
+  if (!validation || validation.valid) {
     return true
   }
 
-  if (validation?.unresolvedTokens) {
-    if (validation?.unresolvedTokens?.some(token => val?.includes(token))) {
-      return false
-    }
+  // not valid but no invalid component specified
+  if (!validation.valid && isNil(validation.invalidComponents)) {
+    return false
   }
 
-  if (validation?.missingComponents) {
+  if (validation.invalidComponents) {
     const addrComponents = FIELD_TO_ADDR_COMPONENTS[field]
-    if (addrComponents?.some(comp => validation?.missingComponents?.includes(comp))) {
+    if (addrComponents?.some(comp => validation?.invalidComponents?.includes(comp))) {
       return false
     }
   }
@@ -56,9 +55,9 @@ export function isAddressFieldValid(
 export function explainAddressValidationResults(validation: AddressValidationResult | undefined) : string[] {
   const out = []
 
-  if (validation?.missingComponents) {
+  if (validation?.invalidComponents) {
     const missingComponentNames = validation
-      .missingComponents
+      .invalidComponents
       .map(comp => ADDR_COMPONENT_TO_NAME[comp])
       .map(val => val.toLowerCase())
       .filter(val => !isNil(val))
@@ -80,22 +79,7 @@ export function explainAddressValidationResults(validation: AddressValidationRes
     }
   }
 
-  if (validation?.unresolvedTokens && validation.unresolvedTokens.length > 0) {
-    const unresolvedTokens = validation.unresolvedTokens
-    if (unresolvedTokens.length === 1) {
-      out.push(
-        `A part of the address ('${
-          unresolvedTokens[0]
-        }') could not be verified. Please correct it and try again.`)
-    } else {
-      out.push(
-        `Some parts of the address ('${
-          unresolvedTokens.slice(0, unresolvedTokens.length - 1).join(',\' \'')
-        }' and '${
-          unresolvedTokens[unresolvedTokens.length - 1]
-        }') could not be verified. Please correct them and try again.`)
-    }
-  }
+  // todo: make better
 
   return out
 }

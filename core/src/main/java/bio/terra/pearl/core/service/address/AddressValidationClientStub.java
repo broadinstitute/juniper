@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Component
 @Slf4j
@@ -18,10 +17,13 @@ public class AddressValidationClientStub implements AddressValidationClient {
 
     private static final String BAD_ADDRESS_INDICATOR = "BAD";
     private static final String IMPROVABLE_ADDRESS_INDICATOR = "IMPROVABLE";
+    private static final String INFERRED_ADDRESS_INDICATOR = "INFERRED";
     private static final String ERROR_INDICATOR = "ERROR";
+    private static final String VACANT_INDICATOR = "VACANT";
 
     /**
-     * Stubbed client allows you to test various possible states of address validation.
+     * Stubbed client allows you to test various possible states of address validation. In all cases, if you put
+     * "VACANT" in street1, the address will be considered vacant.
      * <br>
      * State 1: Invalid address
      * - Put the word "BAD" in street1, e.g. 123 Bad St, or leave it empty
@@ -33,6 +35,10 @@ public class AddressValidationClientStub implements AddressValidationClient {
      * - Put the word "IMPROVABLE" in street1, e.g. 415 IMPROVABLE St
      * - Returns valid = true with a suggested address of 415 Main St
      * <br>
+     * State 3: Required inference
+     * - Put the word "INFERENCE" in street1, e.g. 415 INFERENCE St
+     * - Returns valid = true with a suggested address of 415 Main St
+     * <br>
      * State 3: Server side error
      * - Put the word "ERROR" in street1, e.g. 500 ERROR Lane
      * - Throws an AddressValidationException
@@ -42,15 +48,14 @@ public class AddressValidationClientStub implements AddressValidationClient {
      * - All other addresses will default to valid
      */
     @Override
-    public AddressValidationResultDto validate(UUID sessionId, MailingAddress address) throws AddressValidationException {
+    public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
 
         if (address.getStreet1().contains(BAD_ADDRESS_INDICATOR) || address.getStreet1().isEmpty()) {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
-                    .missingComponents(findMissingComponents(address))
-                    .unresolvedTokens(List.of(StringUtils.split(address.getStreet1())))
-                    .sessionId(sessionId)
+                    .invalidComponents(findMissingComponents(address))
+                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
                     .build();
         } else if (address.getStreet1().contains(IMPROVABLE_ADDRESS_INDICATOR)) {
             return AddressValidationResultDto
@@ -67,7 +72,26 @@ public class AddressValidationClientStub implements AddressValidationClient {
                                     .createdAt(null)
                                     .lastUpdatedAt(null)
                                     .build())
-                    .sessionId(sessionId)
+                    .hasInferredComponents(false)
+                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                    .build();
+        } else if (address.getStreet1().contains(INFERRED_ADDRESS_INDICATOR)) {
+            return AddressValidationResultDto
+                    .builder()
+                    .valid(true)
+                    .suggestedAddress(
+                            MailingAddress
+                                    .builder()
+                                    .street1("415 Main St")
+                                    .city("Cambridge")
+                                    .state("MA")
+                                    .country("USA")
+                                    .postalCode("02142")
+                                    .createdAt(null)
+                                    .lastUpdatedAt(null)
+                                    .build())
+                    .hasInferredComponents(true)
+                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
                     .build();
         } else if (address.getStreet1().contains(ERROR_INDICATOR)) {
             int errorCode = 500;
@@ -83,11 +107,13 @@ public class AddressValidationClientStub implements AddressValidationClient {
             throw new AddressValidationException(
                     "Failed to run address validation",
                     HttpStatusCode.valueOf(errorCode));
-
         }
 
-
-        return AddressValidationResultDto.builder().valid(true).sessionId(sessionId).build();
+        return AddressValidationResultDto
+                .builder()
+                .valid(true)
+                .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                .build();
     }
 
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {

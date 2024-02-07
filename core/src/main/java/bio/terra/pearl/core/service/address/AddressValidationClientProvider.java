@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.address;
 
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -14,8 +13,9 @@ public class AddressValidationClientProvider {
     private final Map<String, AddressValidationClient> clientMap = new HashMap<>();
     private final String defaultClient;
 
-    public AddressValidationClientProvider(Environment env, AddressValidationClientStub stubbedClient) {
-        defaultClient = env.getProperty("env.addrValidation.addrValidationClientClass");
+    public AddressValidationClientProvider(AddressValidationConfig addressValidationConfig,
+                                           AddressValidationClientStub stubbedClient) {
+        defaultClient = addressValidationConfig.getAddressValidationClass();
 
         clientMap.put("AddressValidationClientStub", stubbedClient);
     }

@@ -13,7 +13,7 @@ export type AddressComponent = 'HOUSE_NUMBER' | 'STREET_NAME' | 'STREET_TYPE' | 
 export type AddressValidationResult = {
   valid: boolean,
   suggestedAddress?: MailingAddress,
-  missingComponents?: AddressComponent[],
-  unresolvedTokens?: string[],
-  sessionId?: string
+  invalidComponents?: AddressComponent[],
+  hasInferredComponents?: boolean,
+  vacant?: boolean
 }
