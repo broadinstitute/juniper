@@ -11,15 +11,27 @@ jest.mock('@tanstack/react-virtual', () => ({
 
 describe('MultipleCombobox', () => {
   test('renders a combobox', () => {
-    //Arrange
     render(<MultipleComboBox<ItemValue>
       id={'test'}
       itemToString={(item: ItemValue) => item.text}
       placeholder={'Select an option'}
       options={[]} />)
 
-    //Assert
     expect(screen.getByRole('combobox')).toBeInTheDocument()
     expect(screen.getByLabelText('toggle menu')).toBeInTheDocument()
+  })
+
+  test('fetches combobox choices by url', () => {
+    const mockResponse = new Response(JSON.stringify(['optionA', 'optionB']))
+    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(mockResponse))
+
+    render(<MultipleComboBox<ItemValue>
+      id={'test'}
+      itemToString={(item: ItemValue) => item.text}
+      placeholder={'Select an option'}
+      options={[]}
+      choicesByUrl={'/test.json'} />)
+
+    expect(fetchSpy).toHaveBeenCalledWith('/test.json')
   })
 })

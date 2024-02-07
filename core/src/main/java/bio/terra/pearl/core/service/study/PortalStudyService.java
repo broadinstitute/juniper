@@ -42,4 +42,9 @@ public class PortalStudyService extends ImmutableEntityService<PortalStudy, Port
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
     }
+
+    @Transactional
+    public void deleteByStudyId(UUID studyId) {
+        dao.deleteByStudyId(studyId);
+    }
 }

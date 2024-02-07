@@ -179,7 +179,6 @@ export type MedicationsQuestion = TitledQuestion & {
   type: 'medications'
 }
 
-
 export type HtmlQuestion = BaseQuestion & {
   type: 'html',
   html: string

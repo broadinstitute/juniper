@@ -1,0 +1,174 @@
+{
+  "title": "",
+  "sectionDtos": [{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "title": "Ayúdenos a comprender el riesgo de enfermedades cardiovasculares entre las poblaciones del sur de Asia.",
+      "blurb": "La demostración Heart Study estudia la información genética y de salud de los asiáticos del sur que viven en los Estados Unidos para prevenir y controlar mejor el riesgo de enfermedades cardiovasculares.",
+      "fullWidth": true,
+      "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
+      "imagePosition": "right",
+      "background": "linear-gradient(270deg, #8587E3 0%, #95ADCC 100%)",
+      "buttons": [
+        {
+          "text": "Conviértase en participante",
+          "type": "join",
+          "studyShortcode": "ourheart"
+        }
+      ],
+      "logos": [
+        {
+          "cleanFileName": "broad_logo.png",
+          "version": 1,
+          "alt": "Logotipo del Instituto Broad",
+          "style": { "height": "40px" }
+        },
+        {
+          "cleanFileName": "mgh_logo.png",
+          "version": 1,
+          "alt": "Logotipo del Hospital General de Massachusetts",
+          "style": { "height": "40px" }
+        }
+      ]
+    }
+  },{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "background": "#F2F2F2",
+      "title": "¿Por qué es necesario esto?",
+      "blurb": "Aunque los asiáticos del sur representan el 23% de la población mundial y tienen el doble de riesgo de enfermedad cardiovascular en comparación con los europeos, están **significativamente subrepresentados en estudios e investigaciones genéticas**. Los conjuntos de datos disponibles son limitados en tamaño, diversidad cultural y representación diaspórica.",
+      "fullWidth": true,
+      "buttons": [
+        {"text": "Antecedentes científicos",
+          "type": "internalLink",
+          "href": "/background"
+        }
+      ],
+      "imagePosition": "left",
+      "imageWidthPercentage": 34,
+      "image": {"cleanFileName": "idea_bulb.png", "version": 1, "alt": "", "className": "p-3 p-lg-5"}
+    }
+  },{
+    "sectionType": "HERO_WITH_IMAGE",
+    "sectionConfigJson": {
+      "title": "¿Quién puede participar?",
+      "blurb": "Cualquier persona que:\n\n* Viva en los Estados Unidos\n * Mayor de 18 años\n * Cómodo completando encuestas en inglés\n * De ascendencia del sur de Asia*\n\n&nbsp;\n\n*Ascendencia auto-identificada de uno de los países del sur de Asia definidos por la Asociación Americana del Corazón como Bangladesh, Bután, India, las Maldivas, Nepal, Pakistán y Sri Lanka.",
+      "fullWidth": true,
+      "buttons": [
+        {
+          "text": "Comience",
+          "type": "join",
+          "studyShortcode": "ourheart"
+        }
+      ],
+      "image": {"cleanFileName": "people_laughing.jpg", "alt": "", "version": 1},
+      "imagePosition": "left"
+    }
+  },{
+    "sectionType": "STEP_OVERVIEW",
+    "sectionConfigJson": {
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+      "title": "Cómo participar",
+      "steps": [{
+        "image": {"cleanFileName": "step_1.png", "version": 1, "alt": ""},
+        "duration": "1 minuto",
+        "blurb": "Responda preguntas de elegibilidad y cree su cuenta."
+      },{
+        "image": {"cleanFileName": "step_2.png", "version": 1, "alt": ""},
+        "duration": "5 minutos",
+        "blurb": "Lea el formulario de consentimiento y decida si desea unirse al estudio."
+      },{
+        "image": {"cleanFileName": "step_3.png", "version": 1, "alt": ""},
+        "duration": "25-45 minutos",
+        "blurb": "Responda preguntas sobre usted y su salud."
+      },{
+        "image": {"cleanFileName": "step_4.png", "version": 1, "alt": ""},
+        "duration": "5 minutos",
+        "blurb": "Proporcione su dirección para que podamos enviar un kit de donación de muestra."
+      }],
+      "buttons": [
+        {
+          "text": "Más información sobre la participación",
+          "type": "internalLink",
+          "href": "/participation"
+        }
+      ]
+    }
+  },{
+    "sectionType": "FAQ",
+    "anchorRef": "faq",
+    "sectionConfigJson": {
+      "backgroundColor": "#f2f2f2",
+      "blurb": "Si su pregunta no se responde a continuación, puede llamar o enviar un correo electrónico a nuestro personal de estudio al **[617&#x2011;724&#x2011;1240](tel:+16177241240)** o **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+      "showToggleAllButton": false,
+      "questions": [
+        {
+          "question": "¿Qué es el estudio OurHealth?",
+          "answer": "OurHealth es una iniciativa de investigación sin fines de lucro que permite a las personas que se identifican como del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
+        },
+        {
+          "question": "¿Por qué estamos haciendo este estudio?",
+          "answer": "Las personas de ascendencia del sur de Asia están desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentados en estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo que aumenta la enfermedad cardiovascular, lo que destaca una conciencia pero una brecha de conocimiento distinta. OurHealth tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
+        },
+        {
+          "question": "¿Cómo puedo participar?",
+          "answer": "Si tiene más de 18 años, vive en los Estados Unidos y se identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/ourheart/join)."
+        },
+        {
+          "question": "¿Qué hace OurHealth con los datos?",
+          "answer": "Los datos recopilados se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos."
+        }]
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "backgroundColor": "#F2F2F2",
+      "buttons": [{
+        "type": "internalLink",
+        "text": "Más preguntas frecuentes",
+        "href": "/faq"
+      }]
+    }
+  },{
+    "sectionType": "SOCIAL_MEDIA",
+    "sectionConfigJson": {
+      "twitterHandle": "ourhealthstudy",
+      "instagramHandle": "ourhealthstudy",
+      "facebookHandle": "ourhealthstudy",
+      "paddingBottom": 0
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "title": "Manténgase informado",
+      "blurb": "Regístrese en nuestra lista de correo o síganos en las redes sociales.",
+      "buttons": [{
+        "type": "mailingList",
+        "text": "Unirse a la lista de correo"
+      }]
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "image": {
+        "cleanFileName": "globe_and_hearts.png",
+        "version": 1,
+        "alt": ""
+      },
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
+      "paddingBottom": 0
+    }
+  },{
+    "sectionType": "HERO_CENTERED",
+    "sectionConfigJson": {
+      "title": "Usted puede marcar la diferencia",
+      "blurb": "Con su ayuda, los pacientes pueden ser la fuerza impulsora detrás de la investigación cardiovascular transformadora.",
+      "buttons": [{
+        "type": "join",
+        "text": "Únase a OurHealth",
+        "studyShortcode": "ourheart"
+      }],
+      "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+    }
+  }]
+}

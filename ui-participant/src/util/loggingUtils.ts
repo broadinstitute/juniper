@@ -1,4 +1,7 @@
 import Api, { getEnvSpec, LogEvent } from 'api/api'
+// we use flatted here since we don't control the objects we're serializing, and so we need to be more
+// robust to circular references than JSON.stringify
+import stringify from 'json-stringify-safe'
 
 /** listens to all window errors and logs them  */
 const setupErrorLogger = () => {
@@ -14,7 +17,7 @@ export const logVitals = (metric: object) => {
   log({
     eventType: 'STATS',
     eventName: 'webvitals',
-    eventDetail: JSON.stringify(metric)
+    eventDetail: stringify(metric)
   })
 }
 
@@ -36,10 +39,19 @@ export type ErrorEventDetail = {
 
 /** specific helper function for logging an error */
 export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
-  Api.log({
-    eventType: 'ERROR',
-    eventName: 'jserror',
-    eventDetail: `${JSON.stringify(detail)}\n${window.location.href}`,
-    stackTrace
-  })
+  if (detail.message.startsWith('Object.hasOwn is not')) {
+    alert('Your browser does not support this page. ' +
+      'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
+    log({
+      eventType: 'INFO', eventName: 'js-compatibility',
+      eventDetail: detail.message
+    })
+  } else {
+    log({
+      eventType: 'ERROR',
+      eventName: 'jserror',
+      eventDetail: `${stringify(detail)}\n${window.location.href}`,
+      stackTrace
+    })
+  }
 }

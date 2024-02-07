@@ -1,0 +1,85 @@
+{
+  "itemType": "INTERNAL",
+  "text": "About Us",
+  "htmlPageDto": {
+    "title": "DEV_About Us",
+    "path": "aboutUs",
+    "sectionDtos": [{
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "hands_banner.jpg",
+          "version": 1,
+          "alt": ""
+        }
+      }
+    },{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "backgroundColor": "#F2F2F2",
+        "title": "DEV_About OurHealth",
+        "blurbAlign": "left",
+        "blurb": "DEV_OurHealth was founded by cardiologists and genetic researchers at Massachusetts General Hospital and the Broad Institute of MIT and Harvard who are dedicated to discovering the underlying genetic factors for cardiovascular disease risk in South Asian populations.\n\nParticipants drive forward research by providing information about their lifestyle habits and medical history in the form of survey responses, as well as by donating biological samples for study and analysis. From these data, the OurHealth study team sequences and analyzes the data to discover genomic trends that may explain the high cardiovascular disease risk in South Asians.\n\nSouth Asians have historically been underrepresented in genetic studies, a disparity the OurHealth team hopes to address with your help!",
+        "buttons": [{
+          "text": "DEV_Learn More About Participation",
+          "type": "internalLink",
+          "href": "/participation"
+        }]
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "**DEV_We are dedicated to discovering the underlying genetic factors** for cardiometabolic disease risk in South Asian populations.",
+        "image": { "cleanFileName": "discover.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
+        "imagePosition": "left",
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "DEV_Background",
+        "background": "#F2F2F2",
+        "blurbAlign": "left",
+        "blurb": "DEV_Around the world, many studies have described a higher rate of diabetes and cardiovascular disease among South Asians. In particular, higher rates of obesity, insulin resistance, and diabetes appear to drive increased risk for cardiovascular disease. However, the challenge for researchers is that the majority of these studies are neither genetic studies nor clinical trials. Read more about the scientific background here:",
+        "buttons": [{
+          "text": "DEV_Scientific Background",
+          "type": "internalLink",
+          "href": "/background"
+        }]
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "blurbAlign": "left",
+        "blurb": "DEV_The OurHealth investigators, led by Co-Principal Investigators Dr. Pradeep Natarajan and Dr. Amit V. Khera, have extensive experience in studying the genetic basis of cardiovascular and cardiometabolic disease. By closely studying the contribution of genetics towards heart and metabolic disease in individuals of South Asian ancestry living outside the United States, they have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diasporic representation.\n\nHelp us close this gap! [Join the OurHealth study](/studies/ourheart/join) and contribute to improving South Asian heart health."
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "**DEV_South Asian datasets remain limited** in size, cultural diversity, and diasporic representation.",
+        "image": { "cleanFileName": "engage.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
+        "imagePosition": "left",
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    },
+      {
+        "sectionType": "PHOTO_BLURB_GRID",
+        "sectionConfigJson": {
+          "background": "#F2F2F2",
+          "subGrids": [{
+            "title": "DEV_Core Team",
+            "photoBios": [{
+              "name": "Anthony Philippakis",
+              "title": "MD, PhD",
+              "blurb": "DEV_Chief Data Officer, Broad Institute\n\nCo-Director Schmidt Center, Broad Institute\n\nVenture Partner, GV",
+              "image": { "cleanFileName": "anthony_philippakis.jpg", "version": 1}
+            }]
+          }]
+        }
+      }]
+  }
+}

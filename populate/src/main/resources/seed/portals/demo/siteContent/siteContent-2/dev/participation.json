@@ -1,0 +1,73 @@
+{
+  "itemType": "INTERNAL",
+  "text": "Participation",
+  "htmlPageDto": {
+    "title": "DEV_Participation",
+    "path": "participation",
+    "sectionDtos": [{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "DEV_Participation",
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    },{
+      "sectionType": "PARTICIPATION_DETAIL",
+      "sectionConfigJson": {
+        "title": "DEV_Provide consent for the study",
+        "timeIndication": "5 minutes",
+        "stepNumberText": "STEP 1",
+        "blurb": "DEV_This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later.",
+        "image": { "cleanFileName": "consent_step.png", "version": 1, "alt": "" },
+        "imagePosition": "right"
+      }
+    },{
+      "sectionType": "PARTICIPATION_DETAIL",
+      "sectionConfigJson": {
+        "title": "DEV_Respond to surveys about yourself",
+        "timeIndication": "45+ minutes",
+        "stepNumberText": "STEP 2",
+        "blurb": "DEV_In these surveys, we ask questions about your background, lifestyle, and medical history, among others. Your progress will be automatically saved so please feel free to finish at your convenience.",
+        "background": "#F2F2F2",
+        "image": { "cleanFileName": "survey_step.png", "version": 1, "alt": "" },
+        "imagePosition": "left"
+      }
+    },{
+      "sectionType": "PARTICIPATION_DETAIL",
+      "sectionConfigJson": {
+        "title": "DEV_Provide a saliva sample (possible)",
+        "timeIndication": "10 minutes",
+        "stepNumberText": "STEP 3",
+        "blurb": "DEV_We may send you a kit to collect a sample of your saliva. We will study these samples to help improve our understanding of cardiovascular risk.",
+        "image": { "cleanFileName": "saliva_step.png", "version": 1, "alt": "" },
+        "imagePosition": "right"
+      }
+    },{
+      "sectionType": "PARTICIPATION_DETAIL",
+      "sectionConfigJson": {
+        "title": "DEV_Stay involved",
+        "timeIndication": "Ongoing",
+        "stepNumberText": "STEP 4",
+        "blurb": "DEV_Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
+        "image": { "cleanFileName": "engagement_step.png", "version": 1, "alt": "" },
+        "imagePosition": "left",
+        "background": "#F2F2F2",
+        "actionButton": {
+          "type": "mailingList",
+          "text": "DEV_Join Mailing List"
+        }
+      }
+    },{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "DEV_You can make an impact",
+        "blurb": "DEV_With your help, patients can be the driving force behind transformative cardiovascular research.",
+        "buttons": [{
+          "type": "join",
+          "text": "DEV_Join OurHealth",
+          "studyShortcode": "ourheart"
+        }],
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    }]
+  }
+}
