@@ -1,4 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { PortalLanguage } from '@juniper/ui-core'
+import Select from 'react-select'
+import useReactSingleSelect from '../util/react-select-utils'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
@@ -8,12 +11,30 @@ type FormPreviewOptions = {
 
 type FormPreviewOptionsProps = {
   value: FormPreviewOptions
+  supportedLanguages: PortalLanguage[]
   onChange: (newValue: FormPreviewOptions) => void
 }
 
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
-  const { value, onChange } = props
+  const { value, supportedLanguages, onChange } = props
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage>()
+
+  useEffect(() => {
+    onChange({ ...value, locale: selectedLanguage?.languageCode ?? 'default' })
+  }, [selectedLanguage])
+
+  const {
+    onChange: localeOnChange, options: localeOptions,
+    selectedOption: selectedLocaleOption, selectInputId: selectLocaleInputId
+  } =
+    useReactSingleSelect(
+      supportedLanguages,
+      (language: PortalLanguage) => ({ label: language.languageName, value: language }),
+      setSelectedLanguage,
+      selectedLanguage
+    )
+
   return (
     <div>
       <div className="form-check">
@@ -53,19 +74,16 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
         would be hidden by survey branching logic.
       </p>
       <div className="form-group">
-        <label htmlFor="form-preview-locale">Locale</label>
-        <input
-          className="form-control"
-          id="form-preview-locale"
-          value={value.locale}
-          onChange={e => {
-            onChange({ ...value, locale: e.target.value })
-          }}
-        />
+        <label htmlFor={selectLocaleInputId}>Language</label>
+        <Select
+          inputId={selectLocaleInputId}
+          options={localeOptions}
+          value={selectedLocaleOption}
+          onChange={localeOnChange}/>
       </div>
       <p className="form-text">
-        The locale code to use when rendering the form. If the locale is not supported, the
-        form will default to English.
+        The language to use when rendering the form. If the language is not supported for this form, the default
+          language for the form will be used.
       </p>
     </div>
   )

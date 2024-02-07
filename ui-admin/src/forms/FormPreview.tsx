@@ -1,18 +1,19 @@
 import React, { useState } from 'react'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { FormContent, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
+import { FormContent, PortalLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 
 type FormPreviewProps = {
   formContent: FormContent
+  supportedLanguages: PortalLanguage[]
 }
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormPreview = (props: FormPreviewProps) => {
-  const { formContent } = props
+  const { formContent, supportedLanguages } = props
 
   const [surveyModel] = useState(() => {
     const model = surveyJSModelFromFormContent(formContent)
@@ -30,6 +31,7 @@ export const FormPreview = (props: FormPreviewProps) => {
       </div>
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
+          supportedLanguages={supportedLanguages}
           value={{
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,

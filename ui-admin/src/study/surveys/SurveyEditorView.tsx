@@ -185,6 +185,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         visibleVersionPreviews={visibleVersionPreviews}
+        supportedLanguages={studyEnvContext.portal.portalLanguages}
         readOnly={readOnly}
         onChange={(newValidationErrors, newContent) => {
           if (isEmpty(newValidationErrors)) {

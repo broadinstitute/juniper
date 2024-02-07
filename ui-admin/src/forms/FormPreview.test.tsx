@@ -32,7 +32,7 @@ const formContent: FormContent = {
 describe('FormPreview', () => {
   it('renders form', () => {
     // Act
-    render(<FormPreview formContent={formContent} />)
+    render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
     // Assert
     screen.getAllByLabelText('First name')
@@ -71,7 +71,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
         // Act
         // Attempt to advance to the next page.
@@ -87,7 +87,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
         // Act
         // Turn off 'Ignore validation'
@@ -138,7 +138,7 @@ describe('FormPreview', () => {
       }
 
       it('defaults to English', () => {
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} supportedLanguages={[]} />)
 
         screen.getByText('First name')
         screen.getByText('Last name')
@@ -147,7 +147,7 @@ describe('FormPreview', () => {
       it('can switch to Spanish', async () => {
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} supportedLanguages={[]} />)
 
         const localeInput = screen.getByLabelText('Locale')
         await act(() => user.type(localeInput, 'es'))
@@ -183,7 +183,7 @@ describe('FormPreview', () => {
 
       it('hides invisible questions by default', () => {
         // Act
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
 
         // Assert
         expect(screen.queryAllByLabelText('Hidden question')).toHaveLength(0)
@@ -193,7 +193,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
 
         // Act
         // Show invisible questions

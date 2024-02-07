@@ -22,7 +22,6 @@ public class PortalLanguageDao extends BaseJdbiDao<PortalLanguage> {
     }
 
     public List<PortalLanguage> findByPortalId(UUID portalId) {
-        System.out.println("findByPortalId: " + portalId.toString());
         return findAllByProperty("portal_id", portalId);
     }
 }

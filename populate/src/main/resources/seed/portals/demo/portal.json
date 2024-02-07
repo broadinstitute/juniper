@@ -10,9 +10,8 @@
   "portalLanguages": [{
     "languageName": "English",
     "languageCode": "en"
-  },
-  {
-    "languageName": "Spanish",
+  }, {
+    "languageName": "Español",
     "languageCode": "es"
   },{
     "languageName": "Developer",

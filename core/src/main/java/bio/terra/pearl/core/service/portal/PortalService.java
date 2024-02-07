@@ -14,8 +14,6 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -33,8 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
     private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
     private SurveyService surveyService;
@@ -42,32 +38,27 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private SiteContentService siteContentService;
     private EmailTemplateService emailTemplateService;
     private SiteImageService siteImageService;
-    //todo replace this with a service
-    private PortalLanguageDao portalLanguageDao;
+    private PortalLanguageService portalLanguageService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
-                         ParticipantUserService participantUserService,
-                         PortalParticipantUserService portalParticipantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
                          SiteImageService siteImageService,
-                         PortalLanguageDao portalLanguageDao) {
+                         PortalLanguageService portalLanguageService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
-        this.participantUserService = participantUserService;
-        this.portalParticipantUserService = portalParticipantUserService;
         this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
         this.siteImageService = siteImageService;
-        this.portalLanguageDao = portalLanguageDao;
+        this.portalLanguageService = portalLanguageService;
     }
 
     @Transactional
@@ -76,7 +67,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         Portal newPortal = dao.create(portal);
         portal.getPortalLanguages().forEach(portalLanguage -> {
             portalLanguage.setPortalId(newPortal.getId());
-            portalLanguageDao.create(portalLanguage);
+            portalLanguageService.create(portalLanguage);
         });
 
         portal.getPortalEnvironments().forEach(portalEnvironment -> {
@@ -138,7 +129,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                         PortalStudy.builder().study(study).build()
                 );
             }
-            List<PortalLanguage> portalLanguages = portalLanguageDao.findByPortalId(portal.getId());
+            List<PortalLanguage> portalLanguages = portalLanguageService.findByPortalId(portal.getId());
             portal.getPortalLanguages().addAll(portalLanguages);
         });
         return portalOpt;
