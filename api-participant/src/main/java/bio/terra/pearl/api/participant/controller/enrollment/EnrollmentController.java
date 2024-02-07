@@ -44,13 +44,13 @@ public class EnrollmentController implements EnrollmentApi {
         authUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
     HubResponse hubResponse =
         enrollmentService.enroll(
-                portalShortcode,
-                environmentName,
-                studyShortcode,
-                user,
-                portalWithPortalUser.ppUser(),
-                preEnrollResponseId,
-                isProxy);
+            portalShortcode,
+            environmentName,
+            studyShortcode,
+            user,
+            portalWithPortalUser.ppUser(),
+            preEnrollResponseId,
+            isProxy);
 
     return ResponseEntity.ok(hubResponse);
   }
