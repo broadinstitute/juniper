@@ -78,8 +78,7 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
     columns,
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true
+    getSortedRowModel: getSortedRowModel()
   })
 
   const assignSurveyTasks = () => {

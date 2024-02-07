@@ -65,8 +65,7 @@ export default function MailingListView({ portalContext, portalEnv }:
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    debugTable: true
+    onRowSelectionChange: setRowSelection
   })
 
   /** download selected contacts as a csv */
