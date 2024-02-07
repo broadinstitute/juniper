@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { PortalLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from '../util/react-select-utils'
@@ -18,11 +18,9 @@ type FormPreviewOptionsProps = {
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage>()
-
-  useEffect(() => {
-    onChange({ ...value, locale: selectedLanguage?.languageCode ?? 'default' })
-  }, [selectedLanguage])
+  //TODO: Right now we'll default to English, but in the future we will set this to the default portal language
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(supportedLanguages.find(lang =>
+    lang.languageCode === 'en'))
 
   const {
     onChange: localeOnChange, options: localeOptions,
@@ -79,7 +77,10 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           inputId={selectLocaleInputId}
           options={localeOptions}
           value={selectedLocaleOption}
-          onChange={localeOnChange}/>
+          onChange={locale => {
+            localeOnChange(locale)
+            onChange({ ...value, locale: locale?.value.languageCode ?? 'default' })
+          }}/>
       </div>
       <p className="form-text">
         The language to use when rendering the form. If the language is not supported for this form, the default

@@ -29,7 +29,7 @@ const landingPageOption = { label: 'Landing page', value: 'Landing page' }
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
-  loadSiteContent: (stableId: string, version: number) => void
+  loadSiteContent: (stableId: string, version: number, language?: string) => void
   createNewVersion: (content: SiteContent) => void
   switchToVersion: (id: string, stableId: string, version: number) => void
   portalEnvContext: PortalEnvContext
@@ -43,8 +43,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const initialContent = siteContent
-  const defaultLanguage = portalEnvContext.portal.portalLanguages.find(lang =>
-    lang.languageCode === siteContent.defaultLanguage)
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
@@ -55,8 +53,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(defaultLanguage)
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === defaultLanguage?.languageCode)
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(
+    portalEnvContext.portal.portalLanguages.find(f =>
+      workingContent.localizedSiteContents[0]?.language === f.languageCode))
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
   if (!localContent) {
     return <div>no content for language {selectedLanguage?.languageName}</div>
@@ -244,9 +244,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               }}/>
           </div>
           <div className="ms-2" style={{ width: 200 }}>
-            <Select options={languageOptions} value={selectedLanguageOption}
+            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
-              onChange={languageOnChange}/>
+              onChange={e => {
+                languageOnChange(e)
+                loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
+              }}/>
           </div>
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}

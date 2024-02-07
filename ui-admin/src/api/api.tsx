@@ -737,9 +737,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSiteContent(portalShortcode: string, stableId: string, version: number) {
-    const response = await fetch(`${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`,
-      this.getGetInit())
+  async getSiteContent(portalShortcode: string, stableId: string, version: number, language?: string) {
+    const baseUrl = `${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`
+    const response = await fetch(language ? `${baseUrl}?language=${language}` : baseUrl, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
