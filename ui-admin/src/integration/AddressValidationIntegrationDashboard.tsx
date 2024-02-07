@@ -18,7 +18,8 @@ export default function AddressValidationIntegrationDashboard() {
     <div className="mt-4">
       <h3 className="h5">Config</h3>
       {!isLoading && <dl>
-        <dt>addressValidationClass</dt><dd>{config?.addressValidationConfig.addressValidationClass}</dd>
+        <dt>addrValidationClientClass</dt>
+        <dd>{config?.addrValidationConfig.addrValidationClientClass}</dd>
       </dl>}
       {isLoading && <LoadingSpinner/>}
     </div>

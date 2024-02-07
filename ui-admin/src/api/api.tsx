@@ -366,7 +366,7 @@ export type KitRequestListResponse = {
 
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
-  addressValidationConfig: Record<string, string>
+  addrValidationConfig: Record<string, string>
 }
 
 export type ParticipantTaskUpdateDto = {

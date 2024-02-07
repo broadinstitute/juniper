@@ -10,6 +10,7 @@ import Api from '../api/api'
 import { isNil } from 'lodash'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
+import { useUser } from '../user/UserProvider'
 
 /**
  * Editable mailing address component with connection to the backend
@@ -27,6 +28,8 @@ export default function EditMailingAddress(
   const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
   const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
+
+  const user = useUser()
 
   const onFieldChange = (field: keyof MailingAddress, value: string) => {
     if (!hasChangedSinceValidation.includes(field)) {
@@ -123,9 +126,10 @@ export default function EditMailingAddress(
           onChange={e => onFieldChange('country', e.target.value)}/>
       </div>
     </div>
-    <LoadingSpinner isLoading={isLoadingValidation}>
+    {user.user.superuser && <LoadingSpinner isLoading={isLoadingValidation}>
       <button className="btn btn-link" onClick={validateAddress}>Validate</button>
     </LoadingSpinner>
+    }
     {addressValidationResults?.suggestedAddress &&
           <SuggestBetterAddressModal
             inputtedAddress={mailingAddress}

@@ -76,8 +76,9 @@ public class ConfigExtService {
                 pepperDSMConfig.getIssuerClaim(),
                 "basePath",
                 pepperDSMConfig.getBasePath()),
-            "addressValidationConfig",
-            Map.of("addressValidationClass", addressValidationConfig.getAddressValidationClass()));
+            "addrValidationConfig",
+            Map.of(
+                "addrValidationClientClass", addressValidationConfig.getAddressValidationClass()));
     return configMap;
   }
 
