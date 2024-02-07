@@ -125,6 +125,11 @@ public class StudyPublishingService {
         }
         for(VersionedConfigChange change : listChange.changedItems()) {
             PublishingUtils.applyChangesToVersionedConfig(change, studyEnvironmentSurveyService, surveyService, destEnv.getEnvironmentName());
+            if (change.documentChange().isChanged()) {
+                // if this is a change of version (as opposed to a reordering), then publish an event
+                Survey survey = surveyService.findByStableId(change.documentChange().newStableId(), change.documentChange().newVersion()).orElseThrow();
+                eventService.publishSurveyPublishedEvent(destPortalEnvId, destEnv.getId(), survey);
+            }
         }
         return destEnv.getConfiguredSurveys();
     }

@@ -60,7 +60,8 @@ public class SurveyTaskDispatcher {
 
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
                                         UUID studyEnvironmentId,
-                                        ResponsibleEntity responsibleEntity) {
+                                        AdminUser operator,
+                                        String systemProcess) {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
@@ -86,10 +87,12 @@ public class SurveyTaskDispatcher {
             }
             if (taskOpt.isPresent()) {
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
+                        .responsibleAdminUserId(operator != null ? operator.getId() : null)
+                        .systemProcess(systemProcess)
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
-                auditInfo.setResponsibleEntity(responsibleEntity);
+
                 ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
                 log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
                         task.getTaskType(), task.getTargetStableId());
@@ -137,17 +140,28 @@ public class SurveyTaskDispatcher {
         }
     }
 
+
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void updateSurveyTaskVersions(SurveyPublishedEvent event) {
         if (event.getSurvey().isAutoUpdateTaskAssignments()) {
-            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY,
-                    event.getSurvey().getStableId(),
-                    event.getSurvey().getVersion(),
-                    )
-
+            ParticipantTaskUpdateDto updateDto = new ParticipantTaskUpdateDto(
+                    List.of(new ParticipantTaskUpdateDto.TaskUpdateSpec(
+                            event.getSurvey().getStableId(),
+                            event.getSurvey().getVersion(),
+                            null,
+                            null)),
+                    null,
+                    true
+                    );
+            participantTaskService.updateTasks(
+                    event.getStudyEnvironmentId(),
+                    updateDto,
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "updateSurveyTaskVersions"))
+            );
         }
     }
+
 
 
     /** builds any survey tasks that the enrollee is eligible for that are not duplicates

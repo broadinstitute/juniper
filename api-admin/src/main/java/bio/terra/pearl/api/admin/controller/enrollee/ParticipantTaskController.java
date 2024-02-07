@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.ParticipantTaskApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.ParticipantTaskExtService;
-import bio.terra.pearl.api.admin.service.enrollee.ParticipantTaskUpdateDto;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;

@@ -130,6 +130,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         SurveyPublishedEvent event = SurveyPublishedEvent.builder()
                         .studyEnvironmentId(studyEnvId)
                 .surveyId(survey.getId())
+                .survey(survey)
                 .portalEnvironmentId(portalEnvId)
                 .eventClass(EventClass.SURVEY_PUBLISHED_EVENT)
                 .build();
@@ -167,6 +168,8 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
     public List<Event> findAllEventsByEnrolleeId(UUID enrolleeId) {
         return dao.findAllByEnrolleeId(enrolleeId);
     }
+
+    public List<Event> findAllByStudyEnvAndClass(UUID studyEnvId, EventClass eventClass) { return dao.findAllByStudyEnvAndClass(studyEnvId, eventClass);}
 
     /**
      * adds ruleData to the event, and also ensures the enrollee task list is refreshed

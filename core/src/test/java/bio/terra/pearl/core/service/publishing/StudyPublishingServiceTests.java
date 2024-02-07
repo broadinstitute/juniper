@@ -14,12 +14,15 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.Event;
+import bio.terra.pearl.core.model.workflow.EventClass;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,6 +93,10 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         List<StudyEnvironmentSurvey> liveSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(liveEnv.getId());
         assertThat(liveSurveys, hasSize(1));
         assertThat(liveSurveys.get(0).getSurveyId(), equalTo(survey.getId()));
+        //confirm that an event was published
+        List<Event> events = eventService.findAllByStudyEnvAndClass(liveEnv.getId(), EventClass.SURVEY_PUBLISHED_EVENT);
+        assertThat(events, hasSize(1));
+
 
         // now test that we can publish a removal
         studyEnvironmentSurveyService.deactivate(surveyConfig.getId());
@@ -151,4 +158,6 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     private PortalDiffService portalDiffService;
     @Autowired
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    @Autowired
+    private EventService eventService;
 }
