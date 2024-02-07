@@ -7,6 +7,17 @@
   "siteContentFiles": [
     "siteContent/siteContent-1/siteContent.json", "siteContent/siteContent-2/siteContent.json"
   ],
+  "portalLanguages": [{
+    "languageName": "English",
+    "languageCode": "en"
+  },
+  {
+    "languageName": "Spanish",
+    "languageCode": "es"
+  },{
+    "languageName": "Developer",
+    "languageCode": "dev"
+  }],
   "portalEnvironmentDtos": [
     {
       "environmentName": "sandbox",

@@ -30,7 +30,8 @@ test('renders a copy link', () => {
     shortcode: 'foo',
     name: 'testPortal',
     portalStudies: [],
-    portalEnvironments: [sandboxEnv, irbEnv]
+    portalEnvironments: [sandboxEnv, irbEnv],
+    portalLanguages: []
   }
   const { RoutedComponent } = setupRouterTest(<PortalEnvPublishControl
     portal={portal} studyShortcode={'bar'}  destEnvName={'irb'} />)

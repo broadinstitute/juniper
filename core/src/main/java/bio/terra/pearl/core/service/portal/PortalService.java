@@ -74,6 +74,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     @Override
     public Portal create(Portal portal) {
         Portal newPortal = dao.create(portal);
+        portal.getPortalLanguages().forEach(portalLanguage -> {
+            portalLanguage.setPortalId(newPortal.getId());
+            portalLanguageDao.create(portalLanguage);
+        });
 
         portal.getPortalEnvironments().forEach(portalEnvironment -> {
             portalEnvironment.setPortalId(newPortal.getId());
