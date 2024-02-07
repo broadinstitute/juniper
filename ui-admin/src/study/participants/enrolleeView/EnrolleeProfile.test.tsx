@@ -9,6 +9,18 @@ import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 
+jest.mock('user/UserProvider', () => {
+  return {
+    __esModule: true,
+    useUser: () => {
+      return {
+        user: {
+          superuser: true
+        }
+      }
+    }
+  }
+})
 
 test('renders enrollee profile', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
@@ -119,6 +131,7 @@ test('profile update is sent appropriately with justification', async () => {
       }
     )
 })
+
 
 test('shows error message on address validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
