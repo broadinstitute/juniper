@@ -43,6 +43,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const initialContent = siteContent
+  //TODO: Eventually, we'll read the default language from the portal
+  const defaultLanguage = { languageCode: 'en', languageName: 'English' }
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
@@ -55,7 +57,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(
     portalEnvContext.portal.portalLanguages.find(f =>
-      workingContent.localizedSiteContents[0]?.language === f.languageCode))
+      workingContent.localizedSiteContents[0]?.language === f.languageCode) || defaultLanguage)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
   if (!localContent) {
@@ -243,14 +245,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
-          <div className="ms-2" style={{ width: 200 }}>
+          { portalEnvContext.portal.portalLanguages.length > 0 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={e => {
                 languageOnChange(e)
                 loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
               }}/>
-          </div>
+          </div> }
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}
