@@ -18,7 +18,7 @@ type FormPreviewOptionsProps = {
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
-  //TODO (JN-863): Use the default language
+  // TODO (JN-863): Use the default language
   const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(supportedLanguages.find(lang =>
     lang.languageCode === 'en'))
 

@@ -43,7 +43,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const initialContent = siteContent
-  //TODO (JN-863): Use the default language
+  // TODO (JN-863): Use the default language
   const defaultLanguage = { languageCode: 'en', languageName: 'English' }
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)

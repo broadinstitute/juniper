@@ -31,7 +31,7 @@ public class PortalController implements PortalApi {
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String envName, String language) {
     if (StringUtils.isBlank(language)) {
-      //TODO (JN-863): Use the default language
+      // TODO (JN-863): Use the default language
       language = "en";
     }
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
