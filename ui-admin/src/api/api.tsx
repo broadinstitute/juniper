@@ -752,7 +752,7 @@ export default {
     const response = await fetch(language ? `${baseUrl}?language=${language}` : baseUrl, this.getGetInit())
     return await this.processJsonResponse(response)
   },
-    
+
   async assignParticipantTasksToEnrollees(studyEnvParams: StudyEnvParams,
     assignDto: ParticipantTaskAssignDto): Promise<ParticipantTask[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/participantTasks/assignToEnrollees`
