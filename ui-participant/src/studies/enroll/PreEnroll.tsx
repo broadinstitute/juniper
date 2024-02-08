@@ -24,10 +24,11 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
-    selectedLanguage,
     undefined,
     { extraCssClasses: { container: 'my-0' } }
   )
+
+  surveyModel.locale = selectedLanguage
 
   /** submit the form */
   function handleComplete() {

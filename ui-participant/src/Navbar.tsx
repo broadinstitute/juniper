@@ -83,7 +83,7 @@ export default function Navbar(props: NavbarProps) {
             languageOptions={languageOptions}
             selectedLanguage={selectedLanguage}
             changeLanguage={changeLanguage}
-            reloadPortal={() => window.location.reload()}
+            reloadPortal={portalEnv.reloadPortal}
           />
           {user.isAnonymous && (
             <>

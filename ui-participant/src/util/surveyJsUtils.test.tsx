@@ -33,7 +33,7 @@ beforeEach(() => {
 /** does nothing except render a survey using the hooks from surveyJsUtils */
 function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm | Survey, profile?: Profile }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, 'en', profile)
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, profile)
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}

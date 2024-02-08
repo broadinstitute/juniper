@@ -46,7 +46,7 @@ beforeEach(() => {
 const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Survey}) => {
   const pager: PageNumberControl = { pageNumber: pageNum, updatePageNumber: () => 1 }
   const { surveyModel } = useSurveyJSModel(survey, null,
-    () => 1, pager, 'en', { sexAtBirth: 'male' })
+    () => 1, pager, { sexAtBirth: 'male' })
   return <SurveyFooter survey={survey} surveyModel={surveyModel}/>
 }
 

@@ -91,7 +91,7 @@ export function RawSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
-    onComplete, pager, selectedLanguage, enrollee.profile)
+    onComplete, pager, enrollee.profile)
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
