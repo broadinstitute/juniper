@@ -58,6 +58,13 @@ export default function FormOptions({
               })}
             /> Required
           </label>
+          <label className="form-label d-block">
+            <input type="checkbox" checked={(workingForm as Survey).assignToAllNewEnrollees}
+              onChange={e => updateWorkingForm({
+                ...workingForm, assignToAllNewEnrollees: e.target.checked
+              })}
+            /> Auto-assign to new participants
+          </label>
           <div className="fw-light fst-italic">
             Note that you need to  &quot;Save&quot; the survey
             for any changes to options to take effect.

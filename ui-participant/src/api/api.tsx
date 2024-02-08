@@ -137,7 +137,7 @@ export type Config = {
 
 export type LogEvent = {
   id?: string,
-  eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS'
+  eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS' | 'INFO'
   eventName: string,
   stackTrace?: string,
   eventDetail?: string,

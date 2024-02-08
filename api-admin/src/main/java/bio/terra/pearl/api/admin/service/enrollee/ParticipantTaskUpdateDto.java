@@ -16,7 +16,5 @@ public record ParticipantTaskUpdateDto(
       String targetStableId,
       int updateToVersion,
       Integer updateFromVersion,
-      boolean createForUnassigned, // create new tasks for enrollees not assigned to any version
-      // (assuming they are eligible)
       TaskStatus newStatus) {}
 }

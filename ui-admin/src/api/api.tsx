@@ -7,6 +7,7 @@ import {
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
+  ParticipantTaskType,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -375,6 +376,16 @@ export type ParticipantTaskUpdateDto = {
   updateAll: boolean // if true, the portalParticipantUserIds list will be ignored and all participants will be updated
 }
 
+export type ParticipantTaskAssignDto = {
+  taskType: ParticipantTaskType
+  targetStableId: string
+  targetAssignedVersion: number
+  enrolleeIds?: string[]
+  // if true, the enrolleeIds list will be ignored and tasks will be assigned to all enrollees
+  // not already having the task in the duplicate window
+  assignAllUnassigned: boolean
+}
+
 export type TaskUpdateSpec = {
   targetStableId: string
   updateToVersion: number
@@ -723,13 +734,24 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async updateParticipantTaskVersions(portalShortcode: string, studyShortcode: string,
-    envName: string, update: ParticipantTaskUpdateDto): Promise<ParticipantTask[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/participantTasks/updateAll`
+  async updateParticipantTaskVersions(studyEnvParams: StudyEnvParams,
+    update: ParticipantTaskUpdateDto): Promise<ParticipantTask[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/participantTasks/updateAll`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async assignParticipantTasksToEnrollees(studyEnvParams: StudyEnvParams,
+    assignDto: ParticipantTaskAssignDto): Promise<ParticipantTask[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/participantTasks/assignToEnrollees`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(assignDto)
     })
     return await this.processJsonResponse(response)
   },

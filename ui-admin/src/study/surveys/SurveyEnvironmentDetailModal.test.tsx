@@ -8,6 +8,8 @@ import {
 import { render, screen, waitFor } from '@testing-library/react'
 import Api from 'api/api'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
+import userEvent from '@testing-library/user-event'
+import { Store } from 'react-notifications-component'
 
 describe('SurveyEnvironmentDetailModal', () => {
   test('enables updating of participant versions', async () => {
@@ -45,5 +47,38 @@ describe('SurveyEnvironmentDetailModal', () => {
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
     // button should appear since there are participants assigned to version 1
     expect(screen.getByText('Update all to version 2')).toBeInTheDocument()
+  })
+
+  test('assigns all unassigned enrollees on button', async () => {
+    jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve(
+      [{
+        ...mockConfiguredSurvey(),
+        survey: {
+          ...mockSurvey(),
+          stableId: 'test1234',
+          version: 2
+        }
+      }]
+    ))
+    jest.spyOn(Store, 'addNotification').mockImplementation(jest.fn())
+    jest.spyOn(Api, 'findTasksForStableId').mockImplementation(() => Promise.resolve([]))
+    const assignSpy = jest.spyOn(Api, 'assignParticipantTasksToEnrollees').mockImplementation(() => Promise.resolve([]))
+
+    render(<SurveyEnvironmentDetailModal studyEnvParams={mockStudyEnvParams()}
+      stableId="test1234" onDismiss={jest.fn()} />)
+
+    await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
+
+    await userEvent.click(screen.getByText('Assign to sandbox participants'))
+    expect(assignSpy).toHaveBeenCalledWith({
+      envName: 'sandbox',
+      portalShortcode: 'foo',
+      studyShortcode: 'bar'
+    }, {
+      assignAllUnassigned: true,
+      targetAssignedVersion: 2,
+      targetStableId: 'test1234',
+      taskType: 'SURVEY'
+    })
   })
 })

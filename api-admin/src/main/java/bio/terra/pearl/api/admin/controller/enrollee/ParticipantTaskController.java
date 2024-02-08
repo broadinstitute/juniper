@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.service.enrollee.ParticipantTaskUpdateDto;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -41,6 +42,19 @@ public class ParticipantTaskController implements ParticipantTaskApi {
     List<ParticipantTask> participantTasks =
         participantTaskExtService.updateTasks(
             portalShortcode, studyShortcode, environmentName, updateDto, operator);
+    return ResponseEntity.ok(participantTasks);
+  }
+
+  @Override
+  public ResponseEntity<Object> assignToEnrollees(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    ParticipantTaskAssignDto assignDto =
+        objectMapper.convertValue(body, ParticipantTaskAssignDto.class);
+    List<ParticipantTask> participantTasks =
+        participantTaskExtService.assignToEnrollees(
+            portalShortcode, studyShortcode, environmentName, assignDto, operator);
     return ResponseEntity.ok(participantTasks);
   }
 

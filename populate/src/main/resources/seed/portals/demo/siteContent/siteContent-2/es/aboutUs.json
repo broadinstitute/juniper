@@ -1,0 +1,85 @@
+{
+  "itemType": "INTERNAL",
+  "text": "Sobre Nosotros",
+  "htmlPageDto": {
+    "title": "Sobre Nosotros",
+    "path": "aboutUs",
+    "sectionDtos": [{
+      "sectionType": "BANNER_IMAGE",
+      "sectionConfigJson": {
+        "image": {
+          "cleanFileName": "hands_banner.jpg",
+          "version": 1,
+          "alt": ""
+        }
+      }
+    },{
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "backgroundColor": "#F2F2F2",
+        "title": "Sobre OurHealth",
+        "blurbAlign": "left",
+        "blurb": "OurHealth fue fundado por cardiólogos e investigadores genéticos del Massachusetts General Hospital y el Broad Institute of MIT y Harvard que se dedican a descubrir los factores genéticos subyacentes para el riesgo de enfermedad cardiovascular en las poblaciones del sur de Asia.\n\nLos participantes impulsan la investigación proporcionando información sobre sus hábitos de vida y antecedentes médicos en forma de respuestas a encuestas, así como donando muestras biológicas para su estudio y análisis. A partir de estos datos, el equipo de estudio de OurHealth secuencia y analiza los datos para descubrir tendencias genómicas que puedan explicar el alto riesgo de enfermedad cardiovascular en los surasiáticos.\n\nLos surasiáticos han sido históricamente subrepresentados en los estudios genéticos, una disparidad que el equipo de OurHealth espera abordar con su ayuda!",
+        "buttons": [{
+          "text": "Aprenda más sobre la participación",
+          "type": "internalLink",
+          "href": "/participation"
+        }]
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "**Estamos dedicados a descubrir los factores genéticos subyacentes** para el riesgo de enfermedad cardiometabólica en las poblaciones del sur de Asia.",
+        "image": { "cleanFileName": "discover.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
+        "imagePosition": "left",
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "title": "Antecedentes",
+        "background": "#F2F2F2",
+        "blurbAlign": "left",
+        "blurb": "En todo el mundo, muchos estudios han descrito una mayor tasa de diabetes y enfermedades cardiovasculares entre los surasiáticos. En particular, tasas más altas de obesidad, resistencia a la insulina y diabetes parecen impulsar un mayor riesgo de enfermedad cardiovascular. Sin embargo, el desafío para los investigadores es que la mayoría de estos estudios no son estudios genéticos ni ensayos clínicos. Lea más sobre los antecedentes científicos aquí:",
+        "buttons": [{
+          "text": "Antecedentes Científicos",
+          "type": "internalLink",
+          "href": "/background"
+        }]
+      }
+    },
+    {
+      "sectionType": "HERO_CENTERED",
+      "sectionConfigJson": {
+        "blurbAlign": "left",
+        "blurb": "Los investigadores de OurHealth, liderados por los Co-Investigadores Principales Dr. Pradeep Natarajan y Dr. Amit V. Khera, tienen una amplia experiencia en el estudio de la base genética de la enfermedad cardiovascular y cardiometabólica. Al estudiar de cerca la contribución de la genética a la enfermedad cardíaca y metabólica en personas de ascendencia surasiática que viven fuera de los Estados Unidos, han ayudado a desarrollar un nuevo conjunto de genotipos optimizado para los surasiáticos. Desafortunadamente, los conjuntos de datos surasiáticos siguen siendo limitados en tamaño, diversidad cultural y representación diaspórica.\n\n¡Ayúdenos a cerrar esta brecha! [Únase al estudio OurHealth](/studies/ourheart/join) y contribuya a mejorar la salud cardíaca de los surasiáticos."
+      }
+    },
+    {
+      "sectionType": "HERO_WITH_IMAGE",
+      "sectionConfigJson": {
+        "title": "**Los conjuntos de datos surasiáticos siguen siendo limitados** en tamaño, diversidad cultural y representación diaspórica.",
+        "image": { "cleanFileName": "engage.svg", "version": 1, "alt": "", "style": {"padding": "3rem 0"}},
+        "imagePosition": "left",
+        "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
+      }
+    },
+      {
+        "sectionType": "PHOTO_BLURB_GRID",
+        "sectionConfigJson": {
+          "background": "#F2F2F2",
+          "subGrids": [{
+            "title": "Equipo Principal",
+            "photoBios": [{
+              "name": "Anthony Philippakis",
+              "title": "MD, PhD",
+              "blurb": "Director de Datos, Broad Institute\n\nCo-Director Schmidt Center, Broad Institute\n\nSocio de riesgo, GV",
+              "image": { "cleanFileName": "anthony_philippakis.jpg", "version": 1}
+            }]
+          }]
+        }
+      }]
+  }
+}
