@@ -16,7 +16,11 @@
     },
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
-    "participantUserFiles" : [ ],
+    "participantUserFiles" : [
+      "participants/consentedEnrollee.json",
+      "participants/gertrudeElion.json",
+      "participants/newEnrollee.json"
+    ],
     "siteContentPopDto" : {
       "populateFileName" : "siteContent/hh_portalContent-62/siteContent.json"
     },
