@@ -12,7 +12,7 @@ import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
-import EditMailingAddress from '../../../address/EditMailingAddress'
+import EditMailingAddress from 'address/EditMailingAddress'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
