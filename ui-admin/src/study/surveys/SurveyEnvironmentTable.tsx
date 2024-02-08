@@ -65,8 +65,7 @@ export default function SurveyEnvironmentTable(props: SurveyTableProps) {
     columns,
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true
+    getSortedRowModel: getSortedRowModel()
   })
 
   return <div>

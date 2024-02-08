@@ -60,8 +60,7 @@ public class SurveyTaskDispatcher {
 
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
                                         UUID studyEnvironmentId,
-                                        AdminUser operator,
-                                        String systemProcess) {
+                                        AdminUser operator) {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
@@ -87,8 +86,7 @@ public class SurveyTaskDispatcher {
             }
             if (taskOpt.isPresent()) {
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
-                        .responsibleAdminUserId(operator != null ? operator.getId() : null)
-                        .systemProcess(systemProcess)
+                        .responsibleAdminUserId(operator.getId())
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
@@ -140,7 +138,6 @@ public class SurveyTaskDispatcher {
         }
     }
 
-
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void updateSurveyTaskVersions(SurveyPublishedEvent event) {
@@ -161,8 +158,6 @@ public class SurveyTaskDispatcher {
             );
         }
     }
-
-
 
     /** builds any survey tasks that the enrollee is eligible for that are not duplicates
      *  Does not add them to the event or persist them.

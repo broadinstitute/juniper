@@ -139,7 +139,7 @@ Then, you are ready to run the UI:
   HTTPS=true npm -w ui-participant start
   ```
 
-(note that you can just run `npm -w ui-participant start` if you don't need to test B2C login functionality)
+(note that you can just run `REACT_APP_UNAUTHED_LOGIN=true HTTPS=true npm -w ui-participant start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
 (Notice how you need the environment name and portal name as subdomains)
 

@@ -6,6 +6,12 @@ databaseChangeLog:
         - addColumn:
             tableName: survey
             columns:
-              - column: { name: assign_to_all_new_enrollees, type: boolean, defaultValueBoolean: true,
+              - column: { name: auto_update_task_assignments, type: boolean, defaultValueBoolean: false,
                           constraints: { nullable: false }
+              }
+        - addColumn:
+            tableName: event
+            columns:
+              - column: { name: survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_event_survey, references: survey(id), deleteCascade: true }
               }

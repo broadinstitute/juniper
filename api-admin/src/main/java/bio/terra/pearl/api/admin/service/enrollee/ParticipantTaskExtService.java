@@ -5,20 +5,16 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import java.util.ArrayList;
-import java.util.List;
-
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -69,7 +65,7 @@ public class ParticipantTaskExtService {
             .orElseThrow(StudyEnvironmentMissing::new);
 
     if (assignDto.taskType().equals(TaskType.SURVEY)) {
-      return surveyTaskDispatcher.assign(assignDto, studyEnv.getId(), operator, null);
+      return surveyTaskDispatcher.assign(assignDto, studyEnv.getId(), operator);
     }
     throw new UnsupportedOperationException(
         "task type %s not supported".formatted(assignDto.taskType()));
@@ -91,8 +87,9 @@ public class ParticipantTaskExtService {
         studyEnvironmentService
             .findByStudy(studyShortcode, environmentName)
             .orElseThrow(StudyEnvironmentMissing::new);
-    List<ParticipantTask> updatedTasks = participantTaskService.updateTasks(
-            studyEnv.getId(), updateDto, new ResponsibleEntity(operator)
-    );
+    List<ParticipantTask> updatedTasks =
+        participantTaskService.updateTasks(
+            studyEnv.getId(), updateDto, new ResponsibleEntity(operator));
+    return updatedTasks;
   }
 }
