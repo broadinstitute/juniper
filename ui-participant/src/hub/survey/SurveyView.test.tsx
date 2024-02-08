@@ -79,7 +79,7 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
         answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { 'questionStableId': 'text1', stringValue: 'my Text' },
+          { questionStableId: 'text1', stringValue: 'my Text' },
           { questionStableId: 'colorCode', stringValue: '#0F0' }],
         complete: true,
         resumeData: '{"user1":{"currentPageNo":1}}'

@@ -3,7 +3,7 @@ import Api, { PreEnrollmentResponse, Survey } from 'api/api'
 import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { useUser } from '../../providers/UserProvider'
+import { useUser } from 'providers/UserProvider'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates

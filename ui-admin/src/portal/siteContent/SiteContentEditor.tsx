@@ -19,9 +19,9 @@ import { Tab, Tabs } from 'react-bootstrap'
 import DeletePageModal from './DeletePageModal'
 import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
-import { useConfig } from '../../providers/ConfigProvider'
+import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
-import useReactSingleSelect from '../../util/react-select-utils'
+import useReactSingleSelect from 'util/react-select-utils'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
