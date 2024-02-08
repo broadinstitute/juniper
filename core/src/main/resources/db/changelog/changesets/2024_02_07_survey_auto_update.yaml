@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_survey_auto_update"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: auto_update_task_assignments, type: boolean, defaultValueBoolean: false,
+                          constraints: { nullable: false }
+              }
+        - addColumn:
+            tableName: event
+            columns:
+              - column: { name: survey_id, type: uuid, constraints:
+                { foreignKeyName: fk_event_survey, references: survey(id), deleteCascade: true }
+              }

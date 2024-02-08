@@ -24,4 +24,5 @@ public class Event extends BaseEntity {
     private UUID studyEnvironmentId;
     private UUID portalEnvironmentId;
     private UUID enrolleeId;
+    private UUID surveyId;
 }
