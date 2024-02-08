@@ -23,8 +23,8 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
     lang.languageCode === 'en'))
 
   const {
-    onChange: localeOnChange, options: localeOptions,
-    selectedOption: selectedLocaleOption, selectInputId: selectLocaleInputId
+    onChange: languageOnChange, options: languageOptions,
+    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
   } =
     useReactSingleSelect(
       supportedLanguages,
@@ -71,15 +71,15 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
         Show all questions, regardless of their visibility. Use this to review questions that
         would be hidden by survey branching logic.
       </p>
-      { localeOptions.length > 0 && <><div className="form-group">
-        <label htmlFor={selectLocaleInputId}>Language</label>
+      { languageOptions.length > 1 && <><div className="form-group">
+        <label htmlFor={selectLanguageInputId}>Language</label>
         <Select
-          inputId={selectLocaleInputId}
-          options={localeOptions}
-          value={selectedLocaleOption}
-          onChange={locale => {
-            localeOnChange(locale)
-            onChange({ ...value, locale: locale?.value.languageCode ?? 'default' })
+          inputId={selectLanguageInputId}
+          options={languageOptions}
+          value={selectedLanguageOption}
+          onChange={language => {
+            languageOnChange(language)
+            onChange({ ...value, locale: language?.value.languageCode ?? 'default' })
           }}/>
       </div>
       <p className="form-text">

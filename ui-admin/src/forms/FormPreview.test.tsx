@@ -105,7 +105,7 @@ describe('FormPreview', () => {
       })
     })
 
-    describe('locale input', () => {
+    describe('language selector', () => {
       const localizedFormContent = {
         title: {
           default: 'Test survey',
@@ -147,15 +147,31 @@ describe('FormPreview', () => {
       it('can switch to Spanish', async () => {
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} supportedLanguages={[]} />)
+        render(<FormPreview
+          formContent={localizedFormContent as unknown as FormContent}
+          supportedLanguages={[
+            { languageCode: 'en', languageName: 'English' },
+            { languageCode: 'es', languageName: 'Spanish' }
+          ]}
+        />)
 
-        const localeInput = screen.getByLabelText('Locale')
-        await act(() => user.type(localeInput, 'es'))
+        const languageSelector = screen.getByLabelText('Language')
+        await act(() => user.click(languageSelector))
+        await act(() => user.click(screen.getByText('Spanish')))
 
         waitFor(() => {
           screen.getByText('Nombre')
           screen.getByText('Apellido')
         })
+      })
+
+      it('does not render when there is only one language', () => {
+        render(<FormPreview
+          formContent={localizedFormContent as unknown as FormContent}
+          supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+        />)
+
+        expect(screen.queryByLabelText('Language')).not.toBeInTheDocument()
       })
     })
 
