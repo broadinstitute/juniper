@@ -11,6 +11,7 @@ import { isNil } from 'lodash'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
+import AutocompleteAddressInput from './AutocompleteAddressInput'
 
 /**
  * Editable mailing address component with connection to the backend
@@ -82,10 +83,28 @@ export default function EditMailingAddress(
   return <div className="">
     <div className='row mb-2'>
       <div className="col">
-        <input
-          className={formatClassName('street1')}
-          type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
-          onChange={e => onFieldChange('street1', e.target.value)}/>
+        {
+          user.user.superuser
+            ? <AutocompleteAddressInput
+              value={mailingAddress.street1 || ''}
+              setValue={val => onFieldChange('street1', val)}
+              onSelectMailingAddress={
+                addr => {
+                  setMailingAddress({
+                    ...mailingAddress,
+                    ...addr
+                  })
+                  setAddressValidationResults(undefined)
+                }
+              }
+              inputClassName={formatClassName('street1')}
+            />
+            : <input
+              className={formatClassName('street1')}
+              type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
+              onChange={e => onFieldChange('street1', e.target.value)}/>
+        }
+
       </div>
     </div>
     <div className='row mb-2'>

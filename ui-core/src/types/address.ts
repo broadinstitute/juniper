@@ -17,3 +17,7 @@ export type AddressValidationResult = {
   hasInferredComponents?: boolean,
   vacant?: boolean
 }
+
+export type AddressSearchParams = {
+  search: string
+}

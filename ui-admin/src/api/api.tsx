@@ -1,4 +1,5 @@
 import {
+  AddressSearchParams,
   AddressValidationResult,
   AlertTrigger,
   ConsentForm,
@@ -858,6 +859,17 @@ export default {
     const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+  async autocompleteAddress(
+    search: AddressSearchParams
+  ): Promise<MailingAddress[]> {
+    const url = `${baseAddressUrl()}/autocomplete`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(search),
       headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)

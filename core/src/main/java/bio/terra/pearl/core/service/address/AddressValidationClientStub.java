@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -50,7 +51,9 @@ public class AddressValidationClientStub implements AddressValidationClient {
     @Override
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
 
-        if (address.getStreet1().contains(BAD_ADDRESS_INDICATOR) || address.getStreet1().isEmpty()) {
+        if (Objects.isNull(address.getStreet1())
+                || address.getStreet1().contains(BAD_ADDRESS_INDICATOR)
+                || address.getStreet1().isEmpty()) {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
@@ -116,6 +119,16 @@ public class AddressValidationClientStub implements AddressValidationClient {
                 .build();
     }
 
+    @Override
+    public List<MailingAddress> autocomplete(String street1) {
+        return autocompletePossibilities
+                .stream()
+                .filter(
+                        addr -> addr.getStreet1().toLowerCase().startsWith(street1.toLowerCase())
+                )
+                .toList();
+    }
+
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {
         List<AddressComponent> missingComponents = new ArrayList<>(findMissingComponentsInStreet1(addr.getStreet1()));
 
@@ -166,5 +179,71 @@ public class AddressValidationClientStub implements AddressValidationClient {
 
         return missingComponents;
     }
+
+    private final List<MailingAddress> autocompletePossibilities = List.of(
+            MailingAddress
+                    .builder()
+                    .street1("415 Main St")
+                    .state("MA")
+                    .city("Cambridge")
+                    .country("US")
+                    .postalCode("02142")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build(),
+            MailingAddress
+                    .builder()
+                    .street1("123 Needs Apartment Ln")
+                    .street2("Apt 1")
+                    .state("MA")
+                    .city("Boston")
+                    .country("US")
+                    .postalCode("02120")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build(),
+            MailingAddress
+                    .builder()
+                    .street1("123 Needs Apartment Ln")
+                    .street2("Apt 2")
+                    .state("MA")
+                    .city("Boston")
+                    .country("US")
+                    .postalCode("02120")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build(),
+            MailingAddress
+                    .builder()
+                    .street1("123 Needs Apartment Ln")
+                    .street2("Apt 3")
+                    .state("MA")
+                    .city("Boston")
+                    .country("US")
+                    .postalCode("02120")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build(),
+            MailingAddress
+                    .builder()
+                    .street1("415 Manchester St")
+                    .state("MA")
+                    .city("Boston")
+                    .country("US")
+                    .postalCode("02115")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build(),
+            MailingAddress
+                    .builder()
+                    .street1("415 Main St")
+                    .state("CA")
+                    .city("San Francisco")
+                    .country("US")
+                    .postalCode("12345")
+                    .lastUpdatedAt(null)
+                    .createdAt(null)
+                    .build()
+    );
 
 }

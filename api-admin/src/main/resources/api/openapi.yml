@@ -1058,6 +1058,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/address/v1/autocomplete:
+    put:
+      summary: Searches for mailing addresses given the street1 field
+      tags: [ addressValidation ]
+      operationId: autocomplete
+      requestBody:
+        description: search params
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: list of mailing address matches
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/login:
     post:
       summary: Unauthenticated login (dev only)
