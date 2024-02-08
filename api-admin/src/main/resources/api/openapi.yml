@@ -1043,6 +1043,21 @@ paths:
           description: indication of successful deletion
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/address/v1/validate:
+    put:
+      summary: Validate a given address
+      tags: [ addressValidation ]
+      operationId: validate
+      requestBody:
+        description: mailing address
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: validation results
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/login:
     post:
       summary: Unauthenticated login (dev only)
