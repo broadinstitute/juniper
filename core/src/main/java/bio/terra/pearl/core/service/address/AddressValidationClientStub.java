@@ -18,7 +18,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
 
     private static final String BAD_ADDRESS_INDICATOR = "BAD";
     private static final String IMPROVABLE_ADDRESS_INDICATOR = "IMPROVABLE";
-    private static final String INFERRED_ADDRESS_INDICATOR = "INFERRED";
+    private static final String INFERENCE_ADDRESS_INDICATOR = "INFERENCE";
     private static final String ERROR_INDICATOR = "ERROR";
     private static final String VACANT_INDICATOR = "VACANT";
 
@@ -78,7 +78,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
                     .hasInferredComponents(false)
                     .vacant(address.getStreet1().contains(VACANT_INDICATOR))
                     .build();
-        } else if (address.getStreet1().contains(INFERRED_ADDRESS_INDICATOR)) {
+        } else if (address.getStreet1().contains(INFERENCE_ADDRESS_INDICATOR)) {
             return AddressValidationResultDto
                     .builder()
                     .valid(true)

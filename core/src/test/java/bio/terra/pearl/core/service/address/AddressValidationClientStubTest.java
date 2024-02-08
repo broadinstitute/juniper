@@ -94,7 +94,7 @@ class AddressValidationClientStubTest extends BaseSpringBootTest {
     public void testInferredAddressResponse() {
         AddressValidationResultDto result = clientStub.validate(
                 MailingAddress
-                        .builder().street1("123 INFERRED St").state("CO").country("USA").postalCode("12345").build());
+                        .builder().street1("123 INFERENCE St").state("CO").country("USA").postalCode("12345").build());
 
         Assertions.assertTrue(result.isValid());
         Assertions.assertNotNull(result.getSuggestedAddress());

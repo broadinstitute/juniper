@@ -12,12 +12,12 @@ export default function AutocompleteAddressInput(
     value,
     setValue,
     onSelectMailingAddress,
-    inputClassName
+    inputProps
   } : {
     value: string,
     setValue: (newVal: string) => void,
     onSelectMailingAddress: (mailingAddress: MailingAddress) => void,
-    inputClassName?: string
+    inputProps?: React.InputHTMLAttributes<HTMLInputElement>
   }
 ) {
   const [isFocused, setIsFocused] = useState<boolean>(false)
@@ -42,7 +42,7 @@ export default function AutocompleteAddressInput(
     className={'w-100 position-relative'}
   >
     <input
-      className={`${inputClassName} w-100`}
+      {...inputProps}
       value={value}
       onChange={e => setValue(e.target.value)}
     />

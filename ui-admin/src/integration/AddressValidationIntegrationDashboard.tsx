@@ -4,7 +4,7 @@ import Api, { InternalConfig } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 
 
-/** shows controls and debug info for testing kit request (Pepper) integrations */
+/** shows basic config for address validation service */
 export default function AddressValidationIntegrationDashboard() {
   const [config, setConfig] = useState<InternalConfig>()
 

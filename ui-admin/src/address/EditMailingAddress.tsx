@@ -97,7 +97,12 @@ export default function EditMailingAddress(
                   setAddressValidationResults(undefined)
                 }
               }
-              inputClassName={formatClassName('street1')}
+              inputProps={
+                {
+                  className: formatClassName('street1'),
+                  placeholder: 'Street 1'
+                }
+              }
             />
             : <input
               className={formatClassName('street1')}
