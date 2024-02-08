@@ -245,7 +245,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
-          { portalEnvContext.portal.portalLanguages.length > 0 && <div className="ms-2" style={{ width: 200 }}>
+          { portalEnvContext.portal.portalLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={e => {

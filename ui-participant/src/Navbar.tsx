@@ -79,14 +79,12 @@ export default function Navbar(props: NavbarProps) {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
-          { /* if there are no language options, don't render the language dropdown */ }
-          {languageOptions.length > 0 && <LanguageDropdown
+          <LanguageDropdown
             languageOptions={languageOptions}
             selectedLanguage={selectedLanguage}
             changeLanguage={changeLanguage}
             reloadPortal={() => window.location.reload()}
           />
-          }
           {user.isAnonymous && (
             <>
               <li className="nav-item">
@@ -232,32 +230,34 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
   reloadPortal: () => void
 }) {
   return (
-    <li className="nav-item dropdown d-flex flex-column">
-      <button
-        aria-expanded="false"
-        aria-label="Select a language"
-        className={classNames(
-          navLinkClasses,
-          'btn btn-text dropdown-toggle text-start'
-        )}
-        data-bs-toggle="dropdown"
-      >
-        <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
-        {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
-        <span className="d-lg-none">Select a language</span>
-      </button>
-      <div className="dropdown-menu dropdown-menu-end">
-        {languageOptions.map((lang, index) => {
-          return (
-            <button key={index} className="dropdown-item" onClick={() => {
-              changeLanguage(lang.languageCode)
-              reloadPortal()
-            }}>
-              {lang.languageName}
-            </button>
-          )
-        })}
-      </div>
-    </li>
+    languageOptions.length > 1 ? (
+      <li className="nav-item dropdown d-flex flex-column">
+        <button
+          aria-expanded="false"
+          aria-label="Select a language"
+          className={classNames(
+            navLinkClasses,
+            'btn btn-text dropdown-toggle text-start'
+          )}
+          data-bs-toggle="dropdown"
+        >
+          <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
+          {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
+          <span className="d-lg-none">Select a language</span>
+        </button>
+        <div className="dropdown-menu dropdown-menu-end">
+          {languageOptions.map((lang, index) => {
+            return (
+              <button key={index} className="dropdown-item" aria-label={lang.languageName}
+                onClick={() => {
+                  changeLanguage(lang.languageCode)
+                  reloadPortal()
+                }}>
+                {lang.languageName}
+              </button>
+            )
+          })}
+        </div>
+      </li>) : null
   )
 }

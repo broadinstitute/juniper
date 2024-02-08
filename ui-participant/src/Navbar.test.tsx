@@ -186,7 +186,7 @@ describe('language selector', () => {
     expect(buttons[2]).toHaveTextContent('Spanish')
   })
 
-  it('selecting a language should reload the portal', () => {
+  it('reloads the portal when a language is selected', () => {
     const languageOptions = [
       { languageCode: 'en', languageName: 'English' },
       { languageCode: 'es', languageName: 'Spanish' }
@@ -204,9 +204,32 @@ describe('language selector', () => {
       />
     )
 
-    const buttons = screen.queryAllByRole('button')
-    buttons[2].click()
+
+    const languageSelector = screen.getByLabelText('Select a language')
+    languageSelector.click()
+    const spanishButton = screen.getByText('Spanish')
+    spanishButton.click()
     expect(changeLanguage).toHaveBeenCalledWith('es')
     expect(reloadPortal).toHaveBeenCalled()
+  })
+
+  it('does not render when there is only one language', () => {
+    const languageOptions = [
+      { languageCode: 'en', languageName: 'English' }
+    ]
+    const selectedLanguage = 'en'
+    const changeLanguage = jest.fn()
+    const reloadPortal = jest.fn()
+
+    render(
+      <LanguageDropdown
+        languageOptions={languageOptions}
+        selectedLanguage={selectedLanguage}
+        changeLanguage={changeLanguage}
+        reloadPortal={reloadPortal}
+      />
+    )
+
+    expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()
   })
 })
