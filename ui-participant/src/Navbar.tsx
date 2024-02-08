@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
-import { MailingListModal } from '@juniper/ui-core'
+import { MailingListModal, PortalLanguage } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -80,33 +80,13 @@ export default function Navbar(props: NavbarProps) {
         </ul>
         <ul className="navbar-nav ms-auto">
           { /* if there are no language options, don't render the language dropdown */ }
-          { languageOptions.length > 0 && <li className="nav-item dropdown d-flex flex-column">
-            <button
-              aria-expanded="false"
-              aria-label={user.username}
-              className={classNames(
-                navLinkClasses,
-                'btn btn-text dropdown-toggle text-start'
-              )}
-              data-bs-toggle="dropdown"
-            >
-              <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
-              {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
-              <span className="d-lg-none">{user.username}</span>
-            </button>
-            <div className="dropdown-menu dropdown-menu-end">
-              {languageOptions.map((lang, index) => {
-                return (
-                  <button key={index} className="dropdown-item" onClick={() => {
-                    changeLanguage(lang.languageCode)
-                    portalEnv.reloadPortal()
-                  }}>
-                    {lang.languageName}
-                  </button>
-                )
-              })}
-            </div>
-          </li> }
+          {languageOptions.length > 0 && <LanguageDropdown
+            languageOptions={languageOptions}
+            selectedLanguage={selectedLanguage}
+            changeLanguage={changeLanguage}
+            reloadPortal={() => window.location.reload()}
+          />
+          }
           {user.isAnonymous && (
             <>
               <li className="nav-item">
@@ -240,4 +220,44 @@ export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
 export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStudy[] => {
   return portalStudies.filter(pStudy =>
     pStudy.study.studyEnvironments[0].studyEnvironmentConfig.acceptingEnrollment)
+}
+
+/**
+ *
+ */
+export function LanguageDropdown({ languageOptions, selectedLanguage, changeLanguage, reloadPortal }: {
+  languageOptions: PortalLanguage[],
+  selectedLanguage: string,
+  changeLanguage: (languageCode: string) => void,
+  reloadPortal: () => void
+}) {
+  return (
+    <li className="nav-item dropdown d-flex flex-column">
+      <button
+        aria-expanded="false"
+        aria-label="Select a language"
+        className={classNames(
+          navLinkClasses,
+          'btn btn-text dropdown-toggle text-start'
+        )}
+        data-bs-toggle="dropdown"
+      >
+        <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
+        {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
+        <span className="d-lg-none">Select a language</span>
+      </button>
+      <div className="dropdown-menu dropdown-menu-end">
+        {languageOptions.map((lang, index) => {
+          return (
+            <button key={index} className="dropdown-item" onClick={() => {
+              changeLanguage(lang.languageCode)
+              reloadPortal()
+            }}>
+              {lang.languageName}
+            </button>
+          )
+        })}
+      </div>
+    </li>
+  )
 }

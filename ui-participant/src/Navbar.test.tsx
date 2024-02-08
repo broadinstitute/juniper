@@ -10,7 +10,7 @@ import {
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { CustomNavLink, getMainJoinLink } from './Navbar'
+import { CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -158,5 +158,55 @@ describe('joinPath', () => {
     }] as PortalStudy[]
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
+  })
+})
+
+describe('language selector', () => {
+  it('renders a language selector', () => {
+    const languageOptions = [
+      { languageCode: 'en', languageName: 'English' },
+      { languageCode: 'es', languageName: 'Spanish' }
+    ]
+    const selectedLanguage = 'en'
+    const changeLanguage = jest.fn()
+    const reloadPortal = jest.fn()
+
+    render(
+      <LanguageDropdown
+        languageOptions={languageOptions}
+        selectedLanguage={selectedLanguage}
+        changeLanguage={changeLanguage}
+        reloadPortal={reloadPortal}
+      />
+    )
+
+    const buttons = screen.queryAllByRole('button')
+    expect(buttons[0]).toHaveTextContent('Select a language')
+    expect(buttons[1]).toHaveTextContent('English')
+    expect(buttons[2]).toHaveTextContent('Spanish')
+  })
+
+  it('selecting a language should reload the portal', () => {
+    const languageOptions = [
+      { languageCode: 'en', languageName: 'English' },
+      { languageCode: 'es', languageName: 'Spanish' }
+    ]
+    const selectedLanguage = 'en'
+    const changeLanguage = jest.fn()
+    const reloadPortal = jest.fn()
+
+    render(
+      <LanguageDropdown
+        languageOptions={languageOptions}
+        selectedLanguage={selectedLanguage}
+        changeLanguage={changeLanguage}
+        reloadPortal={reloadPortal}
+      />
+    )
+
+    const buttons = screen.queryAllByRole('button')
+    buttons[2].click()
+    expect(changeLanguage).toHaveBeenCalledWith('es')
+    expect(reloadPortal).toHaveBeenCalled()
   })
 })
