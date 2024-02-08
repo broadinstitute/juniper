@@ -110,7 +110,7 @@ public class SurveyTaskDispatcher {
         }
     }
 
-    /** survey tasks could be triggered by just about anything, sbut for now we just listen to EnrolleeCreation */
+    /** survey tasks could be triggered by just about anything, but for now we just listen to EnrolleeCreation */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void createSurveyTasks(EnrolleeCreationEvent enrolleeEvent) {
