@@ -30,9 +30,7 @@ export const TextInput = (props: TextInputProps) => {
         {label}
         {required && <span className="text-danger">*</span>}
       </label>}
-      {infoContent &&
-        //@ts-ignore
-        <InfoPopup content={infoContent}/>}
+      {infoContent && <InfoPopup content={infoContent}/>}
       <input
         type="text"
         {...inputProps}

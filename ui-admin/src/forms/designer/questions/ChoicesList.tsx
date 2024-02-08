@@ -26,32 +26,25 @@ export const ChoicesList = (props: ChoicesListProps) => {
   return (
     <div className="mb-3">
       <p className="mb-2" id={labelId}>Choices</p>
-      <ol aria-labelledby={labelId} className="list-group mb-1">
+      <ol aria-labelledby={labelId} className="list-unstyled mb-1">
         {question.choices.map((choice, i) => {
           const enableAutoFillValue: boolean = isNewQuestion && choice.value == getValueForChoice(choice.text)
 
           return (
             <li
               key={i}
-              className="list-group-item d-flex"
+              className="d-flex"
+              style={{ borderBottom: '1px solid #ddd', padding: '0.5em', marginBottom: '0.2em' }}
             >
               <div
-                className="flex-grow-1"
-                style={{
-                  display: 'grid',
-                  grid: 'auto-flow / max-content auto',
-                  gridColumnGap: '0.5rem',
-                  gridRowGap: '1rem',
-                  alignItems: 'center',
-                  height: 'fit-content'
-                }}
+                className="d-flex flex-grow-1 align-items-center"
               >
                 <TextInput
                   className="form-control"
                   disabled={readOnly}
                   required={true}
+                  labelClassname=" mb-0 me-1"
                   label="Text"
-                  labelClassname="mb-0"
                   value={choice.text}
                   onChange={value => {
                     onChange({
@@ -71,7 +64,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                   disabled={readOnly}
                   required={true}
                   label="Value"
-                  labelClassname="mb-0"
+                  labelClassname="ms-3 mb-0 me-1"
                   value={choice.value}
                   onChange={value => {
                     onChange({
@@ -86,7 +79,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                 />
               </div>
 
-              <div className="d-flex flex-column justify-content-between ms-2">
+              <div className="d-flex justify-content-between ms-2">
                 <IconButton
                   aria-label="Move this choice before the previous one"
                   disabled={readOnly || i === 0}
@@ -110,7 +103,6 @@ export const ChoicesList = (props: ChoicesListProps) => {
                   disabled={readOnly || i === question.choices.length - 1}
                   icon={faChevronDown}
                   variant="light"
-                  className="btn btn-light"
                   onClick={() => {
                     onChange({
                       ...question,
@@ -123,13 +115,11 @@ export const ChoicesList = (props: ChoicesListProps) => {
                     })
                   }}
                 />
-              </div>
-
-              <div className="d-flex flex-column justify-content-between flex-shrink-0 ms-2">
                 <IconButton
                   aria-label="Delete this choice"
                   disabled={readOnly}
                   icon={faTimes}
+                  className="ms-2"
                   variant="light"
                   onClick={() => {
                     onChange({

@@ -41,7 +41,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={hasVisibleIfExpression}
-          description="Show or hide this question based on responses to other questions."
+          infoContent="Show or hide this question based on responses to other questions."
           disabled={disabled}
           label="Conditionally show this question"
           onChange={checked => {
@@ -62,7 +62,7 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
           <TextInput
             infoContent={infoPopupContent}
             // eslint-disable-next-line max-len
-            description={'Expression for this question\'s visibility. If this expression evaluates to true, the question will be shown.'}
+            description={'If this expression evaluates to true, the question will be shown.'}
             disabled={disabled}
             label="Visibility expression"
             required={true}

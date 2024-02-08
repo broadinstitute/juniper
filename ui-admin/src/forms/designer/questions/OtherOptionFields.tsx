@@ -22,7 +22,6 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={!!question.showOtherItem}
-          description={'Show an "Other" option that, when selected, prompts the participant to enter a text response.'}
           disabled={disabled}
           label={'Show "Other" option'}
           onChange={checked => {
@@ -43,6 +42,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
             }
           }}
         />
+
       </div>
 
       {!!question.showOtherItem && (
