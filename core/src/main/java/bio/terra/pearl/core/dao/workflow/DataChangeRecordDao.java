@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import java.util.List;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;

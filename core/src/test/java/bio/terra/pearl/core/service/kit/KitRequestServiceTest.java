@@ -19,7 +19,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
 import bio.terra.pearl.core.service.kit.pepper.PepperErrorResponse;

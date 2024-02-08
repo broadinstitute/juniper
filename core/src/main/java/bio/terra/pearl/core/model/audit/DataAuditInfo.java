@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.workflow;
+package bio.terra.pearl.core.model.audit;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -40,6 +40,12 @@ public class DataAuditInfo {
 
     public static String systemProcessName(Class clazz, String methodName) {
         return "%s.%s".formatted(clazz.getSimpleName(), methodName);
+    }
+
+    public void setResponsibleEntity(ResponsibleEntity responsibleEntity) {
+        this.responsibleUserId = responsibleEntity.getParticipantUser() != null ? responsibleEntity.getParticipantUser().getId() : null;
+        this.responsibleAdminUserId = responsibleEntity.getAdminUser() != null ? responsibleEntity.getAdminUser().getId() : null;
+        this.systemProcess = responsibleEntity.getSystemProcess() != null ? responsibleEntity.getSystemProcess() : null;
     }
 }
 

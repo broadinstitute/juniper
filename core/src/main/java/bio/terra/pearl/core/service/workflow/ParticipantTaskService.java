@@ -1,16 +1,19 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.CrudService;
+
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -56,5 +59,67 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
             task.setCompletedAt(Instant.now());
         }
         return super.update(task, dataAuditInfo);
+    }
+
+    /**
+     * applies the task updates to the given environment. Returns a list of the updated tasks This is
+     * assumed to be a relatively rare operation, so this is not particularly optimized for
+     * performance.
+     */
+    @Transactional
+    public List<ParticipantTask> updateTasks(
+            UUID studyEnvId,
+            ParticipantTaskUpdateDto updateDto,
+            ResponsibleEntity operator) {
+        List<String> targetStableIds =
+                updateDto.updates().stream().map(update -> update.targetStableId()).toList();
+        List<ParticipantTask> participantTasks =
+                findTasksByStudyAndTarget(studyEnvId, targetStableIds);
+        List<ParticipantTask> tasksToUpdate =
+                participantTasks.stream()
+                        .filter(
+                                task ->
+                                        // take the task for updating if either we're updating all tasks, or if it's in
+                                        // the user list
+                                        updateDto.updateAll()
+                                                || updateDto
+                                                .portalParticipantUserIds()
+                                                .contains(task.getPortalParticipantUserId()))
+                        .toList();
+        List<ParticipantTask> updatedTasks = new ArrayList<>();
+        for (ParticipantTask task : tasksToUpdate) {
+            ParticipantTaskUpdateDto.TaskUpdateSpec updateSpec =
+                    updateDto.updates().stream()
+                            .filter(update -> update.targetStableId().equals(task.getTargetStableId()))
+                            .findFirst()
+                            .orElseThrow(() -> new InternalServerException("unexpected query result"));
+            ParticipantTask updatedTask = updateTask(task, updateSpec, operator);
+            if (updatedTask != null) {
+                updatedTasks.add(updatedTask);
+            }
+        }
+
+        return updatedTasks;
+    }
+
+    protected ParticipantTask updateTask(
+            ParticipantTask task,
+            ParticipantTaskUpdateDto.TaskUpdateSpec updateSpec,
+            ResponsibleEntity operator) {
+        if (updateSpec.updateFromVersion() == null
+                || updateSpec.updateFromVersion().equals(task.getTargetAssignedVersion())) {
+            task.setTargetAssignedVersion(updateSpec.updateToVersion());
+            if (updateSpec.newStatus() != null) {
+                task.setStatus(updateSpec.newStatus());
+            }
+            DataAuditInfo auditInfo =
+                    DataAuditInfo.builder()
+                            .enrolleeId(task.getEnrolleeId())
+                            .portalParticipantUserId(task.getPortalParticipantUserId())
+                            .build();
+            auditInfo.setResponsibleEntity(operator);
+            return update(task, auditInfo);
+        }
+        return null;
     }
 }

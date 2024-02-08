@@ -2,8 +2,8 @@ package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

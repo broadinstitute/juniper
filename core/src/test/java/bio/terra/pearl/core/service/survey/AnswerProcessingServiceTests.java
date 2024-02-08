@@ -16,7 +16,7 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +30,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
