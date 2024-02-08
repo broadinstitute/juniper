@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { PortalLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
-import useReactSingleSelect from '../util/react-select-utils'
+import useReactSingleSelect from 'util/react-select-utils'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
@@ -18,7 +18,7 @@ type FormPreviewOptionsProps = {
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
-  //TODO: Right now we'll default to English, but in the future we will set this to the default portal language
+  //TODO (JN-863): Use the default language
   const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(supportedLanguages.find(lang =>
     lang.languageCode === 'en'))
 
