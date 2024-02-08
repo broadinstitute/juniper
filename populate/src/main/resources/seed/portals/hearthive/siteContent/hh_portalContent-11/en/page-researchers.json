@@ -1,0 +1,22 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "For Researchers",
+  "htmlPageId" : "0e579489-3902-43c4-9f5f-eeb736fee135",
+  "htmlPageDto" : {
+    "title" : "For Researchers",
+    "sections" : [ ],
+    "path" : "researchers",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "title" : "Recruit to your study through Heart Hive",
+        "blurb" : "We welcome enquiries to offer research opportunities to the Heart Hive community. \n\n The Heart Hive is open to all researchers with an ethically-approved project and a recognised sponsoring institution.",
+        "blurbAlign" : "center",
+        "buttons" : [ {
+          "text" : "Contact us",
+          "type" : "mailingList"
+        } ]
+      }
+    } ]
+  }
+}

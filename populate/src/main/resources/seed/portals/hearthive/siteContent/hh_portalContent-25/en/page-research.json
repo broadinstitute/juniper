@@ -1,0 +1,96 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "Current research",
+  "htmlPageId" : "f5f49120-7c69-4d53-b8c9-c40e72558d57",
+  "htmlPageDto" : {
+    "title" : "Heart Hive -- Current Research",
+    "sections" : [ ],
+    "path" : "research",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "select_imperial_-_final_selects_page_1_c.png",
+          "version" : 1
+        },
+        "blurb" : "",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "title" : "Turning today's heart disease into tomorrow's heart health.",
+        "blurb" : "Save lives by advancing research.",
+        "image" : {
+          "cleanFileName" : "participant_smile.webp",
+          "version" : 1
+        },
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Register now",
+          "type" : "join"
+        } ],
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "title" : "Current Research",
+        "blurb" : "##### The Heart Hive Cardiomyopathy Study\n[ClinicalTrials.gov Identifier: NCT04612296](https://clinicaltrials.gov/ct2/show/NCT04612296)\n ##### The Heart Hive COVID-19 Study\n[ClinicalTrials.gov Identifier: NCT04468256](https://clinicaltrials.gov/ct2/show/NCT04468256)\n\n##### Other Heart Hive activities:\n\nDCM Medication survey from [Dr Brian Halliday](https://www.imperial.ac.uk/people/b.halliday)"
+      }
+    }, {
+      "sectionType" : "BANNER_IMAGE",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "hearthive_participant_1.webp",
+          "version" : 1,
+          "alt" : "Enter alt text here",
+          "style" : {
+            "height" : ""
+          }
+        }
+      }
+    }, {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "title" : "Turning today's heart disease into tomorrow's heart health.",
+        "blurb" : "Save lives by advancing research.",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Register now",
+          "type" : "join"
+        } ],
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "",
+        "blurb" : "The Heart Hive was developed by Dr. James Ware and by Dr. Angharad Roberts and the Cardiovascular Genetics & Genomics Group, Imperial College London.\n\nSupported by Cardiomyopathy UK.",
+        "blurbAlign" : "center",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Join Mailing List",
+          "type" : "mailingList"
+        } ]
+      }
+    } ]
+  }
+}

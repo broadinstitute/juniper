@@ -1,0 +1,82 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "For Researchers",
+  "htmlPageId" : "8c3a67b7-308e-4159-83e8-aed19bdc9a1d",
+  "htmlPageDto" : {
+    "title" : "For Researchers",
+    "sections" : [ ],
+    "path" : "researchers",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "select_imperial_-_final_selects_page_1_c.png",
+          "version" : 1
+        },
+        "blurb" : "Turning today's heart disease into tomorrow's heart health",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "title" : "Recruit to your study through Heart Hive",
+        "blurb" : "We welcome enquiries to offer research opportunities to the Heart Hive community. \n\n The Heart Hive is open to all researchers with an ethically-approved project and a recognised sponsoring institution.",
+        "blurbAlign" : "center",
+        "buttons" : [ {
+          "text" : "Contact us",
+          "type" : "mailingList"
+        } ]
+      }
+    }, {
+      "sectionType" : "BANNER_IMAGE",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "hearthive_participant_1.webp",
+          "version" : 1,
+          "alt" : "Enter alt text here",
+          "style" : {
+            "height" : ""
+          }
+        }
+      }
+    }, {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "title" : "Turning today's heart disease into tomorrow's heart health.",
+        "blurb" : "Save lives by advancing research.",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Register now",
+          "type" : "join"
+        } ],
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "",
+        "blurb" : "The Heart Hive was developed by Dr. James Ware and by Dr. Angharad Roberts and the Cardiovascular Genetics & Genomics Group, Imperial College London.\n\nSupported by Cardiomyopathy UK.",
+        "blurbAlign" : "center",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Join Mailing List",
+          "type" : "mailingList"
+        } ]
+      }
+    } ]
+  }
+}
