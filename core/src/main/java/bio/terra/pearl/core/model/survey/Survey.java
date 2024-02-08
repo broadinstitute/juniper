@@ -50,5 +50,7 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     private boolean allowParticipantReedit = true; // whether participants can change answers after submission
     @Builder.Default
     private boolean prepopulate = false; // whether to bring forward answers from prior completions (if recur is true)
+    @Builder.Default
+    private boolean assignToAllNewEnrollees = true;
 }
 

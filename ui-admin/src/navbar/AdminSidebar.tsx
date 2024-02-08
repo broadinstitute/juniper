@@ -11,7 +11,7 @@ import CollapsableMenu from './CollapsableMenu'
 import { Config } from '../api/api'
 
 const ZONE_COLORS: { [index: string]: string } = {
-  'demo': 'rgb(70 143 124)', // dark green
+  'dev': 'rgb(70 143 124)', // dark green
   'local': 'rgb(23 26 30)', // grey
   'prod': '#333F52' // blue (default)
 }

@@ -186,6 +186,9 @@ databaseChangeLog:
       file: changesets/2024_01_25_system_audit.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_02_04_add_survey_assign.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_02_06_portal_languages.yaml
       relativeToChangelogFile: true
 
