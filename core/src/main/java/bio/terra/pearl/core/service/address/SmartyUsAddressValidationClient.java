@@ -3,8 +3,6 @@ package bio.terra.pearl.core.service.address;
 import bio.terra.pearl.core.model.address.AddressComponent;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
-import com.smartystreets.api.ClientBuilder;
-import com.smartystreets.api.StaticCredentials;
 import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Components;
@@ -30,11 +28,8 @@ public class SmartyUsAddressValidationClient implements AddressValidationClient 
 
     Client usClient;
 
-    SmartyUsAddressValidationClient(AddressValidationConfig config) {
-        StaticCredentials credentials = new StaticCredentials(config.getAuthId(),
-                config.getAuthToken());
-
-        usClient = new ClientBuilder(credentials).buildUsStreetApiClient();
+    SmartyUsAddressValidationClient(SmartyClientProvider provider) {
+        usClient = provider.usClient();
     }
 
     @Override
@@ -88,6 +83,9 @@ public class SmartyUsAddressValidationClient implements AddressValidationClient 
     }
 
     private boolean isValid(Candidate candidate) {
+        if (Objects.isNull(candidate.getAnalysis().getDpvMatchCode())) {
+            return false;
+        }
         return candidate.getAnalysis().getDpvMatchCode().contains("Y");
     }
 
@@ -174,9 +172,8 @@ public class SmartyUsAddressValidationClient implements AddressValidationClient 
             "B#", List.of(AddressComponent.CITY, AddressComponent.STATE_PROVINCE),
             "K#", List.of(AddressComponent.STREET_NAME),
             "L#", List.of(AddressComponent.STREET_NAME, AddressComponent.STREET_TYPE),
-            "M#", List.of(AddressComponent.STREET_NAME),
-            "U#", List.of(AddressComponent.CITY)
-            // P# and N# both could be included here, but I believe they shouldn't.
+            "M#", List.of(AddressComponent.STREET_NAME)
+            // U#, P# and N# both could be included here, but I believe they shouldn't.
             // They both indicates _standardization_ of the address, so address
             // components changed, but they did not require inference - the address
             // is valid either way.

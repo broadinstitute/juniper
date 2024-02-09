@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Validation client which, depending upon the provided country, will either
- * map to the US Smarty Client or (TODO: JN-856) the International Client.
+ * map to the US Smarty Client or (TODO: JN-864) the International Client.
  */
 @Component
 @Slf4j
