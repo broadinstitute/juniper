@@ -110,10 +110,7 @@ describe('VisibilityFields', () => {
       const user = userEvent.setup()
       render(<VisibilityFields disabled={false} question={question} onChange={jest.fn()} />)
 
-      await user.click(screen.queryAllByLabelText('info popup')[0])
-      expect(await screen.findByText('Show or hide', { exact: false })).toBeTruthy()
-
-      await user.click(screen.queryAllByLabelText('info popup')[1])
+      await user.click(screen.getByLabelText('info popup'))
       expect(await screen.findByText('Conditional Visibility documentation')).toBeTruthy()
     })
   })
