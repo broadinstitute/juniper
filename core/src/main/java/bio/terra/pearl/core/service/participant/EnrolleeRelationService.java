@@ -47,12 +47,11 @@ public class EnrolleeRelationService extends CrudService<EnrolleeRelation, Enrol
     }
 
     @Transactional
-    public Enrollee newGovernedEnrolleeCreationRecord(Enrollee enrollee, Portal portal, ParticipantUser proxyUser) {
+    public Enrollee newGovernedEnrolleeCreationRecord(Enrollee enrollee, ParticipantUser proxyUser) {
         EnrolleeRelation enrolleeRelation = EnrolleeRelation.builder()
                 .enrolleeId(enrollee.getId())
                 .participantUserId(proxyUser.getId())
                 .relationshipType(RelationshipType.PROXY)
-                .portalId(portal.getId())
                 .build();
 
         this.create(enrolleeRelation);
