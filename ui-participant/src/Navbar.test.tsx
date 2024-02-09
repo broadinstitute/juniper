@@ -171,7 +171,7 @@ describe('language selector', () => {
     const changeLanguage = jest.fn()
     const reloadPortal = jest.fn()
 
-    render(
+    const { RoutedComponent } = setupRouterTest(
       <LanguageDropdown
         languageOptions={languageOptions}
         selectedLanguage={selectedLanguage}
@@ -179,6 +179,7 @@ describe('language selector', () => {
         reloadPortal={reloadPortal}
       />
     )
+    render(RoutedComponent)
 
     const buttons = screen.queryAllByRole('button')
     expect(buttons[0]).toHaveTextContent('Select a language')
@@ -195,7 +196,7 @@ describe('language selector', () => {
     const changeLanguage = jest.fn()
     const reloadPortal = jest.fn()
 
-    render(
+    const { RoutedComponent } = setupRouterTest(
       <LanguageDropdown
         languageOptions={languageOptions}
         selectedLanguage={selectedLanguage}
@@ -203,7 +204,7 @@ describe('language selector', () => {
         reloadPortal={reloadPortal}
       />
     )
-
+    render(RoutedComponent)
 
     const languageSelector = screen.getByLabelText('Select a language')
     languageSelector.click()
@@ -221,7 +222,7 @@ describe('language selector', () => {
     const changeLanguage = jest.fn()
     const reloadPortal = jest.fn()
 
-    render(
+    const { RoutedComponent } = setupRouterTest(
       <LanguageDropdown
         languageOptions={languageOptions}
         selectedLanguage={selectedLanguage}
@@ -229,6 +230,7 @@ describe('language selector', () => {
         reloadPortal={reloadPortal}
       />
     )
+    render(RoutedComponent)
 
     expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()
   })
