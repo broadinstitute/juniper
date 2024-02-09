@@ -21,7 +21,7 @@ export const Textarea = (props: TextareaProps) => {
 
   return (
     <>
-      <label className="form-label" htmlFor={inputId}>
+      <label className="form-label fw-semibold" htmlFor={inputId}>
         {label}
         {required && <span className="text-danger">*</span>}
       </label>

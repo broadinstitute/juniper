@@ -46,9 +46,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
       </div>
 
       {!!question.showOtherItem && (
-        <fieldset>
-          <legend className="form-label fs-5">&ldquo;Other&rdquo; option</legend>
-
+        <fieldset className="ms-4">
           <div className="mb-3">
             <TextInput
               description={'Label for the "Other" option.'}
