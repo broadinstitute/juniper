@@ -41,7 +41,6 @@ export const VisibilityFields = (props: VisibilityFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={hasVisibleIfExpression}
-          infoContent="Show or hide this question based on responses to other questions."
           disabled={disabled}
           label="Conditionally show this question"
           onChange={checked => {

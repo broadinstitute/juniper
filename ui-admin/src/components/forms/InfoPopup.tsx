@@ -32,6 +32,6 @@ export default function InfoPopup({
     <div className="p-2">{content}</div>
   </Popover>
   return <OverlayTrigger rootClose trigger={trigger} placement={placement} overlay={popoverContent}>
-    <button aria-label="info popup" className="btn btn-secondary p-0 mx-2">{target}</button>
+    <button aria-label="info popup" className="btn btn-secondary p-0 mx-2" style={{ color: '#777' }}>{target}</button>
   </OverlayTrigger>
 }
