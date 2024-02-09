@@ -174,7 +174,7 @@ public class SmartyUsAddressValidationClient implements AddressValidationClient 
             "L#", List.of(AddressComponent.STREET_NAME, AddressComponent.STREET_TYPE),
             "M#", List.of(AddressComponent.STREET_NAME)
             // U#, P# and N# both could be included here, but I believe they shouldn't.
-            // They both indicates _standardization_ of the address, so address
+            // They all indicate _standardization_ of the address, so address
             // components changed, but they did not require inference - the address
             // is valid either way.
     );
