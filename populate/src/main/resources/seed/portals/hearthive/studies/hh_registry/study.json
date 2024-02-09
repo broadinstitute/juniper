@@ -182,11 +182,7 @@
     } ],
     "preEnrollmentResponseDtos" : [ ],
     "kitTypeNames" : [ ],
-    "enrolleeFiles" : [
-      "enrollees/consentedEnrollee.json",
-      "enrollees/gertrudeElion.json",
-      "enrollees/newEnrollee.json"
-    ],
+    "enrolleeFiles" : [ ],
     "preEnrollSurveyDto" : {
       "surveyType" : "RESEARCH",
       "triggers" : [ ],
