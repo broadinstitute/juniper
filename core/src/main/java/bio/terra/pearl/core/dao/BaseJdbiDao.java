@@ -237,7 +237,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected Optional<T> findByProperty(String columnName, Object columnValue) {
+    public Optional<T> findByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
                         .bind("columnValue", columnValue)

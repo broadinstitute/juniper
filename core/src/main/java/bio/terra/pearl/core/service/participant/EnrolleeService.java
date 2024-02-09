@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -59,6 +58,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
+    private RandomUtilService randomUtilService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -75,7 +75,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
-                           AdminTaskService adminTaskService, SecureRandom secureRandom) {
+                           AdminTaskService adminTaskService, SecureRandom secureRandom,
+                           RandomUtilService randomUtilService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -93,12 +94,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.kitRequestService = kitRequestService;
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
+        this.randomUtilService = randomUtilService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-
     public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
     }
@@ -266,10 +267,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         int MAX_TRIES = 10;
         String shortcode = null;
         for (int tryNum = 0; tryNum < MAX_TRIES; tryNum++) {
-            String possibleShortcode = secureRandom
-                    .ints(PARTICIPANT_SHORTCODE_LENGTH, 0, PARTICIPANT_SHORTCODE_ALLOWED_CHARS.length())
-                    .mapToObj(i -> PARTICIPANT_SHORTCODE_ALLOWED_CHARS.charAt(i))
-                    .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
+            String possibleShortcode = randomUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH, PARTICIPANT_SHORTCODE_ALLOWED_CHARS);
             if (dao.findOneByShortcode(possibleShortcode).isEmpty()) {
                 shortcode = possibleShortcode;
                 break;

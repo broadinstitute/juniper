@@ -186,6 +186,7 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+        - { name: isProxy, in: query, required: false, schema: { type: boolean } }
       responses:
         '200':
           description: preenrollment response
@@ -507,6 +508,8 @@ components:
       properties:
         email:
           type: string
+        isProxy:
+          type: boolean
 
     MailingListContactDto:
       type: object
