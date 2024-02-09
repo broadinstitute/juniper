@@ -1,12 +1,13 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.time.LocalDate;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter @Setter @SuperBuilder @NoArgsConstructor

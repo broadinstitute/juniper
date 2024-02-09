@@ -87,8 +87,7 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
     enableRowSelection: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true
+    getSortedRowModel: getSortedRowModel()
   })
 
 

@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import java.util.List;

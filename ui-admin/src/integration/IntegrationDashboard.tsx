@@ -1,7 +1,8 @@
 import { NavLink, Outlet, Route, Routes } from 'react-router-dom'
 import React from 'react'
 import KitIntegrationDashboard from './KitIntegrationDashboard'
-import { navDivStyle, navListItemStyle, navLinkStyleFunc } from 'util/subNavStyles'
+import AddressValidationIntegrationDashboard from './AddressValidationIntegrationDashboard'
+import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function IntegrationDashboard() {
@@ -11,11 +12,14 @@ export default function IntegrationDashboard() {
       <div style={navDivStyle}>
         <ul className="list-unstyled">
           <li style={navListItemStyle}><NavLink to="kits" style={navLinkStyleFunc}>Kits</NavLink></li>
+          <li style={navListItemStyle}><NavLink to="addressValidation" style={navLinkStyleFunc}>Address
+            Validation</NavLink></li>
         </ul>
       </div>
       <div className="px-3">
         <Routes>
           <Route path="kits" element={<KitIntegrationDashboard/>}/>
+          <Route path="addressValidation" element={<AddressValidationIntegrationDashboard/>}/>
         </Routes>
         <Outlet/>
       </div>

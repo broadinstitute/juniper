@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service.enrollee;
+package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import java.util.List;
@@ -7,8 +7,7 @@ import java.util.UUID;
 public record ParticipantTaskUpdateDto(
     List<TaskUpdateSpec> updates,
     List<UUID> portalParticipantUserIds,
-    boolean
-        updateAll // if true, the portalParticipantUserIds list will be ignored and all tasks will
+    boolean updateAll // if true, the portalParticipantUserIds list will be ignored and all tasks will
     // be updated in the environment
     ) {
 
@@ -16,7 +15,5 @@ public record ParticipantTaskUpdateDto(
       String targetStableId,
       int updateToVersion,
       Integer updateFromVersion,
-      boolean createForUnassigned, // create new tasks for enrollees not assigned to any version
-      // (assuming they are eligible)
       TaskStatus newStatus) {}
 }

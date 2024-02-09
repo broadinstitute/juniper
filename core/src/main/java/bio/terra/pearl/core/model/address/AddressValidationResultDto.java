@@ -1,41 +1,36 @@
 package bio.terra.pearl.core.model.address;
 
-import bio.terra.pearl.core.model.participant.MailingAddress;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 public class AddressValidationResultDto {
-    // If false, property indicates strong failure -
-    // the address was incomplete or invalid and an
-    // improved address could not be found.
+    // If true, indicates that there is a valid address which
+    // could be found.
+    // (makes no claim about the validity of the provided address)
     private boolean valid;
 
-    // This property provides a suggestion for
-    // an improved mailing address; typically,
-    // this means the address was valid, but
-    // could be improved
+    // This property indicates a valid mailing address provided
+    // by USPS/international databases
     private MailingAddress suggestedAddress;
 
     // Components which were missing from
     // an invalid address
-    // see: https://developers.google.com/maps/documentation/places/web-service/supported_types#table2
-    //      for possible values
-    private List<String> missingComponents;
+    private List<AddressComponent> invalidComponents;
 
-    // Raw string values of things that were not able to
-    // resolve, e.g. "12345678" in "12345678 Main St"
-    private List<String> unresolvedTokens;
+    // Indicates if the suggested address required
+    // inferring components of the address that
+    // were either missing or incorrect
+    private Boolean hasInferredComponents;
 
-    // When validating the same address over and over again,
-    // use the same sessionId
-    private UUID sessionId;
+    // USPS considers this place vacant, which might
+    // lead to misdeliveries
+    private Boolean vacant;
 }

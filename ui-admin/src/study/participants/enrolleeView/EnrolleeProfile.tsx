@@ -12,6 +12,7 @@ import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
+import EditMailingAddress from 'address/EditMailingAddress'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -90,7 +91,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
 /**
  * Read only view of the profile.
  */
-export function ReadOnlyProfile(
+function ReadOnlyProfile(
   { profile }: {
     profile: Profile
   }
@@ -100,7 +101,7 @@ export function ReadOnlyProfile(
   return <>
     <ReadOnlyRow title={'Name'}
       values={[
-        `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
+                   `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
       ]}/>
     <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
@@ -114,13 +115,13 @@ export function ReadOnlyProfile(
 /**
  * Editable profile, providing the update to `setProfile` on each change.
  */
-export function EditableProfile(
+function EditableProfile(
   { profile, setProfile }: {
     profile: Profile,
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
-  const onFieldChange = (field: string, value: string | boolean) => {
+  const onFieldChange = (field: keyof Profile, value: string | boolean) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -129,7 +130,7 @@ export function EditableProfile(
     })
   }
 
-  const onDateFieldChange = (field: string, date: Date | null) => {
+  const onDateFieldChange = (field: keyof Profile, date: Date | null) => {
     const asJavaLocalDate: number[] | undefined = date ? jsDateToJavaLocalDate(date) : undefined
 
     setProfile((oldVal: Profile) => {
@@ -140,7 +141,7 @@ export function EditableProfile(
     })
   }
 
-  const onMailingAddressFieldChange = (field: string, value: string) => {
+  const onMailingAddressFieldChange = (field: keyof MailingAddress, value: string) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -178,48 +179,13 @@ export function EditableProfile(
         <div className="col"/>
       </div>
     </FormRow>
-    <FormRow title={'Primary Address'}>
-      <div className="">
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.street1 || ''}
-              placeholder={'Street 1'} aria-label={'Street 1'}
-              onChange={e => onMailingAddressFieldChange('street1', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.street2 || ''}
-              placeholder={'Street 2'} aria-label={'Street 2'}
-              onChange={e => onMailingAddressFieldChange('street2', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row mb-2'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.city || ''}
-              placeholder={'City'} aria-label={'City'}
-              onChange={e => onMailingAddressFieldChange('city', e.target.value)}/>
-          </div>
-          <div className='col'>
-            <input className="form-control" type="text" value={profile.mailingAddress.state || ''}
-              placeholder={'State'} aria-label={'State'}
-              onChange={e => onMailingAddressFieldChange('state', e.target.value)}/>
-          </div>
-        </div>
-        <div className='row'>
-          <div className="col">
-            <input className="form-control" type="text" value={profile.mailingAddress.postalCode || ''}
-              placeholder={'Postal Code'} aria-label={'Postal Code'}
-              onChange={e => onMailingAddressFieldChange('postalCode', e.target.value)}/>
-          </div>
-          <div className='col'>
-            <input className="form-control" type="text" value={profile.mailingAddress.country || ''}
-              placeholder={'Country'} aria-label={'Country'}
-              onChange={e => onMailingAddressFieldChange('country', e.target.value)}/>
-          </div>
-        </div>
-      </div>
-    </FormRow>
+    <EditMailingAddressRow
+      title={'Primary Address'} mailingAddress={profile.mailingAddress}
+      onMailingAddressFieldChange={onMailingAddressFieldChange}
+      setMailingAddress={mailingAddr => setProfile(profile => {
+        return { ...profile, mailingAddress: mailingAddr }
+      })}
+    />
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'} aria-label={'Contact Email'}
@@ -261,7 +227,7 @@ export function EditableProfile(
 /**
  * Row of readonly data, where the title takes the leftmost portion and the values are on the rightmost.
  */
-export function ReadOnlyRow(
+function ReadOnlyRow(
   { title, values }: {
     title: string,
     values: string[]
@@ -316,7 +282,7 @@ export function ReadOnlyMailingAddress(
 /**
  * One row of the profile's data.
  */
-export function FormRow(
+function FormRow(
   { title, children }: {
     title: string,
     children: React.ReactNode
@@ -332,3 +298,21 @@ export function FormRow(
   </>
 }
 
+
+function EditMailingAddressRow(
+  {
+    title, mailingAddress, onMailingAddressFieldChange, setMailingAddress
+  }: {
+    title: string,
+    mailingAddress: MailingAddress,
+    onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
+    setMailingAddress: (update: MailingAddress) => void
+  }
+) {
+  return <FormRow title={title}>
+    <EditMailingAddress
+      mailingAddress={mailingAddress}
+      onMailingAddressFieldChange={onMailingAddressFieldChange}
+      setMailingAddress={setMailingAddress}/>
+  </FormRow>
+}

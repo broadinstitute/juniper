@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
@@ -24,6 +25,7 @@ public class ConfigExtServiceTests {
 
   @MockBean private B2CConfiguration b2CConfiguration;
   @MockBean private LivePepperDSMClient.PepperDSMConfig pepperDSMConfig;
+  @MockBean private AddressValidationConfig addressValidationConfig;
 
   @Test
   public void testConfigMap() {
@@ -35,7 +37,8 @@ public class ConfigExtServiceTests {
     when(b2CConfiguration.clientId()).thenReturn("client123");
     when(b2CConfiguration.policyName()).thenReturn("policy123");
     ConfigExtService configExtService =
-        new ConfigExtService(b2CConfiguration, applicationRoutingPaths, pepperDSMConfig);
+        new ConfigExtService(
+            b2CConfiguration, applicationRoutingPaths, pepperDSMConfig, addressValidationConfig);
     Map<String, String> configMap = configExtService.getConfigMap();
     Assertions.assertEquals("something.org", configMap.get("participantUiHostname"));
   }
@@ -44,7 +47,8 @@ public class ConfigExtServiceTests {
   public void testInternalConfigRequiresSuperuser() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     ConfigExtService configExtService =
-        new ConfigExtService(b2CConfiguration, applicationRoutingPaths, pepperDSMConfig);
+        new ConfigExtService(
+            b2CConfiguration, applicationRoutingPaths, pepperDSMConfig, addressValidationConfig);
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> {
@@ -60,18 +64,26 @@ public class ConfigExtServiceTests {
             .withProperty("env.dsm.useLiveDsm", "false")
             .withProperty("env.dsm.basePath", "basePath1")
             .withProperty("env.dsm.issuerClaim", "issuerClaim1")
-            .withProperty("env.dsm.secret", "superSecret");
+            .withProperty("env.dsm.secret", "superSecret")
+            .withProperty("env.addrValidation.addrValidationClientClass", "someClass");
 
-    LivePepperDSMClient.PepperDSMConfig testConfig =
+    LivePepperDSMClient.PepperDSMConfig testPepperConfig =
         new LivePepperDSMClient.PepperDSMConfig(mockEnvironment);
+
+    AddressValidationConfig testAddrConfig = new AddressValidationConfig(mockEnvironment);
     ConfigExtService configExtService =
-        new ConfigExtService(b2CConfiguration, applicationRoutingPaths, testConfig);
+        new ConfigExtService(
+            b2CConfiguration, applicationRoutingPaths, testPepperConfig, testAddrConfig);
     Map<String, ?> dsmConfigMap =
         (Map<String, ?>) configExtService.getInternalConfigMap(user).get("pepperDsmConfig");
+    Map<String, ?> addressValidationConfigMap =
+        (Map<String, ?>) configExtService.getInternalConfigMap(user).get("addrValidationConfig");
     assertThat(dsmConfigMap.get("basePath"), equalTo("basePath1"));
     assertThat(dsmConfigMap.get("issuerClaim"), equalTo("issuerClaim1"));
     assertThat(dsmConfigMap.get("secret"), equalTo("su..."));
     assertThat(dsmConfigMap.get("useLiveDsm"), equalTo(false));
+
+    assertThat(addressValidationConfigMap.get("addrValidationClientClass"), equalTo("someClass"));
   }
 
   @Test

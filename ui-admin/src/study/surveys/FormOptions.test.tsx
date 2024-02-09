@@ -59,6 +59,26 @@ describe('FormOptions', () => {
       required: true
     })
   })
+
+  test('allows changing a survey to be auto-updating of versions', async () => {
+    const updateWorkingForm = jest.fn()
+    render(<FormOptions
+      studyEnvContext={mockStudyEnvContext()}
+      workingForm={mockSurvey()}
+      updateWorkingForm={updateWorkingForm}
+      onDismiss={jest.fn()}
+      isDirty={false}
+      visibleVersionPreviews={[]}
+      setVisibleVersionPreviews={jest.fn()}
+    />)
+
+    await userEvent.click(screen.getByLabelText('Auto-update participant tasks', { exact: false }))
+    expect(updateWorkingForm).toHaveBeenCalledWith({
+      ...mockSurvey(),
+      autoUpdateTaskAssignments: true
+    })
+  })
+
   test('allows the user to download the JSON file', async () => {
     //Arrange
     render(<FormOptions

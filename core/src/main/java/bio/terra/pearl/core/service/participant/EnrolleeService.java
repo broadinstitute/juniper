@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
@@ -249,6 +250,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public void updateConsented(UUID enrolleeId, boolean consented) {
         dao.updateConsented(enrolleeId, consented);
         logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
+    }
+
+    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
+                                     String targetStableId,
+                                     Integer targetAssignedVersion) {
+        return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
     }
 
     /** It's possible there are snazzier ways to get postgres to generate this for us,
