@@ -1,13 +1,13 @@
-import { faUser } from '@fortawesome/free-solid-svg-icons'
+import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
-import { MailingListModal } from '@juniper/ui-core'
+import { MailingListModal, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -24,9 +24,11 @@ export default function Navbar(props: NavbarProps) {
   const portalEnv = usePortalEnv()
   const { localContent } = portalEnv
   const config = useConfig()
-  const { user, logoutUser } = useUser()
+  const { user, logoutUser, selectedLanguage, changeLanguage } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
+
+  const languageOptions = portalEnv.portalEnv.supportedLanguages
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -77,6 +79,12 @@ export default function Navbar(props: NavbarProps) {
           </li>)}
         </ul>
         <ul className="navbar-nav ms-auto">
+          <LanguageDropdown
+            languageOptions={languageOptions}
+            selectedLanguage={selectedLanguage}
+            changeLanguage={changeLanguage}
+            reloadPortal={portalEnv.reloadPortal}
+          />
           {user.isAnonymous && (
             <>
               <li className="nav-item">
@@ -88,7 +96,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                  Log In
+                    Log In
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -100,7 +108,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to={getMainJoinLink(portalEnv.portal.portalStudies)}
                 >
-                  Join
+                    Join
                 </NavLink>
               </li>
             </>
@@ -116,7 +124,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                  Dashboard
+                    Dashboard
                 </Link>
               </li>
               <li className="nav-item dropdown d-flex flex-column">
@@ -129,7 +137,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   data-bs-toggle="dropdown"
                 >
-                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser} />
+                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser}/>
                   <span className="d-lg-none">{user.username}</span>
                 </button>
                 <div className="dropdown-menu dropdown-menu-end">
@@ -145,12 +153,12 @@ export default function Navbar(props: NavbarProps) {
                   >
                     {user.username}
                   </p>
-                  <hr className="dropdown-divider d-none d-lg-block" />
+                  <hr className="dropdown-divider d-none d-lg-block"/>
                   <button className="dropdown-item" onClick={doChangePassword}>
-                    Change Password
+                      Change Password
                   </button>
                   <button className="dropdown-item" onClick={doLogout}>
-                    Log Out
+                      Log Out
                   </button>
                 </div>
               </li>
@@ -174,7 +182,7 @@ const MailingListNavLink = (props: MailingListNavLinkProps) => {
         data-bs-toggle="modal"
         data-bs-target={`#${CSS.escape(modalId)}`}
       />
-      <MailingListModal id={modalId} />
+      <MailingListModal id={modalId}/>
     </>
   )
 }
@@ -210,4 +218,63 @@ export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
 export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStudy[] => {
   return portalStudies.filter(pStudy =>
     pStudy.study.studyEnvironments[0].studyEnvironmentConfig.acceptingEnrollment)
+}
+
+/**
+ *
+ */
+export function LanguageDropdown({ languageOptions, selectedLanguage, changeLanguage, reloadPortal }: {
+  languageOptions: PortalEnvironmentLanguage[],
+  selectedLanguage: string,
+  changeLanguage: (languageCode: string) => void,
+  reloadPortal: () => void
+}) {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const langQueryParam = searchParams.get('lang')
+
+  useEffect(() => {
+    if (langQueryParam && langQueryParam !== selectedLanguage &&
+        languageOptions.map(l => l.languageCode).includes(langQueryParam)) {
+      changeLanguage(langQueryParam)
+      reloadPortal()
+    }
+  }, [langQueryParam])
+
+  return (
+    languageOptions.length > 1 ? (
+      <li className="nav-item dropdown d-flex flex-column">
+        <button
+          aria-expanded="false"
+          aria-label="Select a language"
+          className={classNames(
+            navLinkClasses,
+            'btn btn-text dropdown-toggle text-start'
+          )}
+          data-bs-toggle="dropdown"
+        >
+          <FontAwesomeIcon className="d-none d-lg-inline mx-1" icon={faGlobe}/>
+          {languageOptions.find(l => l.languageCode === selectedLanguage)?.languageName}
+          <span className="d-lg-none">Select a language</span>
+        </button>
+        <div className="dropdown-menu dropdown-menu-end">
+          {languageOptions.map((lang, index) => {
+            return (
+              <button key={index} className="dropdown-item" aria-label={lang.languageName}
+                onClick={() => {
+                  //If the user selects a language from the dropdown, remove the lang query param from the URL
+                  if (langQueryParam) {
+                    searchParams.delete('lang')
+                    navigate({ search: searchParams.toString() })
+                  }
+                  changeLanguage(lang.languageCode)
+                  reloadPortal()
+                }}>
+                {lang.languageName}
+              </button>
+            )
+          })}
+        </div>
+      </li>) : null
+  )
 }

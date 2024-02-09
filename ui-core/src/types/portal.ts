@@ -10,6 +10,11 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
+export type PortalEnvironmentLanguage = {
+  languageCode: string
+  languageName: string
+}
+
 export type PortalStudy = {
   study: Study
 }
@@ -17,6 +22,7 @@ export type PortalStudy = {
 export type PortalEnvironment = {
   environmentName: string
   portalEnvironmentConfig: PortalEnvironmentConfig
+  supportedLanguages: PortalEnvironmentLanguage[]
   siteContent?: SiteContent
   preRegSurvey?: Survey
   preRegSurveyId?: string

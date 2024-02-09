@@ -73,7 +73,11 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
     passwordProtected: false,
     acceptingRegistration: true
   },
-  environmentName: envName
+  environmentName: envName,
+  supportedLanguages: [
+    { languageCode: 'en', languageName: 'English' },
+    { languageCode: 'es', languageName: 'Spanish' }
+  ]
 })
 
 

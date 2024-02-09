@@ -32,7 +32,7 @@ const formContent: FormContent = {
 describe('FormPreview', () => {
   it('renders form', () => {
     // Act
-    render(<FormPreview formContent={formContent} />)
+    render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
     // Assert
     screen.getAllByLabelText('First name')
@@ -71,7 +71,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
         // Act
         // Attempt to advance to the next page.
@@ -87,7 +87,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
 
         // Act
         // Turn off 'Ignore validation'
@@ -105,7 +105,7 @@ describe('FormPreview', () => {
       })
     })
 
-    describe('locale input', () => {
+    describe('language selector', () => {
       const localizedFormContent = {
         title: {
           default: 'Test survey',
@@ -138,7 +138,7 @@ describe('FormPreview', () => {
       }
 
       it('defaults to English', () => {
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} supportedLanguages={[]} />)
 
         screen.getByText('First name')
         screen.getByText('Last name')
@@ -147,15 +147,31 @@ describe('FormPreview', () => {
       it('can switch to Spanish', async () => {
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} />)
+        render(<FormPreview
+          formContent={localizedFormContent as unknown as FormContent}
+          supportedLanguages={[
+            { languageCode: 'en', languageName: 'English' },
+            { languageCode: 'es', languageName: 'Spanish' }
+          ]}
+        />)
 
-        const localeInput = screen.getByLabelText('Locale')
-        await act(() => user.type(localeInput, 'es'))
+        const languageSelector = screen.getByLabelText('Language')
+        await act(() => user.click(languageSelector))
+        await act(() => user.click(screen.getByText('Spanish')))
 
         waitFor(() => {
           screen.getByText('Nombre')
           screen.getByText('Apellido')
         })
+      })
+
+      it('does not render when there is only one language', () => {
+        render(<FormPreview
+          formContent={localizedFormContent as unknown as FormContent}
+          supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+        />)
+
+        expect(screen.queryByLabelText('Language')).not.toBeInTheDocument()
       })
     })
 
@@ -183,7 +199,7 @@ describe('FormPreview', () => {
 
       it('hides invisible questions by default', () => {
         // Act
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
 
         // Assert
         expect(screen.queryAllByLabelText('Hidden question')).toHaveLength(0)
@@ -193,7 +209,7 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} />)
+        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
 
         // Act
         // Show invisible questions

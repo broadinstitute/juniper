@@ -191,6 +191,10 @@ databaseChangeLog:
   - include:
       file: changesets/2024_02_07_survey_auto_update.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_02_06_portal_languages.yaml
+      relativeToChangelogFile: true
+
 
   - include:
       file: changesets/proxy_data_model.yaml

@@ -36,6 +36,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private SiteContentService siteContentService;
     private SurveyService surveyService;
     private PortalDashboardConfigService portalDashboardConfigService;
+    private PortalLanguageService portalLanguageService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -47,7 +48,8 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     SiteContentService siteContentService,
                                     DataChangeRecordService dataChangeRecordService,
                                     PortalDashboardConfigService portalDashboardConfigService,
-                                    SurveyService surveyService) {
+                                    SurveyService surveyService,
+                                    PortalLanguageService portalLanguageService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -59,6 +61,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
         this.portalDashboardConfigService = portalDashboardConfigService;
+        this.portalLanguageService = portalLanguageService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
@@ -91,6 +94,12 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         }
         PortalEnvironment newEnv = dao.create(portalEnvironment);
         newEnv.setPortalEnvironmentConfig(envConfig);
+
+        newEnv.getSupportedLanguages().forEach(supportedLanguage -> {
+            supportedLanguage.setPortalEnvironmentId(newEnv.getId());
+            portalLanguageService.create(supportedLanguage);
+        });
+
         return newEnv;
     }
 
