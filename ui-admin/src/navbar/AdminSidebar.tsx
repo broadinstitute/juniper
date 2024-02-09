@@ -59,13 +59,13 @@ const AdminSidebar = ({ config }: { config: Config }) => {
       {user.superuser && <CollapsableMenu header={'Superuser functions'} content={
         <ul className="list-unstyled">
           <li className="mb-2">
-            <NavLink to="/users" className="text-white w-100">All users</NavLink>
+            <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>
           </li>
           <li className="mb-2">
-            <NavLink to="/populate" className="text-white">Populate</NavLink>
+            <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
           </li>
           <li>
-            <NavLink to="/integrations" className="text-white">Integrations</NavLink>
+            <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
           </li>
         </ul>}/>}
     </>}
