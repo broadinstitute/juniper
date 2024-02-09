@@ -234,7 +234,8 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
   const langQueryParam = searchParams.get('lang')
 
   useEffect(() => {
-    if (langQueryParam && langQueryParam !== selectedLanguage) {
+    if (langQueryParam && langQueryParam !== selectedLanguage &&
+        languageOptions.map(l => l.languageCode).includes(langQueryParam)) {
       changeLanguage(langQueryParam)
       reloadPortal()
     }
