@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { FormContent, PortalLanguage, VersionedForm } from '@juniper/ui-core'
+import { FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
@@ -15,7 +15,7 @@ import useStateCallback from '../util/useStateCallback'
 type FormContentEditorProps = {
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
-  supportedLanguages: PortalLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[]
   readOnly: boolean
   onChange: OnChangeFormContent
 }

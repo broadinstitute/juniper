@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { PortalLanguage } from '@juniper/ui-core'
+import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
 
@@ -11,7 +11,7 @@ type FormPreviewOptions = {
 
 type FormPreviewOptionsProps = {
   value: FormPreviewOptions
-  supportedLanguages: PortalLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: FormPreviewOptions) => void
 }
 
@@ -19,7 +19,7 @@ type FormPreviewOptionsProps = {
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
   // TODO (JN-863): Use the default language
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(supportedLanguages.find(lang =>
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(supportedLanguages.find(lang =>
     lang.languageCode === 'en'))
 
   const {
@@ -28,7 +28,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   } =
     useReactSingleSelect(
       supportedLanguages,
-      (language: PortalLanguage) => ({ label: language.languageName, value: language }),
+      (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
       setSelectedLanguage,
       selectedLanguage
     )

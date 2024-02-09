@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
-import { MailingListModal, PortalLanguage } from '@juniper/ui-core'
+import { MailingListModal, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -28,7 +28,7 @@ export default function Navbar(props: NavbarProps) {
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 
-  const languageOptions = portalEnv.portal.portalLanguages
+  const languageOptions = portalEnv.portalEnv.supportedLanguages
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -224,7 +224,7 @@ export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStu
  *
  */
 export function LanguageDropdown({ languageOptions, selectedLanguage, changeLanguage, reloadPortal }: {
-  languageOptions: PortalLanguage[],
+  languageOptions: PortalEnvironmentLanguage[],
   selectedLanguage: string,
   changeLanguage: (languageCode: string) => void,
   reloadPortal: () => void

@@ -5,7 +5,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
-import { mockPortal, mockPortalEnvContext } from 'test-utils/mocking-utils'
+import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
@@ -137,10 +137,20 @@ test('delete page button is disabled when Landing page is selected', async () =>
 test('renders a language selector when there are multiple languages', async () => {
   const siteContent = mockSiteContent()
   const portalEnvContext = mockPortalEnvContext('sandbox')
+  const portalEnvContextWithMultipleLanguages = {
+    ...mockPortalEnvContext('sandbox'),
+    portalEnv: {
+      ...portalEnvContext.portalEnv,
+      supportedLanguages: [
+        { languageCode: 'en', languageName: 'English' },
+        { languageCode: 'es', languageName: 'Spanish' }
+      ]
+    }
+  }
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
-      portalEnvContext={portalEnvContext}/>)
+      portalEnvContext={portalEnvContextWithMultipleLanguages}/>)
   render(RoutedComponent)
 
   const languageSelector = screen.getByLabelText('Select a language')
@@ -149,17 +159,11 @@ test('renders a language selector when there are multiple languages', async () =
 
 test('does not render a language selector when there is only one language', async () => {
   const siteContent = mockSiteContent()
-  const portalOnlyEnglish = {
-    ...mockPortalEnvContext('sandbox'),
-    portal: {
-      ...mockPortal(),
-      portalLanguages: []
-    }
-  }
+  const portalEnvContext = mockPortalEnvContext('sandbox')
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
-      portalEnvContext={portalOnlyEnglish}/>)
+      portalEnvContext={portalEnvContext}/>)
   render(RoutedComponent)
 
   expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()

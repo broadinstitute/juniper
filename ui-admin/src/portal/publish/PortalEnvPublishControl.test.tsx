@@ -14,7 +14,8 @@ test('renders a copy link', () => {
       acceptingRegistration: false,
       passwordProtected: false,
       password: ''
-    }
+    },
+    supportedLanguages: []
   }
   const irbEnv :PortalEnvironment = {
     environmentName: 'irb',
@@ -23,15 +24,15 @@ test('renders a copy link', () => {
       acceptingRegistration: false,
       passwordProtected: false,
       password: ''
-    }
+    },
+    supportedLanguages: []
   }
   const portal: Portal = {
     id: '11111111-1111-1111-1111-111111111111',
     shortcode: 'foo',
     name: 'testPortal',
     portalStudies: [],
-    portalEnvironments: [sandboxEnv, irbEnv],
-    portalLanguages: []
+    portalEnvironments: [sandboxEnv, irbEnv]
   }
   const { RoutedComponent } = setupRouterTest(<PortalEnvPublishControl
     portal={portal} studyShortcode={'bar'}  destEnvName={'irb'} />)

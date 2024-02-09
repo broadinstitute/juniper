@@ -12,8 +12,8 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class PortalLanguage extends BaseEntity {
-    private UUID portalId;
+public class PortalEnvironmentLanguage extends BaseEntity {
+    private UUID portalEnvironmentId;
     private String languageCode;
     private String languageName;
 }

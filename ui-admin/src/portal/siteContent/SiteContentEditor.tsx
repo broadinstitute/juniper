@@ -6,7 +6,7 @@ import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } f
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
-  ApiContextT, HtmlSectionView, SiteFooter, PortalLanguage
+  ApiContextT, HtmlSectionView, SiteFooter, PortalEnvironmentLanguage
 } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
@@ -55,8 +55,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalLanguage | undefined>(
-    portalEnvContext.portal.portalLanguages.find(f =>
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
+    portalEnvContext.portalEnv.supportedLanguages.find(f =>
       workingContent.localizedSiteContents[0]?.language === f.languageCode) || defaultLanguage)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
@@ -71,8 +71,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
   } =
       useReactSingleSelect(
-        portalEnvContext.portal.portalLanguages,
-        (language: PortalLanguage) => ({ label: language.languageName, value: language }),
+        portalEnvContext.portalEnv.supportedLanguages,
+        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
         setSelectedLanguage,
         selectedLanguage
       )
@@ -245,7 +245,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
-          { portalEnvContext.portal.portalLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
+          { portalEnvContext.portalEnv.supportedLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={e => {

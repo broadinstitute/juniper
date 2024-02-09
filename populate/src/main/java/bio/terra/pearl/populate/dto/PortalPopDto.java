@@ -2,7 +2,6 @@ package bio.terra.pearl.populate.dto;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.portal.PortalLanguage;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import java.util.ArrayList;
 import java.util.HashSet;

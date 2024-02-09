@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { FormContent, PortalLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
+import { FormContent, PortalEnvironmentLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 
 type FormPreviewProps = {
   formContent: FormContent
-  supportedLanguages: PortalLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[]
 }
 
 // TODO: Add JSDoc

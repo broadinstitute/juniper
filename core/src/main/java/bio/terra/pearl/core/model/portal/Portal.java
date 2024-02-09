@@ -24,6 +24,4 @@ public class Portal extends BaseEntity {
     private List<PortalStudy> portalStudies = new ArrayList<>();
     @Builder.Default
     private List<PortalEnvironment> portalEnvironments = new ArrayList<>();
-    @Builder.Default
-    private List<PortalLanguage> portalLanguages = new ArrayList<>();
 }

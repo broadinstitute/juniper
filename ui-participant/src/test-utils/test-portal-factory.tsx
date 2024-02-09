@@ -14,8 +14,7 @@ export const mockPortal = (): Portal => {
     id: 'portal123',
     shortcode: 'mockportal',
     portalStudies: [],
-    portalEnvironments: [mockPortalEnvironment()],
-    portalLanguages: [{ languageCode: 'en', languageName: 'English' }]
+    portalEnvironments: [mockPortalEnvironment()]
   }
 }
 
@@ -51,7 +50,8 @@ export const mockPortalEnvironment = (): PortalEnvironment => {
   return {
     environmentName: 'sandbox',
     portalEnvironmentConfig: mockPortalEnvironmentConfig(),
-    siteContent: mockSiteContent()
+    siteContent: mockSiteContent(),
+    supportedLanguages: [{ languageCode: 'en', languageName: 'English' }]
   }
 }
 
