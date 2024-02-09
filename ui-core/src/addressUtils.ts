@@ -4,8 +4,8 @@ import { isEmpty, isNil } from 'lodash'
 
 const FIELD_TO_ADDR_COMPONENTS : { [index: string]: AddressComponent[] } = {
   'city': ['CITY'],
-  'street1': ['STREET_TYPE', 'HOUSE_NUMBER', 'STREET_NAME'],
-  'street2': ['SUBPREMISE'],
+  'street1': ['STREET_TYPE', 'HOUSE_NUMBER', 'STREET_NAME', 'SUBPREMISE'],
+  'street2': [],
   'country': ['COUNTRY'],
   'state': ['STATE_PROVINCE'],
   'postalCode': ['POSTAL_CODE']

@@ -14,10 +14,12 @@ public class AddressValidationClientProvider {
     private final String defaultClient;
 
     public AddressValidationClientProvider(AddressValidationConfig addressValidationConfig,
-                                           AddressValidationClientStub stubbedClient) {
+                                           AddressValidationClientStub stubbedClient,
+                                           SmartyAddressValidationClient realClient) {
         defaultClient = addressValidationConfig.getAddressValidationClass();
 
         clientMap.put("AddressValidationClientStub", stubbedClient);
+        clientMap.put("SmartyAddressValidationClient", realClient);
     }
 
     public AddressValidationClient get() {
