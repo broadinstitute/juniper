@@ -189,6 +189,9 @@ databaseChangeLog:
       file: changesets/2024_02_04_add_survey_assign.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_02_07_survey_auto_update.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_02_06_portal_languages.yaml
       relativeToChangelogFile: true
 

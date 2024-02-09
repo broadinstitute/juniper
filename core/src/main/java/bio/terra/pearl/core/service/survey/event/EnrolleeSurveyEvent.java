@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.survey;
+package bio.terra.pearl.core.service.survey.event;
 
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;

@@ -5,21 +5,31 @@ import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.Event;
+import bio.terra.pearl.core.model.workflow.EventClass;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.EventService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Test
@@ -80,16 +89,20 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
         Survey survey = surveyFactory.buildPersisted(testName);
-        StudyEnvironmentSurvey surveyConfig = studyEnvironmentSurveyService.create(StudyEnvironmentSurvey.builder()
-                .surveyId(survey.getId())
-                .studyEnvironmentId(irbEnv.getId())
-                .build());
-
+        StudyEnvironmentSurvey surveyConfig = surveyFactory.attachToEnv(survey, irbEnv.getId(), true);
         diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
 
         List<StudyEnvironmentSurvey> liveSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(liveEnv.getId());
         assertThat(liveSurveys, hasSize(1));
         assertThat(liveSurveys.get(0).getSurveyId(), equalTo(survey.getId()));
+        //confirm that an event was published
+        List<Event> events = eventService.findAllByStudyEnvAndClass(liveEnv.getId(), EventClass.SURVEY_PUBLISHED_EVENT);
+        assertThat(events, hasSize(1));
+        assertThat(events.get(0), samePropertyValuesAs(Event.builder()
+                .surveyId(survey.getId())
+                .studyEnvironmentId(liveEnv.getId())
+                .eventClass(EventClass.SURVEY_PUBLISHED_EVENT).build(),
+                "id", "createdAt", "lastUpdatedAt"));
 
         // now test that we can publish a removal
         studyEnvironmentSurveyService.deactivate(surveyConfig.getId());
@@ -99,6 +112,40 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         assertThat(liveSurveys, hasSize(0));
         // confirm the deactivated config is still there
         assertThat(studyEnvironmentSurveyDao.findAll(List.of(liveEnv.getId()), null, false), hasSize(1));
+    }
+
+    @Test
+    @Transactional
+    public void testApplyChangesPublishSurveyUpdate(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
+                sandboxBundle.getPortal(), sandboxBundle.getStudy());
+
+        // attach v1 to irb, and v2 in sandbox, then try copying sandbox to irb.
+        Survey survey = surveyFactory.buildPersisted(testName);
+        surveyFactory.attachToEnv(survey, irbBundle.getStudyEnv().getId(), true);
+        survey.setAutoUpdateTaskAssignments(true);
+        Survey surveyV2 = surveyService.createNewVersion(sandboxBundle.getPortal().getId(), survey);
+        surveyFactory.attachToEnv(surveyV2, sandboxBundle.getStudyEnv().getId(), true);
+
+        // assign v1 of the survey to an enrollee in the irb environment
+        EnrolleeFactory.EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(irbEnrollee, ParticipantTaskFactory.DEFAULT_BUILDER
+                .targetStableId(survey.getStableId())
+                .targetAssignedVersion(survey.getVersion()));
+
+        // after publishing, the irb should have the new version, and the task should be updated too
+        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox, EnvironmentName.irb);
+
+        List<StudyEnvironmentSurvey> irbSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(irbBundle.getStudyEnv().getId());
+        assertThat(irbSurveys, hasSize(1));
+        assertThat(irbSurveys.get(0).getSurveyId(), equalTo(surveyV2.getId()));
+
+        // confirm the task version got updated too
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(irbEnrollee.enrollee().getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getTargetAssignedVersion(), equalTo(2));
     }
 
     @Test
@@ -151,4 +198,14 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     private PortalDiffService portalDiffService;
     @Autowired
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    @Autowired
+    private EventService eventService;
+    @Autowired
+    private PortalFactory portalFactory;
+    @Autowired
+    private ParticipantTaskFactory participantTaskFactory;
+    @Autowired
+    private ParticipantTaskService participantTaskService;
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
 }

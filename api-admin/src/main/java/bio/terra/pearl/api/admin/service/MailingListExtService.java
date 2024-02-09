@@ -2,10 +2,10 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;

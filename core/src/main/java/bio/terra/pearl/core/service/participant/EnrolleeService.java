@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;

@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.model.participant;
+package bio.terra.pearl.core.model.address;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;

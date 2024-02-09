@@ -4,7 +4,7 @@ import bio.terra.pearl.core.dao.workflow.AdminTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 
 import java.time.Instant;
 import java.util.List;

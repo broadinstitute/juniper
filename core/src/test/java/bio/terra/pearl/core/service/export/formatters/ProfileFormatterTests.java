@@ -1,17 +1,17 @@
 package bio.terra.pearl.core.service.export.formatters;
 
-import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import java.time.LocalDate;
-import java.util.Map;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ProfileFormatterTests {
     @Test

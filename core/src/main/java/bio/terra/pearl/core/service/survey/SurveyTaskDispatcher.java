@@ -1,12 +1,13 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.RuleEvaluator;
@@ -108,7 +110,7 @@ public class SurveyTaskDispatcher {
         }
     }
 
-    /** survey tasks could be triggered by just about anything, so listen to all enrollee events */
+    /** survey tasks could be triggered by just about anything, but for now we just listen to EnrolleeCreation */
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void createSurveyTasks(EnrolleeCreationEvent enrolleeEvent) {
@@ -133,6 +135,27 @@ public class SurveyTaskDispatcher {
                     enrolleeEvent.getEnrollee().getParticipantTasks().add(task);
                 }
             }
+        }
+    }
+
+    @EventListener
+    @Order(DispatcherOrder.SURVEY_TASK)
+    public void updateSurveyTaskVersions(SurveyPublishedEvent event) {
+        if (event.getSurvey().isAutoUpdateTaskAssignments()) {
+            ParticipantTaskUpdateDto updateDto = new ParticipantTaskUpdateDto(
+                    List.of(new ParticipantTaskUpdateDto.TaskUpdateSpec(
+                            event.getSurvey().getStableId(),
+                            event.getSurvey().getVersion(),
+                            null,
+                            null)),
+                    null,
+                    true
+                    );
+            participantTaskService.updateTasks(
+                    event.getStudyEnvironmentId(),
+                    updateDto,
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "updateSurveyTaskVersions"))
+            );
         }
     }
 

@@ -1,9 +1,13 @@
 import {
+  AddressValidationResult,
   AlertTrigger,
   ConsentForm,
-  ConsentResponse, EnvironmentName,
+  ConsentResponse,
+  EnvironmentName,
+  MailingAddress,
   ParticipantDashboardAlert,
-  ParticipantTask, ParticipantTaskType,
+  ParticipantTask,
+  ParticipantTaskType,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -23,6 +27,7 @@ import queryString from 'query-string'
 
 export type {
   Answer,
+  AddressValidationResult,
   ConsentForm,
   ConsentResponse,
   HtmlPage,
@@ -33,6 +38,7 @@ export type {
   NavbarItemInternalAnchor,
   NavbarItemMailingList,
   NavbarItemExternal,
+  MailingAddress,
   Trigger,
   ParticipantTask,
   Portal,
@@ -128,15 +134,6 @@ export type Profile = {
 export type ProfileUpdateDto = {
   justification: string,
   profile: Profile
-}
-
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
 }
 
 export type Notification = {
@@ -370,6 +367,7 @@ export type KitRequestListResponse = {
 
 export type InternalConfig = {
   pepperDsmConfig: Record<string, string>
+  addrValidationConfig: Record<string, string>
 }
 
 export type ParticipantTaskUpdateDto = {
@@ -388,11 +386,11 @@ export type ParticipantTaskAssignDto = {
   assignAllUnassigned: boolean
 }
 
-export type TaskUpdateSpec ={
-    targetStableId: string
-    updateToVersion: number
-    updateFromVersion?: number // if absent, any other versions will be updated
-    newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
+export type TaskUpdateSpec = {
+  targetStableId: string
+  updateToVersion: number
+  updateFromVersion?: number // if absent, any other versions will be updated
+  newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
 }
 
 
@@ -689,7 +687,7 @@ export default {
     envName?: EnvironmentName, active?: boolean, stableId?: string): Promise<StudyEnvironmentSurvey[]> {
     const params = queryString.stringify({ envName, active, stableId })
     const url = `${basePortalUrl(portalShortcode)}/studies/${studyShortcode}`
-    + `/configuredSurveys/findWithNoContent?${params}`
+      + `/configuredSurveys/findWithNoContent?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -848,6 +846,18 @@ export default {
     const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(profile),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async validateAddress(
+    address: MailingAddress
+  ): Promise<AddressValidationResult> {
+    const url = `${baseAddressUrl()}/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
       headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)
@@ -1346,4 +1356,9 @@ function baseStudyEnvUrlFromParams(studyEnvParams: StudyEnvParams) {
 /** base api path for populate api calls */
 function basePopulateUrl() {
   return `${API_ROOT}/internal/v1/populate`
+}
+
+/** base api path for address api calls */
+function baseAddressUrl() {
+  return `${API_ROOT}/address/v1`
 }
