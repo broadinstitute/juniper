@@ -33,8 +33,6 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
     questions = questions.filter(q => !!answerMap[q.name])
   }
 
-  const { portal } = usePortalEnv()
-
   return <div>
     <div className="d-flex d-print-none">
       <div className="d-flex align-items-center">
