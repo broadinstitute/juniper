@@ -151,7 +151,7 @@ public class RegistrationService {
         governedPpUser.setParticipantUserId(governedUser.getId());
 
         Profile governedProfile =  Profile.builder()
-                .contactEmail(governedUser.getUsername())
+                .contactEmail(proxy.getUsername())
                 .givenName(null)
                 .familyName(null)
            .build();

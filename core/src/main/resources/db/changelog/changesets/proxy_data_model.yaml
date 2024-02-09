@@ -1,10 +1,4 @@
 databaseChangeLog:
-#  - changeSet:
-#      id: create_enum_relationship
-#      author: pegah
-#      changes:
-#        - sql:
-#            sql: CREATE TYPE relationship AS ENUM ('PROXY', 'guardian', 'parent', 'mother', 'father', 'other');
   - changeSet:
       id: "proxy_data_model"
       author: pegah

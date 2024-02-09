@@ -31,6 +31,10 @@ public class EnrolleeRelationService extends CrudService<EnrolleeRelation, Enrol
         return dao.findByEnrolleeIdAndPortalId(enrolleeId, portalId);
     }
 
+    public List<EnrolleeRelation> findByEnrolleeIdAndًُRelationType(UUID enrolleeId, RelationshipType relationshipType) {
+        return dao.findByEnrolleeIdAndRelationshipType(enrolleeId, relationshipType);
+    }
+
     public List<Enrollee> findGovernedEnrollees(UUID participantUserId, UUID portalId) {
         List<EnrolleeRelation> enrolleeRelations=
                 findByParticipantUserIdAndPortalId(participantUserId, portalId).stream().filter(enrolleeRelation -> isProxy(enrolleeRelation))

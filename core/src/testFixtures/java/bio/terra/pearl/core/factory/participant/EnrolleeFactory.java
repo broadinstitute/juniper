@@ -9,9 +9,13 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +25,12 @@ import java.util.UUID;
 public class EnrolleeFactory {
     @Autowired
     private EnrolleeService enrolleeService;
+    @Autowired
+    private StudyService studyService;
+    @Autowired
+    private PortalService portalService;
+    @Autowired
+    private EnrollmentService enrollmentService;
     @Autowired
     private ParticipantUserFactory participantUserFactory;
     @Autowired
@@ -105,6 +115,17 @@ public class EnrolleeFactory {
         return new EnrolleeBundle(enrollee, ppUser, portalEnv.getPortalId());
     }
 
+    public HubResponse buildGovernedEnrollee(String testName){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, testName);
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+
+        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                null, true);
+        return hubResponse;
+    }
 
     public record EnrolleeBundle(Enrollee enrollee, PortalParticipantUser portalParticipantUser, UUID portalId) {}
 }
