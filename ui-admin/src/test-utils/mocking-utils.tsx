@@ -43,10 +43,6 @@ export const mockPortal: () => Portal = () => ({
   portalStudies: [],
   portalEnvironments: [
     mockPortalEnvironment('sandbox')
-  ],
-  portalLanguages: [
-    { languageCode: 'en', languageName: 'English' },
-    { languageCode: 'es', languageName: 'Spanish' }
   ]
 })
 
@@ -78,7 +74,10 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
     acceptingRegistration: true
   },
   environmentName: envName,
-  supportedLanguages: []
+  supportedLanguages: [
+    { languageCode: 'en', languageName: 'English' },
+    { languageCode: 'es', languageName: 'Spanish' }
+  ]
 })
 
 
@@ -157,8 +156,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
       id: 'portalId',
       portalStudies: [],
       portalEnvironments: [],
-      name: 'Fake portal',
-      portalLanguages: []
+      name: 'Fake portal'
     },
     currentEnv: sandboxEnv,
     currentEnvPath: 'portalCode/studies/fakeStudy/env/sandbox'

@@ -137,20 +137,10 @@ test('delete page button is disabled when Landing page is selected', async () =>
 test('renders a language selector when there are multiple languages', async () => {
   const siteContent = mockSiteContent()
   const portalEnvContext = mockPortalEnvContext('sandbox')
-  const portalEnvContextWithMultipleLanguages = {
-    ...mockPortalEnvContext('sandbox'),
-    portalEnv: {
-      ...portalEnvContext.portalEnv,
-      supportedLanguages: [
-        { languageCode: 'en', languageName: 'English' },
-        { languageCode: 'es', languageName: 'Spanish' }
-      ]
-    }
-  }
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
-      portalEnvContext={portalEnvContextWithMultipleLanguages}/>)
+      portalEnvContext={portalEnvContext}/>)
   render(RoutedComponent)
 
   const languageSelector = screen.getByLabelText('Select a language')
@@ -159,11 +149,18 @@ test('renders a language selector when there are multiple languages', async () =
 
 test('does not render a language selector when there is only one language', async () => {
   const siteContent = mockSiteContent()
-  const portalEnvContext = mockPortalEnvContext('sandbox')
+  const mockContext = mockPortalEnvContext('sandbox')
+  const mockContextOnlyEnglish = {
+    ...mockPortalEnvContext('sandbox'),
+    portalEnv: {
+      ...mockContext.portalEnv,
+      supportedLanguages: []
+    }
+  }
   const { RoutedComponent } = setupRouterTest(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
-      portalEnvContext={portalEnvContext}/>)
+      portalEnvContext={mockContextOnlyEnglish}/>)
   render(RoutedComponent)
 
   expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()

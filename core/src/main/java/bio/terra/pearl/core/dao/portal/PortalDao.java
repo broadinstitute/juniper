@@ -91,7 +91,6 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
             portalStudy.setStudy(studyDao.findOneFullLoad(portalStudy.getStudyId()).get());
             portal.getPortalStudies().add(portalStudy);
         }
-
         return portal;
     }
 
