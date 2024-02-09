@@ -115,10 +115,10 @@ public class EnrolleeFactory {
         return new EnrolleeBundle(enrollee, ppUser, portalEnv.getPortalId());
     }
 
-    public HubResponse buildGovernedEnrollee(String testName){
+    public HubResponse buildProxyAndGovernedEnrollee(String testName, String proxyEmail){
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, testName);
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, testName, proxyEmail);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 

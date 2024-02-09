@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,8 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
     private ParticipantUserService participantUserService;
+    @Autowired
+    private PortalParticipantUserService portalParticipantUserService;
 
     @Test
     @Transactional
@@ -183,11 +187,14 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserProfile(TestInfo testInfo){
-        HubResponse hubResponse = enrolleeFactory.buildGovernedEnrollee(getTestName(testInfo));
+        HubResponse hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
         Enrollee enrollee = hubResponse.getEnrollee();
         Profile governedUserProfile = profileService.find(enrollee.getProfileId()).get();
         List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndًُRelationType(enrollee.getId(), RelationshipType.PROXY);
         ParticipantUser proxyUser = participantUserService.find(relations.get(0).getParticipantUserId()).get();
-        Assert.assertEquals(proxyUser.getUsername(), governedUserProfile.getContactEmail());
+        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyUser.getId()).get(0);
+        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
+        Assert.assertTrue(StringUtils.isNoneEmpty(governedUserProfile.getContactEmail()));
+        Assert.assertEquals(proxyProfile.getContactEmail(), governedUserProfile.getContactEmail());
     }
 }

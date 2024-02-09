@@ -178,7 +178,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.getShortcode(), notNullValue());
         Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId());
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
         Assertions.assertEquals(enrolleeRelations.size(), 1);
         Assertions.assertEquals(enrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
         Assertions.assertEquals(enrolleeRelations.get(0).getEnrolleeId(), enrollee.getId());
@@ -222,7 +222,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
         //assert that the proxy wasn't enrolled
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId());
+        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
         Assertions.assertEquals(proxyEnrolleeRelations.size(), 2);
         Assertions.assertEquals(proxyEnrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
         Assertions.assertEquals(proxyEnrolleeRelations.get(0).getEnrolleeId(), enrollee1.getId());
