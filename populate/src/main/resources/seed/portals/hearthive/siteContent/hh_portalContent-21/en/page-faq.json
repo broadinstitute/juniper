@@ -1,0 +1,111 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "FAQ",
+  "htmlPageId" : "5d998c8b-e3d9-48f4-8ed3-20e851002a69",
+  "htmlPageDto" : {
+    "title" : "FAQ",
+    "sections" : [ ],
+    "path" : "faq",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "select_imperial_-_final_selects_page_1_c.png",
+          "version" : 1
+        },
+        "title" : "Frequently Asked Questions",
+        "blurb" : "",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "FAQ",
+      "sectionConfigJson" : {
+        "title" : "",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "questions" : [ {
+          "question" : "How do I register for the Heart Hive?",
+          "answer" : "You are eligible if you meet any one of these criteria:\n\n* You have a diagnosis of cardiomyopathy or myocarditis\n\n* You have a family history of cardiomyopathy\n\n* You have had genetic testing revealing that you have an inherited risk for cardiomyopathy\n\nOr you can register if you **do not** have heart disease and would like to be in our comparison group (check out the Participants Without Heart Disease FAQ section for more details).\n\nHead to our [registration page](/join) where you can set up an account and provide some basic information about yourself."
+        }, {
+          "question" : "I'm registered, what next?",
+          "answer" : "Once you've registered an account - please [log in](/hub) to see if you have any available tasks in the My Tasks section.\n\nEvery study conducted through the Heart Hive will have its own consent process, explaining the study's purpose, what it will involve and any risks that might be involved. A completed version of the consent will be be available for download at any time via the portal.\n\nDepending on the study, taking park will involve completing surveys, and some will involve genetic analysis via DNA collected from saliva kits mailed out to participants."
+        }, {
+          "question" : "What if I've changed my mind about taking part?",
+          "answer" : "If you wish to withdraw from any study, please log in to the Heart Hive and complete the withdraw form.\n\nIf you haven't consented to any studies yet but would like to delete your account, please [contact us.](mailto:info@thehearthive.org)"
+        }, {
+          "question" : "Can I edit my account details?",
+          "answer" : "Yes, if you've noticed something is wrong in your registration details, [log in](/hub) to your account and from the dashboard, click on the enrollment survey, and edit any details that you need to."
+        }, {
+          "question" : "I've forgotten my password, how can I access my account?",
+          "answer" : "You can reset your password [here](/hub) by selecting Forgot your password? and sending a new verification code to the email address you used to register your account."
+        }, {
+          "question" : "Can I register if I don't have cardiomyopathy but a member of my family does?",
+          "answer" : "Yes, anyone with a family history of cardiomyopathy can register with the Heart Hive.\n\nOn the [registration form](/join), select:\n\n* Healthy Volunteer - No\n\n* Diagnosed with cardiomyopathy? - No\n\n* Family history of cardiomyopathy? - Yes"
+        }, {
+          "question" : "Can I register if I don't' have heart disease?",
+          "answer" : "Yes, if you don't have heart disease, you can join the Heart Hive as one of our comparison group for our COVID-19 Study.\n\nThe Heart Hive is primarily a platform for people with cardiomyopathy & those with a family history of cardiomyopathy to take part in research. We expect this will be a one-off opportunity for people without heart disease to take part in the Heart Hive but we may invite you to participate in future studies where a comparison group is needed."
+        }, {
+          "question" : "Can I register if I have high blood pressure or diabetes?",
+          "answer" : "Yes, we're accepting participants with high blood pressure or diabetes.\n\nYou can [sign up](/join) and take part in our comparison group by registering and selecting the following options:\n\n* Healthy Volunteer - Yes\n\n* Diagnosed with cardiomyopathy? - No"
+        }, {
+          "question" : "Which browsers are compatible with the Heart Hive?",
+          "answer" : "The Heart Hive is not currently supported on Internet Explorer."
+        }, {
+          "question" : "The consent form is not accepting my signature.",
+          "answer" : "This may be because you're using a non-compatible internet browser. Please try with a different browser (e.g., Firefox, Chrome, Safari)."
+        }, {
+          "question" : "How can I find out more about the research studies hosted on the Heart Hive?",
+          "answer" : "If you register for the Heart Hive and are eligible for any studies, you will find a section on the landing page called *Useful Documents* containing full details of any study that might be suitable for you to sign up to."
+        } ]
+      }
+    }, {
+      "sectionType" : "BANNER_IMAGE",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "hearthive_participant_1.webp",
+          "version" : 1,
+          "alt" : "Enter alt text here",
+          "style" : {
+            "height" : ""
+          }
+        }
+      }
+    }, {
+      "sectionType" : "HERO_WITH_IMAGE",
+      "sectionConfigJson" : {
+        "title" : "Turning today's heart disease into tomorrow's heart health.",
+        "blurb" : "Save lives by advancing research.",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Register now",
+          "type" : "join"
+        } ],
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "",
+        "blurb" : "The Heart Hive was developed by Dr. James Ware and by Dr. Angharad Roberts and the Cardiovascular Genetics & Genomics Group, Imperial College London.\n\nSupported by Cardiomyopathy UK.",
+        "blurbAlign" : "center",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ {
+          "text" : "Join Mailing List",
+          "type" : "mailingList"
+        } ]
+      }
+    } ]
+  }
+}

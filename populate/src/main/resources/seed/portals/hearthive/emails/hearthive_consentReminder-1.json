@@ -1,0 +1,9 @@
+{
+  "createdAt" : 1700067540.414227000,
+  "lastUpdatedAt" : 1700067540.414227000,
+  "subject" : "Insert subject",
+  "name" : "Consent Reminder",
+  "stableId" : "hearthive_consentReminder",
+  "version" : 1,
+  "bodyPopulateFile" : "hearthive_consentReminder-1.html"
+}

@@ -1,35 +1,65 @@
 {
-  "name": "Pacing study",
-  "shortcode": "pacing",
-  "surveyFiles": [],
-  "consentFormFiles": [],
-  "studyEnvironmentDtos": [
-    {
-      "environmentName": "sandbox",
-      "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
-        "passwordProtected": false,
-        "password": "broad_institute",
-        "initialized": true
-      }
+  "name" : "Pacing study",
+  "shortcode" : "pacing",
+  "studyPortals" : [ ],
+  "surveyFiles" : [ ],
+  "consentFormFiles" : [ ],
+  "emailTemplateFiles" : [ ],
+  "studyEnvironmentDtos" : [ {
+    "environmentName" : "irb",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : true
     },
-    {
-      "environmentName": "irb",
-      "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
-        "passwordProtected": false,
-        "password": "broad_institute",
-        "initialized": false
-      }
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ]
+  }, {
+    "environmentName" : "live",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : false,
+      "initialized" : true
     },
-    {
-      "environmentName": "live",
-      "studyEnvironmentConfig": {
-        "acceptingEnrollment": false,
-        "passwordProtected": false,
-        "password": "broad_institute",
-        "initialized": false
-      }
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ]
+  }, {
+    "environmentName" : "sandbox",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : false,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : false,
+      "initialized" : true
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ],
+    "preEnrollSurveyDto" : {
+      "surveyType" : "RESEARCH",
+      "triggers" : [ ],
+      "recur" : false,
+      "required" : false,
+      "allowAdminEdit" : true,
+      "allowParticipantStart" : true,
+      "allowParticipantReedit" : true,
+      "prepopulate" : false,
+      "populateFileName" : "../../surveys/pacingHocmEligibility-21.json"
     }
-  ]
+  } ]
 }

@@ -1,0 +1,81 @@
+{
+  "stableId" : "registrationForm",
+  "version" : 21,
+  "name" : "Registration_Form",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "jsonContent" : {
+    "title" : "cardiomyopathy registration",
+    "logoPosition" : "right",
+    "pages" : [ {
+      "name" : "page1",
+      "elements" : [ {
+        "type" : "html",
+        "name" : "descriptionText",
+        "html" : "<h3 class=\"text-center fw-bold\">\nWelcome to the Heart Hive!</h3>\n&nbsp;\n\n<p>Please complete this short form to join the registry and set up an account</p>\n\n\n\n"
+      }, {
+        "type" : "radiogroup",
+        "name" : "hh_prereg",
+        "title" : "Please select one of the options",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "I have been diagnosed with cardiomyopathy",
+          "value" : "cm"
+        }, {
+          "text" : "I have a family history of cardiomyopathy, not have not been diagnosed with cardiomyopathy",
+          "value" : "fx"
+        }, {
+          "text" : "I have had genetic testing which revealed an inherited risks for cardiomyopathy",
+          "value" : "genetic_risk_of_cm"
+        }, {
+          "text" : "I have been diagnosed with myocarditis",
+          "value" : "myoc"
+        }, {
+          "text" : "None of the above",
+          "value" : "none"
+        } ]
+      }, {
+        "type" : "radiogroup",
+        "name" : "over18",
+        "title" : "Are you age 18 or older?",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "yes"
+        }, {
+          "text" : "No",
+          "value" : "no"
+        } ]
+      }, {
+        "type" : "html",
+        "name" : "privacy_text",
+        "title" : "privacy",
+        "html" : "I have read and understood how my data will be used as described in the <a href=\"url\" target=\"_blank\" rel=\"noopener noreferrer\">privacy notice</a>\nnotice"
+      }, {
+        "type" : "checkbox",
+        "name" : "privacy_notice",
+        "title" : "Please tick the box to agree",
+        "description" : "",
+        "isRequired" : true,
+        "choices" : [ {
+          "text" : "Yes",
+          "value" : "yes"
+        } ]
+      } ]
+    } ],
+    "calculatedValues" : [ {
+      "name" : "qualified",
+      "expression" : "(!{hh_prereg} = 'none') and {over18} = 'yes' and {privacy_notice} allof ['yes']",
+      "includeIntoResult" : true
+    } ]
+  }
+}

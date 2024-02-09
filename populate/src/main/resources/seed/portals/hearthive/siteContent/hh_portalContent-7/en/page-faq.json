@@ -1,0 +1,11 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "FAQ",
+  "htmlPageId" : "64bb208d-067e-424c-bb7e-593da970b4af",
+  "htmlPageDto" : {
+    "title" : "FAQ",
+    "sections" : [ ],
+    "path" : "faq",
+    "sectionDtos" : [ ]
+  }
+}

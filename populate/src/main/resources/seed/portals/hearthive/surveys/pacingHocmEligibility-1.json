@@ -1,0 +1,17 @@
+{
+  "stableId" : "pacingHocmEligibility",
+  "version" : 1,
+  "name" : "Pacing HOCM eligibility",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "jsonContent" : {
+    "pages" : [ ]
+  }
+}
