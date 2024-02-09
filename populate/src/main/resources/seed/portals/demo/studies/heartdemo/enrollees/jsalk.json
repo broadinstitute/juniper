@@ -52,10 +52,10 @@
       "surveyStableId": "hd_hd_basicInfo",
       "surveyVersion": 1,
       "answerPopDtos": [
-        {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Jonas"},
-        {"questionStableId": "hd_hd_basic_lastName", "stringValue": "Salk"},
-        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street"},
-        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes"}
+        {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Jonas", "viewedLanguage": "en"},
+        {"questionStableId": "hd_hd_basic_lastName", "stringValue": "Salk", "viewedLanguage": "en"},
+        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street", "viewedLanguage": "es"},
+        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes", "viewedLanguage": "es"}
       ],
       "currentPageNo": 1,
       "complete": true,

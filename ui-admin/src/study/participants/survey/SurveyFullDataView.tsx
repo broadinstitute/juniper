@@ -33,6 +33,8 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
     questions = questions.filter(q => !!answerMap[q.name])
   }
 
+  const { portal } = usePortalEnv()
+
   return <div>
     <div className="d-flex d-print-none">
       <div className="d-flex align-items-center">
@@ -81,6 +83,7 @@ type ItemDisplayProps = {
 
 const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
+  const answerLanguage = answer?.viewedLanguage || 'N/A'
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -92,9 +95,11 @@ const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: 
   return <>
     <dt className="fw-normal">
       {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">({stableIdText})</span>
+      <span className="ms-2 fst-italic text-muted">({stableIdText}) ({answerLanguage})</span>
     </dt>
-    <dl><pre className="fw-bold">{displayValue}</pre></dl>
+    <dl>
+      <pre className="fw-bold">{displayValue}</pre>
+    </dl>
   </>
 }
 

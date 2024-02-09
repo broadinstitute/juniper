@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_answer_viewed_lang
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: answer
+            columns:
+              - column: { name: viewed_language, type: text, constraints: { nullable: true } } #TODO: nullable for now
