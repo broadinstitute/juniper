@@ -1,14 +1,18 @@
 package bio.terra.pearl.api.participant.service;
 
+import bio.terra.common.exception.NotFoundException;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
@@ -25,6 +29,8 @@ public class CurrentUserService {
   private ParticipantUserDao participantUserDao;
   private PortalParticipantUserService portalParticipantUserService;
   private EnrolleeService enrolleeService;
+  private EnrolleeRelationService enrolleeRelationService;
+  private PortalService portalService;
   private ParticipantTaskService participantTaskService;
   private ProfileService profileService;
 
@@ -33,12 +39,16 @@ public class CurrentUserService {
       PortalParticipantUserService portalParticipantUserService,
       EnrolleeService enrolleeService,
       ParticipantTaskService participantTaskService,
-      ProfileService profileService) {
+      ProfileService profileService,
+      EnrolleeRelationService enrolleeRelationService,
+      PortalService portalService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
     this.participantTaskService = participantTaskService;
     this.profileService = profileService;
+    this.enrolleeRelationService = enrolleeRelationService;
+    this.portalService = portalService;
   }
 
   /**
@@ -82,6 +92,11 @@ public class CurrentUserService {
     PortalParticipantUser portalUser = portalParticipantUser.get();
     user.getPortalParticipantUsers().add(portalUser);
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
+    Portal portal =
+        portalService
+            .findOneByShortcodeOrHostname(portalShortcode)
+            .orElseThrow(() -> new NotFoundException(""));
+    enrollees.addAll(enrolleeRelationService.findGovernedEnrollees(user.getId(), portal.getId()));
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }

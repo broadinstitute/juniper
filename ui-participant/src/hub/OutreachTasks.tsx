@@ -26,7 +26,8 @@ const useOutreachParams = () => {
 /** renders all outreach tasks for the set of enrollees. This operates on a list of enrollees, since
  * all of the tasks from the portal the user has signed into are shown, and that may include
  * multiple studies and therefore enrollees */
-export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
+export default function OutreachTasks({ enrollees, studies, activeEnrollee }: {enrollees: Enrollee[], studies: Study[],
+  activeEnrollee: Enrollee}) {
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])

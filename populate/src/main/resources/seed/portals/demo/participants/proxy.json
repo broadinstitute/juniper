@@ -1,0 +1,24 @@
+{
+  "participantUser": {
+    "username": "proxy@test.com",
+    "lastLoginHoursAgo": 2,
+    "id": "0e536e2d-1143-4d2d-a192-fecbc02d30ec"
+  },
+  "profile": {
+    "givenName": "Child",
+    "familyName": "FAMLILY",
+    "contactEmail": "proxy@test.com",
+    "mailingAddress": {
+      "street1": "415 Main st",
+      "city": "Cambridge",
+      "state": "MA",
+      "country": "US",
+      "postalCode": "02138"
+    }
+  },
+  "enrolleeRelation": {
+    "participantUserId": "0e536e2d-1143-4d2d-a192-fecbc02d30ec",
+    "enrolleeId": "59f85b44-5bbb-41f6-bc79-9ce4acd6fd50",
+    "relationshipType": "PROXY"
+  }
+}

@@ -70,9 +70,12 @@ export type Enrollee = {
   shortcode: string
   studyEnvironmentId: string
   surveyResponses: []
+  relationshipType?: string
 }
 
 export type Profile = {
+  givenName?: string,
+  familyName?: string,
   sexAtBirth: string
 }
 

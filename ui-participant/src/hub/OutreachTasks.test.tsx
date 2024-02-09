@@ -41,7 +41,7 @@ describe('OutreachTasks', () => {
     ]
     jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
     const { RoutedComponent } = setupRouterTest(<OutreachTasks
-      enrollees={[enrollee]} studies={[study]}/>)
+      enrollees={[enrollee]} studies={[study]} activeEnrollee={enrollee}/>)
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
