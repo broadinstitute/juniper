@@ -19,8 +19,8 @@ type FormPreviewOptionsProps = {
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
   // TODO (JN-863): Use the default language
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(supportedLanguages.find(lang =>
-    lang.languageCode === 'en'))
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
+    supportedLanguages.find(lang => lang.languageCode === 'en'))
 
   const {
     onChange: languageOnChange, options: languageOptions,
