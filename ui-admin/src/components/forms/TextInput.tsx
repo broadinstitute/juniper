@@ -24,15 +24,13 @@ export const TextInput = (props: TextInputProps) => {
   return (
     <>
       {label && <label
-        className={classNames('form-label', labelClassname)}
+        className={classNames('form-label', 'fw-semibold', labelClassname)}
         htmlFor={inputId}
       >
         {label}
         {required && <span className="text-danger">*</span>}
       </label>}
-      {infoContent &&
-        //@ts-ignore
-        <InfoPopup content={infoContent}/>}
+      {infoContent && <InfoPopup content={infoContent}/>}
       <input
         type="text"
         {...inputProps}

@@ -106,17 +106,11 @@ describe('VisibilityFields', () => {
       })
     })
 
-    it('displays an InfoPopup describing conditional visibility', async () => {
-      // Arrange
+    it('displays InfoPopups describing conditional visibility', async () => {
       const user = userEvent.setup()
-
       render(<VisibilityFields disabled={false} question={question} onChange={jest.fn()} />)
 
-      // Act
-      const popup = screen.getByLabelText('info popup')
-      await user.click(popup)
-
-      // Assert
+      await user.click(screen.getByLabelText('info popup'))
       expect(await screen.findByText('Conditional Visibility documentation')).toBeTruthy()
     })
   })
