@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
@@ -229,6 +229,17 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
   changeLanguage: (languageCode: string) => void,
   reloadPortal: () => void
 }) {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const langQueryParam = searchParams.get('lang')
+
+  useEffect(() => {
+    if (langQueryParam && langQueryParam !== selectedLanguage) {
+      changeLanguage(langQueryParam)
+      reloadPortal()
+    }
+  }, [langQueryParam])
+
   return (
     languageOptions.length > 1 ? (
       <li className="nav-item dropdown d-flex flex-column">
@@ -250,6 +261,11 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
             return (
               <button key={index} className="dropdown-item" aria-label={lang.languageName}
                 onClick={() => {
+                  //If the user selects a language from the dropdown, remove the lang query param from the URL
+                  if (langQueryParam) {
+                    searchParams.delete('lang')
+                    navigate({ search: searchParams.toString() })
+                  }
                   changeLanguage(lang.languageCode)
                   reloadPortal()
                 }}>
