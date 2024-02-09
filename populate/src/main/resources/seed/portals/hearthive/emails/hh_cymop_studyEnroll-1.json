@@ -1,9 +1,0 @@
-{
-  "createdAt" : 1697638252.903721000,
-  "lastUpdatedAt" : 1697638252.903721000,
-  "subject" : "Thank you for Signing Up!",
-  "name" : "Enrollment email",
-  "stableId" : "hh_cymop_studyEnroll",
-  "version" : 1,
-  "bodyPopulateFile" : "hh_cymop_studyEnroll-1.html"
-}

@@ -1,0 +1,7 @@
+{
+  "name": "Enrollment email",
+  "bodyPopulateFile": "studyEnroll.html",
+  "subject": "Welcome to The Heart Hive Community!",
+  "stableId": "hh_registry_studyEnroll",
+  "version": 1
+}

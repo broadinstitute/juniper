@@ -1,8 +1,0 @@
-{
-  "stableId" : "marketingConsent",
-  "version" : 1,
-  "name" : "Consent to Contact",
-  "jsonContent" : {
-    "pages" : [ ]
-  }
-}

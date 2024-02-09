@@ -1,0 +1,66 @@
+{
+  "name": "Heart Hive",
+  "shortcode": "hh_registry",
+  "surveyFiles": [],
+  "consentFormFiles": [
+    "surveys/consent.json"
+  ],
+  "surveyFiles": [
+    "surveys/outsideAdvert.json"
+  ],
+  "emailTemplateFiles": [
+    "emails/studyEnroll.json"
+  ],
+  "studyEnvironmentDtos": [
+    {
+      "environmentName": "sandbox",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": true
+      },
+      "configuredConsentDtos": [
+        {
+          "consentStableId": "hh_registry_consent",
+          "consentVersion": 1
+        }
+      ],
+      "configuredSurveyDtos": [
+        {
+          "surveyStableId": "hh_outsideAdvert",
+          "surveyVersion": 1
+        }
+      ],
+      "triggerDtos": [{
+        "triggerType": "EVENT",
+        "eventType": "STUDY_ENROLLMENT",
+        "emailTemplateStableId": "hh_registry_studyEnroll",
+        "emailTemplateVersion": 1
+      }],
+      "enrolleeFiles": [
+        "enrollees/gertrudeElion.json",
+        "enrollees/newEnrollee.json",
+        "enrollees/consentedEnrollee.json"
+      ]
+    },
+    {
+      "environmentName": "irb",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    },
+    {
+      "environmentName": "live",
+      "studyEnvironmentConfig": {
+        "acceptingEnrollment": true,
+        "passwordProtected": false,
+        "password": "broad_institute",
+        "initialized": false
+      }
+    }
+  ]
+}

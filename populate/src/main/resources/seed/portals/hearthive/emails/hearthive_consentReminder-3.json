@@ -1,9 +1,0 @@
-{
-  "createdAt" : 1700067540.414227000,
-  "lastUpdatedAt" : 1700067540.414227000,
-  "subject" : "Please Complete Your Enrollment in Heart Hive",
-  "name" : "Consent Reminder",
-  "stableId" : "hearthive_consentReminder",
-  "version" : 3,
-  "bodyPopulateFile" : "hearthive_consentReminder-3.html"
-}
