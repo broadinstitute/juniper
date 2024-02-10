@@ -4,11 +4,13 @@ import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUserRole;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.UserNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,10 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
         });
     }
 
+    public boolean isUserInPortal(UUID userId, UUID portalId) {
+        return dao.isUserInPortal(userId, portalId);
+    }
+
     public boolean userHasRole(UUID portalAdminUserId, String roleName) {
         PortalAdminUser portalAdminUser = findOneWithRolesAndPermissions(portalAdminUserId).orElseThrow(() -> new UserNotFoundException(portalAdminUserId));
         return portalAdminUser.getRoles().stream().anyMatch(role -> role.getName().equals(roleName));
@@ -61,8 +67,24 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
     public void deleteByUserId(UUID adminUserId) {
         List<PortalAdminUser> portalAdminUsers = dao.findByUserId(adminUserId);
         // for now this will probably be a small list, so it's fine to just delete them one by one
-        portalAdminUsers.forEach(portalAdminUser -> portalAdminUserRoleService.deleteByPortalAdminUserId(portalAdminUser.getId()));
-        dao.deleteByUserId(adminUserId);
+        for (PortalAdminUser portalAdminUser : portalAdminUsers) {
+            delete(portalAdminUser.getId(), CascadeProperty.EMPTY_SET);
+        }
+    }
+
+    @Transactional
+    public void deleteByPortalId(UUID portalId) {
+        List<PortalAdminUser> portalAdminUsers = dao.findByPortal(portalId);
+        for (PortalAdminUser portalAdminUser : portalAdminUsers) {
+            delete(portalAdminUser.getId(), CascadeProperty.EMPTY_SET);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void delete(UUID id, Set<CascadeProperty> cascades) {
+        portalAdminUserRoleService.deleteByPortalAdminUserId(id);
+        dao.delete(id);
     }
 
     @Transactional

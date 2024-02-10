@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.site.SiteContentService;
@@ -29,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
-    private PortalAdminUserDao portalAdminUserDao;
+    private PortalAdminUserService portalAdminUserService;
     private StudyService studyService;
     private SurveyService surveyService;
     private ConsentFormService consentFormService;
@@ -38,17 +39,17 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private SiteImageService siteImageService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
-                         StudyService studyService,
+                         PortalAdminUserService portalAdminUserService, StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
-                         PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
+                          SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
                          SiteImageService siteImageService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
+        this.portalAdminUserService = portalAdminUserService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
-        this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
@@ -90,7 +91,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         siteImageService.deleteByPortalShortcode(portal.getShortcode());
-        portalAdminUserDao.deleteByPortalId(portalId);
+        portalAdminUserService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 
@@ -136,7 +137,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     }
 
     public boolean checkAdminIsInPortal(AdminUser user, UUID portalId) {
-        return user.isSuperuser() || portalAdminUserDao.isUserInPortal(user.getId(), portalId);
+        return user.isSuperuser() || portalAdminUserService.isUserInPortal(user.getId(), portalId);
     }
 
     /**

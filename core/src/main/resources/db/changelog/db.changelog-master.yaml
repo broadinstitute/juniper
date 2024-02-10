@@ -194,10 +194,11 @@ databaseChangeLog:
   - include:
       file: changesets/2024_02_06_portal_languages.yaml
       relativeToChangelogFile: true
-
-
   - include:
       file: changesets/proxy_data_model.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_02_09_permission_populate.yaml
       relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

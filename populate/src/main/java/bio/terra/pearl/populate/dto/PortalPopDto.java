@@ -4,9 +4,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,5 +30,5 @@ public class PortalPopDto extends Portal {
     public List<PortalEnvironment> getPortalEnvironments() {
         return portalEnvironmentDtos.stream().collect(Collectors.toList());
     }
-    public List<AdminUserDto> adminUsers = new ArrayList<>();
+    public List<AdminUserPopDto> adminUsers = new ArrayList<>();
 }
