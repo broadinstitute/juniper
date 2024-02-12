@@ -93,3 +93,14 @@ a {
   flex-direction: column;
   flex-grow: 1;
 }
+
+.sidebar-nav-link:hover {
+  background: rgba(255, 255 ,255, 0.3);
+}
+
+.nav-icon {
+  color: #333F53;
+}
+.nav-icon:hover {
+  color: #858D9A;
+}
