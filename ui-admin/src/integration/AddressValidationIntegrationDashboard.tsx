@@ -20,6 +20,10 @@ export default function AddressValidationIntegrationDashboard() {
       {!isLoading && <dl>
         <dt>addrValidationClientClass</dt>
         <dd>{config?.addrValidationConfig.addrValidationClientClass}</dd>
+        <dt>smartyAuthId</dt>
+        <dd>{config?.addrValidationConfig.smartyAuthId}</dd>
+        <dt>smartyAuthToken</dt>
+        <dd>{config?.addrValidationConfig.smartyAuthToken}</dd>
       </dl>}
       {isLoading && <LoadingSpinner/>}
     </div>

@@ -4,7 +4,6 @@ import bio.terra.pearl.core.model.address.AddressComponent;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import com.smartystreets.api.us_street.Candidate;
-import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Components;
 import com.smartystreets.api.us_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +23,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @Slf4j
-public class SmartyUsAddressValidationClient implements AddressValidationClient {
+public class SmartyUSAddressValidationClient implements AddressValidationClient {
 
-    Client usClient;
+    private SmartyClient client;
 
-    SmartyUsAddressValidationClient(SmartyClientProvider provider) {
-        usClient = provider.usClient();
+    SmartyUSAddressValidationClient(SmartyClient client) {
+        this.client = client;
     }
 
     @Override
@@ -38,7 +37,7 @@ public class SmartyUsAddressValidationClient implements AddressValidationClient 
         Lookup lookup = mailingAddressToLookup(address);
 
         try {
-            usClient.send(lookup);
+            client.send(lookup);
         } catch (Exception e) {
             throw new AddressValidationException(e.getMessage(), HttpStatusCode.valueOf(400));
         }

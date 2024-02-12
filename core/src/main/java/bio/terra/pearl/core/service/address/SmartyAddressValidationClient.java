@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SmartyAddressValidationClient implements AddressValidationClient {
 
-    SmartyUsAddressValidationClient usClient;
+    SmartyUSAddressValidationClient usClient;
 
-    SmartyAddressValidationClient(SmartyUsAddressValidationClient usClient) {
+    SmartyAddressValidationClient(SmartyUSAddressValidationClient usClient) {
         this.usClient = usClient;
     }
 
