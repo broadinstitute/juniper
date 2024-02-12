@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public class AddressValidationClientStub implements AddressValidationClient {
+public class AddressValidationServiceStub implements AddressValidationService {
 
     private static final String BAD_ADDRESS_INDICATOR = "BAD";
     private static final String IMPROVABLE_ADDRESS_INDICATOR = "IMPROVABLE";

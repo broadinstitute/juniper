@@ -23,11 +23,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @Slf4j
-public class SmartyUSAddressValidationClient implements AddressValidationClient {
+public class SmartyUSAddressValidationService implements AddressValidationService {
 
     private SmartyClient client;
 
-    SmartyUSAddressValidationClient(SmartyClient client) {
+    SmartyUSAddressValidationService(SmartyClient client) {
         this.client = client;
     }
 

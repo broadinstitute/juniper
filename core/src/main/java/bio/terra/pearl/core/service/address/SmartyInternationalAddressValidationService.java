@@ -20,11 +20,11 @@ import java.util.Objects;
  */
 @Component
 @Slf4j
-public class SmartyInternationalAddressValidationClient implements AddressValidationClient {
+public class SmartyInternationalAddressValidationService implements AddressValidationService {
 
     private SmartyClient client;
 
-    SmartyInternationalAddressValidationClient(SmartyClient client) {
+    SmartyInternationalAddressValidationService(SmartyClient client) {
         this.client = client;
     }
 
@@ -129,28 +129,28 @@ public class SmartyInternationalAddressValidationClient implements AddressValida
 
     private List<AddressComponent> findComponentsWithValues(Components components, List<String> changes) {
         List<AddressComponent> out = new ArrayList<>();
-        if (changes.contains(components.getPremiseNumber())
-                || changes.contains(components.getPremise())) {
+        if ((Objects.nonNull(components.getPremiseNumber()) && changes.contains(components.getPremiseNumber()))
+                || (Objects.nonNull(components.getPremise()) && changes.contains(components.getPremise()))) {
             out.add(AddressComponent.HOUSE_NUMBER);
         }
 
-        if (changes.contains(components.getThoroughfareName())) {
+        if (Objects.nonNull(components.getThoroughfareName()) && changes.contains(components.getThoroughfareName())) {
             out.add(AddressComponent.STREET_NAME);
         }
 
-        if (changes.contains(components.getThoroughfareTrailingType())) {
+        if (Objects.nonNull(components.getThoroughfareTrailingType()) && changes.contains(components.getThoroughfareTrailingType())) {
             out.add(AddressComponent.STREET_TYPE);
         }
 
-        if (changes.contains(components.getPostalCode())) {
+        if (Objects.nonNull(components.getPostalCode()) && changes.contains(components.getPostalCode())) {
             out.add(AddressComponent.POSTAL_CODE);
         }
 
-        if (changes.contains(components.getAdministrativeArea())) {
+        if (Objects.nonNull(components.getAdministrativeArea()) && changes.contains(components.getAdministrativeArea())) {
             out.add(AddressComponent.STATE_PROVINCE);
         }
 
-        if (changes.contains(components.getSubBuilding())) {
+        if (Objects.nonNull(components.getSubBuilding()) && changes.contains(components.getSubBuilding())) {
             out.add(AddressComponent.SUBPREMISE);
         }
 
