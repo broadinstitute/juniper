@@ -133,3 +133,35 @@ test('delete page button is disabled when Landing page is selected', async () =>
   const deletePageButton = screen.getByText('Delete page')
   expect(deletePageButton).toHaveAttribute('aria-disabled', 'true')
 })
+
+test('renders a language selector when there are multiple languages', async () => {
+  const siteContent = mockSiteContent()
+  const portalEnvContext = mockPortalEnvContext('sandbox')
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={portalEnvContext}/>)
+  render(RoutedComponent)
+
+  const languageSelector = screen.getByLabelText('Select a language')
+  expect(languageSelector).toBeInTheDocument()
+})
+
+test('does not render a language selector when there is only one language', async () => {
+  const siteContent = mockSiteContent()
+  const mockContext = mockPortalEnvContext('sandbox')
+  const mockContextOnlyEnglish = {
+    ...mockPortalEnvContext('sandbox'),
+    portalEnv: {
+      ...mockContext.portalEnv,
+      supportedLanguages: []
+    }
+  }
+  const { RoutedComponent } = setupRouterTest(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={mockContextOnlyEnglish}/>)
+  render(RoutedComponent)
+
+  expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()
+})

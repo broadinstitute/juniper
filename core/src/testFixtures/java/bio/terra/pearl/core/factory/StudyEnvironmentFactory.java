@@ -2,6 +2,7 @@ package bio.terra.pearl.core.factory;
 
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -37,6 +38,8 @@ public class StudyEnvironmentFactory {
     private PortalParticipantUserService portalParticipantUserService;
     @Autowired
     private PortalService portalService;
+    @Autowired
+    private PortalFactory portalFactory;
 
     public StudyEnvironment.StudyEnvironmentBuilder builder(String testName) {
         EnvironmentName envName = EnvironmentName.values()[RandomUtils.nextInt(0, 3)];
@@ -72,10 +75,14 @@ public class StudyEnvironmentFactory {
     }
 
     public StudyEnvironmentBundle buildBundle(String testName, EnvironmentName envName) {
-        PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName, envName);
-        Study study = studyFactory.buildPersisted(portalEnvironment.getPortalId(), testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
+        return buildBundle(testName, envName, portal, study);
+    }
+
+    public StudyEnvironmentBundle buildBundle(String testName, EnvironmentName envName, Portal portal, Study study) {
+        PortalEnvironment portalEnvironment = portalEnvironmentFactory.buildPersisted(testName, envName, portal.getId());
         StudyEnvironment studyEnvironment = buildPersisted(envName, study.getId(), testName);
-        Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return StudyEnvironmentBundle.builder()
                 .study(study)
                 .studyEnv(studyEnvironment)

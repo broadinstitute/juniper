@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { VersionedForm } from 'api/api'
+import { PortalEnvironment, VersionedForm } from 'api/api'
 
 import { Button } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
@@ -52,6 +52,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
+
+  const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
+    env.environmentName === studyEnvContext.currentEnv.environmentName)
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -185,6 +188,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <FormContentEditor
         initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
         visibleVersionPreviews={visibleVersionPreviews}
+        supportedLanguages={portalEnv?.supportedLanguages || []}
         readOnly={readOnly}
         onChange={(newValidationErrors, newContent) => {
           if (isEmpty(newValidationErrors)) {

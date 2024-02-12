@@ -158,15 +158,14 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testGovernedUserEnrollment(){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testGovernedUserEnrollment");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testGovernedUserEnrollment");
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testGovernedUserEnrollment");
+    public void testGovernedUserEnrollment(TestInfo testInfo){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted("testGovernedUserEnrollment");
+        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentFormId(consent.getId())
                 .studyEnvironmentId(studyEnv.getId())
@@ -179,9 +178,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.getShortcode(), notNullValue());
         Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).size(), 1);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId()).get(0).getEnrolleeId(), enrollee.getId());
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
+        Assertions.assertEquals(enrolleeRelations.size(), 1);
+        Assertions.assertEquals(enrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
+        Assertions.assertEquals(enrolleeRelations.get(0).getEnrolleeId(), enrollee.getId());
         assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), contains(enrollee));
 
         // Because the study environment had a consent attached, a consent task should be created on enrollment
@@ -192,15 +192,15 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testProxyEnrollingMultipleChild(){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testProxyEnrollingMultipleChild");
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, "testProxyEnrollingMultipleChild");
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,"testProxyEnrollingMultipleChild");
+    public void testProxyEnrollingMultipleChild(TestInfo testInfo){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted("testProxyEnrollingMultipleChild");
+        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentFormId(consent.getId())
                 .studyEnvironmentId(studyEnv.getId())
@@ -222,7 +222,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
         //assert that the proxy wasn't enrolled
         Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserIdAndPortalId(userBundle.user().getId(), portalEnv.getPortalId());
+        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
         Assertions.assertEquals(proxyEnrolleeRelations.size(), 2);
         Assertions.assertEquals(proxyEnrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
         Assertions.assertEquals(proxyEnrolleeRelations.get(0).getEnrolleeId(), enrollee1.getId());

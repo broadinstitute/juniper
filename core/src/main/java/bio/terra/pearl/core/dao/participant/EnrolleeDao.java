@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.jdbi.v3.core.Jdbi;
+import org.jdbi.v3.core.statement.Query;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,4 +113,32 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         updateProperty(enrolleeId, "consented", consented);
     }
 
+    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
+                                         String targetStableId,
+                                         Integer targetAssignedVersion) {
+
+        return jdbi.withHandle(handle -> {
+            String versionWhereClause = "";
+            if (targetAssignedVersion != null) {
+                versionWhereClause = " and target_assigned_version = :targetAssignedVersion";
+            }
+            Query query = handle.createQuery("""
+                                    select * from enrollee
+                                     where id 
+                                     not in
+                                     (select distinct enrollee_id from participant_task 
+                                        where study_environment_id = :studyEnvironmentId
+                                        and participant_task.target_stable_id = :targetStableId
+                                        %s
+                                     )
+                                     and study_environment_id = :studyEnvironmentId;
+                            """.formatted(versionWhereClause))
+                    .bind("targetStableId", targetStableId)
+                    .bind("studyEnvironmentId", studyEnvironmentId);
+            if (targetAssignedVersion != null) {
+                query = query.bind("targetAssignedVersion", targetAssignedVersion);
+            }
+            return query.mapTo(clazz).list();
+        });
+    }
 }

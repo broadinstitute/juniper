@@ -15,7 +15,7 @@ import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -166,7 +166,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(testName);
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 
-        ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
+        ParticipantTask task = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), configuredSurvey, survey);
         task = participantTaskService.create(task, getAuditInfo(testInfo));
         assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
 
@@ -216,7 +216,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(testName);
         StudyEnvironmentSurvey configuredSurvey = surveyFactory.attachToEnv(survey, enrolleeBundle.enrollee().getStudyEnvironmentId(), true);
 
-        ParticipantTask task = surveyTaskDispatcher.buildTask(configuredSurvey, survey, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser());
+        ParticipantTask task = surveyTaskDispatcher.buildTask(enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(), configuredSurvey, survey);
         task = participantTaskService.create(task, getAuditInfo(testInfo));
         assertThat(task.getStatus(), equalTo(TaskStatus.NEW));
 

@@ -1,12 +1,12 @@
 package bio.terra.pearl.core.dao.participant;
 
-import javax.management.relation.RelationType;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 

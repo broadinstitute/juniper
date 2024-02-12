@@ -32,4 +32,6 @@ public class PortalEnvironment extends BaseEntity {
     private List<Trigger> triggers = new ArrayList<>();
     @Builder.Default
     private List<ParticipantDashboardAlert> participantDashboardAlerts = new ArrayList<>();
+    @Builder.Default
+    private List<PortalEnvironmentLanguage> supportedLanguages = new ArrayList<>();
 }

@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.consent;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -17,7 +17,6 @@ import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import lombok.extern.slf4j.Slf4j;

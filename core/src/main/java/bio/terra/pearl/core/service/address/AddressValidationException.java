@@ -4,9 +4,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
 /**
- *  Class for 400-500 responses returned from address validation service.  This intentionally extends
- *  RuntimeException in order to be correctly handled within `onStatus` of webClient.retrieve().
- *  See e.g. https://medium.com/nerd-for-tech/webclient-error-handling-made-easy-4062dcf58c49
+ *  Class for 400-500 responses returned from address validation service.
  */
 @Getter
 public class AddressValidationException extends RuntimeException {

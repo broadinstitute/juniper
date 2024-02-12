@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_portal_environment_language
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: portal_environment_language
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: language_code, type: text, constraints: { nullable: false } }
+              - column: { name: language_name, type: text, constraints: { nullable: false } }
+              - column: { name: portal_environment_id, type: uuid, constraints: { foreignKeyName: fk_portal_language_portal_env, references: portal_environment(id), deleteCascade: true, nullable: false } }
+        - addUniqueConstraint:
+            tableName: portal_environment_language
+            constraintName: portal_env_language_language_code_portal_env_id_key
+            columnNames: language_code, portal_environment_id

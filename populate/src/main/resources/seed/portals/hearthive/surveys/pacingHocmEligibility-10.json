@@ -1,0 +1,70 @@
+{
+  "stableId" : "pacingHocmEligibility",
+  "version" : 10,
+  "name" : "Pacing HOCM eligibility",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "name" : "HOCM",
+        "title" : "Do you have hypertrophic obstructive cardiomyopathy (HOCM)?",
+        "questionTemplateName" : "Yes_No_dk",
+        "description" : "Hypertrophic obstructive cardiomyopathy is where the heart muscle becomes abnormally thick and blocks or reduces the blood flow from the left ventricle to the aorta"
+      }, {
+        "type" : "checkbox",
+        "name" : "HOCM_SYMPTOMS",
+        "title" : "Do you experience any of the following symptoms with your HCM diagnosis in your daily life? Please tick all that apply",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "Shortness of breath",
+          "value" : "0"
+        }, {
+          "text" : "Chest tightness or pain",
+          "value" : "1"
+        }, {
+          "text" : "Palpitations",
+          "value" : "2"
+        }, {
+          "text" : "Dizziness",
+          "value" : "3"
+        }, {
+          "text" : "Blackouts",
+          "value" : "4"
+        }, {
+          "text" : "General fatigue or lethagy",
+          "value" : "5"
+        } ],
+        "showOtherItem" : true,
+        "otherText" : "Other",
+        "otherPlaceholder" : "Please specify",
+        "otherErrorText" : "A description is required for choices of \"other\"."
+      } ]
+    } ],
+    "questionTemplates" : [ {
+      "type" : "dropdown",
+      "name" : "Yes_No_dk",
+      "title" : "Do you have this symptom? ",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "Yes",
+        "value" : "0"
+      }, {
+        "text" : "No",
+        "value" : "1"
+      }, {
+        "text" : "Don't know",
+        "value" : "2"
+      } ]
+    } ]
+  }
+}

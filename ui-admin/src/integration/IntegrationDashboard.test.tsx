@@ -7,7 +7,8 @@ import userEvent from '@testing-library/user-event'
 
 test('routes to integration paths', async () => {
   jest.spyOn(Api, 'fetchInternalConfig').mockImplementation(() => Promise.resolve({
-    pepperDsmConfig: {}
+    pepperDsmConfig: {},
+    addrValidationConfig: {}
   }))
   const { RoutedComponent } = setupRouterTest(<IntegrationDashboard/>)
   render(RoutedComponent)

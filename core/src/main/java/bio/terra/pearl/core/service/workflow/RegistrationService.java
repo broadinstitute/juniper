@@ -9,8 +9,10 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
@@ -42,6 +44,7 @@ public class RegistrationService {
     private AnswerProcessingService answerProcessingService;
     private ParticipantUserService participantUserService;
     private PortalParticipantUserService portalParticipantUserService;
+    private ProfileService profileService;
     private EventService eventService;
     private ObjectMapper objectMapper;
 
@@ -57,7 +60,8 @@ public class RegistrationService {
                                ParticipantUserService participantUserService,
                                PortalParticipantUserService portalParticipantUserService,
                                EventService eventService, ObjectMapper objectMapper,
-                               RandomUtilService randomUtilService) {
+                               RandomUtilService randomUtilService,
+                               ProfileService profileService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -67,6 +71,7 @@ public class RegistrationService {
         this.eventService = eventService;
         this.objectMapper = objectMapper;
         this.randomUtilService = randomUtilService;
+        this.profileService = profileService;
     }
 
     /**
@@ -137,6 +142,7 @@ public class RegistrationService {
         return new RegistrationResult(user, ppUser);
     }
 
+    @Transactional
     public RegistrationResult registerGovernedUser(String portalShortcode, ParticipantUser proxy) {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
         ParticipantUser governedUser = new ParticipantUser();
@@ -150,11 +156,15 @@ public class RegistrationService {
         governedPpUser.setPortalEnvironmentId(portalEnv.getId());
         governedPpUser.setParticipantUserId(governedUser.getId());
 
+        PortalParticipantUser proxyPpUser = portalParticipantUserService.findOne(proxy.getId(), portalShortcode).orElseThrow(
+                () -> new NotFoundException("Portal user not found for proxy in portal %s".formatted(portalShortcode))
+        );
+        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Profile governedProfile =  Profile.builder()
-                .contactEmail(governedUser.getUsername())
+                .contactEmail(proxyProfile.getContactEmail())
                 .givenName(null)
                 .familyName(null)
-           .build();
+                .build();
         governedPpUser.setProfile(governedProfile);
 
         governedPpUser = portalParticipantUserService.create(governedPpUser);

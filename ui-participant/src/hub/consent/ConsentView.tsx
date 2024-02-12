@@ -36,7 +36,10 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
                           }) {
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
-  const { updateEnrollee } = useUser()
+  const { updateEnrollee, selectedLanguage } = useUser()
+
+  surveyModel.locale = selectedLanguage
+
   if (surveyModel && isEditingPrevious) {
     // consent responses are not editable -- they must be withdrawn via separate workflow
     surveyModel.mode = 'display'

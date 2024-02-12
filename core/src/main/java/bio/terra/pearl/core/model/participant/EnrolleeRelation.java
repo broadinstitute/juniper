@@ -21,7 +21,6 @@ public class EnrolleeRelation extends BaseEntity {
     private UUID participantUserId;
     private UUID enrolleeId;
     private RelationshipType relationshipType;
-    private UUID portalId;
     @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default

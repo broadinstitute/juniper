@@ -107,7 +107,7 @@ public class EnrollmentService {
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
         Enrollee enrollee;
         if (isProxy) {
-            enrollee = enrollGovernedUser( portalShortcode, user, studyEnv, preEnrollResponseId);
+            enrollee = this.enrollGovernedUser( portalShortcode, user, studyEnv, preEnrollResponseId);
         }
         else {
             enrollee = Enrollee.builder()
@@ -149,7 +149,7 @@ public class EnrollmentService {
                 .build();
         enrollee = enrolleeService.create(enrollee);
 
-        return enrolleeRelationService.newGovernedEnrolleeCreationRecord(enrollee, portal, proxyUser);
+        return enrolleeRelationService.newGovernedEnrolleeCreationRecord(enrollee, proxyUser);
 
     }
 

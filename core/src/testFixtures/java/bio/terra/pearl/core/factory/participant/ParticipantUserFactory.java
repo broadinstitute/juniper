@@ -4,6 +4,7 @@ import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -19,6 +20,9 @@ public class ParticipantUserFactory {
     private ParticipantUserService participantUserService;
     @Autowired
     private PortalParticipantUserService portalParticipantUserService;
+    @Autowired
+    private ProfileFactory profileFactory;
+
 
     public ParticipantUser.ParticipantUserBuilder builder(String testName) {
         return ParticipantUser.builder()
@@ -53,6 +57,23 @@ public class ParticipantUserFactory {
                 .participantUserId(user.getId())
                 .portalEnvironmentId(portalEnv.getId()).build();
 
+        // enrollment requires an already-existing portalParticipantUser
+        ppUser = portalParticipantUserService.create(ppUser);
+        return new ParticipantUserAndPortalUser(user, ppUser);
+    }
+
+    /**
+     * This method creates a participant with the given in their Profile
+     * */
+    public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName, String contactEmail) {
+        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
+        Profile.ProfileBuilder builder = profileFactory.builder(testName);
+        builder.contactEmail(contactEmail);
+        Profile proxyProfile = builder.build();
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+                .participantUserId(user.getId())
+                .portalEnvironmentId(portalEnv.getId()).build();
+        ppUser.setProfile(proxyProfile);
         // enrollment requires an already-existing portalParticipantUser
         ppUser = portalParticipantUserService.create(ppUser);
         return new ParticipantUserAndPortalUser(user, ppUser);

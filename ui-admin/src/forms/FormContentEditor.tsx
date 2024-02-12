@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { FormContent, VersionedForm } from '@juniper/ui-core'
+import { FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeFormContent } from './formEditorTypes'
@@ -15,6 +15,7 @@ import useStateCallback from '../util/useStateCallback'
 type FormContentEditorProps = {
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
+  supportedLanguages: PortalEnvironmentLanguage[]
   readOnly: boolean
   onChange: OnChangeFormContent
 }
@@ -22,7 +23,7 @@ type FormContentEditorProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, visibleVersionPreviews, readOnly, onChange } = props
+  const { initialContent, visibleVersionPreviews, supportedLanguages, readOnly, onChange } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -87,7 +88,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Preview"
         >
           <ErrorBoundary>
-            <FormPreview formContent={editedContent} />
+            <FormPreview formContent={editedContent} supportedLanguages={supportedLanguages} />
           </ErrorBoundary>
         </Tab>
         { visibleVersionPreviews.map(form =>
@@ -96,7 +97,10 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             eventKey={`preview${form.version}`}
             title={`Version ${form.version}`}
           >
-            <FormPreview formContent={JSON.parse(form.content) as FormContent} />
+            <FormPreview
+              formContent={JSON.parse(form.content) as FormContent}
+              supportedLanguages={supportedLanguages}
+            />
           </Tab>
         )}
       </Tabs>

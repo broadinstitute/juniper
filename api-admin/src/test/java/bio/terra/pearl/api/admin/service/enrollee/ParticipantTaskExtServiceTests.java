@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -63,7 +64,7 @@ public class ParticipantTaskExtServiceTests extends BaseSpringBootTest {
 
     // issue a command to update surveyA tasks to version 2
     ParticipantTaskUpdateDto.TaskUpdateSpec updateSpec =
-        new ParticipantTaskUpdateDto.TaskUpdateSpec("surveyA", 2, 1, false, null);
+        new ParticipantTaskUpdateDto.TaskUpdateSpec("surveyA", 2, 1, null);
     ParticipantTaskUpdateDto updateDto =
         new ParticipantTaskUpdateDto(List.of(updateSpec), null, true);
     participantTaskExtService.updateTasks(
