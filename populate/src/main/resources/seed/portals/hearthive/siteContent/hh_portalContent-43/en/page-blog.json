@@ -1,0 +1,11 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "Blog",
+  "htmlPageId" : "1ea5b489-7633-4e79-9c6c-e0865882d954",
+  "htmlPageDto" : {
+    "title" : "Blog",
+    "sections" : [ ],
+    "path" : "blog",
+    "sectionDtos" : [ ]
+  }
+}

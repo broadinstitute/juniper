@@ -1,0 +1,17 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "Current research",
+  "htmlPageId" : "f89a12d8-2939-457c-9fbb-cf4b0d084fb2",
+  "htmlPageDto" : {
+    "title" : "Heart Hive -- Current Research",
+    "sections" : [ ],
+    "path" : "research",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Current Research",
+        "blurb" : "##### The Heart Hive Cardiomyopathy Study\n[ClinicalTrials.gov Identifier: NCT04612296](https://clinicaltrials.gov/ct2/show/NCT04612296)\n ##### The Heart Hive COVID-19 Study\n[ClinicalTrials.gov Identifier: NCT04468256](https://clinicaltrials.gov/ct2/show/NCT04468256)\n\n##### Other Heart Hive activities:\n\nDCM Medication survey from [Dr Brian Halliday](https://www.imperial.ac.uk/people/b.halliday)"
+      }
+    } ]
+  }
+}

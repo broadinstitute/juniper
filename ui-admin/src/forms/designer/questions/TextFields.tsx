@@ -36,9 +36,8 @@ export const TextFields = (props: TextFieldsProps) => {
       </div>
 
       {question.inputType === 'number' && (
-        <fieldset>
-          <legend className="form-label fs-5">Number input validation</legend>
-
+        <fieldset className="py-3">
+          <legend className="form-label fs-5 fw-semibold">Number input validation</legend>
           <div className="mb-3">
             <NumberInput
               description="Minimum value accepted for this question."

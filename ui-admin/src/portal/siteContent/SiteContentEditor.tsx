@@ -6,7 +6,7 @@ import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } f
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
-  ApiContextT, HtmlSectionView, SiteFooter
+  ApiContextT, HtmlSectionView, SiteFooter, PortalEnvironmentLanguage
 } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
@@ -19,8 +19,9 @@ import { Tab, Tabs } from 'react-bootstrap'
 import DeletePageModal from './DeletePageModal'
 import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
-import { useConfig } from '../../providers/ConfigProvider'
+import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
+import useReactSingleSelect from 'util/react-select-utils'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -28,7 +29,7 @@ const landingPageOption = { label: 'Landing page', value: 'Landing page' }
 type InitializedSiteContentViewProps = {
   siteContent: SiteContent
   previewApi: ApiContextT
-  loadSiteContent: (stableId: string, version: number) => void
+  loadSiteContent: (stableId: string, version: number, language?: string) => void
   createNewVersion: (content: SiteContent) => void
   switchToVersion: (id: string, stableId: string, version: number) => void
   portalEnvContext: PortalEnvContext
@@ -41,8 +42,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
   const { portalEnv } = portalEnvContext
-  const selectedLanguage = 'en'
   const initialContent = siteContent
+  // TODO (JN-863): Use the default language
+  const defaultLanguage = { languageCode: 'en', languageName: 'English' }
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
@@ -52,14 +54,28 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showDeletePageModal, setShowDeletePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
+    portalEnvContext.portalEnv.supportedLanguages.find(f =>
+      workingContent.localizedSiteContents[0]?.language === f.languageCode) || defaultLanguage)
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
   if (!localContent) {
-    return <div>no content for language {selectedLanguage}</div>
+    return <div>no content for language {selectedLanguage?.languageName}</div>
   }
   const navBarInternalItems = localContent.navbarItems
     .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+
+  const {
+    onChange: languageOnChange, options: languageOptions,
+    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
+  } =
+      useReactSingleSelect(
+        portalEnvContext.portalEnv.supportedLanguages,
+        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
+        setSelectedLanguage,
+        selectedLanguage
+      )
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -229,6 +245,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
+          { portalEnvContext.portalEnv.supportedLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
+            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+              isDisabled={hasInvalidSection} aria-label={'Select a language'}
+              onChange={e => {
+                languageOnChange(e)
+                loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
+              }}/>
+          </div> }
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}

@@ -50,6 +50,7 @@ export function RawSurveyView({
   resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
 }) {
   const navigate = useNavigate()
+  const { selectedLanguage } = useUser()
   const { updateEnrollee } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
@@ -141,6 +142,8 @@ export function RawSurveyView({
   }
 
   useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
+
+  surveyModel.locale = selectedLanguage
 
   return (
     <>

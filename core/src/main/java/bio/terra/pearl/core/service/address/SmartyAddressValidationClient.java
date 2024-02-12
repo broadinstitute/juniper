@@ -18,7 +18,6 @@ public class SmartyAddressValidationClient implements AddressValidationClient {
     SmartyUSAddressValidationClient usClient;
     SmartyInternationalAddressValidationClient internationalClient;
 
-
     SmartyAddressValidationClient(SmartyUSAddressValidationClient usClient) {
         this.usClient = usClient;
     }

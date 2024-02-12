@@ -12,8 +12,6 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteImageService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
@@ -31,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PortalService extends CrudService<Portal, PortalDao> {
     private PortalStudyService portalStudyService;
     private PortalEnvironmentService portalEnvironmentService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
     private PortalAdminUserDao portalAdminUserDao;
     private StudyService studyService;
     private SurveyService surveyService;
@@ -44,8 +40,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
-                         ParticipantUserService participantUserService,
-                         PortalParticipantUserService portalParticipantUserService,
                          PortalAdminUserDao portalAdminUserDao, SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
@@ -54,8 +48,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.portalStudyService = portalStudyService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
-        this.participantUserService = participantUserService;
-        this.portalParticipantUserService = portalParticipantUserService;
         this.portalAdminUserDao = portalAdminUserDao;
         this.surveyService = surveyService;
         this.consentFormService = consentFormService;

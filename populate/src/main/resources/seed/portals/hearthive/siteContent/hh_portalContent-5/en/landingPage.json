@@ -1,0 +1,85 @@
+{
+  "title" : "The Heart Hive",
+  "sections" : [ ],
+  "sectionDtos" : [ {
+    "sectionType" : "BANNER_IMAGE",
+    "sectionConfigJson" : {
+      "image" : {
+        "cleanFileName" : "select_imperial_-_final_selects_page_1_c.png",
+        "version" : 1
+      },
+      "logos" : [ ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "Turning today's heart disease into tomorrow's heart health.",
+      "blurb" : "Save lives by advancing research.",
+      "image" : {
+        "cleanFileName" : "participant_smile.webp",
+        "version" : 1
+      },
+      "backgroundImage" : {
+        "cleanFileName" : "main_banner.webp",
+        "version" : 1
+      },
+      "buttons" : [ {
+        "text" : "Register now",
+        "type" : "join"
+      } ],
+      "logos" : [ ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "blurb" : "We're excited to announce that we're in the process of building a better version of our platform, and as such, the portal will be taking a **short break** while we make the necessary updates.\n\nWe apologise for any inconvenience this may cause, but rest assured that we'll be back up and running shortly with a fresh new look and improved functionality.\n\nIf you'd like to join the Heart Hive community, please take a moment to fill out our short form to express your interest. We'll make sure to email you as soon as we're ready to welcome you to our new platform.",
+      "image" : {
+        "cleanFileName" : "hex_round.webp",
+        "version" : 1,
+        "alt" : "Enter alt text here",
+        "style" : {
+          "height" : "150px"
+        }
+      },
+      "buttons" : [ {
+        "text" : "Join Mailing List",
+        "type" : "mailingList"
+      } ],
+      "imagePosition" : "right",
+      "stepNumberText" : "",
+      "timeIndication" : "",
+      "title" : "Thank you for your interest in the Heart Hive."
+    }
+  }, {
+    "sectionType" : "HERO_CENTERED",
+    "sectionConfigJson" : {
+      "title" : "",
+      "blurb" : "​If you're an existing participant and have any questions or concerns about our move, please don't hesitate to reach out to us at info@thehearthive.org. We'll be happy to answer any questions you may have. Thank you for your understanding and patience as we work to improve the Heart Hive experience. We can't wait to share our new platform with you soon.",
+      "blurbAlign" : "left",
+      "buttons" : [ ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "What is the Heart Hive?",
+      "blurb" : "The Heart Hive is a simple way for patients and researchers to partner together so that research happens faster and tomorrow's cures are discovered sooner.\n\nOn Video: Learn more about the Heart Hive and how you can join as a patient data donor. (2:45)",
+      "fullWidth" : true,
+      "imagePosition" : "right",
+      "buttons" : [ ],
+      "logos" : [ ]
+    }
+  }, {
+    "sectionType" : "HERO_WITH_IMAGE",
+    "sectionConfigJson" : {
+      "title" : "How can I be part of the Heart Hive?",
+      "blurb" : "You are eligible if you meet **any one** of these criteria:\n\n * **People with a diagnosis of cardiomyopathy or myocarditis**\n * **People who have a family history of cardiomyopathy**\n * **People whose genetic testing reveals they have inherited risks for cardiomyopathy**\n\nJoining is easy, and we invite all qualified participants to sign up now.",
+      "fullWidth" : true,
+      "imagePosition" : "right",
+      "buttons" : [ {
+        "text" : "Register now",
+        "type" : "join"
+      } ],
+      "logos" : [ ]
+    }
+  } ]
+}

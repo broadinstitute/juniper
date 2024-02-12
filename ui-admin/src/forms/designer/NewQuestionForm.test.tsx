@@ -1,7 +1,6 @@
 import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import { NewQuestionForm } from './NewQuestionForm'
-import { questionTypeDescriptions } from './questions/questionTypes'
 import userEvent from '@testing-library/user-event'
 
 describe('NewQuestionForm', () => {
@@ -23,13 +22,13 @@ describe('NewQuestionForm', () => {
     await act(() => user.selectOptions(questionTypeSelect, 'checkbox'))
 
     expect(questionTypeSelect).toHaveValue('checkbox')
-    expect(screen.getByText(questionTypeDescriptions.checkbox)).toBeInTheDocument()
+    expect(screen.getAllByText('Checkbox question')).not.toHaveLength(0)
 
     // now check we can change the type to html
     await act(() => user.selectOptions(questionTypeSelect, 'html'))
 
     expect(questionTypeSelect).toHaveValue('html')
-    expect(screen.getByText(questionTypeDescriptions.html)).toBeInTheDocument()
+    expect(screen.getAllByText('Html question')).not.toHaveLength(0)
     expect(screen.queryByLabelText('Question text')).not.toBeInTheDocument()
   })
 
@@ -63,7 +62,7 @@ describe('NewQuestionForm', () => {
 
     //Assert
     expect(questionTypeSelect).toHaveValue('radiogroup')
-    expect(screen.getByText(questionTypeDescriptions.radiogroup)).toBeInTheDocument()
+    expect(screen.getAllByText('Radio group', { exact: false })).not.toHaveLength(0)
   })
 
   test('renders the question template picker when there are templates', async () => {

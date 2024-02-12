@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: "proxy_data_model"
+      author: pegah
+      changes:
+        - createTable:
+            tableName: enrollee_relation
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: participant_user_id, type: uuid, constraints: {#participant user id is the user who is the proxy but not the enrollee
+                nullable: false, foreignKeyName: fk_enrollee_relation_participant_user, references: participant_user(id)} }
+              - column:  { name: enrollee_id, type: uuid, constraints: { #enrollee id is the id of the user who is actually enrolled in the study
+                nullable: false, foreignKeyName: fk_enrollee_relation_enrollee, references: enrollee(id)}  }
+              - column: { name: relationship_type, type: varchar(40), constraints: { nullable: false} }
+              - column: { name: beginDate, type: datetime, defaultValue: now(), defaultValueComputed: true, constraints: { nullable: false } }
+              - column: { name: endDate, type: datetime, constraints: { nullable: true } }

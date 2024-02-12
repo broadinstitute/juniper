@@ -1,0 +1,90 @@
+{
+  "stableId" : "baseline",
+  "version" : 3,
+  "name" : "Baseline",
+  "surveyType" : "RESEARCH",
+  "answerMappings" : [ ],
+  "triggers" : [ ],
+  "recur" : false,
+  "required" : false,
+  "allowAdminEdit" : true,
+  "allowParticipantStart" : true,
+  "allowParticipantReedit" : true,
+  "prepopulate" : false,
+  "jsonContent" : {
+    "pages" : [ {
+      "elements" : [ {
+        "name" : "cardiomyopathy",
+        "title" : "What type of cardiomyopathy have you been diagnosed with?",
+        "questionTemplateName" : "cm_type"
+      }, {
+        "type" : "radiogroup",
+        "name" : "FHX",
+        "title" : "Does anyone else in your family (blood relatives) have cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "choices" : [ {
+          "text" : "No",
+          "value" : "0"
+        }, {
+          "text" : "Yes",
+          "value" : "1"
+        }, {
+          "text" : "Don't Know",
+          "value" : "2"
+        } ]
+      }, {
+        "type" : "text",
+        "name" : "FHX_TOTAL",
+        "title" : "In total how many people in your family (blood relatives) have cardiomyopathy?",
+        "description" : "",
+        "isRequired" : false,
+        "inputType" : "number",
+        "min" : 1,
+        "max" : 50,
+        "visibleIf" : "{FHX}=\"1\""
+      } ]
+    }, {
+      "elements" : [ ]
+    } ],
+    "questionTemplates" : [ {
+      "type" : "radiogroup",
+      "name" : "cm_type",
+      "title" : "Cardiomyopathy type?",
+      "description" : "",
+      "isRequired" : false,
+      "choices" : [ {
+        "text" : "DCM - Dilated Cardiomyopathy ",
+        "value" : "dcm"
+      }, {
+        "text" : "HCM - Hypertrophic Cardiomyopathy ",
+        "value" : "hcm"
+      }, {
+        "text" : "ACM/ARVC - Arrhythmogenic Cardiomyopathy/Arrhythmogenic Right Ventricular Cardiomyopathy ",
+        "value" : "acm"
+      }, {
+        "text" : "LVNC - Left Ventricular Non-Compaction",
+        "value" : "lvnc"
+      }, {
+        "text" : "Ischaemic Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Restrictive Cardiomyopathy",
+        "value" : "ICM"
+      }, {
+        "text" : "Takotsubo (stress-related)",
+        "value" : "takotsubo"
+      }, {
+        "text" : "Peripartum cardiomyopathy ",
+        "value" : "PPCM"
+      }, {
+        "text" : "Unknown or Undefined type",
+        "value" : "unknown"
+      } ],
+      "showOtherItem" : true,
+      "otherText" : "Other",
+      "otherPlaceholder" : "Please specify",
+      "otherErrorText" : "A description is required for choices of \"other\"."
+    } ]
+  }
+}

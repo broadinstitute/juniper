@@ -187,9 +187,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getPortal(): Promise<Portal> {
+  async getPortal(selectedLanguage: string): Promise<Portal> {
     const { shortcodeOrHostname, envName } = currentEnvSpec
-    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}`
+    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?language=${selectedLanguage}`
     const response = await fetch(url, this.getGetInit())
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
@@ -267,8 +267,8 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email, accessToken }: {
-    preRegResponseId: string | null, email: string, accessToken: string
+  async register({ preRegResponseId, email, accessToken, isProxy }: {
+    preRegResponseId: string | null, email: string, accessToken: string, isProxy : boolean
   }): Promise<LoginResult> {
     bearerToken = accessToken
     let url = `${baseEnvUrl(false)}/register`
@@ -278,7 +278,7 @@ export default {
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, isProxy })
     })
     return await this.processJsonResponse(response)
   },
@@ -303,12 +303,22 @@ export default {
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId }:
-                         { studyShortcode: string, preEnrollResponseId: string | null }):
+  async createEnrollee({ studyShortcode, preEnrollResponseId, isProxy }:
+                         { studyShortcode: string, preEnrollResponseId: string | null, isProxy : boolean | false }):
     Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
+    const queryParams = []
+
     if (preEnrollResponseId) {
-      url += `?preEnrollResponseId=${preEnrollResponseId}`
+      queryParams.push(`preEnrollResponseId=${preEnrollResponseId}`)
+    }
+
+    // Adding isProxy to the query parameters
+    queryParams.push(`isProxy=${isProxy}`)
+
+    // Joining all parameters with '&' and appending to the url
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`
     }
     const response = await fetch(url, {
       method: 'POST',
