@@ -88,7 +88,6 @@ public class CurrentUserService {
     PortalParticipantUser portalUser = portalParticipantUser.get();
     user.getPortalParticipantUsers().add(portalUser);
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
-    // TODO pegah JN-815 refactor
     List<EnrolleeRelation> enrolleeRelations =
         enrolleeRelationService.findByParticipantUserId(user.getId()).stream()
             .filter(enrolleeRelation -> enrolleeRelationService.isProxy(enrolleeRelation))
