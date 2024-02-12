@@ -95,6 +95,7 @@ public class SmartyUSAddressValidationClient implements AddressValidationClient 
                 .city(components.getCityName())
                 .state(components.getState())
                 .street1(candidate.getDeliveryLine1())
+                .street2(candidate.getDeliveryLine2())
                 .country("US") // this API can only return addresses in the US
                 .postalCode(components.getZipCode() + "-" + components.getPlus4Code())
                 .createdAt(null)
