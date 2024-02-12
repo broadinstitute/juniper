@@ -18,6 +18,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class EnrolleeRelation extends BaseEntity {
+    private UUID id;
     private UUID participantUserId;
     private UUID enrolleeId;
     private RelationshipType relationshipType;

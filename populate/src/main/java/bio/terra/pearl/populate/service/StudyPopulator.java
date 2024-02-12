@@ -39,6 +39,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private StudyService studyService;
     private StudyEnvironmentService studyEnvService;
     private EnrolleePopulator enrolleePopulator;
+    private EnrolleeRelationPopulator enrolleeRelationPopulator;
     private SurveyPopulator surveyPopulator;
     private SurveyService surveyService;
     private ConsentFormPopulator consentFormPopulator;
@@ -58,7 +59,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
                           PortalDiffService portalDiffService, StudyPublishingService studyPublishingService,
                           PortalEnvironmentService portalEnvironmentService, KitTypeDao kitTypeDao,
-                          StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao) {
+                          StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao,
+                          EnrolleeRelationPopulator enrolleeRelationPopulator) {
         this.studyService = studyService;
         this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
@@ -72,6 +74,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.portalEnvironmentService = portalEnvironmentService;
         this.kitTypeDao = kitTypeDao;
         this.studyEnvironmentKitTypeDao = studyEnvironmentKitTypeDao;
+        this.enrolleeRelationPopulator = enrolleeRelationPopulator;
     }
 
     /** takes a dto and hydrates it with already-populated objects (surveys, consents, etc...) */
@@ -125,6 +128,10 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         // now populate enrollees
         for (String enrolleeFile : studyPopEnv.getEnrolleeFiles()) {
             enrolleePopulator.populate(context.newFrom(enrolleeFile), overwrite);
+        }
+        //enrollee relations
+        for (String enrolleeRelationFile : studyPopEnv.getEnrolleeRelationFiles()) {
+            enrolleeRelationPopulator.populate(context.newFrom(enrolleeRelationFile), overwrite);
         }
     }
 

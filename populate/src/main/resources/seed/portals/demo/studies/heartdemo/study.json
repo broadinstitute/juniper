@@ -84,7 +84,10 @@
         "enrollees/consentedEnrollee.json",
         "enrollees/basicsDone.json",
         "enrollees/withdrawn.json",
-        "enrollees/oldVersion.json"
+        "enrollees/oldVersion.json",
+        "enrollees/governedUser.json",
+        "enrollees/governedUser1Family2.json",
+        "enrollees/governedUser2Family2.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,
@@ -106,7 +109,12 @@
             {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
             {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"}
           ]
-      }]
+      }],
+      "enrolleeRelationFiles": [
+        "enrolleeRelation/family1ProxyRelation.json",
+        "enrolleeRelation/family2Proxy1Relation.json",
+        "enrolleeRelation/family2Proxy2Relation.json"
+      ]
     },
     {
       "environmentName": "irb",

@@ -1,0 +1,18 @@
+{
+  "participantUser": {
+    "username": "proxyFamily2@test.com-prox-ABCD",
+    "lastLoginHoursAgo": 0
+  },
+  "profile": {
+    "givenName": "Child1",
+    "familyName": "Family2",
+    "contactEmail": "proxyFamily2@test.com",
+    "mailingAddress": {
+      "street1": "105 Broadway",
+      "city": "Cambridge",
+      "state": "MA",
+      "country": "US",
+      "postalCode": "02138"
+    }
+  }
+}

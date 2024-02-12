@@ -31,6 +31,8 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<String> kitTypeNames = new ArrayList<>();
     @Builder.Default
     private List<String> enrolleeFiles = new ArrayList<>();
+    @Builder.Default
+    private List<String> enrolleeRelationFiles = new ArrayList<>();
 
     private SurveyPopDto preEnrollSurveyDto;
 }

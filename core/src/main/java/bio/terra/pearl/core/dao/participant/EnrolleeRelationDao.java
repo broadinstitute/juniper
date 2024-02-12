@@ -21,15 +21,15 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         return EnrolleeRelation.class;
     }
 
-    public List<EnrolleeRelation> findByParticipantUserIdAndPortalId(UUID participantUserId, UUID portalId){
-        return findAllByTwoProperties("participant_user_id", participantUserId, "portal_id", portalId);
+    public List<EnrolleeRelation> findByParticipantUserId(UUID participantUserId){
+        return findAllByProperty("participant_user_id", participantUserId);
     }
 
-    public List<EnrolleeRelation> findByEnrolleeIdAndPortalId(UUID enrolleeId, UUID portalId){
-        return findAllByTwoProperties("enrollee_id", enrolleeId, "portal_id", portalId);
+    public List<EnrolleeRelation> findByEnrolleeId(UUID participantUserId){
+        return findAllByProperty("enrollee_id", participantUserId);
     }
 
-    public Optional<EnrolleeRelation> findByParticipantUserId(UUID participantUserId, RelationType type) {
-        return findByTwoProperties("participant_user_id", participantUserId, "relationship_type", type);
+    public List<EnrolleeRelation> findByEnrolleeIdAndRelationshipType(UUID enrolleeId, RelationshipType type) {
+        return findAllByTwoProperties("enrollee_id", enrolleeId, "relationship_type", type);
     }
 }

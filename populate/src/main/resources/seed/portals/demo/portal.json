@@ -37,8 +37,11 @@
         "participants/basicsDone.json",
         "participants/withdrawn.json",
         "participants/oldVersion.json",
-        "participants/withProxy.json",
-        "participants/proxy.json"
+        "participants/childFamily1.json",
+        "participants/proxyFamily1.json",
+        "participants/child1Family2.json",
+        "participants/child2Family2.json",
+        "participants/proxyFamily2.json"
       ],
       "mailingListContacts": [
         {

@@ -1,11 +1,11 @@
 {
   "participantUser": {
-    "username": "proxy@test.com-prox-ABCD",
+    "username": "proxy@test.com-prox-GOVR",
     "lastLoginHoursAgo": 2
   },
   "profile": {
     "givenName": "Child",
-    "familyName": "FAMLILY",
+    "familyName": "Family1",
     "contactEmail": "proxy@test.com",
     "mailingAddress": {
       "street1": "415 Main st",

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -59,6 +60,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
     private RandomUtilService randomUtilService;
+    private EnrolleeRelationService enrolleeRelationService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -76,7 +78,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
-                           RandomUtilService randomUtilService) {
+                           RandomUtilService randomUtilService,
+                           EnrolleeRelationService enrolleeRelationService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -95,12 +98,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-    public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
+    public Optional<Enrollee> findByParticipantUserId(UUID participantUserId, String enrolleeShortcode) {
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
     }
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
@@ -219,6 +223,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
         notificationService.deleteByEnrolleeId(enrolleeId);
         dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
+        enrolleeRelationService.deleteByEnrolleeId(enrolleeId);
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
@@ -239,7 +244,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public Enrollee create(Enrollee enrollee) {
         if (enrollee.getShortcode() == null) {
             enrollee.setShortcode(generateShortcode());
-
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
@@ -278,6 +282,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             throw new InternalServerException("Unable to generate unique shortcode");
         }
         return shortcode;
+    }
+
+    @Transactional
+    public List<Enrollee> findGovernedEnrollees(List<EnrolleeRelation> enrolleeRelations) {
+        return findAll(enrolleeRelations.stream().map(EnrolleeRelation::getId).toList());
     }
 
     public enum AllowedCascades implements CascadeProperty {

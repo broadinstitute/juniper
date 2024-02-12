@@ -1,24 +1,23 @@
 package bio.terra.pearl.api.participant.service;
 
-import bio.terra.common.exception.NotFoundException;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +29,6 @@ public class CurrentUserService {
   private PortalParticipantUserService portalParticipantUserService;
   private EnrolleeService enrolleeService;
   private EnrolleeRelationService enrolleeRelationService;
-  private PortalService portalService;
   private ParticipantTaskService participantTaskService;
   private ProfileService profileService;
 
@@ -40,15 +38,13 @@ public class CurrentUserService {
       EnrolleeService enrolleeService,
       ParticipantTaskService participantTaskService,
       ProfileService profileService,
-      EnrolleeRelationService enrolleeRelationService,
-      PortalService portalService) {
+      EnrolleeRelationService enrolleeRelationService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
     this.participantTaskService = participantTaskService;
     this.profileService = profileService;
     this.enrolleeRelationService = enrolleeRelationService;
-    this.portalService = portalService;
   }
 
   /**
@@ -92,11 +88,12 @@ public class CurrentUserService {
     PortalParticipantUser portalUser = portalParticipantUser.get();
     user.getPortalParticipantUsers().add(portalUser);
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(portalUser);
-    Portal portal =
-        portalService
-            .findOneByShortcodeOrHostname(portalShortcode)
-            .orElseThrow(() -> new NotFoundException(""));
-    enrollees.addAll(enrolleeRelationService.findGovernedEnrollees(user.getId(), portal.getId()));
+    // TODO pegah JN-815 refactor
+    List<EnrolleeRelation> enrolleeRelations =
+        enrolleeRelationService.findByParticipantUserId(user.getId()).stream()
+            .filter(enrolleeRelation -> enrolleeRelationService.isProxy(enrolleeRelation))
+            .collect(Collectors.toList());
+    enrollees.addAll(enrolleeService.findGovernedEnrollees(enrolleeRelations));
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
