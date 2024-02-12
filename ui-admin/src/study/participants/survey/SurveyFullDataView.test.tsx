@@ -5,7 +5,7 @@ import SurveyFullDataView, { getDisplayValue } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { mockSurvey } from 'test-utils/mocking-utils'
+import { mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 
 
@@ -73,7 +73,7 @@ describe('getDisplayValue', () => {
 test('shows the download/print modal', async () => {
   const printSpy = jest.spyOn(window, 'print').mockImplementation(() => 1)
   const { RoutedComponent } = setupRouterTest(
-    <SurveyFullDataView answers={[]} survey={mockSurvey()}/>)
+    <SurveyFullDataView answers={[]} survey={mockSurvey()} studyEnvContext={mockStudyEnvContext()}/>)
   render(RoutedComponent)
   expect(screen.queryByText('Done')).not.toBeInTheDocument()
   await userEvent.click(screen.getByText('print/download'))

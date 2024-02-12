@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Question, SurveyModel, CalculatedValue } from 'survey-core'
 
-import { surveyJSModelFromForm, makeSurveyJsData } from '@juniper/ui-core'
+import { surveyJSModelFromForm, makeSurveyJsData, PortalEnvironment, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,15 +9,17 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from '../../../util/pageUtils'
+import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
   resumeData?: string,
-  userId?: string
+  userId?: string,
+  studyEnvContext: StudyEnvContextT
 }
 
 /** renders every item in a survey response */
-export default function SurveyFullDataView({ answers, resumeData, survey, userId }:
+export default function SurveyFullDataView({ answers, resumeData, survey, userId, studyEnvContext }:
   SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
@@ -32,6 +34,10 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   if (!showAllQuestions) {
     questions = questions.filter(q => !!answerMap[q.name])
   }
+
+  const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
+    env.environmentName === studyEnvContext.currentEnv.environmentName)
+  const supportedLanguages = portalEnv?.supportedLanguages ?? []
 
   return <div>
     <div className="d-flex d-print-none">
@@ -65,7 +71,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
       }/>
       <Route index element={<dl>
         {questions.map((question, index) =>
-          <ItemDisplay key={index} question={question} answerMap={answerMap}
+          <ItemDisplay key={index} question={question} answerMap={answerMap} supportedLanguages={supportedLanguages}
             surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
       </dl>}/>
     </Routes>
@@ -76,12 +82,15 @@ type ItemDisplayProps = {
   question: Question | CalculatedValue,
   answerMap: Record<string, Answer>,
   surveyVersion: number,
-  showFullQuestions: boolean
+  showFullQuestions: boolean,
+  supportedLanguages: PortalEnvironmentLanguage[]
 }
 
-const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: ItemDisplayProps) => {
+const ItemDisplay = ({
+  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages
+}: ItemDisplayProps) => {
   const answer = answerMap[question.name]
-  const answerLanguage = answer?.viewedLanguage || 'N/A'
+  const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -93,7 +102,9 @@ const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: 
   return <>
     <dt className="fw-normal">
       {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">({stableIdText}) ({answerLanguage})</span>
+      <span className="ms-2 fst-italic text-muted">
+        ({stableIdText})
+        {answerLanguage ? ` (Answered in ${answerLanguage.languageName})` : ''}</span>
     </dt>
     <dl>
       <pre className="fw-bold">{displayValue}</pre>
