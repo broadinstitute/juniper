@@ -11,7 +11,7 @@ import { ConsentResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 /** shows consent forms for a given enrollee, based on url params specifying the form */
 export default function EnrolleeConsentView({ studyEnvContext, enrollee, responseMap }: {

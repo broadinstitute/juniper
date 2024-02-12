@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
-import { renderTruncatedText } from '../../../util/pageUtils'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { renderTruncatedText } from 'util/pageUtils'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,

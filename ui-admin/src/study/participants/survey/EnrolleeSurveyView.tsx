@@ -10,7 +10,7 @@ import { instantToDefaultString } from 'util/timeUtils'
 import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext }:

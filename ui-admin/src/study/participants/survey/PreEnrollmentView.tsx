@@ -1,7 +1,7 @@
 import React from 'react'
 import SurveyFullDataView from './SurveyFullDataView'
 import { Answer, PreregistrationResponse, Survey } from 'api/api'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 /** show a preEnrollment response */
 export default function PreEnrollmentView({ studyEnvContext, preEnrollResponse, preEnrollSurvey }: {
