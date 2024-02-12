@@ -21,8 +21,10 @@ public class SmartyAddressValidationService implements AddressValidationService 
     SmartyUSAddressValidationService usClient;
     SmartyInternationalAddressValidationService internationalClient;
 
-    SmartyAddressValidationService(SmartyUSAddressValidationService usClient) {
+    SmartyAddressValidationService(SmartyUSAddressValidationService usClient,
+                                   SmartyInternationalAddressValidationService internationalClient) {
         this.usClient = usClient;
+        this.internationalClient = internationalClient;
     }
 
     @Override

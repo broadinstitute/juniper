@@ -33,6 +33,11 @@ public class SmartyInternationalAddressValidationService implements AddressValid
 
         Lookup lookup = mailingAddressToLookup(address);
 
+        System.out.println(lookup.getAddress1());
+        System.out.println(lookup.getAddress2());
+        System.out.println(lookup.getCountry());
+        System.out.println(lookup.getLocality());
+        System.out.println(lookup.getPostalCode());
         try {
             client.send(lookup);
         } catch (Exception e) {
