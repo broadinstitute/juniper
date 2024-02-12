@@ -65,7 +65,9 @@ public class ConfigExtServiceTests {
             .withProperty("env.dsm.basePath", "basePath1")
             .withProperty("env.dsm.issuerClaim", "issuerClaim1")
             .withProperty("env.dsm.secret", "superSecret")
-            .withProperty("env.addrValidation.addrValidationClientClass", "someClass");
+            .withProperty("env.addrValidation.addrValidationClientClass", "someClass")
+            .withProperty("env.addrValidation.smartyAuthId", "sm_id")
+            .withProperty("env.addrValidation.smartyAuthToken", "sm_token");
 
     LivePepperDSMClient.PepperDSMConfig testPepperConfig =
         new LivePepperDSMClient.PepperDSMConfig(mockEnvironment);
@@ -84,6 +86,8 @@ public class ConfigExtServiceTests {
     assertThat(dsmConfigMap.get("useLiveDsm"), equalTo(false));
 
     assertThat(addressValidationConfigMap.get("addrValidationClientClass"), equalTo("someClass"));
+    assertThat(addressValidationConfigMap.get("smartyAuthId"), equalTo("sm_id"));
+    assertThat(addressValidationConfigMap.get("smartyAuthToken"), equalTo("sm..."));
   }
 
   @Test
