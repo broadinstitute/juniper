@@ -86,7 +86,11 @@ type ItemDisplayProps = {
   supportedLanguages: PortalEnvironmentLanguage[]
 }
 
-const ItemDisplay = ({
+/**
+ * Renders a single survey question and its answer,
+ * with stableId and the viewed language (if applicable)
+ */
+export const ItemDisplay = ({
   question, answerMap, surveyVersion, showFullQuestions, supportedLanguages
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
