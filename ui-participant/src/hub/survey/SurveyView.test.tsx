@@ -31,7 +31,8 @@ beforeEach(() => {
   (usePortalEnv as jest.Mock).mockReturnValue({
     portal: { name: 'demo' },
     portalEnv: {
-      environmentName: 'sandbox'
+      environmentName: 'sandbox',
+      supportedLanguages: []
     }
   })
 })
