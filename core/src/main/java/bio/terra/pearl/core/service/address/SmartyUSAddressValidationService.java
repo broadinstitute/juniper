@@ -7,7 +7,6 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Components;
 import com.smartystreets.api.us_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -36,15 +35,11 @@ public class SmartyUSAddressValidationService implements AddressValidationServic
 
         Lookup lookup = mailingAddressToLookup(address);
 
-        try {
-            client.send(lookup);
-        } catch (Exception e) {
-            throw new AddressValidationException(e.getMessage(), HttpStatusCode.valueOf(400));
-        }
+        client.send(lookup);
 
         List<Candidate> results = lookup.getResult();
 
-        if (results.isEmpty()) {
+        if (Objects.isNull(results) || results.isEmpty()) {
             return AddressValidationResultDto.builder().valid(false).build();
         }
 

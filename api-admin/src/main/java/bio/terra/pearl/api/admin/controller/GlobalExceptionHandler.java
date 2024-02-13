@@ -1,7 +1,12 @@
 package bio.terra.pearl.api.admin.controller;
 
-import bio.terra.common.exception.*;
+import bio.terra.common.exception.BadRequestException;
+import bio.terra.common.exception.InternalServerErrorException;
+import bio.terra.common.exception.NotFoundException;
+import bio.terra.common.exception.UnauthorizedException;
+import bio.terra.common.exception.ValidationException;
 import bio.terra.pearl.api.admin.model.ErrorReport;
+import bio.terra.pearl.core.service.address.AddressValidationException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,6 +75,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({InternalServerErrorException.class, Exception.class})
   public ResponseEntity<ErrorReport> internalErrorExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
+  }
+
+  @ExceptionHandler({AddressValidationException.class})
+  public ResponseEntity<ErrorReport> addressValidationExceptionHandler(
+      AddressValidationException ex) {
+    return buildErrorReport(ex, ex.getHttpStatusCode(), request);
   }
 
   protected static ResponseEntity<ErrorReport> buildErrorReport(
