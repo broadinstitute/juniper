@@ -8,7 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
-import { renderTruncatedText } from '../../../util/pageUtils'
+import { renderTruncatedText } from 'util/pageUtils'
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -79,8 +79,14 @@ type ItemDisplayProps = {
   showFullQuestions: boolean
 }
 
-const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: ItemDisplayProps) => {
+/**
+ *
+ */
+export const ItemDisplay = ({
+  question, answerMap, surveyVersion, showFullQuestions
+}: ItemDisplayProps) => {
   const answer = answerMap[question.name]
+  const answerLanguage = answer?.viewedLanguage?.languageName
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -92,7 +98,9 @@ const ItemDisplay = ({ question, answerMap, surveyVersion, showFullQuestions }: 
   return <>
     <dt className="fw-normal">
       {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">({stableIdText})</span>
+      <span className="ms-2 fst-italic text-muted">
+        ({stableIdText})
+        {answerLanguage ? ` (Answered in ${answerLanguage})` : ''}</span>
     </dt>
     <dl><pre className="fw-bold">{displayValue}</pre></dl>
   </>

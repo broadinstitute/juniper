@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.survey;
 import bio.terra.pearl.core.model.BaseEntity;
 import java.util.Objects;
 import java.util.UUID;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,8 @@ public class Answer extends BaseEntity {
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;
+    private PortalEnvironmentLanguage viewedLanguage;
+    private UUID viewedLanguageId;
     private AnswerType answerType;
     private String stringValue;
     // objects are stored as JSON strings

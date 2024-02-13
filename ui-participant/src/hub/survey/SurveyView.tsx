@@ -50,8 +50,8 @@ export function RawSurveyView({
   resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
 }) {
   const navigate = useNavigate()
-  const { selectedLanguage } = useUser()
-  const { updateEnrollee } = useUser()
+  const { selectedLanguage, updateEnrollee } = useUser()
+  const { portalEnv } = usePortalEnv()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
 
@@ -64,7 +64,9 @@ export function RawSurveyView({
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>,
+        currentModelValues, portalEnv.supportedLanguages.find(l =>
+          l.languageCode === selectedLanguage)),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
@@ -96,7 +98,9 @@ export function RawSurveyView({
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
-    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues)
+    const updatedAnswers = getUpdatedAnswers(
+        prevSave.current as Record<string, object>, currentModelValues, portalEnv.supportedLanguages.find(l =>
+          l.languageCode === selectedLanguage))
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return

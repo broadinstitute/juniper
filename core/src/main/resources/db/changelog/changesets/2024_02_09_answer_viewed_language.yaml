@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_answer_viewed_lang
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: answer
+            columns:
+              - column: { name: viewed_language_id, type: uuid, constraints: {
+                nullable: true, foreignKeyName: fk_answer_portal_env_language, references: portal_environment_language(id) }
+              }

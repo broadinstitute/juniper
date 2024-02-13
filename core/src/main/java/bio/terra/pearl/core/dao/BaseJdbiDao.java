@@ -211,6 +211,16 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
      * and do so in a single SQL query
      */
     protected Optional<T> findWithChild(UUID id, String childIdPropertyName, String childPropertyName, BaseJdbiDao childDao) {
+        return findAllByPropertyWithChild("id", id, childIdPropertyName, childPropertyName, childDao).stream().findFirst();
+    }
+
+    /**
+     * Fetches a list of entities with children attached.  For example, if the parent table has a column "mailing_address_id" and
+     * a field mailingAddress, this method could be used to fetch the parents with the mailing addresses already hydrated
+     * and do so in a single SQL query
+     */
+    public List<T> findAllByPropertyWithChild(String columnName, Object columnValue, String childIdPropertyName,
+                                              String childPropertyName, BaseJdbiDao childDao) {
         List<String> parentCols = getQueryColumns.stream().map(col -> "a." + col + " a_" + col)
                 .collect(Collectors.toList());
         List<String> childCols = ((List<String>) childDao.getQueryColumns).stream().map(col -> "b." + col + " b_" + col)
@@ -220,8 +230,8 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         + String.join(", ", childCols)
                         + " from " + tableName + " a left join " + childDao.tableName
                         + " b on a." + toSnakeCase(childIdPropertyName) + " = b.id"
-                        + " where a.id = :id")
-                        .bind("id", id )
+                        + " where a." + toSnakeCase(columnName) + " = :columnValue")
+                        .bind("columnValue", columnValue)
                         .registerRowMapper(clazz, getRowMapper("a"))
                         .registerRowMapper(childDao.clazz, childDao.getRowMapper("b"))
                         .reduceRows((Map<UUID, T> map, RowView rowView) -> {
@@ -233,7 +243,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                                 accessor.setPropertyValue(childPropertyName, rowView.getRow(childDao.getClazz()));
                             }
                         })
-                        .findFirst()
+                        .toList()
         );
     }
 

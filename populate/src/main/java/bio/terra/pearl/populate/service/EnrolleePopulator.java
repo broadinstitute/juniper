@@ -16,6 +16,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
@@ -39,8 +40,8 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
@@ -90,7 +91,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private ParticipantTaskService participantTaskService;
     private TriggerService triggerService;
     private NotificationService notificationService;
-    private AnswerProcessingService answerProcessingService;
+    private PortalLanguageService portalLanguageService;
     private EnrollmentService enrollmentService;
     private ProfileService profileService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
@@ -111,7 +112,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              ConsentResponseService consentResponseService,
                              ParticipantTaskService participantTaskService,
                              TriggerService triggerService,
-                             NotificationService notificationService, AnswerProcessingService answerProcessingService,
+                             NotificationService notificationService, PortalLanguageService portalLanguageService,
                              EnrollmentService enrollmentService, ProfileService profileService,
                              WithdrawnEnrolleeService withdrawnEnrolleeService,
                              TimeShiftPopulateDao timeShiftPopulateDao,
@@ -131,7 +132,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.enrolleeService = enrolleeService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.participantUserService = participantUserService;
-        this.answerProcessingService = answerProcessingService;
+        this.portalLanguageService = portalLanguageService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
         this.withdrawnEnrolleeService = withdrawnEnrolleeService;
@@ -157,7 +158,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
-            Answer answer = convertAnswerPopDto(answerPopDto);
+            UUID portEnvId = ppUser.getPortalEnvironmentId();
+            List<PortalEnvironmentLanguage> languages = portalLanguageService.findByPortalEnvId(portEnvId);
+            Answer answer = convertAnswerPopDto(answerPopDto, languages);
             response.getAnswers().add(answer);
         }
         DataAuditInfo auditInfo = DataAuditInfo.builder()
@@ -201,9 +204,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return null;
     }
 
-    public Answer convertAnswerPopDto(AnswerPopDto popDto) throws JsonProcessingException {
+    public Answer convertAnswerPopDto(AnswerPopDto popDto, List<PortalEnvironmentLanguage> languages) throws JsonProcessingException {
         if (popDto.getObjectJsonValue() != null) {
             popDto.setObjectValue(objectMapper.writeValueAsString(popDto.getObjectJsonValue()));
+        }
+        if(!languages.isEmpty() && popDto.getViewedLanguage() != null){
+            Optional<PortalEnvironmentLanguage> answerLanguage = languages.stream().filter(language -> language.getLanguageCode().equals(popDto.getViewedLanguage().getLanguageCode())).findFirst();
+            answerLanguage.ifPresent(portalEnvironmentLanguage -> popDto.setViewedLanguageId(portalEnvironmentLanguage.getId()));
         }
         return popDto;
     }

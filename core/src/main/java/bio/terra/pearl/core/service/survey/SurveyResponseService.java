@@ -5,24 +5,28 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.*;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
     private AnswerService answerService;
-    private EnrolleeService enrolleeService;
+    private PortalLanguageService portalLanguageService;
     private SurveyService surveyService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
@@ -31,14 +35,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private EventService eventService;
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
-                                 EnrolleeService enrolleeService, SurveyService surveyService,
+                                 PortalLanguageService portalLanguageService, SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
                                  DataChangeRecordService dataChangeRecordService, EventService eventService) {
         super(dao);
         this.answerService = answerService;
-        this.enrolleeService = enrolleeService;
+        this.portalLanguageService = portalLanguageService;
         this.surveyService = surveyService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
@@ -204,6 +208,25 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         // use the responseId (which we have already validated) and questionStableIds to get existing answers
         List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getId(), updatedStableIds);
 
+        List<PortalEnvironmentLanguage> supportedLanguages = portalLanguageService.findByPortalEnvId(ppUser.getPortalEnvironmentId());
+        for (Answer answer : answers) {
+            if(answer.getViewedLanguage() != null) {
+                Optional<PortalEnvironmentLanguage> langOpt = supportedLanguages.stream().filter(language -> language.getLanguageCode().equals(answer.getViewedLanguage().getLanguageCode())).findFirst();
+                langOpt.ifPresentOrElse(
+                        lang -> answer.setViewedLanguageId(lang.getId()),
+                        () -> {
+                            // if the language is somehow not supported, log an error and set the language to null.
+                            // we don't want to error here because we don't want to lose the participants response
+                            log.error("The specified language (langName: {}, langCode: {}, responseId: {}) is not supported by the portal environment",
+                                    answer.getViewedLanguage().getLanguageName(),
+                                    answer.getViewedLanguage().getLanguageCode(),
+                                    response.getId());
+                            answer.setViewedLanguageId(null);
+                        }
+                );
+            }
+        }
+
         // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
         Map<String, Answer> existingAnswerMap = new HashMap<>();
         for (Answer answer : existingAnswers) {
@@ -254,6 +277,9 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
+        if(answer.getViewedLanguage() != null) {
+            answer.setViewedLanguageId(answer.getViewedLanguage().getId());
+        }
         if (answer.getSurveyVersion() == 0) {
             // if the frontend didn't specify a specific version,
             // default to the assigned version

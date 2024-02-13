@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.dao.portal.PortalLanguageDao;
 import bio.terra.pearl.core.model.survey.Answer;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class AnswerDao extends BaseMutableJdbiDao<Answer> {
-    public AnswerDao(Jdbi jdbi) {
+    private PortalLanguageDao portalLanguageDao;
+    public AnswerDao(Jdbi jdbi, PortalLanguageDao portalLanguageDao) {
         super(jdbi);
+        this.portalLanguageDao = portalLanguageDao;
     }
 
     @Override
@@ -21,7 +24,7 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
     }
 
     public List<Answer> findByResponse(UUID surveyResponseId) {
-        return findAllByProperty("survey_response_id", surveyResponseId);
+        return findAllByPropertyWithChild("survey_response_id", surveyResponseId, "viewed_language_id", "viewedLanguage", portalLanguageDao);
     }
 
     public void deleteByResponseId(UUID responseId) {
@@ -54,6 +57,6 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
     }
 
     public List<Answer> findByEnrolleeId(UUID enrolleeId) {
-        return findAllByProperty("enrollee_id", enrolleeId);
+        return findAllByPropertyWithChild("enrollee_id", enrolleeId, "viewed_language_id", "viewedLanguage", portalLanguageDao);
     }
 }

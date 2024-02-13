@@ -1,3 +1,5 @@
+import { PortalEnvironmentLanguage } from './portal'
+
 export type VersionedForm = {
   id: string
   stableId: string
@@ -49,6 +51,7 @@ export type Answer = {
   otherDescription?: string
   surveyStableId?: string
   surveyVersion?: number
+  viewedLanguage?: PortalEnvironmentLanguage
 }
 
 export type FormResponse = {
