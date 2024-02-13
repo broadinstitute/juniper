@@ -26,7 +26,7 @@ public class Answer extends BaseEntity {
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;
-    private String viewedLanguage; //todo: should this be an ID to the PortalLanguage? hmmm
+    private String viewedLanguage;
     private AnswerType answerType;
     private String stringValue;
     // objects are stored as JSON strings
