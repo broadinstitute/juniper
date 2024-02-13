@@ -1,4 +1,5 @@
-import { AdminTask, AdminUser, Enrollee, ParticipantNote } from 'api/api'
+import { AdminTask, Enrollee, ParticipantNote } from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCheck, faUser } from '@fortawesome/free-solid-svg-icons'
 import { instantToDateString, instantToDefaultString } from 'util/timeUtils'

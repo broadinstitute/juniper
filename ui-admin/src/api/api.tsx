@@ -24,6 +24,7 @@ import {
 import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 import queryString from 'query-string'
+import { AdminUser, NewAdminUser } from './adminUser'
 
 export type {
   Answer,
@@ -59,26 +60,6 @@ export type {
   SurveyResponse,
   VersionedForm
 } from '@juniper/ui-core'
-
-export type AdminUser = {
-  id: string,
-  username: string,
-  token: string,
-  superuser: boolean,
-  portalPermissions: Record<string, string[]>,
-  isAnonymous: boolean,
-  portalAdminUsers?: PortalAdminUser[]
-};
-
-export type NewAdminUser = {
-  username: string,
-  superuser: boolean,
-  portalShortcode: string | null
-}
-
-export type PortalAdminUser = {
-  portalId: string
-}
 
 export type StudyEnvironmentUpdate = {
   id: string,
@@ -1125,6 +1106,15 @@ Promise<Trigger> {
 
   async fetchAdminUsers(): Promise<AdminUser[]> {
     const url = `${API_ROOT}/adminUsers/v1`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchAdminUser(adminUserId: string, portalShortcode?: string): Promise<AdminUser> {
+    let url = `${API_ROOT}/adminUsers/v1/${adminUserId}`
+    if (portalShortcode) {
+      url += `?portalShortcode=${portalShortcode}`
+    }
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

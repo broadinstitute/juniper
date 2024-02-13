@@ -30,15 +30,21 @@ public class PortalAdminUserService extends ImmutableEntityService<PortalAdminUs
         return dao.findByPortal(portalId);
     }
 
+    public List<PortalAdminUser> findByAdminUser(UUID adminUserId) {
+        return dao.findByUserId(adminUserId);
+    }
+
     public Optional<PortalAdminUser> findOneWithRolesAndPermissions(UUID portalAdminUserId) {
         Optional<PortalAdminUser> portalAdminUserOpt = dao.find(portalAdminUserId);
-        return portalAdminUserOpt.map(portalAdminUser -> {
-            List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
-            portalAdminUserRoles.forEach((PortalAdminUserRole portalAdminUserRole) -> {
-                portalAdminUser.getRoles().add(portalAdminUserRole.getRole());
-            });
-            return portalAdminUser;
+        return portalAdminUserOpt.map(portalAdminUser -> attachRolesAndPermissions(portalAdminUser));
+    }
+
+    public PortalAdminUser attachRolesAndPermissions(PortalAdminUser portalAdminUser) {
+        List<PortalAdminUserRole> portalAdminUserRoles = portalAdminUserRoleService.findByPortalAdminUserIdWithRolesAndPermissions(portalAdminUser.getId());
+        portalAdminUserRoles.forEach((PortalAdminUserRole portalAdminUserRole) -> {
+            portalAdminUser.getRoles().add(portalAdminUserRole.getRole());
         });
+        return portalAdminUser;
     }
 
     public boolean isUserInPortal(UUID userId, UUID portalId) {

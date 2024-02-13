@@ -5,6 +5,8 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
@@ -18,19 +20,54 @@ public class AdminUserExtService {
   private AdminUserService adminUserService;
   private AuthUtilService authUtilService;
   private AdminEmailService adminEmailService;
+  private PortalAdminUserService portalAdminUserService;
 
   public AdminUserExtService(
       AdminUserService adminUserService,
       AuthUtilService authUtilService,
       AdminEmailService adminEmailService,
-      EmailTemplateService emailTemplateService) {
+      EmailTemplateService emailTemplateService,
+      PortalAdminUserService portalAdminUserService) {
     this.adminUserService = adminUserService;
     this.authUtilService = authUtilService;
     this.adminEmailService = adminEmailService;
+    this.portalAdminUserService = portalAdminUserService;
   }
 
-  public Optional<AdminUser> get(UUID id, AdminUser operator) {
-    return authUserToUser(operator, id);
+  /**
+   * gets an adminUser with associated portal admin users, roles, and permissions. If portalId is
+   * null, returns all portalAdminUsers, otherwise, just returns the portalAdminUser corresponding
+   * to the portalId if one exists
+   */
+  public AdminUser get(UUID id, String portalShortcode, AdminUser operator) {
+    if (portalShortcode == null && !operator.isSuperuser()) {
+      // only superusers can see all PortalAdminUsers for an AdminUser
+      throw new PermissionDeniedException("You do not have permission for this operation");
+    }
+    Portal portal = null;
+    if (portalShortcode != null) {
+      portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    }
+
+    Optional<AdminUser> adminUserOpt = adminUserService.find(id);
+    if (adminUserOpt.isEmpty()) {
+      throw new NotFoundException("No admin user with id %s".formatted(id.toString()));
+    }
+    AdminUser adminUser = adminUserOpt.get();
+
+    List<PortalAdminUser> portalAdminUsers =
+        portalAdminUserService.findByAdminUser(adminUser.getId());
+    for (PortalAdminUser portalAdminUser : portalAdminUsers) {
+      if (portal == null || portalAdminUser.getPortalId().equals(portal.getId())) {
+        portalAdminUserService.attachRolesAndPermissions(portalAdminUser);
+        adminUser.getPortalAdminUsers().add(portalAdminUser);
+      }
+    }
+    if (adminUser.getPortalAdminUsers().size() == 0 && !operator.isSuperuser()) {
+      // if the user isn't in the requested portal, this user doesn't have access
+      throw new PermissionDeniedException("You do not have permission for this operation");
+    }
+    return adminUser;
   }
 
   public List<AdminUser> getAll(AdminUser operator) {
@@ -65,16 +102,6 @@ public class AdminUserExtService {
     AdminUser newAdminUser = adminUserService.create(newUser);
     adminEmailService.sendWelcomeEmail(null, newAdminUser);
     return newAdminUser;
-  }
-
-  protected Optional<AdminUser> authUserToUser(AdminUser user, UUID targetId) {
-    // for now, only superusers can access adminUser objects directly, everyone else can only deal
-    // with PortalAdminUsers
-    if (user.isSuperuser()) {
-      return adminUserService.find(targetId);
-    }
-    throw new PermissionDeniedException(
-        "User %s does not have permissions on user %s".formatted(user.getUsername(), targetId));
   }
 
   public record NewAdminUser(String username, boolean superuser, String portalShortcode) {}

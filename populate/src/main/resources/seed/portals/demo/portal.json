@@ -83,7 +83,8 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@heartdemo.org"}
+    {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
+    {"username": "pro_staff@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
   ],
   "siteImageDtos": [{
     "populateFileName": "images/Banner-image.png"

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -6,7 +6,8 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import Api, { AdminUser, Portal, PortalAdminUser } from 'api/api'
+import Api, { Portal } from 'api/api'
+import { AdminUser, PortalAdminUser } from 'api/adminUser'
 import { basicTableLayout, renderEmptyMessage }  from 'util/tableUtils'
 import { instantToDefaultString } from 'util/timeUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -15,11 +16,13 @@ import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
 import CreateUserModal from './CreateUserModal'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
+import { Link } from 'react-router-dom'
+import { useLoadingEffect } from '../api/api-utils'
+import UserAction from './UserAction'
 
-/** lists all admin users */
-const UserList = () => {
+/** lists all admin users or the users of a specific portal */
+const UserList = ({ portal }: {portal?: Portal}) => {
   const [users, setUsers] = useState<AdminUser[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [portals, setPortals] = React.useState<Portal[]>([])
@@ -32,26 +35,43 @@ const UserList = () => {
       portals.find(portal => portal.id === portalAdminUser.portalId)?.shortcode ?? '')
   }
 
-  const columns: ColumnDef<AdminUser>[] = useMemo(() => ([{
-    header: 'Username',
-    accessorKey: 'username'
-  }, {
-    header: 'Superuser',
-    accessorKey: 'superuser',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }, {
-    header: 'Portals',
-    accessorKey: 'portalAdminUsers',
-    cell: info => portalColumn(info.getValue() as PortalAdminUser[])
-  }, {
-    header: 'Created',
-    accessorKey: 'createdAt',
-    cell: info => instantToDefaultString(info.getValue() as number)
-  }, {
-    header: 'Last login',
-    accessorKey: 'lastLogin',
-    cell: info => instantToDefaultString(info.getValue() as number)
-  }]), [users])
+  const columns: ColumnDef<AdminUser>[] = useMemo(() => {
+    const cols: ColumnDef<AdminUser>[] = [{
+      header: 'Username',
+      id: 'username',
+      cell: ({ row }) => <Link to={row.original.id}>{row.original.username}</Link>
+    }]
+    if (!portal) {
+      cols.push({
+        header: 'Superuser',
+        accessorKey: 'superuser',
+        cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+      })
+      cols.push({
+        header: 'Portals',
+        accessorKey: 'portalAdminUsers',
+        cell: info => portalColumn(info.getValue() as PortalAdminUser[])
+      })
+    }
+    cols.push({
+      header: 'Created',
+      accessorKey: 'createdAt',
+      cell: info => instantToDefaultString(info.getValue() as number)
+    })
+    cols.push({
+      header: 'Last login',
+      accessorKey: 'lastLogin',
+      cell: info => instantToDefaultString(info.getValue() as number)
+    })
+    if (portal) {
+      cols.push({
+        header: 'Actions',
+        accessorKey: 'actions',
+        cell: info => <UserAction row={info.row} portal={portal} onUserListChanged={reload}/>
+      })
+    }
+    return cols
+  }, [users])
 
   const table = useReactTable({
     data: users,
@@ -65,28 +85,26 @@ const UserList = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const loadAdminUsersAndPortals = async () => {
-    setIsLoading(true)
+  const { isLoading, reload } = useLoadingEffect(async () => {
     try {
-      const result = await Promise.all(
-        [Api.fetchAdminUsers(), Api.getPortals()]
-      )
+      let result
+      if (portal) {
+        result = await Promise.all([Api.fetchAdminUsersByPortal(portal.shortcode), Api.getPortals()])
+      } else {
+        result = await Promise.all([Api.fetchAdminUsers(), Api.getPortals()])
+      }
       setUsers(result[0])
       setPortals(result[1])
     } catch (e) {
       alert(`error loading user list ${e}`)
     }
-    setIsLoading(false)
-  }
+  })
 
   const handleUserCreated = () => {
     // just reload everything
-    loadAdminUsersAndPortals()
+    reload()
   }
 
-  useEffect(() => {
-    loadAdminUsersAndPortals()
-  }, [])
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('All Users') }
     <div className="d-flex align-items-center justify-content-end">
@@ -94,7 +112,8 @@ const UserList = () => {
         <FontAwesomeIcon icon={faPlus}/> Create user
       </Button>
     </div>
-    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)} portals={portals}
+    {showCreateModal && <CreateUserModal onDismiss={() => setShowCreateModal(false)}
+      portals={portal ? [portal] : portals}
       userCreated={handleUserCreated}/>}
     <LoadingSpinner isLoading={isLoading}>
       { basicTableLayout(table) }
