@@ -107,8 +107,8 @@ export const ItemDisplay = ({
     <dt className="fw-normal">
       {renderQuestionText(answer, question, showFullQuestions)}
       <span className="ms-2 fst-italic text-muted">
-        ({stableIdText})
-        {answerLanguage ? ` (Answered in ${answerLanguage.languageName})` : ''}</span>
+        ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
+      </span>
     </dt>
     <dl>
       <pre className="fw-bold">{displayValue}</pre>

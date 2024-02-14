@@ -216,13 +216,13 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
 export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
-  updated: Record<string, SurveyJsValueType>, selectedLanguage?: string): Answer[] {
+  updated: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer[] {
   const allKeys = _union(_keys(original), _keys(updated))
   const updatedKeys = allKeys.filter(key => !_isEqual(original[key], updated[key]))
     .map(key => key.endsWith(SURVEY_JS_OTHER_SUFFIX) ? key.substring(0, key.lastIndexOf(SURVEY_JS_OTHER_SUFFIX)) : key)
   const dedupedKeys = Array.from(new Set(updatedKeys).values())
 
-  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated, selectedLanguage))
+  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated, viewedLanguage))
 }
 
 /** get a merge of both the explicit answer data and the calculated values */
