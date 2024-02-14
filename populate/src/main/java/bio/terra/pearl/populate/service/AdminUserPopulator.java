@@ -19,13 +19,11 @@ import org.springframework.stereotype.Service;
 public class AdminUserPopulator extends BasePopulator<AdminUser, AdminUserPopDto, FilePopulateContext> {
     private AdminUserService adminUserService;
     private PortalAdminUserService portalAdminUserService;
-    private RoleService roleService;
     private PortalAdminUserRoleService portalAdminUserRoleService;
 
-    public AdminUserPopulator(AdminUserService adminUserService, PortalAdminUserService portalAdminUserService, RoleService roleService, PortalAdminUserRoleService portalAdminUserRoleService) {
+    public AdminUserPopulator(AdminUserService adminUserService, PortalAdminUserService portalAdminUserService, PortalAdminUserRoleService portalAdminUserRoleService) {
         this.adminUserService = adminUserService;
         this.portalAdminUserService = portalAdminUserService;
-        this.roleService = roleService;
         this.portalAdminUserRoleService = portalAdminUserRoleService;
     }
 
