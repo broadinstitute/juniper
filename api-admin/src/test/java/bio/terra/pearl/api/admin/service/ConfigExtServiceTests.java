@@ -65,7 +65,7 @@ public class ConfigExtServiceTests {
             .withProperty("env.dsm.basePath", "basePath1")
             .withProperty("env.dsm.issuerClaim", "issuerClaim1")
             .withProperty("env.dsm.secret", "superSecret")
-            .withProperty("env.addrValidation.addrValidationServuceClass", "someClass")
+            .withProperty("env.addrValidation.addrValidationServiceClass", "someClass")
             .withProperty("env.addrValidation.smartyAuthId", "sm_id")
             .withProperty("env.addrValidation.smartyAuthToken", "sm_token");
 
@@ -85,7 +85,7 @@ public class ConfigExtServiceTests {
     assertThat(dsmConfigMap.get("secret"), equalTo("su..."));
     assertThat(dsmConfigMap.get("useLiveDsm"), equalTo(false));
 
-    assertThat(addressValidationConfigMap.get("addrValidationServuceClass"), equalTo("someClass"));
+    assertThat(addressValidationConfigMap.get("addrValidationServiceClass"), equalTo("someClass"));
     assertThat(addressValidationConfigMap.get("smartyAuthId"), equalTo("sm_id"));
     assertThat(addressValidationConfigMap.get("smartyAuthToken"), equalTo("sm..."));
   }

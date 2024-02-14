@@ -78,7 +78,7 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
                    }
                 """
         );
-        AddressValidationResultDto result = client.validate(new MailingAddress());
+        AddressValidationResultDto result = client.validate(MailingAddress.builder().country("MX").build());
 
         Assertions.assertTrue(result.isValid());
         Assertions.assertEquals("14 Frenchman Dr", result.getSuggestedAddress().getStreet1());
@@ -135,7 +135,7 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
                         }
                         """
         );
-        AddressValidationResultDto result = client.validate(new MailingAddress());
+        AddressValidationResultDto result = client.validate(MailingAddress.builder().country("MX").build());
 
         Assertions.assertTrue(result.isValid());
         Assertions.assertEquals("14 Frenchman Dr", result.getSuggestedAddress().getStreet1());
@@ -181,7 +181,7 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
                           }
                         """
         );
-        AddressValidationResultDto result = client.validate(new MailingAddress());
+        AddressValidationResultDto result = client.validate(MailingAddress.builder().country("MX").build());
 
         Assertions.assertFalse(result.isValid());
         Assertions.assertNull(result.getSuggestedAddress());

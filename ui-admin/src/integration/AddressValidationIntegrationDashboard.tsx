@@ -18,8 +18,8 @@ export default function AddressValidationIntegrationDashboard() {
     <div className="mt-4">
       <h3 className="h5">Config</h3>
       {!isLoading && <dl>
-        <dt>addrValidationServuceClass</dt>
-        <dd>{config?.addrValidationConfig.addrValidationServuceClass}</dd>
+        <dt>addrValidationServiceClass</dt>
+        <dd>{config?.addrValidationConfig.addrValidationServiceClass}</dd>
         <dt>smartyAuthId</dt>
         <dd>{config?.addrValidationConfig.smartyAuthId}</dd>
         <dt>smartyAuthToken</dt>

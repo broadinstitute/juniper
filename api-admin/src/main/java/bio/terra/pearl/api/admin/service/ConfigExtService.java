@@ -78,7 +78,7 @@ public class ConfigExtService {
                 pepperDSMConfig.getBasePath()),
             "addrValidationConfig",
             Map.of(
-                "addrValidationServuceClass", addressValidationConfig.getAddressValidationClass(),
+                "addrValidationServiceClass", addressValidationConfig.getAddressValidationClass(),
                 "smartyAuthId", addressValidationConfig.getAuthId(),
                 "smartyAuthToken", maskSecret(addressValidationConfig.getAuthToken())));
     return configMap;
