@@ -163,6 +163,7 @@ export default function EditMailingAddress(
             value: mailingAddress.country,
             label: findCountryLabel(mailingAddress.country)
           }}
+          formatCreateLabel={val => val}
           onChange={val => onFieldChange('country', val ? val.value : '')}
         />
       </div>
