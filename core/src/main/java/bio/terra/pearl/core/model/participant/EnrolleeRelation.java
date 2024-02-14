@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.model.participant;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,17 +14,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/** represents a relation between two enrollees.
+ * this relationship is directional from the enrollee to the
+ * targetEnrollee
+ * To read semantically,  "The enrollee with id `enrolleeId` is the `relationshipType` of/to the enrollee with id `targetEnrolleeId`
+ * e.g.  if enrolleeId is 1, and targetEnrolleeId is 2, 1 is the proxy of 2. (not vice-versa)
+ */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 public class EnrolleeRelation extends BaseEntity {
-    private UUID participantUserId;
     private UUID enrolleeId;
+    private UUID targetEnrolleeId;
+    private Enrollee targetEnrollee;
     private RelationshipType relationshipType;
-    @Builder.Default
-    private List<SurveyResponse> surveyResponses = new ArrayList<>();
-    @Builder.Default
-    private List<ConsentResponse> consentResponses = new ArrayList<>();
-
+    private Instant beginDate;
+    private Instant endDate;
 }

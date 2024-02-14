@@ -16,6 +16,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,8 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
     private ParticipantUserService participantUserService;
+    @Autowired
+    private EnrolleeService enrolleeService;
     @Autowired
     private PortalParticipantUserService portalParticipantUserService;
 
@@ -191,8 +194,8 @@ public class ProfileServiceTests extends BaseSpringBootTest {
         Enrollee enrollee = hubResponse.getEnrollee();
         Profile governedUserProfile = profileService.find(enrollee.getProfileId()).get();
         List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndًُRelationType(enrollee.getId(), RelationshipType.PROXY);
-        ParticipantUser proxyUser = participantUserService.find(relations.get(0).getParticipantUserId()).get();
-        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyUser.getId()).get(0);
+        Enrollee proxyEnrollee = enrolleeService.find(relations.get(0).getEnrolleeId()).get();
+        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId()).get(0);
         Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Assert.assertTrue(StringUtils.isNoneEmpty(governedUserProfile.getContactEmail()));
         Assert.assertEquals(proxyProfile.getContactEmail(), governedUserProfile.getContactEmail());

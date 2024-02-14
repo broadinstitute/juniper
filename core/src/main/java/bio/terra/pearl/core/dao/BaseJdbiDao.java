@@ -205,6 +205,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return findAllByPropertyCollection("id", uuids);
     }
 
+    /** finds all the entities by the given ids, sorted in the same order as the ids */
+    public List<T> findAllPreserveOrder(List<UUID> uuids) {
+        return findAllByPropertyCollectionPreserveOrder("id", uuids);
+    }
+
     /**
      * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
      * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated
