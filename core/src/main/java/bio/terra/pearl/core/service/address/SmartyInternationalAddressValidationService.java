@@ -27,8 +27,28 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         this.client = client;
     }
 
+    // Common name + alpha-2/3 codes
+    // see: https://www.iban.com/country-codes
+    // if a country is given that is not one of these countries, then
+    // validation will always error with an IllegalArgumentException
+    public static final List<String> SUPPORTED_COUNTRIES = List.of(
+            "Canada",
+            "CAN",
+            "CA",
+            "United Kingdom",
+            "GB",
+            "GBR",
+            "Mexico",
+            "MX",
+            "MEX"
+    );
+
     @Override
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
+
+        if (SUPPORTED_COUNTRIES.stream().noneMatch(val -> val.equalsIgnoreCase(address.getCountry()))) {
+            throw new IllegalArgumentException("Cannot validate country " + address.getCountry());
+        }
 
         Lookup lookup = mailingAddressToLookup(address);
 
@@ -77,20 +97,14 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             || Objects.isNull(candidate.getAnalysis().getAddressPrecision())) {
             return false;
         }
-        // verifies that the analysis was verified at a delivery point level or at the
-        // maximum possible for the country (some countries do not have data down to
-        // the delivery point, so can only verify to a certain level of precision).
+        // verifies that the analysis was verified at a delivery point level.
         // Ambiguous doesn't always mean undeliverable; e.g., an ambiguous scenario
-        // is when two addresses exist, one with company name and one without.
+        // could be when two addresses exist, one with company name and one without.
+        // Both are shippable.
         return (
             candidate.getAnalysis().getVerificationStatus().contains("Verified")
             || candidate.getAnalysis().getVerificationStatus().contains("Ambiguous")
-        )
-        &&
-        (
-            candidate.getAnalysis().getAddressPrecision().contains("DeliveryPoint")
-            || candidate.getAnalysis().getAddressPrecision().equals(candidate.getAnalysis().getMaxAddressPrecision()
-        ));
+        ) && candidate.getAnalysis().getAddressPrecision().contains("DeliveryPoint");
     }
 
     private MailingAddress suggestedAddress(Candidate candidate) {
@@ -99,7 +113,7 @@ public class SmartyInternationalAddressValidationService implements AddressValid
                 .builder()
                 .city(components.getLocality())
                 .state(components.getAdministrativeArea())
-                .street2("")
+                .street2(candidate.getAddress2())
                 .street1(candidate.getAddress1())
                 .country(components.getCountryIso3())
                 .postalCode(components.getPostalCode())
@@ -139,6 +153,10 @@ public class SmartyInternationalAddressValidationService implements AddressValid
 
         if (Objects.nonNull(components.getPostalCode()) && changes.contains(components.getPostalCode())) {
             out.add(AddressComponent.POSTAL_CODE);
+        }
+
+        if (Objects.nonNull(components.getLocality()) && changes.contains(components.getLocality())) {
+            out.add(AddressComponent.CITY);
         }
 
         if (Objects.nonNull(components.getAdministrativeArea()) && changes.contains(components.getAdministrativeArea())) {

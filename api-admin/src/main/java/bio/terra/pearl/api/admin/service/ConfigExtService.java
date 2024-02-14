@@ -6,9 +6,10 @@ import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
-import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class ConfigExtService {
@@ -78,7 +79,7 @@ public class ConfigExtService {
                 pepperDSMConfig.getBasePath()),
             "addrValidationConfig",
             Map.of(
-                "addrValidationClientClass", addressValidationConfig.getAddressValidationClass(),
+                "addrValidationServuceClass", addressValidationConfig.getAddressValidationClass(),
                 "smartyAuthId", addressValidationConfig.getAuthId(),
                 "smartyAuthToken", maskSecret(addressValidationConfig.getAuthToken())));
     return configMap;
