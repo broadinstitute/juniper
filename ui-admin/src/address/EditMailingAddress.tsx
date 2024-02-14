@@ -15,9 +15,9 @@ import { findDifferencesBetweenObjects } from '../util/objectUtils'
 import CreatableSelect from 'react-select/creatable'
 
 const SUPPORTED_COUNTRIES = [
-  { value: 'CA', label: 'Canada' },
-  { value: 'MX', label: 'Mexico' },
-  { value: 'GB', label: 'United Kingdom' },
+  { value: 'CAN', label: 'Canada' },
+  { value: 'MEX', label: 'Mexico' },
+  { value: 'GBR', label: 'United Kingdom' },
   { value: 'US', label: 'United States' }
 ]
 
