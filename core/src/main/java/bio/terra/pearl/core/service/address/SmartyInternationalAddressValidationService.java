@@ -7,6 +7,7 @@ import com.smartystreets.api.international_street.Candidate;
 import com.smartystreets.api.international_street.Components;
 import com.smartystreets.api.international_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -91,7 +92,17 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             || Objects.isNull(candidate.getAnalysis().getAddressPrecision())) {
             return false;
         }
-        // verifies that the analysis was verified at a delivery point level.
+
+        // often when a post box is provided (e.g. in the UK) it seems that it always
+        // has a precision of Locality. Unfortunately, I think this means that it cannot
+        // go all the way to a delivery point level of precision as they do not have
+        // international PO box data for every country like they do in the US. So,
+        // we have to just trust that it works.
+        if (!StringUtils.isEmpty(candidate.getComponents().getPostBox())
+                && candidate.getAnalysis().getAddressPrecision().equals("Locality")) {
+            return true;
+        }
+
         // Ambiguous doesn't always mean undeliverable; e.g., an ambiguous scenario
         // could be when two addresses exist, one with company name and one without.
         // Both are shippable.
@@ -171,7 +182,7 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         // the subpremise, so we need both street1 and street2. In most countries,
         // the second address line from smarty contains city/state/postal info, so
         // we don't want that in a freeform line
-        if (!components.getSubBuilding().isEmpty()) {
+        if (!StringUtils.isEmpty(components.getSubBuilding())) {
             return MailingAddress
                     .builder()
                     .city(components.getLocality())

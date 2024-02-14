@@ -24,7 +24,7 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
     private SmartyClient mockSmartyClient;
 
     // all the candidates below come from real responses via
-    // https://www.smarty.com/products/us-address-verification#demo
+    // https://www.smarty.com/products/international-address-verification
 
     @Autowired
     private SmartyInternationalAddressValidationService client;
@@ -82,6 +82,7 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
 
         Assertions.assertTrue(result.isValid());
         Assertions.assertEquals("14 Frenchman Dr", result.getSuggestedAddress().getStreet1());
+        Assertions.assertEquals("", result.getSuggestedAddress().getStreet2());
         Assertions.assertNull(result.getInvalidComponents());
         Assertions.assertFalse(result.getHasInferredComponents());
     }
@@ -186,6 +187,104 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
         Assertions.assertFalse(result.isValid());
         Assertions.assertNull(result.getSuggestedAddress());
         Assertions.assertTrue(result.getInvalidComponents().isEmpty());
+    }
+
+    @Test
+    public void tryGbPoBox() throws SmartyException, IOException, InterruptedException {
+        mockResponse(
+                """
+                         {
+                          "address1": "P O BOX 789",
+                          "address2": "London",
+                          "components": {
+                            "administrative_area": "London",
+                            "country_iso_3": "GBR",
+                            "locality": "London",
+                            "postal_code": "W5 5YZ",
+                            "post_box": "P O BOX 789",
+                            "post_box_number": "789",
+                            "post_box_type": "P O BOX 789"
+                          },
+                          "metadata": {
+                            "address_format": "post_box|locality|"
+                          },
+                          "analysis": {
+                            "verification_status": "Ambiguous",
+                            "address_precision": "Locality",
+                            "max_address_precision": "DeliveryPoint",
+                            "changes": {
+                              "components": {
+                                "administrative_area": "Added",
+                                "country_iso_3": "Added",
+                                "locality": "Verified-NoChange",
+                                "postal_code": "Identified-ContextChange",
+                                "post_box": "Identified-AliasChange",
+                                "post_box_number": "Identified-NoChange",
+                                "post_box_type": "Identified-AliasChange"
+                              }
+                            }
+                          }
+                        }
+                         """
+        );
+        AddressValidationResultDto result = client.validate(MailingAddress.builder().country("GB").build());
+
+        Assertions.assertTrue(result.isValid());
+        Assertions.assertEquals("P O BOX 789", result.getSuggestedAddress().getStreet1());
+        Assertions.assertEquals("", result.getSuggestedAddress().getStreet2());
+    }
+
+    @Test
+    public void tryGbWithFlat() throws SmartyException, IOException, InterruptedException {
+        mockResponse(
+                """
+                        {
+                           "address1": "Flat 9 Wheatstone House",
+                           "address2": "650-654 Chiswick High Road",
+                           "address3": "London",
+                           "address4": "W4 5BB",
+                           "components": {
+                             "administrative_area": "London",
+                             "country_iso_3": "GBR",
+                             "locality": "London",
+                             "postal_code": "W4 5BB",
+                             "postal_code_short": "W4 5BB",
+                             "premise": "650-654",
+                             "premise_number": "650-654",
+                             "thoroughfare": "Chiswick High Road",
+                             "building": "Wheatstone House",
+                             "sub_building": "Flat 9"
+                           },
+                           "metadata": {
+                             "address_format": "sub_building building|premise thoroughfare|locality|postal_code"
+                           },
+                           "analysis": {
+                             "verification_status": "Verified",
+                             "address_precision": "DeliveryPoint",
+                             "max_address_precision": "DeliveryPoint",
+                             "changes": {
+                               "components": {
+                                 "administrative_area": "Added",
+                                 "country_iso_3": "Added",
+                                 "locality": "Verified-NoChange",
+                                 "postal_code": "Verified-NoChange",
+                                 "postal_code_short": "Verified-NoChange",
+                                 "premise": "Verified-NoChange",
+                                 "premise_number": "Verified-NoChange",
+                                 "thoroughfare": "Verified-NoChange",
+                                 "building": "Verified-NoChange",
+                                 "sub_building": "Verified-NoChange"
+                               }
+                             }
+                           }
+                         }
+                         """
+        );
+        AddressValidationResultDto result = client.validate(MailingAddress.builder().country("GB").build());
+
+        Assertions.assertTrue(result.isValid());
+        Assertions.assertEquals("Flat 9 Wheatstone House", result.getSuggestedAddress().getStreet1());
+        Assertions.assertEquals("650-654 Chiswick High Road", result.getSuggestedAddress().getStreet2());
     }
 
 
