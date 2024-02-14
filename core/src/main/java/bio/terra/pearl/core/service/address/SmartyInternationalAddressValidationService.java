@@ -28,20 +28,13 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         this.client = client;
     }
 
-    // Common name + alpha-2/3 codes
     // see: https://www.iban.com/country-codes
     // if a country is given that is not one of these countries, then
     // validation will always error with an IllegalArgumentException
     public static final List<String> SUPPORTED_COUNTRIES = List.of(
-            "Canada",
-            "CAN",
             "CA",
-            "United Kingdom",
             "GB",
-            "GBR",
-            "Mexico",
-            "MX",
-            "MEX"
+            "MX"
     );
 
     @Override
@@ -59,7 +52,7 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             return AddressValidationResultDto.builder().valid(false).build();
         }
 
-        return candidateToValidationResult(lookup.getResult()[0]);
+        return candidateToValidationResult(address, lookup.getResult()[0]);
     }
 
     private Lookup mailingAddressToLookup(MailingAddress addr) {
@@ -75,13 +68,13 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         return lookup;
     }
 
-    private AddressValidationResultDto candidateToValidationResult(Candidate candidate) {
+    private AddressValidationResultDto candidateToValidationResult(MailingAddress input, Candidate candidate) {
 
         if (isValid(candidate)) {
             return AddressValidationResultDto
                     .builder()
                     .valid(true)
-                    .suggestedAddress(suggestedAddress(candidate))
+                    .suggestedAddress(suggestedAddress(input, candidate))
                     .hasInferredComponents(requiredInference(candidate))
                     .build();
         } else {
@@ -108,19 +101,13 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         ) && candidate.getAnalysis().getAddressPrecision().contains("DeliveryPoint");
     }
 
-    private MailingAddress suggestedAddress(Candidate candidate) {
-        Components components = candidate.getComponents();
-        return MailingAddress
-                .builder()
-                .city(components.getLocality())
-                .state(components.getAdministrativeArea())
-                .street2(candidate.getAddress2())
-                .street1(candidate.getAddress1())
-                .country(components.getCountryIso3())
-                .postalCode(components.getPostalCode())
-                .createdAt(null)
-                .lastUpdatedAt(null)
-                .build();
+    private MailingAddress suggestedAddress(MailingAddress input, Candidate candidate) {
+
+        if (input.getCountry().equals("GB")) {
+            return suggestedAddressSubpremiseOnItsOwnLine(input, candidate);
+        }
+
+        return standardSuggestedAddress(input, candidate);
     }
 
     private List<AddressComponent> invalidComponents(Candidate candidate) {
@@ -176,4 +163,44 @@ public class SmartyInternationalAddressValidationService implements AddressValid
 
     private static final List<String> REQUIRED_INFERENCE = List.of(
             "Added", "Identified-AliasChange");
+
+    // --------- Suggested Address Translation Methods ---------
+    private MailingAddress suggestedAddressSubpremiseOnItsOwnLine(MailingAddress input, Candidate candidate) {
+        Components components = candidate.getComponents();
+        // if there is a subpremise in some countries (e.g., GB), then the first street line is
+        // the subpremise, so we need both street1 and street2. In most countries,
+        // the second address line from smarty contains city/state/postal info, so
+        // we don't want that in a freeform line
+        if (!components.getSubBuilding().isEmpty()) {
+            return MailingAddress
+                    .builder()
+                    .city(components.getLocality())
+                    .state(components.getAdministrativeArea())
+                    .street2(candidate.getAddress2())
+                    .street1(candidate.getAddress1())
+                    .country(input.getCountry())
+                    .postalCode(components.getPostalCode())
+                    .createdAt(null)
+                    .lastUpdatedAt(null)
+                    .build();
+        }
+
+        return standardSuggestedAddress(input, candidate);
+    }
+
+    private MailingAddress standardSuggestedAddress(MailingAddress input, Candidate candidate) {
+        Components components = candidate.getComponents();
+
+        return MailingAddress
+                .builder()
+                .city(components.getLocality())
+                .state(components.getAdministrativeArea())
+                .street2("")
+                .street1(candidate.getAddress1())
+                .country(input.getCountry())
+                .postalCode(components.getPostalCode())
+                .createdAt(null)
+                .lastUpdatedAt(null)
+                .build();
+    }
 }

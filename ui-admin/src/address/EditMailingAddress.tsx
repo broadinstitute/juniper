@@ -14,13 +14,14 @@ import { useUser } from '../user/UserProvider'
 import { findDifferencesBetweenObjects } from '../util/objectUtils'
 import CreatableSelect from 'react-select/creatable'
 
+// Supported country alpha-2 codes; see
+// SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
-  { value: 'CAN', label: 'Canada' },
-  { value: 'MEX', label: 'Mexico' },
-  { value: 'GBR', label: 'United Kingdom' },
-  { value: 'US', label: 'United States' }
+  'CA',
+  'MX',
+  'GB',
+  'US'
 ]
-
 
 /**
  * Editable mailing address component with connection to the backend
@@ -28,11 +29,12 @@ const SUPPORTED_COUNTRIES = [
  */
 export default function EditMailingAddress(
   {
-    mailingAddress, onMailingAddressFieldChange, setMailingAddress
+    mailingAddress, onMailingAddressFieldChange, setMailingAddress, language
   }: {
     mailingAddress: MailingAddress,
     onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
-    setMailingAddress: (update: MailingAddress) => void
+    setMailingAddress: (update: MailingAddress) => void,
+    language?: string
   }
 ) {
   const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
@@ -48,6 +50,20 @@ export default function EditMailingAddress(
 
     onMailingAddressFieldChange(field, value)
   }
+
+  const calcCountryOptionsForLang = () => {
+    // automatically gets internationalized country names based upon the given language
+    const names = new Intl.DisplayNames([language || 'en'], { type: 'region' })
+
+    return SUPPORTED_COUNTRIES.map(code => {
+      return {
+        value: code,
+        label: names.of(code)
+      }
+    })
+  }
+
+  const countryOptions = calcCountryOptionsForLang()
 
   const validateAddress = () => {
     doApiLoad(async () => {
@@ -96,7 +112,7 @@ export default function EditMailingAddress(
   }
 
   const findCountryLabel = (val: string) => {
-    const option = SUPPORTED_COUNTRIES.find(option => option.value === val)
+    const option = countryOptions.find(option => option.value === val)
 
     if (option) {
       return option.label
@@ -106,7 +122,7 @@ export default function EditMailingAddress(
   }
 
   const isSupportedCountry = (val: string) => {
-    return SUPPORTED_COUNTRIES.findIndex(opt => opt.label === val || opt.value === val) >= 0
+    return countryOptions.findIndex(opt => opt.label === val || opt.value === val) >= 0
   }
 
   return <div className="">
@@ -158,7 +174,7 @@ export default function EditMailingAddress(
             })
           }}
           placeholder={'Country'}
-          options={sortBy(SUPPORTED_COUNTRIES, opt => opt.label)}
+          options={sortBy(countryOptions, opt => opt.label)}
           value={{
             value: mailingAddress.country,
             label: findCountryLabel(mailingAddress.country)
