@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Validation client for addresses in the United States. Ignores `country` field, so be sure
- * that you are giving it an address in the United States.
+ * Validation client for international addresses. Due to the complexity of global
+ * address formats, does not support all countries, but only a verified subset of
+ * countries.
  */
 @Component
 @Slf4j

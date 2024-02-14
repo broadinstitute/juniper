@@ -157,6 +157,7 @@ export default function EditMailingAddress(
               borderColor: 'var(--bs-border-color)' // use same border color as all other components
             })
           }}
+          placeholder={'Country'}
           options={sortBy(SUPPORTED_COUNTRIES, opt => opt.label)}
           value={{
             value: mailingAddress.country,

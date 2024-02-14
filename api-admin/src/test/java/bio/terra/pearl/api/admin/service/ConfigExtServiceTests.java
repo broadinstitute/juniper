@@ -1,23 +1,22 @@
 package bio.terra.pearl.api.admin.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
+
 import bio.terra.pearl.api.admin.config.B2CConfiguration;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.address.AddressValidationConfig;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.kit.pepper.LivePepperDSMClient;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = ConfigExtService.class)
 @WebMvcTest
