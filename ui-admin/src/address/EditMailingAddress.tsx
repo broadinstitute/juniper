@@ -11,6 +11,7 @@ import { isNil } from 'lodash'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
+import { findDifferencesBetweenObjects } from '../util/objectUtils'
 
 /**
  * Editable mailing address component with connection to the backend
@@ -42,13 +43,20 @@ export default function EditMailingAddress(
   const validateAddress = () => {
     doApiLoad(async () => {
       const results = await Api.validateAddress(mailingAddress)
+      if (results.suggestedAddress
+        && findDifferencesBetweenObjects(mailingAddress, results.suggestedAddress)
+          .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
+          .length === 0) {
+        results.suggestedAddress = undefined
+      }
+
       setAddressValidationResults(results)
       setHasChangedSinceValidation([])
     }, { setIsLoading: setIsLoadingValidation })
   }
 
   const formatClassName = (field: keyof MailingAddress) => {
-    if (!addressValidationResults) {
+    if (!addressValidationResults || !isNil(addressValidationResults.suggestedAddress)) {
       return 'form-control'
     }
 
@@ -137,9 +145,17 @@ export default function EditMailingAddress(
             hasInferredComponents={addressValidationResults.hasInferredComponents || false}
             accept={() => {
               if (addressValidationResults && addressValidationResults.suggestedAddress) {
+                const suggested = addressValidationResults.suggestedAddress
                 setMailingAddress({
-                  ...mailingAddress,
-                  ...addressValidationResults.suggestedAddress
+                  ...mailingAddress, // keep same id/createdAt, etc.
+                  ...{
+                    street1: suggested.street1,
+                    street2: suggested.street2,
+                    country: suggested.country,
+                    city: suggested.city,
+                    postalCode: suggested.postalCode,
+                    state: suggested.state
+                  } // only update relevant fields (not, e.g., id or createdAt)
                 })
               }
               // clear the results since we saved the new address

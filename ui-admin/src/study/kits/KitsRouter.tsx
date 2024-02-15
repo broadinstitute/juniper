@@ -17,7 +17,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
 
   const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
     borderBottom: isActive ? '3px solid #333': '',
-    background: isActive ? '#ddd' : ''
+    background: isActive ? '#E1E8F7' : '#F5F8FF'
   })
 
   return <>
@@ -26,7 +26,7 @@ export default function KitsRouter({ studyEnvContext }: {studyEnvContext: StudyE
     </NavBreadcrumb>
     <div className="container-fluid px-4 py-2">
       { renderPageHeader('Kits') }
-      <div className="d-flex w-100 mb-2" style={{ backgroundColor: '#ccc' }}>
+      <div className="d-flex mb-2">
         <NavLink to="eligible" style={tabLinkStyle}>
           <div className="py-3 px-5">
             Eligible for kit

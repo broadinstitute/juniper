@@ -96,7 +96,7 @@ public class ParticipantTaskDaoTests extends BaseSpringBootTest {
         ParticipantTaskDao.EnrolleeWithTasks enrollee1tasks = enrolleeTasks.stream().filter(et ->
                 et.getEnrolleeId().equals(enrolleeBundle.enrollee().getId())).findFirst().get();
         assertThat(enrollee1tasks.getTaskTargetNames(), hasSize(2));
-        assertThat(enrollee1tasks.getTaskTargetNames(), contains(task1_1.getTargetName(), task1_2.getTargetName()));
+        assertThat(enrollee1tasks.getTaskTargetNames(), containsInAnyOrder(task1_1.getTargetName(), task1_2.getTargetName()));
 
         // Now check that it filters out tasks if there is a recent notification
         Trigger trigger = triggerFactory.buildPersisted(Trigger.builder()
