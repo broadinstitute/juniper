@@ -92,7 +92,7 @@ public class CurrentUserService {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
     List<EnrolleeRelation> proxyRelations =
-        enrolleeRelationService.findByEnrolleeIdsAndًُRelationType(
+        enrolleeRelationService.findByEnrolleeIdsAndRelationType(
             enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
     enrolleeRelationService.attachTargetEnrollees(proxyRelations);
     for (EnrolleeRelation relation : proxyRelations) {
