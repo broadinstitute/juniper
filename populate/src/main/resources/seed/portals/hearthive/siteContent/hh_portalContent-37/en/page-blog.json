@@ -1,0 +1,37 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "Blog",
+  "htmlPageId" : "2669126f-c06d-48c1-ac9e-663b80a98e5b",
+  "htmlPageDto" : {
+    "title" : "Blog",
+    "sections" : [ ],
+    "path" : "blog",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "image" : {
+          "cleanFileName" : "select_imperial_-_final_selects_page_1_c.png",
+          "version" : 1
+        },
+        "blurb" : "",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "logos" : [ ]
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "",
+        "blurb" : "COMING SOON",
+        "blurbAlign" : "left",
+        "backgroundImage" : {
+          "cleanFileName" : "main_banner.webp",
+          "version" : 1
+        },
+        "buttons" : [ ]
+      }
+    } ]
+  }
+}

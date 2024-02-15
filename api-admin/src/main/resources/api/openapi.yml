@@ -669,7 +669,25 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: updated PArticipantTask objects
+          description: updated ParticipantTask objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/assignToEnrollees:
+    post:
+      summary: Assigns the specified tasks according to the passed-in ParticipantTaskAssignDto
+      tags: [ participantTask ]
+      operationId: assignToEnrollees
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: updated ParticipantTask objects
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -1023,6 +1041,21 @@ paths:
       responses:
         '204':
           description: indication of successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/address/v1/validate:
+    put:
+      summary: Validate a given address
+      tags: [ addressValidation ]
+      operationId: validate
+      requestBody:
+        description: mailing address
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: validation results
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/login:

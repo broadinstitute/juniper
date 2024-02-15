@@ -8,6 +8,8 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +18,16 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
     private PortalEnvironmentConfigDao portalEnvironmentConfigDao;
     private SiteContentDao siteContentDao;
     private SurveyDao surveyDao;
+    private PortalLanguageDao portalLanguageDao;
     public PortalEnvironmentDao(Jdbi jdbi,
                                 PortalEnvironmentConfigDao portalEnvironmentConfigDao,
-                                SiteContentDao siteContentDao, SurveyDao surveyDao) {
+                                SiteContentDao siteContentDao, SurveyDao surveyDao,
+                                PortalLanguageDao portalLanguageDao) {
         super(jdbi);
         this.portalEnvironmentConfigDao = portalEnvironmentConfigDao;
         this.siteContentDao = siteContentDao;
         this.surveyDao = surveyDao;
+        this.portalLanguageDao = portalLanguageDao;
     }
 
     @Override
@@ -60,6 +65,8 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
             if (portalEnv.getPreRegSurveyId() != null) {
                 portalEnv.setPreRegSurvey(surveyDao.find(portalEnv.getPreRegSurveyId()).get());
             }
+            List<PortalEnvironmentLanguage> portalEnvLanguages = portalLanguageDao.findByPortalEnvId(portalEnv.getId());
+            portalEnv.getSupportedLanguages().addAll(portalEnvLanguages);
         });
         return portalEnvOpt;
     }

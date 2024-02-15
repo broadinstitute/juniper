@@ -31,8 +31,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -58,6 +58,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
+    private RandomUtilService randomUtilService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -74,7 +75,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
-                           AdminTaskService adminTaskService, SecureRandom secureRandom) {
+                           AdminTaskService adminTaskService, SecureRandom secureRandom,
+                           RandomUtilService randomUtilService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -92,12 +94,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.kitRequestService = kitRequestService;
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
+        this.randomUtilService = randomUtilService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-
     public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
         return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
     }
@@ -250,6 +252,12 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         logger.info("Updated enrollee consent status: enrollee: {}, consented {}", enrolleeId, consented);
     }
 
+    public List<Enrollee> findUnassignedToTask(UUID studyEnvironmentId,
+                                     String targetStableId,
+                                     Integer targetAssignedVersion) {
+        return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
+    }
+
     /** It's possible there are snazzier ways to get postgres to generate this for us,
      * but for now, just keep trying strings until we get a unique one
      * returns null if we couldn't generate one.
@@ -259,10 +267,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         int MAX_TRIES = 10;
         String shortcode = null;
         for (int tryNum = 0; tryNum < MAX_TRIES; tryNum++) {
-            String possibleShortcode = secureRandom
-                    .ints(PARTICIPANT_SHORTCODE_LENGTH, 0, PARTICIPANT_SHORTCODE_ALLOWED_CHARS.length())
-                    .mapToObj(i -> PARTICIPANT_SHORTCODE_ALLOWED_CHARS.charAt(i))
-                    .collect(StringBuilder::new, StringBuilder::append, StringBuilder::append).toString();
+            String possibleShortcode = randomUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH, PARTICIPANT_SHORTCODE_ALLOWED_CHARS);
             if (dao.findOneByShortcode(possibleShortcode).isEmpty()) {
                 shortcode = possibleShortcode;
                 break;

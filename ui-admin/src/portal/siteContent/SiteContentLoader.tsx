@@ -26,9 +26,9 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
     submitMailingListContact: () => Promise.resolve({})
   }
 
-  const loadSiteContent = async (stableId: string, version: number) => {
+  const loadSiteContent = async (stableId: string, version: number, language?: string) => {
     setIsLoading(true)
-    Api.getSiteContent(portalShortcode, stableId, version).then(response => {
+    Api.getSiteContent(portalShortcode, stableId, version, language).then(response => {
       setSiteContent(response)
       setIsLoading(false)
     }).catch(() => {

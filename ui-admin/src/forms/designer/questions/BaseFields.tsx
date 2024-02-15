@@ -38,7 +38,8 @@ export const BaseFields = (props: BaseFieldsProps) => {
 
       <div className="mb-3">
         <Textarea
-          description="Additional context for the question."
+          infoContent="Optional additional context for the question.
+           Will be displayed in a smaller font beneath the main question text"
           disabled={disabled}
           label="Description"
           rows={2}
@@ -55,8 +56,8 @@ export const BaseFields = (props: BaseFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={!!regularQuestion.isRequired}
-          // eslint-disable-next-line max-len
-          description="If checked, participants will be required to enter a response before they can continue to the next page of the form."
+          infoContent="If checked, participants will be required to enter a response
+          before they can continue to the next page of the form."
           disabled={disabled}
           label="Require response"
           onChange={checked => {

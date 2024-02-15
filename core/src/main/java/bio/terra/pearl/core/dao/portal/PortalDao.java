@@ -20,6 +20,7 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     private PortalStudyDao portalStudyDao;
     private StudyDao studyDao;
     private PortalAdminUserDao portalAdminUserDao;
+    private PortalLanguageDao portalLanguageDao;
 
     @Override
     protected Class<Portal> getClazz() {
@@ -27,12 +28,14 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     }
 
     public PortalDao(Jdbi jdbi, PortalEnvironmentDao portalEnvironmentDao,
-                     PortalStudyDao portalStudyDao, StudyDao studyDao, PortalAdminUserDao portalAdminUserDao) {
+                     PortalStudyDao portalStudyDao, StudyDao studyDao, PortalAdminUserDao portalAdminUserDao,
+                     PortalLanguageDao portalLanguageDao) {
         super(jdbi);
         this.portalEnvironmentDao = portalEnvironmentDao;
         this.portalStudyDao = portalStudyDao;
         this.studyDao = studyDao;
         this.portalAdminUserDao = portalAdminUserDao;
+        this.portalLanguageDao = portalLanguageDao;
     }
 
     public Optional<Portal> findOneByShortcode(String shortcode) {

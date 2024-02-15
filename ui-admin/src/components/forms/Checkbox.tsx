@@ -1,16 +1,18 @@
 import classNames from 'classnames'
 import React, { useId } from 'react'
+import InfoPopup from './InfoPopup'
 
 export type CheckboxProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & {
   checked: boolean
   description?: string
+  infoContent?: React.ReactNode
   label: string
   onChange?: (value: boolean) => void
 }
 
 /** A textarea with label and description. */
 export const Checkbox = (props: CheckboxProps) => {
-  const { description, label, ...inputProps } = props
+  const { description, label, infoContent, ...inputProps } = props
   const { checked, className, disabled, id, onChange } = inputProps
 
   const generatedId = useId()
@@ -39,6 +41,7 @@ export const Checkbox = (props: CheckboxProps) => {
         <label className="form-check-label" htmlFor={inputId}>
           {label}
         </label>
+        { infoContent && <InfoPopup content={infoContent}/> }
       </div>
       {description && (
         <p

@@ -3,12 +3,20 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-import bio.terra.pearl.core.model.participant.MailingAddress;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.workflow.DataAuditInfo;
-import bio.terra.pearl.core.model.workflow.DataChangeRecord;
+import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -27,6 +35,12 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     private DataChangeRecordService dataChangeRecordService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private EnrolleeRelationService enrolleeRelationService;
+    @Autowired
+    private ParticipantUserService participantUserService;
+    @Autowired
+    private PortalParticipantUserService portalParticipantUserService;
 
     @Test
     @Transactional
@@ -168,5 +182,19 @@ public class ProfileServiceTests extends BaseSpringBootTest {
 
         Assertions.assertEquals(newStreet1, updatedProfile.getMailingAddress().getStreet1());
         Assertions.assertEquals(newCity, updatedProfile.getMailingAddress().getCity());
+    }
+
+    @Test
+    @Transactional
+    public void testGovernedUserProfile(TestInfo testInfo){
+        HubResponse hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
+        Enrollee enrollee = hubResponse.getEnrollee();
+        Profile governedUserProfile = profileService.find(enrollee.getProfileId()).get();
+        List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndًُRelationType(enrollee.getId(), RelationshipType.PROXY);
+        ParticipantUser proxyUser = participantUserService.find(relations.get(0).getParticipantUserId()).get();
+        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyUser.getId()).get(0);
+        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
+        Assert.assertTrue(StringUtils.isNoneEmpty(governedUserProfile.getContactEmail()));
+        Assert.assertEquals(proxyProfile.getContactEmail(), governedUserProfile.getContactEmail());
     }
 }

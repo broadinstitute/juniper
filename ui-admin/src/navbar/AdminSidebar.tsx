@@ -11,11 +11,12 @@ import CollapsableMenu from './CollapsableMenu'
 import { Config } from '../api/api'
 
 const ZONE_COLORS: { [index: string]: string } = {
-  'demo': 'rgb(70 143 124)', // dark green
+  'dev': 'rgb(70 143 124)', // dark green
   'local': 'rgb(23 26 30)', // grey
   'prod': '#333F52' // blue (default)
 }
 
+export const sidebarNavLinkClasses = 'text-white p-1 rounded w-100 d-block sidebar-nav-link'
 
 /** renders the left navbar of admin tool */
 const AdminSidebar = ({ config }: { config: Config }) => {
@@ -47,7 +48,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
     </button>}
     {open && <>
       <div className="d-flex justify-content-between align-items-center">
-        <Link to="/" className="text-white fs-4 ms-2">Juniper</Link>
+        <Link to="/" className="text-white fs-4 px-2 rounded-1 sidebar-nav-link flex-grow-1">Juniper</Link>
         <button onClick={() => setOpen(!open)} title="toggle sidebar" className="btn btn-link text-white">
           <FontAwesomeIcon icon={faArrowLeft}/>
         </button>
@@ -58,13 +59,13 @@ const AdminSidebar = ({ config }: { config: Config }) => {
       {user.superuser && <CollapsableMenu header={'Superuser functions'} content={
         <ul className="list-unstyled">
           <li className="mb-2">
-            <NavLink to="/users" className="text-white">All users</NavLink>
+            <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>
           </li>
           <li className="mb-2">
-            <NavLink to="/populate" className="text-white">Populate</NavLink>
+            <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
           </li>
           <li>
-            <NavLink to="/integrations" className="text-white">Integrations</NavLink>
+            <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
           </li>
         </ul>}/>}
     </>}

@@ -128,8 +128,8 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
   })
 
   const tabLinkStyle = ({ isActive }: {isActive: boolean}) => ({
-    borderBottom: isActive ? '2px solid #666': '',
-    background: isActive ? '#ddd' : ''
+    borderBottom: isActive ? '2px solid #708DBC': '',
+    background: isActive ? '#E1E8F7' : ''
   })
 
   const refreshStatuses = async () => {
@@ -145,7 +145,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
 
   return <LoadingSpinner isLoading={isLoading}>
     <div className="container-fluid p-0 mt-2">
-      <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#ccc' }}>
+      <div className="d-flex w-100 align-items-center mb-2" style={{ backgroundColor: '#F5F8FF' }}>
         { statusTabs.map(tab => {
           const kits = kitsByTabKey[tab.key] || []
           return <NavLink key={tab.key} to={tab.key} style={tabLinkStyle}>

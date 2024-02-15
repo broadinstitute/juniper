@@ -237,7 +237,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected Optional<T> findByProperty(String columnName, Object columnValue) {
+    public Optional<T> findByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")
                         .bind("columnValue", columnValue)
@@ -353,6 +353,35 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .mapTo(clazz)
                         .list()
         );
+    }
+
+    /**
+     * Returns a list of the items using the ordering of the columnValues to sort them.
+     * Be careful about using this for potentially large queries -- it has not been performance tuned at all
+     * and it generates a potentially very long query string.
+     */
+    protected List<T> findAllByPropertyCollectionPreserveOrder(String columnName, List<?> columnValues) {
+        if (columnValues.isEmpty()) {
+            // short circuit this case because bindList errors if list is empty
+            return new ArrayList<>();
+        }
+        String valuesString = IntStream.range(0, columnValues.size())
+                .mapToObj(i -> "(:column1Value%s, %s)".formatted(i, i)).collect(Collectors.joining(","));
+        return jdbi.withHandle(handle -> {
+            Query query = handle.createQuery("""
+                            select * from %s               
+                            join (values %s) as sortJoin (column1, ordering)                        
+                            on (%s = sortJoin.column1)
+                            where %s IN (<columnValues>)
+                            order by sortJoin.ordering;
+                            """.formatted(tableName, valuesString, columnName, columnName))
+                    .bindList("columnValues", columnValues);
+            for (int i = 0; i < columnValues.size(); i++) {
+                query = query.bind("column1Value" + i, columnValues.get(i))
+                        .bind("column2Value" + i, columnValues.get(i));
+            }
+            return query.mapTo(clazz).list();
+        });
     }
 
     protected List<T> findAllByPropertySorted(String columnName, Object columnValue, String sortProperty, String sortDir) {

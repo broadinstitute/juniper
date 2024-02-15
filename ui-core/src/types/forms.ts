@@ -16,6 +16,8 @@ export type Survey = VersionedForm & {
   surveyType: SurveyType
   blurb?: string
   required: boolean
+  assignToAllNewEnrollees: boolean
+  autoUpdateTaskAssignments: boolean
   recur: boolean
   recurrenceIntervalDays: number
   allowAdminEdit: boolean
@@ -26,6 +28,8 @@ export type Survey = VersionedForm & {
 
 export const defaultSurvey = {
   required: false,
+  assignToAllNewEnrollees: true,
+  autoUpdateTaskAssignments: false,
   recur: false,
   recurrenceIntervalDays: 0,
   allowAdminEdit: true,

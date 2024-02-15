@@ -39,6 +39,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
         {
           ...defaultSurvey,
+          autoUpdateTaskAssignments: type === 'OUTREACH',
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type, blurb: surveyBlurb,
           content: defaultTemplateJson, name: formName, stableId: formStableId
         })

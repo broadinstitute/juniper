@@ -10,6 +10,10 @@ env:
     user: ${DATABASE_USER:dbuser}
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
+  addrValidation:
+    addrValidationClientClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationClientStub}
+    smartyAuthId: ${SMARTY_AUTH_ID:}
+    smartyAuthToken: ${SMARTY_AUTH_TOKEN:}
   tdr:
     basePath: ${TDR_ADDRESS:https://jade.datarepo-dev.broadinstitute.org}
     serviceAccountCreds: ${TDR_SA_CREDS:}

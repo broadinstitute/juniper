@@ -51,8 +51,7 @@ const ParticipantTaskView = ({ enrollee }: {enrollee: Enrollee}) => {
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection,
-    debugTable: true
+    onRowSelectionChange: setRowSelection
   })
 
   return <div className="container p-3">

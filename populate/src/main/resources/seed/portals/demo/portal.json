@@ -17,6 +17,16 @@
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio"
       },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }, {
+        "languageName": "Español",
+        "languageCode": "es"
+      },{
+        "languageName": "Developer",
+        "languageCode": "dev"
+      }],
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent-2/siteContent.json"
       },
@@ -47,6 +57,10 @@
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio"
       },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }],
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent-2/siteContent.json"
       }
@@ -59,6 +73,10 @@
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio"
       },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }],
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent-1/siteContent.json"
       }

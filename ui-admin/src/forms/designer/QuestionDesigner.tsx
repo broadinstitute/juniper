@@ -13,6 +13,7 @@ import { Textarea } from 'components/forms/Textarea'
 import { Button } from 'components/forms/Button'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import InfoPopup from '../../components/forms/InfoPopup'
 
 export type QuestionDesignerProps = {
   question: Question
@@ -41,8 +42,9 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
       </div>
       {!isTemplated && (
         <>
-          <p className="fs-4 mb-0">{questionTypeLabels[question.type]} question</p>
-          <p>{questionTypeDescriptions[question.type]}</p>
+          <p className="fs-4">{questionTypeLabels[question.type]} question
+            <InfoPopup content={questionTypeDescriptions[question.type]}/>
+          </p>
         </>
       )}
 

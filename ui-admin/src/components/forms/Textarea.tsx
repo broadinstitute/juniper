@@ -1,8 +1,10 @@
 import classNames from 'classnames'
 import React, { useId } from 'react'
+import InfoPopup from './InfoPopup'
 
 export type TextareaProps = Omit<JSX.IntrinsicElements['textarea'], 'onChange'> & {
   description?: string
+  infoContent?: React.ReactNode
   label: string
   required?: boolean
   onChange?: (value: string) => void
@@ -10,7 +12,7 @@ export type TextareaProps = Omit<JSX.IntrinsicElements['textarea'], 'onChange'> 
 
 /** A textarea with label and description. */
 export const Textarea = (props: TextareaProps) => {
-  const { description, label, required, ...inputProps } = props
+  const { description, label, required, infoContent, ...inputProps } = props
   const { className, disabled, value, id, onChange } = inputProps
 
   const generatedId = useId()
@@ -19,10 +21,11 @@ export const Textarea = (props: TextareaProps) => {
 
   return (
     <>
-      <label className="form-label" htmlFor={inputId}>
+      <label className="form-label fw-semibold" htmlFor={inputId}>
         {label}
         {required && <span className="text-danger">*</span>}
       </label>
+      {infoContent && <InfoPopup content={infoContent}/>}
       <textarea
         {...inputProps}
         aria-describedby={description ? descriptionId : undefined}

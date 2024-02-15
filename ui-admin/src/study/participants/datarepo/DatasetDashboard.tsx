@@ -59,8 +59,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
     },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    debugTable: true
+    getSortedRowModel: getSortedRowModel()
   })
 
   const contentHeaderStyle = {

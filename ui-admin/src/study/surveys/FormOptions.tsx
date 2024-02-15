@@ -5,7 +5,7 @@ import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
 import { instantToDefaultString } from '@juniper/ui-core'
 import Select from 'react-select'
-import { faArrowRightFromBracket, faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faArrowRightFromBracket, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
@@ -41,41 +41,60 @@ export default function FormOptions({
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>{workingForm.name} <InfoPopup placement="bottom" content={<div>
-        See the &quot;Options&quot; section in
-        our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
-        more detail.
-      </div>}/></Modal.Title>
+      <Modal.Title>{workingForm.name}</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       { isSurvey &&
         <div>
-          <h3 className="h5">Configuration</h3>
-          <label className="form-label d-block">
-            <input type="checkbox" checked={(workingForm as Survey).required}
-              onChange={e => updateWorkingForm({
-                ...workingForm, required: e.target.checked
-              })}
-            /> Required
-          </label>
-          <div className="fw-light fst-italic">
-            Note that you need to  &quot;Save&quot; the survey
-            for any changes to options to take effect.
-          </div>
+          <h3 className="h5">Configuration <InfoPopup placement="right" content={<div>
+            See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
+            our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
+            information on the options below.
+          </div>}/></h3>
+          <form className="p-2">
+            <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).required}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, required: e.target.checked
+                })}
+              /> Required
+            </label>
+            <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).assignToAllNewEnrollees}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, assignToAllNewEnrollees: e.target.checked
+                })}
+              /> Auto-assign to new participants
+            </label>
+            <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).autoUpdateTaskAssignments}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, autoUpdateTaskAssignments: e.target.checked
+                })}
+              /> Auto-update participant tasks to the latest version of this survey after publishing
+            </label>
+            <div className="fw-light fst-italic">
+              Note: you must  &quot;Save&quot; the survey
+              for changes to these options to take effect.
+            </div>
+          </form>
           <hr/>
         </div>
       }
       <h3 className="h5">Actions</h3>
-      <Button variant="secondary" title="Download the current contents of the JSON Editor as a file"
-        onClick={downloadJSON}>
-        <FontAwesomeIcon icon={faDownload}/> Download JSON
-      </Button>
-      <VersionSelector studyEnvContext={studyEnvContext}
-        workingForm={workingForm}
-        visibleVersionPreviews={visibleVersionPreviews}
-        setVisibleVersionPreviews={setVisibleVersionPreviews}
-        isConsentForm={!isSurvey}
-        onDismiss={onDismiss}/>
+      <form className="p-2">
+        <Button variant="secondary" title="Download the current contents of the JSON Editor as a file"
+          onClick={downloadJSON}>
+          <FontAwesomeIcon icon={faDownload}/> Download JSON
+        </Button>
+        <VersionSelector studyEnvContext={studyEnvContext}
+          workingForm={workingForm}
+          visibleVersionPreviews={visibleVersionPreviews}
+          setVisibleVersionPreviews={setVisibleVersionPreviews}
+          isConsentForm={!isSurvey}
+          onDismiss={onDismiss}/>
+      </form>
+
     </Modal.Body>
     <Modal.Footer>
       <Button variant="secondary" onClick={onDismiss}>

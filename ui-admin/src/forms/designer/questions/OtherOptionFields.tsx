@@ -22,7 +22,6 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
       <div className="mb-3">
         <Checkbox
           checked={!!question.showOtherItem}
-          description={'Show an "Other" option that, when selected, prompts the participant to enter a text response.'}
           disabled={disabled}
           label={'Show "Other" option'}
           onChange={checked => {
@@ -43,12 +42,11 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
             }
           }}
         />
+
       </div>
 
       {!!question.showOtherItem && (
-        <fieldset>
-          <legend className="form-label fs-5">&ldquo;Other&rdquo; option</legend>
-
+        <fieldset className="ms-4">
           <div className="mb-3">
             <TextInput
               description={'Label for the "Other" option.'}

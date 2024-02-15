@@ -1,14 +1,16 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ParticipantTask, StudyEnvironmentSurvey, instantToDateString } from '@juniper/ui-core'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { StudyEnvParams } from '../StudyEnvironmentRouter'
 import Api, { ParticipantTaskUpdateDto } from 'api/api'
-import { Button } from '../../components/forms/Button'
-import InfoPopup from '../../components/forms/InfoPopup'
-import { successNotification } from '../../util/notifications'
+import { Button } from 'components/forms/Button'
+import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
+import InfoPopup from 'components/forms/InfoPopup'
+import { basicTableLayout } from 'util/tableUtils'
 
 export type SurveyEnvironmentDetailModalProps = {
   studyEnvParams: StudyEnvParams
@@ -23,6 +25,7 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
   const { onDismiss, stableId, studyEnvParams  } = props
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurvey[]>([])
   const [participantTasks, setParticipantTasks] = useState<ParticipantTask[]>([])
+
   const { isLoading, reload } = useLoadingEffect(async () => {
     const configsResponse = await Api.findConfiguredSurveys(studyEnvParams.portalShortcode,
       studyEnvParams.studyShortcode,
@@ -36,6 +39,60 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
 
   const mostRecentVersion = configuredSurveys[configuredSurveys.length - 1]?.survey?.version
 
+  const columns = useMemo((): ColumnDef<StudyEnvironmentSurvey>[] => {
+    return [{
+      id: 'versionName',
+      header: '',
+      cell: ({ row }) => row.original.survey.version
+    }, {
+      id: 'launchDate',
+      header: 'Launch date',
+      cell: ({ row }) => instantToDateString(row.original.createdAt)
+    }, {
+      id: 'numParticipants',
+      header: '# participants currently assigned',
+      cell: ({ row }) => participantTasks
+        .filter(task => task.targetAssignedVersion === row.original.survey.version).length
+    }, {
+      id: 'actions',
+      header: '',
+      cell: ({ row }) => <>
+        { (hasParticipantsOnOldVersions && row.original.survey.version === mostRecentVersion) &&
+          <span className="ms-4">
+            <Button variant="secondary" outline={true} onClick={updateAllTasks}>
+              Update all to version {mostRecentVersion}
+            </Button>
+            <InfoPopup content={`Update all participants in the ${studyEnvParams.envName} 
+            environment to have the latest version of this form.  
+            This means when they revisit, they will see the latest version, with any prior
+            answers already filled-in`}/>
+          </span>
+        }
+      </>
+    }]
+  }, [stableId, participantTasks.length])
+
+  const table = useReactTable({
+    data: configuredSurveys,
+    columns,
+    enableRowSelection: true,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
+  })
+
+  const assignSurveyTasks = () => {
+    doApiLoad(async () => {
+      const newTasks = await Api.assignParticipantTasksToEnrollees(studyEnvParams, {
+        assignAllUnassigned: true,
+        targetStableId: stableId,
+        targetAssignedVersion: mostRecentVersion,
+        taskType: 'SURVEY'
+      })
+      Store.addNotification(successNotification(`Assigned survey to ${newTasks.length} enrollees`))
+      reload()
+    })
+  }
+
   const updateAllTasks = () => {
     doApiLoad(async () => {
       const updateObj: ParticipantTaskUpdateDto = {
@@ -44,60 +101,34 @@ export default function SurveyEnvironmentDetailModal(props: SurveyEnvironmentDet
           { targetStableId: stableId, updateToVersion: mostRecentVersion }
         ]
       }
-      await Api.updateParticipantTaskVersions(studyEnvParams.portalShortcode,
-        studyEnvParams.studyShortcode,
-        studyEnvParams.envName, updateObj)
+      await Api.updateParticipantTaskVersions(studyEnvParams, updateObj)
       Store.addNotification(successNotification('Task versions updated'))
       reload()
     })
   }
 
+  const surveyName = (configuredSurveys[0] && configuredSurveys[0].survey.name) ?? ''
   const hasParticipantsOnOldVersions = participantTasks.some(task => task.targetAssignedVersion !== mostRecentVersion)
 
-  return <Modal show={true} onHide={onDismiss}>
+  return <Modal show={true} onHide={onDismiss} className="modal-lg">
     <LoadingSpinner isLoading={isLoading}>
       <Modal.Header closeButton>
         <Modal.Title>
           <div>{studyEnvParams.envName}</div>
-          <span className="fst-italic fw-light">{configuredSurveys[0] && configuredSurveys[0].survey.name}</span>
+          <span className="fst-italic fw-light">{surveyName}</span>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <td></td>
-              <td>launch date</td>
-              <td># participants<br/> currently assigned</td>
-            </tr>
-          </thead>
-          <tbody>
-            {configuredSurveys.map((config, index) => {
-              const numParticipants = participantTasks
-                .filter(task => task.targetAssignedVersion === config.survey.version).length
-              const isLastRow = config.survey.version === mostRecentVersion
-              return <tr key={index}>
-                <td className="align-middle">v{config.survey.version}</td>
-                <td className="align-middle">{ instantToDateString(config.createdAt)}</td>
-                <td className="align-middle">
-                  <span>{ numParticipants }</span>
-                  { (hasParticipantsOnOldVersions && isLastRow) &&
-                    <span className="ms-4">
-                      <Button variant="light" className="border m-1"
-                        onClick={updateAllTasks}>
-                    Update all to version {mostRecentVersion}
-                      </Button>
-                      <InfoPopup content={`Update all participants in the ${studyEnvParams.envName} 
-                      environment to have the latest version of this form.  
-                      This means when they revisit, they will see the latest version, with any prior
-                      answers already filled-in`}/>
-                    </span>
-                  }
-                </td>
-              </tr>
-            })}
-          </tbody>
-        </table>
+        <LoadingSpinner isLoading={isLoading}>
+          { basicTableLayout(table, { tableClass: 'table table-striped align-middle' })}
+          <div className="d-flex">
+            <Button variant="secondary" outline={true} onClick={assignSurveyTasks}>
+            Assign to {studyEnvParams.envName} participants
+            </Button>
+            <InfoPopup content={`Assign ${surveyName} to all participants in the ${studyEnvParams.envName} 
+              environment who are eligible.`}/>
+          </div>
+        </LoadingSpinner>
       </Modal.Body>
       <Modal.Footer>
         <LoadingSpinner isLoading={isLoading}>

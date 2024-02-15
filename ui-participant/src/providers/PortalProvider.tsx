@@ -3,25 +3,27 @@ import Api, { LocalSiteContent, Portal, PortalEnvironment } from 'api/api'
 
 
 /** current portal object context */
-const PortalContext = React.createContext<Portal | null>(null)
+const PortalContext = React.createContext<PortalEnvContextT | null>(null)
 
 export type PortalEnvContextT = {
   portal: Portal,
   portalEnv: PortalEnvironment,
+  reloadPortal: () => void,
   localContent: LocalSiteContent
 }
 
 /** use the loaded portal.  Attempting to call this outside of PortalProvider children will throw an exception */
 export function usePortalEnv(): PortalEnvContextT {
-  const portal = useContext(PortalContext)
-  if (!portal) {
+  const portalContext = useContext(PortalContext)
+  if (!portalContext?.portal) {
     throw ('Portal environment not initialized')
   }
   // the api guarantees the first environment and first localizedSiteContents returned are the correct ones
-  const portalEnv = portal.portalEnvironments[0]
+  const portalEnv = portalContext.portal.portalEnvironments[0]
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const localContent = portalEnv.siteContent!.localizedSiteContents[0]
-  return { portal, portalEnv, localContent }
+
+  return { portal: portalContext.portal, portalEnv, reloadPortal: portalContext.reloadPortal, localContent }
 }
 
 /**
@@ -34,7 +36,13 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   const [isError, setIsError] = useState(false)
 
   useEffect(() => {
-    Api.getPortal().then(result => {
+    reloadPortal()
+  }, [])
+
+  const reloadPortal = () => {
+    const selectedLanguage = localStorage.getItem('selectedLanguage') || 'en'
+    setIsLoading(true)
+    Api.getPortal(selectedLanguage).then(result => {
       setEnvState(result)
       setIsError(false)
       setIsLoading(false)
@@ -42,7 +50,14 @@ export default function PortalProvider({ children }: { children: React.ReactNode
       setIsError(true)
       setIsLoading(false)
     })
-  }, [])
+  }
+
+  const portalEnv = envState && {
+    portal: envState,
+    portalEnv: envState.portalEnvironments[0],
+    reloadPortal,
+    localContent: envState.portalEnvironments[0].siteContent!.localizedSiteContents[0]
+  }
 
   return <>
     {isLoading && <div className="bg-white h-100 w-100">
@@ -54,7 +69,7 @@ export default function PortalProvider({ children }: { children: React.ReactNode
         If this is an error, contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>.
       </div>
     </div>}
-    {!isLoading && !isError && <PortalContext.Provider value={envState}>
+    {!isLoading && !isError && <PortalContext.Provider value={portalEnv}>
       {children}
     </PortalContext.Provider>}
   </>

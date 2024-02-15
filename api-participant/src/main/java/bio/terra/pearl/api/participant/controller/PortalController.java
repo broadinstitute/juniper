@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -28,10 +29,14 @@ public class PortalController implements PortalApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String portalShortcode, String envName) {
+  public ResponseEntity<Object> get(String portalShortcode, String envName, String language) {
+    if (StringUtils.isBlank(language)) {
+      // TODO (JN-863): Use the default language
+      language = "en";
+    }
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     Optional<Portal> portalOpt =
-        portalService.loadWithParticipantSiteContent(portalShortcode, environmentName, "en");
+        portalService.loadWithParticipantSiteContent(portalShortcode, environmentName, language);
     return ResponseEntity.of(portalOpt.map(portal -> portal));
   }
 
