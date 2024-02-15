@@ -1,6 +1,7 @@
 import {
   AddressValidationResult,
   explainAddressValidationResults,
+  getAllCountries,
   isAddressFieldValid,
   MailingAddress
 } from '@juniper/ui-core'
@@ -13,6 +14,7 @@ import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
 import { findDifferencesBetweenObjects } from '../util/objectUtils'
 import CreatableSelect from 'react-select/creatable'
+import classNames from 'classnames'
 
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
@@ -20,6 +22,7 @@ const SUPPORTED_COUNTRIES = [
   'CA',
   'MX',
   'GB',
+  'AU',
   'US'
 ]
 
@@ -51,19 +54,15 @@ export default function EditMailingAddress(
     onMailingAddressFieldChange(field, value)
   }
 
-  const calcCountryOptionsForLang = () => {
-    // automatically gets internationalized country names based upon the given language
-    const names = new Intl.DisplayNames([language || 'en'], { type: 'region' })
 
-    return SUPPORTED_COUNTRIES.map(code => {
+  const countryOptions = getAllCountries(language).map(
+    country => {
       return {
-        value: code,
-        label: names.of(code)
+        value: country.code,
+        label: country.name
       }
-    })
-  }
-
-  const countryOptions = calcCountryOptionsForLang()
+    }
+  )
 
   const validateAddress = () => {
     doApiLoad(async () => {
@@ -80,9 +79,11 @@ export default function EditMailingAddress(
     }, { setIsLoading: setIsLoadingValidation })
   }
 
-  const formatClassName = (field: keyof MailingAddress, baseClasses = 'form-control') => {
+  // checks if a field should be in an error state; if true,
+  // should be green, if false, red, and if undefined, unhighlighted
+  const isValid = (field: keyof MailingAddress): boolean | undefined => {
     if (!addressValidationResults || !isNil(addressValidationResults.suggestedAddress)) {
-      return baseClasses
+      return undefined
     }
 
     if (!hasChangedSinceValidation.includes(field)
@@ -90,15 +91,15 @@ export default function EditMailingAddress(
       && isNil(addressValidationResults.suggestedAddress)
       && (isNil(addressValidationResults.hasInferredComponents)
         || !addressValidationResults.hasInferredComponents)) {
-      return `${baseClasses} is-valid`
+      return true
     }
 
     if (!hasChangedSinceValidation.includes(field)
       && !isAddressFieldValid(addressValidationResults, field)) {
-      return `${baseClasses} is-invalid`
+      return false
     }
 
-    return baseClasses
+    return undefined
   }
 
   const clearSuggestedAddress = () => {
@@ -122,14 +123,18 @@ export default function EditMailingAddress(
   }
 
   const isSupportedCountry = (val: string) => {
-    return countryOptions.findIndex(opt => opt.label === val || opt.value === val) >= 0
+    return SUPPORTED_COUNTRIES.includes(val)
   }
 
   return <div className="">
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('street1')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('street1') === true,
+              'is-invalid': isValid('street1') === false
+            })}
           type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
           onChange={e => onFieldChange('street1', e.target.value)}/>
       </div>
@@ -137,7 +142,11 @@ export default function EditMailingAddress(
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('street2')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('street2') === true,
+              'is-invalid': isValid('street2') === false
+            })}
           type="text" value={mailingAddress.street2 || ''}
           placeholder={'Street 2'}
           onChange={e => onFieldChange('street2', e.target.value)}/>
@@ -146,14 +155,22 @@ export default function EditMailingAddress(
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('city')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('city') === true,
+              'is-invalid': isValid('city') === false
+            })}
           type="text" value={mailingAddress.city || ''}
           placeholder={'City'}
           onChange={e => onFieldChange('city', e.target.value)}/>
       </div>
       <div className='col'>
         <input
-          className={formatClassName('state')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('state') === true,
+              'is-invalid': isValid('state') === false
+            })}
           type="text" value={mailingAddress.state || ''} placeholder={'State/Province'}
           onChange={e => onFieldChange('state', e.target.value)}/>
       </div>
@@ -161,7 +178,11 @@ export default function EditMailingAddress(
     <div className='row'>
       <div className="col">
         <input
-          className={formatClassName('postalCode')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('postalCode') === true,
+              'is-invalid': isValid('postalCode') === false
+            })}
           type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
           onChange={e => onFieldChange('postalCode', e.target.value)}/>
       </div>
@@ -190,7 +211,7 @@ export default function EditMailingAddress(
             className={'d-inline-block'}
             title={isSupportedCountry(mailingAddress.country)
               ? 'Validate address'
-              : `Validation is not supported for ${mailingAddress.country}`}>
+              : `Validation is not supported for this country`}>
             <button
               className="btn btn-link" disabled={!isSupportedCountry(mailingAddress.country)}
               onClick={validateAddress}>

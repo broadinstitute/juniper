@@ -35,7 +35,8 @@ public class SmartyInternationalAddressValidationService implements AddressValid
     public static final List<String> SUPPORTED_COUNTRIES = List.of(
             "CA",
             "GB",
-            "MX"
+            "MX",
+            "AU"
     );
 
     @Override
