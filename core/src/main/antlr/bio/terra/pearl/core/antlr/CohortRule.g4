@@ -1,6 +1,7 @@
 grammar CohortRule;
 
-/** A grammar for parsing rules, designed to be a subset of the SurveyJS rule parsing syntax */
+/** A grammar for parsing rules, designed to be a subset of the SurveyJS rule parsing syntax
+   See https://github.com/surveyjs/survey-library/blob/master/src/expressions/grammar.pegjs */
 
 // Parser rules
 expr: PAR_OPEN expr PAR_CLOSE | term OPERATOR term | expr JOINER expr;
