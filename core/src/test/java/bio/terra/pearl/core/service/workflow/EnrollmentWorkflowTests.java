@@ -1,5 +1,19 @@
 package bio.terra.pearl.core.service.workflow;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
@@ -30,19 +44,11 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import org.junit.jupiter.api.Assertions;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
@@ -63,7 +69,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
@@ -103,7 +109,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(hubResponse.getProfile(), notNullValue());
@@ -166,7 +172,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                 null);
         Enrollee enrollee = hubResponse.getResponse();
         Enrollee proxyEnrollee = hubResponse.getEnrollee();
@@ -210,10 +216,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+        HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                  null);
         Enrollee proxyEnrollee = hubResponse1.getEnrollee();
-        HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollGovernedUser(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, proxyEnrollee,  userBundle.user(), userBundle.ppUser(), null);
+        HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollGovernedUser(studyEnv.getEnvironmentName(), studyShortcode, proxyEnrollee,  userBundle.user(), userBundle.ppUser(), null);
         Enrollee governedEnrollee1 = hubResponse1.getResponse();
         Enrollee governedEnrollee2 = hubResponse2.getEnrollee();
 

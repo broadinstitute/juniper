@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.dao.participant;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
@@ -44,4 +43,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         }
     }
 
+    public List<EnrolleeRelation> findByEnrolleeId(UUID enrolleeId) {
+        return findAllByProperty("enrollee_id", enrolleeId);
+    }
 }

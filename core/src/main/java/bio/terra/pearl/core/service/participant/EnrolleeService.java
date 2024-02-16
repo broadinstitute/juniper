@@ -1,5 +1,14 @@
 package bio.terra.pearl.core.service.participant;
 
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
@@ -22,16 +31,6 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
@@ -59,6 +58,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
     private RandomUtilService randomUtilService;
+    private EnrolleeRelationService enrolleeRelationService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -76,7 +76,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
-                           RandomUtilService randomUtilService) {
+                           RandomUtilService randomUtilService,
+                           EnrolleeRelationService enrolleeRelationService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -95,13 +96,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-    public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
-        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
+    public Optional<Enrollee> findByParticipantUserId(UUID participantUserId, String enrolleeShortcode) {
+        return dao.findByParticipantUserIdAndEnrolleShortcode(participantUserId, enrolleeShortcode);
     }
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
         return dao.findByProfileId(ppUser.getProfileId());
@@ -219,6 +221,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
         notificationService.deleteByEnrolleeId(enrolleeId);
         dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
+
+        enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrolleeId);
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());

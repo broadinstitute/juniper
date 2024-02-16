@@ -1,5 +1,10 @@
 package bio.terra.pearl.core.dao.participant;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
@@ -8,13 +13,8 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
-
-import java.util.*;
-import java.util.stream.Stream;
-
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,7 +98,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByTwoProperties("participant_user_id", userId, "id", enrolleeId);
     }
 
-    public Optional<Enrollee> findByEnrolleeId(UUID userId, String enrolleeShortcode) {
+    public Optional<Enrollee> findByParticipantUserIdAndEnrolleShortcode(UUID userId, String enrolleeShortcode) {
         return findByTwoProperties("participant_user_id", userId, "shortcode", enrolleeShortcode);
     }
 

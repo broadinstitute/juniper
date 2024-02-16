@@ -36,7 +36,10 @@
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
-        "participants/oldVersion.json"
+        "participants/oldVersion.json",
+        "participants/proxy.json",
+        "participants/proxyFamily2.json"
+
       ],
       "mailingListContacts": [
         {

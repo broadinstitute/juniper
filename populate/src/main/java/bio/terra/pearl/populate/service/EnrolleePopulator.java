@@ -1,10 +1,26 @@
 package bio.terra.pearl.populate.service;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -21,7 +37,6 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -52,6 +67,7 @@ import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
+import bio.terra.pearl.populate.dto.participant.ProxyPopDto;
 import bio.terra.pearl.populate.dto.survey.AnswerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
@@ -60,21 +76,6 @@ import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
 public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
@@ -354,15 +355,22 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         StudyEnvironment attachedEnv = studyEnvironmentService
                 .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
         popDto.setStudyEnvironmentId(attachedEnv.getId());
+
+        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv);
+        popDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
+
+        if (!popDto.getProxyPopDtos().isEmpty()){
+            ProxyPopDto firstProxy = popDto.getProxyPopDtos().get(0);
+            if (firstProxy.isEnrollAsProxy()){
+                return createNewGovernedUser(popDto, context, firstProxy);
+            }
+        }
         ParticipantUser attachedUser = participantUserService
                 .findOne(popDto.getLinkedUsername(), context.getEnvironmentName()).get();
         PortalParticipantUser ppUser = portalParticipantUserService
                 .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
         popDto.setParticipantUserId(attachedUser.getId());
         popDto.setProfileId(ppUser.getProfileId());
-
-        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv);
-        popDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
 
         Enrollee enrollee;
         List<ParticipantTask> tasks;
@@ -379,7 +387,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         );
 
         if (popDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(context.getPortalShortcode(), attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
                     attachedUser, ppUser, popDto.getPreEnrollmentResponseId(), true);
             enrollee = hubResponse.getEnrollee();
             tasks = hubResponse.getTasks();
@@ -431,6 +439,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             withdrawnEnrolleeService.withdrawEnrollee(enrollee);
         }
         return enrollee;
+    }
+
+    private Enrollee createNewGovernedUser(EnrolleePopDto popDto, StudyPopulateContext context, ProxyPopDto proxyPopDto){
+        StudyEnvironment studyEnvironment = studyEnvironmentService.find(popDto.getStudyEnvironmentId()).get();
+        ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), studyEnvironment.getEnvironmentName()).get();
+        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(),  context.getPortalShortcode()).get();
+        return enrollmentService.enrollAsProxy( studyEnvironment.getEnvironmentName(), context.getStudyShortcode(), proxyParticipantUser, portalParticipantUser, popDto.getPreEnrollmentResponseId()).getResponse();
     }
 
     public void bulkPopulateEnrollees(String portalShortcode, EnvironmentName envName, String studyShortcode, List<String> usernamesToLink) {
