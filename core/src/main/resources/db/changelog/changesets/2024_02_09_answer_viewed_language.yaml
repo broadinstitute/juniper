@@ -6,4 +6,4 @@ databaseChangeLog:
         - addColumn:
             tableName: answer
             columns:
-              - column: { name: viewed_language, type: text, constraints: { nullable: true } }
+              - column: { name: viewed_language, type: text }
