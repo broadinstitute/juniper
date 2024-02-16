@@ -7,7 +7,6 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Components;
 import com.smartystreets.api.us_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -23,11 +22,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @Component
 @Slf4j
-public class SmartyUSAddressValidationClient implements AddressValidationClient {
+public class SmartyUSAddressValidationService implements AddressValidationService {
 
     private SmartyClient client;
 
-    SmartyUSAddressValidationClient(SmartyClient client) {
+    SmartyUSAddressValidationService(SmartyClient client) {
         this.client = client;
     }
 
@@ -36,15 +35,11 @@ public class SmartyUSAddressValidationClient implements AddressValidationClient 
 
         Lookup lookup = mailingAddressToLookup(address);
 
-        try {
-            client.send(lookup);
-        } catch (Exception e) {
-            throw new AddressValidationException(e.getMessage(), HttpStatusCode.valueOf(400));
-        }
+        client.send(lookup);
 
         List<Candidate> results = lookup.getResult();
 
-        if (results.isEmpty()) {
+        if (Objects.isNull(results) || results.isEmpty()) {
             return AddressValidationResultDto.builder().valid(false).build();
         }
 
@@ -95,6 +90,7 @@ public class SmartyUSAddressValidationClient implements AddressValidationClient 
                 .city(components.getCityName())
                 .state(components.getState())
                 .street1(candidate.getDeliveryLine1())
+                .street2(candidate.getDeliveryLine2())
                 .country("US") // this API can only return addresses in the US
                 .postalCode(components.getZipCode() + "-" + components.getPlus4Code())
                 .createdAt(null)
