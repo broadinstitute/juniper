@@ -400,6 +400,23 @@ export default {
     return await this.processJsonResponse(result, { alertErrors })
   },
 
+  async updateEnrolleeProfile(
+    {
+      studyShortcode, enrolleeShortcode, profile, alertErrors = true
+    }: {
+      studyShortcode: string, enrolleeShortcode: string, profile: Profile, alertErrors?: boolean
+    }
+  ): Promise<Profile> {
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/profile/byEnrollee/${enrolleeShortcode}`
+
+    const result = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(profile)
+    })
+    return await this.processJsonResponse(result, { alertErrors })
+  },
+
   async submitMailingListContact(name: string, email: string) {
     const url = `${baseEnvUrl(true)}/mailingListContact`
     const result = await fetch(url, {
