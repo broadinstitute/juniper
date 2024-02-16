@@ -5,15 +5,16 @@ import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.http.HttpStatusCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
-public class AddressValidationClientStub implements AddressValidationClient {
+public class AddressValidationServiceStub implements AddressValidationService {
 
     private static final String BAD_ADDRESS_INDICATOR = "BAD";
     private static final String IMPROVABLE_ADDRESS_INDICATOR = "IMPROVABLE";
@@ -50,12 +51,12 @@ public class AddressValidationClientStub implements AddressValidationClient {
     @Override
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
 
-        if (address.getStreet1().contains(BAD_ADDRESS_INDICATOR) || address.getStreet1().isEmpty()) {
+        if (StringUtils.isEmpty(address.getStreet1()) || address.getStreet1().contains(BAD_ADDRESS_INDICATOR)) {
             return AddressValidationResultDto
                     .builder()
                     .valid(false)
                     .invalidComponents(findMissingComponents(address))
-                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                    .vacant(isVacant(address))
                     .build();
         } else if (address.getStreet1().contains(IMPROVABLE_ADDRESS_INDICATOR)) {
             return AddressValidationResultDto
@@ -73,7 +74,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
                                     .lastUpdatedAt(null)
                                     .build())
                     .hasInferredComponents(false)
-                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                    .vacant(isVacant(address))
                     .build();
         } else if (address.getStreet1().contains(INFERENCE_ADDRESS_INDICATOR)) {
             return AddressValidationResultDto
@@ -91,7 +92,7 @@ public class AddressValidationClientStub implements AddressValidationClient {
                                     .lastUpdatedAt(null)
                                     .build())
                     .hasInferredComponents(true)
-                    .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                    .vacant(isVacant(address))
                     .build();
         } else if (address.getStreet1().contains(ERROR_INDICATOR)) {
             int errorCode = 500;
@@ -106,14 +107,22 @@ public class AddressValidationClientStub implements AddressValidationClient {
             }
             throw new AddressValidationException(
                     "Failed to run address validation",
-                    HttpStatusCode.valueOf(errorCode));
+                    HttpStatus.valueOf(errorCode));
         }
 
         return AddressValidationResultDto
                 .builder()
                 .valid(true)
-                .vacant(address.getStreet1().contains(VACANT_INDICATOR))
+                .vacant(isVacant(address))
                 .build();
+    }
+
+    private boolean isVacant(MailingAddress addr) {
+        if (Objects.isNull(addr.getStreet1())) {
+            return false;
+        }
+
+        return addr.getStreet1().contains(VACANT_INDICATOR);
     }
 
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {

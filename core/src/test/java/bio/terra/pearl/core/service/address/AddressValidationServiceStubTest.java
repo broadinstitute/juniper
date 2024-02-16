@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-class AddressValidationClientStubTest extends BaseSpringBootTest {
+class AddressValidationServiceStubTest extends BaseSpringBootTest {
     @Autowired
-    private AddressValidationClientStub clientStub;
+    private AddressValidationServiceStub clientStub;
 
     @Test
     public void testValidResponse() {

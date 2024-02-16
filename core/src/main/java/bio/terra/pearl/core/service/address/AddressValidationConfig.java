@@ -14,7 +14,7 @@ public class AddressValidationConfig {
     private String addressValidationClass;
 
     public AddressValidationConfig(Environment environment) {
-        this.addressValidationClass = environment.getProperty("env.addrValidation.addrValidationClientClass");
+        this.addressValidationClass = environment.getProperty("env.addrValidation.addrValidationServiceClass");
         this.authId = environment.getProperty("env.addrValidation.smartyAuthId");
         this.authToken = environment.getProperty("env.addrValidation.smartyAuthToken");
 
