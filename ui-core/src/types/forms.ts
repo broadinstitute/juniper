@@ -49,6 +49,7 @@ export type Answer = {
   otherDescription?: string
   surveyStableId?: string
   surveyVersion?: number
+  viewedLanguage?: string
 }
 
 export type FormResponse = {

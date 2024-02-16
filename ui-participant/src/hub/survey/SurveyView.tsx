@@ -64,7 +64,7 @@ export function RawSurveyView({
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues, selectedLanguage),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
@@ -96,7 +96,8 @@ export function RawSurveyView({
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
-    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues)
+    const updatedAnswers = getUpdatedAnswers(
+        prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
