@@ -205,6 +205,11 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         return findAllByPropertyCollection("id", uuids);
     }
 
+    /** finds all the entities by the given ids, sorted in the same order as the ids */
+    public List<T> findAllPreserveOrder(List<UUID> uuids) {
+        return findAllByPropertyCollectionPreserveOrder("id", uuids);
+    }
+
     /**
      * Fetches an entity with a child attached.  For example, if the parent table has a column "mailing_address_id" and
      * a field mailingAddress, this method could be used to fetch the parent with the mailing address already hydrated
@@ -367,7 +372,7 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         }
         String valuesString = IntStream.range(0, columnValues.size())
                 .mapToObj(i -> "(:column1Value%s, %s)".formatted(i, i)).collect(Collectors.joining(","));
-        return jdbi.withHandle(handle -> {
+        List<T> result = jdbi.withHandle(handle -> {
             Query query = handle.createQuery("""
                             select * from %s               
                             join (values %s) as sortJoin (column1, ordering)                        
@@ -382,6 +387,10 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
             }
             return query.mapTo(clazz).list();
         });
+        if (result.size() != columnValues.size()) {
+            throw new IllegalStateException("findAllByPropertyCollectionPreserveOrder did not return the same number of results as input values");
+        }
+        return result;
     }
 
     protected List<T> findAllByPropertySorted(String columnName, Object columnValue, String sortProperty, String sortDir) {

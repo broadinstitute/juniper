@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -143,22 +144,21 @@ public class RegistrationService {
     }
 
     @Transactional
-    public RegistrationResult registerGovernedUser(String portalShortcode, ParticipantUser proxy) {
-        PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, proxy.getEnvironmentName()).get();
+    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser) {
+        if (!proxyPpUser.getParticipantUserId().equals(proxyUser.getId())) {
+            throw new IllegalArgumentException("user and portal participant user do not match");
+        }
         ParticipantUser governedUser = new ParticipantUser();
-        governedUser.setEnvironmentName(proxy.getEnvironmentName());
-        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxy.getUsername(), proxy.getEnvironmentName());
-        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxy.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
+        governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
+        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
+        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
         governedUser.setUsername(governedUserName);
         governedUser = participantUserService.create(governedUser);
 
         PortalParticipantUser governedPpUser = new PortalParticipantUser();
-        governedPpUser.setPortalEnvironmentId(portalEnv.getId());
+        governedPpUser.setPortalEnvironmentId(proxyPpUser.getPortalEnvironmentId());
         governedPpUser.setParticipantUserId(governedUser.getId());
 
-        PortalParticipantUser proxyPpUser = portalParticipantUserService.findOne(proxy.getId(), portalShortcode).orElseThrow(
-                () -> new NotFoundException("Portal user not found for proxy in portal %s".formatted(portalShortcode))
-        );
         Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Profile governedProfile =  Profile.builder()
                 .contactEmail(proxyProfile.getContactEmail())
@@ -166,11 +166,12 @@ public class RegistrationService {
                 .familyName(null)
                 .build();
         governedPpUser.setProfile(governedProfile);
-
         governedPpUser = portalParticipantUserService.create(governedPpUser);
 
+        PortalEnvironment portalEnv = portalEnvService.find(proxyPpUser.getPortalEnvironmentId()).orElseThrow();
+
         eventService.publishPortalRegistrationEvent(governedUser, governedPpUser, portalEnv);
-        log.info("Governed user registration: userId: {}, portal: {}", governedUser.getId(), portalShortcode);
+        log.info("Governed user registration: userId: {}, portal: {}, env: {}", governedUser.getId(), portalEnv.getPortalId(), portalEnv.getEnvironmentName());
         return new RegistrationResult(governedUser, governedPpUser);
     }
 

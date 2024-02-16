@@ -7,7 +7,7 @@ package bio.terra.pearl.core.service.rule;
 public class RuleEvaluator {
     /** return whether the rule is satisfied by the given data */
     public static boolean evaluateEnrolleeRule(String rule, EnrolleeRuleData ruleData) {
-        // TODO implement
-        return true;
+        // for now, all enrollees are eligible for everything, as long as they are a research subject (e.g. not just a proxy)
+        return ruleData.enrollee().isSubject();
     }
 }
