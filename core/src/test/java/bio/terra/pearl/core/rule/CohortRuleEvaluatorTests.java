@@ -63,4 +63,16 @@ public class CohortRuleEvaluatorTests {
         assertThat(CohortRuleEvaluator.evaluateRule(rule, Map.of("foo", true)), equalTo(true));
         assertThat(CohortRuleEvaluator.evaluateRule(rule, Map.of("foo", false)), equalTo(false));
     }
+
+    @Test
+    public void testOrderOfOperationsAndOr() throws Exception {
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 && 2 = 3 || 3 = 3", Map.of()), equalTo(true));
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 1 && 2 = 2 || 3 = 4", Map.of()), equalTo(true));
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 1 || 2 = 3 && 3 = 4", Map.of()), equalTo(true));
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 || 2 = 2 && 3 = 3", Map.of()), equalTo(true));
+
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 || 2 = 3 && 3 = 3", Map.of()), equalTo(false));
+        assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 || 2 = 2 && 3 = 4", Map.of()), equalTo(false));
+    }
+
 }

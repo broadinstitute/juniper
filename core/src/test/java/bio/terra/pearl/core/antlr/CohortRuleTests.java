@@ -27,7 +27,7 @@ public class CohortRuleTests {
         CohortRuleParser parser = setupParser("{foo} = 'yes'");
         CohortRuleParser.ExprContext exp = parser.expr();
         assertThat(exp.term(0).getText(), equalTo("{foo}"));
-        assertThat(exp.term(0).VARIABLE(), equalTo("{foo}"));
+        assertThat(exp.term(0).VARIABLE().getText(), equalTo("{foo}"));
         assertThat(exp.term(1).getText(), equalTo("'yes'"));
         assertThat(exp.OPERATOR().getText(), equalTo("="));
     }
@@ -37,7 +37,7 @@ public class CohortRuleTests {
         CohortRuleParser parser = setupParser("{foo} = 'yes' && {bar} = 'no'");
         CohortRuleParser.ExprContext exp = parser.expr();
         assertThat(exp.term().size(), equalTo(0));
-        assertThat(exp.JOINER().getText(), equalTo("&&"));
+        assertThat(exp.AND().getText(), equalTo("&&"));
         assertThat(exp.expr(0).getText(), equalTo("{foo}='yes'"));
         assertThat(exp.expr(1).getText(), equalTo("{bar}='no'"));
     }
@@ -48,10 +48,23 @@ public class CohortRuleTests {
         CohortRuleParser.ExprContext rootExp = parser.expr();
         assertThat(rootExp.term().size(), equalTo(0));
         assertThat(rootExp.expr().size(), equalTo(2));
-        assertThat(rootExp.JOINER().getText(), equalTo("&&"));
+        assertThat(rootExp.AND().getText(), equalTo("&&"));
 
         assertThat(rootExp.expr(0).getText(), equalTo("{foo}='yes'&&{bar}='no'"));
         assertThat(rootExp.expr(1).getText(), equalTo("{baz}=1"));
+    }
+
+    @Test
+    public void testParenthesesParsing() {
+        CohortRuleParser parser = setupParser("{foo} = 'yes' && ({bar} = 'no' || {baz} = 1)");
+        CohortRuleParser.ExprContext rootExp = parser.expr();
+        assertThat(rootExp.term().size(), equalTo(0));
+        assertThat(rootExp.expr().size(), equalTo(2));
+        assertThat(rootExp.AND().getText(), equalTo("&&"));
+
+
+        assertThat(rootExp.expr(0).getText(), equalTo("{foo}='yes'"));
+        assertThat(rootExp.expr(1).getText(), equalTo("({bar}='no'||{baz}=1)"));
     }
 
     protected CohortRuleParser setupParser(String input) {

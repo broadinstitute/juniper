@@ -35,12 +35,12 @@ public class CohortRuleEvaluator {
         if (ctx.expr().size() > 1) {
             Boolean left = evaluateExpression(ctx.expr(0));
             Boolean right = evaluateExpression(ctx.expr(1));
-            if ("&&".equals(ctx.JOINER())) {
+            if (ctx.AND() != null) {
                 return left && right;
-            } else if ("||".equals(ctx.JOINER())) {
+            } else if (ctx.OR() != null) {
                 return left || right;
             } else {
-                throw new RuleParsingException("Unknown joiner " + ctx.JOINER().getText());
+                throw new RuleParsingException("Unknown joiner");
             }
         } else {
             Object left = evaluateTerm(ctx.term(0));

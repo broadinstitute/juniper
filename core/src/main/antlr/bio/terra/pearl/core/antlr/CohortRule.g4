@@ -4,7 +4,7 @@ grammar CohortRule;
    See https://github.com/surveyjs/survey-library/blob/master/src/expressions/grammar.pegjs */
 
 // Parser rules
-expr: PAR_OPEN expr PAR_CLOSE | term OPERATOR term | expr JOINER expr;
+expr: PAR_OPEN expr PAR_CLOSE | term OPERATOR term | expr AND expr | expr OR expr;
 term: NUMBER | STRING | VARIABLE | BOOLEAN;
 
 // Lexer rules
@@ -14,6 +14,7 @@ VARIABLE: '{' (~[\\'\r\n])* '}';
 BOOLEAN: 'true' | 'false';
 WS: [ \t\r\n]+ -> skip;
 OPERATOR: '=' | '!=';
-JOINER: '&&' | '||';
+AND: '&&';
+OR: '||';
 PAR_OPEN: '(';
 PAR_CLOSE: ')';
