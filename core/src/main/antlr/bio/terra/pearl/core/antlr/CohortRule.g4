@@ -17,5 +17,3 @@ OPERATOR: '=' | '!=';
 JOINER: '&&' | '||';
 PAR_OPEN: '(';
 PAR_CLOSE: ')';
-
-
