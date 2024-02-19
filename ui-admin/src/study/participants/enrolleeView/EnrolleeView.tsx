@@ -204,17 +204,17 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   onUpdate={onUpdate}/>}/>
                 {currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
-                    preEnrollResponse={enrollee.preEnrollmentResponse}/>
+                    preEnrollResponse={enrollee.preEnrollmentResponse} studyEnvContext={studyEnvContext}/>
                 }/>}
                 <Route path="surveys">
                   <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
-                    responseMap={responseMap}/>}/>
+                    responseMap={responseMap} studyEnvContext={studyEnvContext}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
                 <Route path="consents">
                   <Route path=":consentStableId/*" element={<EnrolleeConsentView enrollee={enrollee}
-                    responseMap={consentMap}/>}/>
+                    responseMap={consentMap} studyEnvContext={studyEnvContext}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="timeline" element={

@@ -2,9 +2,8 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -24,6 +23,8 @@ import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -96,7 +97,7 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public HubResponse<Enrollee> enroll(String portalShortcode, EnvironmentName envName, String studyShortcode, ParticipantUser user, PortalParticipantUser ppUser, UUID preEnrollResponseId, boolean isProxy) {
+    public HubResponse<Enrollee> enroll(String portalShortcode, EnvironmentName envName, String studyShortcode, ParticipantUser user, PortalParticipantUser ppUser, UUID preEnrollResponseId, boolean isSubject) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
@@ -106,25 +107,22 @@ public class EnrollmentService {
         }
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId());
         Enrollee enrollee;
-        if (isProxy) {
-            enrollee = this.enrollGovernedUser( portalShortcode, user, studyEnv, preEnrollResponseId);
-        }
-        else {
-            enrollee = Enrollee.builder()
-                    .studyEnvironmentId(studyEnv.getId())
-                    .participantUserId(user.getId())
-                    .profileId(ppUser.getProfileId())
-                    .preEnrollmentResponseId(preEnrollResponseId)
-                    .build();
-            enrollee = enrolleeService.create(enrollee);
 
-        }
+        enrollee = Enrollee.builder()
+                .studyEnvironmentId(studyEnv.getId())
+                .participantUserId(user.getId())
+                .profileId(ppUser.getProfileId())
+                .preEnrollmentResponseId(preEnrollResponseId)
+                .subject(isSubject)
+                .build();
+        enrollee = enrolleeService.create(enrollee);
 
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
             preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(preEnrollResponse);
         }
+
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
         log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
@@ -132,25 +130,44 @@ public class EnrollmentService {
         return hubResponse;
     }
 
+    /**
+     * Will create an enrollee for both the given user and a new governed user that is registered.  The HubResponse
+     * returned will include the governedEnrollee as the "response", and the enrollee corresponding to the proxy user as
+     * the "enrollee"
+     */
     @Transactional
-    protected Enrollee enrollGovernedUser(String portalShortcode, ParticipantUser proxyUser, StudyEnvironment studyEnv,
+    public HubResponse<Enrollee> enrollAsProxy(String portalShortcode, EnvironmentName envName, String studyShortcode, ParticipantUser user, PortalParticipantUser ppUser, UUID preEnrollResponseId) {
+        HubResponse<Enrollee> proxyResponse = enroll(portalShortcode, envName, studyShortcode, user, ppUser, preEnrollResponseId, false);
+        HubResponse<Enrollee> governedResponse = enrollGovernedUser(portalShortcode, envName, studyShortcode, proxyResponse.getEnrollee(), user, ppUser, preEnrollResponseId);
+        governedResponse.setEnrollee(proxyResponse.getEnrollee());
+        return governedResponse;
+    }
+
+    @Transactional
+    public HubResponse<Enrollee> enrollGovernedUser(String portalShortcode, EnvironmentName envName, String studyShortcode, Enrollee governingEnrollee, ParticipantUser proxyUser, PortalParticipantUser proxyPpUser,
                                           UUID preEnrollResponseId) {
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
-        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(portalShortcode, proxyUser);
-        Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow(() -> new NotFoundException("portal %s not found".formatted(portalShortcode)));
-        log.info("Governed user {} registered", registrationResult.participantUser().getId());
-        ParticipantUser governedUser = registrationResult.participantUser();
-        PortalParticipantUser governedPpUser = registrationResult.portalParticipantUser();
-        Enrollee enrollee = Enrollee.builder()
-                .studyEnvironmentId(studyEnv.getId())
-                .participantUserId(governedUser.getId())
-                .profileId(governedPpUser.getProfileId())
-                .preEnrollmentResponseId(preEnrollResponseId)
+        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(proxyUser, proxyPpUser);
+
+        HubResponse<Enrollee> hubResponse = enroll(portalShortcode, envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(), preEnrollResponseId, true);
+
+        EnrolleeRelation relation = EnrolleeRelation.builder()
+                .enrolleeId(governingEnrollee.getId())
+                .targetEnrolleeId(hubResponse.getEnrollee().getId())
+                .relationshipType(RelationshipType.PROXY)
+                .beginDate(Instant.now()).build();
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .enrolleeId(hubResponse.getEnrollee().getId())
+                .responsibleUserId(proxyUser.getId()).build();
+        enrolleeRelationService.create(relation, auditInfo);
+        log.info("Created proxy relationship: {} is proxy for {}", governingEnrollee.getShortcode(), hubResponse.getEnrollee().getShortcode());
+
+        EnrolleeUserDto enrolleeUserDto = EnrolleeUserDto.builder()
+                .enrollee(hubResponse.getEnrollee())
+                .participantUser(registrationResult.participantUser())
+                .portalParticipantUser(registrationResult.portalParticipantUser())
                 .build();
-        enrollee = enrolleeService.create(enrollee);
-
-        return enrolleeRelationService.newGovernedEnrolleeCreationRecord(enrollee, proxyUser);
-
+        return hubResponse;
     }
 
     private PreEnrollmentResponse validatePreEnrollResponse(StudyEnvironment studyEnv,

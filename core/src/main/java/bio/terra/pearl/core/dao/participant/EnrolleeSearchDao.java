@@ -112,7 +112,9 @@ public class EnrolleeSearchDao {
     froms.add(0, baseFromQuery);
     String fromQuery = froms.stream().collect(Collectors.joining(""));
 
-    String baseWhereQuery = " where enrollee.study_environment_id = :studyEnvironmentId";
+    /** we are hardcoded to only return enrollees who are subjects for now */
+    String baseWhereQuery = " where enrollee.study_environment_id = :studyEnvironmentId and subject = true";
+
     List<String> wheres = IntStream.range(0, facets.size()).mapToObj(i ->
         facets.get(i).getWhereClause(i)).collect(Collectors.toList());
     wheres.add(0, baseWhereQuery);

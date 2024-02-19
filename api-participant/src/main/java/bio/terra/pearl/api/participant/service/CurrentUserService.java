@@ -3,9 +3,8 @@ package bio.terra.pearl.api.participant.service;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -25,6 +24,7 @@ public class CurrentUserService {
   private ParticipantUserDao participantUserDao;
   private PortalParticipantUserService portalParticipantUserService;
   private EnrolleeService enrolleeService;
+  private EnrolleeRelationService enrolleeRelationService;
   private ParticipantTaskService participantTaskService;
   private ProfileService profileService;
 
@@ -32,11 +32,13 @@ public class CurrentUserService {
       ParticipantUserDao participantUserDao,
       PortalParticipantUserService portalParticipantUserService,
       EnrolleeService enrolleeService,
+      EnrolleeRelationService enrolleeRelationService,
       ParticipantTaskService participantTaskService,
       ProfileService profileService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
+    this.enrolleeRelationService = enrolleeRelationService;
     this.participantTaskService = participantTaskService;
     this.profileService = profileService;
   }
@@ -64,12 +66,16 @@ public class CurrentUserService {
       String token, String portalShortcode, EnvironmentName environmentName) {
     DecodedJWT decodedJWT = JWT.decode(token);
     String email = decodedJWT.getClaim("email").asString();
-    Optional<ParticipantUser> userOpt = participantUserDao.findOne(email, environmentName);
-    if (userOpt.isEmpty()) {
-      log.info("User not found for environment {}. (Portal: {})", environmentName, portalShortcode);
-      throw new UnauthorizedException("User not found for environment " + environmentName);
+    ParticipantUser user =
+        participantUserDao
+            .findOne(email, environmentName)
+            .orElseThrow(
+                () ->
+                    new UnauthorizedException("User not found for environment " + environmentName));
+    if (!user.isLoginAllowed()) {
+      throw new UnauthorizedException("Login not allowed for this account");
     }
-    return loadFromUser(userOpt.get(), portalShortcode);
+    return loadFromUser(user, portalShortcode);
   }
 
   public UserWithEnrollees loadFromUser(ParticipantUser user, String portalShortcode) {
@@ -85,10 +91,18 @@ public class CurrentUserService {
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
-    return new UserWithEnrollees(user, enrollees);
+    List<EnrolleeRelation> proxyRelations =
+        enrolleeRelationService.findByEnrolleeIdsAndRelationType(
+            enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
+    enrolleeRelationService.attachTargetEnrollees(proxyRelations);
+    for (EnrolleeRelation relation : proxyRelations) {
+      enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
+    }
+    return new UserWithEnrollees(user, enrollees, proxyRelations);
   }
 
-  public record UserWithEnrollees(ParticipantUser user, List<Enrollee> enrollees) {}
+  public record UserWithEnrollees(
+      ParticipantUser user, List<Enrollee> enrollees, List<EnrolleeRelation> relations) {}
 
   @Transactional
   public void logout(ParticipantUser user) {

@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 
-class SmartyUSAddressValidationClientTest extends BaseSpringBootTest {
+class SmartyUSAddressValidationServiceTest extends BaseSpringBootTest {
 
     @MockBean
     private SmartyClient mockSmartyClient;
@@ -28,7 +28,7 @@ class SmartyUSAddressValidationClientTest extends BaseSpringBootTest {
     // https://www.smarty.com/products/us-address-verification#demo
 
     @Autowired
-    private SmartyUSAddressValidationClient client;
+    private SmartyUSAddressValidationService client;
 
     @Test
     public void testValidResponse() throws SmartyException, IOException, InterruptedException {
