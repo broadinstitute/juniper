@@ -146,10 +146,17 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId) {
-        HubResponse<Enrollee> proxyResponse = enroll(envName, studyShortcode, proxyUser, ppUser, null, false);
+        Optional<Enrollee> maybeProxyEnrollee =
+                enrolleeService.findOneByParticipantUserIdAndStudyEnvironmentId(proxyUser.getId(), studyShortcode, envName);
+        if (maybeProxyEnrollee.isEmpty()) {
+            maybeProxyEnrollee = Optional.of(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
+        }
+        Enrollee proxyEnrollee = maybeProxyEnrollee.orElseThrow(() -> new NotFoundException(
+                "Proxy enrolee with participant user id %s for study %s env %s was not found".formatted(proxyUser.getId(), studyShortcode,
+                        envName)));
         HubResponse<Enrollee> governedResponse =
-                enrollGovernedUser(envName, studyShortcode, proxyResponse.getEnrollee(), proxyUser, ppUser, preEnrollResponseId);
-        governedResponse.setEnrollee(proxyResponse.getEnrollee());
+                enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId);
+        governedResponse.setEnrollee(proxyEnrollee);
         return governedResponse;
     }
 

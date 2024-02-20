@@ -146,4 +146,8 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             return query.mapTo(clazz).list();
         });
     }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
+        return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);
+    }
 }

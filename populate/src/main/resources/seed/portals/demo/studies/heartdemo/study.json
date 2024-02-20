@@ -85,7 +85,9 @@
         "enrollees/basicsDone.json",
         "enrollees/withdrawn.json",
         "enrollees/oldVersion.json",
-        "enrollees/child1.json"
+        "enrollees/child1.json",
+        "enrollees/child1Family2.json",
+        "enrollees/child2Family2.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,

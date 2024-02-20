@@ -1,0 +1,21 @@
+{
+  "proxyPopDtos": [{
+    "username": "proxyFamily2@test.com",
+    "shortcode": "HDPRXA",
+    "enrollAsProxy": true}],
+  "shortcode": "HDGVAA",
+  "submittedHoursAgo": 10,
+  "preEnrollmentResponseDto": {
+    "qualified": true,
+    "surveyStableId": "hd_hd_preenroll",
+    "surveyVersion": 1,
+    "answers": [
+      {"questionStableId":"hd_hd_preenroll_southAsianAncestry", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_understandsEnglish", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_isAdult", "stringValue": "yes"},
+      {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"},
+      {"questionStableId":"qualified", "booleanValue": true}
+    ]
+  },
+  "simulateSubmissions": true
+}

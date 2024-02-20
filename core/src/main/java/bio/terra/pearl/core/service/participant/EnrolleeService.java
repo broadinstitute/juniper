@@ -23,6 +23,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -281,6 +282,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             throw new InternalServerException("Unable to generate unique shortcode");
         }
         return shortcode;
+    }
+
+    public Optional<Enrollee> findOneByParticipantUserIdAndStudyEnvironmentId(UUID participantUserId, UUID studyEnvId) {
+        return dao.findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnvId);
+    }
+
+    public Optional<Enrollee> findOneByParticipantUserIdAndStudyEnvironmentId(UUID participantUserId, String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
+        return findOneByParticipantUserIdAndStudyEnvironmentId(participantUserId, studyEnv.getId());
     }
 
     public enum AllowedCascades implements CascadeProperty {
