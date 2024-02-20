@@ -40,15 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.*;
 
 import org.junit.jupiter.api.Assertions;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
@@ -70,7 +64,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
         HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode,
-                userBundle.user(), userBundle.ppUser(), null, false);
+                userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
         assertThat(enrollee.getParticipantUserId(), equalTo(userBundle.user().getId()));
@@ -110,7 +104,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         HubResponse hubResponse = enrollmentService.enroll(portalShortcode,studyEnv.getEnvironmentName(), studyShortcode,
-                userBundle.user(), userBundle.ppUser(), null, false);
+                userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(hubResponse.getProfile(), notNullValue());
         // Because the study environment had a consent attached, a consent task should be created on enrollment
@@ -172,22 +166,31 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                null, true);
-        Enrollee enrollee = hubResponse.getEnrollee();
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                null);
+        Enrollee enrollee = hubResponse.getResponse();
+        Enrollee proxyEnrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
-        Assertions.assertNotEquals(enrollee.getParticipantUserId(),userBundle.user().getId());
-        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
+        Assertions.assertNotEquals(enrollee.getParticipantUserId(), userBundle.user().getId());
+        // check that we've created an enrollee for the proxy too
+        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 1);
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findAll();
         Assertions.assertEquals(enrolleeRelations.size(), 1);
-        Assertions.assertEquals(enrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(enrolleeRelations.get(0).getEnrolleeId(), enrollee.getId());
-        assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), contains(enrollee));
+        assertThat(enrolleeRelations.get(0), samePropertyValuesAs(EnrolleeRelation.builder()
+                .enrolleeId(hubResponse.getEnrollee().getId())
+                .targetEnrolleeId(hubResponse.getResponse().getId())
+                .relationshipType(RelationshipType.PROXY).build(), "id", "beginDate", "endDate", "createdAt", "lastUpdatedAt"));
+        assertThat(enrolleeService.findByStudyEnvironment(studyEnv.getId()), containsInAnyOrder(enrollee, proxyEnrollee));
 
         // Because the study environment had a consent attached, a consent task should be created on enrollment
+        assertThat(participantTaskService.findByEnrolleeId(enrollee.getId()), hasSize(1));
         assertThat(enrollee.getParticipantTasks(), hasSize(1));
         assertThat(enrollee.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
         assertThat(enrollee.isConsented(), equalTo(false));
+
+        // the consent form should NOT be given as a task to the proxy
+        assertThat(proxyEnrollee.getParticipantTasks(), hasSize(0));
+        assertThat(participantTaskService.findByEnrolleeId(proxyEnrollee.getId()), hasSize(0));
     }
 
     @Test
@@ -207,37 +210,38 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .build();
         studyEnvironmentConsentService.create(studyEnvConsent);
 
-        HubResponse hubResponse1 = enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                 null, true);
+        HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                 null);
+        Enrollee proxyEnrollee = hubResponse1.getEnrollee();
+        HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollGovernedUser(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, proxyEnrollee,  userBundle.user(), userBundle.ppUser(), null);
+        Enrollee governedEnrollee1 = hubResponse1.getResponse();
+        Enrollee governedEnrollee2 = hubResponse2.getEnrollee();
 
-        HubResponse hubResponse2 = enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                 null, true);
-        Enrollee enrollee1 = hubResponse1.getEnrollee();
-        Enrollee enrollee2 = hubResponse2.getEnrollee();
-        assertThat(enrollee1.getShortcode(), notNullValue());
-        assertThat(enrollee2.getShortcode(), notNullValue());
-        Assertions.assertNotEquals(enrollee1.getShortcode(), enrollee2.getShortcode());
-        Assertions.assertNotEquals(enrollee1.getParticipantUserId(), enrollee2.getParticipantUserId());
+        Assertions.assertNotEquals(governedEnrollee1.getShortcode(), governedEnrollee2.getShortcode());
+        Assertions.assertNotEquals(governedEnrollee1.getParticipantUserId(), governedEnrollee2.getParticipantUserId());
         //participant user id for governed user and proxy user should differ
-        Assertions.assertNotEquals(enrollee1.getParticipantUserId(), userBundle.user().getId());
-        //assert that the proxy wasn't enrolled
-        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 0);
-        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findByParticipantUserId(userBundle.user().getId());
-        Assertions.assertEquals(proxyEnrolleeRelations.size(), 2);
-        Assertions.assertEquals(proxyEnrolleeRelations.get(0).getRelationshipType(), RelationshipType.PROXY);
-        Assertions.assertEquals(proxyEnrolleeRelations.get(0).getEnrolleeId(), enrollee1.getId());
-        Assertions.assertEquals(proxyEnrolleeRelations.get(1).getEnrolleeId(), enrollee2.getId());
-        Assertions.assertEquals(enrolleeService.findByStudyEnvironment(studyEnv.getId()).size(), 2);
-        Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee1)));
-        Assertions.assertTrue(enrolleeService.findByStudyEnvironment(studyEnv.getId()).stream().anyMatch(enrollee -> enrollee.equals(enrollee2)));
+        Assertions.assertNotEquals(governedEnrollee1.getParticipantUserId(), proxyEnrollee.getParticipantUserId());
+        //assert that the proxy was enrolled
+        Assertions.assertEquals(enrolleeService.findByPortalParticipantUser(userBundle.ppUser()).size(), 1);
+        List<EnrolleeRelation> proxyEnrolleeRelations = enrolleeRelationService.findAll();
+        assertThat(proxyEnrolleeRelations, hasSize(2));
+        List<EnrolleeRelation> relations1 = enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee1.getId());
+        assertThat(relations1, hasSize(1));
+        assertThat(relations1.get(0), samePropertyValuesAs(EnrolleeRelation.builder()
+                .enrolleeId(proxyEnrollee.getId())
+                .targetEnrolleeId(governedEnrollee1.getId())
+                .relationshipType(RelationshipType.PROXY).build(), "id", "beginDate", "endDate", "createdAt", "lastUpdatedAt"));
+
+        List<EnrolleeRelation> relations2 = enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee2.getId());
+        assertThat(relations2, hasSize(1));
+        assertThat(relations2.get(0), samePropertyValuesAs(EnrolleeRelation.builder()
+                .enrolleeId(proxyEnrollee.getId())
+                .targetEnrolleeId(governedEnrollee2.getId())
+                .relationshipType(RelationshipType.PROXY).build(), "id", "beginDate", "endDate", "createdAt", "lastUpdatedAt"));
 
         // Because the study environment had a consent attached, a consent task should be created on enrollment
-        assertThat(enrollee1.getParticipantTasks(), hasSize(1));
-        assertThat(enrollee2.getParticipantTasks(), hasSize(1));
-        assertThat(enrollee1.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
-        assertThat(enrollee2.getParticipantTasks(), contains(hasProperty("taskType", equalTo(TaskType.CONSENT))));
-        assertThat(enrollee1.isConsented(), equalTo(false));
-        assertThat(enrollee2.isConsented(), equalTo(false));
+        assertThat(participantTaskService.findByEnrolleeId(governedEnrollee1.getId()), hasSize(1));
+        assertThat(participantTaskService.findByEnrolleeId(governedEnrollee2.getId()), hasSize(1));
     }
 
 

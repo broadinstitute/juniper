@@ -176,7 +176,7 @@ export function getResumeData(surveyJSModel: SurveyModel,
 }
 
 /** converts the given model into a list of answers, or an empty array if undefined */
-export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
+export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLanguage?: string): Answer[] {
   if (!surveyJSModel.data) {
     return []
   }
@@ -185,13 +185,16 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel): Answer[] {
     .filter(([key]) => {
       return !key.endsWith(SURVEY_JS_OTHER_SUFFIX) && surveyJSModel.getQuestionByName(key)?.getType() !== 'html'
     })
-    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data))
+    .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
 }
 
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
 export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
-  surveyJsData: Record<string, SurveyJsValueType>): Answer {
+  surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer {
   const answer: Answer = { questionStableId }
+  if (viewedLanguage) {
+    answer.viewedLanguage = viewedLanguage
+  }
   if (typeof value === 'string') {
     answer.stringValue = value
   } else if (typeof value == 'number') {
@@ -206,20 +209,20 @@ export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
     answer.otherDescription = surveyJsData[questionStableId + SURVEY_JS_OTHER_SUFFIX] as string
   } else if (questionStableId.endsWith(SURVEY_JS_OTHER_SUFFIX)) {
     const baseStableId = questionStableId.substring(0, questionStableId.lastIndexOf('-'))
-    return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData)
+    return makeAnswer(surveyJsData[baseStableId], baseStableId, surveyJsData, viewedLanguage)
   }
   return answer
 }
 
 /** compares two surveyModel.data objects and returns a list of answers corresponding to updates */
 export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
-  updated: Record<string, SurveyJsValueType>): Answer[] {
+  updated: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer[] {
   const allKeys = _union(_keys(original), _keys(updated))
   const updatedKeys = allKeys.filter(key => !_isEqual(original[key], updated[key]))
     .map(key => key.endsWith(SURVEY_JS_OTHER_SUFFIX) ? key.substring(0, key.lastIndexOf(SURVEY_JS_OTHER_SUFFIX)) : key)
   const dedupedKeys = Array.from(new Set(updatedKeys).values())
 
-  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated))
+  return dedupedKeys.map(key => makeAnswer(updated[key], key, updated, viewedLanguage))
 }
 
 /** get a merge of both the explicit answer data and the calculated values */

@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import SurveyFullDataView, { getDisplayValue } from './SurveyFullDataView'
+import SurveyFullDataView, { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { mockSurvey } from 'test-utils/mocking-utils'
+import { mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 
 
@@ -73,10 +73,71 @@ describe('getDisplayValue', () => {
 test('shows the download/print modal', async () => {
   const printSpy = jest.spyOn(window, 'print').mockImplementation(() => 1)
   const { RoutedComponent } = setupRouterTest(
-    <SurveyFullDataView answers={[]} survey={mockSurvey()}/>)
+    <SurveyFullDataView answers={[]} survey={mockSurvey()} studyEnvContext={mockStudyEnvContext()}/>)
   render(RoutedComponent)
   expect(screen.queryByText('Done')).not.toBeInTheDocument()
   await userEvent.click(screen.getByText('print/download'))
   expect(screen.getByText('Done')).toBeVisible()
   await waitFor(() => expect(printSpy).toHaveBeenCalledTimes(1))
+})
+
+describe('ItemDisplay', () => {
+  it('renders the language used to answer a question', async () => {
+    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const answer: Answer = {
+      stringValue: 'test123',
+      questionStableId: 'testQ',
+      surveyVersion: 1,
+      viewedLanguage: 'es'
+    } as Answer
+    const answerMap: Record<string, Answer> = {}
+    answerMap[answer.questionStableId] = answer
+    render(<ItemDisplay
+      question={question as unknown as Question}
+      answerMap={answerMap}
+      surveyVersion={1}
+      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish' }]}
+      showFullQuestions={true}/>)
+
+    expect(screen.getByText('(testQ) (Answered in Spanish)')).toBeInTheDocument()
+  })
+
+  it('renders correctly if a viewedLanguage is not specified', async () => {
+    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const answer: Answer = {
+      stringValue: 'test123',
+      questionStableId: 'testQ',
+      surveyVersion: 1
+    } as Answer
+    const answerMap: Record<string, Answer> = {}
+    answerMap[answer.questionStableId] = answer
+    render(<ItemDisplay
+      question={question as unknown as Question}
+      answerMap={answerMap}
+      surveyVersion={1}
+      supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+      showFullQuestions={true}/>)
+
+    expect(screen.getByText('(testQ)')).toBeInTheDocument()
+  })
+
+  it('does not render a language name if it doesnt match a supported language', async () => {
+    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const answer: Answer = {
+      stringValue: 'test123',
+      questionStableId: 'testQ',
+      surveyVersion: 1,
+      viewedLanguage: 'fake'
+    } as Answer
+    const answerMap: Record<string, Answer> = {}
+    answerMap[answer.questionStableId] = answer
+    render(<ItemDisplay
+      question={question as unknown as Question}
+      answerMap={answerMap}
+      surveyVersion={1}
+      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish' }]}
+      showFullQuestions={true}/>)
+
+    expect(screen.getByText('(testQ)')).toBeInTheDocument()
+  })
 })
