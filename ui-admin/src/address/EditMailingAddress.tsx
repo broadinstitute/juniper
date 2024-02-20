@@ -1,17 +1,30 @@
 import {
   AddressValidationResult,
   explainAddressValidationResults,
+  getAllCountries,
   isAddressFieldValid,
   MailingAddress
 } from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { doApiLoad } from '../api/api-utils'
 import Api from '../api/api'
-import { isNil } from 'lodash'
+import { isNil, sortBy } from 'lodash'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
 import { findDifferencesBetweenObjects } from '../util/objectUtils'
+import CreatableSelect from 'react-select/creatable'
+import classNames from 'classnames'
+
+// Supported country alpha-2 codes; see
+// SmartyInternationalAddressValidationService in core
+const SUPPORTED_COUNTRIES = [
+  'CA',
+  'MX',
+  'GB',
+  'AU',
+  'US'
+]
 
 /**
  * Editable mailing address component with connection to the backend
@@ -19,11 +32,12 @@ import { findDifferencesBetweenObjects } from '../util/objectUtils'
  */
 export default function EditMailingAddress(
   {
-    mailingAddress, onMailingAddressFieldChange, setMailingAddress
+    mailingAddress, onMailingAddressFieldChange, setMailingAddress, language
   }: {
     mailingAddress: MailingAddress,
     onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
-    setMailingAddress: (update: MailingAddress) => void
+    setMailingAddress: (update: MailingAddress) => void,
+    language?: string
   }
 ) {
   const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
@@ -40,6 +54,16 @@ export default function EditMailingAddress(
     onMailingAddressFieldChange(field, value)
   }
 
+
+  const countryOptions = getAllCountries(language).map(
+    country => {
+      return {
+        value: country.code,
+        label: country.name
+      }
+    }
+  )
+
   const validateAddress = () => {
     doApiLoad(async () => {
       const results = await Api.validateAddress(mailingAddress)
@@ -55,9 +79,11 @@ export default function EditMailingAddress(
     }, { setIsLoading: setIsLoadingValidation })
   }
 
-  const formatClassName = (field: keyof MailingAddress) => {
+  // checks if a field should be in an error state; if true,
+  // should be green, if false, red, and if undefined, unhighlighted
+  const isValid = (field: keyof MailingAddress): boolean | undefined => {
     if (!addressValidationResults || !isNil(addressValidationResults.suggestedAddress)) {
-      return 'form-control'
+      return undefined
     }
 
     if (!hasChangedSinceValidation.includes(field)
@@ -65,15 +91,15 @@ export default function EditMailingAddress(
       && isNil(addressValidationResults.suggestedAddress)
       && (isNil(addressValidationResults.hasInferredComponents)
         || !addressValidationResults.hasInferredComponents)) {
-      return 'form-control is-valid'
+      return true
     }
 
     if (!hasChangedSinceValidation.includes(field)
       && !isAddressFieldValid(addressValidationResults, field)) {
-      return 'form-control is-invalid'
+      return false
     }
 
-    return 'form-control'
+    return undefined
   }
 
   const clearSuggestedAddress = () => {
@@ -86,12 +112,29 @@ export default function EditMailingAddress(
     })
   }
 
+  const findCountryLabel = (val: string) => {
+    const option = countryOptions.find(option => option.value === val)
+
+    if (option) {
+      return option.label
+    }
+
+    return val
+  }
+
+  const isSupportedCountry = (val: string) => {
+    return SUPPORTED_COUNTRIES.includes(val)
+  }
 
   return <div className="">
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('street1')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('street1') === true,
+              'is-invalid': isValid('street1') === false
+            })}
           type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
           onChange={e => onFieldChange('street1', e.target.value)}/>
       </div>
@@ -99,7 +142,11 @@ export default function EditMailingAddress(
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('street2')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('street2') === true,
+              'is-invalid': isValid('street2') === false
+            })}
           type="text" value={mailingAddress.street2 || ''}
           placeholder={'Street 2'}
           onChange={e => onFieldChange('street2', e.target.value)}/>
@@ -108,14 +155,22 @@ export default function EditMailingAddress(
     <div className='row mb-2'>
       <div className="col">
         <input
-          className={formatClassName('city')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('city') === true,
+              'is-invalid': isValid('city') === false
+            })}
           type="text" value={mailingAddress.city || ''}
           placeholder={'City'}
           onChange={e => onFieldChange('city', e.target.value)}/>
       </div>
       <div className='col'>
         <input
-          className={formatClassName('state')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('state') === true,
+              'is-invalid': isValid('state') === false
+            })}
           type="text" value={mailingAddress.state || ''} placeholder={'State/Province'}
           onChange={e => onFieldChange('state', e.target.value)}/>
       </div>
@@ -123,51 +178,79 @@ export default function EditMailingAddress(
     <div className='row'>
       <div className="col">
         <input
-          className={formatClassName('postalCode')}
+          className={classNames(
+            'form-control', {
+              'is-valid': isValid('postalCode') === true,
+              'is-invalid': isValid('postalCode') === false
+            })}
           type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
           onChange={e => onFieldChange('postalCode', e.target.value)}/>
       </div>
       <div className='col'>
-        <input
-          className={formatClassName('country')}
-          type="text" value={mailingAddress.country || ''} placeholder={'Country'}
-          onChange={e => onFieldChange('country', e.target.value)}/>
+        <CreatableSelect
+          styles={{
+            control: baseStyles => ({
+              ...baseStyles,
+              borderColor: 'var(--bs-border-color)' // use same border color as all other components
+            })
+          }}
+          placeholder={'Country'}
+          options={sortBy(countryOptions, opt => opt.label)}
+          value={{
+            value: mailingAddress.country,
+            label: findCountryLabel(mailingAddress.country)
+          }}
+          formatCreateLabel={val => val}
+          onChange={val => onFieldChange('country', val ? val.value : '')}
+        />
       </div>
     </div>
-    {user.user.superuser && <LoadingSpinner isLoading={isLoadingValidation}>
-      <button className="btn btn-link" onClick={validateAddress}>Validate</button>
-    </LoadingSpinner>
+    {(user.user.superuser) &&
+        <LoadingSpinner isLoading={isLoadingValidation}>
+          <div
+            className={'d-inline-block'}
+            title={isSupportedCountry(mailingAddress.country)
+              ? 'Validate address'
+              : `Validation is not supported for this country`}>
+            <button
+              className="btn btn-link" disabled={!isSupportedCountry(mailingAddress.country)}
+              onClick={validateAddress}>
+                    Validate
+            </button>
+          </div>
+
+        </LoadingSpinner>
     }
     {addressValidationResults?.suggestedAddress &&
-          <SuggestBetterAddressModal
-            inputtedAddress={mailingAddress}
-            improvedAddress={addressValidationResults.suggestedAddress}
-            hasInferredComponents={addressValidationResults.hasInferredComponents || false}
-            accept={() => {
-              if (addressValidationResults && addressValidationResults.suggestedAddress) {
-                const suggested = addressValidationResults.suggestedAddress
-                setMailingAddress({
-                  ...mailingAddress, // keep same id/createdAt, etc.
-                  ...{
-                    street1: suggested.street1,
-                    street2: suggested.street2,
-                    country: suggested.country,
-                    city: suggested.city,
-                    postalCode: suggested.postalCode,
-                    state: suggested.state
-                  } // only update relevant fields (not, e.g., id or createdAt)
-                })
-              }
-              // clear the results since we saved the new address
-              setAddressValidationResults(undefined)
-            }}
-            deny={() => {
-              clearSuggestedAddress()
-            }}
-            onDismiss={() => {
-              clearSuggestedAddress()
-            }}
-          />}
+        <SuggestBetterAddressModal
+          inputtedAddress={mailingAddress}
+          improvedAddress={addressValidationResults.suggestedAddress}
+          hasInferredComponents={addressValidationResults.hasInferredComponents || false}
+          accept={() => {
+            if (addressValidationResults && addressValidationResults.suggestedAddress) {
+              const suggested = addressValidationResults.suggestedAddress
+              setMailingAddress({
+                ...mailingAddress, // keep same id/createdAt, etc.
+                ...{
+                  street1: suggested.street1,
+                  street2: suggested.street2,
+                  country: suggested.country,
+                  city: suggested.city,
+                  postalCode: suggested.postalCode,
+                  state: suggested.state
+                } // only update relevant fields (not, e.g., id or createdAt)
+              })
+            }
+            // clear the results since we saved the new address
+            setAddressValidationResults(undefined)
+          }}
+          deny={() => {
+            clearSuggestedAddress()
+          }}
+          onDismiss={() => {
+            clearSuggestedAddress()
+          }}
+        />}
     {!addressValidationResults?.valid && explainAddressValidationResults(addressValidationResults)
       .map((explanation, idx) =>
         <p key={idx} className="text-danger-emphasis">{explanation}</p>

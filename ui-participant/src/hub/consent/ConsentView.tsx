@@ -53,7 +53,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel)),
+      fullData: JSON.stringify(getSurveyJsAnswerList(surveyModel, selectedLanguage)),
       creatingParticipantId: enrollee.participantUserId,
       consentFormId: form.id,
       // if the form doesn't export an explicit "consented" property, then the default is that they've consented

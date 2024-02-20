@@ -13,6 +13,7 @@ export * from './autoSaveUtils'
 export * from './reactUtils'
 export * from './surveyUtils'
 export * from './addressUtils'
+export * from './i18nUtils'
 export * from './waitForImages'
 
 export * from './participant/dashboard/Alert'

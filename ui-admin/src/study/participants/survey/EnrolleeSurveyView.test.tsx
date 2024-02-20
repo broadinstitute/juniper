@@ -1,7 +1,13 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { RawEnrolleeSurveyView } from './EnrolleeSurveyView'
-import { mockAnswer, mockConfiguredSurvey, mockEnrollee, mockSurveyResponse } from 'test-utils/mocking-utils'
+import {
+  mockAnswer,
+  mockConfiguredSurvey,
+  mockEnrollee,
+  mockStudyEnvContext,
+  mockSurveyResponse
+} from 'test-utils/mocking-utils'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 describe('RawEnrolleeSurveyView', () => {
@@ -14,6 +20,7 @@ describe('RawEnrolleeSurveyView', () => {
     }
     const { RoutedComponent } = setupRouterTest(
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
+        studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
         responses={[response]}/>)
     render(RoutedComponent)
@@ -30,6 +37,7 @@ describe('RawEnrolleeSurveyView', () => {
     }
     const { RoutedComponent } = setupRouterTest(
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
+        studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
         responses={[response]}/>)
     render(RoutedComponent)

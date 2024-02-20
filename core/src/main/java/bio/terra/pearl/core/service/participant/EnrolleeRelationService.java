@@ -14,10 +14,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
+    EnrolleeService enrolleeService;
 
-    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
+    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao, EnrolleeService enrolleeService,
                                     DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
+        this.enrolleeService = enrolleeService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -42,4 +44,5 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         bulkDelete(enrolleeRelations, DataAuditInfo.builder().systemProcess(DataAuditInfo.systemProcessName(getClass(),
                 "deleteAllByEnrolleeIdOrTargetId")).build());
     }
+
 }

@@ -198,8 +198,12 @@ databaseChangeLog:
       file: changesets/proxy_data_model.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_02_09_answer_viewed_language.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_02_14_enrollee_proxy.yaml
       relativeToChangelogFile: true
+
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

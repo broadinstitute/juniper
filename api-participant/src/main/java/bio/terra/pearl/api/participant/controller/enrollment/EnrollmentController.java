@@ -47,6 +47,7 @@ public class EnrollmentController implements EnrollmentApi {
     if (isProxy) {
       hubResponse =
           enrollmentService.enrollAsProxy(
+              portalShortcode,
               environmentName,
               studyShortcode,
               user,
@@ -55,6 +56,7 @@ public class EnrollmentController implements EnrollmentApi {
     } else {
       hubResponse =
           enrollmentService.enroll(
+              portalShortcode,
               environmentName,
               studyShortcode,
               user,
