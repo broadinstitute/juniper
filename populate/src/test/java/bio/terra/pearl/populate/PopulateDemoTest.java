@@ -1,7 +1,22 @@
 package bio.terra.pearl.populate;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -15,14 +30,6 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 /** confirm demo portal populates as expected */
 public class PopulateDemoTest extends BasePopulatePortalsTest {
@@ -42,9 +49,11 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(5, enrollees.size());
+        Assertions.assertEquals(10, enrollees.size());//3 new governed enrollees and 2 proxies
 
         checkOldVersionEnrollee(enrollees);
+        checkProxyWithOneGovernedEnrollee(enrollees);
+        checkProxyWithTwoGovernedEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
     }
 
@@ -66,12 +75,71 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         );
     }
 
+    /** confirm the proxy enrollee with one governed user was enrolled appropriately */
+    private void checkProxyWithOneGovernedEnrollee(List<Enrollee> sandboxEnrollees) {
+        Enrollee governedEnrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDGOVR".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+
+        Enrollee proxyEnrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDPROX".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee.getId()), hasSize(1));
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee.getId()).get(0).getEnrolleeId(), equalTo(proxyEnrollee.getId()));
+        List<PortalParticipantUser> portalParticipantUsers = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId());
+        assertThat(portalParticipantUsers, hasSize(1));
+        assertThat(portalParticipantUsers.get(0).getParticipantUserId(), equalTo(proxyEnrollee.getParticipantUserId()));
+        List<PortalParticipantUser> governedPortalParticipantUsers = portalParticipantUserService.findByParticipantUserId(governedEnrollee.getParticipantUserId());
+        assertThat(governedPortalParticipantUsers, hasSize(1));
+        assertThat(governedPortalParticipantUsers.get(0).getParticipantUserId(), equalTo(governedEnrollee.getParticipantUserId()));
+        PortalParticipantUser proxyPPUser = portalParticipantUsers.get(0);
+        PortalParticipantUser governedPPUser = governedPortalParticipantUsers.get(0);
+        Profile proxyProfile = profileService.find(proxyPPUser.getProfileId()).get();
+        Profile governedUserProfile = profileService.find(governedPPUser.getProfileId()).get();
+        assertThat(proxyProfile.getContactEmail(), equalTo(governedUserProfile.getContactEmail()));
+        assertThat(proxyProfile, not(equalTo(governedUserProfile)));
+    }
+
+    /** confirm the proxy enrollee with two governed users was enrolled appropriately */
+    private void checkProxyWithTwoGovernedEnrollee(List<Enrollee> sandboxEnrollees) {
+        Enrollee governedEnrollee1 = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDGVAA".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        Enrollee governedEnrollee2 = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDGVBA".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        Enrollee proxyEnrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDPRXA".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        assertThat(enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY), hasSize(2));
+        assertThat(enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY).stream().filter(enrolleeRelation -> enrolleeRelation.getTargetEnrolleeId().equals(governedEnrollee1.getId())).collect(
+                Collectors.toList()), hasSize(1));
+        assertThat(enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY).stream().filter(enrolleeRelation -> enrolleeRelation.getTargetEnrolleeId().equals(governedEnrollee2.getId())).collect(
+                Collectors.toList()), hasSize(1));
+
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee1.getId()), hasSize(1));
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee1.getId()).get(0).getEnrolleeId(), equalTo(proxyEnrollee.getId()));
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee2.getId()), hasSize(1));
+        assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee2.getId()).get(0).getEnrolleeId(), equalTo(proxyEnrollee.getId()));
+
+        List<PortalParticipantUser> proxyPortalParticipantUsers = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId());
+        assertThat(proxyPortalParticipantUsers, hasSize(1));
+        assertThat(proxyPortalParticipantUsers.get(0).getParticipantUserId(), equalTo(proxyEnrollee.getParticipantUserId()));
+
+        PortalParticipantUser governedPPUser1 = portalParticipantUserService.findByParticipantUserId(governedEnrollee1.getParticipantUserId()).get(0);
+        PortalParticipantUser governedPPUser2 = portalParticipantUserService.findByParticipantUserId(governedEnrollee2.getParticipantUserId()).get(0);
+        PortalParticipantUser proxyPPUser = proxyPortalParticipantUsers.get(0);
+        Profile proxyProfile = profileService.find(proxyPPUser.getProfileId()).get();
+        Profile governedUserProfile1 = profileService.find(governedPPUser1.getProfileId()).get();
+        Profile governedUserProfile2 = profileService.find(governedPPUser2.getProfileId()).get();
+        assertThat(proxyProfile.getContactEmail(), equalTo(governedUserProfile1.getContactEmail()));
+        assertThat(proxyProfile.getContactEmail(), equalTo(governedUserProfile2.getContactEmail()));
+        assertThat(proxyProfile, not(equalTo(governedUserProfile1)));
+        assertThat(governedUserProfile2, not(equalTo(proxyProfile)));
+        assertThat(governedUserProfile2, not(equalTo(governedUserProfile1)));
+    }
+
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
         ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
-        assertThat(exportData, hasSize(5));
+        assertThat(exportData, hasSize(8));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         // confirm text (including typo) from prior version is carried through
