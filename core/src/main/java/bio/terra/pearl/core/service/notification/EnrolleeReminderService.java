@@ -77,9 +77,9 @@ public class EnrolleeReminderService {
             // this isn't an optimized match -- we're assuming the number of reminders we send on any given run for a single
             // config will likely be < 100
             EnrolleeRuleData ruleData = enrolleeData.stream()
-                    .filter(erd -> erd.enrollee().getId().equals(enrolleeWithTask.getEnrolleeId())).findFirst().get();
+                    .filter(erd -> erd.getEnrollee().getId().equals(enrolleeWithTask.getEnrolleeId())).findFirst().get();
             // don't send non-consent task reminders to enrollees who haven't consented
-            if (trigger.getTaskType().equals(TaskType.CONSENT) || ruleData.enrollee().isConsented()) {
+            if (trigger.getTaskType().equals(TaskType.CONSENT) || ruleData.getEnrollee().isConsented()) {
                 notificationDispatcher.dispatchNotification(trigger, ruleData, envContext);
             }
         }

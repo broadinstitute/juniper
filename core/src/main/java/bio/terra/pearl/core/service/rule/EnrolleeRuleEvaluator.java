@@ -10,31 +10,49 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
-public class CohortRuleEvaluator {
+public class EnrolleeRuleEvaluator {
     private final EnrolleeRuleData ruleData;
 
-    public CohortRuleEvaluator(EnrolleeRuleData ruleData) {
+    public EnrolleeRuleEvaluator(EnrolleeRuleData ruleData) {
         this.ruleData = ruleData;
     }
 
-    public static boolean evaluateRule(String rule, EnrolleeRuleData ruleData) throws RuleEvaluationException, RuleParsingException {
-        CohortRuleEvaluator evaluator = new CohortRuleEvaluator(ruleData);
-        return evaluator.evaluateRule(rule);
+    // for evaluations where we need to indicate whether the rule itself is valid
+    public static boolean evaluateRuleChecked(String rule, EnrolleeRuleData ruleData) throws RuleEvaluationException, RuleParsingException {
+        EnrolleeRuleEvaluator evaluator = new EnrolleeRuleEvaluator(ruleData);
+        return evaluator.evaluateRuleChecked(rule);
     }
 
-    public boolean evaluateRule(String rule) throws RuleEvaluationException, RuleParsingException {
+    // Evaluates the rule. Returns false if the rule cannot be parsed, or if an error occurred accessing the ruleData
+    public static boolean evaluateRule(String rule, EnrolleeRuleData ruleData) {
+        try {
+            return evaluateRuleChecked(rule, ruleData);
+        } catch (RuleEvaluationException | RuleParsingException e) {
+            log.warn("Error evaluating rule [ {} ]: studyEnvironment {}, enrollee {}: ".formatted(rule,
+                    ruleData.getEnrollee().getStudyEnvironmentId(),
+                    ruleData.getEnrollee().getShortcode()), e);
+            return false;
+        }
+    }
+
+
+    public boolean evaluateRuleChecked(String rule) throws RuleEvaluationException, RuleParsingException {
         if (StringUtils.isBlank(rule)) {
-            // the default rule is that the action is applied if the enrollee is a subject
-            return ruleData.enrollee().isSubject();
+            return applyDefaultRule();
         }
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CohortRuleParser parser = new CohortRuleParser(tokens);
         CohortRuleParser.ExprContext exp = parser.expr();
         return evaluateExpression(exp);
+    }
+
+    // the default rule is that the action is applied if the enrollee is a subject
+    protected boolean applyDefaultRule() {
+        return ruleData.getEnrollee().isSubject();
     }
 
     public boolean evaluateExpression(CohortRuleParser.ExprContext ctx) throws RuleEvaluationException, RuleParsingException {
@@ -54,9 +72,9 @@ public class CohortRuleEvaluator {
             String operator = ctx.OPERATOR().getText();
             switch (operator)  {
                 case "=":
-                    return left.equals(right);
+                    return Objects.equals(left, right);
                 case "!=":
-                    return !left.equals(right);
+                    return !Objects.equals(left, right);
                 default:
                     throw new RuleParsingException("Unknown operator %s".formatted(operator));
             }
@@ -89,6 +107,8 @@ public class CohortRuleEvaluator {
                 // if the property doesn't exist, return null
                 return null;
             }
+        } else if (ctx.NULL() != null) {
+            return null;
         }
         throw new RuleParsingException("Unknown term type");
     }
