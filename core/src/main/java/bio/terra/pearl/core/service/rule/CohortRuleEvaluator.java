@@ -1,10 +1,12 @@
-package bio.terra.pearl.core.rule;
+package bio.terra.pearl.core.service.rule;
 
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,18 +14,22 @@ import java.util.Map;
 
 @Slf4j
 public class CohortRuleEvaluator {
-    private final Map<String, Object> variableMap;
+    private final EnrolleeRuleData ruleData;
 
-    public CohortRuleEvaluator(Map<String, Object> variableMap) {
-        this.variableMap = variableMap;
+    public CohortRuleEvaluator(EnrolleeRuleData ruleData) {
+        this.ruleData = ruleData;
     }
 
-    public static boolean evaluateRule(String rule, Map<String, Object> variableMap) throws RuleEvaluationException, RuleParsingException {
-        CohortRuleEvaluator evaluator = new CohortRuleEvaluator(variableMap);
+    public static boolean evaluateRule(String rule, EnrolleeRuleData ruleData) throws RuleEvaluationException, RuleParsingException {
+        CohortRuleEvaluator evaluator = new CohortRuleEvaluator(ruleData);
         return evaluator.evaluateRule(rule);
     }
 
     public boolean evaluateRule(String rule) throws RuleEvaluationException, RuleParsingException {
+        if (StringUtils.isBlank(rule)) {
+            // the default rule is that the action is applied if the enrollee is a subject
+            return ruleData.enrollee().isSubject();
+        }
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CohortRuleParser parser = new CohortRuleParser(tokens);
@@ -70,19 +76,20 @@ public class CohortRuleEvaluator {
             String rawString = ctx.VARIABLE().getText();
             // trim off brackets and any whitespace immediately inside the quotes
             String variableName = rawString.substring(1, rawString.length() - 1).trim();
-            if (variableMap.containsKey(variableName)) {
-                Object value = variableMap.get(variableName);
+            try {
+                Object value = PropertyUtils.getNestedProperty(ruleData, variableName);
                 if (value instanceof Integer || value instanceof Float || value instanceof BigInteger || value instanceof BigDecimal) {
                     // cast all numbers to Doubles for comparison -- this assumes that this
                     // framework will never be used for anything that requires more precision
                     return ((Number) value).doubleValue();
+                } else {
+                    return value;
                 }
-                return variableMap.get(variableName);
-            } else {
-                throw new RuleEvaluationException("Variable " + variableName + " not found in variable map");
+            } catch (Exception e) {
+                // if the property doesn't exist, return null
+                return null;
             }
-        } else {
-            throw new RuleParsingException("Unknown term type");
         }
+        throw new RuleParsingException("Unknown term type");
     }
 }

@@ -166,6 +166,19 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("someQuestion"), equalTo("someQuestion"));
     }
 
+    @Test
+    public void testParseObjectValue() {
+        Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("matrix")
+                .exportOrder(1)
+                .build();
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(questionDef), objectMapper);
+        moduleFormatter.
+        assertThat(
+    }
+
     /** helper for testing generation of answer maps values for a single question-answer pair */
     private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions) throws JsonProcessingException {
         Map<String, String> valueMap = new HashMap<>();
@@ -182,5 +195,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);
         return valueMap;
     }
+
 
 }
