@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.rule;
 
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.rule.CohortRuleEvaluator;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 public class CohortRuleEvaluatorTests {
+
+    private EnrolleeRuleData EMPTY_RULE_DATA = new EnrolleeRuleData(null, null);
+
     @Test
     public void testStringEvaluation() throws Exception {
         CohortRuleEvaluator evaluator = new CohortRuleEvaluator(EMPTY_RULE_DATA);
@@ -45,8 +49,10 @@ public class CohortRuleEvaluatorTests {
 
     @Test
     public void testStringVariableInsertion() throws Exception {
-        String rule = "{foo} = 'yes'";
-        assertThat(CohortRuleEvaluator.evaluateRule(rule, EMPTY_RULE_DATA), equalTo(true));
+        String rule = "{profile.sexAtBrith} = 'M'";
+        assertThat(CohortRuleEvaluator.evaluateRule(rule,
+                new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build())),
+                equalTo(true));
         assertThat(CohortRuleEvaluator.evaluateRule(rule, EMPTY_RULE_DATA), equalTo(false));
     }
 
@@ -75,7 +81,5 @@ public class CohortRuleEvaluatorTests {
         assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 || 2 = 3 && 3 = 3", EMPTY_RULE_DATA), equalTo(false));
         assertThat(CohortRuleEvaluator.evaluateRule("1 = 2 || 2 = 2 && 3 = 4", EMPTY_RULE_DATA), equalTo(false));
     }
-
-    private EnrolleeRuleData EMPTY_RULE_DATA = new EnrolleeRuleData(null, null);
 
 }
