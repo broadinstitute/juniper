@@ -171,6 +171,53 @@
               {"text": "Strongly agree", "value": "stronglyAgree"},
               {"text": "Don’t know/Not sure", "value": "dontKnowNotSure"}
             ]
+          },
+          {
+            "type": "matrix",
+            "name": "neighborhoodMatrix",
+            "title": "Please indicate if you agree or disagree with the following statements about your neighborhood.",
+            "alternateRows": true,
+            "columns": [
+              {
+                "value": 5,
+                "text": "Strongly agree"
+              },
+              {
+                "value": 4,
+                "text": "Agree"
+              },
+              {
+                "value": 3,
+                "text": "Neutral"
+              },
+              {
+                "value": 2,
+                "text": "Disagree"
+              },
+              {
+                "value": 1,
+                "text": "Strongly disagree"
+              }
+            ],
+            "rows": [
+              {
+                "value": "affordable",
+                "text": "Neighborhood is affordable"
+              },
+              {
+                "value": "has friendly people",
+                "text": "Neighborhood has friendly people"
+              },
+              {
+                "value": "better than others",
+                "text": "Neighborhood is better than others nearby"
+              },
+              {
+                "value": "easy to travel to",
+                "text": "Neighborhood is easy to travel to"
+              }
+            ],
+            "isAllRowRequired": true
           }
         ]
       },

@@ -8,9 +8,6 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -166,8 +163,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("someQuestion"), equalTo("someQuestion"));
     }
 
-<<<<<<< Updated upstream:core/src/test/java/bio/terra/pearl/core/service/export/formatters/SurveyFormatterTests.java
-=======
     @Test
     public void testParseUnrecognizedObjectValue() {
         Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
@@ -182,7 +177,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
 
     }
 
->>>>>>> Stashed changes:core/src/test/java/bio/terra/pearl/core/service/export/formatters/module/SurveyFormatterTests.java
     /** helper for testing generation of answer maps values for a single question-answer pair */
     private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions) throws JsonProcessingException {
         Map<String, String> valueMap = new HashMap<>();

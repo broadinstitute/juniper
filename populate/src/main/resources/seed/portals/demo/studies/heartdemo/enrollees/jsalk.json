@@ -32,7 +32,8 @@
       "surveyVersion": 2,
       "answerPopDtos": [
         { "questionStableId": "hd_hd_socialHealth_neighborhoodGetsAlong", "stringValue": "agree"},
-        { "questionStableId": "hd_hd_socialHealth_neighborhoodSharesValues", "stringValue": "stronglyAgree"}
+        { "questionStableId": "hd_hd_socialHealth_neighborhoodSharesValues", "stringValue": "stronglyAgree"},
+        {"questionStableId": "neighborhoodMatrix", "objectValue": "{\"affordable\":5,\"does what it claims\":4,\"better than others\":5,\"easy to use\":3}\n", "viewedLanguage": "en"}
       ],
       "currentPageNo": 1,
       "complete": true,
