@@ -20,7 +20,7 @@
             ]
           },
           {
-            "name": "hd_hd_sandbox_colorChoid",
+            "name": "hd_hd_sandbox_colorChoice",
             "type": "radiogroup",
             "title": "What color is your parachute?",
             "choices": [
