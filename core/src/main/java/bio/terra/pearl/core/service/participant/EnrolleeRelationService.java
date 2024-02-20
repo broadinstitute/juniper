@@ -20,11 +20,11 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
     }
 
-    public List<EnrolleeRelation> findByEnrolleeIdAndًُRelationType(UUID enrolleeId, RelationshipType relationshipType) {
+    public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
         return dao.findByEnrolleeIdAndRelationshipType(enrolleeId, relationshipType);
     }
 
-    public List<EnrolleeRelation> findByEnrolleeIdsAndًُRelationType(List<UUID> enrolleeIds, RelationshipType relationshipType) {
+    public List<EnrolleeRelation> findByEnrolleeIdsAndRelationType(List<UUID> enrolleeIds, RelationshipType relationshipType) {
         return dao.findByEnrolleeIdsAndRelationshipType(enrolleeIds, relationshipType);
     }
 
