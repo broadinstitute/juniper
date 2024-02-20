@@ -205,15 +205,15 @@
                 "text": "Neighborhood is affordable"
               },
               {
-                "value": "has friendly people",
+                "value": "friendlyPeople",
                 "text": "Neighborhood has friendly people"
               },
               {
-                "value": "better than others",
+                "value": "betterThanOthers",
                 "text": "Neighborhood is better than others nearby"
               },
               {
-                "value": "easy to travel to",
+                "value": "easyTravelTo",
                 "text": "Neighborhood is easy to travel to"
               }
             ],
