@@ -402,7 +402,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Enrollee enrollee;
         List<ParticipantTask> tasks;
         if (popDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(context.getPortalShortcode(), attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
                     attachedUser, ppUser, popDto.getPreEnrollmentResponseId(), true);
             enrollee = hubResponse.getEnrollee();
             tasks = hubResponse.getTasks();

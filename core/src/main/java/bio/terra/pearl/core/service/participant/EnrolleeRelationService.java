@@ -14,12 +14,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
-    EnrolleeService enrolleeService;
 
-    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao, EnrolleeService enrolleeService,
+    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                     DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
-        this.enrolleeService = enrolleeService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
