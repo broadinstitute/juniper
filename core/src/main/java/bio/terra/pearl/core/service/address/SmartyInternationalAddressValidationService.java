@@ -36,7 +36,17 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             "CA",
             "GB",
             "MX",
-            "AU"
+            "AU",
+            "TR",
+            "ES",
+            "PL",
+            "DE",
+            "FR", // todo
+            "IT", // todo
+            "CZ",
+            "BR",
+            "SE",
+            "CH" // todo
     );
 
     @Override
@@ -117,6 +127,8 @@ public class SmartyInternationalAddressValidationService implements AddressValid
 
         if (input.getCountry().equals("GB")) {
             return suggestedAddressSubpremiseOnItsOwnLine(input, candidate);
+        } else if (input.getCountry().equals("TR")) {
+            return suggestedAddressDependentLocalityOnItsOwnLine(input, candidate);
         }
 
         return standardSuggestedAddress(input, candidate);
@@ -184,6 +196,29 @@ public class SmartyInternationalAddressValidationService implements AddressValid
         // the second address line from smarty contains city/state/postal info, so
         // we don't want that in a freeform line
         if (!StringUtils.isEmpty(components.getSubBuilding())) {
+            return MailingAddress
+                    .builder()
+                    .city(components.getLocality())
+                    .state(components.getAdministrativeArea())
+                    .street2(candidate.getAddress2())
+                    .street1(candidate.getAddress1())
+                    .country(input.getCountry())
+                    .postalCode(components.getPostalCode())
+                    .createdAt(null)
+                    .lastUpdatedAt(null)
+                    .build();
+        }
+
+        return standardSuggestedAddress(input, candidate);
+    }
+
+    private MailingAddress suggestedAddressDependentLocalityOnItsOwnLine(MailingAddress input, Candidate candidate) {
+        Components components = candidate.getComponents();
+        // if there is a subpremise in some countries (e.g., GB), then the first street line is
+        // the subpremise, so we need both street1 and street2. In most countries,
+        // the second address line from smarty contains city/state/postal info, so
+        // we don't want that in a freeform line
+        if (!StringUtils.isEmpty(components.getDependentLocality())) {
             return MailingAddress
                     .builder()
                     .city(components.getLocality())
