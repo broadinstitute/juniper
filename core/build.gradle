@@ -4,6 +4,7 @@ plugins {
     id 'org.liquibase.gradle' version '2.1.0'
     id "java-test-fixtures"
     id 'jacoco'
+    id 'antlr'
 }
 
 group = 'bio.terra.pearl.core'
@@ -18,6 +19,9 @@ repositories {
 }
 
 dependencies {
+    antlr "org.antlr:antlr4:4.9.3"
+    compileOnly "org.antlr:antlr4-runtime:4.9.3"
+
     implementation 'org.springframework.boot:spring-boot-starter:3.1.2'
 	implementation group: 'org.postgresql', name: 'postgresql', version: '42.5.0'
     implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
@@ -57,6 +61,18 @@ dependencies {
     testFixturesImplementation 'org.apache.commons:commons-text:1.10.0'
     testFixturesImplementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
 }
+
+generateGrammarSource {
+    maxHeapSize = "128m"
+    arguments += ['-package', 'bio.terra.pearl.core.antlr', '-visitor', '-no-listener']
+}
+compileJava.dependsOn generateGrammarSource
+sourceSets {
+    generated {
+        java.srcDir 'generated-src/antlr/main/'
+    }
+}
+compileJava.source sourceSets.generated.java, sourceSets.main.java
 
 test {
     useJUnitPlatform {
