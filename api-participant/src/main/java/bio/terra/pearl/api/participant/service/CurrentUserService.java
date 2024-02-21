@@ -1,9 +1,5 @@
 package bio.terra.pearl.api.participant.service;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -19,6 +15,9 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
