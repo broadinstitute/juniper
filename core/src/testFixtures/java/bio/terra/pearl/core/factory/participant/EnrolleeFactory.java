@@ -122,8 +122,8 @@ public class EnrolleeFactory {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
-                null, true);
+        HubResponse hubResponse = enrollmentService.enrollAsProxy(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                null);
         return hubResponse;
     }
 

@@ -1,8 +1,14 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -16,11 +22,16 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
     @Autowired
+    private StudyEnvironmentFactory studyEnvironmentFactory;
+    @Autowired
     private RegistrationService registrationService;
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
     private PortalService portalService;
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
+
 
     @Test
     @Transactional
@@ -36,19 +47,15 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testRegisterForGovernedUser() {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted("testRegisterForGovernedUser");
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+    public void testRegisterForGovernedUser(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
 
-        String proxyUsername = "test-proxy" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
-        RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
-                portalEnv.getEnvironmentName(), proxyUsername, null);
-
-        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(portalShortcode,
-                result.participantUser());
-        Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUsername));
-        Assertions.assertTrue(participantUserService.findOne(proxyUsername, portalEnv.getEnvironmentName()).isPresent());
-        Assertions.assertNotEquals(proxyUsername, registerGovernedUser.participantUser().getUsername());
-        Assertions.assertTrue(participantUserService.findOne(registerGovernedUser.participantUser().getUsername(), portalEnv.getEnvironmentName()).isPresent());
+        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
+        ParticipantUser proxyUser = participantUserService.find(proxyBundle.enrollee().getParticipantUserId()).orElseThrow();
+        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(proxyUser, proxyBundle.portalParticipantUser());
+        Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUser.getUsername()));
+        Assertions.assertTrue(participantUserService.findOne(proxyUser.getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
+        Assertions.assertNotEquals(proxyUser.getUsername(), registerGovernedUser.participantUser().getUsername());
+        Assertions.assertTrue(participantUserService.findOne(registerGovernedUser.participantUser().getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
     }
 }
