@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import { useUser } from 'providers/UserProvider'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '@juniper/ui-core'
-import Api, { Profile } from 'api/api'
-import Modal from 'react-bootstrap/Modal'
-import ThemedModal from 'components/ThemedModal'
+import { dateToDefaultString } from '@juniper/ui-core'
+import Api, { MailingAddress, Profile } from 'api/api'
+import EditParticipantProfileFieldModals from './EditParticipantProfileModals'
+import { isEmpty } from 'lodash'
 
 /**
  *
@@ -48,251 +48,49 @@ export function ParticipantProfile(
         {/*Readonly profile view*/}
         <ProfileCard title="Profile">
           <ProfileRow title={'Name'} onEdit={() => setShowEditFieldModal('givenName')}>
-            <p className="m-0">{profile.givenName || ''} {profile.familyName || ''}</p>
+            <ProfileTextRow text={
+              (profile.givenName || profile.familyName)
+                ? `${profile.givenName || ''} ${profile.familyName || ''}`
+                : undefined
+            }/>
           </ProfileRow>
           <ProfileRow title={'Birthday'} onEdit={() => setShowEditFieldModal('birthDate')}>
-            {profile.birthDate && <p className="m-0">{dateToDefaultString(profile.birthDate)}</p>}
+            <ProfileTextRow text={
+              profile.birthDate && dateToDefaultString(profile.birthDate)
+            }/>
           </ProfileRow>
         </ProfileCard>
 
         <ProfileCard title="Mailing Address">
-          <ProfileRow title={'Name'} onEdit={() => console.log('clicked!')}>
-            <p className="m-0">{profile.givenName || ''} {profile.familyName || ''}</p>
+          <ProfileRow title={'Primary Address'} onEdit={() => setShowEditFieldModal('mailingAddress')}>
+            <ReadOnlyAddress address={profile.mailingAddress}/>
+          </ProfileRow>
+        </ProfileCard>
+
+        <ProfileCard title="Communication Preferences">
+          <ProfileRow title={'Email'} onEdit={() => setShowEditFieldModal('contactEmail')}>
+            <ProfileTextRow text={profile.contactEmail}/>
+          </ProfileRow>
+          <ProfileRow title={'Phone Number'} onEdit={() => setShowEditFieldModal('phoneNumber')}>
+            <ProfileTextRow text={profile.phoneNumber}/>
+          </ProfileRow>
+          <ProfileRow title={'Notifications'} onEdit={() => setShowEditFieldModal('doNotEmail')}>
+            <ProfileTextRow text={profile.doNotEmail ? 'Off' : 'On'}/>
+          </ProfileRow>
+          <ProfileRow title={'Do Not Solicit'} onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
+            <ProfileTextRow text={profile.doNotEmailSolicit ? 'Off' : 'On'}/>
           </ProfileRow>
         </ProfileCard>
 
         {/*Edit modals*/}
-        <EditProfileFieldModals
+        <EditParticipantProfileFieldModals
           profile={profile}
           showFieldModal={showEditFieldModal}
-          dismissModal={() => setShowEditFieldModal(undefined)} save={save}/>
+          dismissModal={() => setShowEditFieldModal(undefined)}
+          save={save}/>
       </div>
     </div>
   </div>
-}
-
-const useProfileEditMethods = (props: EditModalProps) => {
-  const {
-    profile,
-    dismissModal,
-    save
-  } = props
-
-  const [editedProfile, setEditedProfile] = useState<Profile>(profile)
-
-  const onDismiss = () => {
-    dismissModal()
-    // reset profile back to original state so that
-    // you don't close a modal then open another
-    // and accidentally commit changes from both
-    setEditedProfile(profile)
-  }
-
-  const onFieldChange = (field: keyof Profile, value: string | boolean) => {
-    setEditedProfile(oldProfile => {
-      return {
-        ...oldProfile,
-        [field]: value
-      }
-    })
-  }
-
-  const onDateFieldChange = (field: keyof Profile, date: Date | null) => {
-    const asJavaLocalDate: number[] | undefined = date ? jsDateToJavaLocalDate(date) : undefined
-
-    setEditedProfile((oldVal: Profile) => {
-      return {
-        ...oldVal,
-        [field]: asJavaLocalDate
-      }
-    })
-  }
-
-  const onSave = () => {
-    save(editedProfile)
-    dismissModal()
-  }
-
-  return {
-    onDismiss,
-    onSave,
-    onDateFieldChange,
-    onFieldChange,
-    editedProfile
-  }
-}
-
-function EditProfileFieldModals(
-  {
-    profile,
-    showFieldModal,
-    dismissModal,
-    save
-  }: {
-    profile: Profile,
-    showFieldModal: keyof Profile | undefined,
-    dismissModal: () => void,
-    save: (p: Profile) => void
-  }) {
-  const modalProps: EditModalProps = {
-    profile,
-    dismissModal,
-    save
-  }
-
-  switch (showFieldModal) {
-    case 'givenName':
-    case 'familyName':
-      return <EditNameModal {...modalProps}/>
-    case 'birthDate':
-      return <EditBirthDateModal {...modalProps}/>
-    case 'doNotEmailSolicit':
-    case 'doNotEmail':
-    case 'contactEmail':
-      return <EditNotificationPreferencesModal {...modalProps}/>
-    case 'mailingAddress':
-      return <p>mailing address</p>
-    case 'phoneNumber':
-      return <EditPhoneNumberModal {...modalProps}/>
-    default:
-      return <></>
-  }
-}
-
-type EditModalProps = {
-  profile: Profile,
-  dismissModal: () => void,
-  save: (p: Profile) => void
-
-}
-
-function EditNameModal(props: EditModalProps) {
-  const {
-    onDismiss,
-    onSave,
-    onFieldChange,
-    editedProfile
-  } = useProfileEditMethods(props)
-
-
-  return <ProfileRowEditModal
-    title={'Name'}
-    onSave={onSave}
-    onDismiss={onDismiss}>
-    <div className={'d-flex w-100'}>
-      <div className={'w-50 p-1'}>
-        <label htmlFor={'givenName'} className={'fs-6 fw-bold'}>
-          Given Name
-        </label>
-        <input
-          className={'form-control'}
-          id={'givenName'}
-          value={editedProfile.givenName}
-          onChange={e => onFieldChange('givenName', e.target.value)}
-          placeholder={'Given Name'}/>
-      </div>
-      <div className={'w-50 p-1'}>
-        <label htmlFor={'familyName'} className={'fs-6 fw-bold'}>
-          Family Name
-        </label>
-        <input
-          className={'form-control'}
-          id={'familyName'}
-          value={editedProfile.familyName}
-          onChange={e => onFieldChange('familyName', e.target.value)}
-          placeholder={'Family Name'}/>
-      </div>
-    </div>
-  </ProfileRowEditModal>
-}
-
-function EditBirthDateModal(props: EditModalProps) {
-  const {
-    onDismiss,
-    onSave,
-    onDateFieldChange,
-    editedProfile
-  } = useProfileEditMethods(props)
-
-
-  return <ProfileRowEditModal
-    title={'Birthday'}
-    onSave={onSave}
-    onDismiss={onDismiss}>
-
-    <label htmlFor={'birthDate'} className={'fs-6 fw-bold'}>
-      Birthday
-    </label>
-    <input className="form-control" type="date" id='birthDate'
-      defaultValue={javaLocalDateToJsDate(editedProfile.birthDate)?.toISOString().split('T')[0] || ''}
-      placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
-      onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
-
-  </ProfileRowEditModal>
-}
-
-function EditPhoneNumberModal(props: EditModalProps) {
-  const {
-    onDismiss,
-    onSave,
-    onFieldChange,
-    editedProfile
-  } = useProfileEditMethods(props)
-
-
-  return <ProfileRowEditModal
-    title={'Phone Number'}
-    onSave={onSave}
-    onDismiss={onDismiss}>
-    <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
-      Phone Number
-    </label>
-    <input
-      className={'form-control'}
-      id={'phoneNumber'}
-      value={editedProfile.phoneNumber}
-      onChange={e => onFieldChange('phoneNumber', e.target.value)}
-      placeholder={'Phone Number'}/>
-  </ProfileRowEditModal>
-}
-
-function EditNotificationPreferencesModal(props: EditModalProps) {
-  const {
-    onDismiss,
-    onSave,
-    onFieldChange,
-    editedProfile
-  } = useProfileEditMethods(props)
-
-
-  return <ProfileRowEditModal
-    title={'Notification Preferences'}
-    onSave={onSave}
-    onDismiss={onDismiss}>
-    <div className='row mt-2'>
-      <div className="col-auto">
-        <div className="form-check">
-
-          <input className="form-check-input" type="checkbox" checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
-            aria-label={'Do Not Email'}
-            onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
-          <label className="form-check-label" htmlFor="doNotEmailCheckbox">
-            Do Not Email
-          </label>
-        </div>
-      </div>
-      <div className='col-auto'>
-        <div className="form-check">
-          <input className="form-check-input" type="checkbox" checked={editedProfile.doNotEmailSolicit}
-            id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
-            onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
-          <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
-            Do Not Solicit
-          </label>
-        </div>
-      </div>
-    </div>
-  </ProfileRowEditModal>
 }
 
 function ProfileCard({ title, children }: { title: string, children: React.ReactNode }) {
@@ -302,6 +100,35 @@ function ProfileCard({ title, children }: { title: string, children: React.React
       {children}
     </div>
   </div>
+}
+
+const ProfileTextRow = ({ text }: { text: string | undefined }) => {
+  return (text
+    ? <p className="m-0">{text}</p>
+    : <p className="m-0 fst-italic text-secondary">Not provided</p>
+  )
+}
+
+const ReadOnlyAddress = ({ address }: { address: MailingAddress | undefined }) => {
+  if (
+    !address || (
+      isEmpty(address.city)
+      && isEmpty(address.street1)
+      && isEmpty(address.street2)
+      && isEmpty(address.country)
+      && isEmpty(address.postalCode)
+      && isEmpty(address.state)
+    )) {
+    return <ProfileTextRow text={undefined}/>
+  }
+
+  return <>
+    {address.street1 && <ProfileTextRow text={address.street1}/>}
+    {address.street2 && <ProfileTextRow text={address.street2}/>}
+    {(address.city || address.postalCode || address.state) &&
+        <ProfileTextRow text={`${address.city} ${address.state} ${address.postalCode}`.split(/\s+/).join(' ')}/>}
+    {address.country && <ProfileTextRow text={address.country}/>}
+  </>
 }
 
 const Bar = () => {
@@ -327,27 +154,3 @@ function ProfileRow(
   </>
 }
 
-function ProfileRowEditModal(
-  {
-    title, children, onSave, onDismiss
-  }: {
-    title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void
-  }
-) {
-  return <ThemedModal show={true} onHide={onDismiss} size={'lg'}>
-    <Modal.Header>
-      <Modal.Title>
-        <h2 className="fw-bold pb-3">Edit {title}</h2>
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      {children}
-    </Modal.Body>
-    <Modal.Footer>
-      <div className={'d-flex w-100'}>
-        <button className={'btn btn-primary m-2'} onClick={onSave}>Save</button>
-        <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>Cancel</button>
-      </div>
-    </Modal.Footer>
-  </ThemedModal>
-}

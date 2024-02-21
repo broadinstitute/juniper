@@ -415,7 +415,7 @@ export default {
     const url = `${baseEnvUrl(false)}/portalParticipantUsers/${ppUserId}/profile`
 
     const response = await fetch(url, { headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
+    return await this.processJsonResponse(response, { alertErrors })
   },
 
   async updateProfile(
