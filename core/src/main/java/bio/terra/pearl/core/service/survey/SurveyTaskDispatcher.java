@@ -14,11 +14,11 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 
 import java.time.Instant;
@@ -177,7 +177,7 @@ public class SurveyTaskDispatcher {
     }
 
     public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return RuleEvaluator.evaluateEnrolleeRule(eligibilityRule, enrolleeRuleData);
+        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeRuleData);
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */

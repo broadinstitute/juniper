@@ -174,7 +174,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(questionDef), objectMapper);
         String value = moduleFormatter.formatObjectValue(Answer.builder().objectValue("d[f}asdfja").build(), null, false, new ObjectMapper());
         assertThat(value, equalTo("d[f}asdfja"));
-
     }
 
     /** helper for testing generation of answer maps values for a single question-answer pair */
@@ -193,5 +192,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);
         return valueMap;
     }
+
 
 }

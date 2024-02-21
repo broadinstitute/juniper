@@ -5,13 +5,14 @@ grammar CohortRule;
 
 // Parser rules
 expr: PAR_OPEN expr PAR_CLOSE | term OPERATOR term | expr AND expr | expr OR expr;
-term: NUMBER | STRING | VARIABLE | BOOLEAN;
+term: NUMBER | STRING | VARIABLE | BOOLEAN | NULL;
 
 // Lexer rules
 NUMBER: [0-9]+ ('.' [0-9]+)?;
 STRING: '\'' (~[\\'\r\n])* '\'';
 VARIABLE: '{' (~[\\'\r\n])* '}';
 BOOLEAN: 'true' | 'false';
+NULL: 'null';
 WS: [ \t\r\n]+ -> skip;
 OPERATOR: '=' | '!=';
 AND: '&&';
