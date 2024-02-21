@@ -1,7 +1,5 @@
 package bio.terra.pearl.api.participant.controller.enrollment;
 
-import java.util.UUID;
-
 import bio.terra.pearl.api.participant.api.EnrollmentApi;
 import bio.terra.pearl.api.participant.service.AuthUtilService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
@@ -11,6 +9,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -47,7 +46,6 @@ public class EnrollmentController implements EnrollmentApi {
     if (isProxy) {
       hubResponse =
           enrollmentService.enrollAsProxy(
-              portalShortcode,
               environmentName,
               studyShortcode,
               user,
@@ -56,7 +54,6 @@ public class EnrollmentController implements EnrollmentApi {
     } else {
       hubResponse =
           enrollmentService.enroll(
-              portalShortcode,
               environmentName,
               studyShortcode,
               user,
