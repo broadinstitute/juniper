@@ -18,6 +18,9 @@ import java.util.Objects;
  * Validation client for international addresses. Due to the complexity of global
  * address formats, does not support all countries, but only a verified subset of
  * countries.
+ * <br>
+ * Many of these countries likely have edge cases that break our validation. We
+ * should make sure that users always have the ability to override if necessary.
  */
 @Component
 @Slf4j
@@ -41,12 +44,12 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             "ES",
             "PL",
             "DE",
-            "FR", // todo
-            "IT", // todo
+            "FR",
+            "IT",
             "CZ",
             "BR",
             "SE",
-            "CH" // todo
+            "CH"
     );
 
     @Override
@@ -125,7 +128,8 @@ public class SmartyInternationalAddressValidationService implements AddressValid
 
     private MailingAddress suggestedAddress(MailingAddress input, Candidate candidate) {
 
-        if (input.getCountry().equals("GB")) {
+        // many countries put the apartment on its own line
+        if (List.of("GB", "FR", "IT", "CH").contains(input.getCountry())) {
             return suggestedAddressSubpremiseOnItsOwnLine(input, candidate);
         } else if (input.getCountry().equals("TR")) {
             return suggestedAddressDependentLocalityOnItsOwnLine(input, candidate);

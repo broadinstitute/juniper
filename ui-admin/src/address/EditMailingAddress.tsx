@@ -20,10 +20,19 @@ import classNames from 'classnames'
 // SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
   'CA',
-  'MX',
   'GB',
+  'MX',
   'AU',
-  'US'
+  'TR',
+  'ES',
+  'PL',
+  'DE',
+  'FR',
+  'IT',
+  'CZ',
+  'BR',
+  'SE',
+  'CH'
 ]
 
 /**
