@@ -42,6 +42,16 @@ public class AuthUtilService {
     return enrolleeOpt.get();
   }
 
+  public PortalParticipantUser authParticipantUserToPortalParticipantUser(
+      UUID participantUserId, UUID portalParticipantUserId) {
+    return portalParticipantUserService
+        .find(portalParticipantUserId)
+        .filter(
+            portalParticipantUser ->
+                portalParticipantUser.getParticipantUserId().equals(participantUserId))
+        .orElseThrow(() -> new PermissionDeniedException("Access denied"));
+  }
+
   /** confirms the participant can access resources from the given portal */
   public PortalWithPortalUser authParticipantToPortal(
       UUID participantUserId, String portalShortcode, EnvironmentName envName) {

@@ -1,13 +1,16 @@
 package bio.terra.pearl.api.participant.service;
 
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import java.util.Optional;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import jakarta.ws.rs.NotFoundException;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,50 +18,68 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ProfileExtService {
   private final AuthUtilService authUtilService;
-  private final RequestUtilService requestUtilService;
   private final ProfileService profileService;
-  private final PortalParticipantUserService portalParticipantUserService;
+  private final PortalEnvironmentService portalEnvironmentService;
 
   public ProfileExtService(
       AuthUtilService authUtilService,
-      RequestUtilService requestUtilService,
       ProfileService profileService,
-      PortalParticipantUserService portalParticipantUserService) {
+      PortalEnvironmentService portalEnvironmentService) {
     this.authUtilService = authUtilService;
-    this.requestUtilService = requestUtilService;
     this.profileService = profileService;
-    this.portalParticipantUserService = portalParticipantUserService;
+    this.portalEnvironmentService = portalEnvironmentService;
   }
 
   public Profile updateWithMailingAddress(
       String portalShortcode,
-      String studyShortcode,
-      String envName,
+      EnvironmentName envName,
       ParticipantUser participantUser,
-      String enrolleeShortcode,
+      UUID ppUserId,
       Profile profile) {
-    Optional<PortalParticipantUser> portalParticipantUser =
-        portalParticipantUserService.findOne(participantUser.getId(), portalShortcode);
-    if (portalParticipantUser.isEmpty()) {
-      throw new IllegalArgumentException("Unknown portal");
+
+    PortalParticipantUser ppUser =
+        authUtilService.authParticipantUserToPortalParticipantUser(
+            participantUser.getId(), ppUserId);
+
+    PortalEnvironment portalEnvironment =
+        portalEnvironmentService
+            .findOne(portalShortcode, envName)
+            .orElseThrow(NotFoundException::new);
+
+    if (!ppUser.getPortalEnvironmentId().equals(portalEnvironment.getId())) {
+      throw new PermissionDeniedException("User not in portal environment");
     }
 
-    //    StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
-
-    Enrollee enrollee =
-        authUtilService.authParticipantUserToEnrollee(participantUser.getId(), enrolleeShortcode);
-
-    //    if (!studyEnv.getId().equals(enrollee.getStudyEnvironmentId())) {
-    //      throw new IllegalArgumentException("Unknown study environment");
-    //    }
-
-    profile.setId(enrollee.getProfileId());
+    profile.setId(ppUser.getProfileId());
 
     return profileService.updateWithMailingAddress(
         profile,
         DataAuditInfo.builder()
-            .enrolleeId(enrollee.getId())
-            .portalParticipantUserId(portalParticipantUser.get().getId())
+            .responsibleUserId(participantUser.getId())
+            .portalParticipantUserId(ppUser.getId())
             .build());
+  }
+
+  public Profile findProfile(
+      String portalShortcode,
+      EnvironmentName envName,
+      ParticipantUser participantUser,
+      UUID ppUserId) {
+    PortalParticipantUser ppUser =
+        authUtilService.authParticipantUserToPortalParticipantUser(
+            participantUser.getId(), ppUserId);
+
+    PortalEnvironment portalEnvironment =
+        portalEnvironmentService
+            .findOne(portalShortcode, envName)
+            .orElseThrow(NotFoundException::new);
+
+    if (!ppUser.getPortalEnvironmentId().equals(portalEnvironment.getId())) {
+      throw new PermissionDeniedException("User not in portal environment");
+    }
+
+    return profileService
+        .loadWithMailingAddress(ppUser.getProfileId())
+        .orElseThrow(NotFoundException::new);
   }
 }

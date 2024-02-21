@@ -22,7 +22,6 @@ import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider } from '@juniper/ui-core'
-import { ParticipantProfile } from './participant/ParticipantProfile'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
@@ -105,10 +104,7 @@ function App() {
                           <Route path="/privacy" element={<PrivacyPolicyPage />} />
                           <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
                           <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
-                          <Route path="/participant">
-                            <Route path="profile"
-                              element={<ProtectedRoute><ParticipantProfile/></ProtectedRoute>}/>
-                          </Route>
+
                           <Route path="*" element={<div>unmatched route</div>}/>
                         </Routes>
                       </Suspense>

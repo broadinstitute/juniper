@@ -52,7 +52,9 @@ export type ParticipantUser = {
 
 export type LoginResult = {
   user: ParticipantUser,
-  enrollees: Enrollee[]
+  ppUser: PortalParticipantUser,
+  enrollees: Enrollee[],
+  profile: Profile
 }
 
 export type Enrollee = {
@@ -112,7 +114,8 @@ export type KitType = {
 
 export type RegistrationResponse = {
   participantUser: ParticipantUser,
-  portalParticipantUser: PortalParticipantUser
+  portalParticipantUser: PortalParticipantUser,
+  profile: Profile
 }
 
 export type ConsentWithResponses = {
@@ -142,7 +145,9 @@ export type TaskWithSurvey = {
 }
 
 export type PortalParticipantUser = {
-  profile: object
+  profile: Profile,
+  profileId: string,
+  id: string
 }
 
 export type Config = {
@@ -400,14 +405,27 @@ export default {
     return await this.processJsonResponse(result, { alertErrors })
   },
 
-  async updateEnrolleeProfile(
+  async findProfile(
     {
-      studyShortcode, enrolleeShortcode, profile, alertErrors = true
+      ppUserId, alertErrors = true
     }: {
-      studyShortcode: string, enrolleeShortcode: string, profile: Profile, alertErrors?: boolean
+      ppUserId: string, alertErrors?: boolean
     }
   ): Promise<Profile> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/profile/byEnrollee/${enrolleeShortcode}`
+    const url = `${baseEnvUrl(false)}/portalParticipantUsers/${ppUserId}/profile`
+
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
+  async updateProfile(
+    {
+      profile, ppUserId, alertErrors = true
+    }: {
+      profile: Profile, ppUserId: string, alertErrors?: boolean
+    }
+  ): Promise<Profile> {
+    const url = `${baseEnvUrl(false)}/portalParticipantUsers/${ppUserId}/profile`
 
     const result = await fetch(url, {
       method: 'PUT',

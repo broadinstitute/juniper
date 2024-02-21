@@ -3,11 +3,13 @@ package bio.terra.pearl.api.participant.controller.participant;
 import bio.terra.pearl.api.participant.api.ProfileApi;
 import bio.terra.pearl.api.participant.service.ProfileExtService;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -32,30 +34,41 @@ public class ProfileController implements ProfileApi {
   }
 
   @Override
-  public ResponseEntity<Object> updateProfileForEnrollee(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      String enrolleeShortcode,
-      Object body) {
-    System.out.println("called");
+  public ResponseEntity<Object> updateProfile(
+      String portalShortcode, String envName, UUID ppUserId, Object body) {
     Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
     if (participantUserOpt.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
-    System.out.println("ok let's go");
 
     Profile profile = objectMapper.convertValue(body, Profile.class);
 
     Profile updatedProfile =
         profileExtService.updateWithMailingAddress(
             portalShortcode,
-            studyShortcode,
-            envName,
+            EnvironmentName.valueOfCaseInsensitive(envName),
             participantUserOpt.get(),
-            enrolleeShortcode,
+            ppUserId,
             profile);
 
     return ResponseEntity.ok(updatedProfile);
+  }
+
+  @Override
+  public ResponseEntity<Object> findProfile(String portalShortcode, String envName, UUID ppUserId) {
+
+    Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
+    if (participantUserOpt.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+
+    Profile found =
+        profileExtService.findProfile(
+            portalShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName),
+            participantUserOpt.get(),
+            ppUserId);
+
+    return ResponseEntity.ok(found);
   }
 }
