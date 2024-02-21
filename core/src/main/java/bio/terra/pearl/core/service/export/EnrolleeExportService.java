@@ -69,7 +69,7 @@ public class EnrolleeExportService {
 
     public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId,
                                                    List<ModuleFormatter> moduleFormatters, Integer limit) {
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId, "created_at", "DESC");
+        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId, true, "created_at", "DESC");
         if (limit != null && enrollees.size() > 0) {
             enrollees = enrollees.subList(0, Math.min(enrollees.size(), limit));
         }

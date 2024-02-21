@@ -62,8 +62,13 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 
-    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, String sortProperty, String sortDir) {
-        return findAllByPropertySorted("study_environment_id", studyEnvironmentId,
+    public List<Enrollee> findByStudyEnvironmentId(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
+        if (isSubject == null) {
+            return findAllByPropertySorted("study_environment_id", studyEnvironmentId,
+                    sortProperty, sortDir);
+        }
+        return findAllByTwoPropertiesSorted("study_environment_id", studyEnvironmentId,
+                "subject", isSubject,
                 sortProperty, sortDir);
     }
 

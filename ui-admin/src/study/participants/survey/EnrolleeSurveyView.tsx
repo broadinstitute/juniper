@@ -10,10 +10,11 @@ import { instantToDefaultString } from '@juniper/ui-core'
 import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 /** Show responses for a survey based on url param */
-export default function EnrolleeSurveyView({ enrollee, responseMap }:
-  {enrollee: Enrollee, responseMap: ResponseMapT}) {
+export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext }:
+  {enrollee: Enrollee, responseMap: ResponseMapT, studyEnvContext: StudyEnvContextT}) {
   const params = useParams<EnrolleeParams>()
 
   const surveyStableId: string | undefined = params.surveyStableId
@@ -26,13 +27,15 @@ export default function EnrolleeSurveyView({ enrollee, responseMap }:
     return <div>Unknown survey stableId</div>
   }
 
-  return <RawEnrolleeSurveyView enrollee={enrollee}
+  return <RawEnrolleeSurveyView enrollee={enrollee} studyEnvContext={studyEnvContext}
     configSurvey={surveyAndResponses.survey} responses={surveyAndResponses.responses}/>
 }
 
 /** show responses for a survey */
-export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
-  {enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey, responses: SurveyResponse[]}) {
+export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses, studyEnvContext }: {
+    enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey,
+  responses: SurveyResponse[], studyEnvContext: StudyEnvContextT
+}) {
   const [isEditing, setIsEditing] = useState(false)
   if (responses.length === 0) {
     return <div>No responses for enrollee {enrollee.shortcode}</div>
@@ -63,7 +66,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses }:
       </button>
       <hr/>
       {!isEditing && <SurveyFullDataView answers={lastResponse.answers} survey={configSurvey.survey}
-        userId={enrollee.participantUserId}/> }
+        userId={enrollee.participantUserId} studyEnvContext={studyEnvContext}/> }
       {isEditing && <SurveyEditView survey={configSurvey.survey} response={lastResponse}/>}
     </div>
   </div>

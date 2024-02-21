@@ -1,0 +1,34 @@
+databaseChangeLog:
+  - changeSet:
+      id: "enrollee_proxy"
+      author: dbush
+      changes:
+        - sql:  # we don't have any real enrollee relation data yet, so just drop it all
+            sql: delete from enrollee_relation;
+        - dropColumn:
+            tableName: enrollee_relation
+            columns:
+              - column: { name: participant_user_id }
+              - column: { name: beginDate }
+              - column: { name: endDate }
+        - addColumn:
+            tableName: enrollee_relation
+            columns:
+              - column: { name: target_enrollee_id, type: uuid, constraints:
+                { foreignKeyName: fk_enrollee_relation_target_enrollee, references: enrollee(id), nullable: false }
+              }
+              - column: { name: begin_date, type: datetime }
+              - column: { name: end_date, type: datetime }
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column: { name: subject, type: boolean, defaultValueBoolean: true,
+                          constraints: { nullable: false }
+              }
+        - addColumn:
+            tableName: participant_user
+            columns:
+              - column: { name: login_allowed, type: boolean, defaultValueBoolean: true,
+                          constraints: { nullable: false }
+              }
+

@@ -164,7 +164,7 @@ test('shows error message on address validation', async () => {
   const streetClasses = screen.getByPlaceholderText('Street 1').className
   expect(streetClasses).toContain('is-invalid')
 
-  const countryClasses = screen.getByPlaceholderText('Country').className
+  const countryClasses = screen.getByPlaceholderText('City').className
   expect(countryClasses.includes('is-invalid')).toBeFalsy()
   expect(countryClasses.includes('is-valid')).toBeFalsy()
 })

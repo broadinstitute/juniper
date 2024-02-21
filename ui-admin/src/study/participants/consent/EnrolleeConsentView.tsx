@@ -11,10 +11,12 @@ import { ConsentResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { instantToDefaultString } from '@juniper/ui-core'
 import DocumentTitle from 'util/DocumentTitle'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 /** shows consent forms for a given enrollee, based on url params specifying the form */
-export default function EnrolleeConsentView({ enrollee, responseMap }:
-                                             { enrollee: Enrollee, responseMap: ConsentResponseMapT}) {
+export default function EnrolleeConsentView({ studyEnvContext, enrollee, responseMap }: {
+  studyEnvContext: StudyEnvContextT, enrollee: Enrollee, responseMap: ConsentResponseMapT
+}) {
   const params = useParams<EnrolleeParams>()
 
   const consentStableId: string | undefined = params.consentStableId
@@ -28,12 +30,14 @@ export default function EnrolleeConsentView({ enrollee, responseMap }:
   }
 
   return <RawEnrolleeConsentView enrollee={enrollee} configConsent={surveyAndResponses.consent}
-    responses={surveyAndResponses.responses}/>
+    responses={surveyAndResponses.responses} studyEnvContext={studyEnvContext}/>
 }
 
 /** shows a given consent form for an enrollee */
-export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
-   {enrollee: Enrollee, configConsent: StudyEnvironmentConsent, responses: ConsentResponse[]}) {
+export function RawEnrolleeConsentView({ studyEnvContext, enrollee, configConsent, responses }: {
+  studyEnvContext: StudyEnvContextT, enrollee: Enrollee,
+  configConsent: StudyEnvironmentConsent, responses: ConsentResponse[]
+}) {
   if (responses.length === 0) {
     return <div>No responses for {enrollee.shortcode}</div>
   }
@@ -46,7 +50,7 @@ export function RawEnrolleeConsentView({ enrollee, configConsent, responses }:
     <div>
       <span className="fst-italic">completed {instantToDefaultString(lastResponse.createdAt)}</span>
       <hr/>
-      <SurveyFullDataView answers={answers} survey={configConsent.consentForm}/>
+      <SurveyFullDataView answers={answers} survey={configConsent.consentForm} studyEnvContext={studyEnvContext}/>
     </div>
   </div>
 }
