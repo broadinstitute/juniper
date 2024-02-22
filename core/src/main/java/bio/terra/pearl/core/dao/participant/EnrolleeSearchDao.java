@@ -95,7 +95,8 @@ public class EnrolleeSearchDao {
           facetsGroupByTable.get(facet.getTableName()).add(facet);
         });
 
-    List<String> selects = facets.stream().map(facet -> facet.getSelectQuery())
+    List<String> selects = IntStream.range(0, facets.size()).mapToObj(i ->
+            facets.get(i).getSelectQuery(i))
         .filter(query -> query != null)
         .collect(Collectors.toList());
     selects.add(0, baseSelectString);

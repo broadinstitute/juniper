@@ -18,7 +18,7 @@ public class ProfileAgeFacetSqlGenerator implements FacetSqlGenerator<IntRangeFa
   }
 
   @Override
-  public String getSelectQuery(IntRangeFacetValue facetValue) {
+  public String getSelectQuery(IntRangeFacetValue facetValue, int facetIndex) {
     return null; // already included in base query
   }
 
