@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { LanguageText } from '@juniper/ui-core'
 import Api from 'api/api'
-import { usePortalEnv } from './PortalProvider'
 import { useUser } from './UserProvider'
 
 const I18nContext = createContext<I18nContextT | null>(null)
@@ -30,17 +29,16 @@ export function useI18n(): I18nContextT {
  * Provider for the current portal environment's i18n context.
  */
 export default function I18nProvider({ children }: { children: React.ReactNode }) {
-  const { portal, portalEnv } = usePortalEnv()
   const { selectedLanguage } = useUser()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<LanguageText[]>([])
 
   useEffect(() => {
-    reloadLanguageTexts(portal.shortcode, portalEnv.environmentName, selectedLanguage)
+    reloadLanguageTexts(selectedLanguage)
   }, [])
 
-  const reloadLanguageTexts = (portalShortcode: string, envName: string, selectedLanguage: string) => {
+  const reloadLanguageTexts = (selectedLanguage: string) => {
     setIsLoading(true)
     Api.getLanguageTexts(selectedLanguage).then(result => {
       setLanguageTexts(result)
