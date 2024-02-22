@@ -48,7 +48,9 @@ public class EnrolleeExtService {
       List<SqlSearchableFacet> facets) {
     authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     // for now, we're hardcoded to always limit the search to subjects (e.g. don't return proxies)
-    facets.add(new SqlSearchableFacet(new BooleanFacetValue("subject", true), new EnrolleeFacetSqlGenerator()));
+    facets.add(
+        new SqlSearchableFacet(
+            new BooleanFacetValue("subject", true), new EnrolleeFacetSqlGenerator()));
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
