@@ -60,15 +60,19 @@ public class BaseSeedPopulator {
         for (String file : ENVIRONMENTS_TO_POPULATE) {
             environmentPopulator.populate(new FilePopulateContext(file), false);
         }
-        for (String file : CORE_LANGUAGE_TEXTS_TO_POPULATE) {
-            coreLanguageTextPopulator.populateList(new FilePopulateContext(file), false);
-        }
+        populateCoreLanguageTexts();
         AdminConfigPopulator.AdminConfigStats configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())
                 .numEnvironments(environmentService.count())
                 .adminConfigStats(configStats)
                 .build();
+    }
+
+    public void populateCoreLanguageTexts() {
+        for (String file : CORE_LANGUAGE_TEXTS_TO_POPULATE) {
+            coreLanguageTextPopulator.populateList(new FilePopulateContext(file), false);
+        }
     }
 
     /** This class is NOT persisted, despite extending BaseEntity */

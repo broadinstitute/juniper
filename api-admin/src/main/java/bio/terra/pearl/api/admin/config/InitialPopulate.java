@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.config;
 
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.i18n.CoreLanguageTextService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class InitialPopulate {
   @Autowired private AdminUserService adminUserService;
+  @Autowired private CoreLanguageTextService coreLanguageTextService;
   @Autowired private BaseSeedPopulator baseSeedPopulator;
 
   @EventListener(ApplicationReadyEvent.class)
@@ -22,6 +24,12 @@ public class InitialPopulate {
       baseSeedPopulator.populate("seed");
     } else {
       log.info("Existing admin users found, skipping seed populate");
+    }
+    if (coreLanguageTextService.count() == 0) {
+      log.info("No core language texts found, populating");
+      baseSeedPopulator.populateCoreLanguageTexts();
+    } else {
+      log.info("Existing core language texts found, skipping");
     }
   }
 }
