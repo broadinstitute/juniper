@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.participant.search.facets;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jdbi.v3.core.statement.Query;
 
 
 /**
@@ -62,6 +63,38 @@ public class AnswerFacetValue implements FacetValue {
 
     @Override
     public void setKeyName(String keyName) {
+        // no-op
+    }
 
+    @Override
+    public String getWhereClause(String tableName, String columnName, int facetIndex) {
+        return """
+                 answer.%s = :%s
+                 and answer.survey_stable_id = :%s
+                 and answer.question_stable_id = :%s    
+                """.formatted(
+                columnName,
+                getValueParam(facetIndex),
+                getSurveyStableIdParam(facetIndex),
+                getQuestionStableIdParam(facetIndex)
+        );
+    }
+
+    @Override
+    public void bindSqlParameters(String tableName, String columnName, int facetIndex, Query query) {
+        query.bind(getValueParam(facetIndex), getValue());
+        query.bind(getSurveyStableIdParam(facetIndex), getSurveyStableId());
+        query.bind(getQuestionStableIdParam(facetIndex), getQuestionStableId());
+    }
+
+    private String getValueParam(int facetIndex) {
+        return "answer_val_%s".formatted(facetIndex);
+    }
+    private String getQuestionStableIdParam(int facetIndex) {
+        return "question_stable_id_%s".formatted(facetIndex);
+    }
+
+    private String getSurveyStableIdParam(int facetIndex) {
+        return "survey_stable_id_%s".formatted(facetIndex);
     }
 }

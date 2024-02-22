@@ -1,7 +1,5 @@
 package bio.terra.pearl.core.service.participant.search.facets.sql;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.service.participant.search.EnrolleeSearchUtils;
 import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
 import org.jdbi.v3.core.statement.Query;
 
@@ -36,7 +34,7 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
         }
         return IntStream.range(0, facetValue.getValues().size())
                 .mapToObj(index -> {
-                    String paramName = EnrolleeSearchUtils.getSqlParamName("keyword", facetValue.getKeyName(), index);
+                    String paramName = facetValue.getSqlParamName("keyword", facetValue.getKeyName(), index);
                     return """
                             (profile.given_name ilike :%1$s 
                               OR profile.family_name ilike :%1$s
@@ -56,7 +54,7 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
     @Override
     public void bindSqlParameters(StringFacetValue facetValue, int facetIndex, Query query) {
         for(int i = 0; i < facetValue.getValues().size(); i++) {
-            query.bind(EnrolleeSearchUtils.getSqlParamName("keyword",
+            query.bind(facetValue.getSqlParamName("keyword",
                     facetValue.getKeyName(), i), "%" + facetValue.getValues().get(i) + "%");
         }
     }

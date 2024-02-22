@@ -11,6 +11,8 @@ import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
+import bio.terra.pearl.core.service.participant.search.facets.BooleanFacetValue;
+import bio.terra.pearl.core.service.participant.search.facets.sql.EnrolleeFacetSqlGenerator;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +47,8 @@ public class EnrolleeExtService {
       EnvironmentName environmentName,
       List<SqlSearchableFacet> facets) {
     authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    // for now, we're hardcoded to always limit the search to subjects (e.g. don't return proxies)
+    facets.add(new SqlSearchableFacet(new BooleanFacetValue("subject", true), new EnrolleeFacetSqlGenerator()));
     return enrolleeSearchService.search(studyShortcode, environmentName, facets);
   }
 
