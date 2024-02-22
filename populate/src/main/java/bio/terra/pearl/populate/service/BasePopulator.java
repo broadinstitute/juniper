@@ -29,8 +29,6 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
         }
     }
 
-    //while regular populate populates a single entity from a file, populateFromList
-    //populates an entire list of entities from a file
     @Transactional
     public void populateList(P context, boolean overwrite) {
         try {
@@ -47,7 +45,6 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
             throw new IOInternalException("Error populating " + context.getRootFileName(), e);
         }
     }
-
 
     public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {
         D popDto = readValue(fileString);

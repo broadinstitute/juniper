@@ -165,7 +165,6 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
             <span className="d-inline-block me-2 text-center" style={{ width: 20 }}>
               <FontAwesomeIcon icon={allQuestionsAreExpanded ? faXmark : faPlus} />
             </span>
-            { /* push these types of texts into the SiteContent section configs, and translate as part of that */ }
             {allQuestionsAreExpanded ? 'Collapse' : 'Expand'} all
           </button>
         </div>

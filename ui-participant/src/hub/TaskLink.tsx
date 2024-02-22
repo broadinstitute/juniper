@@ -5,7 +5,7 @@ import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
-import { useI18n } from '../providers/I18nProvider'
+import { useI18n } from 'providers/I18nProvider'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,

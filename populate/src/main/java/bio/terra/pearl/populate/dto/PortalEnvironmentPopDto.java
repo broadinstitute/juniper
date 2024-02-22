@@ -3,7 +3,6 @@ package bio.terra.pearl.populate.dto;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.populate.dto.i18n.PortalEnvironmentLanguagePopDto;
 import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import java.util.ArrayList;
@@ -21,5 +20,4 @@ public class PortalEnvironmentPopDto extends PortalEnvironment {
     private SiteContentPopDto siteContentPopDto;
     private List<MailingListContact> mailingListContacts = new ArrayList<>();
     private List<ParticipantDashboardAlert> participantDashboardAlerts = new ArrayList<>();
-    private List<PortalEnvironmentLanguagePopDto> portalEnvironmentLanguageDtos = new ArrayList<>();
 }

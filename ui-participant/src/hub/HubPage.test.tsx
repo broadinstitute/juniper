@@ -57,7 +57,7 @@ jest.mock('../providers/UserProvider', () => {
   }
 })
 
-jest.mock('../providers/I18nProvider', () => {
+jest.mock('providers/I18nProvider', () => {
   return {
     useI18n: () => ({
       i18n: (key: string) => key

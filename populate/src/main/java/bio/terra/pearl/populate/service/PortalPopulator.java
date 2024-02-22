@@ -2,10 +2,10 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
-import bio.terra.pearl.core.model.i18n.CoreLanguageText;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
@@ -16,7 +16,6 @@ import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
-import bio.terra.pearl.populate.dto.i18n.PortalEnvironmentLanguagePopDto;
 import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
@@ -25,10 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.zip.ZipInputStream;
 
 import bio.terra.pearl.populate.util.ZipUtils;
@@ -125,12 +122,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             alert.setPortalEnvironmentId(savedEnv.getId());
             portalDashboardConfigService.create(alert);
         }
-        for (PortalEnvironmentLanguagePopDto language : portalEnvPopDto.getPortalEnvironmentLanguageDtos()) {
+        for (PortalEnvironmentLanguage language : portalEnvPopDto.getSupportedLanguages()) {
             language.setPortalEnvironmentId(savedEnv.getId());
             portalLanguageService.create(language);
-            if(language.getLanguageTextsFileName() != null) {
-                populateLanguageTexts(envConfig, language.getLanguageTextsFileName(), savedEnv.getId());
-            }
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);
@@ -224,19 +218,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
             siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
-    }
-
-    public void populateLanguageTexts(PortalPopulateContext context, String languageTextsPath, UUID portalEnvironmentId) {
-//        try {
-//            String languageTextsString = filePopulateService.readFile(languageTextsPath, context);
-//            List<CoreLanguageText> coreLanguageTexts = objectMapper.readValue(languageTextsString, objectMapper.getTypeFactory().constructCollectionType(List.class, CoreLanguageText.class));
-//            for (CoreLanguageText coreLanguageText : coreLanguageTexts) {
-//                coreLanguageText.setPortalEnvironmentId(portalEnvironmentId);
-//                languageTextService.create(coreLanguageText);
-//            }
-//        } catch (IOException e) {
-//            throw new IllegalArgumentException("Error populating language texts", e);
-//        }
     }
 
     public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {

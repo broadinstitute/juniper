@@ -2,7 +2,7 @@ import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLin
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { Enrollee, ParticipantTask } from 'api/api'
-import { useI18n } from '../providers/I18nProvider'
+import { useI18n } from 'providers/I18nProvider'
 
 
 const taskTypeDisplayMap: Record<string, string> = {

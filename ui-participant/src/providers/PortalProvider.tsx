@@ -23,12 +23,7 @@ export function usePortalEnv(): PortalEnvContextT {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const localContent = portalEnv.siteContent!.localizedSiteContents[0]
 
-  return {
-    portal: portalContext.portal,
-    portalEnv,
-    reloadPortal: portalContext.reloadPortal,
-    localContent
-  }
+  return { portal: portalContext.portal, portalEnv, reloadPortal: portalContext.reloadPortal, localContent }
 }
 
 /**

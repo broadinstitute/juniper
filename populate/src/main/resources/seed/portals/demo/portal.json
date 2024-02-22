@@ -17,19 +17,16 @@
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio"
       },
-      "portalEnvironmentLanguageDtos": [{
+      "supportedLanguages": [{
         "languageName": "English",
         "languageCode": "en"
       }, {
         "languageName": "Español",
-        "languageCode": "es",
-        "languageTextsFileName": "languageTexts/es/languageTexts.json"
+        "languageCode": "es"
       },{
         "languageName": "Developer",
-        "languageCode": "dev",
-        "languageTextsFileName": "languageTexts/dev/languageTexts.json"
+        "languageCode": "dev"
       }],
-      "languageTextsFileName": "languageTexts/languageTexts.json",
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent-2/siteContent.json"
       },

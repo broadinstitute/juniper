@@ -9,12 +9,12 @@ import { HashLink } from 'react-router-hash-link'
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
 import { MailingListModal, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { useI18n } from 'providers/I18nProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { UserManager } from 'oidc-client-ts'
 import { uniqueId } from 'lodash'
-import { useI18n } from './providers/I18nProvider'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 

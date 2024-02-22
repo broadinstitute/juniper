@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { LanguageText } from '@juniper/ui-core'
-import Api from '../api/api'
+import Api from 'api/api'
 import { usePortalEnv } from './PortalProvider'
 import { useUser } from './UserProvider'
 
