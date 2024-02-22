@@ -16,27 +16,31 @@ export function ParticipantProfile(
 
   const { ppUser, profile, updateProfile } = useUser()
 
-  // todo: modal hooks for fns
-  if (!ppUser || !profile) {
-    return null
-  }
 
   // profile should already be up-to-date, but this
   // fetches the latest on page load just in case
   const loadProfile = async () => {
-    const profile = await Api.findProfile({ ppUserId: ppUser.id, alertErrors: true })
-    await updateProfile(profile)
+    if (ppUser) {
+      const profile = await Api.findProfile({ ppUserId: ppUser.id, alertErrors: true })
+      await updateProfile(profile)
+    }
   }
 
   useEffect(() => {
     loadProfile()
-  }, [ppUser.profileId])
+  }, [ppUser?.profileId])
 
   const save = async (editedProfile: Profile) => {
-    const profile = await Api.updateProfile({
-      ppUserId: ppUser.id, profile: editedProfile
-    })
-    await updateProfile(profile)
+    if (ppUser) {
+      const profile = await Api.updateProfile({
+        ppUserId: ppUser.id, profile: editedProfile
+      })
+      await updateProfile(profile)
+    }
+  }
+
+  if (!ppUser || !profile) {
+    return null
   }
 
   return <div
@@ -78,7 +82,7 @@ export function ParticipantProfile(
             <ProfileTextRow text={profile.doNotEmail ? 'Off' : 'On'}/>
           </ProfileRow>
           <ProfileRow title={'Do Not Solicit'} onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
-            <ProfileTextRow text={profile.doNotEmailSolicit ? 'Off' : 'On'}/>
+            <ProfileTextRow text={profile.doNotEmailSolicit ? 'On' : 'Off'}/>
           </ProfileRow>
         </ProfileCard>
 
@@ -103,7 +107,7 @@ function ProfileCard({ title, children }: { title: string, children: React.React
 }
 
 const ProfileTextRow = ({ text }: { text: string | undefined }) => {
-  return (text
+  return (!isEmpty(text)
     ? <p className="m-0">{text}</p>
     : <p className="m-0 fst-italic text-secondary">Not provided</p>
   )
@@ -146,7 +150,11 @@ function ProfileRow(
         {children}
       </div>
       <div className="flex-shrink m-0 pb-3 pt-3">
-        <button className="btn btn-outline-primary float-end" onClick={onEdit}>
+        <button
+          className="btn btn-outline-primary float-end"
+          onClick={onEdit}
+          aria-label={`Edit ${title}`}
+        >
           <FontAwesomeIcon icon={faPencil} className={''}/>
         </button>
       </div>

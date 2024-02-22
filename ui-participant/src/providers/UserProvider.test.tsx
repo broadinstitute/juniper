@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import UserProvider, { useUser } from './UserProvider'
-import { mockEnrollee } from '../test-utils/test-participant-factory'
+import { mockEnrollee, mockParticipantUser } from '../test-utils/test-participant-factory'
 import { setupRouterTest } from '../test-utils/router-testing-utils'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -10,13 +10,14 @@ import { AuthProvider } from 'react-oidc-context'
 const UpdateEnrolleeTestComponent = () => {
   const { loginUserInternal, enrollees, updateEnrollee } = useUser()
   const [updated, setUpdated] = useState(false)
-  // useEffect(() => {
-  //   loginUserInternal({
-  //     user: mockParticipantUser(),
-  //
-  //     enrollees: []
-  //   })
-  // }, [])
+  useEffect(() => {
+    loginUserInternal({
+      user: mockParticipantUser(),
+      ppUser: { profile: {}, profileId: '', id: '' },
+      profile: {},
+      enrollees: []
+    })
+  }, [])
 
   const addEnrollee = () => {
     updateEnrollee(mockEnrollee()).then(() => { setUpdated(true) })

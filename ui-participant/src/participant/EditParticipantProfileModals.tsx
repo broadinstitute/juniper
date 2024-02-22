@@ -37,7 +37,7 @@ export default function EditParticipantProfileFieldModals(
     case 'doNotEmail':
     case 'contactEmail':
     case 'phoneNumber':
-      return <EditNotificationPreferencesModal {...modalProps}/>
+      return <EditCommunicationPreferences {...modalProps}/>
     case 'mailingAddress':
       return <EditMailingAddressModal {...modalProps}/>
     default:
@@ -56,7 +56,7 @@ function ProfileRowEditModal(
   return <ThemedModal show={true} onHide={onDismiss} size={'lg'}>
     <Modal.Header>
       <Modal.Title>
-        <h2 className="fw-bold pb-3">Edit {title}</h2>
+        <h2 className="fw-bold pb-0 mb-0">Edit {title}</h2>
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
@@ -196,7 +196,7 @@ function EditBirthDateModal(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditNotificationPreferencesModal(props: EditModalProps) {
+function EditCommunicationPreferences(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -206,7 +206,7 @@ function EditNotificationPreferencesModal(props: EditModalProps) {
 
 
   return <ProfileRowEditModal
-    title={'Notification Preferences'}
+    title={'Communication Preferences'}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div>
@@ -237,7 +237,8 @@ function EditNotificationPreferencesModal(props: EditModalProps) {
     <div className='row mt-2'>
       <div className="col-auto">
         <div className="form-check">
-          <input className="form-check-input" type="checkbox" checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
+          <input className="form-check-input" type="checkbox"
+            checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
             aria-label={'Do Not Email'}
             onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotEmailCheckbox">
@@ -247,7 +248,8 @@ function EditNotificationPreferencesModal(props: EditModalProps) {
       </div>
       <div className='col-auto'>
         <div className="form-check">
-          <input className="form-check-input" type="checkbox" checked={editedProfile.doNotEmailSolicit}
+          <input className="form-check-input" type="checkbox"
+            checked={editedProfile.doNotEmailSolicit}
             id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
             onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
