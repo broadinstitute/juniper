@@ -14,8 +14,8 @@ public class SqlSearchableFacet<T extends FacetValue> {
   public String getTableName() {
     return sqlGenerator.getTableName();
   };
-  public String getSelectQuery() {
-    return sqlGenerator.getSelectQuery(value);
+  public String getSelectQuery(int facetIndex) {
+    return sqlGenerator.getSelectQuery(value, facetIndex);
   };
   public String getJoinQuery() {
     return sqlGenerator.getJoinQuery();

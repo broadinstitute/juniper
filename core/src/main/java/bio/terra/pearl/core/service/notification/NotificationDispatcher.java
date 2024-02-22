@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.notification;
 import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.RuleEvaluator;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import java.util.List;
@@ -40,7 +40,7 @@ public class NotificationDispatcher {
         for (Trigger config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
-                if (RuleEvaluator.evaluateEnrolleeRule(config.getRule(), event.getEnrolleeRuleData())) {
+                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeRuleData())) {
                     dispatchNotificationAsync(config, event.getEnrolleeRuleData(),
                             event.getPortalParticipantUser().getPortalEnvironmentId());
                 }
@@ -83,12 +83,12 @@ public class NotificationDispatcher {
     public Notification initializeNotification(Trigger config, EnrolleeRuleData ruleData,
                                                UUID portalEnvId, Map<String, String> customMessages) {
         return Notification.builder()
-                .enrolleeId(ruleData.enrollee().getId())
-                .participantUserId(ruleData.enrollee().getParticipantUserId())
+                .enrolleeId(ruleData.getEnrollee().getId())
+                .participantUserId(ruleData.getEnrollee().getParticipantUserId())
                 .triggerId(config.getId())
                 .deliveryStatus(NotificationDeliveryStatus.READY)
                 .deliveryType(config.getDeliveryType())
-                .studyEnvironmentId(ruleData.enrollee().getStudyEnvironmentId())
+                .studyEnvironmentId(ruleData.getEnrollee().getStudyEnvironmentId())
                 .portalEnvironmentId(portalEnvId)
                 .customMessagesMap(customMessages)
                 .retries(0)

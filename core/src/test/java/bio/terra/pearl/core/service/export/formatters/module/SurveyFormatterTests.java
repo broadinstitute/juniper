@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.export.formatters;
+package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -8,9 +8,6 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -166,6 +163,19 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(SurveyFormatter.stripStudyAndSurveyPrefixes("someQuestion"), equalTo("someQuestion"));
     }
 
+    @Test
+    public void testParseUnrecognizedObjectValue() {
+        Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
+                .questionStableId("oh_surveyA_q1")
+                .questionType("matrix")
+                .exportOrder(1)
+                .build();
+        SurveyFormatter moduleFormatter = new SurveyFormatter(new ExportOptions(), "oh_surveyA", List.of(testSurvey), List.of(questionDef), objectMapper);
+        String value = moduleFormatter.formatObjectValue(Answer.builder().objectValue("d[f}asdfja").build(), null, false, new ObjectMapper());
+        assertThat(value, equalTo("d[f}asdfja"));
+    }
+
     /** helper for testing generation of answer maps values for a single question-answer pair */
     private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions) throws JsonProcessingException {
         Map<String, String> valueMap = new HashMap<>();
@@ -182,5 +192,6 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);
         return valueMap;
     }
+
 
 }

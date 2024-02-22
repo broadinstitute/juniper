@@ -1,34 +1,58 @@
-package bio.terra.pearl.core.rule;
+package bio.terra.pearl.core.service.rule;
 
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import lombok.extern.slf4j.Slf4j;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
-public class CohortRuleEvaluator {
-    private final Map<String, Object> variableMap;
+public class EnrolleeRuleEvaluator {
+    private final EnrolleeRuleData ruleData;
 
-    public CohortRuleEvaluator(Map<String, Object> variableMap) {
-        this.variableMap = variableMap;
+    public EnrolleeRuleEvaluator(EnrolleeRuleData ruleData) {
+        this.ruleData = ruleData;
     }
 
-    public static boolean evaluateRule(String rule, Map<String, Object> variableMap) throws RuleEvaluationException, RuleParsingException {
-        CohortRuleEvaluator evaluator = new CohortRuleEvaluator(variableMap);
-        return evaluator.evaluateRule(rule);
+    // for evaluations where we need to indicate whether the rule itself is valid
+    public static boolean evaluateRuleChecked(String rule, EnrolleeRuleData ruleData) throws RuleEvaluationException, RuleParsingException {
+        EnrolleeRuleEvaluator evaluator = new EnrolleeRuleEvaluator(ruleData);
+        return evaluator.evaluateRuleChecked(rule);
     }
 
-    public boolean evaluateRule(String rule) throws RuleEvaluationException, RuleParsingException {
+    // Evaluates the rule. Returns false if the rule cannot be parsed, or if an error occurred accessing the ruleData
+    public static boolean evaluateRule(String rule, EnrolleeRuleData ruleData) {
+        try {
+            return evaluateRuleChecked(rule, ruleData);
+        } catch (RuleEvaluationException | RuleParsingException e) {
+            log.warn("Error evaluating rule [ {} ]: studyEnvironment {}, enrollee {}: ".formatted(rule,
+                    ruleData.getEnrollee().getStudyEnvironmentId(),
+                    ruleData.getEnrollee().getShortcode()), e);
+            return false;
+        }
+    }
+
+
+    public boolean evaluateRuleChecked(String rule) throws RuleEvaluationException, RuleParsingException {
+        if (StringUtils.isBlank(rule)) {
+            return applyDefaultRule();
+        }
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CohortRuleParser parser = new CohortRuleParser(tokens);
         CohortRuleParser.ExprContext exp = parser.expr();
         return evaluateExpression(exp);
+    }
+
+    // the default rule is that the action is applied if the enrollee is a subject
+    protected boolean applyDefaultRule() {
+        return ruleData.getEnrollee().isSubject();
     }
 
     public boolean evaluateExpression(CohortRuleParser.ExprContext ctx) throws RuleEvaluationException, RuleParsingException {
@@ -48,9 +72,9 @@ public class CohortRuleEvaluator {
             String operator = ctx.OPERATOR().getText();
             switch (operator)  {
                 case "=":
-                    return left.equals(right);
+                    return Objects.equals(left, right);
                 case "!=":
-                    return !left.equals(right);
+                    return !Objects.equals(left, right);
                 default:
                     throw new RuleParsingException("Unknown operator %s".formatted(operator));
             }
@@ -70,19 +94,22 @@ public class CohortRuleEvaluator {
             String rawString = ctx.VARIABLE().getText();
             // trim off brackets and any whitespace immediately inside the quotes
             String variableName = rawString.substring(1, rawString.length() - 1).trim();
-            if (variableMap.containsKey(variableName)) {
-                Object value = variableMap.get(variableName);
+            try {
+                Object value = PropertyUtils.getNestedProperty(ruleData, variableName);
                 if (value instanceof Integer || value instanceof Float || value instanceof BigInteger || value instanceof BigDecimal) {
                     // cast all numbers to Doubles for comparison -- this assumes that this
                     // framework will never be used for anything that requires more precision
                     return ((Number) value).doubleValue();
+                } else {
+                    return value;
                 }
-                return variableMap.get(variableName);
-            } else {
-                throw new RuleEvaluationException("Variable " + variableName + " not found in variable map");
+            } catch (Exception e) {
+                // if the property doesn't exist, return null
+                return null;
             }
-        } else {
-            throw new RuleParsingException("Unknown term type");
+        } else if (ctx.NULL() != null) {
+            return null;
         }
+        throw new RuleParsingException("Unknown term type");
     }
 }

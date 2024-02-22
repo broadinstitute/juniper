@@ -25,7 +25,7 @@ public class KeywordFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
     }
 
     @Override
-    public String getSelectQuery(StringFacetValue facetValue) {
+    public String getSelectQuery(StringFacetValue facetValue, int facetIndex) {
         return null; // already included in base query
     }
 
