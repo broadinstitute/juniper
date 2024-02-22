@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
@@ -154,11 +154,16 @@ export default function Navbar(props: NavbarProps) {
                     {user.username}
                   </p>
                   <hr className="dropdown-divider d-none d-lg-block"/>
+                  <NavLink to="/hub/profile">
+                    <button className="dropdown-item">
+                      Profile
+                    </button>
+                  </NavLink>
                   <button className="dropdown-item" onClick={doChangePassword}>
-                      Change Password
+                    Change Password
                   </button>
                   <button className="dropdown-item" onClick={doLogout}>
-                      Log Out
+                    Log Out
                   </button>
                 </div>
               </li>
