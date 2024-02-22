@@ -1,5 +1,5 @@
 import {
-  ConsentResponse,
+  ConsentResponse, LanguageText,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -194,6 +194,12 @@ export default {
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
     return parsedResponse
+  },
+
+  async getLanguageTexts(selectedLanguage?: string): Promise<LanguageText[]> {
+    const url = `${API_ROOT}/public/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {

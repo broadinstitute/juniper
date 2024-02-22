@@ -23,6 +23,7 @@ import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider } from '@juniper/ui-core'
+import I18nProvider from './providers/I18nProvider'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -115,25 +116,28 @@ function App() {
                     ...getAuthProviderProps(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)
                   }>
                     <UserProvider>
-                      <Suspense fallback={<PageLoadingIndicator />}>
-                        <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
-                        <Routes>
-                          <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
-                          <Route path="/studies/:studyShortcode">
-                            <Route path="join/*" element={<StudyEnrollRouter/>}/>
-                            <Route index element={<div>study specific page -- TBD</div>}/>
-                            <Route path="*" element={<div>unmatched study route</div>}/>
-                          </Route>
-                          <Route path="/" element={<LandingPage localContent={localContent}/>}>
-                            {landingRoutes}
-                          </Route>
-                          <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
-                          <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                          <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
-                          <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
-                          <Route path="*" element={<div>unmatched route</div>}/>
-                        </Routes>
-                      </Suspense>
+                      <I18nProvider>
+                        <Suspense fallback={<PageLoadingIndicator />}>
+                          <IdleStatusMonitor
+                            maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
+                          <Routes>
+                            <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
+                            <Route path="/studies/:studyShortcode">
+                              <Route path="join/*" element={<StudyEnrollRouter/>}/>
+                              <Route index element={<div>study specific page -- TBD</div>}/>
+                              <Route path="*" element={<div>unmatched study route</div>}/>
+                            </Route>
+                            <Route path="/" element={<LandingPage localContent={localContent}/>}>
+                              {landingRoutes}
+                            </Route>
+                            <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
+                            <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                            <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
+                            <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
+                            <Route path="*" element={<div>unmatched route</div>}/>
+                          </Routes>
+                        </Suspense>
+                      </I18nProvider>
                     </UserProvider>
                   </AuthProvider>
                 }

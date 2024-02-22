@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_core_language_text
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: core_language_text
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column: { name: message_key, type: text, constraints: { nullable: false } }
+              - column: { name: text, type: text, constraints: { nullable: false } }
+              - column: { name: language, type: text, constraints: { nullable: false } }
+        - addUniqueConstraint:
+            tableName: core_language_text
+            columnNames: message_key, language
+            constraintName: message_key_language

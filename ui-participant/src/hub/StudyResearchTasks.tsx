@@ -2,6 +2,7 @@ import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLin
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { Enrollee, ParticipantTask } from 'api/api'
+import { useI18n } from '../providers/I18nProvider'
 
 
 const taskTypeDisplayMap: Record<string, string> = {
@@ -24,6 +25,7 @@ type StudyResearchTasksProps = {
 /** renders the research tasks (consents and research surveys) for the enrollee */
 export default function StudyResearchTasks(props: StudyResearchTasksProps) {
   const { enrollee, studyShortcode, participantTasks } = props
+  const { i18n } = useI18n()
 
   const hasStudyTasks = participantTasks.length > 0
 
@@ -47,7 +49,7 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
   const hasCompletedConsentTasks = completedConsentTasks.length > 0
 
   if (!hasStudyTasks) {
-    return <div className="fst-italic">No tasks for this study</div>
+    return <div className="fst-italic">{i18n('tasksNoneForStudy')}</div>
   }
 
   return (
@@ -104,12 +106,13 @@ function TaskGrouping({ title, tasks, enrollee, studyShortcode }: {
     enrollee: Enrollee, studyShortcode: string
 }) {
   const hasLockedTasks = tasks.some(task => !isTaskAccessible(task, enrollee))
+  const { i18n } = useI18n()
 
   return (
     <>
       <h2 className="fs-6 text-uppercase mb-0">{title}</h2>
       {hasLockedTasks && (
-        <p className="my-2 text-muted">Some surveys are locked until other required tasks are completed.</p>
+        <p className="my-2 text-muted">{i18n('surveysSomeLocked')}</p>
       )}
       <ol className="list-unstyled p-0">
         {tasks.map(task => <li key={task.id}>

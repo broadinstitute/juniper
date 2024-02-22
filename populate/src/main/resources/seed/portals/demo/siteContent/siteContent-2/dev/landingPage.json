@@ -97,6 +97,7 @@
     "anchorRef": "faq",
     "sectionConfigJson": {
       "backgroundColor": "#f2f2f2",
+      "title": "DEV_Frequently Asked Questions",
       "blurb": "DEV_If your question is not answered below, you can call or email our study staff at **[617&#x2011;724&#x2011;1240](tel:+16177241240)** or **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
       "showToggleAllButton": false,
       "questions": [

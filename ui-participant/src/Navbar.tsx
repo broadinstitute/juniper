@@ -14,6 +14,7 @@ import { useConfig } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { UserManager } from 'oidc-client-ts'
 import { uniqueId } from 'lodash'
+import { useI18n } from './providers/I18nProvider'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -21,14 +22,14 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 
 /** renders the navbar for participants */
 export default function Navbar(props: NavbarProps) {
-  const portalEnv = usePortalEnv()
-  const { localContent } = portalEnv
+  const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
+  const { i18n } = useI18n()
   const config = useConfig()
   const { user, logoutUser, selectedLanguage, changeLanguage } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 
-  const languageOptions = portalEnv.portalEnv.supportedLanguages
+  const languageOptions = portalEnv.supportedLanguages
 
   /** invoke B2C change password flow */
   function doChangePassword() {
@@ -83,7 +84,7 @@ export default function Navbar(props: NavbarProps) {
             languageOptions={languageOptions}
             selectedLanguage={selectedLanguage}
             changeLanguage={changeLanguage}
-            reloadPortal={portalEnv.reloadPortal}
+            reloadPortal={reloadPortal}
           />
           {user.isAnonymous && (
             <>
@@ -96,7 +97,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                    Log In
+                  {i18n('navbarLogin')}
                 </NavLink>
               </li>
               <li className="nav-item">
@@ -106,9 +107,9 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  to={getMainJoinLink(portalEnv.portal.portalStudies)}
+                  to={getMainJoinLink(portal.portalStudies)}
                 >
-                    Join
+                  {i18n('navbarJoin')}
                 </NavLink>
               </li>
             </>
@@ -124,7 +125,7 @@ export default function Navbar(props: NavbarProps) {
                   )}
                   to="/hub"
                 >
-                    Dashboard
+                  {i18n('navbarDashboard')}
                 </Link>
               </li>
               <li className="nav-item dropdown d-flex flex-column">
@@ -155,10 +156,10 @@ export default function Navbar(props: NavbarProps) {
                   </p>
                   <hr className="dropdown-divider d-none d-lg-block"/>
                   <button className="dropdown-item" onClick={doChangePassword}>
-                      Change Password
+                    {i18n('navbarChangePassword')}
                   </button>
                   <button className="dropdown-item" onClick={doLogout}>
-                      Log Out
+                    {i18n('navbarLogout')}
                   </button>
                 </div>
               </li>
