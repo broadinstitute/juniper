@@ -16,6 +16,7 @@ import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -105,7 +106,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
         ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, true );
-        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), operator);
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(2));
     }
@@ -124,19 +125,19 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
 
         // shouldn't create a duplicate task if directed to assign to all unassigned
         ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false );
-        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), operator);
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(1));
 
         // shouldn't create a duplicate task even if the enrolleeId is provided manually, since eligibility override is false
         assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox1.enrollee().getId()), false, false );
-        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), operator);
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(1));
 
         // if overriding eligibility is specified, then a duplicate task should be created
         assignDto = new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), List.of(sandbox1.enrollee().getId()), false, true );
-        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), operator);
+        surveyTaskDispatcher.assign(assignDto, sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
         participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
         assertThat(participantTasks, hasSize(2));
     }
