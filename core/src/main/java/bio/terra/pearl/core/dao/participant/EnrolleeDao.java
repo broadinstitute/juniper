@@ -98,7 +98,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByTwoProperties("participant_user_id", userId, "id", enrolleeId);
     }
 
-    public Optional<Enrollee> findByParticipantUserIdAndEnrolleShortcode(UUID userId, String enrolleeShortcode) {
+    public Optional<Enrollee> findByParticipantUserIdAndShortcode(UUID userId, String enrolleeShortcode) {
         return findByTwoProperties("participant_user_id", userId, "shortcode", enrolleeShortcode);
     }
 

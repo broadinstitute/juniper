@@ -79,15 +79,18 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     private void checkProxyWithOneGovernedEnrollee(List<Enrollee> sandboxEnrollees) {
         Enrollee governedEnrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDGOVR".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
-
+        // now check the EnrolleeRelation was created correctly
         Enrollee proxyEnrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDPROX".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
         assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee.getId()), hasSize(1));
         assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee.getId()).get(0).getEnrolleeId(), equalTo(proxyEnrollee.getId()));
+
+        // now confirm PortalParticipantUsers were wired correctly
         List<PortalParticipantUser> portalParticipantUsers = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId());
         assertThat(portalParticipantUsers, hasSize(1));
         assertThat(portalParticipantUsers.get(0).getParticipantUserId(), equalTo(proxyEnrollee.getParticipantUserId()));
         List<PortalParticipantUser> governedPortalParticipantUsers = portalParticipantUserService.findByParticipantUserId(governedEnrollee.getParticipantUserId());
+        // now confirm profiles were setup correctly
         assertThat(governedPortalParticipantUsers, hasSize(1));
         assertThat(governedPortalParticipantUsers.get(0).getParticipantUserId(), equalTo(governedEnrollee.getParticipantUserId()));
         PortalParticipantUser proxyPPUser = portalParticipantUsers.get(0);
@@ -117,6 +120,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee2.getId()), hasSize(1));
         assertThat(enrolleeRelationService.findByTargetEnrolleeId(governedEnrollee2.getId()).get(0).getEnrolleeId(), equalTo(proxyEnrollee.getId()));
 
+        // now confirm PortalParticipantUsers were wired correctly
         List<PortalParticipantUser> proxyPortalParticipantUsers = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId());
         assertThat(proxyPortalParticipantUsers, hasSize(1));
         assertThat(proxyPortalParticipantUsers.get(0).getParticipantUserId(), equalTo(proxyEnrollee.getParticipantUserId()));

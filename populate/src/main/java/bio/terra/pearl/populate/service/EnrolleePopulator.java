@@ -80,6 +80,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
@@ -367,10 +368,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             // for now assuming only one proxy per user
             ProxyPopDto firstProxy = popDto.getProxyPopDtos().get(0);
             if (firstProxy.isEnrollAsProxy()){
-                enrolleePopulationEntities = createNewGovernedEnrollee(popDto, context, firstProxy);
+                enrolleePopulationEntities = this.createNewGovernedEnrollee(attachedEnv.getEnvironmentName(), popDto, context, firstProxy);
             }
         } else {
-            enrolleePopulationEntities = createNewEnrollee(popDto, context);
+            enrolleePopulationEntities = this.createNewEnrollee(attachedEnv.getEnvironmentName(), popDto, context);
         }
         PortalParticipantUser ppUser = enrolleePopulationEntities.getPpUser();
 
@@ -390,9 +391,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return enrolleePopulationEntities.getEnrollee();
     }
 
-    private EnrolleePopulationEntities createNewEnrollee(EnrolleePopDto popDto, StudyPopulateContext context) {
-        StudyEnvironment attachedEnv = studyEnvironmentService
-                .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
+    //creates a new independent adult (non-governed) enrollee
+    private EnrolleePopulationEntities createNewEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context) {
         ParticipantUser attachedUser = participantUserService
                 .findOne(popDto.getLinkedUsername(), context.getEnvironmentName()).get();
         PortalParticipantUser ppUser = portalParticipantUserService
@@ -402,7 +402,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Enrollee enrollee;
         List<ParticipantTask> tasks;
         if (popDto.isSimulateSubmissions()) {
-            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(attachedEnv.getEnvironmentName(), context.getStudyShortcode(),
+            HubResponse<Enrollee>  hubResponse = enrollmentService.enroll(environmentName, context.getStudyShortcode(),
                     attachedUser, ppUser, popDto.getPreEnrollmentResponseId(), true);
             enrollee = hubResponse.getEnrollee();
             tasks = hubResponse.getTasks();
@@ -460,12 +460,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
     }
 
-    private EnrolleePopulationEntities createNewGovernedEnrollee(EnrolleePopDto popDto, StudyPopulateContext context, ProxyPopDto proxyPopDto) {
-        StudyEnvironment studyEnvironment = studyEnvironmentService.find(popDto.getStudyEnvironmentId()).get();
-        ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), studyEnvironment.getEnvironmentName()).get();
+    @Transactional
+    protected EnrolleePopulationEntities createNewGovernedEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context, ProxyPopDto proxyPopDto) {
+        ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), environmentName).get();
         PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(),  context.getPortalShortcode()).get();
         // for governed and proxy users we always simulate submissions
-        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( studyEnvironment.getEnvironmentName(), context.getStudyShortcode(), proxyParticipantUser, portalParticipantUser, popDto.getPreEnrollmentResponseId());
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( environmentName, context.getStudyShortcode(), proxyParticipantUser, portalParticipantUser, popDto.getPreEnrollmentResponseId());
         Enrollee proxyEnrollee = hubResponse.getEnrollee();
         proxyEnrollee.setShortcode(proxyPopDto.getShortcode());
         enrolleeService.update(proxyEnrollee);

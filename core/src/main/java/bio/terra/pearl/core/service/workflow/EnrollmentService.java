@@ -136,9 +136,9 @@ public class EnrollmentService {
     }
 
     /**
-     * Will create an enrollee for both the given user and a new governed user that is registered.  The HubResponse
-     * returned will include the governedEnrollee as the "response", and the enrollee corresponding to the proxy user as
-     * the "enrollee"
+     * Will check if proxy is already enrolled, if not will create an enrollee for the proxy. Will then create a new
+     * governed user that is registered.  The HubResponse returned will include the governedEnrollee as the "response",
+     * and the enrollee corresponding to the proxy user as the "enrollee"
      */
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
@@ -148,9 +148,7 @@ public class EnrollmentService {
         if (maybeProxyEnrollee.isEmpty()) {
             maybeProxyEnrollee = Optional.of(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
         }
-        Enrollee proxyEnrollee = maybeProxyEnrollee.orElseThrow(() -> new NotFoundException(
-                "Proxy enrolee with participant user id %s for study %s env %s was not found".formatted(proxyUser.getId(), studyShortcode,
-                        envName)));
+        Enrollee proxyEnrollee = maybeProxyEnrollee.get();
         HubResponse<Enrollee> governedResponse =
                 enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId);
         governedResponse.setEnrollee(proxyEnrollee);

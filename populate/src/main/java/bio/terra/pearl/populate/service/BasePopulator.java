@@ -67,5 +67,6 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
 
     public abstract T overwriteExisting(T existingObj, D popDto, P context) throws IOException;
     public abstract T createPreserveExisting(T existingObj, D popDto, P context) throws IOException;
+    @Transactional
     public abstract T createNew(D popDto, P context, boolean overwrite) throws IOException;
 }
