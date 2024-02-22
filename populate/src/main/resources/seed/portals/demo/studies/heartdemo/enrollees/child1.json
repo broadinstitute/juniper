@@ -4,6 +4,7 @@
     "shortcode": "HDPROX",
     "enrollAsProxy": true}],
   "shortcode": "HDGOVR",
+  "linkedUsername": "proxy@test.com-prox-GOVR",
   "submittedHoursAgo": 10,
   "preEnrollmentResponseDto": {
     "qualified": true,

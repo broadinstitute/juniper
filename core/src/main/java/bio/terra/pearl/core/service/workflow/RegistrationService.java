@@ -2,7 +2,6 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -10,7 +9,6 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -50,7 +48,6 @@ public class RegistrationService {
     private ObjectMapper objectMapper;
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
     private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
     private final Random random = new SecureRandom();
 
@@ -144,15 +141,13 @@ public class RegistrationService {
     }
 
     @Transactional
-    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser) {
+    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser, String governedUsername) {
         if (!proxyPpUser.getParticipantUserId().equals(proxyUser.getId())) {
             throw new IllegalArgumentException("user and portal participant user do not match");
         }
         ParticipantUser governedUser = new ParticipantUser();
         governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
-        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
-        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
-        governedUser.setUsername(governedUserName);
+        governedUser.setUsername(governedUsername);
         governedUser = participantUserService.create(governedUser);
 
         PortalParticipantUser governedPpUser = new PortalParticipantUser();

@@ -37,6 +37,11 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     }
 
     @Transactional
+    public void deleteByResponsibleUserId(UUID responsibleUserId) {
+        dao.deleteByResponsibleUserId(responsibleUserId);
+    }
+
+    @Transactional
     public void deleteByPortalEnvironmentId(UUID portalEnvId) {
         dao.deleteByPortalEnvironmentId(portalEnvId);
     }

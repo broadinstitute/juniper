@@ -8,7 +8,6 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.*;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
@@ -19,6 +18,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
@@ -46,6 +46,10 @@ public class EnrollmentService {
     private RegistrationService registrationService;
     private EventService eventService;
     private ObjectMapper objectMapper;
+    private RandomUtilService randomUtilService;
+    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
+    private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
@@ -56,7 +60,8 @@ public class EnrollmentService {
                              EventService eventService, ObjectMapper objectMapper,
                              RegistrationService registrationService,
                              PortalService portalService,
-                             EnrolleeRelationService enrolleeRelationService) {
+                             EnrolleeRelationService enrolleeRelationService,
+                             RandomUtilService randomUtilService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -68,6 +73,7 @@ public class EnrollmentService {
         this.registrationService = registrationService;
         this.portalService = portalService;
         this.enrolleeRelationService = enrolleeRelationService;
+        this.randomUtilService = randomUtilService;
     }
 
     /**
@@ -143,6 +149,14 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId) {
+        String governedUsernameSuffix = registrationService.generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
+        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
+        return enrollAsProxy(envName, studyShortcode, proxyUser, ppUser, preEnrollResponseId, governedUserName);
+    }
+
+    @Transactional
+    public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
+                                               PortalParticipantUser ppUser, UUID preEnrollResponseId, String governedUsername) {
         Optional<Enrollee> maybeProxyEnrollee =
                 enrolleeService.findOneByParticipantUserIdAndStudyEnvironmentId(proxyUser.getId(), studyShortcode, envName);
         if (maybeProxyEnrollee.isEmpty()) {
@@ -150,7 +164,7 @@ public class EnrollmentService {
         }
         Enrollee proxyEnrollee = maybeProxyEnrollee.get();
         HubResponse<Enrollee> governedResponse =
-                enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId);
+                enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
         governedResponse.setEnrollee(proxyEnrollee);
         return governedResponse;
     }
@@ -158,9 +172,9 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollGovernedUser(EnvironmentName envName, String studyShortcode, Enrollee governingEnrollee,
                                                     ParticipantUser proxyUser, PortalParticipantUser proxyPpUser,
-                                                    UUID preEnrollResponseId) {
+                                                    UUID preEnrollResponseId, String governedUserName) {
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
-        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(proxyUser, proxyPpUser);
+        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName);
 
         HubResponse<Enrollee> hubResponse =
                 enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
@@ -203,4 +217,5 @@ public class EnrollmentService {
         }
         return response;
     }
+
 }

@@ -54,6 +54,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
+    private PortalParticipantUserService portalParticipantUserService;
     private ParticipantNoteService participantNoteService;
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
@@ -78,7 +79,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
                            RandomUtilService randomUtilService,
-                           EnrolleeRelationService enrolleeRelationService) {
+                           EnrolleeRelationService enrolleeRelationService,
+                           PortalParticipantUserService portalParticipantUserService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -98,6 +100,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
         this.enrolleeRelationService = enrolleeRelationService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -229,6 +232,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
         }
         if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
+            portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
             participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
         }
     }

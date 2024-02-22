@@ -10,6 +10,8 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.*;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
@@ -23,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
@@ -153,7 +156,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
 
     @Override
     public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
-        portalService.delete(existingObj.getId(), Set.of(PortalService.AllowedCascades.STUDY));
+        Set<CascadeProperty> set = new HashSet<>();
+        set.add(PortalService.AllowedCascades.STUDY);
+        set.add(EnrolleeService.AllowedCascades.PARTICIPANT_USER);
+        portalService.delete(existingObj.getId(), set);
         return createNew(popDto, context, true);
     }
 

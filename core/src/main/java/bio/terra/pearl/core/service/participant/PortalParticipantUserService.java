@@ -112,7 +112,9 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
     @Transactional
     public void deleteByParticipantUserId(UUID participantUserId) {
         List<PortalParticipantUser> users = dao.findByParticipantUserId(participantUserId);
+        dataChangeRecordService.deleteByResponsibleUserId(participantUserId);
         for(PortalParticipantUser ppUser : users) {
+            dataChangeRecordService.deleteByPortalParticipantUserId(ppUser.getId());
             delete(ppUser.getId(), CascadeProperty.EMPTY_SET);
         }
     }

@@ -4,6 +4,7 @@
     "shortcode": "HDPRXA",
     "enrollAsProxy": true}],
   "shortcode": "HDGVAA",
+  "linkedUsername": "proxyFamily2@test.com-prox-GVAA",
   "submittedHoursAgo": 10,
   "preEnrollmentResponseDto": {
     "qualified": true,

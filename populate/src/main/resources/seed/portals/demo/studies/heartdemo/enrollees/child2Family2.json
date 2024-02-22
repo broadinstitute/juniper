@@ -4,6 +4,7 @@
     "shortcode": "HDPRXA",
     "enrollAsProxy": true}],
   "shortcode": "HDGVBA",
+  "linkedUsername": "proxyFamily2@test.com-prox-GVBA",
   "submittedHoursAgo": 10,
   "preEnrollmentResponseDto": {
     "qualified": true,

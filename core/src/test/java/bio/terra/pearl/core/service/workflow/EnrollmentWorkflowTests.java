@@ -219,7 +219,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                  null);
         Enrollee proxyEnrollee = hubResponse1.getEnrollee();
-        HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollGovernedUser(studyEnv.getEnvironmentName(), studyShortcode, proxyEnrollee,  userBundle.user(), userBundle.ppUser(), null);
+        HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode,userBundle.user(), userBundle.ppUser(),
+                null);
         Enrollee governedEnrollee1 = hubResponse1.getResponse();
         Enrollee governedEnrollee2 = hubResponse2.getEnrollee();
 

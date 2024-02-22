@@ -461,11 +461,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     @Transactional
-    protected EnrolleePopulationEntities createNewGovernedEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context, ProxyPopDto proxyPopDto) {
+    protected EnrolleePopulationEntities createNewGovernedEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context,
+                                                                   ProxyPopDto proxyPopDto) {
+        String governedUsername = popDto.getLinkedUsername();
         ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), environmentName).get();
         PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(),  context.getPortalShortcode()).get();
         // for governed and proxy users we always simulate submissions
-        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( environmentName, context.getStudyShortcode(), proxyParticipantUser, portalParticipantUser, popDto.getPreEnrollmentResponseId());
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( environmentName, context.getStudyShortcode(), proxyParticipantUser, portalParticipantUser, popDto.getPreEnrollmentResponseId(), governedUsername);
         Enrollee proxyEnrollee = hubResponse.getEnrollee();
         proxyEnrollee.setShortcode(proxyPopDto.getShortcode());
         enrolleeService.update(proxyEnrollee);

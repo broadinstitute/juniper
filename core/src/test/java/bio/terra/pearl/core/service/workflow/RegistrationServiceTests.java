@@ -52,7 +52,7 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
 
         EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), bundle.getPortalEnv(), bundle.getStudyEnv());
         ParticipantUser proxyUser = participantUserService.find(proxyBundle.enrollee().getParticipantUserId()).orElseThrow();
-        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(proxyUser, proxyBundle.portalParticipantUser());
+        RegistrationService.RegistrationResult registerGovernedUser = registrationService.registerGovernedUser(proxyUser, proxyBundle.portalParticipantUser(), proxyUser.getUsername()+"-prox-RFGU");
         Assertions.assertTrue(registerGovernedUser.participantUser().getUsername().contains(proxyUser.getUsername()));
         Assertions.assertTrue(participantUserService.findOne(proxyUser.getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
         Assertions.assertNotEquals(proxyUser.getUsername(), registerGovernedUser.participantUser().getUsername());
