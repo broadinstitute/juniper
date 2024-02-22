@@ -72,7 +72,7 @@ export function ParticipantProfile(
         </ProfileCard>
 
         <ProfileCard title="Communication Preferences">
-          <ProfileRow title={'Email'} onEdit={() => setShowEditFieldModal('contactEmail')}>
+          <ProfileRow title={'Contact Email'} onEdit={() => setShowEditFieldModal('contactEmail')}>
             <ProfileTextRow text={profile.contactEmail}/>
           </ProfileRow>
           <ProfileRow title={'Phone Number'} onEdit={() => setShowEditFieldModal('phoneNumber')}>
@@ -140,12 +140,18 @@ const Bar = () => {
 }
 
 function ProfileRow(
-  { title, children, onEdit }: { title: string, children: React.ReactNode, onEdit: () => void }
+  {
+    title, children, onEdit
+  }: {
+    title: string, children: React.ReactNode, onEdit: () => void
+  }
 ) {
   return <>
     <Bar/>
     <div className="d-flex w-100 align-content-center">
-      <p className="w-25 m-0 pb-3 pt-3 fw-bold">{title}</p>
+      <div className="w-25">
+        <p className="m-0 pb-3 pt-3 fw-bold">{title}</p>
+      </div>
       <div className="flex-grow-1 pb-3 pt-3">
         {children}
       </div>

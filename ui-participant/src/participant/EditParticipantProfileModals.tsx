@@ -35,9 +35,11 @@ export default function EditParticipantProfileFieldModals(
       return <EditBirthDateModal {...modalProps}/>
     case 'doNotEmailSolicit':
     case 'doNotEmail':
-    case 'contactEmail':
-    case 'phoneNumber':
       return <EditCommunicationPreferences {...modalProps}/>
+    case 'contactEmail':
+      return <EditContactEmail {...modalProps}/>
+    case 'phoneNumber':
+      return <EditPhoneNumber {...modalProps}/>
     case 'mailingAddress':
       return <EditMailingAddressModal {...modalProps}/>
     default:
@@ -196,6 +198,62 @@ function EditBirthDateModal(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
+function EditPhoneNumber(props: EditModalProps) {
+  const {
+    onDismiss,
+    onSave,
+    onFieldChange,
+    editedProfile
+  } = useProfileEditMethods(props)
+
+
+  return <ProfileRowEditModal
+    title={'Phone Number'}
+    onSave={onSave}
+    onDismiss={onDismiss}>
+    <div>
+      <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
+        Phone Number
+      </label>
+      <input
+        className={'form-control'}
+        type={'tel'} // on mobile, brings up numpad instead of keyboard
+        id={'phoneNumber'}
+        value={editedProfile.phoneNumber}
+        onChange={e => onFieldChange('phoneNumber', e.target.value)}
+        placeholder={'Phone Number'}/>
+    </div>
+  </ProfileRowEditModal>
+}
+
+function EditContactEmail(props: EditModalProps) {
+  const {
+    onDismiss,
+    onSave,
+    onFieldChange,
+    editedProfile
+  } = useProfileEditMethods(props)
+
+
+  return <ProfileRowEditModal
+    title={'Contact Email'}
+    onSave={onSave}
+    onDismiss={onDismiss}>
+    <div>
+      <p className="fst-italic">Update your contact email. Note that your login information will not change.</p>
+      <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
+        Email
+      </label>
+      <input
+        className={'form-control'}
+        id={'contactEmail'}
+        value={editedProfile.contactEmail}
+        onChange={e => onFieldChange('contactEmail', e.target.value)}
+        placeholder={'Email'}/>
+    </div>
+  </ProfileRowEditModal>
+}
+
 function EditCommunicationPreferences(props: EditModalProps) {
   const {
     onDismiss,
@@ -209,31 +267,6 @@ function EditCommunicationPreferences(props: EditModalProps) {
     title={'Communication Preferences'}
     onSave={onSave}
     onDismiss={onDismiss}>
-    <div>
-      <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
-        Email
-      </label>
-      <input
-        className={'form-control'}
-        id={'contactEmail'}
-        value={editedProfile.contactEmail}
-        onChange={e => onFieldChange('contactEmail', e.target.value)}
-        placeholder={'Email'}/>
-    </div>
-
-    <div className="my-2">
-      <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
-        Phone Number
-      </label>
-      <input
-        className={'form-control'}
-        type={'tel'} // on mobile, brings up numpad instead of keyboard
-        id={'phoneNumber'}
-        value={editedProfile.phoneNumber}
-        onChange={e => onFieldChange('phoneNumber', e.target.value)}
-        placeholder={'Phone Number'}/>
-    </div>
-
     <div className='row mt-2'>
       <div className="col-auto">
         <div className="form-check">
