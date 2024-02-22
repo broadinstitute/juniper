@@ -19,6 +19,9 @@ public class FacetValueFactory {
       ),
       "keyword", Map.of(
               "keyword", new FacetDefinition(StringFacetValue.class, new KeywordFacetSqlGenerator())
+      ),
+      "survey", Map.of(
+              "answer", new FacetDefinition(AnswerFacetValue.class, new AnswerFacetSqlGenerator())
       )
   );
 

@@ -29,7 +29,7 @@ public class ParticipantTaskFacetSqlGenerator implements FacetSqlGenerator<Combi
   }
 
   @Override
-  public String getSelectQuery(CombinedStableIdFacetValue facetValue) {
+  public String getSelectQuery(CombinedStableIdFacetValue facetValue, int facetIndex) {
     String columnName = getColumnName(facetValue);
     // this will only return a single matched task, we'll need to extend this if we want to return more complex stuff
     return " %s.%s AS %s__%s, %s.target_stable_id AS %s__target_stable_id"
