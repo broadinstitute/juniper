@@ -31,23 +31,21 @@ public class AnswerFacetSqlGenerator implements FacetSqlGenerator<AnswerFacetVal
 
     @Override
     public String getSelectQuery(AnswerFacetValue facetValue, int facetIndex) {
-        String columnName = getColumnName(facetValue);
-        // this will only return a single matched task, we'll need to extend this if we want to return more complex stuff
-        return " answer.%s AS answer_%s"
-                .formatted(columnName, facetIndex);
+        return " answer.%s AS answer_%s".formatted(getColumnName(facetValue), facetIndex);
     }
 
     @Override
     public String getWhereClause(AnswerFacetValue facetValue, int facetIndex) {
-        String queryValue = facetValue.valueAsString();
-        if (facetValue.getStringValue() != null) {
-            queryValue = "'%s'".formatted(queryValue);
-        }
         return """
                  answer.%s = :%s
                  and answer.survey_stable_id = :%s
                  and answer.question_stable_id = :%s    
-                """.formatted(getColumnName(facetValue), getValueParam(facetIndex), getSurveyStableIdParam(facetIndex), getQuestionStableIdParam(facetIndex));
+                """.formatted(
+                        getColumnName(facetValue),
+                        getValueParam(facetIndex),
+                        getSurveyStableIdParam(facetIndex),
+                        getQuestionStableIdParam(facetIndex)
+                );
     }
 
     @Override
