@@ -26,7 +26,7 @@ export function useI18n(): I18nContextT {
 }
 
 /**
- * Provider for the current portal environment's i18n context.
+ * Provider for the current users i18n context.
  */
 export default function I18nProvider({ children }: { children: React.ReactNode }) {
   const { selectedLanguage } = useUser()

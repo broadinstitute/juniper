@@ -48,7 +48,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
     private final PortalLanguageService portalLanguageService;
-    private final CoreLanguageTextService languageTextService;
 
 
     public PortalPopulator(PortalService portalService,
@@ -63,8 +62,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            MailingListContactService mailingListContactService,
                            ConsentFormPopulator consentFormPopulator,
                            EmailTemplatePopulator emailTemplatePopulator,
-                           PortalLanguageService portalLanguageService,
-                           CoreLanguageTextService languageTextService) {
+                           PortalLanguageService portalLanguageService) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -79,7 +77,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.portalLanguageService = portalLanguageService;
-        this.languageTextService = languageTextService;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) {

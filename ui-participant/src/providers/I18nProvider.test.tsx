@@ -19,7 +19,7 @@ beforeEach(() => {
 })
 
 describe('I18nProvider', () => {
-  it('loads language texts based on the selected language', async () => {
+  it('substitutes internationalized text', async () => {
     const TestComponent = () => {
       const { i18n } = useI18n()
       return <span>{i18n('testKey')}</span>

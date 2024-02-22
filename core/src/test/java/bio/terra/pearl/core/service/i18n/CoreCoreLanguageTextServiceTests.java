@@ -45,7 +45,7 @@ public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
         List<CoreLanguageText> langTexts = coreLanguageTextService.findByLanguage("dev");
 
         assertThat(langTexts, hasSize(1));
-        assertThat(langTexts.get(0).getLanguage() , equalTo("dev"));
+        assertThat(langTexts.get(0).getLanguage(), equalTo("dev"));
     }
 
 }
