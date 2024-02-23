@@ -65,7 +65,8 @@ public class ParticipantTaskExtService {
             .orElseThrow(StudyEnvironmentMissing::new);
 
     if (assignDto.taskType().equals(TaskType.SURVEY)) {
-      return surveyTaskDispatcher.assign(assignDto, studyEnv.getId(), operator);
+      return surveyTaskDispatcher.assign(
+          assignDto, studyEnv.getId(), new ResponsibleEntity(operator));
     }
     throw new UnsupportedOperationException(
         "task type %s not supported".formatted(assignDto.taskType()));
