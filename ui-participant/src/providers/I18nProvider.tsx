@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { LanguageText } from '@juniper/ui-core'
 import Api from 'api/api'
 import { useUser } from './UserProvider'
 
 const I18nContext = createContext<I18nContextT | null>(null)
 
 export type I18nContextT = {
-  languageTexts: LanguageText[]
+  languageTexts: Record<string, string>
   i18n: (key: string) => string
 }
 
@@ -32,7 +31,7 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
   const { selectedLanguage } = useUser()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
-  const [languageTexts, setLanguageTexts] = useState<LanguageText[]>([])
+  const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
 
   useEffect(() => {
     reloadLanguageTexts(selectedLanguage)
@@ -51,7 +50,7 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
   }
 
   const i18n = (key: string) => {
-    return languageTexts.find(text => text.keyName === key)?.text || `{${key}}`
+    return languageTexts[key] || `{${key}}`
   }
 
   return <>

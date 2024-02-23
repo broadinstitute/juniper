@@ -80,7 +80,7 @@ paths:
       tags: [ i18n ]
       operationId: listCoreLanguageTexts
       parameters:
-        - { name: language, in: query, required: false, schema: { type: string } }
+        - { name: language, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: OK

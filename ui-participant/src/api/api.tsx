@@ -1,5 +1,5 @@
 import {
-  ConsentResponse, LanguageText,
+  ConsentResponse,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -196,7 +196,7 @@ export default {
     return parsedResponse
   },
 
-  async getLanguageTexts(selectedLanguage?: string): Promise<LanguageText[]> {
+  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
     const url = `${API_ROOT}/public/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
 
@@ -26,8 +27,8 @@ public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
     @Test
     @Transactional
     public void testFindAll(TestInfo testInfo) {
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "dev");
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "es");
+        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
+        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
 
         List<CoreLanguageText> langTexts = coreLanguageTextService.findAll();
 
@@ -39,13 +40,13 @@ public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
     @Test
     @Transactional
     public void testFindByPortalEnvIdAndLanguage(TestInfo testInfo) {
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "dev");
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "es");
+        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
+        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
 
-        List<CoreLanguageText> langTexts = coreLanguageTextService.findByLanguage("dev");
+        Map<String, String> langTexts = coreLanguageTextService.getLanguageTextMapForLanguage("dev");
 
-        assertThat(langTexts, hasSize(1));
-        assertThat(langTexts.get(0).getLanguage(), equalTo("dev"));
+        assertThat(langTexts.size(), equalTo(1));
+        assertThat(langTexts.get(getTestName(testInfo) + "login"), equalTo(getTestName(testInfo) + " text"));
     }
 
 }

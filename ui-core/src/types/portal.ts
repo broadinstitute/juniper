@@ -28,12 +28,6 @@ export type PortalEnvironment = {
   preRegSurveyId?: string
 }
 
-export type LanguageText = {
-  keyName: string
-  language: string
-  text: string
-}
-
 export type PortalEnvironmentConfig = {
   acceptingRegistration: boolean
   initialized: boolean

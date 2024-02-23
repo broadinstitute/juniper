@@ -11,15 +11,15 @@ public class CoreLanguageTextFactory {
     @Autowired
     private CoreLanguageTextService coreLanguageTextService;
 
-    public CoreLanguageText.CoreLanguageTextBuilder builder(String testName, String language) {
+    public CoreLanguageText.CoreLanguageTextBuilder builder(String testName, String keyName, String language) {
         return CoreLanguageText.builder()
                 .language(language)
-                .keyName(testName + " key")
+                .keyName(testName + keyName)
                 .text(testName + " text");
     }
 
-    public CoreLanguageText buildPersisted(String testName, String language) {
-        return coreLanguageTextService.create(builder(testName, language).build());
+    public CoreLanguageText buildPersisted(String testName, String keyName, String language) {
+        return coreLanguageTextService.create(builder(testName, keyName, language).build());
     }
 
 }
