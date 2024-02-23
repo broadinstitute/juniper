@@ -91,7 +91,7 @@ test('opens expected modals', async () => {
   const editNameBtn = screen.getByLabelText('Edit Name')
   const editBirthdayBtn = screen.getByLabelText('Edit Birthday')
   const editMailingAddressBtn = screen.getByLabelText('Edit Primary Address')
-  const editEmailBtn = screen.getByLabelText('Edit Email')
+  const editEmailBtn = screen.getByLabelText('Edit Contact Email')
   const editPhoneBtn = screen.getByLabelText('Edit Phone Number')
   const editNotificationsBtn = screen.getByLabelText('Edit Notifications')
   const editSolicitBtn = screen.getByLabelText('Edit Do Not Solicit')
@@ -112,14 +112,14 @@ test('opens expected modals', async () => {
   expect(screen.getByText('Edit Mailing Address')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Cancel'))
 
-  expect(screen.queryByText('Edit Communication Preferences')).not.toBeInTheDocument()
+  expect(screen.queryByText('Edit Contact Email')).not.toBeInTheDocument()
   await userEvent.click(editEmailBtn)
-  expect(screen.getByText('Edit Communication Preferences')).toBeInTheDocument()
+  expect(screen.getByText('Edit Contact Email')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Cancel'))
 
-  expect(screen.queryByText('Edit Communication Preferences')).not.toBeInTheDocument()
+  expect(screen.queryByText('Edit Phone Number')).not.toBeInTheDocument()
   await userEvent.click(editPhoneBtn)
-  expect(screen.getByText('Edit Communication Preferences')).toBeInTheDocument()
+  expect(screen.getByText('Edit Phone Number')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Cancel'))
 
   expect(screen.queryByText('Edit Communication Preferences')).not.toBeInTheDocument()
