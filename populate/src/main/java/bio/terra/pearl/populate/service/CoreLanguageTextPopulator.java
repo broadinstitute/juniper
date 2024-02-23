@@ -24,7 +24,7 @@ public class CoreLanguageTextPopulator extends BasePopulator<CoreLanguageText, C
 
     @Override
     public Optional<CoreLanguageText> findFromDto(CoreLanguageTextDto popDto, FilePopulateContext context) {
-        return Optional.empty();
+        return coreLanguageTextService.findByKeyNameAndLanguage(popDto.getKeyName(), popDto.getLanguage());
     }
 
     @Override

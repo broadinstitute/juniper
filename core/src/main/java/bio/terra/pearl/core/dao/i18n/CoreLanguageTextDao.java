@@ -6,6 +6,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class CoreLanguageTextDao extends BaseMutableJdbiDao<CoreLanguageText> {
@@ -21,5 +22,9 @@ public class CoreLanguageTextDao extends BaseMutableJdbiDao<CoreLanguageText> {
 
     public List<CoreLanguageText> findByLanguage(String language) {
         return findAllByProperty("language", language);
+    }
+
+    public Optional<CoreLanguageText> findByKeyNameAndLanguage(String keyName, String language) {
+        return findByTwoProperties("key_name", keyName, "language", language);
     }
 }

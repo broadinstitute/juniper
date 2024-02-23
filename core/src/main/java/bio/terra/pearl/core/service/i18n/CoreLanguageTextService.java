@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CoreLanguageTextService extends CrudService<CoreLanguageText, CoreLanguageTextDao> {
@@ -29,6 +30,10 @@ public class CoreLanguageTextService extends CrudService<CoreLanguageText, CoreL
         }
 
         return languageTextMap;
+    }
+
+    public Optional<CoreLanguageText> findByKeyNameAndLanguage(String keyName, String language) {
+        return coreLanguageTextDao.findByKeyNameAndLanguage(keyName, language);
     }
 
 }

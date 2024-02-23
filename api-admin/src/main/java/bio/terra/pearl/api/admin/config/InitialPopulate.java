@@ -25,11 +25,7 @@ public class InitialPopulate {
     } else {
       log.info("Existing admin users found, skipping seed populate");
     }
-    if (coreLanguageTextService.count() == 0) {
-      log.info("No core language texts found, populating");
-      baseSeedPopulator.populateCoreLanguageTexts();
-    } else {
-      log.info("Existing core language texts found, skipping");
-    }
+    log.info("Repopulating core language texts");
+    baseSeedPopulator.populateCoreLanguageTexts();
   }
 }
