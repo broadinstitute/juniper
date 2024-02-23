@@ -52,6 +52,8 @@ public class SmartyInternationalAddressValidationService implements AddressValid
             "CH"
     );
 
+
+    private static final List<String> APARTMENT_ON_OWN_LINE = List.of("GB", "FR", "IT", "CH");
     @Override
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
 
@@ -129,7 +131,7 @@ public class SmartyInternationalAddressValidationService implements AddressValid
     private MailingAddress suggestedAddress(MailingAddress input, Candidate candidate) {
 
         // many countries put the apartment on its own line
-        if (List.of("GB", "FR", "IT", "CH").contains(input.getCountry())) {
+        if (APARTMENT_ON_OWN_LINE.contains(input.getCountry())) {
             return suggestedAddressSubpremiseOnItsOwnLine(input, candidate);
         } else if (input.getCountry().equals("TR")) {
             return suggestedAddressDependentLocalityOnItsOwnLine(input, candidate);
