@@ -29,7 +29,7 @@
     },
     {
       "surveyStableId": "hd_hd_socialHealth",
-      "surveyVersion": 2,
+      "surveyVersion": 3,
       "answerPopDtos": [
         { "questionStableId": "hd_hd_socialHealth_neighborhoodGetsAlong", "stringValue": "agree"},
         { "questionStableId": "hd_hd_socialHealth_neighborhoodSharesValues", "stringValue": "stronglyAgree"},

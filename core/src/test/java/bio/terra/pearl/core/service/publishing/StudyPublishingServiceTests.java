@@ -150,6 +150,35 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testPublishSurveyAssignExisting(TestInfo testInfo) throws Exception {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
+                sandboxBundle.getPortal(), sandboxBundle.getStudy());
+        Survey survey = surveyFactory.buildPersisted(testName);
+        Survey autoAssignSurvey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo)).assignToExistingEnrollees(true));
+
+        // create an enrollee in the irb environment with no survey tasks
+        EnrolleeFactory.EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
+
+        // attach surveys to sandbox, then copy sandbox to irb
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+        surveyFactory.attachToEnv(autoAssignSurvey, sandboxBundle.getStudyEnv().getId(), true);
+
+        // after publishing, the irb should have the surveys, and the enrollee should have a task for the auto-assigned survey
+        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox, EnvironmentName.irb);
+
+        List<StudyEnvironmentSurvey> irbSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(irbBundle.getStudyEnv().getId());
+        assertThat(irbSurveys, hasSize(2));
+        // confirm the task version got updated too
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(irbEnrollee.enrollee().getId());
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0).getTargetStableId(), equalTo(autoAssignSurvey.getStableId()));
+    }
+
+
+    @Test
+    @Transactional
     public void testApplyChangesConsents(TestInfo info) throws Exception {
         String testName = getTestName(info);
         Study study = studyFactory.buildPersisted(testName);

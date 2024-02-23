@@ -17,6 +17,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -39,6 +40,7 @@ public class SurveyExtServiceAuthTests {
   @MockBean private StudyEnvironmentSurveyService mockStudyEnvironmentSurveyService;
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
   @MockBean private PortalEnvironmentService mockPortalEnvironmentService;
+  @MockBean private EventService mockEventService;
 
   @Test
   public void createConfiguredRequiresPortalAuth() {
