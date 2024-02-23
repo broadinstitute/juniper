@@ -37,7 +37,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                 "dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portal()),
                 "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
                 "participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv()),
-                "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
+                "siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
                 // providing a study isn't required, since emails might come from the portal, rather than a study
                 // but immutable map doesn't allow nulls
                 "study", contextInfo.study() != null ? contextInfo.study() : ""));
@@ -93,7 +93,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     public String getImageBaseUrl(PortalEnvironment portalEnvironment, String portalShortcode) {
         return routingPaths.getParticipantBaseUrl(portalEnvironment, portalShortcode)
                 + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnvironment.getEnvironmentName()
-                + "/siteImages";
+                + "/siteMedia";
     }
 
     public String getParticipantSupportEmailLink(PortalEnvironment portalEnvironment) {

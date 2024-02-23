@@ -1,36 +1,36 @@
 package bio.terra.pearl.core.dao.site;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.model.site.SiteImage;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import bio.terra.pearl.core.model.site.SiteImageMetadata;
+import bio.terra.pearl.core.model.site.SiteMedia;
+import bio.terra.pearl.core.model.site.SiteMediaMetadata;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 @Component
-public class SiteImageDao extends BaseJdbiDao<SiteImage> {
+public class SiteMediaDao extends BaseJdbiDao<SiteMedia> {
     private String metadataFieldString;
-    private RowMapper imageMetadataRowMapper = BeanMapper.of(SiteImageMetadata.class);
-    public SiteImageDao(Jdbi jdbi) {
+    private RowMapper imageMetadataRowMapper = BeanMapper.of(SiteMediaMetadata.class);
+
+    public SiteMediaDao(Jdbi jdbi) {
         super(jdbi);
-        jdbi.registerRowMapper(SiteImageMetadata.class, imageMetadataRowMapper);
+        jdbi.registerRowMapper(SiteMediaMetadata.class, imageMetadataRowMapper);
         List<String> metadataColumns = getGetQueryColumns();
         metadataColumns.remove("data");
         metadataFieldString = metadataColumns.stream().collect(Collectors.joining(", "));
     }
 
     @Override
-    protected Class<SiteImage> getClazz() {
-        return SiteImage.class;
+    protected Class<SiteMedia> getClazz() {
+        return SiteMedia.class;
     }
 
-    public Optional<SiteImage> findOne(String portalShortcode, String cleanFileName, int version) {
+    public Optional<SiteMedia> findOne(String portalShortcode, String cleanFileName, int version) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where portal_shortcode = :portalShortcode"
                                 + " and clean_file_name = :cleanFileName and version = :version;")
@@ -42,7 +42,7 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
         );
     }
 
-    public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
+    public Optional<SiteMedia> findOneLatestVersion(String portalShortcode, String cleanFileName) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where portal_shortcode = :portalShortcode"
                                 + " and clean_file_name = :cleanFileName order by version desc limit 1;")
@@ -64,18 +64,18 @@ public class SiteImageDao extends BaseJdbiDao<SiteImage> {
         ) + 1;
     }
 
-    public List<SiteImage> findByPortal(String portalShortcode) {
+    public List<SiteMedia> findByPortal(String portalShortcode) {
         return findAllByProperty("portal_shortcode", portalShortcode);
     }
 
-    public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
+    public List<SiteMediaMetadata> findMetadataByPortal(String portalShortcode) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("""
                                 select %s from %s 
                                 where portal_shortcode = :portalShortcode
                                 """.formatted(metadataFieldString, tableName))
                         .bind("portalShortcode", portalShortcode)
-                        .mapTo(SiteImageMetadata.class)
+                        .mapTo(SiteMediaMetadata.class)
                         .list()
         );
     }

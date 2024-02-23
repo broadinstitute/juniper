@@ -9,11 +9,10 @@ import bio.terra.pearl.api.participant.service.StatusService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentDescriptor;
-import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteMedia;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.site.SiteImageService;
+import bio.terra.pearl.core.service.site.SiteMediaService;
 import jakarta.servlet.http.HttpServletRequest;
-import java.nio.file.*;
 import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @Controller
 public class PublicApiController implements PublicApi {
   private final B2CConfigurationService b2CConfigurationService;
-  private final SiteImageService siteImageService;
+  private final SiteMediaService siteMediaService;
   private final PortalService portalService;
   private final StatusService statusService;
   private final VersionConfiguration versionConfiguration;
@@ -40,13 +39,13 @@ public class PublicApiController implements PublicApi {
   @Autowired
   public PublicApiController(
       B2CConfigurationService b2CConfigurationService,
-      SiteImageService siteImageService,
+      SiteMediaService siteMediaService,
       PortalService portalService,
       StatusService statusService,
       VersionConfiguration versionConfiguration,
       Environment env) {
     this.b2CConfigurationService = b2CConfigurationService;
-    this.siteImageService = siteImageService;
+    this.siteMediaService = siteMediaService;
     this.portalService = portalService;
     this.statusService = statusService;
     this.versionConfiguration = versionConfiguration;
@@ -107,8 +106,8 @@ public class PublicApiController implements PublicApi {
     if (portal.isEmpty()) {
       return ResponseEntity.notFound().build();
     }
-    Optional<SiteImage> imageOpt =
-        siteImageService.findOneLatestVersion(portal.get().shortcode(), "favicon.ico");
+    Optional<SiteMedia> imageOpt =
+        siteMediaService.findOneLatestVersion(portal.get().shortcode(), "favicon.ico");
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType("image/x-icon"))
         .body(

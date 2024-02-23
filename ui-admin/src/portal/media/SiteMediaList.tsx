@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import Api, { getImageUrl, PortalEnvironment, SiteImageMetadata } from 'api/api'
+import Api, { getImageUrl, PortalEnvironment, SiteMediaMetadata } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
-  getCoreRowModel, getPaginationRowModel,
+  getCoreRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable
@@ -14,34 +15,36 @@ import { LoadedPortalContextT } from '../PortalProvider'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Modal } from 'react-bootstrap'
-import SiteImageUploadModal, { allowedImageTypes } from './SiteImageUploadModal'
+import SiteMediaUploadModal, { allowedImageTypes } from './SiteMediaUploadModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faClipboard, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
+import SiteMediaDeleteModal from './SiteMediaDeleteModal'
 
 /** shows a list of images in a table */
-export default function SiteImageList({ portalContext, portalEnv }:
+export default function SiteMediaList({ portalContext, portalEnv }:
                                             {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
-  const [images, setImages] = React.useState<SiteImageMetadata[]>([])
+  const [images, setImages] = React.useState<SiteMediaMetadata[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{
     id: 'cleanFileName', desc: false
   }])
-  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteImageList')
-  const [previewImage, setPreviewImage] = useState<SiteImageMetadata>()
-  const [updatingImage, setUpdatingImage] = useState<SiteImageMetadata>()
+  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteMediaList')
+  const [previewImage, setPreviewImage] = useState<SiteMediaMetadata>()
+  const [updatingImage, setUpdatingImage] = useState<SiteMediaMetadata>()
   const [showUploadModal, setShowUploadModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState<SiteMediaMetadata | undefined>()
 
-  const updateImage = (image: SiteImageMetadata) => {
+  const updateImage = (image: SiteMediaMetadata) => {
     setUpdatingImage(image)
     setShowUploadModal(true)
   }
 
-  const supportsPreview = (image: SiteImageMetadata) => {
+  const supportsPreview = (image: SiteMediaMetadata) => {
     return allowedImageTypes.some(ext => image.cleanFileName.endsWith(ext))
   }
 
-  const columns: ColumnDef<SiteImageMetadata>[] = [{
+  const columns: ColumnDef<SiteMediaMetadata>[] = [{
     header: 'File name',
     accessorKey: 'cleanFileName'
   }, {
@@ -85,6 +88,14 @@ export default function SiteImageList({ portalContext, portalEnv }:
     className="btn btn-secondary">
       <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Copy Path
     </button>
+  }, {
+    header: '',
+    id: 'delete',
+    cell: ({ row: { original } }) => {
+      return <button className="btn btn-secondary">
+        <FontAwesomeIcon icon={faTrash} onClick={() => setShowDeleteModal(original)}/>
+      </button>
+    }
   }]
 
   const table = useReactTable({
@@ -110,9 +121,13 @@ export default function SiteImageList({ portalContext, portalEnv }:
     setShowUploadModal(false)
   }
 
+  const onSubmitDelete = () => {
+    reload()
+    setShowDeleteModal(undefined)
+  }
 
   const { isLoading, reload } = useLoadingEffect(async () => {
-    const result = await Api.getPortalImages(portalContext.portal.shortcode)
+    const result = await Api.getPortalMedia(portalContext.portal.shortcode)
     /** Only show the most recent version of a given image in the list */
     setImages(filterPriorVersions(result))
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
@@ -134,19 +149,24 @@ export default function SiteImageList({ portalContext, portalEnv }:
         previewImage.cleanFileName,
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
-    { showUploadModal && <SiteImageUploadModal portalContext={portalContext}
+    {showUploadModal && <SiteMediaUploadModal portalContext={portalContext}
       onDismiss={() => {
         setShowUploadModal(false)
         setUpdatingImage(undefined)
       }}
-      existingImage={updatingImage}
-      onSubmit={onSubmitUpload}/> }
+      existingMedia={updatingImage}
+      onSubmit={onSubmitUpload}/>}
+    {showDeleteModal && <SiteMediaDeleteModal
+      portalContext={portalContext}
+      onDismiss={() => setShowDeleteModal(undefined)}
+      media={showDeleteModal}
+      onSubmit={onSubmitDelete}/>}
   </div>
 }
 
 /** Return an array of only the most recent of each image version */
-export const filterPriorVersions = (imageList: SiteImageMetadata[]): SiteImageMetadata[] => {
-  const latestVersions: Record<string, SiteImageMetadata> = {}
+export const filterPriorVersions = (imageList: SiteMediaMetadata[]): SiteMediaMetadata[] => {
+  const latestVersions: Record<string, SiteMediaMetadata> = {}
   imageList.forEach(image => {
     if (image.version > (latestVersions[image.cleanFileName]?.version ?? -1)) {
       latestVersions[image.cleanFileName] = image

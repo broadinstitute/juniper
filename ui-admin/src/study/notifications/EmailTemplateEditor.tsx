@@ -20,10 +20,10 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
 
   const replacePlaceholders = (html: string) => {
-    return html.replaceAll('${siteImageBaseUrl}', location.origin + getImageBaseUrl(portalShortcode))
+    return html.replaceAll('${siteMediaBaseUrl}', location.origin + getImageBaseUrl(portalShortcode))
   }
   const insertPlaceholders = (html: string) => {
-    return html.replaceAll(location.origin + getImageBaseUrl(portalShortcode), '${siteImageBaseUrl}')
+    return html.replaceAll(location.origin + getImageBaseUrl(portalShortcode), '${siteMediaBaseUrl}')
   }
 
   const onEditorLoaded: EmailEditorProps['onReady'] = unlayer => {

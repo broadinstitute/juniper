@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import Api, { SiteImageMetadata } from 'api/api'
+import Api, { SiteMediaMetadata } from 'api/api'
 import { doApiLoad } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
@@ -21,32 +21,35 @@ const FILE_TYPE_REGEX = new RegExp(
   ].join('|')
 )
 /** Renders a modal for an admin to submit a sample collection kit request. */
-export default function SiteImageUploadModal({
+export default function SiteMediaUploadModal({
   portalContext,
   onDismiss, onSubmit,
-  existingImage
+  existingMedia
 }: {
-    portalContext: LoadedPortalContextT,
-    onDismiss: () => void,
-    existingImage?: SiteImageMetadata,
-    onSubmit: () => void }) {
+  portalContext: LoadedPortalContextT,
+  onDismiss: () => void,
+  existingMedia?: SiteMediaMetadata,
+  onSubmit: () => void
+}) {
   const [isLoading, setIsLoading] = useState(false)
 
-  const [fileName, setFileName] = useState(existingImage?.cleanFileName ?? '')
+  const [fileName, setFileName] = useState(existingMedia?.cleanFileName ?? '')
 
   const handleFileChange = (newFile: File) => {
     // only autofill the name field if this is a new image
-    if (!existingImage) {
+    if (!existingMedia) {
       setFileName(cleanFileName(newFile.name))
     }
   }
 
   const { file, FileChooser } = useFileUploadButton(handleFileChange)
   const uploadImage = () => {
-    if (!file) { return }
-    const version = existingImage?.version ? existingImage.version + 1 : 1
+    if (!file) {
+      return
+    }
+    const version = existingMedia?.version ? existingMedia.version + 1 : 1
     doApiLoad(async () => {
-      await Api.uploadPortalImage(portalContext.portal.shortcode, fileName, version, file)
+      await Api.uploadPortalMedia(portalContext.portal.shortcode, fileName, version, file)
       Store.addNotification(successNotification('file uploaded'))
       onSubmit()
     }, { setIsLoading })
@@ -63,7 +66,7 @@ export default function SiteImageUploadModal({
 
   return <Modal show={true} onHide={onDismiss}>
     <Modal.Header closeButton>
-      <Modal.Title>{existingImage ? 'Update' : 'Upload'} media</Modal.Title>
+      <Modal.Title>{existingMedia ? 'Update' : 'Upload'} media</Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
@@ -72,18 +75,18 @@ export default function SiteImageUploadModal({
             Maximum size is 10MB</p>
           File:
           <div>
-            { FileChooser }
+            {FileChooser}
             <span className="text-muted fst-italic ms-2">{file?.name}</span>
           </div>
-          { validationMessages.map(msg => <div className='text-danger'>{msg}</div>)}
+          {validationMessages.map(msg => <div className='text-danger'>{msg}</div>)}
         </div>
         <label className="mt-3 mb-2 form-label">
-                    Name:
-          <input type="text" className="form-control" readOnly={!!existingImage}
+          Name:
+          <input type="text" className="form-control" readOnly={!!existingMedia}
             onChange={e => setFileName(cleanFileName(e.target.value))} value={fileName}/>
         </label>
         <p>File names must be lowercase,
-                    and cannot contain special characters other than dashes or underscores.</p>
+          and cannot contain special characters other than dashes or underscores.</p>
 
       </form>
     </Modal.Body>

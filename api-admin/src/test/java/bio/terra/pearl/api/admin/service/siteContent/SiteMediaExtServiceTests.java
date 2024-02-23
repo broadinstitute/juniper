@@ -13,10 +13,10 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-public class SiteImageExtServiceTests extends BaseSpringBootTest {
+public class SiteMediaExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private PortalFactory portalFactory;
-  @Autowired private SiteImageExtService siteImageExtService;
+  @Autowired private SiteMediaExtService siteMediaExtService;
 
   @Test
   @Transactional
@@ -26,7 +26,7 @@ public class SiteImageExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          siteImageExtService.list(portal.getShortcode(), operator);
+          siteMediaExtService.list(portal.getShortcode(), operator);
         });
   }
 
@@ -38,7 +38,7 @@ public class SiteImageExtServiceTests extends BaseSpringBootTest {
     Assertions.assertThrows(
         NotFoundException.class,
         () -> {
-          siteImageExtService.upload(
+          siteMediaExtService.upload(
               portal.getShortcode(), "blah", "blah".getBytes(StandardCharsets.UTF_8), operator);
         });
   }

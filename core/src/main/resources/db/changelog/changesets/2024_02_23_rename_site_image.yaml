@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "rename_site_image"
+      author: connorlbark
+      changes:
+        - renameTable:
+            newTableName:  site_media
+            oldTableName:  site_image
