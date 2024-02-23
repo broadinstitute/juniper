@@ -19,7 +19,9 @@ export type SurveyParamsT = StudyParams & {
 export type SaveableFormProps = {
   content: string
   required?: boolean
-  assignToAllNewEnrollees?: boolean,
+  assignToAllNewEnrollees?: boolean
+  assignToExistingEnrollees?: boolean
+  rule?: string
   autoUpdateTaskAssignments?: boolean
 }
 

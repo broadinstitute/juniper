@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "assign_to_existing_enrollees"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: survey
+            columns:
+              - column: { name: assign_to_existing_enrollees, type: boolean, defaultValueBoolean: false,
+                          constraints: { nullable: false }
+              }
