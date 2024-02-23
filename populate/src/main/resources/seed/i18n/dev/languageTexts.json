@@ -1,14 +1,14 @@
 [
-  {"messageKey": "navbarDashboard", "text": "DEV_Dashboard", "language": "dev"},
-  {"messageKey": "navbarChangePassword", "text": "DEV_Change Password", "language": "dev"},
-  {"messageKey": "navbarLogout", "text": "DEV_Log Out", "language": "dev"},
-  {"messageKey": "navbarLogin", "text": "DEV_Log In", "language": "dev"},
-  {"messageKey": "navbarJoin", "text": "DEV_Register", "language": "dev"},
-  {"messageKey": "taskComplete", "text": "DEV_Complete", "language": "dev"},
-  {"messageKey": "taskInProgress", "text": "DEV_In Progress", "language": "dev"},
-  {"messageKey": "taskNotStarted", "text": "DEV_Not Started", "language": "dev"},
-  {"messageKey": "taskDeclined", "text": "DEV_Declined", "language": "dev"},
-  {"messageKey": "taskLocked", "text": "DEV_Locked", "language": "dev"},
-  {"messageKey": "tasksNoneForStudy", "text": "DEV_No tasks for this study", "language": "dev"},
-  {"messageKey": "surveysSomeLocked", "text": "DEV_Some surveys are locked until other required tasks are completed.", "language": "dev"}
+  {"i18nKey": "navbarDashboard", "text": "DEV_Dashboard", "language": "dev"},
+  {"i18nKey": "navbarChangePassword", "text": "DEV_Change Password", "language": "dev"},
+  {"i18nKey": "navbarLogout", "text": "DEV_Log Out", "language": "dev"},
+  {"i18nKey": "navbarLogin", "text": "DEV_Log In", "language": "dev"},
+  {"i18nKey": "navbarJoin", "text": "DEV_Register", "language": "dev"},
+  {"i18nKey": "taskComplete", "text": "DEV_Complete", "language": "dev"},
+  {"i18nKey": "taskInProgress", "text": "DEV_In Progress", "language": "dev"},
+  {"i18nKey": "taskNotStarted", "text": "DEV_Not Started", "language": "dev"},
+  {"i18nKey": "taskDeclined", "text": "DEV_Declined", "language": "dev"},
+  {"i18nKey": "taskLocked", "text": "DEV_Locked", "language": "dev"},
+  {"i18nKey": "tasksNoneForStudy", "text": "DEV_No tasks for this study", "language": "dev"},
+  {"i18nKey": "surveysSomeLocked", "text": "DEV_Some surveys are locked until other required tasks are completed.", "language": "dev"}
 ]

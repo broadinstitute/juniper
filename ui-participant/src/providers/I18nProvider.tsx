@@ -51,7 +51,7 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
   }
 
   const i18n = (key: string) => {
-    return languageTexts.find(text => text.messageKey === key)?.text || `{${key}}`
+    return languageTexts.find(text => text.i18nKey === key)?.text || `{${key}}`
   }
 
   return <>

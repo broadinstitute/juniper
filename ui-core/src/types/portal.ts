@@ -29,7 +29,7 @@ export type PortalEnvironment = {
 }
 
 export type LanguageText = {
-  messageKey: string
+  i18nKey: string
   language: string
   text: string
 }

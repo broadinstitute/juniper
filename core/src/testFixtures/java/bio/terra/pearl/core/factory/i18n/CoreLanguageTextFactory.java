@@ -16,7 +16,7 @@ public class CoreLanguageTextFactory {
     public CoreLanguageText.CoreLanguageTextBuilder builder(String testName, String language) {
         return CoreLanguageText.builder()
                 .language(language)
-                .messageKey(testName + " key")
+                .i18nKey(testName + " key")
                 .text(testName + " text");
     }
 
