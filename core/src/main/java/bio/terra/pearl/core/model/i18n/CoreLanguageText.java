@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class CoreLanguageText extends BaseEntity {
-    private String i18nKey;
+    private String keyName;
     private String text;
     private String language;
 }

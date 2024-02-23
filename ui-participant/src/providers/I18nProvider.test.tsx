@@ -5,7 +5,7 @@ import { useUser } from './UserProvider'
 
 jest.mock('api/api', () => ({
   getLanguageTexts: () => {
-    return Promise.resolve([{ i18nKey: 'testKey', text: 'Test Text', language: 'en' }])
+    return Promise.resolve([{ keyName: 'testKey', text: 'Test Text', language: 'en' }])
   }
 }))
 

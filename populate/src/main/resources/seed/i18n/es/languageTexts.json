@@ -1,14 +1,14 @@
 [
-  {"i18nKey": "navbarDashboard", "text": "Tablero", "language": "es"},
-  {"i18nKey": "navbarChangePassword", "text": "Cambiar Contraseña", "language": "es"},
-  {"i18nKey": "navbarLogout", "text": "Cerrar Sesión", "language": "es"},
-  {"i18nKey": "navbarLogin", "text": "Iniciar Sesión", "language": "es"},
-  {"i18nKey": "navbarJoin", "text": "Registrarse", "language": "es"},
-  {"i18nKey": "taskComplete", "text": "Completo", "language": "es"},
-  {"i18nKey": "taskInProgress", "text": "En Progreso", "language": "es"},
-  {"i18nKey": "taskNotStarted", "text": "No Iniciado", "language": "es"},
-  {"i18nKey": "taskDeclined", "text": "Rechazado", "language": "es"},
-  {"i18nKey": "taskLocked", "text": "Bloqueado", "language": "es"},
-  {"i18nKey": "tasksNoneForStudy", "text": "No hay tareas para este estudio", "language": "es"},
-  {"i18nKey": "surveysSomeLocked", "text": "Algunas encuestas están bloqueadas hasta que se completen otras tareas requeridas.", "language": "es"}
+  {"keyName": "navbarDashboard", "text": "Tablero", "language": "es"},
+  {"keyName": "navbarChangePassword", "text": "Cambiar Contraseña", "language": "es"},
+  {"keyName": "navbarLogout", "text": "Cerrar Sesión", "language": "es"},
+  {"keyName": "navbarLogin", "text": "Iniciar Sesión", "language": "es"},
+  {"keyName": "navbarJoin", "text": "Registrarse", "language": "es"},
+  {"keyName": "taskComplete", "text": "Completo", "language": "es"},
+  {"keyName": "taskInProgress", "text": "En Progreso", "language": "es"},
+  {"keyName": "taskNotStarted", "text": "No Iniciado", "language": "es"},
+  {"keyName": "taskDeclined", "text": "Rechazado", "language": "es"},
+  {"keyName": "taskLocked", "text": "Bloqueado", "language": "es"},
+  {"keyName": "tasksNoneForStudy", "text": "No hay tareas para este estudio", "language": "es"},
+  {"keyName": "surveysSomeLocked", "text": "Algunas encuestas están bloqueadas hasta que se completen otras tareas requeridas.", "language": "es"}
 ]
