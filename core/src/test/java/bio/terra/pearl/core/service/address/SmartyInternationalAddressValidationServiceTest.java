@@ -303,48 +303,4 @@ class SmartyInternationalAddressValidationServiceTest extends BaseSpringBootTest
 
         Mockito.doAnswer(answer).when(mockSmartyClient).send(any(Lookup.class));
     }
-
-    private static final String MORE_RESPONSES = """
-                  {
-                    "address1": "Şehreküstü Mah.",
-                    "address2": "Cimek Sokak 3/1",
-                    "address3": "37300 Tosya/Kastamonu",
-                    "components": {
-                      "super_administrative_area": "Karadeniz",
-                      "administrative_area": "Kastamonu",
-                      "sub_administrative_area": "Tosya",
-                      "country_iso_3": "TUR",
-                      "locality": "Tosya",
-                      "dependent_locality": "Şehreküstü Mah.",
-                      "postal_code": "37300",
-                      "postal_code_short": "37300",
-                      "premise": "3/1",
-                      "premise_number": "3/1",
-                      "thoroughfare": "Cimek Sokak"
-                    },
-                    "metadata": {
-                      "address_format": "dependent_locality|thoroughfare premise|postal_code locality/administrative_area"
-                    },
-                    "analysis": {
-                      "verification_status": "Verified",
-                      "address_precision": "DeliveryPoint",
-                      "max_address_precision": "DeliveryPoint",
-                      "changes": {
-                        "components": {
-                          "super_administrative_area": "Added",
-                          "administrative_area": "Verified-NoChange",
-                          "sub_administrative_area": "Added",
-                          "country_iso_3": "Added",
-                          "locality": "Verified-NoChange",
-                          "dependent_locality": "Verified-NoChange",
-                          "postal_code": "Verified-NoChange",
-                          "postal_code_short": "Verified-NoChange",
-                          "premise": "Verified-NoChange",
-                          "premise_number": "Verified-NoChange",
-                          "thoroughfare": "Verified-NoChange"
-                        }
-                      }
-                    }
-                  }
-            """;
 }
