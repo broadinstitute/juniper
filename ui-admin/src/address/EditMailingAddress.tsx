@@ -19,11 +19,21 @@ import classNames from 'classnames'
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
+  'US',
   'CA',
-  'MX',
   'GB',
+  'MX',
   'AU',
-  'US'
+  'TR',
+  'ES',
+  'PL',
+  'DE',
+  'FR',
+  'IT',
+  'CZ',
+  'BR',
+  'SE',
+  'CH'
 ]
 
 /**
