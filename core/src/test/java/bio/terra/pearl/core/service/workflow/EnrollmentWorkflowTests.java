@@ -207,8 +207,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(testInfo));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-
         ConsentForm consent = consentFormFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentFormId(consent.getId())
@@ -222,7 +220,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         HubResponse<Enrollee> hubResponse2 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode,userBundle.user(), userBundle.ppUser(),
                 null);
         Enrollee governedEnrollee1 = hubResponse1.getResponse();
-        Enrollee governedEnrollee2 = hubResponse2.getEnrollee();
+        Enrollee governedEnrollee2 = hubResponse2.getResponse();
 
         Assertions.assertNotEquals(governedEnrollee1.getShortcode(), governedEnrollee2.getShortcode());
         Assertions.assertNotEquals(governedEnrollee1.getParticipantUserId(), governedEnrollee2.getParticipantUserId());
