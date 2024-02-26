@@ -16,5 +16,6 @@
   {"keyName": "taskTypeConsent", "text": "Consentimiento", "language": "es"},
   {"keyName": "taskTypeForms", "text": "Formas", "language": "es"},
   {"keyName": "taskStart", "text": "Comenzar", "language": "es"},
-  {"keyName": "taskContinue", "text": "Continuar", "language": "es"}
+  {"keyName": "taskContinue", "text": "Continuar", "language": "es"},
+  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"}
 ]

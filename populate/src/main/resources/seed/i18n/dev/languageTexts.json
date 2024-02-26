@@ -16,5 +16,6 @@
   {"keyName": "taskTypeConsent", "text": "DEV_Consent", "language": "dev"},
   {"keyName": "taskTypeForms", "text": "DEV_Forms", "language": "dev"},
   {"keyName": "taskStart", "text": "DEV_Start", "language": "dev"},
-  {"keyName": "taskContinue", "text": "DEV_Continue", "language": "dev"}
+  {"keyName": "taskContinue", "text": "DEV_Continue", "language": "dev"},
+  {"keyName": "outreachLearnMore", "text": "DEV_Learn More", "language": "dev"}
 ]
