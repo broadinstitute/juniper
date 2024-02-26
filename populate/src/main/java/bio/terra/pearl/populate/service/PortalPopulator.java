@@ -10,7 +10,6 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.i18n.CoreLanguageTextService;
 import bio.terra.pearl.core.service.portal.*;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;

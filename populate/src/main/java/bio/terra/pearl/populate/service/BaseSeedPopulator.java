@@ -2,7 +2,6 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.service.EnvironmentService;
 import bio.terra.pearl.core.service.admin.AdminUserService;
-import bio.terra.pearl.core.service.i18n.CoreLanguageTextService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,7 +23,7 @@ public class BaseSeedPopulator {
     private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
-    private CoreLanguageTextPopulator coreLanguageTextPopulator;
+    private LanguageTextPopulator languageTextPopulator;
     private KitTypePopulator kitTypePopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
@@ -36,20 +35,20 @@ public class BaseSeedPopulator {
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
-    public static final List<String> CORE_LANGUAGE_TEXTS_TO_POPULATE =
+    public static final List<String> LANGUAGE_TEXTS_TO_POPULATE =
             Arrays.asList("i18n/en/languageTexts.json", "i18n/es/languageTexts.json", "i18n/dev/languageTexts.json");
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
                              AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
                              EnvironmentService environmentService, KitTypePopulator kitTypePopulator,
-                             CoreLanguageTextPopulator coreLanguageTextPopulator) {
+                             LanguageTextPopulator languageTextPopulator) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
         this.kitTypePopulator = kitTypePopulator;
-        this.coreLanguageTextPopulator = coreLanguageTextPopulator;
+        this.languageTextPopulator = languageTextPopulator;
     }
 
     public SetupStats populate(String filePathName) throws IOException {
@@ -68,9 +67,9 @@ public class BaseSeedPopulator {
                 .build();
     }
 
-    public void populateCoreLanguageTexts() {
-        for (String file : CORE_LANGUAGE_TEXTS_TO_POPULATE) {
-            coreLanguageTextPopulator.populateList(new FilePopulateContext(file), false);
+    public void populateLanguageTexts() {
+        for (String file : LANGUAGE_TEXTS_TO_POPULATE) {
+            languageTextPopulator.populateList(new FilePopulateContext(file), false);
         }
     }
 

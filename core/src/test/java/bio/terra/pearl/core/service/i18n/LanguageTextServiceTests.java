@@ -1,10 +1,8 @@
 package bio.terra.pearl.core.service.i18n;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.i18n.CoreLanguageTextFactory;
-import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.i18n.CoreLanguageText;
-import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.factory.i18n.LanguageTextFactory;
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,21 +14,21 @@ import static org.hamcrest.Matchers.*;
 import java.util.List;
 import java.util.Map;
 
-public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
+public class LanguageTextServiceTests extends BaseSpringBootTest  {
 
     @Autowired
-    private CoreLanguageTextService coreLanguageTextService;
+    private LanguageTextService languageTextService;
 
     @Autowired
-    private CoreLanguageTextFactory coreLanguageTextFactory;
+    private LanguageTextFactory languageTextFactory;
 
     @Test
     @Transactional
     public void testFindAll(TestInfo testInfo) {
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
+        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
+        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
 
-        List<CoreLanguageText> langTexts = coreLanguageTextService.findAll();
+        List<LanguageText> langTexts = languageTextService.findAll();
 
         assertThat(langTexts, hasSize(2));
         assertThat(langTexts.get(0).getLanguage(), equalTo("dev"));
@@ -40,10 +38,10 @@ public class CoreCoreLanguageTextServiceTests extends BaseSpringBootTest  {
     @Test
     @Transactional
     public void testFindByPortalEnvIdAndLanguage(TestInfo testInfo) {
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
-        coreLanguageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
+        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
+        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
 
-        Map<String, String> langTexts = coreLanguageTextService.getLanguageTextMapForLanguage("dev");
+        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage("dev");
 
         assertThat(langTexts.size(), equalTo(1));
         assertThat(langTexts.get(getTestName(testInfo) + "login"), equalTo(getTestName(testInfo) + " text"));

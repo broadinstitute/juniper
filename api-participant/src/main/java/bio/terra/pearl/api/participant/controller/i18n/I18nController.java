@@ -1,28 +1,28 @@
 package bio.terra.pearl.api.participant.controller.i18n;
 
 import bio.terra.pearl.api.participant.api.I18nApi;
-import bio.terra.pearl.core.service.i18n.CoreLanguageTextService;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import java.util.HashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class I18nController implements I18nApi {
-  private CoreLanguageTextService languageTextService;
+  private LanguageTextService languageTextService;
 
-  public I18nController(CoreLanguageTextService languageTextService) {
+  public I18nController(LanguageTextService languageTextService) {
     this.languageTextService = languageTextService;
   }
 
   @Override
-  public ResponseEntity<Object> listCoreLanguageTexts(String language) {
-    HashMap<String, String> coreLanguageTexts;
+  public ResponseEntity<Object> listLanguageTexts(String language) {
+    HashMap<String, String> languageTexts;
     if (language != null) {
-      coreLanguageTexts = languageTextService.getLanguageTextMapForLanguage(language);
+      languageTexts = languageTextService.getLanguageTextMapForLanguage(language);
     } else {
       // default to English
-      coreLanguageTexts = languageTextService.getLanguageTextMapForLanguage("en");
+      languageTexts = languageTextService.getLanguageTextMapForLanguage("en");
     }
-    return ResponseEntity.ok(coreLanguageTexts);
+    return ResponseEntity.ok(languageTexts);
   }
 }

@@ -76,9 +76,9 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/public/i18n/v1:
     get:
-      summary: Lists the core application texts for a given language
+      summary: Lists the application texts for a given language
       tags: [ i18n ]
-      operationId: listCoreLanguageTexts
+      operationId: listLanguageTexts
       parameters:
         - { name: language, in: query, required: true, schema: { type: string } }
       responses:

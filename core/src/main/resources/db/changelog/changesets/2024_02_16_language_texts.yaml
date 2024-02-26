@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: add_core_language_text
+      id: add_language_text
       author: mbemis
       changes:
         - createTable:
-            tableName: core_language_text
+            tableName: language_text
             columns:
               - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
               - column: { name: created_at, type: datetime, constraints: { nullable: false } }
@@ -13,6 +13,6 @@ databaseChangeLog:
               - column: { name: text, type: text, constraints: { nullable: false } }
               - column: { name: language, type: text, constraints: { nullable: false } }
         - addUniqueConstraint:
-            tableName: core_language_text
+            tableName: language_text
             columnNames: key_name, language
             constraintName: key_name_language
