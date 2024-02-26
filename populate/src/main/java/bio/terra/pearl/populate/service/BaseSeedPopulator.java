@@ -23,6 +23,7 @@ public class BaseSeedPopulator {
     private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
     private EnvironmentService environmentService;
+    private LanguageTextPopulator languageTextPopulator;
     private KitTypePopulator kitTypePopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
@@ -34,15 +35,20 @@ public class BaseSeedPopulator {
     public static final List<String> ENVIRONMENTS_TO_POPULATE =
             Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
 
+    public static final List<String> LANGUAGE_TEXTS_TO_POPULATE =
+            Arrays.asList("i18n/en/languageTexts.json", "i18n/es/languageTexts.json", "i18n/dev/languageTexts.json");
+
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
                              AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
-                             EnvironmentService environmentService, KitTypePopulator kitTypePopulator) {
+                             EnvironmentService environmentService, KitTypePopulator kitTypePopulator,
+                             LanguageTextPopulator languageTextPopulator) {
         this.adminUserPopulator = adminUserPopulator;
         this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.environmentService = environmentService;
         this.kitTypePopulator = kitTypePopulator;
+        this.languageTextPopulator = languageTextPopulator;
     }
 
     public SetupStats populate(String filePathName) throws IOException {
@@ -59,6 +65,12 @@ public class BaseSeedPopulator {
                 .numEnvironments(environmentService.count())
                 .adminConfigStats(configStats)
                 .build();
+    }
+
+    public void populateLanguageTexts() {
+        for (String file : LANGUAGE_TEXTS_TO_POPULATE) {
+            languageTextPopulator.populateList(new FilePopulateContext(file), false);
+        }
     }
 
     /** This class is NOT persisted, despite extending BaseEntity */

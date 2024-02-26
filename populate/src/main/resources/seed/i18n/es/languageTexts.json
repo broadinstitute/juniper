@@ -1,0 +1,14 @@
+[
+  {"keyName": "navbarDashboard", "text": "Tablero", "language": "es"},
+  {"keyName": "navbarChangePassword", "text": "Cambiar Contraseña", "language": "es"},
+  {"keyName": "navbarLogout", "text": "Cerrar Sesión", "language": "es"},
+  {"keyName": "navbarLogin", "text": "Iniciar Sesión", "language": "es"},
+  {"keyName": "navbarJoin", "text": "Registrarse", "language": "es"},
+  {"keyName": "taskComplete", "text": "Completo", "language": "es"},
+  {"keyName": "taskInProgress", "text": "En Progreso", "language": "es"},
+  {"keyName": "taskNotStarted", "text": "No Iniciado", "language": "es"},
+  {"keyName": "taskDeclined", "text": "Rechazado", "language": "es"},
+  {"keyName": "taskLocked", "text": "Bloqueado", "language": "es"},
+  {"keyName": "tasksNoneForStudy", "text": "No hay tareas para este estudio", "language": "es"},
+  {"keyName": "surveysSomeLocked", "text": "Algunas encuestas están bloqueadas hasta que se completen otras tareas requeridas.", "language": "es"}
+]

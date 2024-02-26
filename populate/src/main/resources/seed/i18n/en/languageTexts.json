@@ -1,0 +1,14 @@
+[
+  {"keyName": "navbarDashboard", "text": "Dashboard", "language": "en"},
+  {"keyName": "navbarChangePassword", "text": "Change Password", "language": "en"},
+  {"keyName": "navbarLogout", "text": "Log Out", "language": "en"},
+  {"keyName": "navbarLogin", "text": "Log In", "language": "en"},
+  {"keyName": "navbarJoin", "text": "Register", "language": "en"},
+  {"keyName": "taskComplete", "text": "Complete", "language": "en"},
+  {"keyName": "taskInProgress", "text": "In Progress", "language": "en"},
+  {"keyName": "taskNotStarted", "text": "Not Started", "language": "en"},
+  {"keyName": "taskDeclined", "text": "Declined", "language": "en"},
+  {"keyName": "taskLocked", "text": "Locked", "language": "en"},
+  {"keyName": "tasksNoneForStudy", "text": "No tasks for this study", "language": "en"},
+  {"keyName": "surveysSomeLocked", "text": "Some surveys are locked until other required tasks are completed.", "language": "en"}
+]

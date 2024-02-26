@@ -204,6 +204,9 @@ databaseChangeLog:
       file: changesets/2024_02_14_enrollee_proxy.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_02_16_language_texts.yaml
+      relativeToChangelogFile: true
+  - include:
      file: changesets/2024_02_22_survey_assign_existing.yaml
      relativeToChangelogFile: true
 
