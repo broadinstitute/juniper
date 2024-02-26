@@ -109,6 +109,8 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  codec:
+    max-in-memory-size: 50MB # max size of files we can receive via WebClient (e.g. Pepper api calls)
 
 hibernate:
   packages-to-scan: bio.terra.pearl.core.model
