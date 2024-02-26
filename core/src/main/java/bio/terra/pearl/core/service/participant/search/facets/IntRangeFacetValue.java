@@ -24,7 +24,7 @@ public class IntRangeFacetValue implements FacetValue {
     int minValue = getMin() != null ? getMin() : Integer.MIN_VALUE;
     // CAREFUL: this is putting user params directly in sql, this is only safe since it's only allowing integers.
     return """
-         %s.%s > %d and %s.%s < %d
+         %s.%s >= %d and %s.%s < %d
         """.formatted(tableName, columnName, minValue, tableName, columnName, maxValue);
   }
 

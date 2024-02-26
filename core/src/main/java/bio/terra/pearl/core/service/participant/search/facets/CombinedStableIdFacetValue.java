@@ -15,6 +15,7 @@ import org.jdbi.v3.core.statement.Query;
 public class CombinedStableIdFacetValue implements FacetValue {
   private String keyName;
   private List<StableIdStringFacetValue> values;
+
   public CombinedStableIdFacetValue(String keyName, List<StableIdStringFacetValue> values) {
     this.values = values;
     this.keyName = keyName;

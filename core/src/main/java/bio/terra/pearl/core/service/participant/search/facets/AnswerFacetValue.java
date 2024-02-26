@@ -19,6 +19,7 @@ public class AnswerFacetValue implements FacetValue {
   private Double numberValue;
   private String questionStableId;
   private String surveyStableId;
+  private String operator = "=";
 
   public AnswerFacetValue(String surveyStableId, String questionStableId, String value) {
         this.stringValue = value;

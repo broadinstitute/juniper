@@ -6,6 +6,9 @@ import org.jdbi.v3.core.statement.Query;
 public interface FacetValue {
   String getKeyName();
   void setKeyName(String keyName);
+  default String getOperator() {
+    return "=";
+  };
 
   String getWhereClause(String tableName, String columnName, int facetIndex);
 
