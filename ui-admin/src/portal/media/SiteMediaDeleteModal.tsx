@@ -43,15 +43,3 @@ export default function SiteMediaDeleteModal({
     </Modal.Footer>
   </Modal>
 }
-
-/**
- * A cleanFileName is a portal-scoped-unique, URL-safe identifier.
- * cleanFileName is the upload filename with whitespace replaced with _,
- * stripped of special characters and whitespace except "." "_" or "-", then lowercased.
- * See SiteMediaService.java for the server-side implementation of this
- */
-export const cleanFileName = (fileName: string) => {
-  return fileName.toLowerCase()
-    .replaceAll(/\s/g, '_')
-    .replaceAll(/[^a-z\d._-]/g, '')
-}
