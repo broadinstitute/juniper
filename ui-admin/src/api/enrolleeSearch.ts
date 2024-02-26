@@ -130,6 +130,14 @@ export type EntityOptionsArrayFacet = BaseFacet & {
 
 export type Facet = StringFacet | StringOptionsFacet | EntityOptionsArrayFacet | IntRangeFacet
 
+export type ExpressionJoin = '&&' | '||'
+
+export type FacetExpression = {
+  left: FacetValue | FacetExpression
+  right: FacetValue | FacetExpression
+  join: ExpressionJoin
+}
+
 export const SEX_FACET: StringOptionsFacet = {
   category: 'profile',
   keyName: 'sexAtBirth',

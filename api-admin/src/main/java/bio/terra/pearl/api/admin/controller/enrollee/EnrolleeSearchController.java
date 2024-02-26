@@ -7,7 +7,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
-import bio.terra.pearl.core.service.participant.search.facets.FacetExpression;
 import bio.terra.pearl.core.service.participant.search.facets.FacetValueFactory;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -71,28 +70,22 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
     return ResponseEntity.ok(facets);
   }
 
-
-  public FacetExpression facetsFromJsonString(String facetString)
+  public List<SqlSearchableFacet> facetsFromJsonString(String facetString)
       throws JsonProcessingException {
     if (StringUtils.isEmpty(facetString)) {
-      facetString = "[]";
+      facetString = "{}";
     }
     JsonNode facetsNode = objectMapper.readTree(facetString);
-
-  }
-
-  public FacetExpression expressionFromFacetArray(JsonNode facetsNode) {
-    FacetExpression expression = new FacetExpression();
-    FacetExpression currentExpression = expression;
+    List<SqlSearchableFacet> facetValues = new ArrayList<>();
     facetsNode
-            .fields()
-            .forEachRemaining(
-                    entry -> {
-                      String categoryName = entry.getKey();
-                      List<SqlSearchableFacet> categoryValues =
-                              parseCategory(categoryName, entry.getValue());
-                      facetValues.addAll(categoryValues);
-                    });
+        .fields()
+        .forEachRemaining(
+            entry -> {
+              String categoryName = entry.getKey();
+              List<SqlSearchableFacet> categoryValues =
+                  parseCategory(categoryName, entry.getValue());
+              facetValues.addAll(categoryValues);
+            });
     return facetValues;
   }
 

@@ -13,6 +13,24 @@ import { saveBlobAsDownload } from 'util/downloadUtils'
 import { SaveableFormProps } from './SurveyView'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
+import { QueryBuilder } from 'react-querybuilder/dist/cjs/react-querybuilder.cjs.development'
+import { Field, RuleGroupType } from 'react-querybuilder'
+
+
+const BUILT_IN_FIELDS: Field[] = [
+  { name: 'profile.age', label: 'Age', operators: [{ name: '>', label: '>' }, { name: '<=', label: '<=' }] },
+  {
+    name: 'profile.sexAtBirth', label: 'Sex at birth', valueEditorType: 'select',
+    operators: [{ name: '=', label: '=' }, { name: '!=', label: '!=' }],
+    values: [{ name: 'M', label: 'Male' }, { name: 'F', label: 'Female' }]
+  },
+  {
+    name: 'enrollee.subject', label: 'Is primary subject', valueEditorType: 'select',
+    operators: [{ name: '=', label: 'is' }],
+    values: [{ name: 'true', label: 'True' }, { name: 'false', label: 'False' }]
+  }
+]
+
 
 /** component for selecting versions of a form */
 export default function FormOptions({
@@ -26,6 +44,7 @@ export default function FormOptions({
                                             visibleVersionPreviews: VersionedForm[],
                                             setVisibleVersionPreviews: (versions: VersionedForm[]) => void}) {
   const stableId = workingForm.stableId
+  const [ruleQuery, setRuleQuery] = useState<RuleGroupType>()
 
   const downloadJSON = () => {
     const content = workingForm.content
@@ -80,6 +99,18 @@ export default function FormOptions({
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
+            <label className="fw-semibold  mt-2">
+              Eligibility criteria:
+            </label>
+            <QueryBuilder
+              fields={BUILT_IN_FIELDS}
+              query={ruleQuery}
+              onQueryChange={q => setRuleQuery(q)}
+              controlClassnames={{ queryBuilder: 'queryBuilder-branches' }}
+            />
+            <div>
+
+            </div>
             <div className="fw-light fst-italic mt-4">
               Note: you must  &quot;Save&quot; the survey
               for changes to these options to take effect.

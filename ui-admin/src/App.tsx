@@ -4,6 +4,7 @@ import 'styles/notifications.css'
 import 'survey-core/defaultV2.min.css'
 import './App.css'
 import './print.css'
+import 'react-querybuilder/dist/query-builder.scss'
 
 import { BrowserRouter, Outlet, Route, Routes, useLocation } from 'react-router-dom'
 import { ReactNotifications } from 'react-notifications-component'

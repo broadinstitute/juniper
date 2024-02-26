@@ -104,3 +104,31 @@ a {
 .nav-icon:hover {
   color: #858D9A;
 }
+
+/* query builder styling */
+.queryBuilder-branches select {
+  padding: 0.25em 0.5em;
+  border-radius: 3px;
+}
+
+.queryBuilder-branches input {
+    border-radius: 3px;
+}
+
+.queryBuilder-branches button {
+  border-radius: 3px;
+  background: none;
+  border: #4D72AA 1px solid;
+  color: #4D72AA;
+  border: none;
+  font-weight: bold;
+}
+
+.queryBuilder-branches button.rule-remove, .queryBuilder-branches button.ruleGroup-remove {
+  color: red;
+
+}
+
+.queryBuilder-branches .ruleGroup {
+  background: #f5f5f5;
+}

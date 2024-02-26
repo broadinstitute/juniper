@@ -8,7 +8,6 @@ import useReactSingleSelect from '../util/react-select-utils'
 import Api, { ExportData } from '../api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import { Field, QueryBuilder } from 'react-querybuilder'
-import 'react-querybuilder/dist/query-builder.scss'
 
 /**
  * Returns a cohort builder modal
