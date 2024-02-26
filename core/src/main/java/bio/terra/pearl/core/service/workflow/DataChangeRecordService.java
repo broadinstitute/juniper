@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import org.springframework.context.annotation.Lazy;
@@ -35,8 +34,8 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     // to ensure that we are missing nothing for a given enrollee.
     public List<DataChangeRecord> findAllRecordsForEnrollee(Enrollee enrollee) {
         PortalParticipantUser ppUser = portalParticipantUserService
-                .findByProfileId(enrollee.getProfileId())
-                .orElseThrow(() -> new NotFoundException("Invalid enrollee"));
+                .findForEnrollee(enrollee)
+                .orElseThrow(() -> new IllegalStateException("Invalid enrollee"));
         return dao.findAllRecordsForEnrollee(enrollee.getId(), ppUser.getId());
     }
 
