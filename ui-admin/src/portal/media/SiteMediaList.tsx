@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, {getMediaUrl, PortalEnvironment, SiteMediaMetadata} from 'api/api'
+import Api, { getMediaUrl, PortalEnvironment, SiteMediaMetadata } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
@@ -73,7 +73,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
   }, {
     header: '',
     id: 'actions',
-    cell: ({row: {original: image}}) => <button onClick={() => updateMedia(image)}
+    cell: ({ row: { original: image } }) => <button onClick={() => updateMedia(image)}
       className="btn btn-secondary">
       update
     </button>
@@ -145,7 +145,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
     </LoadingSpinner>
     { !!previewImage && <Modal show={true} onHide={() => setPreviewImage(undefined)} size="xl"
       animation={false}>
-        <img src={getMediaUrl(portalContext.portal.shortcode,
+      <img src={getMediaUrl(portalContext.portal.shortcode,
         previewImage.cleanFileName,
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
