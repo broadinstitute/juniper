@@ -44,7 +44,7 @@ public class Answer extends BaseEntity {
         if (answerType.equals(AnswerType.STRING)) {
             stringValue = (String) value;
         } else if (answerType.equals(AnswerType.NUMBER)) {
-            numberValue = (Double) value;
+            numberValue = ((Number) value).doubleValue();
         } else if (answerType.equals(AnswerType.BOOLEAN)) {
             booleanValue = (Boolean) value;
         } else {

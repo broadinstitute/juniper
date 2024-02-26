@@ -98,6 +98,7 @@ describe('CreateSurveyModal', () => {
       {
         ...defaultSurvey,
         autoUpdateTaskAssignments: true,
+        assignToExistingEnrollees: true,
         blurb: 'Testing out the marketing blurb...',
         content: expect.stringContaining('{"pages":[{"elements":[{"type":"html","name":"outreach_content_'),
         createdAt: 0,
@@ -138,6 +139,7 @@ describe('CreateSurveyModal', () => {
         ...defaultSurvey,
         autoUpdateTaskAssignments: true,
         blurb: 'Testing out the screener blurb...',
+        assignToExistingEnrollees: true,
         content: '{"pages":[]}',
         createdAt: 0,
         id: '',

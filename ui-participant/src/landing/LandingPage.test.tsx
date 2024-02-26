@@ -16,6 +16,10 @@ jest.mock('providers/PortalProvider', () => {
   }
 })
 
+jest.mock('providers/I18nProvider', () => ({
+  useI18n: () => ({ i18n: (key: string) => key })
+}))
+
 describe('LandingPage', () => {
   beforeEach(() => {
     // @ts-expect-error "TS doesn't know about mocks"

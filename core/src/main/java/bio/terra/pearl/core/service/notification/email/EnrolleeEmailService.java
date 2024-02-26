@@ -59,17 +59,17 @@ public class EnrolleeEmailService implements NotificationSender {
         if (!shouldSendEmail(config, ruleData, contextInfo)) {
             notification.setDeliveryStatus(NotificationDeliveryStatus.SKIPPED);
         } else {
-            notification.setSentTo(ruleData.profile().getContactEmail());
+            notification.setSentTo(ruleData.getProfile().getContactEmail());
             try {
                 buildAndSendEmail(contextInfo, ruleData, notification);
                 log.info("Email sent: config: {}, enrollee: {}", config.getId(),
-                        ruleData.enrollee().getShortcode());
+                        ruleData.getEnrollee().getShortcode());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
                 log.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
-                        ruleData.enrollee().getShortcode());
+                        ruleData.getEnrollee().getShortcode());
             }
         }
         if (notification.getId() != null) {
@@ -121,7 +121,7 @@ public class EnrolleeEmailService implements NotificationSender {
 
         Mail mail = sendgridClient.buildEmail(
                 contextInfo,
-                ruleData.profile().getContactEmail(),
+                ruleData.getProfile().getContactEmail(),
                 fromAddress,
                 fromName,
                 substitutor);
@@ -131,9 +131,9 @@ public class EnrolleeEmailService implements NotificationSender {
     public boolean shouldSendEmail(Trigger config,
                                    EnrolleeRuleData ruleData,
                                    NotificationContextInfo contextInfo) {
-        if (ruleData.profile() != null && ruleData.profile().isDoNotEmail()) {
+        if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmail()) {
             log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
-                    ruleData.enrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                    ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (config.getEmailTemplateId() == null) {

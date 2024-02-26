@@ -218,6 +218,12 @@ export default {
     return parsedResponse
   },
 
+  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
+    const url = `${API_ROOT}/public/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
     const url = `${API_ROOT}/public/portals/v1/${portalShortcode}/env/${envName}/dashboard/config/alerts`
     const response = await fetch(url, this.getGetInit())

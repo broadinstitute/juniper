@@ -10,7 +10,7 @@ public enum AnswerType {
     public static AnswerType forValue(Object value) {
         if (String.class.isInstance(value)) {
             return STRING;
-        } else if (Double.class.isInstance(value)) {
+        } else if (Number.class.isInstance(value)) {
             return NUMBER;
         } else if (Boolean.class.isInstance(value)) {
             return BOOLEAN;

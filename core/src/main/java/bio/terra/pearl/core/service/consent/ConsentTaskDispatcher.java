@@ -8,9 +8,9 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
@@ -103,7 +103,7 @@ public class ConsentTaskDispatcher {
                                                    List<StudyEnvironmentConsent> studyEnvConsents) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
-            if (RuleEvaluator.evaluateEnrolleeRule(studyConsent.getEligibilityRule(), enrolleeRuleData)) {
+            if (EnrolleeRuleEvaluator.evaluateRule(studyConsent.getEligibilityRule(), enrolleeRuleData)) {
                 ParticipantTask consentTask = buildTask(studyConsent, enrollee, portalParticipantUserId);
                 if (!isDuplicateTask(consentTask, enrollee.getParticipantTasks())) {
                     tasks.add(consentTask);

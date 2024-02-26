@@ -10,8 +10,11 @@ import org.springframework.stereotype.Component;
 public class FacetValueFactory {
   private ObjectMapper objectMapper;
   private static final Map<String, Map<String, FacetDefinition>> facetTypeMap = Map.of(
-      "profile", Map.of(
-          "age", new FacetDefinition(IntRangeFacetValue.class, new ProfileAgeFacetSqlGenerator()),
+      "enrollee", Map.of(
+              "subject", new FacetDefinition(BooleanFacetValue.class, new EnrolleeFacetSqlGenerator()),
+              "consented", new FacetDefinition(BooleanFacetValue.class, new EnrolleeFacetSqlGenerator())
+      ),"profile", Map.of(
+          "age", new FacetDefinition(AgeRangeFacetValue.class, new ProfileFacetSqlGenerator()),
           "sexAtBirth", new FacetDefinition(StringFacetValue.class, new ProfileFacetSqlGenerator())
       ),
       "participantTask", Map.of(
@@ -19,6 +22,9 @@ public class FacetValueFactory {
       ),
       "keyword", Map.of(
               "keyword", new FacetDefinition(StringFacetValue.class, new KeywordFacetSqlGenerator())
+      ),
+      "survey", Map.of(
+              "answer", new FacetDefinition(AnswerFacetValue.class, new AnswerFacetSqlGenerator())
       )
   );
 

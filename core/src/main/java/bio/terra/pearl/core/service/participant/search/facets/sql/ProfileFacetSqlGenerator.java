@@ -1,17 +1,16 @@
 package bio.terra.pearl.core.service.participant.search.facets.sql;
 
-import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.service.participant.search.EnrolleeSearchUtils;
-import bio.terra.pearl.core.service.participant.search.facets.StringFacetValue;
-import java.util.List;
-import org.jdbi.v3.core.statement.Query;
+import bio.terra.pearl.core.service.participant.search.facets.FacetValue;
 
-public class ProfileFacetSqlGenerator implements FacetSqlGenerator<StringFacetValue> {
-
+public class ProfileFacetSqlGenerator extends BaseFacetSqlGenerator<FacetValue> {
     public ProfileFacetSqlGenerator() {}
 
-    private String getColumnName(StringFacetValue facetValue) {
-      return BaseJdbiDao.toSnakeCase(facetValue.getKeyName());
+    @Override
+    protected String getColumnName(FacetValue facetValue) {
+        if ("age".equals(facetValue.getKeyName())) {
+            return "birth_date";
+        }
+        return super.getColumnName(facetValue);
     }
 
     @Override
@@ -25,23 +24,7 @@ public class ProfileFacetSqlGenerator implements FacetSqlGenerator<StringFacetVa
     }
 
     @Override
-    public String getSelectQuery(StringFacetValue facetValue) {
+    public String getSelectQuery(FacetValue facetValue, int facetIndex) {
       return null; // already included in base query
     }
-
-    @Override
-    public String getWhereClause(StringFacetValue facetValue, int facetIndex) {
-      String columnName = getColumnName(facetValue);
-      return EnrolleeSearchUtils.getSimpleWhereClause(facetValue, columnName, "profile");
-    }
-
-  @Override
-  public String getCombinedWhereClause(List<StringFacetValue> facetValues) {
-    return "";
-  }
-
-  @Override
-  public void bindSqlParameters(StringFacetValue facetValue, int facetIndex, Query query) {
-      EnrolleeSearchUtils.bindSqlParameters(facetValue, "profile", query);
-  }
 }
