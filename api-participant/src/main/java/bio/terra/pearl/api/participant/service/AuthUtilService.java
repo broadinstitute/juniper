@@ -12,11 +12,10 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import jakarta.ws.rs.NotAuthorizedException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AuthUtilService {
@@ -26,10 +25,10 @@ public class AuthUtilService {
   private PortalParticipantUserService portalParticipantUserService;
 
   public AuthUtilService(
-          EnrolleeService enrolleeService,
-          PortalService portalService,
-          PortalParticipantUserService portalParticipantUserService,
-          EnrolleeRelationService enrolleeRelationService) {
+      EnrolleeService enrolleeService,
+      PortalService portalService,
+      PortalParticipantUserService portalParticipantUserService,
+      EnrolleeRelationService enrolleeRelationService) {
     this.enrolleeService = enrolleeService;
     this.portalService = portalService;
     this.portalParticipantUserService = portalParticipantUserService;
@@ -52,7 +51,8 @@ public class AuthUtilService {
 
   public PortalParticipantUser authParticipantUserToPortalParticipantUser(
       UUID participantUserId, UUID portalParticipantUserId) {
-    PortalParticipantUser ppUser = portalParticipantUserService
+    PortalParticipantUser ppUser =
+        portalParticipantUserService
             .find(portalParticipantUserId)
             .orElseThrow(() -> new NotFoundException(""));
 

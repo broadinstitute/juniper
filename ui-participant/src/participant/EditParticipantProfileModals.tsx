@@ -211,7 +211,10 @@ export function EditContactEmail(props: EditModalProps) {
     onSave={onSave}
     onDismiss={onDismiss}>
     <div>
-      <p className="fst-italic">Update your contact email. Note that your login information will not change.</p>
+      <p className="fst-italic">
+        Press &quot;Save&quot; to update the email used for communication. Note that your login information will not
+        change.
+      </p>
       <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
         Email
       </label>
