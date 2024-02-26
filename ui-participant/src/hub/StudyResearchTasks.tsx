@@ -5,9 +5,9 @@ import { Enrollee, ParticipantTask } from 'api/api'
 import { useI18n } from 'providers/I18nProvider'
 
 
-const taskTypeDisplayMap: Record<string, string> = {
-  CONSENT: 'Consent',
-  SURVEY: 'Survey'
+const taskTypeMap: Record<string, string> = {
+  CONSENT: 'taskTypeConsent',
+  SURVEY: 'taskTypeSurvey'
 }
 
 const enrolleeHasStartedTaskType = (enrollee: Enrollee, taskType: string): boolean => {
@@ -61,9 +61,9 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
           >
             {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
-              ? 'Continue'
-              : 'Start'}
-            {' '}{taskTypeDisplayMap[nextTask.taskType]}
+              ? i18n('taskContinue')
+              : i18n('taskStart')}
+            {' '}{i18n(taskTypeMap[nextTask.taskType])}
             {numTasksOfNextTaskType > 1 && 's'}
           </Link>
         </div>
@@ -74,7 +74,7 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
           enrollee={enrollee}
           studyShortcode={studyShortcode}
           tasks={sortedActiveConsentTasks}
-          title="Consent"
+          title={i18n('taskTypeConsent')}
         />
       )}
 
@@ -83,7 +83,7 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
           enrollee={enrollee}
           tasks={sortedSurveyTasks}
           studyShortcode={studyShortcode}
-          title="Surveys"
+          title={i18n('taskTypeSurveys')}
         />
       )}
 
@@ -92,7 +92,7 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
           enrollee={enrollee}
           studyShortcode={studyShortcode}
           tasks={completedConsentTasks}
-          title="Forms"
+          title={i18n('taskTypeForms')}
         />
       )}
     </>

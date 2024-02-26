@@ -10,5 +10,11 @@
   {"keyName": "taskDeclined", "text": "Declined", "language": "en"},
   {"keyName": "taskLocked", "text": "Locked", "language": "en"},
   {"keyName": "tasksNoneForStudy", "text": "No tasks for this study", "language": "en"},
-  {"keyName": "surveysSomeLocked", "text": "Some surveys are locked until other required tasks are completed.", "language": "en"}
+  {"keyName": "surveysSomeLocked", "text": "Some surveys are locked until other required tasks are completed.", "language": "en"},
+  {"keyName": "taskTypeSurvey", "text": "Survey", "language": "en"},
+  {"keyName": "taskTypeSurveys", "text": "Surveys", "language": "en"},
+  {"keyName": "taskTypeConsent", "text": "Consent", "language": "en"},
+  {"keyName": "taskTypeForms", "text": "Forms", "language": "en"},
+  {"keyName": "taskStart", "text": "Start", "language": "en"},
+  {"keyName": "taskContinue", "text": "Continue", "language": "en"}
 ]
