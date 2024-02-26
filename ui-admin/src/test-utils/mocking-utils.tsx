@@ -462,7 +462,7 @@ export const mockAnswer = (): Answer => {
   }
 }
 /** mock siteMediaMetadata */
-export const mockSiteImage = (): SiteMediaMetadata => {
+export const mockSiteMedia = (): SiteMediaMetadata => {
   return {
     id: 'image1',
     createdAt: Date.now(),

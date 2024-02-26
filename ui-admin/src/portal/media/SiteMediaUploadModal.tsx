@@ -103,7 +103,7 @@ export default function SiteMediaUploadModal({
  * A cleanFileName is a portal-scoped-unique, URL-safe identifier.
  * cleanFileName is the upload filename with whitespace replaced with _,
  * stripped of special characters and whitespace except "." "_" or "-", then lowercased.
- * See SiteImageService.java for the server-side implementation of this
+ * See SiteMediaService.java for the server-side implementation of this
  */
 export const cleanFileName = (fileName: string) => {
   return fileName.toLowerCase()

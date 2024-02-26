@@ -1329,13 +1329,13 @@ Promise<Trigger> {
   }
 }
 
-/** gets an image url for a SiteImage suitable for including in an img tag */
-export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${getImageBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
+/** gets an image url for SiteMedia */
+export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number) {
+  return `${getMediaBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 
-/** gets the base url for public site images */
-export function getImageBaseUrl(portalShortcode: string) {
+/** gets the base url for public site media (e.g., images) */
+export function getMediaBaseUrl(portalShortcode: string) {
   return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteMedia`
 }
 

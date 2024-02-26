@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { getImageUrl, PortalEnvironment, SiteMediaMetadata } from 'api/api'
+import Api, {getMediaUrl, PortalEnvironment, SiteMediaMetadata} from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
   ColumnDef,
@@ -31,12 +31,12 @@ export default function SiteMediaList({ portalContext, portalEnv }:
   }])
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteMediaList')
   const [previewImage, setPreviewImage] = useState<SiteMediaMetadata>()
-  const [updatingImage, setUpdatingImage] = useState<SiteMediaMetadata>()
+  const [updatingImage, setUpdatingMedia] = useState<SiteMediaMetadata>()
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState<SiteMediaMetadata | undefined>()
 
-  const updateImage = (image: SiteMediaMetadata) => {
-    setUpdatingImage(image)
+  const updateMedia = (image: SiteMediaMetadata) => {
+    setUpdatingMedia(image)
     setShowUploadModal(true)
   }
 
@@ -65,7 +65,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
         }}
         className="border-1 bg-white"
         title="show full-size preview">
-        <img src={getImageUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
+        <img src={getMediaUrl(portalContext.portal.shortcode, image.cleanFileName, image.version)}
           style={{ maxHeight: '40px', maxWidth: '80px' }}
         />
       </button> :
@@ -73,7 +73,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
   }, {
     header: '',
     id: 'actions',
-    cell: ({ row: { original: image } }) => <button onClick={() => updateImage(image)}
+    cell: ({row: {original: image}}) => <button onClick={() => updateMedia(image)}
       className="btn btn-secondary">
       update
     </button>
@@ -81,7 +81,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
     header: '',
     id: 'copy',
     cell: ({ row: { original: image } }) => <button onClick={() => {
-      navigator.clipboard.writeText(getImageUrl(portalContext.portal.shortcode,
+      navigator.clipboard.writeText(getMediaUrl(portalContext.portal.shortcode,
         image.cleanFileName,
         image.version))
     }}
@@ -117,7 +117,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
 
   const onSubmitUpload = () => {
     reload()
-    setUpdatingImage(undefined)
+    setUpdatingMedia(undefined)
     setShowUploadModal(false)
   }
 
@@ -145,14 +145,14 @@ export default function SiteMediaList({ portalContext, portalEnv }:
     </LoadingSpinner>
     { !!previewImage && <Modal show={true} onHide={() => setPreviewImage(undefined)} size="xl"
       animation={false}>
-      <img src={getImageUrl(portalContext.portal.shortcode,
+        <img src={getMediaUrl(portalContext.portal.shortcode,
         previewImage.cleanFileName,
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
     {showUploadModal && <SiteMediaUploadModal portalContext={portalContext}
       onDismiss={() => {
         setShowUploadModal(false)
-        setUpdatingImage(undefined)
+        setUpdatingMedia(undefined)
       }}
       existingMedia={updatingImage}
       onSubmit={onSubmitUpload}/>}

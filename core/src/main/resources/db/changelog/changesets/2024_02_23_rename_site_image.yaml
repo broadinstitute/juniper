@@ -6,3 +6,9 @@ databaseChangeLog:
         - renameTable:
             newTableName:  site_media
             oldTableName:  site_image
+        - sql:
+            sql: ALTER INDEX site_image_pkey RENAME TO site_media_pkey
+        - sql:
+            sql: ALTER TABLE site_media RENAME CONSTRAINT site_image_clean_file_name_version TO site_media_clean_file_name_version;
+        - sql:
+            sql: ALTER TABLE site_media RENAME CONSTRAINT fk_site_image_portal_shortcode TO fk_site_media_portal_shortcode;

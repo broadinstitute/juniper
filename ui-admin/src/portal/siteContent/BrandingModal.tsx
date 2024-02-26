@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { LocalSiteContent } from '@juniper/ui-core'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from 'api/api-utils'
-import Api, { getImageUrl, SiteMediaMetadata } from 'api/api'
+import Api, { getMediaUrl, SiteMediaMetadata } from 'api/api'
 import { filterPriorVersions } from '../media/SiteMediaList'
 import useReactSingleSelect from 'util/react-select-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -11,7 +11,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 
 const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => <div>
   {image.cleanFileName} <img style={{ maxHeight: '1.5em' }}
-    src={getImageUrl(portalShortcode, image!.cleanFileName, image!.version)}/>
+    src={getMediaUrl(portalShortcode, image!.cleanFileName, image!.version)}/>
 </div>
 
 /** controls for primary color and nav logo */

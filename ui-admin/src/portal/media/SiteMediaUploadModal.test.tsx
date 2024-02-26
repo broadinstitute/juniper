@@ -2,7 +2,7 @@ import React from 'react'
 
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { mockPortalContext, mockSiteImage } from 'test-utils/mocking-utils'
+import { mockPortalContext, mockSiteMedia } from 'test-utils/mocking-utils'
 import Api from 'api/api'
 import userEvent from '@testing-library/user-event'
 import SiteMediaUploadModal, { cleanFileName } from './SiteMediaUploadModal'
@@ -32,7 +32,7 @@ test('file name shown to user is cleaned', async () => {
 
 test('upload api is called on submit', async () => {
   const uploadSpy = jest.spyOn(Api, 'uploadPortalMedia')
-    .mockImplementation(() => Promise.resolve(mockSiteImage()))
+    .mockImplementation(() => Promise.resolve(mockSiteMedia()))
   jest.spyOn(Store, 'addNotification').mockImplementation(jest.fn())
   const file = new File(['databits'], 'hello.png', { type: 'image/png' })
   const portalContext = mockPortalContext()

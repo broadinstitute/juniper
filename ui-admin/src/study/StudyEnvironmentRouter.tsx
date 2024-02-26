@@ -216,10 +216,10 @@ export const studyEnvSiteContentPath = (portalShortcode: string, studyShortcode:
 }
 
 /**
- * helper function for image manager route -- note the simages are portal-scoped, rather than study-scoped,
+ * helper function for image manager route -- note the media are portal-scoped, rather than study-scoped,
  * but the route is set to maintain study context
  */
-export const studyEnvSiteImagesPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+export const studyEnvSiteMediaPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/siteContent`
 }
 
