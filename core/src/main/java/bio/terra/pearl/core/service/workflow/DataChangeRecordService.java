@@ -34,8 +34,7 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     // to ensure that we are missing nothing for a given enrollee.
     public List<DataChangeRecord> findAllRecordsForEnrollee(Enrollee enrollee) {
         PortalParticipantUser ppUser = portalParticipantUserService
-                .findForEnrollee(enrollee)
-                .orElseThrow(() -> new IllegalStateException("Invalid enrollee"));
+                .findForEnrollee(enrollee);
         return dao.findAllRecordsForEnrollee(enrollee.getId(), ppUser.getId());
     }
 
