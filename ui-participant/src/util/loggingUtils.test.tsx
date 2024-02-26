@@ -48,12 +48,12 @@ test('handles metrics with circular reference', async () => {
   })
 })
 
-test('does not log errors if browser incompatible', async () => {
+test('does not log errors if browser is incompatible with the site', async () => {
   const logSpy = jest.spyOn(Api, 'log').mockImplementation(jest.fn())
   jest.spyOn(Object, 'hasOwn').mockImplementation(() => {
     throw new Error('Test error')
   })
-  const windowSpy = jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  const alertSpy = jest.spyOn(window, 'alert').mockImplementation(jest.fn())
 
   logError({ message: 'Object.hasOwn is not a function' },  'trace')
   expect(logSpy).toHaveBeenCalledWith({
@@ -63,5 +63,5 @@ test('does not log errors if browser incompatible', async () => {
     eventName: 'js-compatibility',
     portalShortcode: 'localhost'
   })
-  expect(windowSpy).toHaveBeenCalledTimes(1)
+  expect(alertSpy).toHaveBeenCalledTimes(1)
 })
