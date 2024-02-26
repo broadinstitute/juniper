@@ -35,6 +35,8 @@ type FrequentlyAskedQuestionsConfig = {
   questions: FaqQuestion[], // the questions
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
   title?: string, // large heading text
+  collapseAllText?: string,
+  expandAllText?: string
 }
 
 const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
@@ -51,6 +53,8 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   const title = requireOptionalString(config, 'title', message)
   const blurb = requireOptionalString(config, 'blurb', message)
   const showToggleAllButton = requireOptionalBoolean(config, 'showToggleAllButton', message)
+  const collapseAllText = requireOptionalString(config, 'collapseAllText', message)
+  const expandAllText = requireOptionalString(config, 'expandAllText', message)
 
   const questions = config.questions
   if (!Array.isArray(questions)) {
@@ -61,7 +65,9 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
     blurb,
     questions: questions.map(validateFaqQuestion),
     showToggleAllButton,
-    title
+    title,
+    collapseAllText,
+    expandAllText
   }
 }
 
@@ -120,7 +126,9 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     blurb,
     questions,
     showToggleAllButton = true,
-    title = 'Frequently Asked Questions'
+    title = 'Frequently Asked Questions',
+    collapseAllText = 'Collapse All',
+    expandAllText = 'Expand All'
   } = config
 
   const { getImageUrl } = useApiContext()
@@ -165,7 +173,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
             <span className="d-inline-block me-2 text-center" style={{ width: 20 }}>
               <FontAwesomeIcon icon={allQuestionsAreExpanded ? faXmark : faPlus} />
             </span>
-            {allQuestionsAreExpanded ? 'Collapse' : 'Expand'} all
+            {allQuestionsAreExpanded ? collapseAllText : expandAllText}
           </button>
         </div>
       )}
