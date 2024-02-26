@@ -8,67 +8,60 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
+import java.util.UUID;
+
 @Controller
 @Slf4j
 public class ProfileController implements ProfileApi {
-  private RequestUtilService requestUtilService;
-  private ProfileExtService profileExtService;
-  private HttpServletRequest request;
-  private ObjectMapper objectMapper;
+    private RequestUtilService requestUtilService;
+    private ProfileExtService profileExtService;
+    private HttpServletRequest request;
+    private ObjectMapper objectMapper;
 
-  public ProfileController(
-      RequestUtilService requestUtilService,
-      ProfileExtService profileExtService,
-      ObjectMapper objectMapper,
-      HttpServletRequest request) {
-    this.requestUtilService = requestUtilService;
-    this.profileExtService = profileExtService;
-    this.objectMapper = objectMapper;
-    this.request = request;
-  }
-
-  @Override
-  public ResponseEntity<Object> updateProfile(
-      String portalShortcode, String envName, UUID ppUserId, Object body) {
-    Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
-    if (participantUserOpt.isEmpty()) {
-      return ResponseEntity.notFound().build();
+    public ProfileController(
+            RequestUtilService requestUtilService,
+            ProfileExtService profileExtService,
+            ObjectMapper objectMapper,
+            HttpServletRequest request) {
+        this.requestUtilService = requestUtilService;
+        this.profileExtService = profileExtService;
+        this.objectMapper = objectMapper;
+        this.request = request;
     }
 
-    Profile profile = objectMapper.convertValue(body, Profile.class);
+    @Override
+    public ResponseEntity<Object> updateProfile(
+            String portalShortcode, String envName, UUID ppUserId, Object body) {
+        ParticipantUser participantUser = requestUtilService.requireUser(request);
+        Profile profile = objectMapper.convertValue(body, Profile.class);
 
-    Profile updatedProfile =
-        profileExtService.updateWithMailingAddress(
-            portalShortcode,
-            EnvironmentName.valueOfCaseInsensitive(envName),
-            participantUserOpt.get(),
-            ppUserId,
-            profile);
+        Profile updatedProfile =
+                profileExtService.updateWithMailingAddress(
+                        portalShortcode,
+                        EnvironmentName.valueOfCaseInsensitive(envName),
+                        participantUser,
+                        ppUserId,
+                        profile);
 
-    return ResponseEntity.ok(updatedProfile);
-  }
-
-  @Override
-  public ResponseEntity<Object> findProfile(String portalShortcode, String envName, UUID ppUserId) {
-
-    Optional<ParticipantUser> participantUserOpt = requestUtilService.getUserFromRequest(request);
-    if (participantUserOpt.isEmpty()) {
-      return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updatedProfile);
     }
 
-    Profile found =
-        profileExtService.findProfile(
-            portalShortcode,
-            EnvironmentName.valueOfCaseInsensitive(envName),
-            participantUserOpt.get(),
-            ppUserId);
+    @Override
+    public ResponseEntity<Object> findProfile(String portalShortcode, String envName, UUID ppUserId) {
 
-    return ResponseEntity.ok(found);
-  }
+        ParticipantUser participantUser = requestUtilService.requireUser(request);
+
+        Profile found =
+                profileExtService.findProfile(
+                        portalShortcode,
+                        EnvironmentName.valueOfCaseInsensitive(envName),
+                        participantUser,
+                        ppUserId);
+
+        return ResponseEntity.ok(found);
+    }
 }

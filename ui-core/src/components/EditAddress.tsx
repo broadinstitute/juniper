@@ -15,7 +15,7 @@ export default function EditAddress(
     setMailingAddress,
     validationResult,
     showLabels = true,
-    language = 'en' // todo: accept internationalized labels
+    language = 'en' // todo: accept internationalized labels, see JN-910 for implementation
   }: {
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,

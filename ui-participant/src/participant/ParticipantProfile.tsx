@@ -4,11 +4,20 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import { useUser } from 'providers/UserProvider'
 import { dateToDefaultString } from '@juniper/ui-core'
 import Api, { MailingAddress, Profile } from 'api/api'
-import EditParticipantProfileFieldModals from './EditParticipantProfileModals'
 import { isEmpty } from 'lodash'
+import {
+  EditBirthDateModal,
+  EditCommunicationPreferences,
+  EditContactEmail,
+  EditMailingAddressModal,
+  EditNameModal,
+  EditPhoneNumber
+} from './EditParticipantProfileModals'
 
 /**
- *
+ * Shows the Participant's profile as a series of cards. Each property is a row
+ * with an edit button. This edit button opens a modal which allows editing and
+ * saving changes to profile data.
  */
 export function ParticipantProfile(
 ) {
@@ -41,6 +50,33 @@ export function ParticipantProfile(
 
   if (!ppUser || !profile) {
     return null
+  }
+
+  const findAppropriateEditModal = () => {
+    const modalProps = {
+      profile,
+      dismissModal: () => setShowEditFieldModal(undefined),
+      save
+    }
+
+    switch (showEditFieldModal) {
+      case 'givenName':
+      case 'familyName':
+        return <EditNameModal {...modalProps}/>
+      case 'birthDate':
+        return <EditBirthDateModal {...modalProps}/>
+      case 'doNotEmailSolicit':
+      case 'doNotEmail':
+        return <EditCommunicationPreferences {...modalProps}/>
+      case 'contactEmail':
+        return <EditContactEmail {...modalProps}/>
+      case 'phoneNumber':
+        return <EditPhoneNumber {...modalProps}/>
+      case 'mailingAddress':
+        return <EditMailingAddressModal {...modalProps}/>
+      default:
+        return null
+    }
   }
 
   return <div
@@ -87,11 +123,7 @@ export function ParticipantProfile(
         </ProfileCard>
 
         {/*Edit modals*/}
-        <EditParticipantProfileFieldModals
-          profile={profile}
-          showFieldModal={showEditFieldModal}
-          dismissModal={() => setShowEditFieldModal(undefined)}
-          save={save}/>
+        {showEditFieldModal && findAppropriateEditModal()}
       </div>
     </div>
   </div>
@@ -135,7 +167,7 @@ const ReadOnlyAddress = ({ address }: { address: MailingAddress | undefined }) =
   </>
 }
 
-const Bar = () => {
+const HorizontalBar = () => {
   return <div className="w-100 border-bottom border-1"/>
 }
 
@@ -147,7 +179,7 @@ function ProfileRow(
   }
 ) {
   return <>
-    <Bar/>
+    <HorizontalBar/>
     <div className="d-flex w-100 align-content-center">
       <div className="w-25">
         <p className="m-0 pb-3 pt-3 fw-bold">{title}</p>

@@ -5,47 +5,6 @@ import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
 import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
-/**
- * Set of modals that are automatically picked based upon the `showFieldModal` prop,
- * which denotes which field the user would like to edit.
- */
-export default function EditParticipantProfileFieldModals(
-  {
-    profile,
-    showFieldModal,
-    dismissModal,
-    save
-  }: {
-    profile: Profile,
-    showFieldModal: keyof Profile | undefined,
-    dismissModal: () => void,
-    save: (p: Profile) => void
-  }) {
-  const modalProps: EditModalProps = {
-    profile,
-    dismissModal,
-    save
-  }
-
-  switch (showFieldModal) {
-    case 'givenName':
-    case 'familyName':
-      return <EditNameModal {...modalProps}/>
-    case 'birthDate':
-      return <EditBirthDateModal {...modalProps}/>
-    case 'doNotEmailSolicit':
-    case 'doNotEmail':
-      return <EditCommunicationPreferences {...modalProps}/>
-    case 'contactEmail':
-      return <EditContactEmail {...modalProps}/>
-    case 'phoneNumber':
-      return <EditPhoneNumber {...modalProps}/>
-    case 'mailingAddress':
-      return <EditMailingAddressModal {...modalProps}/>
-    default:
-      return null
-  }
-}
 
 // skeleton for all profile edit modals
 function ProfileRowEditModal(
@@ -133,7 +92,10 @@ const useProfileEditMethods = (props: EditModalProps) => {
   }
 }
 
-function EditNameModal(props: EditModalProps) {
+/**
+ * Modal for editing the givenName and familyName properties on a profile.
+ */
+export function EditNameModal(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -173,7 +135,10 @@ function EditNameModal(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditBirthDateModal(props: EditModalProps) {
+/**
+ * Modal for editing the birthDate property on a profile.
+ */
+export function EditBirthDateModal(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -198,7 +163,10 @@ function EditBirthDateModal(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditPhoneNumber(props: EditModalProps) {
+/**
+ * Modal for editing the phoneNumber property on a profile.
+ */
+export function EditPhoneNumber(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -226,7 +194,10 @@ function EditPhoneNumber(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditContactEmail(props: EditModalProps) {
+/**
+ * Modal for editing the contactEmail property on a profile.
+ */
+export function EditContactEmail(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -254,7 +225,10 @@ function EditContactEmail(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditCommunicationPreferences(props: EditModalProps) {
+/**
+ * Modal for editing the doNotEmail and doNotSolicit properties on a profile.
+ */
+export function EditCommunicationPreferences(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
@@ -294,7 +268,10 @@ function EditCommunicationPreferences(props: EditModalProps) {
   </ProfileRowEditModal>
 }
 
-function EditMailingAddressModal(props: EditModalProps) {
+/**
+ * Modal for editing the mailing address properties on a profile.
+ */
+export function EditMailingAddressModal(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
