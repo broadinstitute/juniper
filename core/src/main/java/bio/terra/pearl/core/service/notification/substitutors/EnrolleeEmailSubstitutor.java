@@ -38,6 +38,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                 "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
                 "participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv()),
                 "siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
+                // legacy template substitution support
+                "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
                 // providing a study isn't required, since emails might come from the portal, rather than a study
                 // but immutable map doesn't allow nulls
                 "study", contextInfo.study() != null ? contextInfo.study() : ""));
