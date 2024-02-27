@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
 import { setupRouterTest } from '../test-utils/router-testing-utils'
+import { MockI18nProvider, mockTextsDefault } from '../test-utils/i18n-testing-utils'
 
 
 jest.mock('../providers/PortalProvider', () => {
@@ -57,24 +58,22 @@ jest.mock('../providers/UserProvider', () => {
   }
 })
 
-jest.mock('providers/I18nProvider', () => {
-  return {
-    useI18n: () => ({
-      i18n: (key: string) => key
-    })
-  }
-})
-
 describe('HubPage', () => {
   it('is rendered with the study name', () => {
-    const { RoutedComponent } = setupRouterTest(<HubPage />)
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={{}}>
+        <HubPage/>
+      </MockI18nProvider>)
     render(RoutedComponent)
 
     expect(screen.getByText('Test Study')).toBeInTheDocument()
   })
 
   it('is rendered with a Start button for the next new task', () => {
-    const { RoutedComponent } = setupRouterTest(<HubPage />)
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={mockTextsDefault}>
+        <HubPage />
+      </MockI18nProvider>)
     render(RoutedComponent)
 
     expect(screen.getByText('Start Consent')).toBeInTheDocument()

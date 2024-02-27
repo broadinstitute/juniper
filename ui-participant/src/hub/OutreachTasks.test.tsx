@@ -5,6 +5,7 @@ import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-p
 import OutreachTasks from './OutreachTasks'
 import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
+import { MockI18nProvider } from '../test-utils/i18n-testing-utils'
 
 describe('OutreachTasks', () => {
   it('show tasks with blurbs', async () => {
@@ -40,8 +41,11 @@ describe('OutreachTasks', () => {
       }
     ]
     jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
-    const { RoutedComponent } = setupRouterTest(<OutreachTasks
-      enrollees={[enrollee]} studies={[study]}/>)
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={{}}>
+        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+      </MockI18nProvider>
+    )
     render(RoutedComponent)
     await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
