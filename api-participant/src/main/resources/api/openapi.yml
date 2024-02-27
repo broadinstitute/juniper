@@ -379,7 +379,7 @@ paths:
     get:
       summary: Returns the binary image data for the image of the given shortcode (legacy endpoint for siteMedia--will be removed)
       tags: [ siteMedia ]
-      operationId: get
+      operationId: getLegacy
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }

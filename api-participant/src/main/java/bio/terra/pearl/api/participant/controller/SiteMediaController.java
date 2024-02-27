@@ -28,6 +28,12 @@ public class SiteMediaController implements SiteMediaApi {
     return convertToResourceResponse(siteMediaOpt);
   }
 
+  @Override
+  public ResponseEntity<Resource> getLegacy(
+      String portalShortcode, String envName, String cleanFileName, Integer version) {
+    return get(portalShortcode, envName, cleanFileName, version);
+  }
+
   private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteMedia> imageOpt) {
     if (imageOpt.isPresent()) {
       MediaType contentType;
