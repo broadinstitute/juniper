@@ -84,12 +84,13 @@ export default function SiteMediaList({ portalContext, portalEnv }:
     header: '',
     id: 'copy',
     cell: ({ row: { original: image } }) => <button onClick={() => {
-      navigator.clipboard.writeText(getMediaUrl(portalContext.portal.shortcode,
+      navigator.clipboard.writeText(`${location.origin}${getMediaUrl(
+        portalContext.portal.shortcode,
         image.cleanFileName,
-        image.version))
+        image.version)}`)
     }}
     className="btn btn-secondary">
-      <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Copy Path
+      <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Copy URL
     </button>
   }]
 
