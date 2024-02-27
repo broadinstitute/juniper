@@ -23,6 +23,7 @@ import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
+import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import I18nProvider from './providers/I18nProvider'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
@@ -50,6 +51,14 @@ function App() {
   if (localContent.primaryBrandColor) {
     brandConfig.brandColor = localContent.primaryBrandColor
   }
+
+  useEffect(() => {
+    const isCompatible = isBrowserCompatible()
+    if (!isCompatible) {
+      alert('Your browser does not support this page. ' +
+          'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
+    }
+  }, [])
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
