@@ -4,7 +4,7 @@ import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { useTaskIdParam } from './survey/SurveyView'
-import { useI18n } from '../providers/I18nProvider'
+import { useI18n } from 'providers/I18nProvider'
 
 type OutreachParams = {
     enrolleeShortcode?: string,

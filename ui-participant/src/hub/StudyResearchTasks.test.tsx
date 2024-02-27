@@ -3,7 +3,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask } from 'test-utils/test-participant-factory'
 import StudyResearchTasks from './StudyResearchTasks'
-import { MockI18nProvider, mockTextsDefault } from '../test-utils/i18n-testing-utils'
+import { MockI18nProvider, mockTextsDefault } from 'test-utils/i18n-testing-utils'
 
 describe('HubPage', () => {
   it('renders tasks with consent and required surveys first', () => {

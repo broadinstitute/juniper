@@ -1,5 +1,5 @@
 import React from 'react'
-import { I18nContext, I18nContextT } from '../providers/I18nProvider'
+import { I18nContext, I18nContextT } from 'providers/I18nProvider'
 
 export const mockTextsDefault: Record<string, string> = { taskTypeConsent: 'Consent', taskStart: 'Start' }
 

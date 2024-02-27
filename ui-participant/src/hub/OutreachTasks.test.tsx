@@ -5,7 +5,7 @@ import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-p
 import OutreachTasks from './OutreachTasks'
 import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
-import { MockI18nProvider } from '../test-utils/i18n-testing-utils'
+import { MockI18nProvider } from 'test-utils/i18n-testing-utils'
 
 describe('OutreachTasks', () => {
   it('show tasks with blurbs', async () => {

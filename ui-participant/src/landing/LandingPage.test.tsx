@@ -8,7 +8,7 @@ import {
   mockPortal,
   mockPortalEnvironment
 } from 'test-utils/test-portal-factory'
-import { MockI18nProvider } from '../test-utils/i18n-testing-utils'
+import { MockI18nProvider } from 'test-utils/i18n-testing-utils'
 
 jest.mock('providers/PortalProvider', () => {
   return {
