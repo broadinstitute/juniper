@@ -18,7 +18,7 @@ code {
 
 /* Based on https://getbootstrap.com/docs/5.3/components/buttons/#sass-mixins */
 /* Brand color custom properties defined in App.tsx */
-.App .btn-primary {
+.btn-primary {
   --bs-btn-color: var(--brand-color-contrast);
   --bs-btn-bg: var(--brand-color);
   --bs-btn-border-color: var(--brand-color);
@@ -35,7 +35,7 @@ code {
   --bs-btn-disabled-border-color: var(--brand-color);
 }
 
-.App .btn-outline-primary {
+.btn-outline-primary {
   --bs-btn-color: var(--brand-color);
   --bs-btn-border-color: var(--brand-color);
   --bs-btn-hover-color: var(--brand-color-contrast);
@@ -57,12 +57,12 @@ a {
   color: var(--brand-color, blue);
 }
 
-.App .navbar-nav {
+.navbar-nav {
   --bs-nav-link-color: var(--brand-color);
   --bs-nav-link-hover-color: var(--brand-color-shift-20);
 }
 
-.App .navbar-nav .nav-link.active {
+.navbar-nav .nav-link.active {
   color: var(--brand-color);
   text-decoration: underline;
   text-underline-offset: 0.25em;

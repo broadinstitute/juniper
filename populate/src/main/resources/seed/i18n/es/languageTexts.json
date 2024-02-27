@@ -2,6 +2,7 @@
   {"keyName": "navbarDashboard", "text": "Tablero", "language": "es"},
   {"keyName": "navbarChangePassword", "text": "Cambiar Contraseña", "language": "es"},
   {"keyName": "navbarLogout", "text": "Cerrar Sesión", "language": "es"},
+  {"keyName": "navbarProfile", "text": "Perfil", "language": "es"},
   {"keyName": "navbarLogin", "text": "Iniciar Sesión", "language": "es"},
   {"keyName": "navbarJoin", "text": "Registrarse", "language": "es"},
   {"keyName": "taskComplete", "text": "Completo", "language": "es"},

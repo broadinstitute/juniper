@@ -2,6 +2,7 @@
   {"keyName": "navbarDashboard", "text": "DEV_Dashboard", "language": "dev"},
   {"keyName": "navbarChangePassword", "text": "DEV_Change Password", "language": "dev"},
   {"keyName": "navbarLogout", "text": "DEV_Log Out", "language": "dev"},
+  {"keyName": "navbarProfile", "text": "DEV_Profile", "language": "dev"},
   {"keyName": "navbarLogin", "text": "DEV_Log In", "language": "dev"},
   {"keyName": "navbarJoin", "text": "DEV_Register", "language": "dev"},
   {"keyName": "taskComplete", "text": "DEV_Complete", "language": "dev"},

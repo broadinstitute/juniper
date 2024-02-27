@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class LanguageTextServiceTests extends BaseSpringBootTest  {
 
@@ -24,27 +25,32 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
 
     @Test
     @Transactional
-    public void testFindAll(TestInfo testInfo) {
-        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
-        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
+    public void testFindByKeyNameAndLanguage(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        languageTextFactory.buildPersisted(testName, "testLogin", "fr");
+        languageTextFactory.buildPersisted(testName, "testLogin", "es");
 
-        List<LanguageText> langTexts = languageTextService.findAll();
+        Optional<LanguageText> frenchLoginText = languageTextService.findByKeyNameAndLanguage(testName + "testLogin", "fr");
+        assertThat(frenchLoginText.isPresent(), equalTo(true));
+        assertThat(frenchLoginText.get().getText(), equalTo(testName + " text"));
 
-        assertThat(langTexts, hasSize(2));
-        assertThat(langTexts.get(0).getLanguage(), equalTo("dev"));
-        assertThat(langTexts.get(1).getLanguage(), equalTo("es"));
+        Optional<LanguageText> missingText = languageTextService.findByKeyNameAndLanguage("doesNotExist", "fr");
+        assertThat(missingText.isPresent(), equalTo(false));
     }
 
     @Test
     @Transactional
-    public void testFindByPortalEnvIdAndLanguage(TestInfo testInfo) {
-        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "dev");
-        languageTextFactory.buildPersisted(getTestName(testInfo), "login", "es");
+    public void testGetLanguageTextMapForLanguage(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        languageTextFactory.buildPersisted(testName, "login", "testLang");
+        languageTextFactory.buildPersisted(testName, "logout", "testLang");
+        languageTextFactory.buildPersisted(testName, "logout", "otherTestLang");
 
-        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage("dev");
+        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage("testLang");
 
-        assertThat(langTexts.size(), equalTo(1));
-        assertThat(langTexts.get(getTestName(testInfo) + "login"), equalTo(getTestName(testInfo) + " text"));
+        assertThat(langTexts.size(), equalTo(2));
+        assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
+        assertThat(langTexts.get(testName + "logout"), equalTo(testName + " text"));
     }
 
 }

@@ -28,16 +28,16 @@ public class CurrentUserController implements CurrentUserApi {
   public ResponseEntity<Object> tokenLogin(String portalShortcode, String envName) {
     String token = requestUtilService.requireToken(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    CurrentUserService.UserWithEnrollees userWithEnrollees =
+    CurrentUserService.UserLoginDto userLoginDto =
         currentUserService.tokenLogin(token, portalShortcode, environmentName);
-    return ResponseEntity.ok(userWithEnrollees);
+    return ResponseEntity.ok(userLoginDto);
   }
 
   @Override
   public ResponseEntity<Object> refresh(String portalShortcode, String envName) {
     String token = requestUtilService.requireToken(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    CurrentUserService.UserWithEnrollees userOpt =
+    CurrentUserService.UserLoginDto userOpt =
         currentUserService.refresh(token, portalShortcode, environmentName);
     return ResponseEntity.ok(userOpt);
   }

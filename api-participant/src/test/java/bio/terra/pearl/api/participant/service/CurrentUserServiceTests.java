@@ -52,7 +52,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     String token = generateFakeJwtToken(userBundle.user().getUsername());
 
     try {
-      CurrentUserService.UserWithEnrollees loadedUser =
+      CurrentUserService.UserLoginDto loadedUser =
           currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
       assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
       assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));

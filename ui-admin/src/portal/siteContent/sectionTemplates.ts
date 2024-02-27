@@ -98,9 +98,13 @@ export const sectionTemplates: Record<string, object> = {
     ]
   },
   'SOCIAL_MEDIA': {
-    twitterHandle: 'Enter Twitter handle here',
+    xHandle: 'Enter X handle here',
     instagramHandle: 'Enter Instagram handle here',
     facebookHandle: 'Enter Facebook handle here',
+    tiktokHandle: 'Enter TikTok handle here',
+    linkedinHandle: 'Enter LinkedIn handle here',
+    threadsHandle: 'Enter Threads handle here',
+    youtubeHandle: 'Enter YouTube handle here',
     paddingBottom: 0
   },
   'STEP_OVERVIEW': {

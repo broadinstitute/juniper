@@ -1,20 +1,12 @@
-import {
-  AddressValidationResult,
-  explainAddressValidationResults,
-  getAllCountries,
-  isAddressFieldValid,
-  MailingAddress
-} from '@juniper/ui-core'
+import { AddressValidationResult, explainAddressValidationResults, MailingAddress } from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { doApiLoad } from '../api/api-utils'
 import Api from '../api/api'
-import { isNil, sortBy } from 'lodash'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
 import { findDifferencesBetweenObjects } from '../util/objectUtils'
-import CreatableSelect from 'react-select/creatable'
-import classNames from 'classnames'
+import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
@@ -42,37 +34,16 @@ const SUPPORTED_COUNTRIES = [
  */
 export default function EditMailingAddress(
   {
-    mailingAddress, onMailingAddressFieldChange, setMailingAddress, language
+    mailingAddress, setMailingAddress
   }: {
     mailingAddress: MailingAddress,
-    onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
-    setMailingAddress: (update: MailingAddress) => void,
-    language?: string
+    setMailingAddress: (update: React.SetStateAction<MailingAddress>) => void,
   }
 ) {
   const [addressValidationResults, setAddressValidationResults] = useState<AddressValidationResult | undefined>()
   const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
-  const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
 
   const user = useUser()
-
-  const onFieldChange = (field: keyof MailingAddress, value: string) => {
-    if (!hasChangedSinceValidation.includes(field)) {
-      setHasChangedSinceValidation(val => val.concat([field]))
-    }
-
-    onMailingAddressFieldChange(field, value)
-  }
-
-
-  const countryOptions = getAllCountries(language).map(
-    country => {
-      return {
-        value: country.code,
-        label: country.name
-      }
-    }
-  )
 
   const validateAddress = () => {
     doApiLoad(async () => {
@@ -85,31 +56,7 @@ export default function EditMailingAddress(
       }
 
       setAddressValidationResults(results)
-      setHasChangedSinceValidation([])
     }, { setIsLoading: setIsLoadingValidation })
-  }
-
-  // checks if a field should be in an error state; if true,
-  // should be green, if false, red, and if undefined, unhighlighted
-  const isValid = (field: keyof MailingAddress): boolean | undefined => {
-    if (!addressValidationResults || !isNil(addressValidationResults.suggestedAddress)) {
-      return undefined
-    }
-
-    if (!hasChangedSinceValidation.includes(field)
-      && addressValidationResults.valid
-      && isNil(addressValidationResults.suggestedAddress)
-      && (isNil(addressValidationResults.hasInferredComponents)
-        || !addressValidationResults.hasInferredComponents)) {
-      return true
-    }
-
-    if (!hasChangedSinceValidation.includes(field)
-      && !isAddressFieldValid(addressValidationResults, field)) {
-      return false
-    }
-
-    return undefined
   }
 
   const clearSuggestedAddress = () => {
@@ -122,99 +69,18 @@ export default function EditMailingAddress(
     })
   }
 
-  const findCountryLabel = (val: string) => {
-    const option = countryOptions.find(option => option.value === val)
-
-    if (option) {
-      return option.label
-    }
-
-    return val
-  }
-
   const isSupportedCountry = (val: string) => {
     return SUPPORTED_COUNTRIES.includes(val)
   }
 
   return <div className="">
-    <div className='row mb-2'>
-      <div className="col">
-        <input
-          className={classNames(
-            'form-control', {
-              'is-valid': isValid('street1') === true,
-              'is-invalid': isValid('street1') === false
-            })}
-          type="text" value={mailingAddress.street1 || ''} placeholder={'Street 1'}
-          onChange={e => onFieldChange('street1', e.target.value)}/>
-      </div>
-    </div>
-    <div className='row mb-2'>
-      <div className="col">
-        <input
-          className={classNames(
-            'form-control', {
-              'is-valid': isValid('street2') === true,
-              'is-invalid': isValid('street2') === false
-            })}
-          type="text" value={mailingAddress.street2 || ''}
-          placeholder={'Street 2'}
-          onChange={e => onFieldChange('street2', e.target.value)}/>
-      </div>
-    </div>
-    <div className='row mb-2'>
-      <div className="col">
-        <input
-          className={classNames(
-            'form-control', {
-              'is-valid': isValid('city') === true,
-              'is-invalid': isValid('city') === false
-            })}
-          type="text" value={mailingAddress.city || ''}
-          placeholder={'City'}
-          onChange={e => onFieldChange('city', e.target.value)}/>
-      </div>
-      <div className='col'>
-        <input
-          className={classNames(
-            'form-control', {
-              'is-valid': isValid('state') === true,
-              'is-invalid': isValid('state') === false
-            })}
-          type="text" value={mailingAddress.state || ''} placeholder={'State/Province'}
-          onChange={e => onFieldChange('state', e.target.value)}/>
-      </div>
-    </div>
-    <div className='row'>
-      <div className="col">
-        <input
-          className={classNames(
-            'form-control', {
-              'is-valid': isValid('postalCode') === true,
-              'is-invalid': isValid('postalCode') === false
-            })}
-          type="text" value={mailingAddress.postalCode || ''} placeholder={'Postal Code'}
-          onChange={e => onFieldChange('postalCode', e.target.value)}/>
-      </div>
-      <div className='col'>
-        <CreatableSelect
-          styles={{
-            control: baseStyles => ({
-              ...baseStyles,
-              borderColor: 'var(--bs-border-color)' // use same border color as all other components
-            })
-          }}
-          placeholder={'Country'}
-          options={sortBy(countryOptions, opt => opt.label)}
-          value={{
-            value: mailingAddress.country,
-            label: findCountryLabel(mailingAddress.country)
-          }}
-          formatCreateLabel={val => val}
-          onChange={val => onFieldChange('country', val ? val.value : '')}
-        />
-      </div>
-    </div>
+    <EditAddress
+      mailingAddress={mailingAddress}
+      setMailingAddress={setMailingAddress}
+      showLabels={false}
+      validationResult={addressValidationResults}
+      language={'en'}
+    />
     {(user.user.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
           <div

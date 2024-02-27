@@ -2,7 +2,7 @@ import React from 'react'
 import { Enrollee } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
-import { dateToDefaultString } from 'util/timeUtils'
+import { dateToDefaultString } from '@juniper/ui-core'
 import KitRequests from '../KitRequests'
 
 /** Shows minimal identifying information, and then kits and notes */

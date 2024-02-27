@@ -130,9 +130,13 @@
   },{
     "sectionType": "SOCIAL_MEDIA",
     "sectionConfigJson": {
-      "twitterHandle": "ourhealthstudy",
       "instagramHandle": "ourhealthstudy",
       "facebookHandle": "ourhealthstudy",
+      "xHandle": "ourhealthstudy",
+      "tiktokHandle": "ourhealthstudy",
+      "linkedinHandle": "ourhealthstudy",
+      "threadsHandle": "ourhealthstudy",
+      "youtubeHandle": "ourhealthstudy",
       "paddingBottom": 0
     }
   },{
