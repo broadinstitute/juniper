@@ -11,5 +11,12 @@
   {"keyName": "taskDeclined", "text": "Rechazado", "language": "es"},
   {"keyName": "taskLocked", "text": "Bloqueado", "language": "es"},
   {"keyName": "tasksNoneForStudy", "text": "No hay tareas para este estudio", "language": "es"},
-  {"keyName": "surveysSomeLocked", "text": "Algunas encuestas están bloqueadas hasta que se completen otras tareas requeridas.", "language": "es"}
+  {"keyName": "surveysSomeLocked", "text": "Algunas encuestas están bloqueadas hasta que se completen otras tareas requeridas.", "language": "es"},
+  {"keyName": "taskTypeSurvey", "text": "Encuesta", "language": "es"},
+  {"keyName": "taskTypeSurveys", "text": "Encuestas", "language": "es"},
+  {"keyName": "taskTypeConsent", "text": "Consentimiento", "language": "es"},
+  {"keyName": "taskTypeForms", "text": "Formas", "language": "es"},
+  {"keyName": "taskStart", "text": "Comenzar", "language": "es"},
+  {"keyName": "taskContinue", "text": "Continuar", "language": "es"},
+  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"}
 ]

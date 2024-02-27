@@ -4,6 +4,7 @@ import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { useTaskIdParam } from './survey/SurveyView'
+import { useI18n } from 'providers/I18nProvider'
 
 type OutreachParams = {
     enrolleeShortcode?: string,
@@ -27,6 +28,7 @@ const useOutreachParams = () => {
  * all of the tasks from the portal the user has signed into are shown, and that may include
  * multiple studies and therefore enrollees */
 export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
+  const { i18n } = useI18n()
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
@@ -88,7 +90,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
             </p>
             <div className="py-3 text-center" style={{ background: 'var(--brand-color-shift-90)' }}>
               <Link to={taskUrl} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">
-              Learn More
+                {i18n('outreachLearnMore')}
               </Link>
             </div>
           </div>

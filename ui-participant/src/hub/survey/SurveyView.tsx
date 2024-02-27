@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import 'survey-core/survey.i18n'
 
 import Api, { Enrollee, Portal, StudyEnvironmentSurvey, Survey, SurveyResponse, SurveyWithResponse } from 'api/api'
 

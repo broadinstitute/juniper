@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
+import 'survey-core/survey.i18n'
 
 import { FormContent, PortalEnvironmentLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
 

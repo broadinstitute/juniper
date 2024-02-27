@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import Api from 'api/api'
 import { useUser } from './UserProvider'
 
-const I18nContext = createContext<I18nContextT | null>(null)
+export const I18nContext = createContext<I18nContextT | null>(null)
 
 export type I18nContextT = {
   languageTexts: Record<string, string>

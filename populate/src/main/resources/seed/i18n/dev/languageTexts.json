@@ -11,5 +11,12 @@
   {"keyName": "taskDeclined", "text": "DEV_Declined", "language": "dev"},
   {"keyName": "taskLocked", "text": "DEV_Locked", "language": "dev"},
   {"keyName": "tasksNoneForStudy", "text": "DEV_No tasks for this study", "language": "dev"},
-  {"keyName": "surveysSomeLocked", "text": "DEV_Some surveys are locked until other required tasks are completed.", "language": "dev"}
+  {"keyName": "surveysSomeLocked", "text": "DEV_Some surveys are locked until other required tasks are completed.", "language": "dev"},
+  {"keyName": "taskTypeSurvey", "text": "DEV_Survey", "language": "dev"},
+  {"keyName": "taskTypeSurveys", "text": "DEV_Surveys", "language": "dev"},
+  {"keyName": "taskTypeConsent", "text": "DEV_Consent", "language": "dev"},
+  {"keyName": "taskTypeForms", "text": "DEV_Forms", "language": "dev"},
+  {"keyName": "taskStart", "text": "DEV_Start", "language": "dev"},
+  {"keyName": "taskContinue", "text": "DEV_Continue", "language": "dev"},
+  {"keyName": "outreachLearnMore", "text": "DEV_Learn More", "language": "dev"}
 ]
