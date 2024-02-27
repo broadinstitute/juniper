@@ -1,22 +1,24 @@
 package bio.terra.pearl.core.service.site;
 
-import bio.terra.pearl.core.dao.site.SiteImageDao;
-import bio.terra.pearl.core.model.site.SiteImage;
-import bio.terra.pearl.core.model.site.SiteImageMetadata;
+import bio.terra.pearl.core.dao.site.SiteMediaDao;
+import bio.terra.pearl.core.model.site.SiteMedia;
+import bio.terra.pearl.core.model.site.SiteMediaMetadata;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 
 @Component
-public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImageDao> {
+public class SiteMediaService extends ImmutableEntityService<SiteMedia, SiteMediaDao> {
     public static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("png", "jpeg", "jpg", "svg", "gif", "webp", "ico", "pdf", "json", "txt", "csv");
     private PortalService portalService;
-    public SiteImageService(SiteImageDao dao, @Lazy PortalService portalService) {
+
+    public SiteMediaService(SiteMediaDao dao, @Lazy PortalService portalService) {
         super(dao);
         this.portalService = portalService;
     }
@@ -25,24 +27,24 @@ public class SiteImageService extends ImmutableEntityService<SiteImage, SiteImag
         dao.deleteByPortalShortcode(portalShortcode);
     }
 
-    public Optional<SiteImage> findOne(String portalShortcode, String cleanFileName, int version) {
+    public Optional<SiteMedia> findOne(String portalShortcode, String cleanFileName, int version) {
         return dao.findOne(portalShortcode, cleanFileName, version);
     }
 
-    public Optional<SiteImage> findOneLatestVersion(String portalShortcode, String cleanFileName) {
+    public Optional<SiteMedia> findOneLatestVersion(String portalShortcode, String cleanFileName) {
         return dao.findOneLatestVersion(portalShortcode, cleanFileName);
     }
 
-    public List<SiteImage> findByPortal(String portalShortcode) {
+    public List<SiteMedia> findByPortal(String portalShortcode) {
         return dao.findByPortal(portalShortcode);
     }
 
-    public List<SiteImageMetadata> findMetadataByPortal(String portalShortcode) {
+    public List<SiteMediaMetadata> findMetadataByPortal(String portalShortcode) {
         return dao.findMetadataByPortal(portalShortcode);
     }
 
     @Override
-    public SiteImage create(SiteImage image) {
+    public SiteMedia create(SiteMedia image) {
 
         if (!isAllowedFileName(image.getUploadFileName())) {
             throw new IllegalArgumentException("Allowed extensions are: " +

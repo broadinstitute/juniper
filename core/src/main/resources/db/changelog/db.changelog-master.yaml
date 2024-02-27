@@ -209,7 +209,9 @@ databaseChangeLog:
   - include:
      file: changesets/2024_02_22_survey_assign_existing.yaml
      relativeToChangelogFile: true
-
+  - include:
+      file: changesets/2024_02_23_rename_site_image.yaml
+      relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

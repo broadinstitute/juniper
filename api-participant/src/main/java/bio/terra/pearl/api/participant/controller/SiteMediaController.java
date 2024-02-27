@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.participant.controller;
 
-import bio.terra.pearl.api.participant.api.SiteImageApi;
-import bio.terra.pearl.core.model.site.SiteImage;
-import bio.terra.pearl.core.service.site.SiteImageService;
+import bio.terra.pearl.api.participant.api.SiteMediaApi;
+import bio.terra.pearl.core.model.site.SiteMedia;
+import bio.terra.pearl.core.service.site.SiteMediaService;
 import java.net.URLConnection;
 import java.util.Optional;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,26 +12,26 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class SiteImageController implements SiteImageApi {
-  private SiteImageService siteImageService;
+public class SiteMediaController implements SiteMediaApi {
+  private SiteMediaService siteMediaService;
 
-  public SiteImageController(SiteImageService siteImageService) {
-    this.siteImageService = siteImageService;
+  public SiteMediaController(SiteMediaService siteMediaService) {
+    this.siteMediaService = siteMediaService;
   }
 
   @Override
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, Integer version) {
-    Optional<SiteImage> siteImageOpt;
+    Optional<SiteMedia> siteMediaOpt;
 
-    siteImageOpt = siteImageService.findOne(portalShortcode, cleanFileName, version);
-    return convertToResourceResponse(siteImageOpt);
+    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName, version);
+    return convertToResourceResponse(siteMediaOpt);
   }
 
-  private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {
+  private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteMedia> imageOpt) {
     if (imageOpt.isPresent()) {
       MediaType contentType;
-      SiteImage image = imageOpt.get();
+      SiteMedia image = imageOpt.get();
       if (image.getCleanFileName().endsWith(".json")) {
         contentType = MediaType.APPLICATION_JSON;
       } else {

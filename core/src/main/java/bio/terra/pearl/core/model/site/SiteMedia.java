@@ -1,13 +1,14 @@
 package bio.terra.pearl.core.model.site;
 
-import bio.terra.pearl.core.model.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-/** Full persistent class that includes the actual serialized image */
+/**
+ * Full persistent class that includes the actual serialized media
+ */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
-public class SiteImage extends SiteImageMetadata {
+public class SiteMedia extends SiteMediaMetadata {
     private byte[] data;
 }

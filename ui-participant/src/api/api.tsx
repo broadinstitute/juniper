@@ -542,7 +542,7 @@ function baseStudyEnvUrl(isPublic: boolean, studyShortcode: string) {
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(cleanFileName: string, version: number) {
-  return `${baseEnvUrl(true)}/siteImages/${version}/${cleanFileName}`
+  return `${baseEnvUrl(true)}/siteMedia/${version}/${cleanFileName}`
 }
 
 export type EnvSpec = {

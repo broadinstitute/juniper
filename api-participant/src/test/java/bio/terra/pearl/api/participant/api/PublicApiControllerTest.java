@@ -2,7 +2,9 @@ package bio.terra.pearl.api.participant.api;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import bio.terra.pearl.api.participant.config.B2CConfigurationService;
 import bio.terra.pearl.api.participant.config.VersionConfiguration;
@@ -10,7 +12,7 @@ import bio.terra.pearl.api.participant.controller.PublicApiController;
 import bio.terra.pearl.api.participant.model.SystemStatus;
 import bio.terra.pearl.api.participant.service.StatusService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.site.SiteImageService;
+import bio.terra.pearl.core.service.site.SiteMediaService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -25,7 +27,7 @@ class PublicApiControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @MockBean private B2CConfigurationService b2CConfigurationService;
-  @MockBean private SiteImageService siteImageService;
+  @MockBean private SiteMediaService siteMediaService;
   @MockBean private PortalService portalService;
 
   @MockBean private StatusService statusService;

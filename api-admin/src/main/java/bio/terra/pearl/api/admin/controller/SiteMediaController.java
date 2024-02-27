@@ -1,14 +1,15 @@
 package bio.terra.pearl.api.admin.controller;
 
-import bio.terra.pearl.api.admin.api.SiteImageApi;
+import bio.terra.pearl.api.admin.api.SiteMediaApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
-import bio.terra.pearl.api.admin.service.siteContent.SiteImageExtService;
+import bio.terra.pearl.api.admin.service.siteContent.SiteMediaExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.site.SiteImage;
+import bio.terra.pearl.core.model.site.SiteMedia;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLConnection;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -17,18 +18,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class SiteImageController implements SiteImageApi {
+public class SiteMediaController implements SiteMediaApi {
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
-  private SiteImageExtService siteImageExtService;
+  private SiteMediaExtService siteMediaExtService;
 
-  public SiteImageController(
+  public SiteMediaController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
-      SiteImageExtService siteImageExtService) {
+      SiteMediaExtService siteMediaExtService) {
     this.authUtilService = authUtilService;
     this.request = request;
-    this.siteImageExtService = siteImageExtService;
+    this.siteMediaExtService = siteMediaExtService;
   }
 
   /**
@@ -39,15 +40,15 @@ public class SiteImageController implements SiteImageApi {
   @Override
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, Integer version) {
-    Optional<SiteImage> siteImageOpt =
-        siteImageExtService.findOne(portalShortcode, cleanFileName, version);
-    return convertToResourceResponse(siteImageOpt);
+    Optional<SiteMedia> siteMediaOpt =
+        siteMediaExtService.findOne(portalShortcode, cleanFileName, version);
+    return convertToResourceResponse(siteMediaOpt);
   }
 
   @Override
   public ResponseEntity<Object> list(String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(siteImageExtService.list(portalShortcode, operator));
+    return ResponseEntity.ok(siteMediaExtService.list(portalShortcode, operator));
   }
 
   @Override
@@ -57,16 +58,24 @@ public class SiteImageController implements SiteImageApi {
     try {
       byte[] imageData = image.getBytes();
       return ResponseEntity.ok(
-          siteImageExtService.upload(portalShortcode, uploadFileName, imageData, operator));
+          siteMediaExtService.upload(portalShortcode, uploadFileName, imageData, operator));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read image data");
     }
   }
 
-  private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteImage> imageOpt) {
+  @Override
+  public ResponseEntity<Void> delete(String portalShortcode, UUID id) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    siteMediaExtService.delete(portalShortcode, id, operator);
+
+    return ResponseEntity.ok().build();
+  }
+
+  private ResponseEntity<Resource> convertToResourceResponse(Optional<SiteMedia> imageOpt) {
     if (imageOpt.isPresent()) {
       MediaType contentType;
-      SiteImage image = imageOpt.get();
+      SiteMedia image = imageOpt.get();
       if (image.getCleanFileName().endsWith(".ico")) {
         contentType = MediaType.valueOf("image/x-icon");
       } else if (image.getCleanFileName().endsWith(".json")) {

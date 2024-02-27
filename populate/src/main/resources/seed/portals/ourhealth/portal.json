@@ -61,107 +61,108 @@
     {"username": "staff@ourhealth.org"},
     {"username": "staff2@ourhealth.org"}
   ],
-  "siteImageDtos": [{
-    "populateFileName": "images/Banner-image.png"
+  "siteMediaDtos": [
+    {
+      "populateFileName": "media/Banner-image.png"
   }, {
-    "populateFileName": "images/family.png"
+      "populateFileName": "media/family.png"
   }, {
-    "populateFileName": "images/ourhealth-logo.png"
+      "populateFileName": "media/ourhealth-logo.png"
   }, {
-    "populateFileName": "images/discover.svg"
+      "populateFileName": "media/discover.svg"
   }, {
-    "populateFileName": "images/engage.svg"
+      "populateFileName": "media/engage.svg"
   }, {
-    "populateFileName": "images/amit_khera.jpg"
+      "populateFileName": "media/amit_khera.jpg"
   }, {
-    "populateFileName": "images/pradeep_natarajan.jpg"
+      "populateFileName": "media/pradeep_natarajan.jpg"
   }, {
-    "populateFileName": "images/romit_bhattacharya.jpg"
+      "populateFileName": "media/romit_bhattacharya.jpg"
   }, {
-    "populateFileName": "images/kaavya_paruchuri.jpg"
+      "populateFileName": "media/kaavya_paruchuri.jpg"
   }, {
-    "populateFileName": "images/aniruddh_patel.jpg"
+      "populateFileName": "media/aniruddh_patel.jpg"
   }, {
-    "populateFileName": "images/whitney_hornsby.jpg"
+      "populateFileName": "media/whitney_hornsby.jpg"
   }, {
-    "populateFileName": "images/puneet_batra.jpg"
+      "populateFileName": "media/puneet_batra.jpg"
   }, {
-    "populateFileName": "images/sara_heidermota.jpg"
+      "populateFileName": "media/sara_heidermota.jpg"
   }, {
-    "populateFileName": "images/nishant_uppal.jpg"
+      "populateFileName": "media/nishant_uppal.jpg"
   }, {
-    "populateFileName": "images/nina_kathiresan.jpg"
+      "populateFileName": "media/nina_kathiresan.jpg"
   }, {
-    "populateFileName": "images/shriie_ganesh.jpg"
+      "populateFileName": "media/shriie_ganesh.jpg"
   }, {
-    "populateFileName": "images/alka_kanya.jpg"
+      "populateFileName": "media/alka_kanya.jpg"
   }, {
-    "populateFileName": "images/sekar_kathiresan.jpg"
+      "populateFileName": "media/sekar_kathiresan.jpg"
   }, {
-    "populateFileName": "images/anthony_philippakis.jpg"
+      "populateFileName": "media/anthony_philippakis.jpg"
   }, {
-    "populateFileName": "images/svati_shah.jpg"
+      "populateFileName": "media/svati_shah.jpg"
   }, {
-    "populateFileName": "images/nikhil_wagle.jpg"
+      "populateFileName": "media/nikhil_wagle.jpg"
   }, {
-    "populateFileName": "images/krishna_yeshwant.jpg"
+      "populateFileName": "media/krishna_yeshwant.jpg"
   }, {
-    "populateFileName": "images/latha_palaniappan.jpg"
+      "populateFileName": "media/latha_palaniappan.jpg"
   }, {
-    "populateFileName": "images/aarushi_bhatnagar.jpg"
+      "populateFileName": "media/aarushi_bhatnagar.jpg"
   }, {
-    "populateFileName": "images/shilpa_bhupathiraju.jpg"
+      "populateFileName": "media/shilpa_bhupathiraju.jpg"
   }, {
-    "populateFileName": "images/namrata_sengupta.jpg"
+      "populateFileName": "media/namrata_sengupta.jpg"
   }, {
-    "populateFileName": "images/rohan_khera.jpg"
+      "populateFileName": "media/rohan_khera.jpg"
   },{
-    "populateFileName": "images/consent_step.png"
+      "populateFileName": "media/consent_step.png"
   }, {
-    "populateFileName": "images/survey_step.png"
+      "populateFileName": "media/survey_step.png"
   }, {
-    "populateFileName": "images/saliva_step.png"
+      "populateFileName": "media/saliva_step.png"
   }, {
-    "populateFileName": "images/engagement_step.png"
+      "populateFileName": "media/engagement_step.png"
   }, {
-    "populateFileName": "images/infographic_risk.png"
+      "populateFileName": "media/infographic_risk.png"
   }, {
-    "populateFileName": "images/risk_factors.png"
+      "populateFileName": "media/risk_factors.png"
   }, {
-    "populateFileName": "images/population_rates.png"
+      "populateFileName": "media/population_rates.png"
   }, {
-    "populateFileName": "images/individual_rates.png"
+      "populateFileName": "media/individual_rates.png"
   }, {
-    "populateFileName": "images/people_laughing.jpg"
+      "populateFileName": "media/people_laughing.jpg"
   }, {
-    "populateFileName": "images/idea_bulb.png"
+      "populateFileName": "media/idea_bulb.png"
   }, {
-    "populateFileName": "images/step_1.png"
+      "populateFileName": "media/step_1.png"
   }, {
-    "populateFileName": "images/step_2.png"
+      "populateFileName": "media/step_2.png"
   }, {
-    "populateFileName": "images/step_3.png"
+      "populateFileName": "media/step_3.png"
   }, {
-    "populateFileName": "images/step_4.png"
+      "populateFileName": "media/step_4.png"
   }, {
-    "populateFileName": "images/hands_banner.jpg"
+      "populateFileName": "media/hands_banner.jpg"
   }, {
-    "populateFileName": "images/scientists_banner.jpg"
+      "populateFileName": "media/scientists_banner.jpg"
   }, {
-    "populateFileName": "images/logos/broad_logo.png"
+      "populateFileName": "media/logos/broad_logo.png"
   }, {
-    "populateFileName": "images/logos/mgh_logo.png"
+      "populateFileName": "media/logos/mgh_logo.png"
   }, {
-    "populateFileName": "images/logos/mgb_logo.svg"
+      "populateFileName": "media/logos/mgb_logo.svg"
   }, {
-    "populateFileName": "images/logos/hms_logo.png"
+      "populateFileName": "media/logos/hms_logo.png"
   }, {
-    "populateFileName": "images/logos/stanford_med.png"
+      "populateFileName": "media/logos/stanford_med.png"
   }, {
-    "populateFileName": "images/logos/yale_med.png"
+      "populateFileName": "media/logos/yale_med.png"
   },{
-    "populateFileName": "images/globe_and_hearts.png"
+      "populateFileName": "media/globe_and_hearts.png"
   }, {
-    "populateFileName": "images/favicon.ico"
+      "populateFileName": "media/favicon.ico"
   }]
 }

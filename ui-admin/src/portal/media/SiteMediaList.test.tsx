@@ -3,14 +3,14 @@ import React from 'react'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { mockPortalContext, mockPortalEnvironment } from 'test-utils/mocking-utils'
-import SiteImageList from './SiteImageList'
+import SiteMediaList from './SiteMediaList'
 import Api from 'api/api'
 import userEvent from '@testing-library/user-event'
 
 test('renders empty table', async () => {
-  jest.spyOn(Api, 'getPortalImages').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([]))
   const { RoutedComponent } = setupRouterTest(
-    <SiteImageList portalContext={mockPortalContext()}
+    <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)
   render(RoutedComponent)
   await waitFor(() => expect(screen.getByText('Showing 0 of 0 rows')).toBeInTheDocument())
@@ -18,14 +18,14 @@ test('renders empty table', async () => {
 
 
 test('renders table with a clickable image', async () => {
-  jest.spyOn(Api, 'getPortalImages').mockImplementation(() => Promise.resolve([{
+  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([{
     id: 'fakeId',
     cleanFileName: 'testImage.png',
     version: 1,
     createdAt: Date.now()
   }]))
   const { RoutedComponent } = setupRouterTest(
-    <SiteImageList portalContext={mockPortalContext()}
+    <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)
   render(RoutedComponent)
   await waitFor(() => expect(screen.getByText('Showing 1 of 1 rows')).toBeInTheDocument())
@@ -37,14 +37,14 @@ test('renders table with a clickable image', async () => {
 })
 
 test('does not render a preview for a non-image type', async () => {
-  jest.spyOn(Api, 'getPortalImages').mockImplementation(() => Promise.resolve([{
+  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([{
     id: 'fakeId',
     cleanFileName: 'testDoc.pdf',
     version: 1,
     createdAt: Date.now()
   }]))
   const { RoutedComponent } = setupRouterTest(
-    <SiteImageList portalContext={mockPortalContext()}
+    <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)
   render(RoutedComponent)
   await waitFor(() => expect(screen.getByText('Showing 1 of 1 rows')).toBeInTheDocument())

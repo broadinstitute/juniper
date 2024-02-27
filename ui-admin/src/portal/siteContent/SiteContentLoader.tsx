@@ -20,7 +20,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
   /** uses the admin image retrieval endpoint */
   const getImageUrl = (cleanFileName: string, version: number) =>
       `/api/public/portals/v1/${portalShortcode}/env/${portalEnv.environmentName}` +
-      `/siteImages/${version}/${cleanFileName}`
+    `/siteMedia/${version}/${cleanFileName}`
   const previewApi: ApiContextT = {
     getImageUrl,
     submitMailingListContact: () => Promise.resolve({})

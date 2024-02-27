@@ -8,13 +8,13 @@ import lombok.experimental.SuperBuilder;
 
 /**
  * Class for storing metadata about a portal image.  Does not contain the serialized image data
- * SiteImages are uniquely identified by the composite key of (cleanFileName, version, portalShortcode)
+ * SiteMedias are uniquely identified by the composite key of (cleanFileName, version, portalShortcode)
  * */
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class SiteImageMetadata extends BaseEntity {
+public class SiteMediaMetadata extends BaseEntity {
     /**
      * the cleanFileName essentially serves as a stableId -- we call it cleanFileName here to indicate its origin.
      * and because it is not required to be globally unique like other stableIds -- it just has to be unique within a portal
