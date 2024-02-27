@@ -37,7 +37,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    void TestIsUserProxyForAnyOf(TestInfo info) {
+    void testIsUserProxyForAnyOf(TestInfo info) {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
         StudyEnvironment studyEnv2 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));

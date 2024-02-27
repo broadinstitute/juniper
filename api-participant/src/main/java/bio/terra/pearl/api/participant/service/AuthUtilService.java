@@ -11,7 +11,6 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
-import jakarta.ws.rs.NotAuthorizedException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,7 +68,7 @@ public class AuthUtilService {
       return ppUser;
     }
 
-    throw new NotAuthorizedException("Cannot act on behalf of this user.");
+    throw new NotFoundException("Portal participant user not found.");
   }
 
   /** confirms the participant can access resources from the given portal */
