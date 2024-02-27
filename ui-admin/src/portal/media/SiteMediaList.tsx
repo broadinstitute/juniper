@@ -21,6 +21,7 @@ import { faClipboard, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import SiteMediaDeleteModal from './SiteMediaDeleteModal'
+import { useUser } from '../../user/UserProvider'
 
 /** shows a list of images in a table */
 export default function SiteMediaList({ portalContext, portalEnv }:
@@ -34,6 +35,8 @@ export default function SiteMediaList({ portalContext, portalEnv }:
   const [updatingImage, setUpdatingMedia] = useState<SiteMediaMetadata>()
   const [showUploadModal, setShowUploadModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState<SiteMediaMetadata | undefined>()
+
+  const { user } = useUser()
 
   const updateMedia = (image: SiteMediaMetadata) => {
     setUpdatingMedia(image)
@@ -88,7 +91,9 @@ export default function SiteMediaList({ portalContext, portalEnv }:
     className="btn btn-secondary">
       <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Copy Path
     </button>
-  }, {
+  }]
+
+  const deleteColumnDef: ColumnDef<SiteMediaMetadata> = {
     header: '',
     id: 'delete',
     cell: ({ row: { original } }) => {
@@ -96,11 +101,11 @@ export default function SiteMediaList({ portalContext, portalEnv }:
         <FontAwesomeIcon icon={faTrash} onClick={() => setShowDeleteModal(original)}/>
       </button>
     }
-  }]
+  }
 
   const table = useReactTable({
     data: images,
-    columns,
+    columns: user.superuser ? columns.concat(deleteColumnDef) : columns,
     state: {
       sorting
     },
