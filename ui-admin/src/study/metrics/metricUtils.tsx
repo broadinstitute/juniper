@@ -1,4 +1,4 @@
-import { dateMinusDays } from 'util/timeUtils'
+import { dateMinusDays } from '@juniper/ui-core'
 
 export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS' | 'CUSTOM'
 

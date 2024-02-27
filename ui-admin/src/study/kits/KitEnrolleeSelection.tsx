@@ -22,7 +22,7 @@ import {
   RowVisibilityCount
 } from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { instantToDateString } from 'util/timeUtils'
+import { instantToDateString } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'

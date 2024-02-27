@@ -2,6 +2,7 @@
   {"keyName": "navbarDashboard", "text": "Dashboard", "language": "en"},
   {"keyName": "navbarChangePassword", "text": "Change Password", "language": "en"},
   {"keyName": "navbarLogout", "text": "Log Out", "language": "en"},
+  {"keyName": "navbarProfile", "text": "Profile", "language": "en"},
   {"keyName": "navbarLogin", "text": "Log In", "language": "en"},
   {"keyName": "navbarJoin", "text": "Register", "language": "en"},
   {"keyName": "taskComplete", "text": "Complete", "language": "en"},

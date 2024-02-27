@@ -1,5 +1,4 @@
-import { cssVar, parseToRgb, tint } from 'polished'
-import React, { CSSProperties, Suspense, lazy, useEffect } from 'react'
+import React, { lazy, Suspense, useEffect } from 'react'
 
 import LandingPage from 'landing/LandingPage'
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
@@ -23,39 +22,13 @@ import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider } from '@juniper/ui-core'
-import I18nProvider from 'providers/I18nProvider'
+import { BrandConfiguration, brandStyles } from './util/brandUtils'
+import I18nProvider from './providers/I18nProvider'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
 const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
 
-
-type BrandConfiguration = {
-  brandColor?: string;
-}
-
-const brandStyles = (config: BrandConfiguration = {}): CSSProperties => {
-  const {
-    brandColor = cssVar('--bs-blue') as string
-  } = config
-
-  const brandColorRgb = parseToRgb(brandColor)
-
-  return {
-    // Custom properties used in index.css.
-    '--brand-color': brandColor,
-    '--brand-color-rgb': `${brandColorRgb.red}, ${brandColorRgb.green}, ${brandColorRgb.blue}`,
-    '--brand-color-contrast': '#fff',
-    '--brand-color-shift-10': tint(0.10, brandColor),
-    '--brand-color-shift-15': tint(0.15, brandColor),
-    '--brand-color-shift-20': tint(0.20, brandColor),
-    '--brand-color-shift-90': tint(0.90, brandColor),
-    '--brand-link-color': brandColor,
-    // Override Bootstrap properties.
-    '--bs-link-color': brandColor,
-    '--bs-link-hover-color': tint(0.20, brandColor)
-  } as CSSProperties
-}
 
 const ScrollToTop = () => {
   const location = useLocation()
@@ -117,7 +90,7 @@ function App() {
                   }>
                     <UserProvider>
                       <I18nProvider>
-                        <Suspense fallback={<PageLoadingIndicator />}>
+                        <Suspense fallback={<PageLoadingIndicator/>}>
                           <IdleStatusMonitor
                             maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
                           <Routes>
@@ -131,9 +104,9 @@ function App() {
                               {landingRoutes}
                             </Route>
                             <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
-                            <Route path="/privacy" element={<PrivacyPolicyPage />} />
-                            <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage />} />
-                            <Route path="/terms/participant" element={<ParticipantTermsOfUsePage />} />
+                            <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
+                            <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
+                            <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>
                             <Route path="*" element={<div>unmatched route</div>}/>
                           </Routes>
                         </Suspense>

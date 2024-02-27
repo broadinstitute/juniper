@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-table'
 import Api, { AdminUser, Portal } from 'api/api'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'

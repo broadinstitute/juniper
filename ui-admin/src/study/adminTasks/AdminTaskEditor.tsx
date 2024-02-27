@@ -6,7 +6,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import AdminUserSelect from 'user/AdminUserSelect'
 import { doApiLoad } from 'api/api-utils'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { instantToDefaultString } from '../../util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 
 
 /** Form for editing an admin task */
