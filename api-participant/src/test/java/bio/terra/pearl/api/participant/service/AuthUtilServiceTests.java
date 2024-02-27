@@ -7,9 +7,14 @@ import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,6 +27,7 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Autowired private ParticipantUserFactory participantUserFactory;
   @Autowired private AuthUtilService authUtilService;
   @Autowired private StudyEnvironmentService studyEnvironmentService;
+  @Autowired private EnrolleeRelationService enrolleeRelationService;
 
   @Test
   @Transactional
@@ -46,5 +52,55 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
         () -> {
           authUtilService.authParticipantUserToEnrollee(otherUser.getId(), enrollee.getShortcode());
         });
+  }
+
+  @Test
+  @Transactional
+  public void testAuthToPortalParticipantUserAllowsIfParticipant(TestInfo info) {
+    EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    PortalParticipantUser ppUser =
+        authUtilService.authParticipantUserToPortalParticipantUser(
+            bundle.enrollee().getParticipantUserId(), bundle.portalParticipantUser().getId());
+    Assertions.assertEquals(bundle.portalParticipantUser(), ppUser);
+  }
+
+  @Test
+  @Transactional
+  public void testAuthToPortalParticipantUserAllowsIfProxy(TestInfo info) {
+
+    EnrolleeFactory.EnrolleeBundle proxyBundle =
+        enrolleeFactory.buildWithPortalUser(getTestName(info));
+    EnrolleeFactory.EnrolleeBundle targetBundle =
+        enrolleeFactory.buildWithPortalUser(getTestName(info));
+
+    enrolleeRelationService.create(
+        EnrolleeRelation.builder()
+            .enrolleeId(proxyBundle.enrollee().getId())
+            .targetEnrolleeId(targetBundle.enrollee().getId())
+            .relationshipType(RelationshipType.PROXY)
+            .build(),
+        getAuditInfo(info));
+
+    PortalParticipantUser ppUser =
+        authUtilService.authParticipantUserToPortalParticipantUser(
+            proxyBundle.enrollee().getParticipantUserId(),
+            targetBundle.portalParticipantUser().getId());
+
+    Assertions.assertEquals(targetBundle.portalParticipantUser(), ppUser);
+  }
+
+  @Test
+  @Transactional
+  public void testAuthToPortalParticipantUserDisallowsIfNotParticipantOrProxy(TestInfo info) {
+    EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.find(bundle.enrollee().getStudyEnvironmentId()).get();
+    ParticipantUser otherUser =
+        participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), getTestName(info));
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () ->
+            authUtilService.authParticipantUserToPortalParticipantUser(
+                bundle.enrollee().getParticipantUserId(), otherUser.getId()));
   }
 }

@@ -74,6 +74,19 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/i18n/v1:
+    get:
+      summary: Lists the application texts for a given language
+      tags: [ i18n ]
+      operationId: listLanguageTexts
+      parameters:
+        - { name: language, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/dashboard/config/alerts:
     get:
       summary: Lists all participant dashboard alert configs for a portal environment
@@ -191,6 +204,39 @@ paths:
       responses:
         '200':
           description: preenrollment response
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/portalParticipantUsers/{ppUserId}/profile:
+    get:
+      summary: Get a portal participant user's profile
+      tags: [ profile ]
+      operationId: findProfile
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: ppUserId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Found profile
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: Update a portal participant user's profile
+      tags: [ profile ]
+      operationId: updateProfile
+      requestBody:
+        required: true
+        description: profile with all desired changes
+        content: { application/json: { schema: { type: object } } }
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: ppUserId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Updated profile
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

@@ -4,6 +4,10 @@ import { render, screen } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask } from 'test-utils/test-participant-factory'
 import StudyResearchTasks from './StudyResearchTasks'
 
+jest.mock('providers/I18nProvider', () => ({
+  useI18n: () => ({ i18n: (key: string) => key })
+}))
+
 describe('HubPage', () => {
   it('renders tasks with consent and required surveys first', () => {
     const enrollee = mockEnrollee()

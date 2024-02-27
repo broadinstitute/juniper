@@ -10,7 +10,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { basicTableLayout, IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
-import { currentIsoDate, instantToDateString, instantToDefaultString } from 'util/timeUtils'
+import { currentIsoDate, instantToDateString, instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
 import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 import { failureNotification, successNotification } from '../util/notifications'

@@ -27,13 +27,13 @@ public class CurrentUnauthedUserService {
   }
 
   @Transactional
-  public CurrentUserService.UserWithEnrollees unauthedRefresh(
+  public CurrentUserService.UserLoginDto unauthedRefresh(
       String token, String portalShortcode, EnvironmentName environmentName) {
     return currentUserService.refresh(token, portalShortcode, environmentName);
   }
 
   @Transactional
-  public CurrentUserService.UserWithEnrollees unauthedLogin(
+  public CurrentUserService.UserLoginDto unauthedLogin(
       String username, String portalShortcode, EnvironmentName environmentName) {
     Optional<ParticipantUser> userOpt = participantUserDao.findOne(username, environmentName);
     if (userOpt.isEmpty()) {
