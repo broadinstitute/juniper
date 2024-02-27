@@ -80,7 +80,7 @@ public class EnrolleeExtService {
   public List<DataChangeRecord> findDataChangeRecords(
       AdminUser operator, String enrolleeShortcode) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
-    return dataChangeRecordService.findByEnrollee(enrollee.getId());
+    return dataChangeRecordService.findAllRecordsForEnrollee(enrollee);
   }
 
   public WithdrawnEnrollee withdrawEnrollee(AdminUser operator, String enrolleeShortcode)

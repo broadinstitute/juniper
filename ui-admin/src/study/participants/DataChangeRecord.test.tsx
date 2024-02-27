@@ -85,15 +85,15 @@ test('basic object changes', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('changes1')).toBeInTheDocument()
+    expect(screen.getByText('changes1', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)
 
-  expect(rows).toHaveLength(2)
-  // creates 2 rows from 1 data change record
-  assertRowContents(rows[0], 'original text 1', 'updated text 1', 'example model 1', 'changes1', 'Participant')
-  assertRowContents(rows[1], 'original text 2', 'updated text 2', 'example model 1', 'changes2', 'Participant')
+  expect(rows).toHaveLength(1)
+  // creates only 1 row
+  assertRowContents(rows[0], 'original text 1', 'updated text 1', 'example model 1', 'changes1', 'Participant',
+    'original text 2', 'updated text 2', 'example model 1', 'changes2')
 })
 
 test('object deletion changes', async () => {
@@ -104,7 +104,7 @@ test('object deletion changes', async () => {
     {
       id: 'dataChangeId1',
       oldValue: '{"original": "value"}',
-      newValue: '{}',
+      newValue: '',
       createdAt: 200,
       modelName: 'example model 1',
       responsibleUserId: 'user1'
@@ -117,7 +117,7 @@ test('object deletion changes', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('original')).toBeInTheDocument()
+    expect(screen.getByText('original', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)
@@ -134,7 +134,7 @@ test('object creation changes', async () => {
   const dataChangeRecords: DataChangeRecord[] = [
     {
       id: 'dataChangeId1',
-      oldValue: '{}',
+      oldValue: '',
       newValue: '{"new": "value"}',
       createdAt: 200,
       modelName: 'example model 1',
@@ -148,7 +148,7 @@ test('object creation changes', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('new')).toBeInTheDocument()
+    expect(screen.getByText('new', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)
@@ -183,16 +183,14 @@ test('nested object changes', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('nested.nestedField1')).toBeInTheDocument()
+    expect(screen.getByText('nested.nestedField1', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)
 
-  expect(rows).toHaveLength(2)
-  // creates 2 rows from 1 data change record
-  assertRowContents(rows[0],  'nested.nestedField1', 'oldValue1', 'newValue1', 'example model 1', 'Participant')
-  assertRowContents(
-    rows[1], 'nested.doublyNestedObject.nestedField2', 'oldValue2', 'newValue2', 'example model 1', 'Participant')
+  expect(rows).toHaveLength(1)
+  assertRowContents(rows[0], 'nested.nestedField1', 'oldValue1', 'newValue1', 'example model 1', 'Participant',
+    'nested.doublyNestedObject.nestedField2', 'oldValue2', 'newValue2')
 })
 
 test('nested object creation', async () => {
@@ -202,7 +200,7 @@ test('nested object creation', async () => {
   const dataChangeRecords: DataChangeRecord[] = [
     {
       id: 'dataChangeId1',
-      oldValue: '{}',
+      oldValue: '',
       newValue: '{"nested": ' +
         '{"doublyNestedObject": {"newField": "newValue"}}' +
         '}',
@@ -218,7 +216,7 @@ test('nested object creation', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('nested.doublyNestedObject.newField')).toBeInTheDocument()
+    expect(screen.getByText('nested.doublyNestedObject.newField', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)
@@ -239,7 +237,7 @@ test('nested object deletion', async () => {
       oldValue: '{"nested": ' +
         '{"doublyNestedObject": {"oldField": "oldValue"}}' +
         '}',
-      newValue: '{}',
+      newValue: '',
       createdAt: 200,
       modelName: 'example model 1',
       responsibleUserId: 'user1'
@@ -252,7 +250,7 @@ test('nested object deletion', async () => {
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('nested.doublyNestedObject.oldField')).toBeInTheDocument()
+    expect(screen.getByText('nested.doublyNestedObject.oldField', { exact: false })).toBeInTheDocument()
   })
 
   const rows = getRows(screen)

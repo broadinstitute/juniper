@@ -9,32 +9,8 @@ import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTa
 import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
 import { findDifferencesBetweenObjects, ObjectDiff } from '../../util/objectUtils'
+import { isEmpty } from 'lodash'
 
-
-// some records contain whole objects, so we want
-// to manually look into the object to see what
-// fields changed, which could more than one field
-const flattenDataChangeRecords = (record: DataChangeRecord): ReadonlyArray<DataChangeRecord> => {
-  try {
-    const newObject: { [index: string]: object } = JSON.parse(record.newValue)
-    const oldObject: { [index: string]: object } = JSON.parse(record.oldValue)
-
-    if ((newObject && typeof newObject === 'object') || (oldObject && typeof oldObject === 'object')) {
-      const diffs: ObjectDiff[] = findDifferencesBetweenObjects(oldObject, newObject)
-
-      return diffs.map<DataChangeRecord>((diff: ObjectDiff) => {
-        return {
-          ...record,
-          ...diff
-        }
-      })
-    }
-
-    return [record]
-  } catch (e: unknown) {
-    return [record]
-  }
-}
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function DataChangeRecords({ enrollee, studyEnvContext }:
@@ -55,16 +31,47 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
       accessorKey: 'modelName'
     },
     {
-      header: 'Field',
-      accessorKey: 'fieldName'
-    },
-    {
       header: 'Update',
-      cell: ({ row }) => (
-        <div>
-          {row.original.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {row.original.newValue}
-        </div>
-      )
+      cell: ({ row }) => {
+        const diffs: ObjectDiff[] = []
+
+        try {
+          const newObject: {
+            [index: string]: object
+          } = !isEmpty(row.original.newValue) ? JSON.parse(row.original.newValue) : {}
+          const oldObject: {
+            [index: string]: object
+          } = !isEmpty(row.original.oldValue) ? JSON.parse(row.original.oldValue) : {}
+
+          if ((newObject && typeof newObject === 'object') && (oldObject && typeof oldObject === 'object')) {
+            diffs.push(...findDifferencesBetweenObjects(oldObject, newObject))
+          } else {
+            diffs.push({
+              fieldName: row.original.fieldName || row.original.modelName,
+              oldValue: row.original.oldValue,
+              newValue: row.original.newValue
+            })
+          }
+        } catch (e: unknown) {
+          diffs.push({
+            fieldName: row.original.fieldName || row.original.modelName,
+            oldValue: row.original.oldValue,
+            newValue: row.original.newValue
+          })
+        }
+
+        return (
+          <div>
+            {
+              diffs.map((diff, idx) => (
+                <div key={idx}>
+                  {diff.fieldName}: {diff.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {diff.newValue}
+                </div>
+              ))
+            }
+          </div>
+        )
+      }
     },
     {
       header: 'Justification',
@@ -98,7 +105,7 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
       currentEnv.environmentName,
       enrollee.shortcode
     )
-    setNotifications(response.flatMap(flattenDataChangeRecords))
+    setNotifications(response)
   }, [enrollee.shortcode])
   return <div>
     <h5>Audit history</h5>
