@@ -52,7 +52,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          channel: '#juniper-dev-notifications'
+          channel: '#matts-test-channel2'
           status: failure
           author_name: Publish docker Image
           fields: job
