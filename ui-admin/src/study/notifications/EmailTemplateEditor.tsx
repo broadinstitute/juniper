@@ -21,9 +21,12 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
 
   const replacePlaceholders = (html: string) => {
     return html.replaceAll('${siteMediaBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
+      // support legacy tempaltes that reference this as siteImageBaseUrl
+      .replaceAll('${siteImageBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
   }
   const insertPlaceholders = (html: string) => {
     return html.replaceAll(location.origin + getMediaBaseUrl(portalShortcode), '${siteMediaBaseUrl}')
+      .replaceAll('${siteImageBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
   }
 
   const onEditorLoaded: EmailEditorProps['onReady'] = unlayer => {

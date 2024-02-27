@@ -375,6 +375,26 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
+    get:
+      summary: Returns the binary image data for the image of the given shortcode (legacy endpoint for siteMedia--will be removed)
+      tags: [ siteMedia ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: cleanFileName, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: image data
+          content:
+            image/*: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
+              schema:
+                type: string
+                format: binary
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteMedia/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode
