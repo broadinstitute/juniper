@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
-import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
@@ -34,8 +33,7 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return dao.findByTargetEnrolleeId(enrolleeId);
     }
 
-    public boolean isUserProxyForAnyOf(UUID participantUserId, List<Enrollee> enrolleeList) {
-        List<UUID> enrolleeIds = enrolleeList.stream().map(Enrollee::getId).toList();
+    public boolean isUserProxyForAnyOf(UUID participantUserId, List<UUID> enrolleeIds) {
         return !dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, enrolleeIds).isEmpty();
     }
 

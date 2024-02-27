@@ -55,7 +55,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
                 targetBundle.enrollee().getProfileId());
 
         Assertions.assertFalse(enrolleeRelationService.isUserProxyForAnyOf(proxyPpUser.getParticipantUserId(),
-                List.of(targetEnrollee1, targetEnrollee2)));
+                List.of(targetEnrollee1.getId(), targetEnrollee2.getId())));
 
         enrolleeRelationService.create(
                 EnrolleeRelation
@@ -68,7 +68,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         );
 
         Assertions.assertTrue(enrolleeRelationService.isUserProxyForAnyOf(proxyPpUser.getParticipantUserId(),
-                List.of(targetEnrollee1, targetEnrollee2)));
+                List.of(targetEnrollee1.getId(), targetEnrollee2.getId())));
 
     }
 }

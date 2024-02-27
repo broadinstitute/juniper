@@ -64,7 +64,8 @@ public class AuthUtilService {
     // they have access to this ppUser.
     List<Enrollee> enrolleeList = enrolleeService.findByPortalParticipantUser(ppUser);
 
-    if (enrolleeRelationService.isUserProxyForAnyOf(participantUserId, enrolleeList)) {
+    if (enrolleeRelationService.isUserProxyForAnyOf(
+        participantUserId, enrolleeList.stream().map(Enrollee::getId).toList())) {
       return ppUser;
     }
 
