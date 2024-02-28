@@ -25,5 +25,16 @@ describe('ConfiguredMedia', () => {
     render(<ConfiguredMedia media={{ cleanFileName: 'foo.png', version: 1, alt: 'testImage' }}/>)
     expect(screen.getByAltText('testImage')).toBeInTheDocument()
     expect(screen.queryByTestId('media-iframe')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+  })
+
+  it('renders image with a link', () => {
+    render(<ConfiguredMedia media={{
+      cleanFileName: 'foo.png', version: 1,
+      alt: 'testImage', link: 'https://fizzle.com'
+    }}/>)
+    const link = screen.getByRole('link')
+    expect(link).toHaveAttribute('href', 'https://fizzle.com')
+    expect(link).toContainElement(screen.getByAltText('testImage'))
   })
 })

@@ -18,6 +18,7 @@ export type ImageConfig = {
   alt?: string
   className?: string
   style?: CSSProperties
+  link?: string
 }
 
 export type MediaConfig = ImageConfig | VideoConfig
@@ -33,6 +34,7 @@ export const validateMediaConfig = (imageConfig: unknown): MediaConfig => {
   const alt = requireOptionalString(config, 'alt', message)
   const className = requireOptionalString(config, 'className', message)
   const videoLink = requireOptionalString(config, 'videoLink', message)
+  const link = requireOptionalString(config, 'link', message)
   // Only validate that style is an object. React will handle invalid keys.
   const style = config.style ? requirePlainObject(config.style, `${message}: Invalid style`) : undefined
 
@@ -42,7 +44,7 @@ export const validateMediaConfig = (imageConfig: unknown): MediaConfig => {
     alt,
     className,
     style,
-    videoLink
+    link
   } as MediaConfig
 }
 
@@ -66,13 +68,17 @@ export default function ConfiguredMedia(props: ConfiguredImageProps) {
       {!videoAllowed && <span className="text-danger">Disallowed video source</span> }
     </div>
   }
-  return <img
+  const image = <img
     src={getImageUrl((media as ImageConfig).cleanFileName, (media as ImageConfig).version)}
     alt={media.alt}
     className={classNames('configured-image', className, media.className)}
     loading="lazy"
     style={{ ...style, ...media.style }}
   />
+  if ((media as ImageConfig).link) {
+    return <a href={(media as ImageConfig).link} target="_blank" rel="noreferrer">{image}</a>
+  }
+  return image
 }
 
 const ALLOWED_VIDEO_HOSTS = ['youtube.com', 'youtu.be', 'vimeo.com']
