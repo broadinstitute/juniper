@@ -99,6 +99,8 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
                 "stable_id", List.of(), "version", List.of());
         assertThat(surveys, empty());
 
+        assertThat(1, equalTo(2));
+
         surveys = surveyDao.findAllByTwoProperties(
                 "stable_id", List.of("B", "A", "B"), "version", List.of(2, 1, 2));
         assertThat(surveys, contains(surveyB2, surveyA1, surveyB2));
