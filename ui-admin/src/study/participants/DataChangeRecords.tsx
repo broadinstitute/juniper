@@ -8,7 +8,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
-import { findDifferencesBetweenObjects, ObjectDiff } from '../../util/objectUtils'
+import { findDifferencesBetweenObjects, ObjectDiff } from '../../../../ui-core/src/objectUtils'
 import { isEmpty } from 'lodash'
 
 

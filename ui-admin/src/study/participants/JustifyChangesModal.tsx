@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import { ObjectDiff } from 'util/objectUtils'
+import { ObjectDiff } from 'ui-core/src/objectUtils'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 

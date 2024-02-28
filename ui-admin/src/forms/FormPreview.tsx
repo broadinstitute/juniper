@@ -5,6 +5,8 @@ import 'survey-core/survey.i18n'
 import { FormContent, PortalEnvironmentLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
+import Api from '../api/api'
+import { createAddressValidator } from '@juniper/ui-core/build/surveyjs/address-validator'
 
 type FormPreviewProps = {
   formContent: FormContent
@@ -21,6 +23,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
     model.locale = 'default'
+    model.onServerValidateQuestions.add(createAddressValidator(Api.validateAddress))
     return model
   })
   const forceUpdate = useForceUpdate()

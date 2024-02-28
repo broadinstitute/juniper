@@ -1,7 +1,7 @@
 import { MailingAddress } from '../api/api'
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { findDifferencesBetweenObjects } from '../util/objectUtils'
+import { findDifferencesBetweenObjects } from '../../../ui-core/src/objectUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 

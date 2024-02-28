@@ -8,7 +8,7 @@ import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } fro
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
-import { findDifferencesBetweenObjects } from 'util/objectUtils'
+import { findDifferencesBetweenObjects } from 'ui-core/src/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'

@@ -1,4 +1,5 @@
 import {
+  AddressValidationResult,
   ConsentResponse,
   ParticipantDashboardAlert,
   ParticipantTask,
@@ -439,6 +440,16 @@ export default {
       body: JSON.stringify(profile)
     })
     return await this.processJsonResponse(result, { alertErrors })
+  },
+
+  async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
+    const url = `${baseEnvUrl(false)}/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
   },
 
   async submitMailingListContact(name: string, email: string) {

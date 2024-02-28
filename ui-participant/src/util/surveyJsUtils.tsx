@@ -11,8 +11,9 @@ import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
 import { SURVEY_JS_OTHER_SUFFIX, surveyJSModelFromForm, SurveyJsResumeData } from '@juniper/ui-core'
 
-import { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
+import Api, { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { createAddressValidator } from '@juniper/ui-core/build/surveyjs/address-validator'
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -119,6 +120,7 @@ export function useSurveyJSModel(
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
+    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(Api.validateAddress))
     return newSurveyModel
   }
 
