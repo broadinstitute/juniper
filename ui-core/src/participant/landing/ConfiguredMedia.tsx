@@ -44,7 +44,8 @@ export const validateMediaConfig = (imageConfig: unknown): MediaConfig => {
     alt,
     className,
     style,
-    link
+    link,
+    videoLink
   } as MediaConfig
 }
 
