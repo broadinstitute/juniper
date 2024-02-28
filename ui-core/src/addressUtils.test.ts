@@ -62,8 +62,6 @@ describe('explainAddressValidationResults', () => {
 
     expect(explanation).toHaveLength(1)
 
-    expect(1).toBeGreaterThan(2)
-
     expect(explanation[0]).toEqual(
       'The country and city fields could not be verified. Please check them and try again.'
     )
