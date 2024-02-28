@@ -1,7 +1,7 @@
 import { SurveyModel } from 'survey-core'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { findDifferencesBetweenObjects } from 'src/objectUtils'
+import { findDifferencesBetweenObjects } from '../objectUtils'
 
 /**
  *
@@ -14,7 +14,7 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
       errors,
       complete
     }: { data: { [index: string]: any; }, errors: { [index: string]: any; }, complete: () => void }) => {  // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
-    const addressValidationQuestions = Object.keys(data).filter(key => key.endsWith('addressValidationResult'))
+    const addressValidationQuestions = Object.keys(data).filter(key => key.endsWith('addressValidation'))
 
     addressValidationQuestions.forEach(addressValidationQuestion => {
       if (sender.getPageByQuestion(sender.getQuestionByName(addressValidationQuestion)).num != sender.currentPageNo) {
@@ -23,7 +23,7 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
 
       const questionNamePrefix = addressValidationQuestion.slice(
         0,
-        addressValidationQuestion.length - 'addressValidationResult'.length)
+        addressValidationQuestion.length - 'addressValidation'.length)
 
       const mailingAddress: MailingAddress | undefined = assembleAddress(data, questionNamePrefix)
 
@@ -35,8 +35,8 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
       const existingValidationState: AddressValidationQuestionValue = data[addressValidationQuestion]
 
 
-      // if user has already validated this address, and they did not accept the suggested address,
-      // we don't need to revalidate
+      // if user has already validated this address, and it had a suggestion which they denied.
+      // we don't need to revalidate, we can just let them keep going.
       if (existingValidationState
         && isSameAddress(existingValidationState.inputAddress, mailingAddress)
         && existingValidationState.canceledSuggestedAddress) {

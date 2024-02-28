@@ -1,11 +1,15 @@
-import { AddressValidationResult, explainAddressValidationResults, MailingAddress } from '@juniper/ui-core'
+import {
+  AddressValidationResult,
+  explainAddressValidationResults,
+  findDifferencesBetweenObjects,
+  MailingAddress
+} from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { doApiLoad } from '../api/api-utils'
 import Api from '../api/api'
 import LoadingSpinner from '../util/LoadingSpinner'
 import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
-import { findDifferencesBetweenObjects } from '../../../ui-core/src/objectUtils'
 import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
 // Supported country alpha-2 codes; see

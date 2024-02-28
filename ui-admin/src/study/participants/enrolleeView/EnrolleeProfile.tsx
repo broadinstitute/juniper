@@ -4,11 +4,15 @@ import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '@juniper/ui-core'
+import {
+  dateToDefaultString,
+  findDifferencesBetweenObjects,
+  javaLocalDateToJsDate,
+  jsDateToJavaLocalDate
+} from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
-import { findDifferencesBetweenObjects } from 'ui-core/src/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
