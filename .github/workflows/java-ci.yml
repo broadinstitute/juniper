@@ -13,7 +13,7 @@ name: Java CI
 
 on:
   push:
-    branches: [ mb-jn-920-notify-on-failure ]
+    branches: [ development ]
     paths-ignore: [ '*.md']
   pull_request:
     branches: [ '**' ]
@@ -78,13 +78,13 @@ jobs:
           reporter: java-junit
       - name: Notify slack on failure
         uses: broadinstitute/action-slack@v3.8.0
-        if: failure()
+        if: failure() && github.ref == 'refs/heads/development'
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         with:
-          channel: '#matts-test-channel2'
+          channel: '#juniper-dev-notifications'
           status: failure
-          author_name: Java CI build failed
+          author_name: Java CI build failed on merge to development
           fields: job
           text: "Java CI build failed :sadpanda:"
           username: 'Pearl Build Notifications'
