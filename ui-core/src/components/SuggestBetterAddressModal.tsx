@@ -1,9 +1,9 @@
-import { MailingAddress } from '../api/api'
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { findDifferencesBetweenObjects } from '@juniper/ui-core'
+import { findDifferencesBetweenObjects } from '../objectUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { MailingAddress } from '../types/address'
 
 
 const irrelevantFields = ['createdAt', 'lastUpdatedAt', 'id']

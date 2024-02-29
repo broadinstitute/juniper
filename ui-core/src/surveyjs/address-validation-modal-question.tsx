@@ -7,12 +7,13 @@
 import React from 'react'
 import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
-import { AddressValidationResult, MailingAddress } from 'src/types/address'
+import { AddressValidationResult, MailingAddress } from '../types/address'
+import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
 
 export type AddressValidationQuestionValue = {
-  inputAddress?: MailingAddress,
-  canceledSuggestedAddress?: boolean,
-  addressValidationResult?: AddressValidationResult
+  inputAddress: MailingAddress,
+  canceledSuggestedAddress: boolean,
+  addressValidationResult: AddressValidationResult
 }
 
 const AddressValidationType = 'addressvalidation'
@@ -44,10 +45,24 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
   }
 
   renderElement() {
-    this.question.value = {}
     return (
       <>
-        {this.value.addressValidationResult?.suggestedAddress ? <p>Modal</p> : <></>}
+        {(this.value.addressValidationResult?.suggestedAddress && !this.value.canceledSuggestedAddress) &&
+            <SuggestBetterAddressModal
+              inputtedAddress={this.value.inputAddress}
+              improvedAddress={this.value.addressValidationResult.suggestedAddress}
+              hasInferredComponents={this.value.addressValidationResult.hasInferredComponents || false}
+              accept={() => {
+                console.log('accepted')
+              }}
+              deny={() => {
+                this.value.canceledSuggestedAddress = true
+                this.value.addressValidationResult.suggestedAddress = undefined
+              }}
+              onDismiss={() => {
+                this.value.canceledSuggestedAddress = true
+                this.value.addressValidationResult.suggestedAddress = undefined
+              }}/>}
       </>
     )
   }

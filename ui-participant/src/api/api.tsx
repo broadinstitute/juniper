@@ -1,6 +1,7 @@
 import {
   AddressValidationResult,
   ConsentResponse,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -73,15 +74,6 @@ export type Enrollee = {
   shortcode: string
   studyEnvironmentId: string
   surveyResponses: []
-}
-
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
 }
 
 export type Profile = {
