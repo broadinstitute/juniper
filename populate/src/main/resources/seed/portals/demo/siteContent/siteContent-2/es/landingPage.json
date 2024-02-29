@@ -21,13 +21,15 @@
           "cleanFileName": "broad_logo.png",
           "version": 1,
           "alt": "Logotipo del Instituto Broad",
-          "style": { "height": "40px" }
+          "style": { "height": "40px" },
+          "link": "https://www.broadinstitute.org/"
         },
         {
           "cleanFileName": "mgh_logo.png",
           "version": 1,
           "alt": "Logotipo del Hospital General de Massachusetts",
-          "style": { "height": "40px" }
+          "style": { "height": "40px" },
+          "link": "https://massgeneral.org/"
         }
       ]
     }
