@@ -14,12 +14,6 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
       errors,
       complete
     }: { data: { [index: string]: any; }, errors: { [index: string]: any; }, complete: () => void }) => {  // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
-    console.log('Running validation')
-    console.log(data)
-    console.log(sender.getAllQuestions(false))
-    console.log(sender.getPageByQuestion(sender.getQuestionByName('oh_oh_basic_addressValidation')).num)
-    console.log(sender.currentPage?.num)
-
     const addressValidationQuestions = sender
       .getAllQuestions(false)
       .filter(q => q.name.endsWith('addressValidation'))
@@ -50,15 +44,24 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
         // we don't need to revalidate, we can just let them keep going.
         if (existingValidationState && existingValidationState.inputAddress
           && isSameAddress(existingValidationState.inputAddress, mailingAddress)
-          && existingValidationState.canceledSuggestedAddress) {
+          && (existingValidationState.canceledSuggestedAddress || existingValidationState.acceptedSuggestedAddress)) {
           return Promise.resolve()
         }
+        // clear all of the previous errors (they do not clear automatically :( )
+        sender.getQuestionByName(`${questionNamePrefix}street1`)?.clearErrors()
+        sender.getQuestionByName(`${questionNamePrefix}street2`)?.clearErrors()
+        sender.getQuestionByName(`${questionNamePrefix}country`)?.clearErrors()
+        sender.getQuestionByName(`${questionNamePrefix}city`)?.clearErrors()
+        sender.getQuestionByName(`${questionNamePrefix}postalCode`)?.clearErrors()
+        sender.getQuestionByName(`${questionNamePrefix}state`)?.clearErrors()
 
+        // hit API
         const results = await validateAddress(mailingAddress)
         console.log(results)
         const addressValidationQuestionValue: AddressValidationQuestionValue = {
           inputAddress: mailingAddress,
           canceledSuggestedAddress: false,
+          acceptedSuggestedAddress: false,
           addressValidationResult: results
         }
         addressValidationQuestion.value = addressValidationQuestionValue

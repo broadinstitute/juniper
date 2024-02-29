@@ -13,6 +13,7 @@ import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
 export type AddressValidationQuestionValue = {
   inputAddress: MailingAddress,
   canceledSuggestedAddress: boolean,
+  acceptedSuggestedAddress: boolean,
   addressValidationResult: AddressValidationResult
 }
 
@@ -44,25 +45,57 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
     return this.question.value
   }
 
+  getPrefix(): string {
+    const name = this.question.name
+    return name.slice(
+      0,
+      name.length - 'addressValidation'.length)
+  }
+
+  accept(addr: MailingAddress) {
+    const prefix = this.getPrefix()
+    const survey = this.questionBase.survey
+
+    survey.getQuestionByName(`${prefix}street1`)?.updateValueFromSurvey(addr.street1)
+    survey.getQuestionByName(`${prefix}street2`)?.updateValueFromSurvey(addr.street2)
+    survey.getQuestionByName(`${prefix}city`)?.updateValueFromSurvey(addr.city)
+    survey.getQuestionByName(`${prefix}state`)?.updateValueFromSurvey(addr.state)
+    survey.getQuestionByName(`${prefix}postalCode`)?.updateValueFromSurvey(addr.postalCode)
+    survey.getQuestionByName(`${prefix}country`)?.updateValueFromSurvey(addr.country)
+  }
+
   renderElement() {
     return (
       <>
-        {(this.value.addressValidationResult?.suggestedAddress && !this.value.canceledSuggestedAddress) &&
+        {(this.value.addressValidationResult?.suggestedAddress
+            && !this.value.canceledSuggestedAddress
+            && !this.value.acceptedSuggestedAddress) &&
             <SuggestBetterAddressModal
               inputtedAddress={this.value.inputAddress}
               improvedAddress={this.value.addressValidationResult.suggestedAddress}
               hasInferredComponents={this.value.addressValidationResult.hasInferredComponents || false}
               accept={() => {
-                console.log('accepted')
+                this.question.value = {
+                  ...this.value,
+                  acceptedSuggestedAddress: true
+                }
+                if (this.value.addressValidationResult.suggestedAddress) {
+                  this.accept(this.value.addressValidationResult.suggestedAddress)
+                }
               }}
               deny={() => {
-                this.value.canceledSuggestedAddress = true
-                this.value.addressValidationResult.suggestedAddress = undefined
+                this.question.value = {
+                  ...this.value,
+                  canceledSuggestedAddress: true
+                }
               }}
               onDismiss={() => {
-                this.value.canceledSuggestedAddress = true
-                this.value.addressValidationResult.suggestedAddress = undefined
-              }}/>}
+                this.question.value = {
+                  ...this.value,
+                  canceledSuggestedAddress: true
+                }
+              }}
+            />}
       </>
     )
   }
