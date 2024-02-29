@@ -1,4 +1,4 @@
-import { SurveyModel } from 'survey-core'
+import { Question, SurveyModel } from 'survey-core'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
 import { findDifferencesBetweenObjects } from '../objectUtils'
@@ -26,12 +26,11 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
 
     Promise.all(
       addressValidationQuestions.map(async addressValidationQuestion => {
-        const questionNamePrefix = addressValidationQuestion.name.slice(
-          0,
-          addressValidationQuestion.name.length - 'addressValidation'.length)
+        const mailingAddress: MailingAddress | undefined = assembleAddress(data, addressValidationQuestion)
 
-        const mailingAddress: MailingAddress | undefined = assembleAddress(data, questionNamePrefix)
-
+        console.log('addr')
+        console.log(mailingAddress)
+        console.log(addressValidationQuestion.street1)
         if (!mailingAddress) {
           // could not assemble mailing address due to invalid survey set up
           return Promise.resolve()
@@ -48,12 +47,12 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
           return Promise.resolve()
         }
         // clear all of the previous errors (they do not clear automatically :( )
-        sender.getQuestionByName(`${questionNamePrefix}street1`)?.clearErrors()
-        sender.getQuestionByName(`${questionNamePrefix}street2`)?.clearErrors()
-        sender.getQuestionByName(`${questionNamePrefix}country`)?.clearErrors()
-        sender.getQuestionByName(`${questionNamePrefix}city`)?.clearErrors()
-        sender.getQuestionByName(`${questionNamePrefix}postalCode`)?.clearErrors()
-        sender.getQuestionByName(`${questionNamePrefix}state`)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.street1)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.street2)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.country)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.city)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.postalCode)?.clearErrors()
+        sender.getQuestionByName(addressValidationQuestion.stateProvince)?.clearErrors()
 
         // hit API
         const results = await validateAddress(mailingAddress)
@@ -73,12 +72,12 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
           errors[addressValidationQuestion.name] = 'Please review the suggested address.'
         } else if (!results.valid) {
           // make the fields go red
-          errors[`${questionNamePrefix}street1`] = 'Address could not be validated.'
-          errors[`${questionNamePrefix}street2`] = 'Address could not be validated.'
-          errors[`${questionNamePrefix}country`] = 'Address could not be validated.'
-          errors[`${questionNamePrefix}city`] = 'Address could not be validated.'
-          errors[`${questionNamePrefix}postalCode`] = 'Address could not be validated.'
-          errors[`${questionNamePrefix}state`] = 'Address could not be validated.'
+          errors[addressValidationQuestion.street1] = 'Address could not be validated.'
+          errors[addressValidationQuestion.street2] = 'Address could not be validated.'
+          errors[addressValidationQuestion.country] = 'Address could not be validated.'
+          errors[addressValidationQuestion.city] = 'Address could not be validated.'
+          errors[addressValidationQuestion.postalCode] = 'Address could not be validated.'
+          errors[addressValidationQuestion.stateProvince] = 'Address could not be validated.'
         }
         return await Promise.resolve()
       })
@@ -96,13 +95,12 @@ const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean =>
     .length === 0
 }
 
-const assembleAddress = (data: { [index: string]: any; }, prefix: string): MailingAddress | undefined => {
-  console.log(prefix)
+const assembleAddress = (data: { [index: string]: any; }, question: Question): MailingAddress | undefined => { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
   const requiredFields = [
-    `${prefix}street1`,
-    `${prefix}city`,
-    `${prefix}state`,
-    `${prefix}postalCode`
+    question.street1,
+    question.city,
+    question.stateProvince,
+    question.postalCode
   ]
 
   for (const requiredField of requiredFields) {
@@ -112,11 +110,11 @@ const assembleAddress = (data: { [index: string]: any; }, prefix: string): Maili
   }
 
   return {
-    street1: data[`${prefix}street1`],
-    street2: data[`${prefix}street2`] || '',
-    city: data[`${prefix}city`],
-    state: data[`${prefix}state`],
-    country: data[`${prefix}country`] || 'US',
-    postalCode: data[`${prefix}postalCode`]
+    street1: data[question.street1],
+    street2: data[question.street2] || '',
+    city: data[question.city],
+    state: data[question.stateProvince],
+    country: data[question.country] || 'US',
+    postalCode: data[question.postalCode]
   }
 }

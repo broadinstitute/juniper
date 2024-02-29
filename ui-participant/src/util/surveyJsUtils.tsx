@@ -120,7 +120,7 @@ export function useSurveyJSModel(
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
-    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(Api.validateAddress))
+    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
     return newSurveyModel
   }
 

@@ -22,6 +22,55 @@ export class QuestionAddressValidationModel extends Question {
   getType() {
     return AddressValidationType
   }
+
+  get street1() {
+    return this.getPropertyValue('street1')
+  }
+
+  set street1(val: string) {
+    this.setPropertyValue('street1', val)
+  }
+
+  get street2() {
+    return this.getPropertyValue('street2')
+  }
+
+  set street2(val: string) {
+    this.setPropertyValue('street2', val)
+  }
+
+  get city() {
+    return this.getPropertyValue('city')
+  }
+
+  set city(val: string) {
+    this.setPropertyValue('city', val)
+  }
+
+  // 'state' is already used on questions :(
+  get stateProvince() {
+    return this.getPropertyValue('state')
+  }
+
+  set stateProvince(val: string) {
+    this.setPropertyValue('state', val)
+  }
+
+  get country() {
+    return this.getPropertyValue('country')
+  }
+
+  set country(val: string) {
+    this.setPropertyValue('country', val)
+  }
+
+  get postalCode() {
+    return this.getPropertyValue('postalCode')
+  }
+
+  set postalCode(val: string) {
+    this.setPropertyValue('postalCode', val)
+  }
 }
 
 ElementFactory.Instance.registerElement(AddressValidationType, name => {
@@ -30,7 +79,25 @@ ElementFactory.Instance.registerElement(AddressValidationType, name => {
 
 Serializer.addClass(
   AddressValidationType,
-  [],
+  [{
+    name: 'street1',
+    category: 'general'
+  }, {
+    name: 'street2',
+    category: 'general'
+  }, {
+    name: 'city',
+    category: 'general'
+  }, {
+    name: 'stateProvince',
+    category: 'general'
+  }, {
+    name: 'postalCode',
+    category: 'general'
+  }, {
+    name: 'country',
+    category: 'general'
+  }],
   () => new QuestionAddressValidationModel(''),
   'question'
 )
@@ -45,23 +112,15 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
     return this.question.value
   }
 
-  getPrefix(): string {
-    const name = this.question.name
-    return name.slice(
-      0,
-      name.length - 'addressValidation'.length)
-  }
-
   accept(addr: MailingAddress) {
-    const prefix = this.getPrefix()
     const survey = this.questionBase.survey
 
-    survey.getQuestionByName(`${prefix}street1`)?.updateValueFromSurvey(addr.street1)
-    survey.getQuestionByName(`${prefix}street2`)?.updateValueFromSurvey(addr.street2)
-    survey.getQuestionByName(`${prefix}city`)?.updateValueFromSurvey(addr.city)
-    survey.getQuestionByName(`${prefix}state`)?.updateValueFromSurvey(addr.state)
-    survey.getQuestionByName(`${prefix}postalCode`)?.updateValueFromSurvey(addr.postalCode)
-    survey.getQuestionByName(`${prefix}country`)?.updateValueFromSurvey(addr.country)
+    survey.getQuestionByName(this.question.street1)?.updateValueFromSurvey(addr.street1)
+    survey.getQuestionByName(this.question.street2)?.updateValueFromSurvey(addr.street2)
+    survey.getQuestionByName(this.question.city)?.updateValueFromSurvey(addr.city)
+    survey.getQuestionByName(this.question.stateProvince)?.updateValueFromSurvey(addr.state)
+    survey.getQuestionByName(this.question.postalCode)?.updateValueFromSurvey(addr.postalCode)
+    survey.getQuestionByName(this.question.country)?.updateValueFromSurvey(addr.country)
   }
 
   renderElement() {
