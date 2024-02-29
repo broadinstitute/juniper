@@ -17,9 +17,11 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
     const addressValidationQuestions = Object.keys(data).filter(key => key.endsWith('addressValidation'))
 
     addressValidationQuestions.forEach(addressValidationQuestion => {
-      if (sender.getPageByQuestion(sender.getQuestionByName(addressValidationQuestion)).num != sender.currentPageNo) {
-        return // address is on different page of survey, let's not worry about it
-      }
+      // if (
+      // sender.getPageByQuestion(sender.getQuestionByName(addressValidationQuestion)).num != sender.currentPageNo
+      // ) {
+      //   return // address is on different page of survey, let's not worry about it
+      // }
 
       const questionNamePrefix = addressValidationQuestion.slice(
         0,
