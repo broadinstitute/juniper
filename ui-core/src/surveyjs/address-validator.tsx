@@ -14,67 +14,76 @@ export function createAddressValidator(validateAddress: (val: MailingAddress) =>
       errors,
       complete
     }: { data: { [index: string]: any; }, errors: { [index: string]: any; }, complete: () => void }) => {  // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
-    const addressValidationQuestions = Object.keys(data).filter(key => key.endsWith('addressValidation'))
+    console.log('Running validation')
+    console.log(data)
+    console.log(sender.getAllQuestions(false))
+    console.log(sender.getPageByQuestion(sender.getQuestionByName('oh_oh_basic_addressValidation')).num)
+    console.log(sender.currentPage?.num)
 
-    addressValidationQuestions.forEach(addressValidationQuestion => {
-      // if (
-      // sender.getPageByQuestion(sender.getQuestionByName(addressValidationQuestion)).num != sender.currentPageNo
-      // ) {
-      //   return // address is on different page of survey, let's not worry about it
-      // }
+    const addressValidationQuestions = sender
+      .getAllQuestions(false)
+      .filter(q => q.name.endsWith('addressValidation'))
+      .filter(q => sender.getPageByQuestion(q).num === sender.currentPage?.num)
 
-      const questionNamePrefix = addressValidationQuestion.slice(
-        0,
-        addressValidationQuestion.length - 'addressValidation'.length)
+    if (addressValidationQuestions.length === 0) {
+      complete()
+      return
+    }
 
-      const mailingAddress: MailingAddress | undefined = assembleAddress(data, questionNamePrefix)
+    Promise.all(
+      addressValidationQuestions.map(async addressValidationQuestion => {
+        const questionNamePrefix = addressValidationQuestion.name.slice(
+          0,
+          addressValidationQuestion.name.length - 'addressValidation'.length)
 
-      if (!mailingAddress) {
-        // could not assemble mailing address due to invalid survey set up
-        return
-      }
+        const mailingAddress: MailingAddress | undefined = assembleAddress(data, questionNamePrefix)
 
-      const existingValidationState: AddressValidationQuestionValue = data[addressValidationQuestion]
+        if (!mailingAddress) {
+          // could not assemble mailing address due to invalid survey set up
+          return Promise.resolve()
+        }
 
-
-      // if user has already validated this address, and it had a suggestion which they denied.
-      // we don't need to revalidate, we can just let them keep going.
-      if (existingValidationState
-        && isSameAddress(existingValidationState.inputAddress, mailingAddress)
-        && existingValidationState.canceledSuggestedAddress) {
-        return
-      }
+        const existingValidationState: AddressValidationQuestionValue = addressValidationQuestion.value
 
 
-      validateAddress(mailingAddress)
-        .then((results: AddressValidationResult) => {
-          const addressValidationQuestionValue: AddressValidationQuestionValue = {
-            inputAddress: mailingAddress,
-            canceledSuggestedAddress: false,
-            addressValidationResult: results
-          }
-          sender.setValue(addressValidationQuestion, addressValidationQuestionValue)
+        // if user has already validated this address, and it had a suggestion which they denied.
+        // we don't need to revalidate, we can just let them keep going.
+        if (existingValidationState && existingValidationState.inputAddress
+          && isSameAddress(existingValidationState.inputAddress, mailingAddress)
+          && existingValidationState.canceledSuggestedAddress) {
+          return Promise.resolve()
+        }
 
-          if (results.suggestedAddress && isSameAddress(results.suggestedAddress, mailingAddress)) {
-            results.suggestedAddress = undefined
-          }
-
-          if (results.suggestedAddress) {
-            errors[addressValidationQuestion] = 'Please review the suggested address.'
-          } else if (!results.valid) {
-            errors[addressValidationQuestion] = 'Address could not be validated.'
-            // make the fields go red
-            errors[`${questionNamePrefix}street1`] = ''
-            errors[`${questionNamePrefix}street2`] = ''
-            errors[`${questionNamePrefix}country`] = ''
-            errors[`${questionNamePrefix}city`] = ''
-            errors[`${questionNamePrefix}postalCode`] = ''
-            errors[`${questionNamePrefix}state`] = ''
-          }
-        })
+        const results = await validateAddress(mailingAddress)
+        console.log(results)
+        const addressValidationQuestionValue: AddressValidationQuestionValue = {
+          inputAddress: mailingAddress,
+          canceledSuggestedAddress: false,
+          addressValidationResult: results
+        }
+        addressValidationQuestion.value = addressValidationQuestionValue
+        if (results.suggestedAddress && isSameAddress(results.suggestedAddress, mailingAddress)) {
+          results.suggestedAddress = undefined
+        }
+        console.log(results.suggestedAddress)
+        if (results.suggestedAddress) {
+          errors[addressValidationQuestion.name] = 'Please review the suggested address.'
+        } else if (!results.valid) {
+          // make the fields go red
+          errors[`${questionNamePrefix}street1`] = 'Address could not be validated.'
+          errors[`${questionNamePrefix}street2`] = 'Address could not be validated.'
+          errors[`${questionNamePrefix}country`] = 'Address could not be validated.'
+          errors[`${questionNamePrefix}city`] = 'Address could not be validated.'
+          errors[`${questionNamePrefix}postalCode`] = 'Address could not be validated.'
+          errors[`${questionNamePrefix}state`] = 'Address could not be validated.'
+        }
+        return await Promise.resolve()
+      })
+    ).then(() => {
+      console.log(errors)
+      console.log('completing!!')
+      complete()
     })
-
-    complete()
   }
 }
 
@@ -85,12 +94,11 @@ const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean =>
 }
 
 const assembleAddress = (data: { [index: string]: any; }, prefix: string): MailingAddress | undefined => {
+  console.log(prefix)
   const requiredFields = [
     `${prefix}street1`,
-    `${prefix}street2`,
     `${prefix}city`,
     `${prefix}state`,
-    `${prefix}country`,
     `${prefix}postalCode`
   ]
 
@@ -102,10 +110,10 @@ const assembleAddress = (data: { [index: string]: any; }, prefix: string): Maili
 
   return {
     street1: data[`${prefix}street1`],
-    street2: data[`${prefix}street2`],
+    street2: data[`${prefix}street2`] || '',
     city: data[`${prefix}city`],
     state: data[`${prefix}state`],
-    country: data[`${prefix}country`],
+    country: data[`${prefix}country`] || 'US',
     postalCode: data[`${prefix}postalCode`]
   }
 }

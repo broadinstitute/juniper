@@ -10,9 +10,9 @@ import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
 
 export type AddressValidationQuestionValue = {
-  inputAddress: MailingAddress,
-  canceledSuggestedAddress: boolean,
-  addressValidationResult: AddressValidationResult
+  inputAddress?: MailingAddress,
+  canceledSuggestedAddress?: boolean,
+  addressValidationResult?: AddressValidationResult
 }
 
 const AddressValidationType = 'addressvalidation'
@@ -34,24 +34,25 @@ Serializer.addClass(
 )
 
 
-export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
+export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
   get question() {
     return this.questionBase
   }
 
-  get value(): AddressValidationQuestionValue | undefined {
+  get value(): AddressValidationQuestionValue {
     return this.question.value
   }
 
   renderElement() {
+    this.question.value = {}
     return (
       <>
-        {this.value && <p>show MODAL</p>}
+        {this.value.addressValidationResult?.suggestedAddress ? <p>Modal</p> : <></>}
       </>
     )
   }
 }
 
 ReactQuestionFactory.Instance.registerQuestion(AddressValidationType, props => {
-  return React.createElement(SurveyQuestionMultipleCombobox, props)
+  return React.createElement(SurveyQuestionAddressValidation, props)
 })

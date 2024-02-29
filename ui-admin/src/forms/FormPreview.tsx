@@ -23,7 +23,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
     model.locale = 'default'
-    model.onServerValidateQuestions.add(createAddressValidator(Api.validateAddress))
+    model.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
     return model
   })
   const forceUpdate = useForceUpdate()
