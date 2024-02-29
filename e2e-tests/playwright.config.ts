@@ -36,7 +36,13 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      use: {
+        ...devices['Desktop Chrome'],
+        contextOptions: {
+          ignoreHTTPSErrors: true
+        },
+        ignoreHTTPSErrors: true
+      }
     }
 
     // {
@@ -89,16 +95,18 @@ export default defineConfig({
     ...(
       process.env.CI ? [] : [
         {
-          command: 'cd .. && npm -w ui-admin start',
-          url: 'http://localhost:3000',
+          command: 'cd .. && REACT_APP_UNAUTHED_LOGIN=true HTTPs=true npm -w ui-admin start',
+          url: 'https://localhost:3000',
           timeout: 120 * 1000,
-          reuseExistingServer: !process.env.CI
+          reuseExistingServer: !process.env.CI,
+          ignoreHTTPSErrors: true
         },
         {
-          command: 'cd .. && npm -w ui-participant start',
-          url: 'http://localhost:3001',
+          command: 'cd .. && REACT_APP_UNAUTHED_LOGIN=true HTTPS=true npm -w ui-participant start',
+          url: 'https://localhost:3001',
           timeout: 120 * 1000,
-          reuseExistingServer: !process.env.CI
+          reuseExistingServer: !process.env.CI,
+          ignoreHTTPSErrors: true
         }
       ]
     )
