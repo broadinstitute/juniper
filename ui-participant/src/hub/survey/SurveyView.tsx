@@ -13,7 +13,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect } from '@juniper/ui-core'
+import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -219,14 +219,16 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   }
 
   return (
-    <PagedSurveyView
-      enrollee={enrollee}
-      form={formAndResponses.studyEnvironmentSurvey}
-      activeResponse={formAndResponses.surveyResponse}
-      studyShortcode={studyShortcode}
-      taskId={taskId}
-      showHeaders={showHeaders}
-    />
+    <ApiProvider api={Api}>
+      <PagedSurveyView
+        enrollee={enrollee}
+        form={formAndResponses.studyEnvironmentSurvey}
+        activeResponse={formAndResponses.surveyResponse}
+        studyShortcode={studyShortcode}
+        taskId={taskId}
+        showHeaders={showHeaders}
+      />
+    </ApiProvider>
   )
 }
 

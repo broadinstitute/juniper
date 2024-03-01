@@ -29,3 +29,15 @@ jobs:
         run: DISABLE_ESLINT_PLUGIN=true npm --workspace=ui-admin --workspace=ui-participant run build
       - name: Run tests
         run: npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure() && github.ref == 'refs/heads/development'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: UI CI build failed on merge to development
+          fields: job
+          text: "UI CI build failed :sadpanda:"
+          username: 'Pearl Build Notifications'

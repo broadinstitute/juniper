@@ -25,11 +25,14 @@ const globalSetup = async () => {
     process.env.ADMIN_URL = 'http://localhost:8080'
     process.env.PARTICIPANT_URL = 'http://sandbox.demo.localhost:8081'
   } else {
-    process.env.ADMIN_URL = 'http://localhost:3000'
-    process.env.PARTICIPANT_URL = 'http://sandbox.demo.localhost:3001'
+    process.env.ADMIN_URL = 'https://localhost:3000'
+    process.env.PARTICIPANT_URL = 'https://sandbox.demo.localhost:3001'
   }
-
-  await runPopulatePortalScript()
+  if (process.env.CI) {
+    await runPopulatePortalScript()
+  } else {
+    console.log('INFO - Skipping `populate_portal.sh demo` -- Non-CI env. assumes demo is already populated')
+  }
 }
 
 export default globalSetup
