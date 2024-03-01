@@ -10,7 +10,7 @@ import { findDifferencesBetweenObjects } from '../objectUtils'
  * address validation will be stored there like any other
  * survey response.
  */
-export default function createAddressValidator(
+export function createAddressValidator(
   validateAddress: (val: MailingAddress) => Promise<AddressValidationResult>
 ) {
   return (
@@ -33,7 +33,7 @@ export default function createAddressValidator(
         async addressValidationQuestion => {
           // clear all the previous errors (they do not clear automatically :( )
           clearExistingValidationErrors(sender, addressValidationQuestion)
-          validateSurveyJsAddress(
+          await validateSurveyJsAddress(
             validateAddress,
             data,
             errors,
@@ -91,6 +91,7 @@ export const validateSurveyJsAddress = async (
   } else if (!results.valid) {
     displayAppropriateErrors(addressValidationQuestion, newValidationState.addressValidationResult, errors)
   }
+
   return await Promise.resolve()
 }
 
