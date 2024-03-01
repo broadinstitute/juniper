@@ -9,6 +9,7 @@ import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
 import { AddressValidationResult, MailingAddress } from '../types/address'
 import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
+import { isEmpty } from 'lodash'
 
 export type AddressValidationQuestionValue = {
   inputAddress: MailingAddress,
@@ -114,14 +115,24 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
   }
 
   accept(addr: MailingAddress) {
-    const survey = this.questionBase.survey
+    this.tryUpdateOtherValue(this.question.street1, addr.street1)
+    this.tryUpdateOtherValue(this.question.street2, addr.street1)
+    this.tryUpdateOtherValue(this.question.city, addr.city)
+    this.tryUpdateOtherValue(this.question.stateProvince, addr.state)
+    this.tryUpdateOtherValue(this.question.postalCode, addr.postalCode)
+    this.tryUpdateOtherValue(this.question.country, addr.country)
+  }
 
-    survey.getQuestionByName(this.question.street1)?.updateValueFromSurvey(addr.street1)
-    survey.getQuestionByName(this.question.street2)?.updateValueFromSurvey(addr.street2)
-    survey.getQuestionByName(this.question.city)?.updateValueFromSurvey(addr.city)
-    survey.getQuestionByName(this.question.stateProvince)?.updateValueFromSurvey(addr.state)
-    survey.getQuestionByName(this.question.postalCode)?.updateValueFromSurvey(addr.postalCode)
-    survey.getQuestionByName(this.question.country)?.updateValueFromSurvey(addr.country)
+  tryUpdateOtherValue(questionName: string, value: string) {
+    if (isEmpty(questionName)) {
+      return
+    }
+
+    const question = this.questionBase.survey.getQuestionByName(questionName)
+
+    if (question) {
+      question.value = value
+    }
   }
 
   renderElement() {
