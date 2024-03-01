@@ -296,6 +296,7 @@ describe('valid address validation', () => {
         country: 'US',
         street2: ''
       },
+      modalDismissed: false,
       canceledSuggestedAddress: false,
       acceptedSuggestedAddress: false
     })
@@ -354,6 +355,7 @@ describe('invalid address validation', () => {
         country: 'US',
         street2: ''
       },
+      modalDismissed: false,
       canceledSuggestedAddress: false,
       acceptedSuggestedAddress: false
     })
@@ -407,6 +409,7 @@ describe('invalid address validation', () => {
         country: 'US',
         street2: ''
       },
+      modalDismissed: false,
       canceledSuggestedAddress: false,
       acceptedSuggestedAddress: false
     })
