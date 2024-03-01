@@ -5,7 +5,7 @@ import { useLoadingEffect } from 'api/api-utils'
 import { useParams } from 'react-router-dom'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
-import { instantToDateString } from 'util/timeUtils'
+import { instantToDateString } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import { userHasPermission, useUser } from './UserProvider'
@@ -29,7 +29,8 @@ const ROLE_COLUMNS: ColumnDef<Role>[] = [{
 }]
 
 /** shows roles and other details for an admin user */
-const AdminUserDetailView = ({ adminUserId, portalShortcode }: { adminUserId: string, portalShortcode?: string}) => {
+export const AdminUserDetailRaw = ({ adminUserId, portalShortcode }:
+  { adminUserId: string, portalShortcode?: string}) => {
   const { user: operator } = useUser()
   const [adminUser, setAdminUser] = useState<AdminUser>()
   const { isLoading } = useLoadingEffect(async () => {
@@ -48,7 +49,7 @@ const AdminUserDetailView = ({ adminUserId, portalShortcode }: { adminUserId: st
         <dt>Created:</dt><dd>{instantToDateString(adminUser.createdAt)}</dd>
       </dl> }
       { adminUser?.portalAdminUsers && adminUser?.portalAdminUsers.map(portalAdminUser => {
-        return <div>
+        return <div key={portalAdminUser.portalId}>
           {showMultiplePortalUsers && <h3 className="h5">portalId: {portalAdminUser.portalId}</h3>}
           <dl>
             <dt>Created:</dt><dd>{instantToDateString(adminUser.createdAt)}</dd>
@@ -82,12 +83,13 @@ const RoleTable = ({ roles }: {roles: Role[]}) => {
  */
 const AdminUserDetail = ({ portalShortcode }: {portalShortcode?: string}) => {
   const { adminUserId } = useParams()
+  const params = useParams()
   if (!adminUserId) {
     return <div>
       No user id specified
     </div>
   }
-  return <AdminUserDetailView adminUserId={adminUserId} portalShortcode={portalShortcode}/>
+  return <AdminUserDetailRaw adminUserId={adminUserId} portalShortcode={portalShortcode}/>
 }
 
 export default AdminUserDetail

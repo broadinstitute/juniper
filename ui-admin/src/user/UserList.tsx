@@ -45,7 +45,7 @@ const UserList = ({ portal }: {portal?: Portal}) => {
       cols.push({
         header: 'Superuser',
         accessorKey: 'superuser',
-        cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+        cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck} aria-label="yes"/> : ''
       })
       cols.push({
         header: 'Portals',
