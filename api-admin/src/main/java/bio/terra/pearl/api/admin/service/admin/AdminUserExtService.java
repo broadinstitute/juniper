@@ -64,8 +64,9 @@ public class AdminUserExtService {
       }
     }
     if (adminUser.getPortalAdminUsers().size() == 0 && !operator.isSuperuser()) {
-      // if the user isn't in the requested portal, this user doesn't have access
-      throw new PermissionDeniedException("You do not have permission for this operation");
+      // if the user isn't in the requested portal, this user doesn't have access--throw as not
+      // found for privacy
+      throw new NotFoundException("No admin user with id %s".formatted(id.toString()));
     }
     return adminUser;
   }
