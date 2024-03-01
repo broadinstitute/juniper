@@ -46,7 +46,8 @@ export function createAddressValidator(
 }
 
 /**
- *
+ * Validates a single address for surveyjs; fills out any errors in the errors
+ * map.
  */
 export const validateSurveyJsAddress = async (
   validateAddress: (val: MailingAddress) => Promise<AddressValidationResult>,
