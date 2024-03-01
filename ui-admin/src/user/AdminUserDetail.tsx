@@ -83,7 +83,6 @@ const RoleTable = ({ roles }: {roles: Role[]}) => {
  */
 const AdminUserDetail = ({ portalShortcode }: {portalShortcode?: string}) => {
   const { adminUserId } = useParams()
-  const params = useParams()
   if (!adminUserId) {
     return <div>
       No user id specified

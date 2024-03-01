@@ -1,6 +1,6 @@
 import React from 'react'
-import { renderWithRouter, setupRouterTest } from 'test-utils/router-testing-utils'
-import { render, screen, waitFor } from '@testing-library/react'
+import { renderWithRouter } from 'test-utils/router-testing-utils'
+import { screen, waitFor } from '@testing-library/react'
 import { mockAdminUser } from '../test-utils/user-mocking-utils'
 import UserList from './UserList'
 import Api from '../api/api'
