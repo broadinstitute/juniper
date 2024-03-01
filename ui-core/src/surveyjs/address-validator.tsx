@@ -75,6 +75,7 @@ export const validateSurveyJsAddress = async (
     inputAddress: mailingAddress,
     canceledSuggestedAddress: false,
     acceptedSuggestedAddress: false,
+    modalDismissed: false,
     addressValidationResult: results
   }
 
@@ -116,7 +117,10 @@ const shouldSkipValidation = (
 ) => {
   return existingValidationState && existingValidationState.inputAddress
     && isSameAddress(existingValidationState.inputAddress, mailingAddress)
-    && (existingValidationState.canceledSuggestedAddress || existingValidationState.acceptedSuggestedAddress)
+    && (
+      existingValidationState.canceledSuggestedAddress
+      || existingValidationState.acceptedSuggestedAddress
+      || existingValidationState.modalDismissed)
 }
 
 const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean => {

@@ -14,6 +14,7 @@ export type AddressValidationQuestionValue = {
   inputAddress: MailingAddress,
   canceledSuggestedAddress: boolean,
   acceptedSuggestedAddress: boolean,
+  modalDismissed: boolean,
   addressValidationResult: AddressValidationResult
 }
 
@@ -136,6 +137,7 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
               accept={() => {
                 this.question.value = {
                   ...this.value,
+                  modalDismissed: true,
                   acceptedSuggestedAddress: true
                 }
                 if (this.value.addressValidationResult.suggestedAddress) {
@@ -145,12 +147,14 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
               deny={() => {
                 this.question.value = {
                   ...this.value,
+                  modalDismissed: true,
                   canceledSuggestedAddress: true
                 }
               }}
               onDismiss={() => {
                 this.question.value = {
                   ...this.value,
+                  modalDismissed: true,
                   canceledSuggestedAddress: true
                 }
               }}
