@@ -64,10 +64,11 @@ jobs:
       - name: Set SonarCloud parameters
         id: sonar-params
         run: |
-          if [ "${{ steps.branch-name.outputs.current_branch }}" != "development" ]; then
+          if [[ "${{ steps.branch-name.outputs.current_branch }}" != "development" ]]; then
             echo "SONAR_ARGS=-Dsonar.branch.target=${{ github.event.repository.default_branch }} -Dsonar.branch.name=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_ENV
           else
             echo "SONAR_ARGS=" >> $GITHUB_ENV
+          fi
       - name: Scan ${{ matrix.subproject }} via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
