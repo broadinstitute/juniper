@@ -4,7 +4,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString } from 'util/timeUtils'
+import { dateToDefaultString } from '@juniper/ui-core'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -164,7 +164,7 @@ test('shows error message on address validation', async () => {
   const streetClasses = screen.getByPlaceholderText('Street 1').className
   expect(streetClasses).toContain('is-invalid')
 
-  const countryClasses = screen.getByPlaceholderText('Country').className
+  const countryClasses = screen.getByPlaceholderText('City').className
   expect(countryClasses.includes('is-invalid')).toBeFalsy()
   expect(countryClasses.includes('is-valid')).toBeFalsy()
 })

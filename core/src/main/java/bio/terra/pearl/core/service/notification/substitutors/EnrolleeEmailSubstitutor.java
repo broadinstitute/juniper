@@ -29,7 +29,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         this.enrolleeRuleData = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;
-        valueMap.putAll(Map.of("profile", enrolleeRuleData.profile(),
+        valueMap.putAll(Map.of("profile", enrolleeRuleData.getProfile(),
                 "portalEnv", contextInfo.portalEnv(),
                 "envConfig", contextInfo.portalEnv().getPortalEnvironmentConfig(),
                 "dashboardLink", getDashboardLink(contextInfo.portalEnv(),
@@ -37,6 +37,8 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
                 "dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portal()),
                 "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
                 "participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv()),
+                "siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
+                // legacy template substitution support
                 "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
                 // providing a study isn't required, since emails might come from the portal, rather than a study
                 // but immutable map doesn't allow nulls
@@ -68,7 +70,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
-                    key, contextInfo.portal().getShortcode(), enrolleeRuleData.enrollee().getShortcode());
+                    key, contextInfo.portal().getShortcode(), enrolleeRuleData.getEnrollee().getShortcode());
         }
         return "";
     }
@@ -93,7 +95,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     public String getImageBaseUrl(PortalEnvironment portalEnvironment, String portalShortcode) {
         return routingPaths.getParticipantBaseUrl(portalEnvironment, portalShortcode)
                 + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnvironment.getEnvironmentName()
-                + "/siteImages";
+                + "/siteMedia";
     }
 
     public String getParticipantSupportEmailLink(PortalEnvironment portalEnvironment) {

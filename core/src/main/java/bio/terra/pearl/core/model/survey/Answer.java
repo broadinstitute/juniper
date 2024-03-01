@@ -26,6 +26,7 @@ public class Answer extends BaseEntity {
     private String surveyStableId;
     private String otherDescription;
     private int surveyVersion;
+    private String viewedLanguage;
     private AnswerType answerType;
     private String stringValue;
     // objects are stored as JSON strings
@@ -43,7 +44,7 @@ public class Answer extends BaseEntity {
         if (answerType.equals(AnswerType.STRING)) {
             stringValue = (String) value;
         } else if (answerType.equals(AnswerType.NUMBER)) {
-            numberValue = (Double) value;
+            numberValue = ((Number) value).doubleValue();
         } else if (answerType.equals(AnswerType.BOOLEAN)) {
             booleanValue = (Boolean) value;
         } else {
@@ -70,6 +71,7 @@ public class Answer extends BaseEntity {
         objectValue = answer.objectValue;
         answerType = answer.answerType;
         otherDescription = answer.otherDescription;
+        viewedLanguage = answer.viewedLanguage;
     }
 
     public boolean valuesEqual(Answer answer) {

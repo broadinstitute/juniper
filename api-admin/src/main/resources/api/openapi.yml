@@ -1504,10 +1504,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/siteImages:
+  /api/portals/v1/{portalShortcode}/siteMedia:
     get:
       summary: Returns a list of the metadata for the images in the portal -- does not return the image files themselves
-      tags: [ siteImage ]
+      tags: [ siteMedia ]
       operationId: list
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -1517,10 +1517,23 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/siteImages/upload/{uploadFileName}/{version}:
+  /api/portals/v1/{portalShortcode}/siteMedia/{id}:
+    delete:
+      summary: Deletes the site media by id
+      tags: [ siteMedia ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteMedia/upload/{uploadFileName}/{version}:
     post:
       summary: upload an image
-      tags: [ siteImage ]
+      tags: [ siteMedia ]
       operationId: upload
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -1541,10 +1554,10 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/siteMedia/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode
-      tags: [ siteImage ]
+      tags: [ siteMedia ]
       operationId: get
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }

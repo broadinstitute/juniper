@@ -40,6 +40,14 @@ export class QuestionMultipleComboboxModel extends Question {
   set choicesByUrl(value) {
     this.setPropertyValue('choicesByUrl', value)
   }
+
+  get choicesByFile() {
+    return this.getPropertyValue('choicesByFile')
+  }
+
+  set choicesByFile(value) {
+    this.setPropertyValue('choicesByFile', value)
+  }
 }
 
 ElementFactory.Instance.registerElement(MultipleComboboxType, name => {
@@ -57,6 +65,9 @@ Serializer.addClass(
     category: 'general'
   }, {
     name: 'choicesByUrl',
+    category: 'general'
+  }, {
+    name: 'choicesByFile',
     category: 'general'
   }],
   () => new QuestionMultipleComboboxModel(''),
@@ -87,6 +98,10 @@ export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
     return this.question.choicesByUrl
   }
 
+  get choicesByFile() {
+    return this.question.choicesByFile
+  }
+
   renderElement() {
     const options: ItemValue[] = this.question.options || []
     const value: string[] = this.question.value || []
@@ -102,6 +117,7 @@ export class SurveyQuestionMultipleCombobox extends SurveyQuestionElementBase {
         }}
         options={options}
         choicesByUrl={this.choicesByUrl?.url}
+        choicesByFile={this.choicesByFile}
         placeholder={this.placeholder}
       />
     )

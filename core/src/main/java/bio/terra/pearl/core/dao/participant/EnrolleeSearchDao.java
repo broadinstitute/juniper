@@ -95,7 +95,8 @@ public class EnrolleeSearchDao {
           facetsGroupByTable.get(facet.getTableName()).add(facet);
         });
 
-    List<String> selects = facets.stream().map(facet -> facet.getSelectQuery())
+    List<String> selects = IntStream.range(0, facets.size()).mapToObj(i ->
+            facets.get(i).getSelectQuery(i))
         .filter(query -> query != null)
         .collect(Collectors.toList());
     selects.add(0, baseSelectString);
@@ -112,7 +113,9 @@ public class EnrolleeSearchDao {
     froms.add(0, baseFromQuery);
     String fromQuery = froms.stream().collect(Collectors.joining(""));
 
+    /** we are hardcoded to only return enrollees who are subjects for now */
     String baseWhereQuery = " where enrollee.study_environment_id = :studyEnvironmentId";
+
     List<String> wheres = IntStream.range(0, facets.size()).mapToObj(i ->
         facets.get(i).getWhereClause(i)).collect(Collectors.toList());
     wheres.add(0, baseWhereQuery);

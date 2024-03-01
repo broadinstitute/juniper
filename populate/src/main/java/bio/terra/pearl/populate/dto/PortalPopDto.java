@@ -2,13 +2,15 @@ package bio.terra.pearl.populate.dto;
 
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Getter @Setter @NoArgsConstructor
 public class PortalPopDto extends Portal {
@@ -21,7 +23,7 @@ public class PortalPopDto extends Portal {
     private List<String> populateStudyFiles = new ArrayList<>();
     private List<String> siteContentFiles = new ArrayList<>();
     private List<PortalEnvironmentPopDto> portalEnvironmentDtos = new ArrayList<>();
-    private List<SiteImagePopDto> siteImageDtos = new ArrayList<>();
+    private List<SiteMediaPopDto> siteMediaDtos = new ArrayList<>();
     private List<String> emailTemplateFiles = new ArrayList<>();
     /**
      * this allows us to pass a PopulatePortalDto to PortalService.create and have the specified environments

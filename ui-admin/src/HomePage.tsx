@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { studyParticipantsPath } from './portal/PortalRouter'
 import { useNavContext } from './navbar/NavContextProvider'
-import { getImageUrl } from './api/api'
+import { getMediaUrl } from './api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisH, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button, IconButton } from './components/forms/Button'
@@ -33,7 +33,7 @@ function HomePage() {
               className="list-group-item my-1 border border-secondary-subtle rounded">
               <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, 'live')}>
                 <img
-                  src={getImageUrl(portal.shortcode, 'favicon.ico', 1)}
+                  src={getMediaUrl(portal.shortcode, 'favicon.ico', 1)}
                   className="me-3" style={{ maxHeight: '1.5em' }}/>
                 {study.name}
               </Link>

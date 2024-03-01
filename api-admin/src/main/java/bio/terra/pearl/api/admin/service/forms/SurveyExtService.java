@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -28,18 +29,21 @@ public class SurveyExtService {
   private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
+  private EventService eventService;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
       SurveyService surveyService,
       StudyEnvironmentSurveyService studyEnvironmentSurveyService,
       StudyEnvironmentService studyEnvironmentService,
-      PortalEnvironmentService portalEnvironmentService) {
+      PortalEnvironmentService portalEnvironmentService,
+      EventService eventService) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
+    this.eventService = eventService;
   }
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser operator) {
@@ -154,9 +158,14 @@ public class SurveyExtService {
       EnvironmentName envName,
       StudyEnvironmentSurvey surveyToConfigure,
       AdminUser operator) {
-    authConfiguredSurveyRequest(
-        portalShortcode, envName, studyShortcode, surveyToConfigure, operator);
-    return studyEnvironmentSurveyService.create(surveyToConfigure);
+    AuthEntities authEntities =
+        authConfiguredSurveyRequest(
+            portalShortcode, envName, studyShortcode, surveyToConfigure, operator);
+
+    StudyEnvironmentSurvey studyEnvSurvey = studyEnvironmentSurveyService.create(surveyToConfigure);
+    eventService.publishSurveyPublishedEvent(
+        authEntities.portalEnv.getId(), authEntities.studyEnv.getId(), authEntities.survey());
+    return studyEnvSurvey;
   }
 
   public void removeConfiguredSurvey(
@@ -198,9 +207,8 @@ public class SurveyExtService {
       StudyEnvironmentSurvey update,
       AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
-    PortalEnvironment portalEnvironment =
-        portalEnvironmentService.findOne(portalShortcode, environmentName).get();
-    StudyEnvironment studyEnv =
+
+    AuthEntities authEntities =
         authConfiguredSurveyRequest(
             portalShortcode, environmentName, studyShortcode, update, operator);
     StudyEnvironmentSurvey existing =
@@ -210,12 +218,14 @@ public class SurveyExtService {
                 () ->
                     new NotFoundException(
                         "No existing StudyEnvironmentSurvey with id " + studyEnvironmentSurveyId));
-    verifyStudyEnvironmentSurvey(existing, studyEnv);
+    verifyStudyEnvironmentSurvey(existing, authEntities.studyEnv);
     StudyEnvironmentSurvey newConfig =
         studyEnvironmentSurveyService.create(update.cleanForCopying());
     // after creating the new config, deactivate the old config
     existing.setActive(false);
     studyEnvironmentSurveyService.update(existing);
+    eventService.publishSurveyPublishedEvent(
+        authEntities.portalEnv.getId(), authEntities.studyEnv.getId(), authEntities.survey());
     return newConfig;
   }
 
@@ -224,7 +234,7 @@ public class SurveyExtService {
    * and that it's in the sandbox environment. Returns the study environment for which the change is
    * being made in.
    */
-  protected StudyEnvironment authConfiguredSurveyRequest(
+  protected AuthEntities authConfiguredSurveyRequest(
       String portalShortcode,
       EnvironmentName envName,
       String studyShortcode,
@@ -240,8 +250,17 @@ public class SurveyExtService {
       throw new IllegalArgumentException(
           "Study environment id in request body does not belong to this study");
     }
-    return studyEnv;
+    PortalEnvironment portalEnvironment =
+        portalEnvironmentService.findOne(portalShortcode, envName).get();
+    Survey survey = surveyService.find(updatedObj.getSurveyId()).get();
+    if (!portalEnvironment.getPortalId().equals(survey.getPortalId())) {
+      throw new IllegalArgumentException("Survey does not belong to the specified portal");
+    }
+    return new AuthEntities(studyEnv, portalEnvironment, survey);
   }
+
+  private record AuthEntities(
+      StudyEnvironment studyEnv, PortalEnvironment portalEnv, Survey survey) {}
 
   /** confirms the given config is associated with the given study */
   private void verifyStudyEnvironmentSurvey(

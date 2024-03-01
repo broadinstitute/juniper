@@ -10,7 +10,7 @@ import { Button } from 'components/forms/Button'
 import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import { LabeledDateRangeMode, METRIC_EXPORT_DELIMITER, MetricDateRange } from './metricUtils'
 
 /**

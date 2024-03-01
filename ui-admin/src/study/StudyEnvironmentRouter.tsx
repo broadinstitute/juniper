@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { Trigger, Portal, PortalEnvironment, Study, StudyEnvironment } from 'api/api'
+import { Portal, PortalEnvironment, Study, StudyEnvironment, Trigger } from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
@@ -23,7 +23,7 @@ import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
-import SiteImageList from '../portal/images/SiteImageList'
+import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
 import DashboardSettings from 'dashboard/DashboardSettings'
 import { EnvironmentName } from '@juniper/ui-core'
@@ -95,7 +95,7 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
       <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
-      <Route path="media" element={<SiteImageList portalContext={portalContext} portalEnv={portalEnv}/>}/>
+      <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
@@ -216,10 +216,10 @@ export const studyEnvSiteContentPath = (portalShortcode: string, studyShortcode:
 }
 
 /**
- * helper function for image manager route -- note the simages are portal-scoped, rather than study-scoped,
+ * helper function for image manager route -- note the media are portal-scoped, rather than study-scoped,
  * but the route is set to maintain study context
  */
-export const studyEnvSiteImagesPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+export const studyEnvSiteMediaPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/siteContent`
 }
 

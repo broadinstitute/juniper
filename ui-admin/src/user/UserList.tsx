@@ -8,8 +8,9 @@ import {
 } from '@tanstack/react-table'
 import Api, { Portal } from 'api/api'
 import { AdminUser, PortalAdminUser } from 'api/adminUser'
+import { useLoadingEffect } from 'api/api-utils'
 import { basicTableLayout, renderEmptyMessage }  from 'util/tableUtils'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faPlus } from '@fortawesome/free-solid-svg-icons'
@@ -17,7 +18,6 @@ import CreateUserModal from './CreateUserModal'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import { Link } from 'react-router-dom'
-import { useLoadingEffect } from '../api/api-utils'
 import UserAction from './UserAction'
 
 /** lists all admin users or the users of a specific portal */

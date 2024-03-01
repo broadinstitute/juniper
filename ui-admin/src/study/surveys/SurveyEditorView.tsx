@@ -14,6 +14,8 @@ import FormOptions from './FormOptions'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
+import { ApiProvider } from '@juniper/ui-core'
+import { previewApi } from 'util/apiContextUtils'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -27,6 +29,7 @@ type SurveyEditorViewProps = {
 const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const {
     studyEnvContext,
+    studyEnvContext: { portal, currentEnv },
     currentForm,
     readOnly = false,
     onCancel,
@@ -53,8 +56,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
 
-  const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
-    env.environmentName === studyEnvContext.currentEnv.environmentName)
+  const portalEnv = portal.portalEnvironments.find((env: PortalEnvironment) =>
+    env.environmentName === currentEnv.environmentName)
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -185,19 +188,21 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           onDismiss={() => setShowAdvancedOptions(false)}/>
         }
       </div>
-      <FormContentEditor
-        initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
-        visibleVersionPreviews={visibleVersionPreviews}
-        supportedLanguages={portalEnv?.supportedLanguages || []}
-        readOnly={readOnly}
-        onChange={(newValidationErrors, newContent) => {
-          if (isEmpty(newValidationErrors)) {
-            setShowErrors(false)
-            setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
-          }
-          setValidationErrors(newValidationErrors)
-        }}
-      />
+      <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
+        <FormContentEditor
+          initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
+          visibleVersionPreviews={visibleVersionPreviews}
+          supportedLanguages={portalEnv?.supportedLanguages || []}
+          readOnly={readOnly}
+          onChange={(newValidationErrors, newContent) => {
+            if (isEmpty(newValidationErrors)) {
+              setShowErrors(false)
+              setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
+            }
+            setValidationErrors(newValidationErrors)
+          }}
+        />
+      </ApiProvider>
     </div>
   )
 }

@@ -21,6 +21,8 @@ public class ParticipantUser extends BaseEntity {
     private String token;
 
     private Instant lastLogin;
+    @Builder.Default
+    private boolean loginAllowed = true;
 
     @Builder.Default
     private boolean withdrawn = false;

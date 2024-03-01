@@ -59,17 +59,17 @@ public class EnrolleeEmailService implements NotificationSender {
         if (!shouldSendEmail(config, ruleData, contextInfo)) {
             notification.setDeliveryStatus(NotificationDeliveryStatus.SKIPPED);
         } else {
-            notification.setSentTo(ruleData.profile().getContactEmail());
+            notification.setSentTo(ruleData.getProfile().getContactEmail());
             try {
                 buildAndSendEmail(contextInfo, ruleData, notification);
                 log.info("Email sent: config: {}, enrollee: {}", config.getId(),
-                        ruleData.enrollee().getShortcode());
+                        ruleData.getEnrollee().getShortcode());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
                 log.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
-                        ruleData.enrollee().getShortcode());
+                        ruleData.getEnrollee().getShortcode());
             }
         }
         if (notification.getId() != null) {
@@ -79,7 +79,19 @@ public class EnrolleeEmailService implements NotificationSender {
             FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
             backOffPolicy.setBackOffPeriod(2000);  // this will retry once every two seconds for 3 tries
             retryTemplate.setBackOffPolicy(backOffPolicy);
-            retryTemplate.execute(arg -> notificationService.update(notification));
+            try {
+                retryTemplate.execute(arg -> notificationService.update(notification));
+            } catch (Exception e) {
+                if (routingPaths.getDeploymentZone().equals("local") &&
+                        ruleData.getEnrollee().getShortcode().endsWith("GONE")) {
+                    // for these participants, they are deleted before the async process to send out the welcome
+                    // email starts, so the notification update will fail. This is expected and not a problem.
+                    log.info("notification update failed for populated withdrawn participant -- this is expected");
+                } else {
+                    log.error("failed to update notification: {}", notification.getId());
+                }
+            }
+
         } else {
             notificationService.create(notification);
         }
@@ -121,7 +133,7 @@ public class EnrolleeEmailService implements NotificationSender {
 
         Mail mail = sendgridClient.buildEmail(
                 contextInfo,
-                ruleData.profile().getContactEmail(),
+                ruleData.getProfile().getContactEmail(),
                 fromAddress,
                 fromName,
                 substitutor);
@@ -131,9 +143,9 @@ public class EnrolleeEmailService implements NotificationSender {
     public boolean shouldSendEmail(Trigger config,
                                    EnrolleeRuleData ruleData,
                                    NotificationContextInfo contextInfo) {
-        if (ruleData.profile() != null && ruleData.profile().isDoNotEmail()) {
+        if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmail()) {
             log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
-                    ruleData.enrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                    ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (config.getEmailTemplateId() == null) {

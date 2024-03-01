@@ -198,6 +198,21 @@ databaseChangeLog:
       file: changesets/proxy_data_model.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_02_09_answer_viewed_language.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_02_14_enrollee_proxy.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_02_16_language_texts.yaml
+      relativeToChangelogFile: true
+  - include:
+     file: changesets/2024_02_22_survey_assign_existing.yaml
+     relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_02_23_rename_site_image.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_02_09_permission_populate.yaml
       relativeToChangelogFile: true
 

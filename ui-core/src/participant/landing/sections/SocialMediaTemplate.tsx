@@ -1,6 +1,15 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
-import { faFacebook, faInstagram, faTwitter } from '@fortawesome/free-brands-svg-icons'
+import {
+  faFacebook,
+  faInstagram,
+  faLinkedin,
+  faThreads,
+  faTiktok,
+  faTwitter,
+  faXTwitter,
+  faYoutube
+} from '@fortawesome/free-brands-svg-icons'
 import React from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
@@ -11,7 +20,14 @@ import { requireOptionalString } from '../../util/validationUtils'
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 
-type SocialMediaSite = 'Facebook' | 'Instagram' | 'Twitter'
+type SocialMediaSite = 'Facebook' |
+    'Instagram' |
+    'Twitter' |
+    'X'|
+    'TikTok' |
+    'Threads' |
+    'LinkedIn' |
+    'YouTube'
 
 type SocialMediaSiteConfig = {
   domain: string
@@ -21,6 +37,12 @@ type SocialMediaSiteConfig = {
 }
 
 export const socialMediaSites: SocialMediaSiteConfig[] = [
+  {
+    domain: 'x.com',
+    icon: faXTwitter,
+    label: 'X',
+    renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
+  },
   {
     domain: 'twitter.com',
     icon: faTwitter,
@@ -38,6 +60,30 @@ export const socialMediaSites: SocialMediaSiteConfig[] = [
     icon: faInstagram,
     label: 'Instagram',
     renderUrl: ({ domain, handle }) => `https://${domain}/${handle}`
+  },
+  {
+    domain: 'tiktok.com',
+    icon: faTiktok,
+    label: 'TikTok',
+    renderUrl: ({ domain, handle }) => `https://${domain}/@${handle}`
+  },
+  {
+    domain: 'threads.net',
+    icon: faThreads,
+    label: 'Threads',
+    renderUrl: ({ domain, handle }) => `https://${domain}/@${handle}`
+  },
+  {
+    domain: 'linkedin.com',
+    icon: faLinkedin,
+    label: 'LinkedIn',
+    renderUrl: ({ domain, handle }) => `https://${domain}/in/${handle}`
+  },
+  {
+    domain: 'youtube.com',
+    icon: faYoutube,
+    label: 'YouTube',
+    renderUrl: ({ domain, handle }) => `https://${domain}/@${handle}`
   }
 ]
 

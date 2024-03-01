@@ -5,13 +5,20 @@ import classNames from 'classnames'
 import { useCombobox, useMultipleSelection } from 'downshift'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { trimStart } from 'lodash'
+import { useApiContext } from '../participant/ApiProvider'
+
+type MultipleComboboxChoicesFileProps = {
+  fileName: string
+  fileVersion: number
+}
 
 type MultipleComboboxProps<ComboboxItem> = {
   id?: string
   initialValue?: ComboboxItem[]
   itemToString: (item: ComboboxItem) => string
-  options: ComboboxItem[]
+  options?: ComboboxItem[]
   choicesByUrl?: string
+  choicesByFile?: MultipleComboboxChoicesFileProps
   placeholder?: string
   onChange?: (value: ComboboxItem[]) => void
 }
@@ -21,11 +28,12 @@ type MultipleComboboxProps<ComboboxItem> = {
  * many more options than a normal React-select would, while remaining performant.
  */
 export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<ComboboxItem>) => {
-  const { id, initialValue, itemToString, options, choicesByUrl, placeholder, onChange } = props
+  const { id, initialValue, itemToString, options, choicesByUrl, choicesByFile, placeholder, onChange } = props
   const [optionsList, setOptionsList] = useState<ComboboxItem[]>([])
+  const { getImageUrl } = useApiContext()
 
-  const loadChoicesByUrl = async (choicesByUrl: string) => {
-    const response = await fetch(choicesByUrl)
+  const loadChoices = async (url: string) => {
+    const response = await fetch(url)
     if (response.ok) {
       const jsonResponse = await response.json()
       const choices = jsonResponse.map((item: string) => ({ value: item, text: item }))
@@ -36,11 +44,12 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
   }
 
   useEffect(() => {
-    // Load options from choicesByUrl if provided, otherwise use any options that were provided in the question JSON.
-    if (choicesByUrl) {
-      loadChoicesByUrl(choicesByUrl)
+    if (choicesByFile) {
+      loadChoices(getImageUrl(choicesByFile.fileName, choicesByFile.fileVersion))
+    } else if (choicesByUrl) {
+      loadChoices(choicesByUrl)
     } else {
-      setOptionsList(options)
+      setOptionsList(options || [])
     }
   }, [])
 
@@ -148,7 +157,8 @@ export const MultipleComboBox = <ComboboxItem, >(props: MultipleComboboxProps<Co
     onHighlightedIndexChange: ({ highlightedIndex, type }) => {
       if (
         type !== useCombobox.stateChangeTypes.MenuMouseLeave &&
-        highlightedIndex !== undefined
+        highlightedIndex !== undefined &&
+        items.length > 0
       ) {
         virtualizer.scrollToIndex(highlightedIndex)
       }

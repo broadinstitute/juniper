@@ -190,7 +190,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .response(response)
                 .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
                 .enrollee(event.getEnrollee())
-                .profile(event.getEnrolleeRuleData().profile())
+                .profile(event.getEnrolleeRuleData().getProfile())
                 .build();
         return hubResponse;
     }

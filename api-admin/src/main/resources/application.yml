@@ -11,7 +11,7 @@ env:
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   addrValidation:
-    addrValidationClientClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationClientStub}
+    addrValidationServiceClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationServiceStub}
     smartyAuthId: ${SMARTY_AUTH_ID:}
     smartyAuthToken: ${SMARTY_AUTH_TOKEN:}
   tdr:
@@ -109,6 +109,8 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
+  codec:
+    max-in-memory-size: 50MB # max size of files we can receive via WebClient (e.g. Pepper api calls)
 
 hibernate:
   packages-to-scan: bio.terra.pearl.core.model

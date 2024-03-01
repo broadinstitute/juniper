@@ -1,14 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import 'survey-core/survey.i18n'
 
-import Api, {
-  Enrollee,
-  Portal,
-  StudyEnvironmentSurvey,
-  Survey,
-  SurveyResponse,
-  SurveyWithResponse
-} from 'api/api'
+import Api, { Enrollee, Portal, StudyEnvironmentSurvey, Survey, SurveyResponse, SurveyWithResponse } from 'api/api'
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
@@ -19,7 +13,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { makeSurveyJsData, SurveyJsResumeData, Markdown, useAutosaveEffect } from '@juniper/ui-core'
+import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -50,8 +44,7 @@ export function RawSurveyView({
   resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
 }) {
   const navigate = useNavigate()
-  const { selectedLanguage } = useUser()
-  const { updateEnrollee } = useUser()
+  const { selectedLanguage, updateEnrollee, profile, updateProfile } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
 
@@ -64,7 +57,7 @@ export function RawSurveyView({
     const responseDto = {
       resumeData: getResumeData(surveyModel, enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues, selectedLanguage),
       creatingParticipantId: enrollee.participantUserId,
       surveyId: form.id,
       complete: true
@@ -76,7 +69,6 @@ export function RawSurveyView({
         version: form.version, response: responseDto, taskId, alertErrors: true
       })
       response.enrollee.participantTasks = response.tasks
-      response.enrollee.profile = response.profile
       const hubUpdate: HubUpdate = {
         message: {
           title: `${form.name} completed`,
@@ -84,6 +76,7 @@ export function RawSurveyView({
         }
       }
       await updateEnrollee(response.enrollee)
+      await updateProfile(response.profile)
       navigate('/hub', { state: showHeaders ? hubUpdate : undefined })
     } catch {
       refreshSurvey(surveyModel, null)
@@ -91,12 +84,13 @@ export function RawSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
-    onComplete, pager, enrollee.profile)
+    onComplete, pager, profile)
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
-    const updatedAnswers = getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues)
+    const updatedAnswers = getUpdatedAnswers(
+        prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
@@ -225,14 +219,16 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   }
 
   return (
-    <PagedSurveyView
-      enrollee={enrollee}
-      form={formAndResponses.studyEnvironmentSurvey}
-      activeResponse={formAndResponses.surveyResponse}
-      studyShortcode={studyShortcode}
-      taskId={taskId}
-      showHeaders={showHeaders}
-    />
+    <ApiProvider api={Api}>
+      <PagedSurveyView
+        enrollee={enrollee}
+        form={formAndResponses.studyEnvironmentSurvey}
+        activeResponse={formAndResponses.surveyResponse}
+        studyShortcode={studyShortcode}
+        taskId={taskId}
+        showHeaders={showHeaders}
+      />
+    </ApiProvider>
   )
 }
 

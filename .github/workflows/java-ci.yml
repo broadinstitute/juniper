@@ -76,6 +76,18 @@ jobs:
             core/build/test-results/test/*.xml,
             populate/build/test-results/test/*.xml
           reporter: java-junit
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure() && github.ref == 'refs/heads/development'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: Java CI build failed on merge to development
+          fields: job
+          text: "Java CI build failed :sadpanda:"
+          username: 'Pearl Build Notifications'
 
   # Need to uncomment these in follow up PR, The new Trivy and Tag workflows need to exist on the development branch
   # before the following steps will work

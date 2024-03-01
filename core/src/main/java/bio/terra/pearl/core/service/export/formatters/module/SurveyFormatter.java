@@ -242,7 +242,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
 
     protected static String formatObjectValue(Answer answer, List<QuestionChoice> choices, boolean stableIdForOptions, ObjectMapper objectMapper) {
         try {
-            // for now, the only object values we support are arrays of strings
+            // for now, the only object values we support explicitly parsing are arrays of strings
             String[] answerArray = objectMapper.readValue(answer.getObjectValue(), String[].class);
             if (stableIdForOptions) {
                 return StringUtils.join(answerArray, ", ");
@@ -250,9 +250,8 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             return Arrays.stream(answerArray).map(ansValue -> formatStringValue(ansValue, choices, stableIdForOptions, answer))
                     .collect(Collectors.joining(", "));
         } catch (Exception e) {
-            log.warn("Error parsing answer object value enrollee: {}, question: {}, answer: {}",
-                    answer.getEnrolleeId(), answer.getQuestionStableId(), answer.getId());
-            return "<PARSE ERROR>";
+            // if we don't know what to do with it, just return the raw value
+            return answer.getObjectValue();
         }
     }
 }

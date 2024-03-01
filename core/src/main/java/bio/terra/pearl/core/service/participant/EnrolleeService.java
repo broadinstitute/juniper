@@ -22,6 +22,12 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
@@ -30,13 +36,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import bio.terra.pearl.core.service.workflow.EventService;
-import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
@@ -115,8 +114,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, String sortProperty, String sortDir) {
-        return dao.findByStudyEnvironmentId(studyEnvironmentId, sortProperty, sortDir);
+    public List<Enrollee> findByStudyEnvironment(UUID studyEnvironmentId, Boolean isSubject, String sortProperty, String sortDir) {
+        return dao.findByStudyEnvironmentId(studyEnvironmentId, isSubject, sortProperty, sortDir);
     }
 
     /**
@@ -135,10 +134,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
         enrollee.getConsentResponses().addAll(consentResponseService.findByEnrolleeId(enrollee.getId()));
         if (enrollee.getPreEnrollmentResponseId() != null) {
-            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).orElseThrow());
         }
         enrollee.getParticipantNotes().addAll(participantNoteService.findByEnrollee(enrollee.getId()));
-        return loadForParticipantDashboard(enrollee);
+        enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
+        enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
+        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow());
+        return enrollee;
     }
 
     /**
@@ -147,7 +149,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      */
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
-        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         return enrollee;
     }

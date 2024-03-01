@@ -14,17 +14,18 @@ import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.site.SiteContentService;
-import bio.terra.pearl.core.service.site.SiteImageService;
+import bio.terra.pearl.core.service.site.SiteMediaService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalService extends CrudService<Portal, PortalDao> {
@@ -36,7 +37,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private ConsentFormService consentFormService;
     private SiteContentService siteContentService;
     private EmailTemplateService emailTemplateService;
-    private SiteImageService siteImageService;
+    private SiteMediaService siteMediaService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          PortalAdminUserService portalAdminUserService, StudyService studyService,
@@ -44,7 +45,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
                           SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
-                         SiteImageService siteImageService) {
+                         SiteMediaService siteMediaService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalAdminUserService = portalAdminUserService;
@@ -54,7 +55,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
-        this.siteImageService = siteImageService;
+        this.siteMediaService = siteMediaService;
     }
 
     @Transactional
@@ -90,7 +91,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         consentFormService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
-        siteImageService.deleteByPortalShortcode(portal.getShortcode());
+        siteMediaService.deleteByPortalShortcode(portal.getShortcode());
         portalAdminUserService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }

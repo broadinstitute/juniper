@@ -14,11 +14,11 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.RuleEvaluator;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 
 import java.time.Instant;
@@ -60,7 +60,7 @@ public class SurveyTaskDispatcher {
 
     public List<ParticipantTask> assign(ParticipantTaskAssignDto assignDto,
                                         UUID studyEnvironmentId,
-                                        AdminUser operator) {
+                                        ResponsibleEntity operator) {
         List<Enrollee> enrollees = findMatchingEnrollees(assignDto, studyEnvironmentId);
         StudyEnvironmentSurvey studyEnvironmentSurvey = studyEnvironmentSurveyService
                 .findAllWithSurveyNoContent(List.of(studyEnvironmentId), assignDto.targetStableId(), true)
@@ -86,11 +86,10 @@ public class SurveyTaskDispatcher {
             }
             if (taskOpt.isPresent()) {
                 DataAuditInfo auditInfo = DataAuditInfo.builder()
-                        .responsibleAdminUserId(operator.getId())
                         .portalParticipantUserId(ppUsers.get(i).getId())
                         .operationId(auditOperationId)
                         .enrolleeId(enrollees.get(i).getId()).build();
-
+                auditInfo.setResponsibleEntity(operator);
                 ParticipantTask task = participantTaskService.create(taskOpt.get(), auditInfo);
                 log.info("Task creation: enrollee {}  -- task {}, target {}", enrollees.get(i).getShortcode(),
                         task.getTaskType(), task.getTargetStableId());
@@ -140,7 +139,7 @@ public class SurveyTaskDispatcher {
 
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
-    public void updateSurveyTaskVersions(SurveyPublishedEvent event) {
+    public void handleSurveyPublished(SurveyPublishedEvent event) {
         if (event.getSurvey().isAutoUpdateTaskAssignments()) {
             ParticipantTaskUpdateDto updateDto = new ParticipantTaskUpdateDto(
                     List.of(new ParticipantTaskUpdateDto.TaskUpdateSpec(
@@ -154,10 +153,24 @@ public class SurveyTaskDispatcher {
             participantTaskService.updateTasks(
                     event.getStudyEnvironmentId(),
                     updateDto,
-                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "updateSurveyTaskVersions"))
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.autoUpdateTaskAssignments"))
             );
         }
+        if (event.getSurvey().isAssignToExistingEnrollees()) {
+            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
+                    TaskType.SURVEY,
+                    event.getSurvey().getStableId(),
+                    event.getSurvey().getVersion(),
+                null,
+                    true,
+                    false);
+
+            assign(assignDto, event.getStudyEnvironmentId(),
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.assignToExistingEnrollees")));
+
+        }
     }
+
 
     /** builds any survey tasks that the enrollee is eligible for that are not duplicates
      *  Does not add them to the event or persist them.
@@ -177,7 +190,7 @@ public class SurveyTaskDispatcher {
     }
 
     public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return RuleEvaluator.evaluateEnrolleeRule(eligibilityRule, enrolleeRuleData);
+        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeRuleData);
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */
