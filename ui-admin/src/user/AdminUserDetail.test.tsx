@@ -1,9 +1,9 @@
 import React from 'react'
 import { renderWithRouter } from 'test-utils/router-testing-utils'
 import { screen, waitFor } from '@testing-library/react'
-import { mockAdminUser, MockUserProvider } from '../test-utils/user-mocking-utils'
+import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import Api from '../api/api'
-import { expectCellToHaveText } from '../test-utils/table-testing-utils'
+import { expectCellToHaveText } from 'test-utils/table-testing-utils'
 import { AdminUserDetailRaw } from './AdminUserDetail'
 
 const mockRoleManager = {
@@ -48,7 +48,7 @@ describe('AdminUserDetail', () => {
 
     // shows permissions
     expectCellToHaveText(userTable as HTMLTableElement, 'Study Admin', 'Permissions',
-      'Edit surveys: make changes to surveysdelete stuff: delete everything')
+      'Edit surveys: make changes to surveysmanage team roles: roles stuff')
   })
 
   test('roles and permissions not shown for user', async () => {
