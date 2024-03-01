@@ -34,6 +34,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure() && github.ref == 'refs/heads/development'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: SonarCloud Java scan failed on merge to development
+          fields: job
+          text: "SonarCloud Java scan failed :sadpanda:"
+          username: 'Pearl Build Notifications'
 
 
   sonar-typescript:
@@ -41,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        subproject: ['ui-admin', 'ui-core', 'ui-participant']
+        subproject: [ 'ui-admin', 'ui-core', 'ui-participant' ]
     steps:
       - uses: actions/checkout@v3
         with:
@@ -49,6 +61,13 @@ jobs:
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v5
+#      - name: Set SonarCloud parameters
+#        id: sonar-params
+#        run: |
+#          if [ "${{ steps.branch-name.outputs.current_branch }}" != "development" ]; then
+#            echo "SONAR_ARGS=-Dsonar.branch.target=${{ github.event.repository.default_branch }} -Dsonar.branch.name=${{ steps.branch-name.outputs.current_branch }}" >> $GITHUB_ENV
+#          else
+#            echo "SONAR_ARGS=" >> $GITHUB_ENV
       - name: Scan ${{ matrix.subproject }} via sonarcloud-github-action
         uses: SonarSource/sonarcloud-github-action@master
         env:
@@ -56,6 +75,17 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           projectBaseDir: ${{ github.workspace }}/${{ matrix.subproject }}
-          args: >
-              -Dsonar.branch.target=${{ github.event.repository.default_branch }}
-              -Dsonar.branch.name=${{ steps.branch-name.outputs.current_branch }}
+#          args: >
+#            ${{ env.SONAR_ARGS }}
+      - name: Notify slack on failure
+        uses: broadinstitute/action-slack@v3.8.0
+        if: failure() && github.ref == 'refs/heads/development'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel: '#juniper-dev-notifications'
+          status: failure
+          author_name: SonarCloud TypeScript scan failed on merge to development
+          fields: job
+          text: "SonarCloud TypeScript scan failed :sadpanda:"
+          username: 'Pearl Build Notifications'
