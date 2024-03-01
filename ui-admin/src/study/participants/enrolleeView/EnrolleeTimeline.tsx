@@ -55,7 +55,7 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       header: 'trigger',
       accessorKey: 'trigger',
       cell: info => info.getValue() && <Link
-        to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> trigger </Link>
+        to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> config </Link>
     }
   ]
 

@@ -811,7 +811,15 @@ export default {
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<Notification[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/notifications`
+    }/notifications/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchTriggerNotifications(portalShortcode: string, studyShortcode: string, envName: string,
+    triggerId: string): Promise<Notification[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/notifications/byTrigger/${triggerId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
