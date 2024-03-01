@@ -325,6 +325,13 @@ export type BasicMetricDatum = {
   subcategory?: string
 }
 
+export type FieldMetricDatum = {
+  time: number,
+  stringValue?: string,
+  numberValue?: string,
+  booleanValue?: boolean
+}
+
 export type DatasetDetails = {
   id: string,
   createdAt: number,
@@ -1013,6 +1020,23 @@ export default {
   async fetchMetric(portalShortcode: string, studyShortcode: string, envName: string, metricName: string):
     Promise<BasicMetricDatum[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics/${metricName}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchFieldMetric(portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
+    questionStableId: string):
+      Promise<FieldMetricDatum[]> {
+    // eslint-disable-next-line max-len
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics?surveyStableId=${surveyStableId}&questionStableId=${questionStableId}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async listMetricFields(portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string):
+      Promise<string[]> {
+    // eslint-disable-next-line max-len
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics/fields?surveyStableId=${surveyStableId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

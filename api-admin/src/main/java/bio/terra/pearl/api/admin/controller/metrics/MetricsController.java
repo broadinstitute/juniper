@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.metrics.MetricName;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
+import bio.terra.pearl.core.model.metrics.SurveyAnswerDatum;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +37,37 @@ public class MetricsController implements MetricsApi {
     List<BasicMetricDatum> result =
         metricsExtService.loadMetrics(
             adminUser, portalShortcode, studyShortcode, environmentName, metric);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<Object> metricByField(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String surveyStableId,
+      String questionStableId) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    List<SurveyAnswerDatum> result =
+        metricsExtService.loadMetricsByField(
+            adminUser,
+            portalShortcode,
+            studyShortcode,
+            environmentName,
+            surveyStableId,
+            questionStableId);
+    return ResponseEntity.ok(result);
+  }
+
+  @Override
+  public ResponseEntity<Object> listMetricFields(
+      String portalShortcode, String studyShortcode, String envName, String surveyStableId) {
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    List<String> result =
+        metricsExtService.listMetricFields(
+            adminUser, portalShortcode, studyShortcode, environmentName, surveyStableId);
     return ResponseEntity.ok(result);
   }
 }

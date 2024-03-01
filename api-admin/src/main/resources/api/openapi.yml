@@ -639,6 +639,39 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics:
+    get:
+      summary: Loads the specified metrics for the given field in the given study env
+      tags: [ metrics ]
+      operationId: metricByField
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: surveyStableId, in: query, required: true, schema: { type: string } }
+        - { name: questionStableId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: BasicMetricDatum objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/fields:
+    get:
+      summary: Loads the available metric field names for the given survey
+      tags: [ metrics ]
+      operationId: listMetricFields
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: surveyStableId, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: BasicMetricDatum objects
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/findAll:
     get:
       summary: finds the given tasks

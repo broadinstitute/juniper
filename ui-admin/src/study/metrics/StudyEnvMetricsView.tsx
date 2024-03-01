@@ -7,10 +7,14 @@ import { Button } from 'components/forms/Button'
 import MetricView from './MetricView'
 import { LabeledDateRangeMode, MetricDateRange, modeToDateRange } from './metricUtils'
 import MetricDateRangeModal from './MetricDateRangeModal'
+import SurveyInsightsView from './SurveyInsightsView'
+
+export type MetricChartType = 'line' | 'pie' | 'bar'
 
 export type MetricInfo = {
   name: string,
   title: string,
+  type: MetricChartType,
   tooltip?: string
 }
 
@@ -18,11 +22,24 @@ const metricMetadata: MetricInfo[] = [
   {
     name: 'STUDY_ENROLLMENT',
     title: 'Accounts Registered',
+    type: 'line',
     tooltip: 'Users who have completed the pre-registration form and created an account.'
   },
-  { name: 'STUDY_ENROLLEE_CONSENTED', title: 'Consents Completed' },
-  { name: 'STUDY_REQUIRED_SURVEY_COMPLETION', title: 'Required Surveys Completed' },
-  { name: 'STUDY_SURVEY_COMPLETION', title: 'Total Surveys Completed' }
+  {
+    name: 'STUDY_ENROLLEE_CONSENTED',
+    type: 'line',
+    title: 'Consents Completed'
+  },
+  {
+    name: 'STUDY_REQUIRED_SURVEY_COMPLETION',
+    type: 'line',
+    title: 'Required Surveys Completed'
+  },
+  {
+    name: 'STUDY_SURVEY_COMPLETION',
+    type: 'line',
+    title: 'Total Surveys Completed'
+  }
 ]
 
 /** shows summary stats for the study.  very simple for now--this will eventually have charts and graphs */
@@ -43,7 +60,7 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
     prev[current.name] = current
     return prev
   }, {})
-  return <div className="container-fluid px-4 py-2">
+  return <div className="container-fluid px-4 py-2 pb-5">
     { renderPageHeader('Participant Analytics') }
     <div className="d-flex align-items-center justify-content-between">
       <h4>{studyEnvContext.study.name} Summary
@@ -64,7 +81,8 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
           /> }
       </div>
     </div>
-    <div className="row my-4 w-75">
+    <div className="row my-4 w-100">
+      <SurveyInsightsView studyEnvContext={studyEnvContext}/>
       { metricMetadata.map(metric => {
         return <MetricView key={metric.name}
           studyEnvContext={studyEnvContext}

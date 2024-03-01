@@ -4,6 +4,8 @@ import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
 import bio.terra.pearl.core.model.metrics.TimeRange;
 import java.util.List;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.survey.Answer;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ public class MetricsDao {
 
   public MetricsDao(Jdbi jdbi) {
     this.jdbi = jdbi;
+    jdbi.registerRowMapper(Answer.class, BeanMapper.of(Answer.class));
     jdbi.registerRowMapper(BasicMetricDatum.class, BeanMapper.of(BasicMetricDatum.class));
   }
 
@@ -90,6 +93,49 @@ public class MetricsDao {
             .bindBean(range)
             .mapToBean(BasicMetricDatum.class)
             .list()
+    );
+  }
+
+
+  public List<Answer> surveyQuestionResponses(String surveyStableId, String questionStableId, TimeRange range) {
+    return jdbi.withHandle(handle ->
+            handle.createQuery("""
+WITH ranked_answers AS (
+  SELECT
+    id,
+    enrollee_id,
+    string_value,
+    boolean_value,
+    number_value,
+    object_value,
+    survey_response_id,
+    question_stable_id,
+    survey_version,
+    ROW_NUMBER() OVER (PARTITION BY enrollee_id ORDER BY survey_version DESC) AS row_num
+  FROM
+    answer
+  WHERE
+    survey_stable_id = :surveyStableId
+    and question_stable_id = :questionStableId
+)
+SELECT
+  id,
+  enrollee_id,
+  string_value,
+  boolean_value,
+  number_value,
+  object_value,
+  survey_response_id,
+  question_stable_id,
+  survey_version
+FROM
+  ranked_answers
+WHERE
+  row_num = 1;""")
+                    .bind("surveyStableId", surveyStableId)
+                    .bind("questionStableId", questionStableId)
+                    .mapToBean(Answer.class)
+                    .list()
     );
   }
 
