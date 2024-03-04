@@ -165,7 +165,7 @@ export const TriggerBaseForm = ({ config, setConfig }:
   return <>
     <div>
       <div className='float-end'>
-        <NavLink to='notifications'>See Usages</NavLink>
+        <NavLink to='notifications'>See All Emails Sent With Trigger</NavLink>
       </div>
       <label className="form-label" htmlFor="notificationType">Trigger</label>
       <Select options={configTypeOptions} inputId="notificationType"

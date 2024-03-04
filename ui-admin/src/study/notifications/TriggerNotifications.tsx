@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { instantToDefaultString } from '@juniper/ui-core'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import TriggerTypeDisplay from './TriggerTypeDisplay'
 import { useLoadingEffect } from '../../api/api-utils'
 import Api, { Notification } from '../../api/api'
 import { basicTableLayout } from '../../util/tableUtils'
@@ -20,7 +19,6 @@ export default function TriggerNotifications({ studyEnvContext }:
 
   const config = currentEnv.triggers.find(config => config.id === configId)
 
-
   const columns: ColumnDef<Notification>[] = [
     {
       header: 'Enrollee',
@@ -35,11 +33,6 @@ export default function TriggerNotifications({ studyEnvContext }:
     {
       header: 'Sent To',
       accessorKey: 'sentTo'
-    },
-    {
-      id: 'name',
-      header: 'notification',
-      cell: ({ row }) => <TriggerTypeDisplay config={row.original.trigger}/>
     },
     {
       header: 'delivery type',
