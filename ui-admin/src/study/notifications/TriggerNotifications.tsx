@@ -7,7 +7,7 @@ import { useLoadingEffect } from '../../api/api-utils'
 import Api, { Notification } from '../../api/api'
 import { basicTableLayout } from '../../util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useParams } from 'react-router-dom'
+import { NavLink, useParams } from 'react-router-dom'
 
 /** loads the list of notifications for a given trigger config */
 export default function TriggerNotifications({ studyEnvContext }:
@@ -20,7 +20,22 @@ export default function TriggerNotifications({ studyEnvContext }:
 
   const config = currentEnv.triggers.find(config => config.id === configId)
 
+
   const columns: ColumnDef<Notification>[] = [
+    {
+      header: 'Enrollee',
+      id: 'enrollee',
+      cell: ({ row }) => <>
+        {row.original.enrollee && <NavLink
+          to={`../../participants/${row.original.enrollee?.shortcode}`}>
+          {row.original.enrollee?.shortcode}
+        </NavLink>}
+      </>
+    },
+    {
+      header: 'Sent To',
+      accessorKey: 'sentTo'
+    },
     {
       id: 'name',
       header: 'notification',
@@ -67,8 +82,11 @@ export default function TriggerNotifications({ studyEnvContext }:
     return <div>Trigger config not found</div>
   }
 
-  return <div>
-    <h5>Timeline</h5>
+  return <div className={'w-100'}>
+    <div className='float-end'>
+      <NavLink to={`../configs/${configId}`}>Go Back</NavLink>
+    </div>
+    <h5>Notifications</h5>
     {/* eslint-disable-next-line react/jsx-no-undef */}
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}

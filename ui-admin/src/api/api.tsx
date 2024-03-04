@@ -145,6 +145,7 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
+  enrollee?: Enrollee,
   trigger?: Trigger
 }
 

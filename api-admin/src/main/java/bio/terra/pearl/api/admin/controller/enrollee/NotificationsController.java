@@ -62,7 +62,7 @@ public class NotificationsController implements NotificationsApi {
       String portalShortcode, String studyShortcode, String envName, UUID triggerId) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
-    List<Notification> notifications = notificationService.findAllByConfigId(triggerId);
+    List<Notification> notifications = notificationService.findAllByConfigId(triggerId, true);
     return ResponseEntity.ok(notifications);
   }
 }
