@@ -47,9 +47,8 @@ public class RegistrationService {
     private ObjectMapper objectMapper;
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
     private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
-    private final Random random = new SecureRandom();
-
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
@@ -192,6 +191,11 @@ public class RegistrationService {
         return guid;
     }
 
+    public String getGovernedUsername(String proxyUserName, EnvironmentName environmentName) {
+        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxyUserName, environmentName);
+        return GOVERNED_USERNAME_INDICATOR.formatted(proxyUserName, governedUsernameSuffix);//a@b.com-prox-guid
+
+    }
     public record RegistrationResult(ParticipantUser participantUser,
                                      PortalParticipantUser portalParticipantUser,
                                      Profile profile) {

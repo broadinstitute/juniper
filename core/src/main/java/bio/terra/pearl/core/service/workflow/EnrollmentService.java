@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class EnrollmentService {
     private static final String QUALIFIED_STABLE_ID = "qualified";
-    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
     private SurveyService surveyService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
@@ -147,24 +146,17 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId) {
-        String governedUsernameSuffix =
-                registrationService.generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
-        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
-        return enrollAsProxy(envName, studyShortcode, proxyUser, ppUser, preEnrollResponseId, governedUserName);
+        String governedUserName = registrationService.getGovernedUsername(proxyUser.getUsername(), proxyUser.getEnvironmentName());
+        return this.enrollAsProxy(envName, studyShortcode, proxyUser, ppUser, preEnrollResponseId, governedUserName);
     }
 
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId, String governedUsername) {
-//        Optional<Enrollee> maybeProxyEnrollee =
-//                enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName);
-//        if (maybeProxyEnrollee.isEmpty()) {
-//            maybeProxyEnrollee = Optional.of(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
-//        }
         Enrollee proxyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName)
-                .orElse(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
+                .orElseGet(() -> this.enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
         HubResponse<Enrollee> governedResponse =
-                enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
+                this.enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
         governedResponse.setEnrollee(proxyEnrollee);
         return governedResponse;
     }
@@ -178,7 +170,7 @@ public class EnrollmentService {
                 registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName);
 
         HubResponse<Enrollee> hubResponse =
-                enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
+                this.enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
                         preEnrollResponseId, true);
 
         EnrolleeRelation relation = EnrolleeRelation.builder()
