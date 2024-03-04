@@ -9,7 +9,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
-import { instantToDateString, instantToDefaultString } from 'util/timeUtils'
+import { instantToDateString, instantToDefaultString } from '@juniper/ui-core'
 import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import _truncate from 'lodash/truncate'

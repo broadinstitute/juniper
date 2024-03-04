@@ -1,7 +1,7 @@
 import { AdminTask, AdminUser, Enrollee, ParticipantNote } from 'api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCheck, faUser } from '@fortawesome/free-solid-svg-icons'
-import { instantToDateString, instantToDefaultString } from 'util/timeUtils'
+import { instantToDateString, instantToDefaultString } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import { enrolleeKitRequestPath } from './EnrolleeView'
 import React, { useState } from 'react'

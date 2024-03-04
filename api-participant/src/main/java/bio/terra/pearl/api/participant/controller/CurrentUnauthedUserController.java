@@ -38,7 +38,7 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
      */
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
-    CurrentUserService.UserWithEnrollees userOpt =
+    CurrentUserService.UserLoginDto userOpt =
         unauthedUserService.unauthedLogin(username, portalShortcode, environmentName);
     return ResponseEntity.ok(userOpt);
   }
@@ -52,7 +52,7 @@ public class CurrentUnauthedUserController implements CurrentUnauthedUserApi {
     String token = requestUtilService.requireToken(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     // for now, log them in as long as the username exists
-    CurrentUserService.UserWithEnrollees userOpt =
+    CurrentUserService.UserLoginDto userOpt =
         unauthedUserService.unauthedRefresh(token, portalShortcode, environmentName);
     return ResponseEntity.ok(userOpt);
   }

@@ -29,7 +29,7 @@
               {
                 "type": "html",
                 "name": "mgbLogo",
-                "html": "<img alt='Mass General Brigham logo' src='/api/public/portals/v1/ourhealth/env/{portalEnvironmentName}/siteImages/1/mgb_logo.svg' style='margin-top:2rem' />"
+                "html": "<img alt='Mass General Brigham logo' src='/api/public/portals/v1/ourhealth/env/{portalEnvironmentName}/siteMedia/1/mgb_logo.svg' style='margin-top:2rem' />"
               },
               {
                 "type": "html",

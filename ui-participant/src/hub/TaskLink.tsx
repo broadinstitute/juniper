@@ -5,32 +5,33 @@ import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
+import { useI18n } from 'providers/I18nProvider'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
-  statusDisplay: string
+  statusDisplayKey: string
 }
 
 const statusDisplayMap: Record<ParticipantTaskStatus, StatusDisplayInfo> = {
   'COMPLETE': {
     icon: <FontAwesomeIcon icon={faCheck} className="fa-lg" style={{ color: 'rgb(122, 152, 188)' }}/>,
-    statusDisplay: 'Complete'
+    statusDisplayKey: 'taskComplete'
   },
   'IN_PROGRESS': {
     icon: <FontAwesomeIcon icon={faCircleHalfStroke} style={{ color: 'rgb(129, 172, 82)' }}/>,
-    statusDisplay: 'In Progress'
+    statusDisplayKey: 'taskInProgress'
   },
   'NEW': {
     icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }}/>,
-    statusDisplay: 'Not Started'
+    statusDisplayKey: 'taskNotStarted'
   },
   'REJECTED': {
     icon: <FontAwesomeIcon icon={faCircleXmark} style={{ color: '#777' }}/>,
-    statusDisplay: 'Declined'
+    statusDisplayKey: 'taskDeclined'
   },
   'VIEWED': {
     icon: <FontAwesomeIcon icon={faCircle} style={{ color: '#777' }}/>,
-    statusDisplay: 'Not started'
+    statusDisplayKey: 'taskNotStarted'
   }
 }
 
@@ -49,6 +50,8 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
     width: '100%',
     color: isAccessible ? undefined : '#595959'
   }
+
+  const { i18n } = useI18n()
 
   return (
     <div className="d-flex flex-row" style={styleProps}>
@@ -72,8 +75,8 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       )}
       <div className="ms-3">
         {isAccessible
-          ? statusDisplayMap[task.status].statusDisplay
-          : 'Locked'}
+          ? i18n(statusDisplayMap[task.status].statusDisplayKey)
+          : i18n('taskLocked')}
       </div>
     </div>
   )

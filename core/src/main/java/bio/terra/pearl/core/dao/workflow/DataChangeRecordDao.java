@@ -2,10 +2,11 @@ package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
-import java.util.List;
-import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
@@ -22,6 +23,20 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
     public List<DataChangeRecord> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
+
+    public List<DataChangeRecord> findAllRecordsForEnrollee(UUID enrolleeId, UUID portalParticipantUserId) {
+        return jdbi.withHandle(handle ->
+                handle
+                        .createQuery("SELECT * FROM data_change_record" +
+                                "    WHERE enrollee_id = :enrolleeId" +
+                                "    OR portal_participant_user_id = :portalParticipantUserId;")
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("portalParticipantUserId", portalParticipantUserId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
 
     public List<DataChangeRecord> findByModelId(UUID modelId) {
         return findAllByProperty("model_id", modelId);

@@ -18,13 +18,6 @@ import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.security.SecureRandom;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.UUID;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +25,12 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.SecureRandom;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -137,7 +136,7 @@ public class RegistrationService {
         }
         eventService.publishPortalRegistrationEvent(user, ppUser, portalEnv);
         log.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
-        return new RegistrationResult(user, ppUser);
+        return new RegistrationResult(user, ppUser, profile);
     }
 
     @Transactional
@@ -167,7 +166,7 @@ public class RegistrationService {
 
         eventService.publishPortalRegistrationEvent(governedUser, governedPpUser, portalEnv);
         log.info("Governed user registration: userId: {}, portal: {}, env: {}", governedUser.getId(), portalEnv.getPortalId(), portalEnv.getEnvironmentName());
-        return new RegistrationResult(governedUser, governedPpUser);
+        return new RegistrationResult(governedUser, governedPpUser, governedProfile);
     }
 
     protected PreregistrationResponse validatePreRegResponseId(UUID preRegResponseId) {
@@ -194,7 +193,8 @@ public class RegistrationService {
     }
 
     public record RegistrationResult(ParticipantUser participantUser,
-                                     PortalParticipantUser portalParticipantUser) {
+                                     PortalParticipantUser portalParticipantUser,
+                                     Profile profile) {
     }
 
     @SuperBuilder

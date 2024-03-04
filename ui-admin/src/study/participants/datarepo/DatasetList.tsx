@@ -5,7 +5,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import {
   ColumnDef,
   getCoreRowModel,

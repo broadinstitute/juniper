@@ -1,11 +1,12 @@
 import { PortalEnvContext } from '../PortalRouter'
 import React, { useEffect, useState } from 'react'
-import { ApiContextT, SiteContent } from '@juniper/ui-core'
+import { SiteContent } from '@juniper/ui-core'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import SiteContentEditor from './SiteContentEditor'
+import { previewApi } from 'util/apiContextUtils'
 
 /** logic for loading, changing, and saving SiteContent objects */
 const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvContext}) => {
@@ -15,15 +16,6 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
   const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
   if (!siteContent) {
     return <div>no site content configured</div>
-  }
-
-  /** uses the admin image retrieval endpoint */
-  const getImageUrl = (cleanFileName: string, version: number) =>
-      `/api/public/portals/v1/${portalShortcode}/env/${portalEnv.environmentName}` +
-      `/siteImages/${version}/${cleanFileName}`
-  const previewApi: ApiContextT = {
-    getImageUrl,
-    submitMailingListContact: () => Promise.resolve({})
   }
 
   const loadSiteContent = async (stableId: string, version: number, language?: string) => {
@@ -94,7 +86,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
       createNewVersion={createNewVersion}
       loadSiteContent={loadSiteContent}
       switchToVersion={switchToVersion}
-      previewApi={previewApi}
+      previewApi={previewApi(portalShortcode, portalEnv.environmentName)}
       portalEnvContext={portalEnvContext}
       readOnly={readOnly}
     /> }

@@ -5,15 +5,9 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faExternalLink, faArrowLeft, faTrash } from '@fortawesome/free-solid-svg-icons'
-import { instantToDefaultString } from '../../../util/timeUtils'
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable
-} from '@tanstack/react-table'
+import { faArrowLeft, faExternalLink, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { instantToDefaultString } from '@juniper/ui-core'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../../util/tableUtils'
 import { Link, useParams } from 'react-router-dom'
 import { useUser } from '../../../user/UserProvider'

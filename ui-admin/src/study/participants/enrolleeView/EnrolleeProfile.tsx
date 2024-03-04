@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
 import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from 'util/timeUtils'
+import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
@@ -107,7 +107,7 @@ function ReadOnlyProfile(
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
     <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
-    <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'On' : 'Off']}/>
+    <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
     <ReadOnlyRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
   </>
 }
@@ -121,7 +121,7 @@ function EditableProfile(
     setProfile: (value: React.SetStateAction<Profile>) => void
   }
 ) {
-  const onFieldChange = (field: keyof Profile, value: string | boolean) => {
+  const onFieldChange = (field: keyof Profile, value: string | boolean | MailingAddress) => {
     setProfile((oldVal: Profile) => {
       return {
         ...oldVal,
@@ -137,18 +137,6 @@ function EditableProfile(
       return {
         ...oldVal,
         [field]: asJavaLocalDate
-      }
-    })
-  }
-
-  const onMailingAddressFieldChange = (field: keyof MailingAddress, value: string) => {
-    setProfile((oldVal: Profile) => {
-      return {
-        ...oldVal,
-        mailingAddress: {
-          ...oldVal.mailingAddress,
-          [field]: value
-        }
       }
     })
   }
@@ -181,10 +169,7 @@ function EditableProfile(
     </FormRow>
     <EditMailingAddressRow
       title={'Primary Address'} mailingAddress={profile.mailingAddress}
-      onMailingAddressFieldChange={onMailingAddressFieldChange}
-      setMailingAddress={mailingAddr => setProfile(profile => {
-        return { ...profile, mailingAddress: mailingAddr }
-      })}
+      onFieldChange={onFieldChange}
     />
     <FormRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
@@ -301,18 +286,22 @@ function FormRow(
 
 function EditMailingAddressRow(
   {
-    title, mailingAddress, onMailingAddressFieldChange, setMailingAddress
+    title, mailingAddress, onFieldChange
   }: {
     title: string,
     mailingAddress: MailingAddress,
-    onMailingAddressFieldChange: (field: keyof MailingAddress, value: string) => void,
-    setMailingAddress: (update: MailingAddress) => void
+    onFieldChange: (field: keyof Profile, value: string | boolean | MailingAddress) => void
   }
 ) {
+  const [editableMailingAddress, setEditableMailingAddress] = useState(mailingAddress)
+
+  useEffect(() => {
+    onFieldChange('mailingAddress', editableMailingAddress)
+  }, [editableMailingAddress])
+
   return <FormRow title={title}>
     <EditMailingAddress
-      mailingAddress={mailingAddress}
-      onMailingAddressFieldChange={onMailingAddressFieldChange}
-      setMailingAddress={setMailingAddress}/>
+      mailingAddress={editableMailingAddress}
+      setMailingAddress={setEditableMailingAddress}/>
   </FormRow>
 }

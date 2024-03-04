@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
 import { EmailTemplate } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
-import { getImageBaseUrl } from 'api/api'
+import { getMediaBaseUrl } from 'api/api'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
@@ -20,10 +20,13 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
 
   const replacePlaceholders = (html: string) => {
-    return html.replaceAll('${siteImageBaseUrl}', location.origin + getImageBaseUrl(portalShortcode))
+    return html.replaceAll('${siteMediaBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
+      // support legacy tempaltes that reference this as siteImageBaseUrl
+      .replaceAll('${siteImageBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
   }
   const insertPlaceholders = (html: string) => {
-    return html.replaceAll(location.origin + getImageBaseUrl(portalShortcode), '${siteImageBaseUrl}')
+    return html.replaceAll(location.origin + getMediaBaseUrl(portalShortcode), '${siteMediaBaseUrl}')
+      .replaceAll('${siteImageBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
   }
 
   const onEditorLoaded: EmailEditorProps['onReady'] = unlayer => {

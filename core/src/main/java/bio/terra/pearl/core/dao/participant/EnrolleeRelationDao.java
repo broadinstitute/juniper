@@ -1,14 +1,14 @@
 package bio.terra.pearl.core.dao.participant;
 
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
@@ -34,6 +34,20 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
 
     public List<EnrolleeRelation> findByTargetEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("target_enrollee_id", enrolleeId);
+    }
+
+    public List<EnrolleeRelation> findEnrolleeRelationsByProxyParticipantUser(UUID participantUserId, List<UUID> targetEnrolleeIds) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select relation.* from enrollee proxy " +
+                                "inner join enrollee_relation relation on (relation.enrollee_id = proxy.id) " +
+                                "where relation.relationship_type = 'PROXY' " +
+                                "and relation.target_enrollee_id IN (<targetEnrolleeIds>) " +
+                                "and proxy.participant_user_id = :participantUserId ")
+                        .bindList("targetEnrolleeIds", targetEnrolleeIds)
+                        .bind("participantUserId", participantUserId)
+                        .mapTo(clazz)
+                        .list()
+        );
     }
 
     public void attachTargetEnrollees(List<EnrolleeRelation> relations) {

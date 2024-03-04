@@ -3,6 +3,7 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask } from 'test-utils/test-participant-factory'
 import StudyResearchTasks from './StudyResearchTasks'
+import { MockI18nProvider, mockTextsDefault } from 'test-utils/i18n-testing-utils'
 
 describe('HubPage', () => {
   it('renders tasks with consent and required surveys first', () => {
@@ -28,10 +29,14 @@ describe('HubPage', () => {
         targetName: 'Outreach Survey'
       }
     ]
-    const { RoutedComponent } = setupRouterTest(<StudyResearchTasks
-      enrollee={enrollee} participantTasks={participantTasks} studyShortcode={'study1'}
-    />)
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={mockTextsDefault}>
+        <StudyResearchTasks enrollee={enrollee} participantTasks={participantTasks} studyShortcode={'study1'}/>
+      </MockI18nProvider>
+    )
     render(RoutedComponent)
+
     expect(screen.getByText('Start Consent')).toBeInTheDocument()
     // compareDocumentPosition returns the relationship of the argument with respect to the element (which is the
     // opposite of how I always read it). So below we are asserting the consent form is preceding the survey

@@ -210,7 +210,7 @@ export type AdminTask = {
   dispositionNote?: string
 }
 
-export type SiteImageMetadata = {
+export type SiteMediaMetadata = {
   id: string,
   createdAt: number,
   cleanFileName: string,
@@ -526,14 +526,14 @@ export default {
     return await this.processResponse(response)
   },
 
-  async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
+  async getPortalMedia(portalShortcode: string): Promise<SiteMediaMetadata[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteMedia`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async uploadPortalImage(portalShortcode: string, uploadFileName: string, version: number, file: File):
-    Promise<SiteImageMetadata> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteImages/upload/${uploadFileName}/${version}`
+  async uploadPortalMedia(portalShortcode: string, uploadFileName: string, version: number, file: File):
+    Promise<SiteMediaMetadata> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/upload/${uploadFileName}/${version}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
     const formData = new FormData()
@@ -544,6 +544,15 @@ export default {
       body: formData
     })
     return await this.processJsonResponse(response)
+  },
+
+  async deletePortalMedia(portalShortcode: string, id: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/${id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async getSurvey(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
@@ -1259,7 +1268,7 @@ Promise<Trigger> {
   },
 
   async uploadPortal(file: File, overwrite: boolean):
-      Promise<SiteImageMetadata> {
+    Promise<SiteMediaMetadata> {
     const url = `${basePopulateUrl()}/portal/upload?overwrite=${overwrite}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
@@ -1320,14 +1329,14 @@ Promise<Trigger> {
   }
 }
 
-/** gets an image url for a SiteImage suitable for including in an img tag */
-export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${getImageBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
+/** gets an image url for SiteMedia */
+export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number) {
+  return `${getMediaBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 
-/** gets the base url for public site images */
-export function getImageBaseUrl(portalShortcode: string) {
-  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages`
+/** gets the base url for public site media (e.g., images) */
+export function getMediaBaseUrl(portalShortcode: string) {
+  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteMedia`
 }
 
 /** base api path for study-scoped api requests */

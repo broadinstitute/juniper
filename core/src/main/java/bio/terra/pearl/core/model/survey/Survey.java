@@ -53,6 +53,8 @@ public class Survey extends BaseEntity implements Versioned, PortalAttached {
     @Builder.Default
     private boolean assignToAllNewEnrollees = true; // whether to assign the survey to all new enrollees by default
     @Builder.Default
+    private boolean assignToExistingEnrollees = false; // whether to assign the survey automatically to existing enrollees
+    @Builder.Default
     private boolean autoUpdateTaskAssignments = false; // whether to auto-update all tasks to the latest version on publish
 }
 

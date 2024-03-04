@@ -1,7 +1,7 @@
 import React from 'react'
 import MetricSummary from './MetricSummary'
 import { render, screen } from '@testing-library/react'
-import { dateMinusDays } from 'util/timeUtils'
+import { dateMinusDays } from '@juniper/ui-core'
 import { LabeledDateRangeMode, modeToDateRange } from './metricUtils'
 
 const currentDate = new Date()

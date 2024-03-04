@@ -8,6 +8,7 @@ import {
   mockPortal,
   mockPortalEnvironment
 } from 'test-utils/test-portal-factory'
+import { MockI18nProvider } from 'test-utils/i18n-testing-utils'
 
 jest.mock('providers/PortalProvider', () => {
   return {
@@ -29,7 +30,10 @@ describe('LandingPage', () => {
   it('handles trivial landing page', () => {
     const { RoutedComponent } =
             setupRouterTest(
-              <LandingPage localContent={mockLocalSiteContent()}/>)
+              <MockI18nProvider mockTexts={{}}>
+                <LandingPage localContent={mockLocalSiteContent()}/>
+              </MockI18nProvider>
+            )
     render(RoutedComponent)
     // mailing list modal is hidden by default
     expectNever(() =>
@@ -40,7 +44,9 @@ describe('LandingPage', () => {
   it('shows mailing list modal if url param is present', () => {
     const { RoutedComponent } =
             setupRouterTest(
-              <LandingPage localContent={mockLocalSiteContent()}/>, ['?showJoinMailingList=true'])
+              <MockI18nProvider mockTexts={{}}>
+                <LandingPage localContent={mockLocalSiteContent()}/>
+              </MockI18nProvider>, ['?showJoinMailingList=true'])
     render(RoutedComponent)
     // mailing list modal is hidden by default
     waitFor(() => expect(screen.getByLabelText('Join mailing list'))

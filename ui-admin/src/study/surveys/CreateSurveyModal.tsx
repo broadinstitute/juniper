@@ -40,6 +40,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
         {
           ...defaultSurvey,
           autoUpdateTaskAssignments: type === 'OUTREACH',
+          assignToExistingEnrollees: type === 'OUTREACH',
           createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type, blurb: surveyBlurb,
           content: defaultTemplateJson, name: formName, stableId: formStableId
         })

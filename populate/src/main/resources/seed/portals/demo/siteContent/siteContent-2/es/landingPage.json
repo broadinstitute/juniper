@@ -21,13 +21,15 @@
           "cleanFileName": "broad_logo.png",
           "version": 1,
           "alt": "Logotipo del Instituto Broad",
-          "style": { "height": "40px" }
+          "style": { "height": "40px" },
+          "link": "https://www.broadinstitute.org/"
         },
         {
           "cleanFileName": "mgh_logo.png",
           "version": 1,
           "alt": "Logotipo del Hospital General de Massachusetts",
-          "style": { "height": "40px" }
+          "style": { "height": "40px" },
+          "link": "https://massgeneral.org/"
         }
       ]
     }
@@ -99,6 +101,7 @@
     "anchorRef": "faq",
     "sectionConfigJson": {
       "backgroundColor": "#f2f2f2",
+      "title": "Preguntas Frecuentes",
       "blurb": "Si su pregunta no se responde a continuación, puede llamar o enviar un correo electrónico a nuestro personal de estudio al **[617&#x2011;724&#x2011;1240](tel:+16177241240)** o **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
       "showToggleAllButton": false,
       "questions": [

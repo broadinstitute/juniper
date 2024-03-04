@@ -3,7 +3,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import Api, { Survey, VersionedForm } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
-import { instantToDefaultString } from 'util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 import Select from 'react-select'
 import { faArrowRight, faArrowRightFromBracket, faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -39,7 +39,7 @@ export default function FormOptions({
   }
   const isSurvey = !!(workingForm as Survey).surveyType
 
-  return <Modal show={true} onHide={onDismiss}>
+  return <Modal show={true} onHide={onDismiss} size="lg">
     <Modal.Header closeButton>
       <Modal.Title>{workingForm.name}</Modal.Title>
     </Modal.Header>
@@ -67,13 +67,20 @@ export default function FormOptions({
               /> Auto-assign to new participants
             </label>
             <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).assignToExistingEnrollees}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, assignToExistingEnrollees: e.target.checked
+                })}
+              /> Auto-assign to existing participants
+            </label>
+            <label className="form-label d-block">
               <input type="checkbox" checked={(workingForm as Survey).autoUpdateTaskAssignments}
                 onChange={e => updateWorkingForm({
                   ...workingForm, autoUpdateTaskAssignments: e.target.checked
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            <div className="fw-light fst-italic">
+            <div className="fw-light fst-italic mt-4">
               Note: you must  &quot;Save&quot; the survey
               for changes to these options to take effect.
             </div>

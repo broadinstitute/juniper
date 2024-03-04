@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser } from 'api/api'
+import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
@@ -17,12 +17,15 @@ const anonymousUser: User = {
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
+  ppUser?: PortalParticipantUser,
+  profile?: Profile,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
+  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
 }
 
 /** current user object context */
@@ -43,6 +46,9 @@ const UserContext = React.createContext<UserContextT>({
     throw new Error('context not yet initialized')
   },
   updateEnrollee: () => {
+    throw new Error('context not yet initialized')
+  },
+  updateProfile: () => {
     throw new Error('context not yet initialized')
   }
 })
@@ -100,8 +106,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
-  function updateEnrollee(enrollee: Enrollee, updateWtihoutRerender=false): Promise<void> {
-    if (updateWtihoutRerender && loginState) {
+  function updateEnrollee(enrollee: Enrollee, updateWithoutRerender = false): Promise<void> {
+    if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
       const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
@@ -114,8 +120,29 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
         updatedEnrollees.push(enrollee)
         return {
-          user: oldState?.user,
+          ...oldState,
           enrollees: updatedEnrollees
+        }
+      })
+    }
+    return new Promise(resolve => {
+      window.setTimeout(resolve, 0)
+    })
+  }
+
+  function updateProfile(profile: Profile, updateWithoutRerender = false): Promise<void> {
+    if (updateWithoutRerender && loginState) {
+      // update the underlying value, but don't call setLoginState, so no refresh
+      // this should obviously be used with great care
+      loginState.profile = profile
+    } else {
+      setLoginState(oldState => {
+        if (oldState == null) {
+          return oldState
+        }
+        return {
+          ...oldState,
+          profile
         }
       })
     }
@@ -127,12 +154,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const userContext: UserContextT = {
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
+    ppUser: loginState?.ppUser,
+    profile: loginState?.profile,
     selectedLanguage,
     changeLanguage,
     loginUser,
     loginUserInternal,
     logoutUser,
-    updateEnrollee
+    updateEnrollee,
+    updateProfile
   }
 
   useEffect(() => {

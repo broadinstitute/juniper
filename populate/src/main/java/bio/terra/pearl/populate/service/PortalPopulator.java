@@ -13,13 +13,21 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.*;
+import bio.terra.pearl.core.service.portal.MailingListContactService;
+import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
-import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
+import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import bio.terra.pearl.populate.util.ZipUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,15 +38,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
 
-import bio.terra.pearl.populate.util.ZipUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.stereotype.Service;
-
 @Service
 public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePopulateContext> {
     private final PortalService portalService;
     private final PortalEnvironmentService portalEnvironmentService;
-    private final SiteImagePopulator siteImagePopulator;
+    private final SiteMediaPopulator siteMediaPopulator;
     private final StudyPopulator studyPopulator;
     private final SurveyPopulator surveyPopulator;
     private final SiteContentPopulator siteContentPopulator;
@@ -59,7 +63,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalEnvironmentService portalEnvironmentService,
                            PortalDashboardConfigService portalDashboardConfigService,
-                           SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
+                           SiteMediaPopulator siteMediaPopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
                            ConsentFormPopulator consentFormPopulator,
@@ -69,7 +73,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalDashboardConfigService = portalDashboardConfigService;
-        this.siteImagePopulator = siteImagePopulator;
+        this.siteMediaPopulator = siteMediaPopulator;
         this.surveyPopulator = surveyPopulator;
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
@@ -182,8 +186,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
             adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
         }
-        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
-            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
+            siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
@@ -217,8 +221,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         String portalFileString = filePopulateService.readFile(fileContext.getRootFileName(), fileContext);
         PortalPopDto popDto = readValue(portalFileString);
         PortalPopulateContext portalPopContext = new PortalPopulateContext(fileContext, popDto.getShortcode(), null);
-        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
-            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
+            siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
     }
 

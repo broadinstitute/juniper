@@ -1,14 +1,5 @@
 package bio.terra.pearl.core.service.participant;
 
-import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
@@ -37,6 +28,15 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.security.SecureRandom;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
@@ -141,10 +141,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
         enrollee.getConsentResponses().addAll(consentResponseService.findByEnrolleeId(enrollee.getId()));
         if (enrollee.getPreEnrollmentResponseId() != null) {
-            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+            enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).orElseThrow());
         }
         enrollee.getParticipantNotes().addAll(participantNoteService.findByEnrollee(enrollee.getId()));
-        return loadForParticipantDashboard(enrollee);
+        enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
+        enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
+        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow());
+        return enrollee;
     }
 
     /**
@@ -153,7 +156,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      */
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
-        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         return enrollee;
     }
