@@ -288,14 +288,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         return shortcode;
     }
 
-    public Optional<Enrollee> findOneByParticipantUserIdAndStudyEnvironmentId(UUID participantUserId, UUID studyEnvId) {
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
         return dao.findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnvId);
     }
 
-    public Optional<Enrollee> findOneByParticipantUserIdAndStudyEnvironmentId(UUID participantUserId, String studyShortcode, EnvironmentName envName) {
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnv(UUID participantUserId, String studyShortcode, EnvironmentName envName) {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
-        return findOneByParticipantUserIdAndStudyEnvironmentId(participantUserId, studyEnv.getId());
+        return findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnv.getId());
     }
 
     public enum AllowedCascades implements CascadeProperty {

@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class EnrollmentService {
     private static final String QUALIFIED_STABLE_ID = "qualified";
+    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
     private SurveyService surveyService;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private StudyEnvironmentService studyEnvironmentService;
@@ -47,9 +48,6 @@ public class EnrollmentService {
     private EventService eventService;
     private ObjectMapper objectMapper;
     private RandomUtilService randomUtilService;
-    private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
-    private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
@@ -149,7 +147,8 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId) {
-        String governedUsernameSuffix = registrationService.generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
+        String governedUsernameSuffix =
+                registrationService.generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
         String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
         return enrollAsProxy(envName, studyShortcode, proxyUser, ppUser, preEnrollResponseId, governedUserName);
     }
@@ -157,12 +156,13 @@ public class EnrollmentService {
     @Transactional
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId, String governedUsername) {
-        Optional<Enrollee> maybeProxyEnrollee =
-                enrolleeService.findOneByParticipantUserIdAndStudyEnvironmentId(proxyUser.getId(), studyShortcode, envName);
-        if (maybeProxyEnrollee.isEmpty()) {
-            maybeProxyEnrollee = Optional.of(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
-        }
-        Enrollee proxyEnrollee = maybeProxyEnrollee.get();
+//        Optional<Enrollee> maybeProxyEnrollee =
+//                enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName);
+//        if (maybeProxyEnrollee.isEmpty()) {
+//            maybeProxyEnrollee = Optional.of(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
+//        }
+        Enrollee proxyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName)
+                .orElse(enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
         HubResponse<Enrollee> governedResponse =
                 enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
         governedResponse.setEnrollee(proxyEnrollee);
@@ -174,7 +174,8 @@ public class EnrollmentService {
                                                     ParticipantUser proxyUser, PortalParticipantUser proxyPpUser,
                                                     UUID preEnrollResponseId, String governedUserName) {
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
-        RegistrationService.RegistrationResult registrationResult = registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName);
+        RegistrationService.RegistrationResult registrationResult =
+                registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName);
 
         HubResponse<Enrollee> hubResponse =
                 enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
