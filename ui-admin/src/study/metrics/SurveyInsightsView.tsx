@@ -56,21 +56,18 @@ export default function SurveyInsightsView({ studyEnvContext }: {
   }
 
   const parseObjectValues = (question: Question, metricData: SurveyAnswerDatum[]): BasicMetricDatum[] => {
-    console.log(question.getType())
-    const parsedValues: BasicMetricDatum[] = []
-    if (question.getType() == 'checkbox') {
-      metricData.map(fieldMetric => {
+    if (question && question.getType() == 'checkbox') {
+      return metricData.flatMap(fieldMetric => {
         const stringValues = JSON.parse(fieldMetric.objectValue || '[]') as string[]
-        stringValues.forEach(value => {
-          parsedValues.push({
-            name: fieldMetric.name,
-            subcategory: value,
-            time: fieldMetric.time
-          })
-        })
+        return stringValues.map(value => ({
+          name: fieldMetric.name,
+          subcategory: value,
+          time: fieldMetric.time
+        }))
       })
-      return parsedValues
-    } else { return [] }
+    } else {
+      return []
+    }
   }
 
   useEffect(() => {
@@ -135,13 +132,13 @@ export default function SurveyInsightsView({ studyEnvContext }: {
               <LineChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
             {selectedChartType === 'pie' &&
-              <PieChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+              <PieChart data={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
             {selectedChartType === 'bar' &&
-              <BarChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+              <BarChart data={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
             {selectedChartType === 'histogram' &&
-              <Histogram metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+              <Histogram data={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
             {!selectedChartType && <div className="d-flex justify-content-center align-items-center h-100">
               <span className="text-muted fst-italic">No chart configured</span>

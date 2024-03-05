@@ -3,52 +3,46 @@ import { BasicMetricDatum } from 'api/api'
 import Plot from 'react-plotly.js'
 
 /**
- * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
- * plotly traces, and then rendering a graph
- */
-
-export type BarChartData = {
-    y: number[],
-    x: string[]
-}
-
-/**
  *
  */
-export default function BarChart({ metricData }: {
-    metricData?: BasicMetricDatum[]
+export default function BarChart({ data }: {
+    data: BasicMetricDatum[]
 }) {
-  function groupByCount(input: BasicMetricDatum[]): BarChartData {
-    const counts = input.reduce((acc, curr) => {
-      // @ts-ignore
-      acc[curr.subcategory] = (acc[curr.subcategory] || 0) + 1
-      return acc
-    }, {})
+  function groupByCount(data: BasicMetricDatum[]): { y: number[], x: string[] } {
+    const counts = new Map<string, number>()
+
+    data.forEach(datum => {
+      if (datum.subcategory != null) {
+        counts.set(datum.subcategory, (counts.get(datum.subcategory) || 0) + 1)
+      }
+    })
 
     return {
-      y: Object.values(counts),
-      x: Object.keys(counts)
+      y: Array.from(counts.values()),
+      x: Array.from(counts.keys())
     }
   }
 
-  const barChartData = [{
-    x: groupByCount(metricData || []).x,
-    y: groupByCount(metricData || []).y,
+  const trace = [{
+    x: groupByCount(data).x,
+    y: groupByCount(data).y,
     type: 'bar'
   }]
 
+  const layout = {
+    xaxis: { title: 'Value' },
+    yaxis: { title: 'Count', tickformat: 'd', dtick: 1 },
+    autosize: false
+  }
+
   return <>
-    { groupByCount(metricData || []).x.length > 0 ?
+    { data.length > 0 ?
       <Plot
         config={{ responsive: true }}
         className="w-100"
         // eslint-disable-next-line
-        data={barChartData as any ?? []}
-        layout={{
-          xaxis: { title: 'Value' },
-          yaxis: { title: 'Count', tickformat: 'd' },
-          autosize: false
-        }}
+        data={trace as any ?? []}
+        layout={layout}
       /> :
       <div className="d-flex justify-content-center align-items-center h-100">
         <span className="text-muted fst-italic">No data</span>

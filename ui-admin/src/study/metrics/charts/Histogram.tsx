@@ -3,18 +3,13 @@ import { BasicMetricDatum } from 'api/api'
 import Plot from 'react-plotly.js'
 
 /**
- * Shows a plot for a specified metric.  Handles fetching the raw metrics from the server, transforming them to
- * plotly traces, and then rendering a graph
+ * Returns a Histogram chart for a specified metric.
  */
-
-/**
- *
- */
-export default function Histogram({ metricData }: {
-    metricData?: BasicMetricDatum[]
+export default function Histogram({ data }: {
+  data: BasicMetricDatum[]
 }) {
-  const histogramData = [{
-    x: metricData ? metricData.map(x => x.subcategory) : [],
+  const trace = [{
+    x: data.map(x => x.subcategory),
     type: 'histogram',
     marker: {
       line: {
@@ -23,18 +18,20 @@ export default function Histogram({ metricData }: {
     }
   }]
 
+  const layout = {
+    xaxis: { title: 'Value' },
+    yaxis: { title: 'Count', tickformat: 'd', dtick: 1 },
+    autosize: false
+  }
+
   return <>
-    { (metricData || []).length > 0 ?
+    { data.length > 0 ?
       <Plot
         config={{ responsive: true }}
         className="w-100"
         // eslint-disable-next-line
-        data={histogramData as any ?? []}
-        layout={{
-          xaxis: { title: 'Value' },
-          yaxis: { title: 'Count' },
-          autosize: false
-        }}
+        data={trace as any ?? []}
+        layout={layout}
       /> :
       <div className="d-flex justify-content-center align-items-center h-100">
         <span className="text-muted fst-italic">No data</span>
