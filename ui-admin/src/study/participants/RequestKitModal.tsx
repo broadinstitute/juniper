@@ -7,6 +7,7 @@ import { ApiErrorResponse, defaultApiErrorHandle, useLoadingEffect } from 'api/a
 import LoadingSpinner from 'util/LoadingSpinner'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import InfoPopup from '../../components/forms/InfoPopup'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({
@@ -20,11 +21,12 @@ export default function RequestKitModal({
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
+  const [overrideBadAddress, setOverrideBadAddress] = useState(false)
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
       await Api.createKitRequest(portal.shortcode, study.shortcode,
-        currentEnv.environmentName, enrolleeShortcode, kitType)
+        currentEnv.environmentName, enrolleeShortcode, { kitType, overrideBadAddress })
       Store.addNotification(successNotification('Kit request created'))
       onSubmit()
     } catch (e) {
@@ -54,6 +56,13 @@ export default function RequestKitModal({
             {KitSelect}
           </label>
         </div>
+        <label className="form-label d-block">
+          <input type="checkbox" checked={overrideBadAddress}
+            onChange={e => setOverrideBadAddress(e.target.checked)}
+          /> Override address validation
+        </label>
+        <InfoPopup content="Checking this box will create the kit
+          request even if the address does not pass mailing address validation."/>
       </form>
     </Modal.Body>
     <Modal.Footer>

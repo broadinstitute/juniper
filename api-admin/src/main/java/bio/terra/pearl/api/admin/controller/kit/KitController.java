@@ -77,13 +77,11 @@ public class KitController implements KitApi {
   }
 
   @Override
-  public ResponseEntity<Object> requestKits(
-      String kitType, String portalShortcode, String studyShortcode, String envName, Object body) {
+  public ResponseEntity<Object> requestKits(String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    List<String> enrolleeShortcodes =
-        Arrays.asList(objectMapper.convertValue(body, String[].class));
+    KitRequestListCreationDto enrolleeShortcodes = objectMapper.convertValue(body, KitRequestListCreationDto.class);
     KitExtService.KitRequestListResponse result =
         kitExtService.requestKits(
             adminUser,
@@ -91,7 +89,7 @@ public class KitController implements KitApi {
             studyShortcode,
             environmentName,
             enrolleeShortcodes,
-            kitType);
+            );
 
     return ResponseEntity.ok(result);
   }
@@ -104,4 +102,10 @@ public class KitController implements KitApi {
     kitExtService.refreshKitStatuses(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.noContent().build();
   }
+
+
+
+  public record KitRequestListCreationDto(String kitType, boolean skipAddressValidation, List<String> enrolleeShortcodes) {}
+
+
 }
