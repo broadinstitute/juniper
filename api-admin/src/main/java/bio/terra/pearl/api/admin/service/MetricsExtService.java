@@ -13,8 +13,8 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerService;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,14 +51,10 @@ public class MetricsExtService {
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // TODO
     List<Enrollee> enrollees =
         enrolleeService.findByStudyEnvironment(studyEnv.getId(), true, "created_at", "DESC");
+    List<UUID> enrolleeIds = enrollees.stream().map(Enrollee::getId).toList();
 
-    List<Answer> answers = new ArrayList<>();
-    // todo just batch with enrolleeids
-    enrollees.forEach(
-        enrollee ->
-            answers.addAll(
-                answerService.findByEnrolleeIdAndQuestionStableId(
-                    enrollee.getId(), questionStableId)));
+    List<Answer> answers =
+        answerService.findAllByEnrolleeIdsAndQuestionStableId(enrolleeIds, questionStableId);
 
     return answers.stream()
         .map(
