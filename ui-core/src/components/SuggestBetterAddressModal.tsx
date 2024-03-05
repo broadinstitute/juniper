@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { findDifferencesBetweenObjects } from '../objectUtils'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { MailingAddress } from '../types/address'
+import { ModalProps } from 'react-bootstrap'
+import FormattedAddress from '../components/FormattedAddress'
+import { isNil } from 'lodash'
 
 
 const irrelevantFields = ['createdAt', 'lastUpdatedAt', 'id']
@@ -17,20 +17,25 @@ export default function SuggestBetterAddressModal(
     hasInferredComponents,
     accept,
     deny,
-    onDismiss
+    onDismiss,
+    goBack,
+    animated,
+    ModalComponent = Modal
   } : {
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
     hasInferredComponents: boolean,
     accept: () => void,
     deny: () => void,
-    onDismiss: () => void
+    onDismiss: () => void,
+    goBack?: () => void,
+    animated?: boolean,
+    ModalComponent?: React.ElementType<ModalProps>
   }
 ) {
-  const changes = findDifferencesBetweenObjects(inputtedAddress, improvedAddress)
-    .filter(diff => !irrelevantFields.includes(diff.fieldName))
+  const [acceptedSuggestedAddress, setAcceptedSuggestedAddress] = useState<boolean>(true)
 
-  return <Modal show={true} size={'lg'}>
+  return <ModalComponent show={true} size={'lg'} animation={animated}>
     <Modal.Header>
       <Modal.Title>
         Is this the correct address?
@@ -38,25 +43,63 @@ export default function SuggestBetterAddressModal(
     </Modal.Header>
     <Modal.Body>
       <p>
-        Please verify the improvements made to the address.
-        {hasInferredComponents ? ' Some of these changes are required for a valid address.' : ''}
+        We were able to verify a similar address. Please select which you would like to use.
       </p>
-      <div className="border-start border-3 p-1 ps-2 border-info w-75 ms-4 mb-4"
-        style={{ backgroundColor: '#f2f2f2' }}>
-        <p className={'fw-bold mb-0'}>Pending Changes</p>
-        {changes.map((change, idx) =>
-          <p key={idx} className="mb-0">
-            {change.fieldName}: {change.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {change.newValue}
-          </p>
-        )}
-      </div>
-      <div className="d-flex">
-        <button className="btn btn-primary" onClick={accept}>Yes</button>
-        <button className="btn btn-secondary" onClick={deny}>No</button>
-        <div className="flex-grow-1">
-          <button className="float-end btn btn-secondary" onClick={onDismiss}>Cancel</button>
+      <div className="ps-4">
+        <div>
+          <p className="fw-bold mb-0 mt-1">New Address</p>
+          <div className="form-check d-inline-block p-1">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="suggestedAddressRadioGroup"
+              id="suggestedAddressRadio"
+              onChange={() => setAcceptedSuggestedAddress(true)}
+              checked={acceptedSuggestedAddress}
+            />
+            <label className="form-check-label" htmlFor="suggestedAddressRadio">
+              <FormattedAddress address={improvedAddress}/>
+            </label>
+          </div>
         </div>
+
+        <div>
+          <p className="fw-bold mb-0 mt-1">Old Address</p>
+          <div className="form-check d-inline-block p-1">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="suggestedAddressRadioGroup"
+              id="oldAddressRadio"
+              onChange={() => setAcceptedSuggestedAddress(false)}
+              checked={!acceptedSuggestedAddress}
+            />
+            <label className="form-check-label" htmlFor="oldAddressRadio">
+              <FormattedAddress address={inputtedAddress}/>
+            </label>
+          </div>
+        </div>
+
       </div>
     </Modal.Body>
-  </Modal>
+    <Modal.Footer>
+      <div className="d-flex flex-row justify-content-start w-100">
+        {isNil(goBack)
+          ? <button className="btn btn-outline-secondary" onClick={onDismiss}>Cancel</button>
+          : <button className="btn btn-outline-secondary" onClick={goBack}>Go Back</button>
+        }
+
+        <div className="flex-grow-1">
+          <button className="float-end btn btn-outline-primary" onClick={() => {
+            if (acceptedSuggestedAddress) {
+              accept()
+            } else {
+              deny()
+            }
+          }}>Continue
+          </button>
+        </div>
+      </div>
+    </Modal.Footer>
+  </ModalComponent>
 }

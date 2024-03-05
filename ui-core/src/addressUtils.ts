@@ -1,5 +1,6 @@
 import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
 import { isEmpty, isNil } from 'lodash'
+import { findDifferencesBetweenObjects } from './objectUtils'
 
 
 const FIELD_TO_ADDR_COMPONENTS : { [index: string]: AddressComponent[] } = {
@@ -92,4 +93,13 @@ export function explainAddressValidationResults(
   }
 
   return out
+}
+
+/**
+ *
+ */
+export function isSameAddress(addr1: MailingAddress, addr2: MailingAddress): boolean {
+  return findDifferencesBetweenObjects(addr1, addr2)
+    .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
+    .length === 0
 }

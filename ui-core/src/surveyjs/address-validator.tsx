@@ -1,7 +1,7 @@
 import { Question, SurveyModel } from 'survey-core'
 import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { findDifferencesBetweenObjects } from '../objectUtils'
+import { isSameAddress } from '../addressUtils'
 
 /**
  * Creates SurveyJS address validator using the provided async function
@@ -122,12 +122,6 @@ const shouldSkipValidation = (
       existingValidationState.canceledSuggestedAddress
       || existingValidationState.acceptedSuggestedAddress
       || existingValidationState.modalDismissed)
-}
-
-const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean => {
-  return findDifferencesBetweenObjects(addr1, addr2)
-    .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
-    .length === 0
 }
 
 // TODO: this is _not_ internationalized, and only works well for US address formats.
