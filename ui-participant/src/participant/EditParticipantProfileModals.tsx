@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Profile } from '../api/api'
-import { javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
+import Api, { Profile } from '../api/api'
+import { AddressValidationResult, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
 import EditAddress from '@juniper/ui-core/build/components/EditAddress'
@@ -293,6 +293,23 @@ export function EditMailingAddressModal(props: EditModalProps) {
     }
   )
 
+  const [validationResults, setValidationResults] = useState<AddressValidationResult>()
+
+
+  const shouldShowModal = () => {
+    if (!validationResults) {
+      return false
+    }
+
+    if (validationResults.valid && )
+  }
+  const validateAndSave = async () => {
+    const newValidationResult = await Api.validateAddress(mailingAddress)
+
+    setValidationResults(newValidationResult)
+
+  }
+
   useEffect(() => {
     onFieldChange('mailingAddress', mailingAddress)
   }, [mailingAddress])
@@ -306,6 +323,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
       setMailingAddress={setMailingAddress}
       language={'en'}
       showLabels={true}
+      validationResult={validationResults}
     />
   </ProfileRowEditModal>
 }
