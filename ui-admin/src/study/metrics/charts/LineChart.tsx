@@ -19,7 +19,7 @@ export default function LineChart({ metricData }: {
         config={{ responsive: true }}
         className="w-100"
         // eslint-disable-next-line
-                data={plotlyTraces as any ?? []}
+        data={plotlyTraces as any ?? []}
         layout={{
           autosize: false,
           yaxis: { rangemode: 'tozero', autorange: true },

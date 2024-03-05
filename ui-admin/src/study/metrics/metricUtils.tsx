@@ -1,4 +1,6 @@
-import { dateMinusDays } from '@juniper/ui-core'
+import { dateMinusDays, instantToDefaultString } from '@juniper/ui-core'
+import { BasicMetricDatum } from '../../api/api'
+import { MetricInfo } from './StudyEnvMetricsView'
 
 export type DateRangeMode = 'ALL_TIME' | 'LAST_MONTH' | 'LAST_WEEK' | 'LAST_24_HOURS' | 'CUSTOM'
 
@@ -42,4 +44,18 @@ export const unixToPlotlyDateRange = (dateRange: MetricDateRange): [string, stri
   const startDate = dateRange.startDate ? new Date(dateRange.startDate) : undefined
   const endDate = dateRange.endDate ? new Date(dateRange.endDate) : undefined
   return [startDate?.toISOString() ?? '', endDate?.toISOString() ?? '']
+}
+
+/**
+ *
+ */
+export const copyRawData = (metricInfo: MetricInfo, metricData: BasicMetricDatum[]) => {
+  if (!metricData) {
+    return
+  }
+  let dataString = `${['name', 'subcategory', 'time'].join(METRIC_EXPORT_DELIMITER)  }\n`
+  dataString += metricData.map(metricDatum =>
+    [metricInfo.name, metricDatum.subcategory, instantToDefaultString(metricDatum.time)].join(METRIC_EXPORT_DELIMITER)
+  ).join('\n')
+  navigator.clipboard.writeText(dataString)
 }

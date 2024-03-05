@@ -325,11 +325,13 @@ export type BasicMetricDatum = {
   subcategory?: string
 }
 
-export type FieldMetricDatum = {
+export type SurveyAnswerDatum = {
   time: number,
+  name: string
   stringValue?: string,
   numberValue?: string,
-  booleanValue?: boolean
+  booleanValue?: boolean,
+  objectValue?: string
 }
 
 export type DatasetDetails = {
@@ -1026,7 +1028,7 @@ export default {
 
   async fetchFieldMetric(portalShortcode: string, studyShortcode: string, envName: string, surveyStableId: string,
     questionStableId: string):
-      Promise<FieldMetricDatum[]> {
+      Promise<SurveyAnswerDatum[]> {
     // eslint-disable-next-line max-len
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/metrics?surveyStableId=${surveyStableId}&questionStableId=${questionStableId}`
     const response = await fetch(url, this.getGetInit())

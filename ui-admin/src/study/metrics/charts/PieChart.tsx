@@ -8,15 +8,15 @@ import Plot from 'react-plotly.js'
  */
 
 export type PieChartData = {
-    values: number[],
-    labels: string[]
+  values: number[],
+  labels: string[]
 }
 
 /**
  *
  */
 export default function PieChart({ metricData }: {
-    metricData?: BasicMetricDatum[]
+  metricData?: BasicMetricDatum[]
 }) {
   function groupByCount(input: BasicMetricDatum[]): PieChartData {
     const counts = input.reduce((acc, curr) => {

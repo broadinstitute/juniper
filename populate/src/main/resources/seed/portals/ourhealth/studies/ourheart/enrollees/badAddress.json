@@ -34,7 +34,8 @@
         {"questionStableId": "oh_oh_basic_lastName", "stringValue": "Addressed"},
         {"questionStableId": "oh_oh_basic_streetAddress", "stringValue": "BAD address 1111"},
         {"questionStableId": "oh_oh_basic_mghPatient", "stringValue": "no"},
-        {"questionStableId": "oh_oh_basic_dateOfBirth", "stringValue":  "05/19/1983"}
+        {"questionStableId": "oh_oh_basic_dateOfBirth", "stringValue":  "05/19/1983"},
+        {"questionStableId":"oh_oh_basic_birthSex", "stringValue": "male"}
       ],
       "currentPageNo": 1,
       "complete": true,

@@ -67,6 +67,10 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "survey_stable_id", surveyStableId);
     }
 
+    public List<Answer> findByEnrolleeAndQuestionStableId(UUID enrolleeId, String questionStableId) {
+        return findAllByTwoProperties("enrollee_id", enrolleeId, "question_stable_id", questionStableId);
+    }
+
     public List<Answer> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
     }

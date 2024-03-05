@@ -1,7 +1,7 @@
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { MetricChartType } from './StudyEnvMetricsView'
-import React, { useState } from 'react'
-import Api, { BasicMetricDatum, FieldMetricDatum, StudyEnvironmentSurvey } from 'api/api'
+import React, { useEffect, useState } from 'react'
+import Api, { BasicMetricDatum, SurveyAnswerDatum, StudyEnvironmentSurvey, VersionedForm } from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Select from 'react-select'
@@ -9,7 +9,10 @@ import useReactSingleSelect from 'util/react-select-utils'
 import LineChart from './charts/LineChart'
 import PieChart from './charts/PieChart'
 import BarChart from './charts/BarChart'
-import { Button } from 'components/forms/Button'
+import Histogram from './charts/Histogram'
+import { surveyJSModelFromForm } from '@juniper/ui-core'
+import { getQuestionsWithComputedValues } from '../participants/survey/SurveyFullDataView'
+import { Question } from 'survey-core'
 
 /**
  * Shows a graph and summary for a metric.
@@ -17,11 +20,15 @@ import { Button } from 'components/forms/Button'
 export default function SurveyInsightsView({ studyEnvContext }: {
     studyEnvContext: StudyEnvContextT
 }) {
-  const [metricData, setMetricData] = useState<FieldMetricDatum[]>([])
-  const [chartType, setChartType] = useState<MetricChartType>()
+  const [metricData, setMetricData] = useState<SurveyAnswerDatum[]>([])
+  const [selectedChartType, setSelectedChartType] = useState<MetricChartType>()
   const [selectedSurvey, setSelectedSurvey] = useState<StudyEnvironmentSurvey>()
   const [selectedQuestion, setSelectedQuestion] = useState<string>()
   const [fieldOptions, setFieldOptions] = useState<string[]>()
+  const surveyJsModel = selectedSurvey ? surveyJSModelFromForm(selectedSurvey.survey as VersionedForm) : undefined
+  const questions = surveyJsModel ? getQuestionsWithComputedValues(surveyJsModel) : []
+  const surveyJsQuestion = questions.find(question => question.name == selectedQuestion) as Question
+  const questionText = surveyJsQuestion?.title
 
   const { isLoading } = useLoadingEffect(async () => {
     if (selectedSurvey && selectedQuestion) {
@@ -30,17 +37,49 @@ export default function SurveyInsightsView({ studyEnvContext }: {
         studyEnvContext.currentEnv.environmentName, selectedSurvey.survey.stableId, selectedQuestion)
       setMetricData(result)
     }
-  }, [chartType, selectedSurvey, selectedQuestion])
+  }, [selectedChartType, selectedSurvey, selectedQuestion])
 
-  const fieldMetricsToBasicMetricDatum = (fieldMetrics: FieldMetricDatum[]): BasicMetricDatum[] => {
+  //TODO Harmonize this
+  const fieldMetricsToBasicMetricDatum = (fieldMetrics: SurveyAnswerDatum[]): BasicMetricDatum[] => {
+    if (fieldMetrics.length > 0 && Object.hasOwn(fieldMetrics[0], 'objectValue')) {
+      return parseObjectValues(surveyJsQuestion, fieldMetrics)
+    }
     return fieldMetrics.map(fieldMetric => {
       return {
-        name: 'foo',
-        subcategory: fieldMetric.stringValue,
+        name: fieldMetric.name,
+        subcategory: fieldMetric.stringValue ||
+            fieldMetric.numberValue as string ||
+            fieldMetric.booleanValue as unknown as string,
         time: fieldMetric.time
       }
     })
   }
+
+  const parseObjectValues = (question: Question, metricData: SurveyAnswerDatum[]): BasicMetricDatum[] => {
+    console.log(question.getType())
+    const parsedValues: BasicMetricDatum[] = []
+    if (question.getType() == 'checkbox') {
+      metricData.map(fieldMetric => {
+        const stringValues = JSON.parse(fieldMetric.objectValue || '[]') as string[]
+        stringValues.forEach(value => {
+          parsedValues.push({
+            name: fieldMetric.name,
+            subcategory: value,
+            time: fieldMetric.time
+          })
+        })
+      })
+      return parsedValues
+    } else { return [] }
+  }
+
+  useEffect(() => {
+    setSelectedQuestion(undefined)
+  }, [selectedSurvey])
+
+  useEffect(() => {
+    setSelectedChartType(undefined)
+  }, [selectedQuestion])
 
   useLoadingEffect(async () => {
     if (selectedSurvey) {
@@ -58,10 +97,10 @@ export default function SurveyInsightsView({ studyEnvContext }: {
     selectedOption: selectedChartTypeOption, selectInputId: selectChartTypeInputId
   } =
         useReactSingleSelect(
-          ['pie', 'bar'],
+          ['bar', 'pie', 'histogram'],
           (chartType: MetricChartType) => ({ label: chartType, value: chartType }),
-          setChartType,
-          chartType)
+          setSelectedChartType,
+          selectedChartType)
 
   const {
     onChange: surveyOnChange, options: surveyOptions,
@@ -69,7 +108,7 @@ export default function SurveyInsightsView({ studyEnvContext }: {
   } =
         useReactSingleSelect(
           studyEnvContext.currentEnv.configuredSurveys,
-          (s: StudyEnvironmentSurvey) => ({ label: s.survey.stableId, value: s }),
+          (s: StudyEnvironmentSurvey) => ({ label: s.survey.name, value: s }),
           setSelectedSurvey,
           selectedSurvey)
 
@@ -91,16 +130,20 @@ export default function SurveyInsightsView({ studyEnvContext }: {
       <div className="container-fluid border">
         <div className="row">
           <div className="col border">
-            {chartType === 'line' &&
-                            <LineChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+            {questionText && <h3 className="h5 text-center pt-4">{questionText} (responses={metricData.length})</h3> }
+            {selectedChartType === 'line' &&
+              <LineChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
-            {chartType === 'pie' &&
-                            <PieChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+            {selectedChartType === 'pie' &&
+              <PieChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
-            {chartType === 'bar' &&
-                            <BarChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+            {selectedChartType === 'bar' &&
+              <BarChart metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
             }
-            {!chartType && <div className="d-flex justify-content-center align-items-center h-100">
+            {selectedChartType === 'histogram' &&
+              <Histogram metricData={fieldMetricsToBasicMetricDatum(metricData)}/>
+            }
+            {!selectedChartType && <div className="d-flex justify-content-center align-items-center h-100">
               <span className="text-muted fst-italic">No chart configured</span>
             </div>}
           </div>
@@ -118,6 +161,7 @@ export default function SurveyInsightsView({ studyEnvContext }: {
                 <label htmlFor={selectQuestionInputId} className='mt-3'>Survey Field</label>
                 <Select
                   options={questionOptions}
+                  isDisabled={!selectedSurvey}
                   inputId={selectQuestionInputId}
                   value={selectedQuestionOption}
                   onChange={questionOnChange}
@@ -125,12 +169,12 @@ export default function SurveyInsightsView({ studyEnvContext }: {
                 <label htmlFor={selectChartTypeInputId} className='mt-3'>Chart Type</label>
                 <Select
                   className={'mb-5'}
+                  isDisabled={!selectedQuestion || !selectedSurvey}
                   inputId={selectChartTypeInputId}
                   value={selectedChartTypeOption}
                   options={chartTypeOptions}
                   onChange={chartTypeOnChange}
                 />
-                <Button variant="primary">Save to dashboard</Button>
               </div>
             </div>
           </div>

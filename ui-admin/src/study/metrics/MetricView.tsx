@@ -10,8 +10,7 @@ import { Button } from 'components/forms/Button'
 import { faClipboard } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { instantToDefaultString } from '@juniper/ui-core'
-import { LabeledDateRangeMode, METRIC_EXPORT_DELIMITER, MetricDateRange } from './metricUtils'
+import { copyRawData, LabeledDateRangeMode, MetricDateRange } from './metricUtils'
 
 /**
  * Shows a graph and summary for a metric.
@@ -28,17 +27,6 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRange, dat
     setMetricData(result)
   }, [metricInfo.name, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName])
 
-  const copyRawData = () => {
-    if (!metricData) {
-      return
-    }
-    let dataString = `${['name', 'subcategory', 'time'].join(METRIC_EXPORT_DELIMITER)  }\n`
-    dataString += metricData.map(metricDatum =>
-      [metricInfo.name, metricDatum.subcategory, instantToDefaultString(metricDatum.time)].join(METRIC_EXPORT_DELIMITER)
-    ).join('\n')
-    navigator.clipboard.writeText(dataString)
-  }
-
   return <div className="container mb-4">
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-baseline">
@@ -47,7 +35,7 @@ export default function MetricView({ studyEnvContext, metricInfo, dateRange, dat
         <Button
           variant="secondary"
           tooltip={'Copy raw data to clipboard'}
-          onClick={copyRawData}
+          onClick={() => copyRawData(metricInfo, metricData)}
         >
           <FontAwesomeIcon icon={faClipboard} className={'fa-regular'} />
         </Button>

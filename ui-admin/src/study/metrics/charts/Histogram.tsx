@@ -7,46 +7,32 @@ import Plot from 'react-plotly.js'
  * plotly traces, and then rendering a graph
  */
 
-export type BarChartData = {
-    y: number[],
-    x: string[]
-}
-
 /**
  *
  */
-export default function BarChart({ metricData }: {
+export default function Histogram({ metricData }: {
     metricData?: BasicMetricDatum[]
 }) {
-  function groupByCount(input: BasicMetricDatum[]): BarChartData {
-    const counts = input.reduce((acc, curr) => {
-      // @ts-ignore
-      acc[curr.subcategory] = (acc[curr.subcategory] || 0) + 1
-      return acc
-    }, {})
-
-    return {
-      y: Object.values(counts),
-      x: Object.keys(counts)
+  const histogramData = [{
+    x: metricData ? metricData.map(x => x.subcategory) : [],
+    type: 'histogram',
+    marker: {
+      line: {
+        width: 1
+      }
     }
-  }
-
-  const barChartData = [{
-    x: groupByCount(metricData || []).x,
-    y: groupByCount(metricData || []).y,
-    type: 'bar'
   }]
 
   return <>
-    { groupByCount(metricData || []).x.length > 0 ?
+    { (metricData || []).length > 0 ?
       <Plot
         config={{ responsive: true }}
         className="w-100"
         // eslint-disable-next-line
-        data={barChartData as any ?? []}
+        data={histogramData as any ?? []}
         layout={{
           xaxis: { title: 'Value' },
-          yaxis: { title: 'Count', tickformat: 'd' },
+          yaxis: { title: 'Count' },
           autosize: false
         }}
       /> :

@@ -9,7 +9,7 @@ import { LabeledDateRangeMode, MetricDateRange, modeToDateRange } from './metric
 import MetricDateRangeModal from './MetricDateRangeModal'
 import SurveyInsightsView from './SurveyInsightsView'
 
-export type MetricChartType = 'line' | 'pie' | 'bar'
+export type MetricChartType = 'line' | 'pie' | 'bar' | 'histogram'
 
 export type MetricInfo = {
   name: string,
@@ -82,7 +82,8 @@ export default function StudyEnvMetricsView({ studyEnvContext }: {studyEnvContex
       </div>
     </div>
     <div className="row my-4 w-100">
-      <SurveyInsightsView studyEnvContext={studyEnvContext}/>
+      <SurveyInsightsView
+        studyEnvContext={studyEnvContext}/>
       { metricMetadata.map(metric => {
         return <MetricView key={metric.name}
           studyEnvContext={studyEnvContext}

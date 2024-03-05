@@ -7,16 +7,14 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
 import bio.terra.pearl.core.model.metrics.SurveyAnswerDatum;
 import bio.terra.pearl.core.model.metrics.TimeRange;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,16 +22,19 @@ public class MetricsExtService {
   private AuthUtilService authUtilService;
   private StudyEnvironmentService studyEnvironmentService;
   private AnswerService answerService;
+  private EnrolleeService enrolleeService;
   private MetricsDao metricsDao;
 
   public MetricsExtService(
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
       AnswerService answerService,
+      EnrolleeService enrolleeService,
       MetricsDao metricsDao) {
     this.authUtilService = authUtilService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.answerService = answerService;
+    this.enrolleeService = enrolleeService;
     this.metricsDao = metricsDao;
   }
 
@@ -44,50 +45,36 @@ public class MetricsExtService {
       EnvironmentName environmentName,
       String surveyStableId,
       String questionStableId) {
+    authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-    List<Answer> answers =
-        metricsDao.surveyQuestionResponses(
-            surveyStableId, questionStableId, new TimeRange(null, null));
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // TODO
+    List<Enrollee> enrollees =
+        enrolleeService.findByStudyEnvironment(studyEnv.getId(), true, "created_at", "DESC");
+
+    List<Answer> answers = new ArrayList<>();
+    // todo just batch with enrolleeids
+    enrollees.forEach(
+        enrollee ->
+            answers.addAll(
+                answerService.findByEnrolleeIdAndQuestionStableId(
+                    enrollee.getId(), questionStableId)));
 
     return answers.stream()
-        .flatMap(
+        .map(
             answer -> {
-              if (answer.getObjectValue() != null) {
-                // Assuming the objectValue is a List<String>
-                ObjectMapper objectMapper = new ObjectMapper();
-                List<String> stringValues;
-                try {
-                  stringValues =
-                      objectMapper.readValue(
-                          (String) answer.getObjectValue(), new TypeReference<List<String>>() {});
-                } catch (JsonProcessingException e) {
-                  throw new RuntimeException(e);
-                }
-                return stringValues.stream()
-                    .map(
-                        stringValue -> {
-                          SurveyAnswerDatum datum =
-                              SurveyAnswerDatum.builder()
-                                  .booleanValue(answer.getBooleanValue())
-                                  .numberValue(answer.getNumberValue())
-                                  .stringValue(stringValue)
-                                  .time(answer.getCreatedAt())
-                                  .build();
-                          return datum;
-                        });
-              } else {
-                SurveyAnswerDatum datum =
-                    SurveyAnswerDatum.builder()
-                        .booleanValue(answer.getBooleanValue())
-                        .numberValue(answer.getNumberValue())
-                        .stringValue(answer.getStringValue())
-                        .time(answer.getCreatedAt())
-                        .objectValue(answer.getObjectValue())
-                        .build();
-                return Stream.of(datum);
-              }
+              SurveyAnswerDatum datum =
+                  SurveyAnswerDatum.builder()
+                      .booleanValue(answer.getBooleanValue())
+                      .numberValue(answer.getNumberValue())
+                      .stringValue(answer.getStringValue())
+                      .time(answer.getCreatedAt())
+                      .objectValue(answer.getObjectValue())
+                      .build();
+
+              return datum;
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public List<String> listMetricFields(
@@ -97,6 +84,7 @@ public class MetricsExtService {
       EnvironmentName environmentName,
       String surveyStableId) {
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+
     // TODO: actually scope this to the environment
     return answerService.findDistinctQuestionStableIdsBySurvey(surveyStableId);
   }

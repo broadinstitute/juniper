@@ -105,7 +105,7 @@ export const ItemDisplay = ({
   }
   return <>
     <dt className="fw-normal">
-      {renderQuestionText(answer, question, showFullQuestions)}
+      {renderQuestionText(question, showFullQuestions)}
       <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
       </span>
@@ -166,7 +166,7 @@ type ItemValue = { text: string, value: string }
 
 
 /** gets the question text -- truncates it at 100 chars */
-export const renderQuestionText = (answer: Answer,
+export const renderQuestionText = (
   question: Question | CalculatedValue,
   showFullQuestions: boolean) => {
   if (!question) {
