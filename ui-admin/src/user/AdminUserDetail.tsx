@@ -79,7 +79,7 @@ const RoleTable = ({ roles }: {roles: Role[]}) => {
 }
 
 /**
- *
+ * routable wrapper component for displaying details of an AdminUser
  */
 const AdminUserDetail = ({ portalShortcode }: {portalShortcode?: string}) => {
   const { adminUserId } = useParams()

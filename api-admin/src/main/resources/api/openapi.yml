@@ -1664,13 +1664,6 @@ components:
       properties:
         id: { type: string, format: uuid }
         preEnrollSurveyId: { type: string, format: uuid }
-    AdminUserDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        username: { type: string }
-        lastLogin: { type: integer }
-        superuser: { type: boolean }
     ErrorReport:
       type: object
       required: [ message, statusCode ]

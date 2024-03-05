@@ -84,7 +84,7 @@
   ],
   "adminUsers": [
     {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
-    {"username": "pro_staff@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
+    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
   ],
   "siteMediaDtos": [
     {
