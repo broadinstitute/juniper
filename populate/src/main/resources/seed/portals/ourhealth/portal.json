@@ -58,8 +58,8 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@ourhealth.org"},
-    {"username": "staff2@ourhealth.org"}
+    {"username": "staff@ourhealth.org", "roleNames": ["study_admin"]},
+    {"username": "staff2@ourhealth.org", "roleNames": ["study_admin"]}
   ],
   "siteMediaDtos": [
     {
