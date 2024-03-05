@@ -49,14 +49,15 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     }
 
-    public List<Answer> findAllByEnrolleeIdsAndQuestionStableId(List<UUID> enrolleeIds, String questionStableId) {
+    public List<Answer> findAllByEnrolleeIdsAndQuestionStableId(List<UUID> enrolleeIds, String surveyStableId, String questionStableId) {
         if (enrolleeIds.isEmpty()) {
             return new ArrayList<>();
         }
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName
-                        + " where enrollee_id IN (<enrolleeIds>) and question_stable_id = :questionStableId")
+                        + " where enrollee_id IN (<enrolleeIds>) and survey_stable_id = :surveyStableId and question_stable_id = :questionStableId")
                         .bindList("enrolleeIds", enrolleeIds)
+                        .bind("surveyStableId", surveyStableId)
                         .bind("questionStableId", questionStableId)
                         .mapTo(clazz)
                         .list()

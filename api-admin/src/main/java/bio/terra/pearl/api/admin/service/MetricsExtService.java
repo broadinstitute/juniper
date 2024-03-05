@@ -12,8 +12,10 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -45,16 +47,16 @@ public class MetricsExtService {
       EnvironmentName environmentName,
       String surveyStableId,
       String questionStableId) {
-    authUtilService.authUserToPortal(user, portalShortcode);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get(); // TODO
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).orElseThrow(StudyEnvironmentMissing::new);
     List<Enrollee> enrollees =
         enrolleeService.findByStudyEnvironment(studyEnv.getId(), true, "created_at", "DESC");
     List<UUID> enrolleeIds = enrollees.stream().map(Enrollee::getId).toList();
 
     List<Answer> answers =
-        answerService.findAllByEnrolleeIdsAndQuestionStableId(enrolleeIds, questionStableId);
+        answerService.findAllByEnrolleeIdsAndQuestionStableId(
+            enrolleeIds, surveyStableId, questionStableId);
 
     return answers.stream()
         .map(
