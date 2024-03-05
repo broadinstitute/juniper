@@ -55,7 +55,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
         eventDao.deleteBySurveyId(surveyId);
 
-
         dao.delete(surveyId);
     }
 
