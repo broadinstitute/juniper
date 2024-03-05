@@ -3,7 +3,7 @@ import { BasicMetricDatum } from 'api/api'
 import Plot from 'react-plotly.js'
 
 /**
- *
+ * Returns a Pie chart for a specified metric
  */
 export default function PieChart({ data }: {
   data: BasicMetricDatum[]
@@ -26,11 +26,12 @@ export default function PieChart({ data }: {
   const trace = [{
     values: groupByCount(data).values,
     labels: groupByCount(data).labels,
-    type: 'pie'
+    type: 'pie',
+    texttemplate: '%{percent} (%{value})'
   }]
 
   const layout = {
-    autosize: false
+    autosize: true
   }
 
   return <>

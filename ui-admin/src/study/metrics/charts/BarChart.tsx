@@ -3,7 +3,7 @@ import { BasicMetricDatum } from 'api/api'
 import Plot from 'react-plotly.js'
 
 /**
- *
+ * Returns a bar chart for a specified metric
  */
 export default function BarChart({ data }: {
     data: BasicMetricDatum[]
@@ -26,13 +26,18 @@ export default function BarChart({ data }: {
   const trace = [{
     x: groupByCount(data).x,
     y: groupByCount(data).y,
-    type: 'bar'
+    type: 'bar',
+    marker: {
+      line: {
+        width: 1
+      }
+    }
   }]
 
   const layout = {
     xaxis: { title: 'Value' },
     yaxis: { title: 'Count', tickformat: 'd', dtick: 1 },
-    autosize: false
+    autosize: true
   }
 
   return <>

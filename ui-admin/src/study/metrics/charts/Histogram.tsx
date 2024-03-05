@@ -21,7 +21,7 @@ export default function Histogram({ data }: {
   const layout = {
     xaxis: { title: 'Value' },
     yaxis: { title: 'Count', tickformat: 'd', dtick: 1 },
-    autosize: false
+    autosize: true
   }
 
   return <>

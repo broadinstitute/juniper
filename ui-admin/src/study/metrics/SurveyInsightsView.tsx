@@ -25,7 +25,7 @@ export default function SurveyInsightsView({ studyEnvContext }: {
   const [selectedSurvey, setSelectedSurvey] = useState<StudyEnvironmentSurvey>()
   const [selectedQuestion, setSelectedQuestion] = useState<string>()
   const [fieldOptions, setFieldOptions] = useState<string[]>()
-  const surveyJsModel = selectedSurvey ? surveyJSModelFromForm(selectedSurvey.survey as VersionedForm) : undefined
+  const surveyJsModel = selectedSurvey ? surveyJSModelFromForm(selectedSurvey?.survey as VersionedForm) : undefined
   const questions = surveyJsModel ? getQuestionsWithComputedValues(surveyJsModel) : []
   const surveyJsQuestion = questions.find(question => question.name == selectedQuestion) as Question
   const questionText = surveyJsQuestion?.title
@@ -41,18 +41,16 @@ export default function SurveyInsightsView({ studyEnvContext }: {
 
   //TODO Harmonize this
   const fieldMetricsToBasicMetricDatum = (fieldMetrics: SurveyAnswerDatum[]): BasicMetricDatum[] => {
-    if (fieldMetrics.length > 0 && Object.hasOwn(fieldMetrics[0], 'objectValue')) {
+    if (Object.hasOwn(fieldMetrics[0], 'objectValue')) {
       return parseObjectValues(surveyJsQuestion, fieldMetrics)
     }
-    return fieldMetrics.map(fieldMetric => {
-      return {
-        name: fieldMetric.name,
-        subcategory: fieldMetric.stringValue ||
-            fieldMetric.numberValue as string ||
-            fieldMetric.booleanValue as unknown as string,
-        time: fieldMetric.time
-      }
-    })
+    return fieldMetrics.map(fieldMetric => ({
+      name: fieldMetric.name,
+      subcategory: fieldMetric.stringValue ??
+          fieldMetric.numberValue as string ??
+          fieldMetric.booleanValue as unknown as string,
+      time: fieldMetric.time
+    }))
   }
 
   const parseObjectValues = (question: Question, metricData: SurveyAnswerDatum[]): BasicMetricDatum[] => {
