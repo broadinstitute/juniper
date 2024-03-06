@@ -5,7 +5,7 @@
  * options while remaining performant.
  */
 import React from 'react'
-import { ElementFactory, Question, Serializer } from 'survey-core'
+import { ElementFactory, Question, Serializer, SurveyModel } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
 import { AddressValidationResult, MailingAddress } from '../types/address'
 import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
@@ -154,13 +154,15 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
                 if (this.value.addressValidationResult.suggestedAddress) {
                   this.accept(this.value.addressValidationResult.suggestedAddress)
                 }
+                (this.question.survey as SurveyModel).nextPage()
               }}
               deny={() => {
                 this.question.value = {
                   ...this.value,
                   modalDismissed: true,
                   canceledSuggestedAddress: true
-                }
+                };
+                (this.question.survey as SurveyModel).nextPage()
               }}
               onDismiss={() => {
                 this.question.value = {
