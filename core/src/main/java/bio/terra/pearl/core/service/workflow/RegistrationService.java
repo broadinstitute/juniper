@@ -139,14 +139,16 @@ public class RegistrationService {
     }
 
     @Transactional
-    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser, String governedUsername) {
+    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser, String governedUsername, ParticipantUser governedUser) {
         if (!proxyPpUser.getParticipantUserId().equals(proxyUser.getId())) {
             throw new IllegalArgumentException("user and portal participant user do not match");
         }
-        ParticipantUser governedUser = new ParticipantUser();
-        governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
-        governedUser.setUsername(governedUsername);
-        governedUser = participantUserService.create(governedUser);
+        if (governedUser == null) {
+            governedUser = new ParticipantUser();
+            governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
+            governedUser.setUsername(governedUsername);
+            governedUser = participantUserService.create(governedUser);
+        }
 
         PortalParticipantUser governedPpUser = new PortalParticipantUser();
         governedPpUser.setPortalEnvironmentId(proxyPpUser.getPortalEnvironmentId());

@@ -41,7 +41,7 @@ public class AuthUtilService {
     // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add
     // proxies
     Optional<Enrollee> enrolleeOpt =
-        enrolleeService.findByParticipantUserId(participantUserId, enrolleeShortcode);
+        enrolleeService.findByParticipantUserIdAndShortcode(participantUserId, enrolleeShortcode);
     if (enrolleeOpt.isEmpty()) {
       throw new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode));
     }

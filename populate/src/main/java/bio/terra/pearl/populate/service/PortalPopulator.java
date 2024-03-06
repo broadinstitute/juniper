@@ -162,7 +162,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
         Set<CascadeProperty> set = new HashSet<>();
         set.add(PortalService.AllowedCascades.STUDY);
-        set.add(EnrolleeService.AllowedCascades.PARTICIPANT_USER);
         portalService.delete(existingObj.getId(), set);
         return createNew(popDto, context, true);
     }

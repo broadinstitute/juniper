@@ -17,6 +17,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -40,6 +41,7 @@ public class EnrollmentService {
     private StudyEnvironmentService studyEnvironmentService;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private PortalParticipantUserService portalParticipantUserService;
+    private ParticipantUserService participantUserService;
     private EnrolleeService enrolleeService;
     private PortalService portalService;
     private EnrolleeRelationService enrolleeRelationService;
@@ -58,7 +60,8 @@ public class EnrollmentService {
                              RegistrationService registrationService,
                              PortalService portalService,
                              EnrolleeRelationService enrolleeRelationService,
-                             RandomUtilService randomUtilService) {
+                             RandomUtilService randomUtilService,
+                             ParticipantUserService participantUserService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -71,6 +74,7 @@ public class EnrollmentService {
         this.portalService = portalService;
         this.enrolleeRelationService = enrolleeRelationService;
         this.randomUtilService = randomUtilService;
+        this.participantUserService = participantUserService;
     }
 
     /**
@@ -165,9 +169,10 @@ public class EnrollmentService {
     public HubResponse<Enrollee> enrollGovernedUser(EnvironmentName envName, String studyShortcode, Enrollee governingEnrollee,
                                                     ParticipantUser proxyUser, PortalParticipantUser proxyPpUser,
                                                     UUID preEnrollResponseId, String governedUserName) {
+        ParticipantUser governedUserParticipantUserOpt = participantUserService.findOne(governedUserName, envName).orElse(null);
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult =
-                registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName);
+                registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
 
         HubResponse<Enrollee> hubResponse =
                 this.enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
