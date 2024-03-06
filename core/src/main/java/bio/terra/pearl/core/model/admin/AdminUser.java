@@ -2,7 +2,9 @@ package bio.terra.pearl.core.model.admin;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
 public class AdminUser extends BaseEntity {
-    // TODO: extract a User entity to share with ParticipantUser?
     private String username;
 
     private String token;
@@ -22,5 +23,5 @@ public class AdminUser extends BaseEntity {
     @Builder.Default
     private boolean superuser = false;
     @Builder.Default
-    private Set<PortalAdminUser> portalAdminUsers = new HashSet<>();
+    private List<PortalAdminUser> portalAdminUsers = new ArrayList<>();
 }

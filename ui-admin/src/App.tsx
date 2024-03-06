@@ -20,7 +20,6 @@ import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import PortalRouter from './portal/PortalRouter'
-import UserList from './user/UserList'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
@@ -28,6 +27,7 @@ import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
+import AdminUserRouter from './user/AdminUserRouter'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -59,7 +59,7 @@ function App() {
                         <NavContextProvider><PageFrame config={config}/></NavContextProvider>
                       </ProtectedRoute>}>
                         <Route path="populate/*" element={<PopulateRouteSelect/>}/>
-                        <Route path="users" element={<UserList/>}/>
+                        <Route path="users/*" element={<AdminUserRouter/>}/>
                         <Route path="integrations/*" element={<IntegrationDashboard/>}/>
                         <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
                         <Route index element={<HomePage/>}/>

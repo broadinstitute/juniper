@@ -62,10 +62,10 @@ export default function ConfiguredMedia(props: ConfiguredImageProps) {
   if ((media as VideoConfig).videoLink) {
     const videoLinkMedia = media as VideoConfig
     const videoAllowed = isVideoLinkAllowed(videoLinkMedia.videoLink)
-    return <div style={{ ...style, ...media.style }}
+    return <div style={{ width: '100%', height: '100%', ...style, ...media.style }}
       className={classNames('configured-image', className, media.className)}>
       {videoAllowed && <iframe src={videoLinkMedia.videoLink} frameBorder="0" allowFullScreen={true}
-        data-testid="media-iframe"></iframe> }
+        data-testid="media-iframe" style={{ width: '100%', height: '100%' }}></iframe> }
       {!videoAllowed && <span className="text-danger">Disallowed video source</span> }
     </div>
   }

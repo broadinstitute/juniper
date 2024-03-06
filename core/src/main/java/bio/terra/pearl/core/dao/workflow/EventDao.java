@@ -29,4 +29,8 @@ public class EventDao extends BaseJdbiDao<Event> {
         return findAllByTwoProperties("study_environment_id", studyEnvId,
                 "event_class", eventClass);
     }
+
+    public void deleteBySurveyId(UUID surveyId) {
+        deleteByProperty("survey_id", surveyId);
+    }
 }
