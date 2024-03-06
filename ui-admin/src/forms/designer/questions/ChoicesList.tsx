@@ -22,7 +22,9 @@ export const ChoicesList = (props: ChoicesListProps) => {
   const { question, isNewQuestion, readOnly, onChange } = props
 
   const labelId = useId()
-
+  if (!question.choices) {
+    return null
+  }
   return (
     <div className="mb-3 mt-4">
       <p className="mb-2 fw-semibold" id={labelId}>Choices</p>

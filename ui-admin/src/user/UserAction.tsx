@@ -1,7 +1,8 @@
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import React, { useState } from 'react'
 import { Row } from '@tanstack/react-table'
-import { AdminUser, Portal } from 'api/api'
+import { Portal } from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import DeleteUserModal from './DeleteUserModal'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 

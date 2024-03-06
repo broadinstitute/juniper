@@ -6,7 +6,6 @@ import { LoadedPortalContextT, PortalContext, PortalParams } from './PortalProvi
 import MailingListView from './MailingListView'
 import PortalEnvView from './PortalEnvView'
 import PortalEnvConfigView from './PortalEnvConfigView'
-import PortalUserList from '../user/PortalUserList'
 import PortalParticipantsView from './PortalParticipantView'
 import { Portal, PortalEnvironment } from '@juniper/ui-core'
 import SiteContentLoader from './siteContent/SiteContentLoader'
@@ -27,7 +26,6 @@ export default function PortalRouter() {
       <Route path="studies">
         <Route path=":studyShortcode/*" element={<StudyRouter portalContext={portalContext}/>}/>
       </Route>
-      <Route path="users" element={<PortalUserList portal={portalContext.portal}/>}/>
       <Route path="env/:portalEnv/*" element={<PortalEnvRouter portalContext={portalContext}/>}/>
       <Route index element={<PortalDashboard portal={portalContext.portal}/>}/>
       <Route path="*" element={<div>Unmatched portal route</div>}/>

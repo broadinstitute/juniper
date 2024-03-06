@@ -1,10 +1,6 @@
 package bio.terra.pearl.api.admin.controller.admin;
 
 import bio.terra.pearl.api.admin.api.AdminUserApi;
-import bio.terra.pearl.api.admin.controller.GlobalExceptionHandler;
-import bio.terra.pearl.api.admin.model.AdminUserDto;
-import bio.terra.pearl.api.admin.model.ErrorReport;
-import bio.terra.pearl.api.admin.model.RoleList;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.admin.AdminUserExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -13,12 +9,9 @@ import bio.terra.pearl.core.service.exception.ValidationException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,24 +35,11 @@ public class AdminUserController implements AdminUserApi {
     this.objectMapper = objectMapper;
   }
 
-  @ExceptionHandler(ValidationException.class)
-  public ResponseEntity<ErrorReport> handleValidationException(ValidationException e) {
-    return GlobalExceptionHandler.badRequestHandler(e, request);
-  }
-
   @Override
-  public ResponseEntity<AdminUserDto> get(UUID id) {
+  public ResponseEntity<Object> get(UUID id, String portalShortcode) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    Optional<AdminUserDto> adminUserDtoOpt =
-        adminUserExtService
-            .get(id, operator)
-            .map(
-                adminUser -> {
-                  AdminUserDto adminUserDto = new AdminUserDto();
-                  BeanUtils.copyProperties(adminUser, adminUserDto);
-                  return adminUserDto;
-                });
-    return ResponseEntity.of(adminUserDtoOpt);
+    AdminUser adminUser = adminUserExtService.get(id, portalShortcode, operator);
+    return ResponseEntity.ok(adminUser);
   }
 
   @Override
@@ -101,12 +81,5 @@ public class AdminUserController implements AdminUserApi {
     }
     AdminUser createdUser = adminUserExtService.create(newUser, operator);
     return new ResponseEntity(createdUser, HttpStatus.CREATED);
-  }
-
-  // TODO: return something useful here... but what? PortalAdminUserRoles? Role names?
-  @Override
-  public ResponseEntity<RoleList> setRoles(UUID userId, RoleList body) throws ValidationException {
-    List<String> roleNames = portalAdminUserRoleService.setRoles(userId, body.getRoles());
-    return ResponseEntity.ok(new RoleList().roles(roleNames));
   }
 }

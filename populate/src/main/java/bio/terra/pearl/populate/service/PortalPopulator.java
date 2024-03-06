@@ -19,7 +19,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
-import bio.terra.pearl.populate.dto.AdminUserDto;
+import bio.terra.pearl.populate.dto.AdminUserPopDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
@@ -182,8 +182,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
         PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
 
-        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
+        for (AdminUserPopDto adminUserPopDto : popDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserPopDto, portalPopContext, overwrite, portal);
         }
         for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
             siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
