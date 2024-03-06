@@ -57,6 +57,15 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         }
     }
 
+    /**
+     * This method works like the original findAllByTwoProperties method, but it only returns relations that there
+     * end dates are greater than or equal to the current date.
+     * @param column1Name the name of the first column to filter by
+     * @param column1Value the value of the first column to filter by
+     * @param column2Name the name of the second column to filter by
+     * @param column2Value the value of the second column to filter by
+     * @return a list of EnrolleeRelation objects that match the given properties and have a valid end date.
+     */
     protected List<EnrolleeRelation> findAllValidByTwoProperties(String column1Name, Object column1Value,
                                              String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
@@ -69,6 +78,13 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         );
     }
 
+    /**
+     * This method works like the original findAllByProperty method, but it only returns relations that there
+     * end dates are greater than or equal to the current date.
+     * @param columnName the name of the column to filter by
+     * @param columnValue the value of the column to filter by
+     * @return a list of EnrolleeRelation objects that match the given properties and have a valid end date.
+     */
     protected List<EnrolleeRelation> findAllValidByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue "
