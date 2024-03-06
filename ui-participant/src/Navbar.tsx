@@ -37,7 +37,8 @@ export default function Navbar(props: NavbarProps) {
     const userManager = new UserManager(oidcConfig)
     userManager.signinRedirect({
       redirectMethod: 'replace',
-      extraQueryParams: { portalShortcode: envSpec.shortcode as string }
+      // eslint-disable-next-line camelcase
+      extraQueryParams: { portalShortcode: envSpec.shortcode as string, ui_locales: 'es' } //todo: selectedLanguage
     })
   }
 

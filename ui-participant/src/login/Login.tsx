@@ -9,7 +9,12 @@ function Login() {
 
   const signIn = () => {
     auth.signinRedirect(
-      { redirectMethod: 'replace', extraQueryParams: { portalShortcode: envSpec.shortcode as string } })
+      {
+        redirectMethod: 'replace', extraQueryParams: {
+          // eslint-disable-next-line camelcase
+          portalShortcode: envSpec.shortcode as string, ui_locales: 'es'
+        }
+      })
   }
 
   useEffect(() => {
