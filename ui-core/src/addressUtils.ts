@@ -86,7 +86,7 @@ export function explainAddressValidationResults(
       out.push(
         `The ${
             missingComponentNames[0]
-        } could not be verified. Please check and try again.`
+        } could not be verified.`
       )
     } else {
       out.push(
@@ -94,7 +94,7 @@ export function explainAddressValidationResults(
             missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
           } and ${
             missingComponentNames[missingComponentNames.length - 1]
-        } could not be verified. Please check them and try again.`
+        } could not be verified.`
       )
     }
   } else {
@@ -131,18 +131,18 @@ export function explainAddressValidationResultsByField(
   }
 
   for (const field of Object.keys(fieldToMissingComponentNames)) {
-    const missingComponentNames = fieldToMissingComponentNames[field]
+    const missingComponentNames = fieldToMissingComponentNames[field].map(val => val.toLowerCase())
 
     if (missingComponentNames.length === 1) {
       out[field] = `The ${
         missingComponentNames[0]
-      } could not be verified. Please check and try again.`
+      } could not be verified.`
     } else {
       out[field] = `The ${
         missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
       } and ${
         missingComponentNames[missingComponentNames.length - 1]
-      } could not be verified. Please check them and try again.`
+      } could not be verified.`
     }
   }
 

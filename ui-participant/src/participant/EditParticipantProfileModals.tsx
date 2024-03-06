@@ -291,9 +291,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
   const {
     onDismiss,
     onSave,
-    onFieldChange,
-    editedProfile,
-    setEditedProfile
+    editedProfile
   } = useProfileEditMethods(props)
 
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
