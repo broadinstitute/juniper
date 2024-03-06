@@ -1,5 +1,5 @@
 import React from 'react'
-import { AdminUser } from '../api/api'
+import { AdminUser } from 'api/adminUser'
 import Select from 'react-select'
 
 export type AdminUserSelectProps = {

@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Getter @Setter @SuperBuilder
 @NoArgsConstructor
@@ -17,7 +15,7 @@ public class PortalAdminUser extends BaseEntity {
     private UUID adminUserId;
     private UUID portalId;
     @Builder.Default
-    private Set<Role> roles = new HashSet<>();
+    private List<Role> roles = new ArrayList<>();
     @Builder.Default
-    private Set<UUID> roleIds = new HashSet<>();
+    private List<UUID> roleIds = new ArrayList<>();
 }

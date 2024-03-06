@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
-import Api, { NewAdminUser, Portal } from 'api/api'
+import Api, { Portal } from 'api/api'
+import { NewAdminUser } from 'api/adminUser'
 import { useUser } from './UserProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
@@ -8,8 +9,7 @@ import { Store } from 'react-notifications-component'
 import Select from 'react-select'
 import { doApiLoad } from '../api/api-utils'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** creates a new admin user */
 const CreateUserModal = ({ onDismiss, portals, userCreated }:
                            { onDismiss: () => void,
                              portals: Portal[], userCreated: () => void

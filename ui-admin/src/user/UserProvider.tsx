@@ -1,10 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import LoadingSpinner from '../util/LoadingSpinner'
-import Api, { AdminUser } from 'api/api'
+import Api from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import { useAuth } from 'react-oidc-context'
 
 const anonymousUser: AdminUser = {
   id: '',
+  createdAt: 0,
+  lastLogin: 0,
   token: '',
   isAnonymous: true,
   username: '',
@@ -128,4 +131,13 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 /** true iff the logged in user is a superuser */
 export const isSuperuser = () => {
   return !!useUser().user?.superuser
+}
+
+/**
+ * true if the user has the permission for the associated portal.  We should probably refactor this
+ * and the underlying endpoint to work with portal shortcodes rather than portalIds for ease of use.
+ * We can tackle that when this gets updated to support study-level permissions
+ */
+export const userHasPermission = (user: AdminUser, portalId: string, permission: string): boolean => {
+  return user.superuser || (user.portalPermissions[portalId] && user.portalPermissions[portalId].includes(permission))
 }
