@@ -29,6 +29,11 @@ export async function adminLogin(page: Page, username?: string) {
   await page.locator('button:text("developer login")').click()
   await page.locator('input[id="inputLoginEmail"]').fill(username)
   await page.locator('button:text("Log in")').click()
-  await expect(page.locator('h1')).toHaveText('Juniper Home')
+  // the after login page might be either the participant list or the home page depending on the number of portals
+  await Promise.any([
+    expect(page.locator('h1')).toHaveText('Juniper Home'),
+    expect(page.locator('h2')).toHaveText('Participant List')
+  ])
+
   return page
 }
