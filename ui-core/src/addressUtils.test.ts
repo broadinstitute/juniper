@@ -49,7 +49,7 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The country field could not be verified. Please check and try again.'
+      'The country could not be verified.'
     )
   })
   it('explains two missing components', () => {
@@ -63,7 +63,7 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The country and city fields could not be verified. Please check them and try again.'
+      'The country and city could not be verified.'
     )
   })
   it('explains n missing components', () => {
@@ -77,7 +77,7 @@ describe('explainAddressValidationResults', () => {
     expect(explanation).toHaveLength(1)
 
     expect(explanation[0]).toEqual(
-      'The country, city and unit number fields could not be verified. Please check them and try again.'
+      'The country, city and unit number could not be verified.'
     )
   })
   it('explains 0 missing components', () => {
