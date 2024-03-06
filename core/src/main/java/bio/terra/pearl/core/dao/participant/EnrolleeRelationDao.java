@@ -70,7 +70,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
                                              String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
-                                + " and " + column2Name + " = :column2Value and end_date >= NOW();")
+                                + " and " + column2Name + " = :column2Value and (end_date is null or end_date >= NOW());")
                         .bind("column1Value", column1Value)
                         .bind("column2Value", column2Value)
                         .mapTo(clazz)
@@ -88,7 +88,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
     protected List<EnrolleeRelation> findAllValidByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue "
-                                + " and end_date >= NOW();")
+                                + " and (end_date is null or end_date >= NOW());")
                         .bind("columnValue", columnValue)
                         .mapTo(clazz)
                         .list()
