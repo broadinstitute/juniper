@@ -70,7 +70,7 @@ export function explainAddressValidationResults(
 ): string[] {
   const out: string[] = []
 
-  if (!validation) {
+  if (!validation || validation.valid) {
     return out
   }
 
@@ -86,7 +86,7 @@ export function explainAddressValidationResults(
       out.push(
         `The ${
             missingComponentNames[0]
-        } field could not be verified. Please check and try again.`
+        } could not be verified. Please check and try again.`
       )
     } else {
       out.push(
@@ -94,7 +94,7 @@ export function explainAddressValidationResults(
             missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
           } and ${
             missingComponentNames[missingComponentNames.length - 1]
-        } fields could not be verified. Please check them and try again.`
+        } could not be verified. Please check them and try again.`
       )
     }
   } else {
@@ -155,4 +155,16 @@ export function isSameAddress(addr1: MailingAddress, addr2: MailingAddress): boo
   return findDifferencesBetweenObjects(addr1, addr2)
     .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
     .length === 0
+}
+
+/**
+ * todo
+ */
+export function toAddressLines(address: MailingAddress): string[] {
+  return [
+    address.street1,
+    address.street2,
+    `${address.city || ''} ${address.state || ''} ${address.postalCode || ''}`,
+    address.country
+  ].map(line => line?.trim()).filter(line => !isNil(line) && !isEmpty(line.trim()))
 }

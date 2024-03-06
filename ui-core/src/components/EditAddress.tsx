@@ -3,11 +3,12 @@ import classNames from 'classnames'
 import { isNil, sortBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { getAllCountries } from '../i18nUtils'
-import { isAddressFieldValid } from '../addressUtils'
+import { explainAddressValidationResults, isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
 
 /**
- *
+ * Renders a set of fields for editing mailing addresses. If provided an address validation result,
+ * will also display errors.
  */
 export default function EditAddress(
   {
@@ -15,12 +16,14 @@ export default function EditAddress(
     setMailingAddress,
     validationResult,
     showLabels = true,
+    showErrors = true,
     language = 'en' // todo: accept internationalized labels, see JN-910 for implementation
   }: {
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,
     validationResult?: AddressValidationResult,
-    showLabels: boolean,
+    showLabels?: boolean,
+    showErrors?: boolean,
     language: string
   }
 ) {
@@ -215,6 +218,14 @@ export default function EditAddress(
           onChange={val => onFieldChange('country', val ? val.value : '')}
         />
       </div>
+      {showErrors && <div className={'mt-2 mb-0'}>
+        {explainAddressValidationResults(validationResult).map(
+          (explanation, idx) => {
+            return <p key={idx} className='text-danger'>{explanation}</p>
+          }
+        )}
+      </div>}
+
     </div>
   </>
 }

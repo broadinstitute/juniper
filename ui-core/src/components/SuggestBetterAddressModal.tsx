@@ -6,7 +6,6 @@ import FormattedAddress from '../components/FormattedAddress'
 import { isNil } from 'lodash'
 
 
-const irrelevantFields = ['createdAt', 'lastUpdatedAt', 'id']
 /**
  * Suggests an improved address which the user may override or accept.
  */
@@ -14,7 +13,6 @@ export default function SuggestBetterAddressModal(
   {
     inputtedAddress,
     improvedAddress,
-    hasInferredComponents,
     accept,
     deny,
     onDismiss,
@@ -24,7 +22,6 @@ export default function SuggestBetterAddressModal(
   } : {
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
-    hasInferredComponents: boolean,
     accept: () => void,
     deny: () => void,
     onDismiss: () => void,
@@ -35,7 +32,7 @@ export default function SuggestBetterAddressModal(
 ) {
   const [acceptedSuggestedAddress, setAcceptedSuggestedAddress] = useState<boolean>(true)
 
-  return <ModalComponent show={true} size={'lg'} animation={animated}>
+  return <ModalComponent show={true} animation={animated} onHide={onDismiss}>
     <Modal.Header>
       <Modal.Title>
         Is this the correct address?
@@ -58,7 +55,10 @@ export default function SuggestBetterAddressModal(
               checked={acceptedSuggestedAddress}
             />
             <label className="form-check-label" htmlFor="suggestedAddressRadio">
-              <FormattedAddress address={improvedAddress}/>
+              <FormattedAddress
+                address={improvedAddress}
+                showDiff={inputtedAddress}
+              />
             </label>
           </div>
         </div>
@@ -90,7 +90,7 @@ export default function SuggestBetterAddressModal(
         }
 
         <div className="flex-grow-1">
-          <button className="float-end btn btn-outline-primary" onClick={() => {
+          <button className="float-end btn btn-primary" onClick={() => {
             if (acceptedSuggestedAddress) {
               accept()
             } else {

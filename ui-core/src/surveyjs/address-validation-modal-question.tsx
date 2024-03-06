@@ -5,11 +5,13 @@
  * options while remaining performant.
  */
 import React from 'react'
-import { ElementFactory, Question, Serializer, SurveyModel } from 'survey-core'
-import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
+import { ElementFactory, Question, Serializer } from 'survey-core'
+import { SurveyQuestionElementBase } from 'survey-react-ui'
 import { AddressValidationResult, MailingAddress } from '../types/address'
 import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
 import { isEmpty } from 'lodash'
+import Modal from 'react-bootstrap/Modal'
+import { ModalProps } from 'react-bootstrap'
 
 export type AddressValidationQuestionValue = {
   inputAddress: MailingAddress,
@@ -114,9 +116,13 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
     return this.question.value
   }
 
+  get baseModal(): React.ElementType<ModalProps> {
+    return Modal
+  }
+
   accept(addr: MailingAddress) {
     this.tryUpdateOtherValue(this.question.street1, addr.street1)
-    this.tryUpdateOtherValue(this.question.street2, addr.street1)
+    this.tryUpdateOtherValue(this.question.street2, addr.street2)
     this.tryUpdateOtherValue(this.question.city, addr.city)
     this.tryUpdateOtherValue(this.question.stateProvince, addr.state)
     this.tryUpdateOtherValue(this.question.postalCode, addr.postalCode)
@@ -135,6 +141,7 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
     }
   }
 
+
   renderElement() {
     return (
       <>
@@ -144,7 +151,6 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
             <SuggestBetterAddressModal
               inputtedAddress={this.value.inputAddress}
               improvedAddress={this.value.addressValidationResult.suggestedAddress}
-              hasInferredComponents={this.value.addressValidationResult.hasInferredComponents || false}
               accept={() => {
                 this.question.value = {
                   ...this.value,
@@ -154,15 +160,13 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
                 if (this.value.addressValidationResult.suggestedAddress) {
                   this.accept(this.value.addressValidationResult.suggestedAddress)
                 }
-                (this.question.survey as SurveyModel).nextPage()
               }}
               deny={() => {
                 this.question.value = {
                   ...this.value,
                   modalDismissed: true,
                   canceledSuggestedAddress: true
-                };
-                (this.question.survey as SurveyModel).nextPage()
+                }
               }}
               onDismiss={() => {
                 this.question.value = {
@@ -171,12 +175,9 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
                   canceledSuggestedAddress: true
                 }
               }}
+              ModalComponent={this.baseModal}
             />}
       </>
     )
   }
 }
-
-ReactQuestionFactory.Instance.registerQuestion(AddressValidationType, props => {
-  return React.createElement(SurveyQuestionAddressValidation, props)
-})

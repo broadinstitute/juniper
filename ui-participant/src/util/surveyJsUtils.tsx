@@ -15,6 +15,8 @@ import Api, { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/a
 import { usePortalEnv } from 'providers/PortalProvider'
 import { createAddressValidator } from '@juniper/ui-core/build/surveyjs/address-validator'
 
+import '../components/ThemedSurveyAddressValidation'
+
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
 /** used for paging surveys */

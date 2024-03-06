@@ -16,7 +16,7 @@ env:
     issuerClaim: ${DSM_JWT_ISSUER:admin-d2p.ddp-dev.envs.broadinstitute.org}
     secret: ${DSM_JWT_SIGNING_SECRET:}
   addrValidation:
-    addrValidationServiceClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationServiceStub}
+    addrValidationServiceClass: ${ADDR_VALIDATION_CLIENT_CLASS:SmartyAddressValidationService}
     smartyAuthId: ${SMARTY_AUTH_ID:}
     smartyAuthToken: ${SMARTY_AUTH_TOKEN:}
   swagger:

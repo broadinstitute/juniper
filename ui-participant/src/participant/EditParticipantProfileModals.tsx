@@ -330,14 +330,21 @@ export function EditMailingAddressModal(props: EditModalProps) {
     }
   }
 
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+
   const validateAndSave = async () => {
-    const newValidationResult = await Api.validateAddress(mailingAddress)
+    setIsLoadingValidation(true)
+    try {
+      const newValidationResult = await Api.validateAddress(mailingAddress)
 
-    setValidationResults(newValidationResult)
-    setAnimateModal(false)
+      setValidationResults(newValidationResult)
+      setAnimateModal(false)
 
-    if (newValidationResult?.valid && !shouldShowSuggestedAddress(newValidationResult)) {
-      onSave(buildUpdatedProfile(mailingAddress))
+      if (newValidationResult?.valid && !shouldShowSuggestedAddress(newValidationResult)) {
+        onSave(buildUpdatedProfile(mailingAddress))
+      }
+    } finally {
+      setIsLoadingValidation(false)
     }
   }
 
@@ -345,7 +352,6 @@ export function EditMailingAddressModal(props: EditModalProps) {
     return <SuggestBetterAddressModal
       inputtedAddress={mailingAddress}
       improvedAddress={validationResults?.suggestedAddress}
-      hasInferredComponents={validationResults.hasInferredComponents || false}
       accept={() => {
         if (!validationResults?.suggestedAddress) {
           return
@@ -369,12 +375,18 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onSave={validateAndSave}
     animated={animateModal}
     onDismiss={onDismiss}>
-    <EditAddress
-      mailingAddress={mailingAddress}
-      setMailingAddress={setMailingAddress}
-      language={'en'}
-      showLabels={true}
-      validationResult={validationResults}
-    />
+    {
+      isLoadingValidation
+        ? <p>Loading...</p>
+        : <EditAddress
+          mailingAddress={mailingAddress}
+          setMailingAddress={setMailingAddress}
+          language={'en'}
+          showLabels={true}
+          validationResult={validationResults}
+        />
+    }
+
+
   </ProfileRowEditModal>
 }

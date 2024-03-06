@@ -117,11 +117,14 @@ const shouldSkipValidation = (
   existingValidationState: AddressValidationQuestionValue, mailingAddress: MailingAddress
 ) => {
   return existingValidationState && existingValidationState.inputAddress
-    && isSameAddress(existingValidationState.inputAddress, mailingAddress)
     && (
-      existingValidationState.canceledSuggestedAddress
-      || existingValidationState.acceptedSuggestedAddress
-      || existingValidationState.modalDismissed)
+      isSameAddress(existingValidationState.inputAddress, mailingAddress)
+      || (
+        existingValidationState.addressValidationResult.suggestedAddress
+        && isSameAddress(existingValidationState.addressValidationResult.suggestedAddress, mailingAddress)
+      )
+    )
+    && existingValidationState.modalDismissed
 }
 
 // TODO: this is _not_ internationalized, and only works well for US address formats.
