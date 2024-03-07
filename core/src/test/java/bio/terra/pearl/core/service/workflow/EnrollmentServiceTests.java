@@ -1,5 +1,12 @@
 package bio.terra.pearl.core.service.workflow;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.List;
+import java.util.Map;
+
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -20,12 +27,6 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.List;
-import java.util.Map;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -61,7 +62,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
                 getTestName(testInfo));
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll( portalShortcode, studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), savedResponse.getId(), false);
         assertThat(hubResponse.getEnrollee(), notNullValue());
     }
@@ -85,7 +86,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, false);
         assertThat(hubResponse.getEnrollee(), notNullValue());
     }
@@ -105,7 +106,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            enrollmentService.enroll(portalShortcode, studyEnv.getEnvironmentName(), studyShortcode,  userBundle.user(), userBundle.ppUser(),
+            enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,  userBundle.user(), userBundle.ppUser(),
                    null, false);
         });
     }
