@@ -12,6 +12,7 @@ import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
+import { Modal } from 'react-bootstrap'
 
 type PhotoBlurbGridConfig = {
   title?: string,
@@ -27,7 +28,8 @@ type PhotoBio = {
   image: MediaConfig,
   name: string,
   title?: string,
-  blurb?: string
+  blurb?: string,
+  detail?: string
 }
 
 const validatePhotoBio = (config: unknown): PhotoBio => {
@@ -37,7 +39,8 @@ const validatePhotoBio = (config: unknown): PhotoBio => {
   const name = requireString(configObj, 'name', message)
   const title = requireOptionalString(configObj, 'title', message)
   const blurb = requireOptionalString(configObj, 'blurb', message)
-  return { image, name, title, blurb }
+  const detail = requireOptionalString(configObj, 'detail', message)
+  return { image, name, title, blurb, detail }
 }
 
 const validateSubGrid = (config: unknown): SubGrid => {
@@ -110,20 +113,55 @@ function SubGridView(props: SubGridViewProps) {
 }
 
 /** renders a single bio with pic */
-function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
+export function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
+  const [showDetail, setShowDetail] = React.useState(false)
   // Default alt text to person's name
   photoBio.image.alt ||= photoBio.name
-  return <div className="col-sm-6 col-md-4 gx-5 gy-3 text-center text-sm-start">
-    <ConfiguredMedia media={photoBio.image} className="img-fluid"/>
-    <div className="my-2 fw-bold">
-      {photoBio.name} {photoBio.title}
-    </div>
-    {!!photoBio.blurb && (
-      <Markdown className="fst-italic lh-1" style={{ fontSize: '0.9em' }}>
-        {photoBio.blurb}
-      </Markdown>
-    )}
+
+  return <div className="col-sm-6 col-md-4 col-lg-3 gx-4 gx-lg-3 gy-3 text-center text-sm-start pb-2 hover-shadow">
+    <button onClick={() => setShowDetail(!showDetail)}
+      className="btn h-100 p-0 pb-2 text-start"
+      style={{ border: '1px solid #ddd' }} >
+      <div className="h-100">
+        <ConfiguredMedia media={photoBio.image} className="img-fluid" style={{
+          borderTopLeftRadius: '5px',
+          borderTopRightRadius: '5px'
+        }}/>
+        <div className="my-2 fw-bold px-2">
+          {photoBio.name} {photoBio.title}
+        </div>
+        {!!photoBio.blurb && (
+          <Markdown className="fst-italic lh-1 px-2" style={{ fontSize: '0.9em' }}>
+            {photoBio.blurb}
+          </Markdown>
+        )}
+      </div>
+    </button>
+    {showDetail && <PhotoBioDetailModal photoBio={photoBio} onDismiss={() => setShowDetail(false)}/>}
   </div>
+}
+
+function PhotoBioDetailModal({ photoBio, onDismiss }: { photoBio: PhotoBio, onDismiss: () => void }) {
+  return <Modal show={true} onHide={onDismiss} className="modal-lg" >
+    <Modal.Body style={{ padding: '0px' }}>
+      <div className="d-flex w-100" style={{ borderBottom: '1px solid #ccc' }}>
+        <div style={{ maxWidth: '300px' }}>
+          <ConfiguredMedia media={photoBio.image} className="img-fluid" style={{ borderTopLeftRadius: '5px' }}/>
+        </div>
+        <div className="flex-grow-1 pt-5 ps-5">
+          <h3 className="fw-bold">{photoBio.name} </h3>
+          <h5>{photoBio.title}</h5>
+          <h5>{photoBio.blurb}</h5>
+        </div>
+        <div>
+          <button className="btn-close p-3" onClick={onDismiss}/>
+        </div>
+      </div>
+      {!!photoBio.detail && <div className="p-5">
+        <Markdown>{photoBio.detail}</Markdown>
+      </div>}
+    </Modal.Body>
+  </Modal>
 }
 
 
