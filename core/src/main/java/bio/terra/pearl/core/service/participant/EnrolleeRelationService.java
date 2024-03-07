@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
@@ -15,12 +16,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
-    EnrolleeService enrolleeService;
 
-    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao, EnrolleeService enrolleeService,
+    public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                     DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
-        this.enrolleeService = enrolleeService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -47,6 +46,13 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
 
     public boolean isRelationshipValid(EnrolleeRelation enrolleeRelation){
         return (enrolleeRelation.getEndDate() == null || enrolleeRelation.getEndDate().isAfter(Instant.now()));
+    }
+
+    public void deleteAllByEnrolleeIdOrTargetId(UUID enrolleeId) {
+        List<EnrolleeRelation> enrolleeRelations = dao.findByEnrolleeId(enrolleeId);
+        enrolleeRelations.addAll(dao.findByTargetEnrolleeId(enrolleeId));
+        bulkDelete(enrolleeRelations, DataAuditInfo.builder().systemProcess(DataAuditInfo.systemProcessName(getClass(),
+                "deleteAllByEnrolleeIdOrTargetId")).build());
     }
 
 }

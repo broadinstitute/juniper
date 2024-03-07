@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.factory.participant;
 
+import java.util.UUID;
+
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
@@ -18,8 +20,6 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class EnrolleeFactory {
@@ -122,7 +122,7 @@ public class EnrolleeFactory {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enrollAsProxy(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+        HubResponse hubResponse = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                 null);
         return hubResponse;
     }
