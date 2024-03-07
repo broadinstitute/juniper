@@ -16,7 +16,7 @@ public class AddressValidationController implements AddressValidationApi {
   AddressValidationServiceProvider serviceProvider;
 
   AddressValidationController(
-          ObjectMapper objectMapper, AddressValidationServiceProvider serviceProvider) {
+      ObjectMapper objectMapper, AddressValidationServiceProvider serviceProvider) {
     this.serviceProvider = serviceProvider;
     this.objectMapper = objectMapper;
   }
