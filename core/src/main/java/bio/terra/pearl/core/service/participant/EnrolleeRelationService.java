@@ -61,6 +61,12 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                 "deleteAllByEnrolleeIdOrTargetId")).build());
     }
 
+    /**
+     * This method returns a list of enrollees that are exclusively proxied by the given enrollee.
+     * An enrollee is exclusively proxied if it is only proxied by the given enrollee and no other enrollees.
+     * @param enrolleeId the id of the enrollee to find exclusive proxied enrollees for
+     * @return a list of enrollees that are exclusively proxied by the given enrollee
+     * */
     public List<Enrollee> findExclusiveProxiedEnrollees(UUID enrolleeId) {
         List<EnrolleeRelation> enrolleeRelations = dao.findByEnrolleeIdAndRelationshipType(enrolleeId, RelationshipType.PROXY);
         List<Enrollee> exclusiveGovernedEnrollees = new ArrayList<>();
