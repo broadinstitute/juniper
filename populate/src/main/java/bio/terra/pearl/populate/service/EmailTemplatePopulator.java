@@ -11,13 +11,13 @@ import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTemplatePopDto, PortalPopulateContext> {
@@ -45,6 +45,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
         EmailTemplate template;
         if (configPopDto.getPopulateFileName() != null) {
+            System.out.println(configPopDto.getPopulateFileName());
             template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
         } else {
             template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),

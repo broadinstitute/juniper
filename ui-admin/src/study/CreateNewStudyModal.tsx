@@ -17,6 +17,7 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
   const { portalList, reload } = useNavContext()
   const [studyName, setStudyName] = useState('')
   const [studyShortcode, setStudyShortcode] = useState('')
+  const [prePopulate, setPrePopulate] = useState<boolean>(true)
   const [selectedPortal, setSelectedPortal] = useState<Portal | undefined>(portalList[0])
   const { onChange, options, selectedOption, selectInputId } =
         useReactSingleSelect(
@@ -30,7 +31,7 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
     if (!selectedPortal) { return }
     doApiLoad(async () => {
       await Api.createStudy(selectedPortal.shortcode, {
-        shortcode: studyShortcode, name: studyName
+        shortcode: studyShortcode, name: studyName, prePopulate
       })
       Store.addNotification(successNotification('Study created'))
       reload()

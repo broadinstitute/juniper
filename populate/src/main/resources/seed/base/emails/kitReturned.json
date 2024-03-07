@@ -1,0 +1,9 @@
+{
+  "createdAt" : 1707416054.581622000,
+  "lastUpdatedAt" : 1707416054.581622000,
+  "subject" : "Your ${study.name} sample kit has been received",
+  "name" : "Kit Returned",
+  "stableId" : "kitReturned",
+  "version" : 2,
+  "bodyPopulateFile" : "kitReturned.html"
+}

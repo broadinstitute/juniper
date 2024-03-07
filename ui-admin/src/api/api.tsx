@@ -488,7 +488,11 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createStudy(portalShortcode: string, study: { shortcode: string, name: string }): Promise<Study> {
+  async createStudy(portalShortcode: string, study: {
+    shortcode: string,
+    name: string,
+    prePopulate: boolean
+  }): Promise<Study> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies`
     const response = await fetch(url, {
       method: 'POST',

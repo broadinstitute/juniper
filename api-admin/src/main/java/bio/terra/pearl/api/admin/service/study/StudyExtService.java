@@ -11,14 +11,24 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.populate.dto.StudyPopDto;
+import bio.terra.pearl.populate.service.FilePopulateService;
+import bio.terra.pearl.populate.service.StudyPopulator;
+import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +40,8 @@ public class StudyExtService {
   private final PortalStudyService portalStudyService;
   private final PortalService portalService;
   private final SiteContentService siteContentService;
+  private final StudyPopulator studyPopulator;
+  private final FilePopulateService filePopulateService;
 
   public StudyExtService(
       AuthUtilService authUtilService,
@@ -37,13 +49,17 @@ public class StudyExtService {
       StudyService studyService,
       PortalStudyService portalStudyService,
       SiteContentService siteContentService,
-      PortalService portalService) {
+      PortalService portalService,
+      StudyPopulator studyPopulator,
+      FilePopulateService filePopulateService) {
     this.authUtilService = authUtilService;
     this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     this.studyService = studyService;
     this.portalStudyService = portalStudyService;
     this.siteContentService = siteContentService;
     this.portalService = portalService;
+    this.studyPopulator = studyPopulator;
+    this.filePopulateService = filePopulateService;
   }
 
   @Transactional
@@ -66,6 +82,27 @@ public class StudyExtService {
             .build();
     newStudy = studyService.create(newStudy);
     portalStudyService.create(portal.getId(), newStudy.getId());
+
+    if (study.prePopulate) {
+      PortalPopulateContext config =
+          new PortalPopulateContext(
+              "base/study.json", portalShortcode, null, new HashMap<>(), false);
+
+      StudyPopDto studyPopDto;
+
+      try {
+        String fileContents = filePopulateService.readFile("study.json", config);
+        studyPopDto = studyPopulator.readValue(fileContents);
+
+        studyPopDto.setShortcode(newStudy.getShortcode());
+        studyPopDto.setName(newStudy.getName());
+
+        studyPopulator.createPreserveExisting(newStudy, studyPopDto, config);
+      } catch (IOException e) {
+        throw new InternalServerException("Failed to pre-populate study.");
+      }
+    }
+
     return newStudy;
   }
 
@@ -120,5 +157,6 @@ public class StudyExtService {
   public static class StudyCreationDto {
     private String shortcode;
     private String name;
+    private boolean prePopulate;
   }
 }
