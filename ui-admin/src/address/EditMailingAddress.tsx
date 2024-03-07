@@ -118,7 +118,7 @@ export default function EditMailingAddress(
             // clear the results since we saved the new address
             setAddressValidationResults(undefined)
           }}
-          deny={() => {
+          reject={() => {
             clearSuggestedAddress()
           }}
           onDismiss={() => {

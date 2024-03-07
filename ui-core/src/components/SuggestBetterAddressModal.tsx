@@ -14,7 +14,7 @@ export default function SuggestBetterAddressModal(
     inputtedAddress,
     improvedAddress,
     accept,
-    deny,
+    reject,
     onDismiss,
     goBack,
     animated,
@@ -23,7 +23,7 @@ export default function SuggestBetterAddressModal(
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
     accept: () => void,
-    deny: () => void,
+    reject: () => void,
     onDismiss: () => void,
     goBack?: () => void,
     animated?: boolean,
@@ -94,7 +94,7 @@ export default function SuggestBetterAddressModal(
             if (acceptedSuggestedAddress) {
               accept()
             } else {
-              deny()
+              reject()
             }
           }}>Continue
           </button>

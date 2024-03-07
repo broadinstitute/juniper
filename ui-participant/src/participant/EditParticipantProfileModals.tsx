@@ -119,7 +119,7 @@ export function EditNameModal(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Name'}
-    onSave={onSave}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div className={'d-flex w-100'}>
       <div className={'w-50 p-1'}>
@@ -162,7 +162,7 @@ export function EditBirthDateModal(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Birthday'}
-    onSave={onSave}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
 
     <label htmlFor={'birthDate'} className={'fs-6 fw-bold'}>
@@ -190,7 +190,7 @@ export function EditPhoneNumber(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Phone Number'}
-    onSave={onSave}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div>
       <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
@@ -221,7 +221,7 @@ export function EditContactEmail(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Contact Email'}
-    onSave={onSave}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div>
       <p className="fst-italic">
@@ -255,7 +255,7 @@ export function EditCommunicationPreferences(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Communication Preferences'}
-    onSave={onSave}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div className='row mt-2'>
       <div className="col-auto">
@@ -356,7 +356,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
         }
         onSave(buildUpdatedProfile(validationResults.suggestedAddress))
       }}
-      deny={() => {
+      reject={() => {
         onSave(buildUpdatedProfile(mailingAddress))
       }}
       goBack={() => {
@@ -370,7 +370,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
 
   return <ProfileRowEditModal
     title={'Mailing Address'}
-    onSave={validateAndSave}
+    onSave={() => validateAndSave()}
     animated={animateModal}
     onDismiss={onDismiss}>
     {
