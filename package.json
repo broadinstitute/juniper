@@ -32,6 +32,7 @@
     "lint": "eslint --max-warnings=0 e2e-tests ui-admin/src ui-core/src ui-participant/src"
   },
   "dependencies": {
+    "canvas": "^2.11.2",
     "json-stringify-safe": "^5.0.1"
   }
 }

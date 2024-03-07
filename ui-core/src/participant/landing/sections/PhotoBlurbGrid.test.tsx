@@ -14,10 +14,10 @@ describe('PhotoBlurbGrid', () => {
       'image': { 'cleanFileName': 'anthony_philippakis.jpg', 'version': 1 }
     }
 
-    const { container } = render(<PhotoBioView photoBio={bio}/>)
-    expect(container).toHaveTextContent('Anthony Philippakis')
-    expect(container).not.toHaveTextContent('General Partner, GV')
-    await userEvent.click(screen.getByText('Anthony Philippakis'))
-    expect(container).toHaveTextContent('General Partner, GV')
+    render(<PhotoBioView photoBio={bio}/>)
+    expect(screen.getByAltText('Anthony Philippakis')).toBeInTheDocument()
+    expect(screen.queryByText('General Partner, GV')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByAltText('Anthony Philippakis'))
+    expect(screen.queryByText('General Partner, GV')).toBeInTheDocument()
   })
 })
