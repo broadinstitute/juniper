@@ -101,12 +101,15 @@ public class CurrentUserService {
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
-    List<EnrolleeRelation> proxyRelations =
-        enrolleeRelationService.findByEnrolleeIdsAndRelationType(
-            enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
-    enrolleeRelationService.attachTargetEnrollees(proxyRelations);
-    for (EnrolleeRelation relation : proxyRelations) {
-      enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
+    List<EnrolleeRelation> proxyRelations = List.of();
+    if (!enrollees.isEmpty()) {
+      proxyRelations =
+          enrolleeRelationService.findByEnrolleeIdsAndRelationType(
+              enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
+      enrolleeRelationService.attachTargetEnrollees(proxyRelations);
+      for (EnrolleeRelation relation : proxyRelations) {
+        enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
+      }
     }
     return new UserLoginDto(user, ppUser, profile, enrollees, proxyRelations);
   }
