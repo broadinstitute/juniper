@@ -16,14 +16,14 @@ export default function SuggestBetterAddressModal(
     improvedAddress,
     hasInferredComponents,
     accept,
-    deny,
+    reject,
     onDismiss
   } : {
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
     hasInferredComponents: boolean,
     accept: () => void,
-    deny: () => void,
+    reject: () => void,
     onDismiss: () => void
   }
 ) {
@@ -52,7 +52,7 @@ export default function SuggestBetterAddressModal(
       </div>
       <div className="d-flex">
         <button className="btn btn-primary" onClick={accept}>Yes</button>
-        <button className="btn btn-secondary" onClick={deny}>No</button>
+        <button className="btn btn-secondary" onClick={reject}>No</button>
         <div className="flex-grow-1">
           <button className="float-end btn btn-secondary" onClick={onDismiss}>Cancel</button>
         </div>

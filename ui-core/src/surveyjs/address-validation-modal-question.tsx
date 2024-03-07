@@ -9,7 +9,7 @@ import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
 import { AddressValidationResult, MailingAddress } from '../types/address'
 import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
-import { isEmpty } from 'lodash'
+import { isEmpty, isNil } from 'lodash'
 
 export type AddressValidationQuestionValue = {
   inputAddress: MailingAddress,
@@ -136,6 +136,10 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
   }
 
   renderElement() {
+    if (isNil(this.value.addressValidationResult)) {
+      return null
+    }
+
     return (
       <>
         {(this.value.addressValidationResult?.suggestedAddress
@@ -155,7 +159,7 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
                   this.accept(this.value.addressValidationResult.suggestedAddress)
                 }
               }}
-              deny={() => {
+              reject={() => {
                 this.question.value = {
                   ...this.value,
                   modalDismissed: true,
