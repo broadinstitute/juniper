@@ -1,29 +1,29 @@
-import { MailingAddress } from '../api/api'
 import React from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { findDifferencesBetweenObjects } from '../util/objectUtils'
+import { findDifferencesBetweenObjects } from '../objectUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { MailingAddress } from '../types/address'
 
 
 const irrelevantFields = ['createdAt', 'lastUpdatedAt', 'id']
 /**
  * Suggests an improved address which the user may override or accept.
  */
-export default function SuggestBetterAddressModal(
+export function SuggestBetterAddressModal(
   {
     inputtedAddress,
     improvedAddress,
     hasInferredComponents,
     accept,
-    deny,
+    reject,
     onDismiss
   } : {
     inputtedAddress: MailingAddress,
     improvedAddress: MailingAddress,
     hasInferredComponents: boolean,
     accept: () => void,
-    deny: () => void,
+    reject: () => void,
     onDismiss: () => void
   }
 ) {
@@ -52,7 +52,7 @@ export default function SuggestBetterAddressModal(
       </div>
       <div className="d-flex">
         <button className="btn btn-primary" onClick={accept}>Yes</button>
-        <button className="btn btn-secondary" onClick={deny}>No</button>
+        <button className="btn btn-secondary" onClick={reject}>No</button>
         <div className="flex-grow-1">
           <button className="float-end btn btn-secondary" onClick={onDismiss}>Cancel</button>
         </div>

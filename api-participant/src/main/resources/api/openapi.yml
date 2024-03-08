@@ -240,6 +240,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/address/validate:
+    put:
+      summary: Validate a given address
+      tags: [ addressValidation ]
+      operationId: validate
+      requestBody:
+        description: mailing address
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: validation results
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/consents/{stableId}/{version}:
     get:
       summary: Gets a consent form and any existing responses for the signed-in user

@@ -1,6 +1,6 @@
-package bio.terra.pearl.api.admin.controller.address;
+package bio.terra.pearl.api.participant.controller.address;
 
-import bio.terra.pearl.api.admin.api.AddressValidationApi;
+import bio.terra.pearl.api.participant.api.AddressValidationApi;
 import bio.terra.pearl.core.model.address.AddressValidationResultDto;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.service.address.AddressValidationServiceProvider;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 public class AddressValidationController implements AddressValidationApi {
 
   ObjectMapper objectMapper;
-
   AddressValidationServiceProvider serviceProvider;
 
   AddressValidationController(

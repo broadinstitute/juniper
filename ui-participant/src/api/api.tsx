@@ -1,5 +1,7 @@
 import {
+  AddressValidationResult,
   ConsentResponse,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -72,15 +74,6 @@ export type Enrollee = {
   shortcode: string
   studyEnvironmentId: string
   surveyResponses: []
-}
-
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
 }
 
 export type Profile = {
@@ -439,6 +432,16 @@ export default {
       body: JSON.stringify(profile)
     })
     return await this.processJsonResponse(result, { alertErrors })
+  },
+
+  async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
+    const url = `${baseEnvUrl(false)}/address/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
   },
 
   async submitMailingListContact(name: string, email: string) {
