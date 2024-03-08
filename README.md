@@ -115,7 +115,10 @@ Then, you are ready to run the UI:
   npm -w ui-core run build
   HTTPS=true npm -w ui-admin start
   ```
-Then go to `localhost:3000` 
+Then go to `localhost:3000`
+you can log in as "dbush@broadinstitute.org" using developer mode login to start.  Then use the manage users UI to add yourself,
+or add yourself to the initial seed data in `populate/src/main/resources/seed/adminUsers` and the BaseSeedPopulator.ADMIN_USERS_TO_POPULATE.
+Once you do that, your user will be created in the database on every clean if the database is empty.
 
 #### Participant tool
 
@@ -141,7 +144,8 @@ Then, you are ready to run the UI:
 
 (note that you can just run `REACT_APP_UNAUTHED_LOGIN=true HTTPS=true npm -w ui-participant start` if you don't need to test B2C login functionality)
 Then go to `sandbox.ourhealth.localhost:3001`
-(Notice how you need the environment name and portal name as subdomains)
+(Notice how you need the environment name and portal name as subdomains)  There are a number of pre-existing participants you 
+can log in as, such as jsalk@test.com or consented@test.com.  All synthetic users have the password 'd2p4eva!'
 
 ### Unit tests
 
