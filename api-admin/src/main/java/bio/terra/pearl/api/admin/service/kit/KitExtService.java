@@ -51,7 +51,8 @@ public class KitExtService {
     KitRequestListResponse response = new KitRequestListResponse();
     for (String enrolleeShortcode : enrolleeShortcodes) {
       try {
-        KitRequestDto kitDto = requestKit(adminUser, studyShortcode, enrolleeShortcode, kitRequestCreationDto);
+        KitRequestDto kitDto =
+            requestKit(adminUser, studyShortcode, enrolleeShortcode, kitRequestCreationDto);
         response.addKitRequest(kitDto);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
@@ -62,7 +63,6 @@ public class KitExtService {
     }
     return response;
   }
-
 
   @Getter
   @SuperBuilder
@@ -94,7 +94,10 @@ public class KitExtService {
   }
 
   public KitRequestDto requestKit(
-      AdminUser adminUser, String studyShortcode, String enrolleeShortcode, KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
+      AdminUser adminUser,
+      String studyShortcode,
+      String enrolleeShortcode,
+      KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
     return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitRequestCreationDto);
   }

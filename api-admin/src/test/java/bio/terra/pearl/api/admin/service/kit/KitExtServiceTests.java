@@ -9,6 +9,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class KitExtServiceTests extends BaseSpringBootTest {
                 "somestudy",
                 EnvironmentName.sandbox,
                 Arrays.asList("enrollee1", "enrollee2"),
-                "kitType"));
+                new KitRequestService.KitRequestCreationDto("SALIVA", false)));
   }
 
   @Test

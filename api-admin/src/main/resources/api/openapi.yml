@@ -528,10 +528,9 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
-        description: JSON array of enrollee shortcodes
+        description: kit request list creation dto
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
@@ -833,7 +832,10 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: kit request creation dto
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: Kit request

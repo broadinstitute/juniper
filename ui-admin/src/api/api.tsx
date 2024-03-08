@@ -211,7 +211,8 @@ export type KitRequest = {
   returnTrackingNumber?: string,
   errorMessage?: string,
   details?: string,
-  enrolleeShortcode?: string
+  enrolleeShortcode?: string,
+  skipAddressValidation: boolean
 }
 
 export type Config = {
@@ -893,12 +894,16 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, overrideBadAddress?: boolean }
+    kitOptions: { kitType: string, skipAddressValidation: boolean}
   ): Promise<string> {
     const params = queryString.stringify(kitOptions)
     const url =
-      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
-    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitOptions)
+    })
     return await this.processJsonResponse(response)
   },
 
@@ -907,14 +912,16 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitOptions: { kitType: string, overrideBadAddress?: boolean }
+    kitOptions: { kitType: string, skipAddressValidation: boolean }
   ): Promise<KitRequestListResponse> {
-    const params = new URLSearchParams({ kitType })
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(enrolleeShortcodes)
+      body: JSON.stringify({
+        creationDto: kitOptions,
+        enrolleeShortcodes
+      })
     })
     return await this.processJsonResponse(response)
   },

@@ -285,6 +285,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
+                .skipAddressValidation(kitRequestPopDto.isSkipAddressValidation())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestPopDto.getStatus())
                 .externalKit(kitRequestPopDto.getExternalKitJson().toString())

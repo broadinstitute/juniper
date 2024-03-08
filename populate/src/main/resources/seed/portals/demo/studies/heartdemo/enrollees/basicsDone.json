@@ -43,5 +43,36 @@
       }
     ],
     "currentPageNo": 6
-  }]
+  }],
+  "kitRequestDtos": [
+    {
+      "creatingAdminUsername": "staff@heartdemo.org",
+      "kitTypeName": "SALIVA",
+      "status": "SENT",
+      "skipAddressValidation": true,
+      "externalKitJson": {
+        "kitId": "11111111-2222-3333-4444-555555555555",
+        "currentStatus": "kit without label",
+        "labelDate": "2023-05-24",
+        "scanDate": "2023-05-24",
+        "receiveDate": "2023-05-24",
+        "scannedByEmail": "",
+        "receivedByEmail": "",
+        "labeledByEmail": "",
+        "deactivationDate": "",
+        "deactivatedBy": "",
+        "deactivationReason": "",
+        "trackingNumbers": [],
+        "returnTrackingNumber": "",
+        "errors": [
+          {
+            "errorDate": "2023-05-24",
+            "errorMessage": ""
+          }
+        ],
+        "discardDate": "2023-05-24",
+        "discardReason": ""
+      }
+    }
+  ]
 }
