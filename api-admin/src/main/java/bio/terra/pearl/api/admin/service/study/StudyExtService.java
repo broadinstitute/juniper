@@ -111,7 +111,7 @@ public class StudyExtService {
       studyPopDto.setShortcode(newStudy.getShortcode());
       studyPopDto.setName(newStudy.getName());
 
-      studyPopulator.createPreserveExisting(newStudy, studyPopDto, config);
+      studyPopulator.populateFromDto(studyPopDto, config, false);
     } catch (IOException e) {
       throw new InternalServerException("Failed to pre-populate study.");
     }

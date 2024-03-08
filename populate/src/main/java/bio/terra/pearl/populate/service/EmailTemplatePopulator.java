@@ -45,7 +45,6 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
         EmailTemplate template;
         if (configPopDto.getPopulateFileName() != null) {
-            System.out.println(configPopDto.getPopulateFileName());
             template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
         } else {
             template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),

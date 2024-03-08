@@ -119,11 +119,7 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   void testCreateWithTemplate(TestInfo info) {
-    Portal portal = portalFactory.buildPersisted(getTestName(info));
-    for (EnvironmentName envName : EnvironmentName.values()) {
-      environmentFactory.buildPersisted(getTestName(info), envName);
-      portalEnvironmentFactory.buildPersisted(getTestName(info), envName, portal.getId());
-    }
+    Portal portal = portalFactory.buildPersistedWithEnvironments(getTestName(info));
 
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
     Study study =
