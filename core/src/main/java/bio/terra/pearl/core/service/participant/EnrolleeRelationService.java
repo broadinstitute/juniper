@@ -29,15 +29,15 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
-        return dao.findByEnrolleeIdAndRelationshipType(enrolleeId, relationshipType);
+        return filterValid(dao.findByEnrolleeIdAndRelationshipType(enrolleeId, relationshipType));
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdsAndRelationType(List<UUID> enrolleeIds, RelationshipType relationshipType) {
-        return dao.findByEnrolleeIdsAndRelationshipType(enrolleeIds, relationshipType);
+        return filterValid(dao.findByEnrolleeIdsAndRelationshipType(enrolleeIds, relationshipType));
     }
 
     public List<EnrolleeRelation> findByTargetEnrolleeId(UUID enrolleeId) {
-        return dao.findByTargetEnrolleeId(enrolleeId);
+        return filterValid(dao.findByTargetEnrolleeId(enrolleeId));
     }
 
     public boolean isUserProxyForAnyOf(UUID participantUserId, List<UUID> enrolleeIds) {
@@ -76,6 +76,10 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
             }
         }
         return exclusiveGovernedEnrollees;
+    }
+
+    public List<EnrolleeRelation> filterValid(List<EnrolleeRelation> enrolleeRelations) {
+        return enrolleeRelations.stream().filter(this::isRelationshipValid).collect(Collectors.toList());
     }
 
 }
