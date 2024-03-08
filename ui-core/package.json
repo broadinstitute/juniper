@@ -9,6 +9,7 @@
     "classnames": "^2.3.2",
     "downshift": "^7.6.0",
     "inputmask": "3.3.10",
+    "react-bootstrap": "^2.8.0",
     "react-select": "^5.4.0",
     "lodash": "^4.17.21"
   },
