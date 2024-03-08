@@ -896,7 +896,6 @@ export default {
     enrolleeShortcode: string,
     kitOptions: { kitType: string, skipAddressValidation: boolean}
   ): Promise<string> {
-    const params = queryString.stringify(kitOptions)
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
     const response = await fetch(url, {
