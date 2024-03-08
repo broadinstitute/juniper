@@ -19,16 +19,18 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
   private ConsentResponseDao consentResponseDao;
   private ParticipantTaskDao participantTaskDao;
   private PreEnrollmentResponseDao preEnrollmentResponseDao;
+  private EnrolleeRelationDao enrolleeRelationDao;
 
   public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
                               ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao,
-                              PreEnrollmentResponseDao preEnrollmentResponseDao) {
+                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao) {
     super(jdbi);
     this.profileDao = profileDao;
     this.surveyResponseDao = surveyResponseDao;
     this.consentResponseDao = consentResponseDao;
     this.participantTaskDao = participantTaskDao;
     this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+    this.enrolleeRelationDao = enrolleeRelationDao;
   }
 
   @Override
@@ -64,6 +66,8 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
     }
+    enrollee.getRelations().addAll(enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId()));
+    enrollee.getRelations().addAll(enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId()));
     return enrollee;
   }
 }

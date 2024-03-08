@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -195,6 +196,52 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
         List<EnrolleeRelation> targetEnrollee1ValidRelations = enrolleeRelationService.findByTargetEnrolleeId(targetEnrollee1.getId());
         Assertions.assertEquals(0, targetEnrollee1ValidRelations.size());
+
+    }
+
+    @Test
+    @Transactional
+    public void findExclusiveProxiedEnrolleesTest(TestInfo info){
+        HubResponse<Enrollee> hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
+        Enrollee proxyEnrollee = hubResponse.getEnrollee();
+        Enrollee governedEnrollee = hubResponse.getResponse();
+        List<Enrollee> targetEnrollees = enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId());
+        Assertions.assertEquals(1, targetEnrollees.size());
+        Assertions.assertEquals(governedEnrollee, targetEnrollees.get(0));
+
+        //now test that if target enrollee has multiple proxies, it is not returned
+        Enrollee proxy2 = enrolleeFactory.buildPersisted(getTestName(info));
+        EnrolleeRelation enrolleeRelation = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxy2.getId())
+                        .targetEnrolleeId(governedEnrollee.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(null)
+                        .build(),
+                getAuditInfo(info)
+        );
+
+        List<Enrollee> targetEnrollees2 = enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId());
+        Assertions.assertEquals(0, targetEnrollees2.size());
+
+        Enrollee governedEnrollee2 = enrolleeFactory.buildPersisted(getTestName(info));
+        EnrolleeRelation enrolleeRelation2 = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(governedEnrollee2.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(null)
+                        .build(),
+                getAuditInfo(info)
+        );
+
+
+        Assertions.assertEquals(1,
+                enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId()).size());
 
     }
 }

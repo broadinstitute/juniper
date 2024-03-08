@@ -57,8 +57,8 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         }
     }
 
-    public List<EnrolleeRelation> findByEnrolleeId(UUID enrolleeId) {
-        return findAllByProperty("enrollee_id", enrolleeId);
+    public List<EnrolleeRelation> findAllByEnrolleeId(UUID enrolleeId) {
+        return findAllValidByProperty("enrollee_id", enrolleeId);
     }
     /**
      * This method works like the original findAllByTwoProperties method, but it only returns relations that there

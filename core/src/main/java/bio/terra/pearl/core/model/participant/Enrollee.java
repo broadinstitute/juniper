@@ -43,4 +43,6 @@ public class Enrollee extends BaseEntity {
     private List<ParticipantNote> participantNotes = new ArrayList<>();
     @Builder.Default
     private List<KitRequestDto> kitRequests = new ArrayList<>();
+    @Builder.Default
+    private List<EnrolleeRelation> relations = new ArrayList<>();
 }
