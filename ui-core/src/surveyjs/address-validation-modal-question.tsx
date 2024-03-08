@@ -138,7 +138,6 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
     }
   }
 
-
   renderElement() {
     if (isNil(this.value?.addressValidationResult)) {
       return null

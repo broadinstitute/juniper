@@ -1,5 +1,10 @@
 package bio.terra.pearl.core.service.participant;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import java.util.List;
+
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -21,11 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 public class ProfileServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -188,14 +188,13 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserProfile(TestInfo testInfo){
-        HubResponse hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
-        Enrollee enrollee = hubResponse.getEnrollee();
-        Profile governedUserProfile = profileService.find(enrollee.getProfileId()).get();
-        List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(enrollee.getId(), RelationshipType.PROXY);
-        Enrollee proxyEnrollee = enrolleeService.find(relations.get(0).getEnrolleeId()).get();
-        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId()).get(0);
-        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
-        Assert.assertTrue(StringUtils.isNoneEmpty(governedUserProfile.getContactEmail()));
-        Assert.assertEquals(proxyProfile.getContactEmail(), governedUserProfile.getContactEmail());
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
+        Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
+        Profile proxyUserProfile = profileService.find(proxyEnrollee.getProfileId()).get();
+        List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY);
+        Enrollee governedEnrollee = enrolleeService.find(relations.get(0).getEnrolleeId()).get();
+        Profile governedProfile = profileService.find(governedEnrollee.getProfileId()).orElseThrow();
+        Assert.assertTrue(StringUtils.isNoneEmpty(governedProfile.getContactEmail()));
+        Assert.assertEquals(governedProfile.getContactEmail(), proxyUserProfile.getContactEmail());
     }
 }

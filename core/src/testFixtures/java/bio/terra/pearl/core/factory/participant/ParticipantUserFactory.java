@@ -51,6 +51,13 @@ public class ParticipantUserFactory {
         return buildPersisted(userBuilder, testName);
     }
 
+    public ParticipantUser buildPersisted(EnvironmentName envName, String testName, String contactEmail) {
+        ParticipantUser.ParticipantUserBuilder userBuilder = builder(testName)
+                .username(contactEmail)
+                .environmentName(envName);
+        return buildPersisted(userBuilder, testName);
+    }
+
     public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName) {
         ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
         PortalParticipantUser ppUser = PortalParticipantUser.builder()
@@ -63,10 +70,10 @@ public class ParticipantUserFactory {
     }
 
     /**
-     * This method creates a participant with the given in their Profile
+     * This method creates a participant with the given contactEmail in their Profile and as their username
      * */
     public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName, String contactEmail) {
-        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
+        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName, contactEmail);
         Profile.ProfileBuilder builder = profileFactory.builder(testName);
         builder.contactEmail(contactEmail);
         Profile proxyProfile = builder.build();

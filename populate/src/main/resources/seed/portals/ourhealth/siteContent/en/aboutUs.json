@@ -75,22 +75,26 @@
             "photoBios": [{
               "name": "Pradeep Natarajan",
               "title": "MD MMSc",
-              "blurb": "Co-Principal Investigator, OurHealth\n\nDirector of Preventive Cardiology, Massachusetts General Hospital\n\nPaul & Phyllis Fireman Endowed Chair in Vascular Medicine, Massachusetts General Hospital\n\nAssociate Professor of Medicine, Harvard Medical School\n\nAssociate Member, Broad Institute of Harvard and MIT",
+              "blurb": "Co-Principal Investigator, OurHealth",
+              "detail": "Director of Preventive Cardiology, Massachusetts General Hospital\n\nPaul & Phyllis Fireman Endowed Chair in Vascular Medicine, Massachusetts General Hospital\n\nAssociate Professor of Medicine, Harvard Medical School\n\nAssociate Member, Broad Institute of Harvard and MIT",
               "image": { "cleanFileName": "pradeep_natarajan.jpg", "version": 1}
             },{
               "name": "Amit Khera",
               "title": "MD MSc",
-              "blurb": "Co-Principal Investigator, OurHealth\n\nVice President, Genomic Medicine, Verve Therapeutics\n\nCardiologist, Brigham and Women's Hospital\n\nLecturer, Harvard Medical School",
+              "blurb": "Co-Principal Investigator, OurHealth",
+              "detail": "Vice President, Genomic Medicine, Verve Therapeutics\n\nCardiologist, Brigham and Women's Hospital\n\nLecturer, Harvard Medical School",
               "image": { "cleanFileName": "amit_khera.jpg", "version": 1}
             },{
               "name": "Romit Bhattacharya",
               "title": "MD",
-              "blurb": "Medical Director, OurHealth\n\nGeneral and Preventive Cardiologist, Massachusetts General Hospital\n\nAssociate Director, Cardiac Lifestyle Program, Massachusetts General Hospital\n\nInstructor, Harvard Medical School",
+              "blurb": "Medical Director, OurHealth",
+              "detail": "General and Preventive Cardiologist, Massachusetts General Hospital\n\nAssociate Director, Cardiac Lifestyle Program, Massachusetts General Hospital\n\nInstructor, Harvard Medical School",
               "image": { "cleanFileName": "romit_bhattacharya.jpg", "version": 1}
             },{
               "name": "Kaavya Paruchuri",
               "title": "MD",
-              "blurb": "Co-Investigator, OurHealth\n\nCardiologist, Massachusetts General Hospital\n\nInstructor, Harvard Medical School",
+              "blurb": "Co-Investigator, OurHealth",
+              "detail": "Cardiologist, Massachusetts General Hospital\n\nInstructor, Harvard Medical School",
               "image": { "cleanFileName": "kaavya_paruchuri.jpg", "version": 1}
             },{
               "name": "Aniruddh Patel",

@@ -29,6 +29,10 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry'
   },
+  expect: {
+    /* faster timeouts of local tests helps speed up creating new tests, at the cost of flakiness */
+    timeout: process.env.CI ? 10000 : 5000
+  },
 
   globalSetup: require.resolve('./global-setup.ts'),
 
