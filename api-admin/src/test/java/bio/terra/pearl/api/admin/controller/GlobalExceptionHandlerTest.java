@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bio.terra.pearl.api.admin.controller.study.StudyController;
 import bio.terra.pearl.api.admin.model.ErrorReport;
+import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -84,8 +85,7 @@ public class GlobalExceptionHandlerTest {
         .create(any());
 
     String portalShortCode = "portal1";
-    StudyExtService.StudyCreationDto studyCreationDto =
-        new StudyExtService.StudyCreationDto("studyShortCode", "studyName");
+    StudyCreationDto studyCreationDto = new StudyCreationDto("studyShortCode", "studyName");
     MockHttpServletRequestBuilder request =
         post("/api/portals/v1/%s/studies".formatted(portalShortCode))
             .contentType(MediaType.APPLICATION_JSON)

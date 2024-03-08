@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service.study;
 
+import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -25,10 +26,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,27 +81,40 @@ public class StudyExtService {
     newStudy = studyService.create(newStudy);
     portalStudyService.create(portal.getId(), newStudy.getId());
 
-    if (study.prePopulate) {
-      PortalPopulateContext config =
-          new PortalPopulateContext(
-              "base/study.json", portalShortcode, null, new HashMap<>(), false);
-
-      StudyPopDto studyPopDto;
-
-      try {
-        String fileContents = filePopulateService.readFile("study.json", config);
-        studyPopDto = studyPopulator.readValue(fileContents);
-
-        studyPopDto.setShortcode(newStudy.getShortcode());
-        studyPopDto.setName(newStudy.getName());
-
-        studyPopulator.createPreserveExisting(newStudy, studyPopDto, config);
-      } catch (IOException e) {
-        throw new InternalServerException("Failed to pre-populate study.");
-      }
+    if (Objects.nonNull(study.getTemplate())) {
+      fillInWithTemplate(portalShortcode, newStudy, study.getTemplate());
     }
 
     return newStudy;
+  }
+
+  private void fillInWithTemplate(
+      String portalShortcode, Study newStudy, StudyCreationDto.StudyTemplate studyTemplate) {
+    String filename;
+
+    switch (studyTemplate) {
+      default -> {
+        filename = "basic_study.json";
+      }
+    }
+
+    PortalPopulateContext config =
+        new PortalPopulateContext(
+            "templates/" + filename, portalShortcode, null, new HashMap<>(), false);
+
+    StudyPopDto studyPopDto;
+
+    try {
+      String fileContents = filePopulateService.readFile(filename, config);
+      studyPopDto = studyPopulator.readValue(fileContents);
+
+      studyPopDto.setShortcode(newStudy.getShortcode());
+      studyPopDto.setName(newStudy.getName());
+
+      studyPopulator.createPreserveExisting(newStudy, studyPopDto, config);
+    } catch (IOException e) {
+      throw new InternalServerException("Failed to pre-populate study.");
+    }
   }
 
   @Transactional
@@ -148,15 +159,5 @@ public class StudyExtService {
                 StudyEnvironmentConfig.builder().initialized(initialized).build())
             .build();
     return studyEnv;
-  }
-
-  @Getter
-  @Setter
-  @NoArgsConstructor
-  @AllArgsConstructor
-  public static class StudyCreationDto {
-    private String shortcode;
-    private String name;
-    private boolean prePopulate;
   }
 }
