@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Profile } from '../api/api'
-import { javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
+import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
-import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
 
 // skeleton for all profile edit modals

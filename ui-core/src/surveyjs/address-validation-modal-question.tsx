@@ -1,14 +1,11 @@
 /**
- * A SurveyJS question that renders a multiple selection combobox.
- * This provides similar functionality as the "tagbox" in https://github.com/surveyjs/custom-widgets.
- * However, this virtualizes the options list to support mahy more
- * options while remaining performant.
+ * A SurveyJS question that enables address validation.
  */
 import React from 'react'
 import { ElementFactory, Question, Serializer } from 'survey-core'
 import { ReactQuestionFactory, SurveyQuestionElementBase } from 'survey-react-ui'
 import { AddressValidationResult, MailingAddress } from '../types/address'
-import SuggestBetterAddressModal from '../components/SuggestBetterAddressModal'
+import { SuggestBetterAddressModal } from '../components/SuggestBetterAddressModal'
 import { isEmpty, isNil } from 'lodash'
 
 export type AddressValidationQuestionValue = {

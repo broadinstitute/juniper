@@ -130,7 +130,7 @@ const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean =>
     .length === 0
 }
 
-// TODO: this is _not_ internationalized, and only works well for US address formats.
+// TODO: this is _not_ internationalized, and only works well for US address formats. See JN-935
 const displayAppropriateErrors = (
   addressValidationQuestion: Question,
   validationResult: AddressValidationResult,

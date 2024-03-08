@@ -1,16 +1,16 @@
 import {
   AddressValidationResult,
+  EditAddress,
   explainAddressValidationResults,
   findDifferencesBetweenObjects,
-  MailingAddress
+  MailingAddress,
+  SuggestBetterAddressModal
 } from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { doApiLoad } from '../api/api-utils'
 import Api from '../api/api'
 import LoadingSpinner from '../util/LoadingSpinner'
-import SuggestBetterAddressModal from '@juniper/ui-core/build/components/SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
-import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core

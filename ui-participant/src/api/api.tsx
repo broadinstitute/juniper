@@ -435,7 +435,7 @@ export default {
   },
 
   async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
-    const url = `${baseEnvUrl(false)}/address/v1/validate`
+    const url = `${baseEnvUrl(false)}/address/validate`
     const response = await fetch(url, {
       method: 'PUT',
       body: JSON.stringify(address),

@@ -2,6 +2,10 @@ export { InvestigatorTermsOfUse } from './terms/InvestigatorTermsOfUse'
 export { ParticipantTermsOfUse } from './terms/ParticipantTermsOfUse'
 export { PrivacyPolicy } from './terms/PrivacyPolicy'
 
+export { SuggestBetterAddressModal } from './components/SuggestBetterAddressModal'
+export { EditAddress } from './components/EditAddress'
+export { createAddressValidator } from './surveyjs/address-validator'
+
 export * from './types/forms'
 export * from './types/landingPageConfig'
 export * from './types/portal'

@@ -7,9 +7,10 @@ import { isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
 
 /**
- *
+ * Editable address component. Displays errors if a validation result is provided,
+ * but does not have any modals for, e.g., suggest address or the full editing workflow.
  */
-export default function EditAddress(
+export function EditAddress(
   {
     mailingAddress,
     setMailingAddress,
