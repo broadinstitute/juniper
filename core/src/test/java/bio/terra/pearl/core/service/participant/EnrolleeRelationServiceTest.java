@@ -16,6 +16,7 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 
 class EnrolleeRelationServiceTest extends BaseSpringBootTest {
@@ -69,6 +70,131 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
         Assertions.assertTrue(enrolleeRelationService.isUserProxyForAnyOf(proxyPpUser.getParticipantUserId(),
                 List.of(targetEnrollee1.getId(), targetEnrollee2.getId())));
+
+    }
+
+    @Test
+    @Transactional
+    void testIsRelationshipValid(TestInfo info){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee proxyEnrollee = proxyBundle.enrollee();
+        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee targetEnrollee1 = targetBundle.enrollee();
+        EnrolleeRelation enrolleeRelation = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(targetEnrollee1.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(null)
+                        .build(),
+                getAuditInfo(info)
+        );
+        Assertions.assertTrue(enrolleeRelationService.isRelationshipValid(enrolleeRelation));
+        Instant tomorrow = Instant.now().plusSeconds(86400);
+        enrolleeRelation.setEndDate(tomorrow);
+        enrolleeRelationService.update(enrolleeRelation, getAuditInfo(info));
+        Assertions.assertTrue(enrolleeRelationService.isRelationshipValid(enrolleeRelation));
+
+        Instant yesterday = Instant.now().minusSeconds(86400);
+        enrolleeRelation.setEndDate(yesterday);
+        enrolleeRelationService.update(enrolleeRelation, getAuditInfo(info));
+        Assertions.assertFalse(enrolleeRelationService.isRelationshipValid(enrolleeRelation));
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllValidByTwoProperties(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee proxyEnrollee = proxyBundle.enrollee();
+        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee targetEnrollee1 = targetBundle.enrollee();
+        EnrolleeFactory.EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee targetEnrollee2 = targetBundle2.enrollee();
+        Instant yesterday = Instant.now().minusSeconds(86400);
+        Instant tomorrow = Instant.now().plusSeconds(86400);
+        EnrolleeRelation enrolleeRelationNotValid = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(targetEnrollee1.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(yesterday)
+                        .build(),
+                getAuditInfo(info)
+        );
+        EnrolleeRelation enrolleeRelationValid = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(targetEnrollee2.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(tomorrow)
+                        .build(),
+                getAuditInfo(info)
+        );
+        List<EnrolleeRelation> validRelations = enrolleeRelationService.findByEnrolleeIdAndRelationType(
+                proxyEnrollee.getId(),
+                RelationshipType.PROXY
+        );
+        Assertions.assertEquals(1, validRelations.size());
+        EnrolleeRelation validRelation = validRelations.get(0);
+        Assertions.assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), validRelation.getTargetEnrolleeId());
+        Assertions.assertEquals(enrolleeRelationValid.getEnrolleeId(), validRelation.getEnrolleeId());
+        Assertions.assertEquals(enrolleeRelationValid.getRelationshipType(), validRelation.getRelationshipType());
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllValidByOneProperty(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv1 = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee proxyEnrollee = proxyBundle.enrollee();
+        EnrolleeFactory.EnrolleeBundle targetBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee targetEnrollee1 = targetBundle.enrollee();
+        EnrolleeFactory.EnrolleeBundle targetBundle2 = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv, studyEnv1);
+        Enrollee targetEnrollee2 = targetBundle2.enrollee();
+        Instant yesterday = Instant.now().minusSeconds(86400);
+        Instant tomorrow = Instant.now().plusSeconds(86400);
+        EnrolleeRelation enrolleeRelationNotValid = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(targetEnrollee1.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(yesterday)
+                        .build(),
+                getAuditInfo(info)
+        );
+        EnrolleeRelation enrolleeRelationValid = enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(targetEnrollee2.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(tomorrow)
+                        .build(),
+                getAuditInfo(info)
+        );
+
+        List<EnrolleeRelation> targetEnrollee2ValidRelations = enrolleeRelationService.findByTargetEnrolleeId(targetEnrollee2.getId());
+        Assertions.assertEquals(1, targetEnrollee2ValidRelations.size());
+        Assertions.assertEquals(enrolleeRelationValid.getEnrolleeId(), targetEnrollee2ValidRelations.get(0).getEnrolleeId());
+        Assertions.assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), targetEnrollee2ValidRelations.get(0).getTargetEnrolleeId());
+        Assertions.assertEquals(enrolleeRelationValid.getRelationshipType(), targetEnrollee2ValidRelations.get(0).getRelationshipType());
+
+        List<EnrolleeRelation> targetEnrollee1ValidRelations = enrolleeRelationService.findByTargetEnrolleeId(targetEnrollee1.getId());
+        Assertions.assertEquals(0, targetEnrollee1ValidRelations.size());
 
     }
 }

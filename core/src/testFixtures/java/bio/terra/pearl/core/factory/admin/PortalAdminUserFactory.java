@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,6 +50,4 @@ public class PortalAdminUserFactory {
         }
         return new AdminUserBundle(adminUser, portalUsers);
     }
-
-    public record AdminUserBundle(AdminUser user, List<PortalAdminUser> portalAdminUsers) {}
 }

@@ -1,5 +1,10 @@
 package bio.terra.pearl.populate.dto.participant;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.populate.dto.TimeShiftable;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
@@ -7,10 +12,6 @@ import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -37,4 +38,5 @@ public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private List<ParticipantNotePopDto> participantNoteDtos = new ArrayList<>();
     private Integer submittedHoursAgo;
     private Set<KitRequestPopDto> kitRequestDtos = new HashSet<>();
+    private List<ProxyPopDto> proxyPopDtos = new ArrayList<>();
 }

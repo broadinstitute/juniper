@@ -14,6 +14,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -53,11 +54,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
+    private PortalParticipantUserService portalParticipantUserService;
     private ParticipantNoteService participantNoteService;
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
     private RandomUtilService randomUtilService;
+    private EnrolleeRelationService enrolleeRelationService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -75,7 +78,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
-                           RandomUtilService randomUtilService) {
+                           RandomUtilService randomUtilService,
+                           EnrolleeRelationService enrolleeRelationService,
+                           PortalParticipantUserService portalParticipantUserService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -94,13 +99,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
+        this.enrolleeRelationService = enrolleeRelationService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-    public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
-        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
+    public Optional<Enrollee> findByParticipantUserIdAndShortcode(UUID participantUserId, String enrolleeShortcode) {
+        return dao.findByParticipantUserIdAndShortcode(participantUserId, enrolleeShortcode);
     }
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
         return dao.findByProfileId(ppUser.getProfileId());
@@ -220,11 +227,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
         notificationService.deleteByEnrolleeId(enrolleeId);
         dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
+
+        enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrolleeId);
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
         }
         if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
+            portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
             participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
         }
     }
@@ -278,6 +288,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             throw new InternalServerException("Unable to generate unique shortcode");
         }
         return shortcode;
+    }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
+        return dao.findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnvId);
+    }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnv(UUID participantUserId, String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
+        return findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnv.getId());
     }
 
     public enum AllowedCascades implements CascadeProperty {

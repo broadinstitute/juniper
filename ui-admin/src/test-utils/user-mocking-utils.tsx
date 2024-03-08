@@ -1,11 +1,13 @@
 import React from 'react'
-import { AdminUser } from '../api/api'
-import { UserContext, UserContextT } from '../user/UserProvider'
+import { AdminUser } from 'api/adminUser'
+import { UserContext, UserContextT } from 'user/UserProvider'
 
 /** returns simple admin user for testing */
 export const mockAdminUser = (superuser: boolean): AdminUser => {
   return {
     id: 'adminUser1',
+    createdAt: 0,
+    lastLogin: 0,
     username: 'blah',
     superuser,
     token: 'fakeToken',

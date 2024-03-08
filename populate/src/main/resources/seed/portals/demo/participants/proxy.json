@@ -1,0 +1,9 @@
+{
+  "participantUser": {
+    "username": "proxy@test.com",
+    "lastLoginHoursAgo": 3
+  },
+  "profile": {
+    "contactEmail": "proxy@test.com"
+  }
+}

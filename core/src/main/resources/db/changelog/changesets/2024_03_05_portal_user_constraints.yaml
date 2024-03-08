@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: "portal_user_constraints"
+      author: dbush
+      changes:
+        - addUniqueConstraint:
+            tableName: portal_admin_user
+            constraintName: uc_portal_admin_user_user_portal
+            columnNames: admin_user_id, portal_id
+        - addUniqueConstraint:
+            tableName: portal_admin_user_role
+            constraintName: uc_portal_admin_user_role_user_role
+            columnNames: portal_admin_user_id, role_id
+        - addUniqueConstraint:
+            tableName: role_permission
+            constraintName: uc_role_permission_role_permission
+            columnNames: role_id, permission_id
+

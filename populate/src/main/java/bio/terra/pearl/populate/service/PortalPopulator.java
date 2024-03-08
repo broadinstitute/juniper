@@ -10,13 +10,16 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.portal.*;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
-import bio.terra.pearl.populate.dto.AdminUserDto;
+import bio.terra.pearl.populate.dto.AdminUserPopDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
@@ -30,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
@@ -156,7 +160,9 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
 
     @Override
     public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
-        portalService.delete(existingObj.getId(), Set.of(PortalService.AllowedCascades.STUDY));
+        Set<CascadeProperty> set = new HashSet<>();
+        set.add(PortalService.AllowedCascades.STUDY);
+        portalService.delete(existingObj.getId(), set);
         return createNew(popDto, context, true);
     }
 
@@ -176,8 +182,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
         PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
 
-        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
+        for (AdminUserPopDto adminUserPopDto : popDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserPopDto, portalPopContext, overwrite, portal);
         }
         for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
             siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
