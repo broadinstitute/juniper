@@ -9,7 +9,7 @@ import { isNil } from 'lodash'
 /**
  * Suggests an improved address which the user may override or accept.
  */
-export default function SuggestBetterAddressModal(
+export function SuggestBetterAddressModal(
   {
     inputtedAddress,
     improvedAddress,

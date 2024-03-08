@@ -10,7 +10,7 @@ import CreatableSelect from 'react-select/creatable'
  * Renders a set of fields for editing mailing addresses. If provided an address validation result,
  * will also display errors.
  */
-export default function EditAddress(
+export function EditAddress(
   {
     mailingAddress,
     setMailingAddress,

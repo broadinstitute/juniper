@@ -2,15 +2,15 @@ import React, { useState } from 'react'
 import Api, { Profile } from '../api/api'
 import {
   AddressValidationResult,
+  EditAddress,
   isSameAddress,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  MailingAddress
+  MailingAddress,
+  SuggestBetterAddressModal
 } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
-import EditAddress from '@juniper/ui-core/build/components/EditAddress'
-import SuggestBetterAddressModal from '@juniper/ui-core/build/components/SuggestBetterAddressModal'
 import { isNil } from 'lodash'
 
 

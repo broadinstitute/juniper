@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
-import { makeSurveyJsData, PortalEnvironment, PortalEnvironmentLanguage, surveyJSModelFromForm } from '@juniper/ui-core'
+import {
+  createAddressValidator,
+  makeSurveyJsData,
+  PortalEnvironment,
+  PortalEnvironmentLanguage,
+  surveyJSModelFromForm
+} from '@juniper/ui-core'
 import Api, { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,7 +16,6 @@ import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { createAddressValidator } from '@juniper/ui-core/build/surveyjs/address-validator'
 
 type SurveyFullDataViewProps = {
   answers: Answer[],
