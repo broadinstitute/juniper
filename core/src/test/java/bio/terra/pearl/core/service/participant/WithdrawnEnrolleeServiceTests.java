@@ -37,9 +37,9 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
   @Test
   @Transactional
   public void testWithdrawProxyEnrollee(TestInfo info) {
-    HubResponse<Enrollee> hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy-email@test.com");
-    Enrollee proxyEnrollee = hubResponse.getEnrollee();
-    Enrollee governedEnrollee = hubResponse.getResponse();
+    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy-email@test.com");
+    Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
+    Enrollee governedEnrollee = enrolleeAndProxy.governedEnrollee();
     DaoTestUtils.assertGeneratedProperties(proxyEnrollee);
     WithdrawnEnrollee withdrawnEnrollee = withdrawnEnrolleeService.withdrawEnrollee(proxyEnrollee);
     DaoTestUtils.assertGeneratedProperties(withdrawnEnrollee);
