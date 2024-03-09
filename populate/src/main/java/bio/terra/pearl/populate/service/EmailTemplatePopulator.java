@@ -59,6 +59,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
         String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
         popDto.setBody(bodyContent);
+        popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElse(
                 /** if the context doesn't have a portal, it's because we're populating admin config
                  * so we want the portalId to be null

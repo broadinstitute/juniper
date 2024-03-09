@@ -151,4 +151,13 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         // confirm answer from question that was removed in current version is still exported
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
     }
+
+    @Test
+    @Transactional
+    public void testPopulateWithShortcodeOverride() throws Exception {
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, "demo2"), true);
+        assertThat(portal.getShortcode(), equalTo("demo2"));
+        Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
+        assertThat(mainStudy.getShortcode(), equalTo("demo2_heartdemo"));
+    }
 }

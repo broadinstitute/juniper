@@ -11,8 +11,6 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.portal.*;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -154,6 +152,11 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     }
 
     @Override
+    public void preProcessDto(PortalPopDto popDto, FilePopulateContext context) {
+        popDto.setShortcode(context.getShortcodeOverride());
+    }
+
+    @Override
     public Optional<Portal> findFromDto(PortalPopDto popDto, FilePopulateContext context) {
         return portalService.findOneByShortcode(popDto.getShortcode());
     }
@@ -225,7 +228,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
     }
 
-    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {
+    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite, String shortcodeOverride) throws IOException {
         String folderName =
                 "portal_%s_%s"
                         .formatted(
@@ -236,6 +239,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         tempDir.mkdirs();
         ZipUtils.unzipFile(tempDir, zipInputStream);
         return populate(
-                new FilePopulateContext(folderName + "/portal.json", true), overwrite);
+                new FilePopulateContext(folderName + "/portal.json", true, shortcodeOverride), overwrite);
     }
 }

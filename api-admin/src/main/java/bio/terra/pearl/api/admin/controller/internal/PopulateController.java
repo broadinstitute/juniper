@@ -65,10 +65,10 @@ public class PopulateController implements PopulateApi {
   }
 
   @Override
-  public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip) {
+  public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip, String shortcodeOverride) {
     AdminUser user = authUtilService.requireAdminUser(request);
     Portal populatedObj =
-        populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite));
+        populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
     return ResponseEntity.ok(populatedObj);
   }
 

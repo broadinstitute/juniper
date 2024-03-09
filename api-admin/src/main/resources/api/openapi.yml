@@ -1343,6 +1343,7 @@ paths:
       operationId: uploadPortal
       parameters:
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: boolean } }
       requestBody:
         content:
           multipart/form-data:
