@@ -218,6 +218,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_03_05_portal_user_constraints.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_04_address_validation_skip.yaml
+      relativeToChangelogFile: true
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

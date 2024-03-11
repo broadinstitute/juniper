@@ -83,7 +83,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Send a request for a sample kit to Pepper.
      * Throws PepperApiException if the Pepper API request failed
      */
-    public KitRequestDto requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, String kitTypeName)
+    public KitRequestDto requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto)
     throws PepperApiException {
         // create and save kit request
         if (enrollee.getProfileId() == null) {
@@ -91,7 +91,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
-        KitRequest kitRequest = assemble(adminUser, enrollee, pepperKitAddress, kitTypeName);
+        KitRequest kitRequest = assemble(adminUser, enrollee, pepperKitAddress, kitRequestCreationDto);
 
         // send kit request to DSM
         try {
@@ -112,6 +112,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         log.info("Kit request created: enrollee: {}, kit: {}", enrollee.getShortcode(), kitRequest.getId());
         return new KitRequestDto(kitRequest, kitRequest.getKitType(), enrollee.getShortcode(), objectMapper);
     }
+
+
+    public record KitRequestCreationDto(String kitType, boolean skipAddressValidation) {}
 
     /**
      * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address
@@ -287,8 +290,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             AdminUser adminUser,
             Enrollee enrollee,
             PepperKitAddress pepperKitAddress,
-            String kitTypeName) {
-        KitType kitType = kitTypeDao.findByName(kitTypeName).get();
+            KitRequestCreationDto kitRequestCreationDto) {
+        KitType kitType = kitTypeDao.findByName(kitRequestCreationDto.kitType).get();
         KitRequest kitRequest = KitRequest.builder()
                 .id(daoUtils.generateUUID())
                 .creatingAdminUserId(adminUser.getId())
@@ -296,6 +299,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .kitTypeId(kitType.getId())
                 .sentToAddress(stringifyPepperAddress(pepperKitAddress))
                 .status(KitRequestStatus.CREATED)
+                .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
                 .build();
         return kitRequest;

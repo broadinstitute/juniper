@@ -76,7 +76,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .phoneNumber("111-222-3333")
                 .build();
 
-        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, "SALIVA");
+        KitRequest sampleKit = kitRequestService.assemble(adminUser, enrollee, expectedSentToAddress, new KitRequestService.KitRequestCreationDto("SALIVA", false));
 
         assertThat(sampleKit.getCreatingAdminUserId(), equalTo(adminUser.getId()));
         assertThat(sampleKit.getEnrolleeId(), equalTo(enrollee.getId()));
@@ -109,7 +109,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
 
         assertThrows(PepperApiException.class, () ->
-                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, kitType.getName())
+                kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), false))
         );
     }
 

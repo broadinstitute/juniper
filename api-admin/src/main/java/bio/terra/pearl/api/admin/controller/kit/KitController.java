@@ -8,10 +8,10 @@ import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -55,19 +55,6 @@ public class KitController implements KitApi {
   }
 
   @Override
-  public ResponseEntity<Object> requestKit(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      String enrolleeShortcode,
-      String kitType) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    KitRequestDto sampleKit =
-        kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType);
-    return ResponseEntity.ok(sampleKit);
-  }
-
-  @Override
   public ResponseEntity<Object> getKitRequests(
       String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
@@ -77,21 +64,36 @@ public class KitController implements KitApi {
   }
 
   @Override
+  public ResponseEntity<Object> requestKit(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      Object body) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    KitRequestService.KitRequestCreationDto creationDto =
+        objectMapper.convertValue(body, KitRequestService.KitRequestCreationDto.class);
+    KitRequestDto sampleKit =
+        kitExtService.requestKit(adminUser, studyShortcode, enrolleeShortcode, creationDto);
+    return ResponseEntity.ok(sampleKit);
+  }
+
+  @Override
   public ResponseEntity<Object> requestKits(
-      String kitType, String portalShortcode, String studyShortcode, String envName, Object body) {
+      String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    List<String> enrolleeShortcodes =
-        Arrays.asList(objectMapper.convertValue(body, String[].class));
+    KitRequestListCreationDto listCreationDto =
+        objectMapper.convertValue(body, KitRequestListCreationDto.class);
     KitExtService.KitRequestListResponse result =
         kitExtService.requestKits(
             adminUser,
             portalShortcode,
             studyShortcode,
             environmentName,
-            enrolleeShortcodes,
-            kitType);
+            listCreationDto.enrolleeShortcodes,
+            listCreationDto.creationDto);
 
     return ResponseEntity.ok(result);
   }
@@ -104,4 +106,7 @@ public class KitController implements KitApi {
     kitExtService.refreshKitStatuses(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.noContent().build();
   }
+
+  public record KitRequestListCreationDto(
+      KitRequestService.KitRequestCreationDto creationDto, List<String> enrolleeShortcodes) {}
 }

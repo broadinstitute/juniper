@@ -22,6 +22,7 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from '../../user/UserProvider'
+import { KitRequestDetails } from '../participants/KitRequests'
 
 type KitStatusTabConfig = {
   statuses: string[],
@@ -240,6 +241,11 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     header: 'Status',
     accessorKey: 'status',
     cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
+    enableColumnFilter: false
+  }, {
+    header: 'Details',
+    accessorKey: 'details',
+    cell: ({ row }) => <KitRequestDetails kitRequest={row.original}/>,
     enableColumnFilter: false
   }]
 
