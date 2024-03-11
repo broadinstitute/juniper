@@ -153,7 +153,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
 
     @Override
     public void preProcessDto(PortalPopDto popDto, FilePopulateContext context) {
-        popDto.setShortcode(context.getShortcodeOverride());
+        if (context.getShortcodeOverride() != null) {
+            popDto.setShortcode(context.getShortcodeOverride());
+            popDto.setName(context.getShortcodeOverride());
+        }
     }
 
     @Override

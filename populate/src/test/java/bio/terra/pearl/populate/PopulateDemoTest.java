@@ -160,6 +160,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testPopulateWithShortcodeOverride() {
+        setUpEnvironments();
         String newShortcode = RandomStringUtils.randomAlphabetic(6);
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, newShortcode), true);
         assertThat(portal.getShortcode(), equalTo(newShortcode));

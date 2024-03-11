@@ -138,6 +138,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     @Override
     public void preProcessDto(StudyPopDto popDto, PortalPopulateContext context) {
         popDto.setShortcode(context.applyShortcodeOverride(popDto.getShortcode()));
+        popDto.setName(context.applyShortcodeOverride(popDto.getName()));
     }
 
     @Override
