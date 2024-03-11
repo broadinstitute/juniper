@@ -13,6 +13,7 @@ import {
   EditNameModal,
   EditPhoneNumber
 } from './EditParticipantProfileModals'
+import { useI18n } from '../providers/I18nProvider'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -24,6 +25,8 @@ export function ParticipantProfile(
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
   const { ppUser, profile, updateProfile } = useUser()
+
+  const { i18n } = useI18n()
 
 
   // profile should already be up-to-date, but this
@@ -86,39 +89,39 @@ export function ParticipantProfile(
     <div className="row mx-0 justify-content-center py-5">
       <div className="col-12 col-sm-10 col-lg-6">
         {/*Readonly profile view*/}
-        <ProfileCard title="Profile">
-          <ProfileRow title={'Name'} onEdit={() => setShowEditFieldModal('givenName')}>
+        <ProfileCard title={i18n('profile')}>
+          <ProfileRow title={i18n('name')} onEdit={() => setShowEditFieldModal('givenName')}>
             <ProfileTextRow text={
               (profile.givenName || profile.familyName)
                 ? `${profile.givenName || ''} ${profile.familyName || ''}`
                 : undefined
             }/>
           </ProfileRow>
-          <ProfileRow title={'Birthday'} onEdit={() => setShowEditFieldModal('birthDate')}>
+          <ProfileRow title={i18n('birthday')} onEdit={() => setShowEditFieldModal('birthDate')}>
             <ProfileTextRow text={
               profile.birthDate && dateToDefaultString(profile.birthDate)
             }/>
           </ProfileRow>
         </ProfileCard>
 
-        <ProfileCard title="Mailing Address">
-          <ProfileRow title={'Primary Address'} onEdit={() => setShowEditFieldModal('mailingAddress')}>
+        <ProfileCard title={i18n('mailingAddress')}>
+          <ProfileRow title={i18n('primaryAddress')} onEdit={() => setShowEditFieldModal('mailingAddress')}>
             <ReadOnlyAddress address={profile.mailingAddress}/>
           </ProfileRow>
         </ProfileCard>
 
-        <ProfileCard title="Communication Preferences">
-          <ProfileRow title={'Contact Email'} onEdit={() => setShowEditFieldModal('contactEmail')}>
+        <ProfileCard title={i18n('communicationPreferences')}>
+          <ProfileRow title={i18n('contactEmail')} onEdit={() => setShowEditFieldModal('contactEmail')}>
             <ProfileTextRow text={profile.contactEmail}/>
           </ProfileRow>
-          <ProfileRow title={'Phone Number'} onEdit={() => setShowEditFieldModal('phoneNumber')}>
+          <ProfileRow title={i18n('phoneNumber')} onEdit={() => setShowEditFieldModal('phoneNumber')}>
             <ProfileTextRow text={profile.phoneNumber}/>
           </ProfileRow>
-          <ProfileRow title={'Notifications'} onEdit={() => setShowEditFieldModal('doNotEmail')}>
-            <ProfileTextRow text={profile.doNotEmail ? 'Off' : 'On'}/>
+          <ProfileRow title={i18n('notifications')} onEdit={() => setShowEditFieldModal('doNotEmail')}>
+            <ProfileTextRow text={profile.doNotEmail ? i18n('off') : i18n('on')}/>
           </ProfileRow>
-          <ProfileRow title={'Do Not Solicit'} onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
-            <ProfileTextRow text={profile.doNotEmailSolicit ? 'On' : 'Off'}/>
+          <ProfileRow title={i18n('doNotSolicit')} onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
+            <ProfileTextRow text={profile.doNotEmailSolicit ? i18n('on') : i18n('off')}/>
           </ProfileRow>
         </ProfileCard>
 
@@ -139,9 +142,10 @@ function ProfileCard({ title, children }: { title: string, children: React.React
 }
 
 const ProfileTextRow = ({ text }: { text: string | undefined }) => {
+  const { i18n } = useI18n()
   return (!isEmpty(text)
     ? <p className="m-0">{text}</p>
-    : <p className="m-0 fst-italic text-secondary">Not provided</p>
+    : <p className="m-0 fst-italic text-secondary">{i18n('notProvided')}</p>
   )
 }
 
@@ -182,7 +186,7 @@ function ProfileRow(
     <HorizontalBar/>
     <div className="d-flex w-100 align-content-center">
       <div className="w-25">
-        <p className="m-0 pb-3 pt-3 fw-bold">{title}</p>
+        <p className="m-0 pb-3 pt-3 pe-2 fw-bold">{title}</p>
       </div>
       <div className="flex-grow-1 pb-3 pt-3">
         {children}

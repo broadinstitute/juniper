@@ -1,7 +1,7 @@
 import React from 'react'
 import { I18nContext, I18nContextT } from 'providers/I18nProvider'
 
-export const mockTextsDefault: Record<string, string> = { taskTypeConsent: 'Consent', taskStart: 'Start' }
+export const mockTextsDefault: Record<string, string> = { taskTypeConsent: 'Consent', start: 'Start' }
 
 /**
  * Returns a MockI18nProvider. Used to test components that need an I18nContext

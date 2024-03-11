@@ -157,7 +157,7 @@ export default function Navbar(props: NavbarProps) {
                   <hr className="dropdown-divider d-none d-lg-block"/>
                   <NavLink to="/hub/profile">
                     <button className="dropdown-item">
-                      {i18n('navbarProfile')}
+                      {i18n('profile')}
                     </button>
                   </NavLink>
                   <button className="dropdown-item" onClick={doChangePassword}>

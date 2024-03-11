@@ -3,6 +3,8 @@ import { Profile } from '../api/api'
 import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
+import { useI18n } from '../providers/I18nProvider'
+import { useUser } from '../providers/UserProvider'
 
 
 // skeleton for all profile edit modals
@@ -13,10 +15,11 @@ function ProfileRowEditModal(
     title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void
   }
 ) {
+  const { i18n } = useI18n()
   return <ThemedModal show={true} onHide={onDismiss} size={'lg'}>
     <Modal.Header>
       <Modal.Title>
-        <h2 className="fw-bold pb-0 mb-0">Edit {title}</h2>
+        <h2 className="fw-bold pb-0 mb-0">{title}</h2>
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
@@ -24,8 +27,8 @@ function ProfileRowEditModal(
     </Modal.Body>
     <Modal.Footer>
       <div className={'d-flex w-100'}>
-        <button className={'btn btn-primary m-2'} onClick={onSave}>Save</button>
-        <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>Cancel</button>
+        <button className={'btn btn-primary m-2'} onClick={onSave}>{i18n('save')}</button>
+        <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>{i18n('cancel')}</button>
       </div>
     </Modal.Footer>
   </ThemedModal>
@@ -36,7 +39,6 @@ type EditModalProps = {
   profile: Profile,
   dismissModal: () => void,
   save: (p: Profile) => void
-
 }
 
 // internal profile editing methods
@@ -46,6 +48,8 @@ const useProfileEditMethods = (props: EditModalProps) => {
     dismissModal,
     save
   } = props
+
+  const { i18n } = useI18n()
 
   const [editedProfile, setEditedProfile] = useState<Profile>(profile)
 
@@ -87,7 +91,8 @@ const useProfileEditMethods = (props: EditModalProps) => {
     onSave,
     onDateFieldChange,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   }
 }
 
@@ -99,36 +104,37 @@ export function EditNameModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={'Name'}
+    title={i18n('editName')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div className={'d-flex w-100'}>
       <div className={'w-50 p-1'}>
         <label htmlFor={'givenName'} className={'fs-6 fw-bold'}>
-          Given Name
+          {i18n('givenName')}
         </label>
         <input
           className={'form-control'}
           id={'givenName'}
           value={editedProfile.givenName}
           onChange={e => onFieldChange('givenName', e.target.value)}
-          placeholder={'Given Name'}/>
+          placeholder={i18n('givenName')}/>
       </div>
       <div className={'w-50 p-1'}>
         <label htmlFor={'familyName'} className={'fs-6 fw-bold'}>
-          Family Name
+          {i18n('familyName')}
         </label>
         <input
           className={'form-control'}
           id={'familyName'}
           value={editedProfile.familyName}
           onChange={e => onFieldChange('familyName', e.target.value)}
-          placeholder={'Family Name'}/>
+          placeholder={i18n('familyName')}/>
       </div>
     </div>
   </ProfileRowEditModal>
@@ -142,21 +148,22 @@ export function EditBirthDateModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onDateFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={'Birthday'}
+    title={i18n('editBirthday')}
     onSave={onSave}
     onDismiss={onDismiss}>
 
     <label htmlFor={'birthDate'} className={'fs-6 fw-bold'}>
-      Birthday
+      {i18n('birthday')}
     </label>
     <input className="form-control" type="date" id='birthDate'
       defaultValue={javaLocalDateToJsDate(editedProfile.birthDate)?.toISOString().split('T')[0] || ''}
-      placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
+      placeholder={i18n('birthday')} max={'9999-12-31'} aria-label={i18n('birthday')}
       onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
 
   </ProfileRowEditModal>
@@ -170,17 +177,18 @@ export function EditPhoneNumber(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={'Phone Number'}
+    title={i18n('editPhoneNumber')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div>
       <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
-        Phone Number
+        {i18n('phoneNumber')}
       </label>
       <input
         className={'form-control'}
@@ -188,7 +196,7 @@ export function EditPhoneNumber(props: EditModalProps) {
         id={'phoneNumber'}
         value={editedProfile.phoneNumber}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}
-        placeholder={'Phone Number'}/>
+        placeholder={i18n('phoneNumber')}/>
     </div>
   </ProfileRowEditModal>
 }
@@ -201,18 +209,18 @@ export function EditContactEmail(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={'Contact Email'}
+    title={i18n('editContactEmail')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div>
       <p className="fst-italic">
-        Press &quot;Save&quot; to update the email used for communication. Note that your login information will not
-        change.
+        {i18n('editProfileContactEmailWarning')}
       </p>
       <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
         Email
@@ -222,7 +230,7 @@ export function EditContactEmail(props: EditModalProps) {
         id={'contactEmail'}
         value={editedProfile.contactEmail}
         onChange={e => onFieldChange('contactEmail', e.target.value)}
-        placeholder={'Email'}/>
+        placeholder={i18n('contactEmail')}/>
     </div>
   </ProfileRowEditModal>
 }
@@ -235,12 +243,13 @@ export function EditCommunicationPreferences(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={'Communication Preferences'}
+    title={i18n('editCommunicationPreferences')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div className='row mt-2'>
@@ -248,10 +257,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
-            aria-label={'Do Not Email'}
+            aria-label={i18n('doNotContact')}
             onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotEmailCheckbox">
-            Do Not Email
+            {i18n('doNotContact')}
           </label>
         </div>
       </div>
@@ -259,10 +268,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmailSolicit}
-            id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
+            id="doNotSolicitCheckbox" aria-label={i18n('doNotSolicit')}
             onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
-            Do Not Solicit
+            {i18n('doNotSolicit')}
           </label>
         </div>
       </div>
@@ -278,7 +287,8 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile
+    editedProfile,
+    i18n
   } = useProfileEditMethods(props)
 
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
@@ -296,6 +306,9 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onFieldChange('mailingAddress', mailingAddress)
   }, [mailingAddress])
 
+  const { selectedLanguage } = useUser()
+
+
   return <ProfileRowEditModal
     title={'Mailing Address'}
     onSave={onSave}
@@ -303,8 +316,9 @@ export function EditMailingAddressModal(props: EditModalProps) {
     <EditAddress
       mailingAddress={mailingAddress}
       setMailingAddress={setMailingAddress}
-      language={'en'}
       showLabels={true}
+      language={selectedLanguage || 'en'}
+      i18n={i18n}
     />
   </ProfileRowEditModal>
 }
