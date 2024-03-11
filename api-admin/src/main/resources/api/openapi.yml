@@ -1327,6 +1327,7 @@ paths:
       parameters:
         - { name: filePathName, in: query, required: true, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       responses:
         '201':
           description: portal object
@@ -1343,7 +1344,7 @@ paths:
       operationId: uploadPortal
       parameters:
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
-        - { name: shortcodeOverride, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       requestBody:
         content:
           multipart/form-data:

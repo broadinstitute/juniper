@@ -15,6 +15,7 @@ import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -57,18 +58,25 @@ public class PopulateController implements PopulateApi {
   }
 
   @Override
-  public ResponseEntity<Object> populatePortal(String filePathName, Boolean overwrite) {
+  public ResponseEntity<Object> populatePortal(
+      String filePathName, Boolean overwrite, String shortcodeOverride) {
     AdminUser user = authUtilService.requireAdminUser(request);
+    if (StringUtils.isBlank(shortcodeOverride)) {
+      shortcodeOverride = null;
+    }
     Portal populatedObj =
-        populateExtService.populatePortal(filePathName, user, Boolean.TRUE.equals(overwrite));
+        populateExtService.populatePortal(
+            filePathName, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
     return ResponseEntity.ok(populatedObj);
   }
 
   @Override
-  public ResponseEntity<Object> uploadPortal(Boolean overwrite, MultipartFile portalZip, String shortcodeOverride) {
+  public ResponseEntity<Object> uploadPortal(
+      Boolean overwrite, String shortcodeOverride, MultipartFile portalZip) {
     AdminUser user = authUtilService.requireAdminUser(request);
     Portal populatedObj =
-        populateExtService.populatePortal(portalZip, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
+        populateExtService.populatePortal(
+            portalZip, user, Boolean.TRUE.equals(overwrite), shortcodeOverride);
     return ResponseEntity.ok(populatedObj);
   }
 

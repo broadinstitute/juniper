@@ -69,7 +69,8 @@ public class PopulateExtService {
     }
   }
 
-  public Portal populatePortal(MultipartFile zipFile, AdminUser user, boolean overwrite, String shortcodeOverride) {
+  public Portal populatePortal(
+      MultipartFile zipFile, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
     try {
       ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
@@ -79,9 +80,11 @@ public class PopulateExtService {
     }
   }
 
-  public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
+  public Portal populatePortal(
+      String filePathName, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
-    return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
+    return portalPopulator.populate(
+        new FilePopulateContext(filePathName, false, shortcodeOverride), overwrite);
   }
 
   public Survey populateSurvey(
