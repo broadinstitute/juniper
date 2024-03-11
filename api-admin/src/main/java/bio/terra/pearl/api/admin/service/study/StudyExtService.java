@@ -100,7 +100,7 @@ public class StudyExtService {
 
     PortalPopulateContext config =
         new PortalPopulateContext(
-            "templates/" + filename, portalShortcode, null, new HashMap<>(), false);
+            "templates/" + filename, portalShortcode, null, new HashMap<>(), false, null);
 
     StudyPopDto studyPopDto;
 
