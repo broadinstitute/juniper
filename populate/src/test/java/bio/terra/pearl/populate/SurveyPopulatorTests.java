@@ -50,7 +50,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         Portal portal = portalFactory.buildPersisted(getTestName(info));
         String surveyFile = "portals/ourhealth/studies/ourheart/surveys/basic.json";
         PortalPopulateContext context =
-                new PortalPopulateContext(surveyFile, portal.getShortcode(), null, new HashMap<>(), false);
+                new PortalPopulateContext(surveyFile, portal.getShortcode(), null, new HashMap<>(), false, null);
         Survey freshSurvey = surveyPopulator.populate(context, false);
         checkSurvey(freshSurvey, "oh_oh_basicInfo", 1);
 
@@ -73,7 +73,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
                 .jsonContent(objectMapper.readTree("{\"foo\": 12}"))
                 .name("Survey 1").build();
         PortalPopulateContext context =
-                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false);
+                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false, null);
         Survey newSurvey = surveyPopulator.populateFromDto(popDto1, context, true);
         checkSurvey(newSurvey, stableId, 1);
 
@@ -83,7 +83,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
                 .jsonContent(objectMapper.readTree("{\"foo\":17}"))
                 .name("Survey 1").build();
         PortalPopulateContext context2 =
-                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false);
+                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false, null);
         Survey overrideSurvey = surveyPopulator.populateFromDto(popDto2, context, true);
         // should override the previous survey, and so still be version 1
         checkSurvey(overrideSurvey, stableId, 1);
@@ -102,7 +102,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
                 .jsonContent(objectMapper.readTree("{\"foo\": 12}"))
                 .name("Survey 1").build();
         PortalPopulateContext context =
-                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false);
+                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false, null);
         Survey newSurvey = surveyPopulator.populateFromDto(popDto1, context, true);
         checkSurvey(newSurvey, stableId, 1);
 
@@ -112,7 +112,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
                 .jsonContent(objectMapper.readTree("{\"foo\":17}"))
                 .name("Survey 1").build();
         PortalPopulateContext context2 =
-                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false);
+                new PortalPopulateContext("fake/file", portal.getShortcode(), null, new HashMap<>(), false, null);
         Survey overrideSurvey = surveyPopulator.populateFromDto(popDto2, context, false);
 
         // should NOT override the previous survey, and so still be saved as version 2

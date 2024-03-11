@@ -1262,8 +1262,9 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async populatePortal(fileName: string, overwrite: boolean) {
-    const url = `${basePopulateUrl()}/portal?filePathName=${fileName}&overwrite=${overwrite}`
+  async populatePortal(fileName: string, overwrite: boolean, shortcodeOverride: string | undefined) {
+    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride  })
+    const url = `${basePopulateUrl()}/portal?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -1271,9 +1272,10 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async uploadPortal(file: File, overwrite: boolean):
+  async uploadPortal(file: File, overwrite: boolean, shortcodeOverride: string | undefined):
     Promise<SiteMediaMetadata> {
-    const url = `${basePopulateUrl()}/portal/upload?overwrite=${overwrite}`
+    const params = queryString.stringify({ overwrite, shortcodeOverride })
+    const url = `${basePopulateUrl()}/portal/upload?${params}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
     const formData = new FormData()
