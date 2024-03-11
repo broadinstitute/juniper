@@ -5,6 +5,7 @@ import { setupRouterTest } from '../test-utils/router-testing-utils'
 import ProvideFullTestUserContext from '../test-utils/ProvideFullTestUserContext'
 import { ParticipantProfile } from './ParticipantProfile'
 import userEvent from '@testing-library/user-event'
+import { MockI18nProvider } from '../test-utils/i18n-testing-utils'
 
 const jsalkProfile: Profile = {
   givenName: 'Jonas',
@@ -25,6 +26,25 @@ const jsalkProfile: Profile = {
   sexAtBirth: 'M'
 }
 
+const labels = {
+  off: 'Off',
+  on: 'On',
+  notProvided: 'Not provided',
+  editName: 'Edit Name',
+  editBirthday: 'Edit Birthday',
+  editDoNotSolicit: 'Edit Do Not Solicit',
+  editNotifications: 'Edit Notifications',
+  editPrimaryAddress: 'Edit Primary Address',
+  editContactEmail: 'Edit Contact Email',
+  editPhoneNumber: 'Edit Phone Number',
+  editMailingAddress: 'Edit Mailing Address',
+  editCommunicationPreferences: 'Edit Communication Preferences',
+  givenName: 'Given Name',
+  familyName: 'Family Name',
+  save: 'Save',
+  cancel: 'Cancel'
+}
+
 
 test('renders jsalk profile', async () => {
   jest.spyOn(Api, 'findProfile').mockImplementation(
@@ -35,7 +55,9 @@ test('renders jsalk profile', async () => {
     <ProvideFullTestUserContext
       profile={jsalkProfile}
     >
-      <ParticipantProfile/>
+      <MockI18nProvider mockTexts={labels}>
+        <ParticipantProfile/>
+      </MockI18nProvider>
     </ProvideFullTestUserContext>)
   render(RoutedComponent)
 
@@ -60,7 +82,9 @@ test('renders empty profile', async () => {
     <ProvideFullTestUserContext
       profile={{}}
     >
-      <ParticipantProfile/>
+      <MockI18nProvider mockTexts={labels}>
+        <ParticipantProfile/>
+      </MockI18nProvider>
     </ProvideFullTestUserContext>)
   render(RoutedComponent)
 
@@ -81,7 +105,9 @@ test('opens expected modals', async () => {
     <ProvideFullTestUserContext
       profile={jsalkProfile}
     >
-      <ParticipantProfile/>
+      <MockI18nProvider mockTexts={labels}>
+        <ParticipantProfile/>
+      </MockI18nProvider>
     </ProvideFullTestUserContext>)
   render(RoutedComponent)
 
@@ -152,7 +178,9 @@ test('updates name properly', async () => {
       profile={jsalkProfile}
       ppUser={{ id: 'testppuserid', profile: jsalkProfile, profileId: '' }}
     >
-      <ParticipantProfile/>
+      <MockI18nProvider mockTexts={labels}>
+        <ParticipantProfile/>
+      </MockI18nProvider>
     </ProvideFullTestUserContext>)
   render(RoutedComponent)
 

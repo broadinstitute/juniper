@@ -310,7 +310,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
 
 
   return <ProfileRowEditModal
-    title={'Mailing Address'}
+    title={i18n('editMailingAddress')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <EditAddress

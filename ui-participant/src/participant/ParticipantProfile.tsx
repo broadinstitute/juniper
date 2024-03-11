@@ -90,14 +90,21 @@ export function ParticipantProfile(
       <div className="col-12 col-sm-10 col-lg-6">
         {/*Readonly profile view*/}
         <ProfileCard title={i18n('profile')}>
-          <ProfileRow title={i18n('name')} onEdit={() => setShowEditFieldModal('givenName')}>
+          <ProfileRow
+            title={i18n('name')}
+            editLabel={i18n('editName')}
+            onEdit={() => setShowEditFieldModal('givenName')}>
             <ProfileTextRow text={
               (profile.givenName || profile.familyName)
                 ? `${profile.givenName || ''} ${profile.familyName || ''}`
                 : undefined
             }/>
           </ProfileRow>
-          <ProfileRow title={i18n('birthday')} onEdit={() => setShowEditFieldModal('birthDate')}>
+          <ProfileRow
+            title={i18n('birthday')}
+            editLabel={i18n('editBirthday')}
+            onEdit={() => setShowEditFieldModal('birthDate')}
+          >
             <ProfileTextRow text={
               profile.birthDate && dateToDefaultString(profile.birthDate)
             }/>
@@ -105,22 +112,37 @@ export function ParticipantProfile(
         </ProfileCard>
 
         <ProfileCard title={i18n('mailingAddress')}>
-          <ProfileRow title={i18n('primaryAddress')} onEdit={() => setShowEditFieldModal('mailingAddress')}>
+          <ProfileRow
+            title={i18n('primaryAddress')}
+            editLabel={i18n('editPrimaryAddress')}
+            onEdit={() => setShowEditFieldModal('mailingAddress')}>
             <ReadOnlyAddress address={profile.mailingAddress}/>
           </ProfileRow>
         </ProfileCard>
 
         <ProfileCard title={i18n('communicationPreferences')}>
-          <ProfileRow title={i18n('contactEmail')} onEdit={() => setShowEditFieldModal('contactEmail')}>
+          <ProfileRow
+            title={i18n('contactEmail')}
+            editLabel={i18n('editContactEmail')}
+            onEdit={() => setShowEditFieldModal('contactEmail')}>
             <ProfileTextRow text={profile.contactEmail}/>
           </ProfileRow>
-          <ProfileRow title={i18n('phoneNumber')} onEdit={() => setShowEditFieldModal('phoneNumber')}>
+          <ProfileRow
+            title={i18n('phoneNumber')}
+            editLabel={i18n('editPhoneNumber')}
+            onEdit={() => setShowEditFieldModal('phoneNumber')}>
             <ProfileTextRow text={profile.phoneNumber}/>
           </ProfileRow>
-          <ProfileRow title={i18n('notifications')} onEdit={() => setShowEditFieldModal('doNotEmail')}>
+          <ProfileRow
+            title={i18n('notifications')}
+            editLabel={i18n('editNotifications')}
+            onEdit={() => setShowEditFieldModal('doNotEmail')}>
             <ProfileTextRow text={profile.doNotEmail ? i18n('off') : i18n('on')}/>
           </ProfileRow>
-          <ProfileRow title={i18n('doNotSolicit')} onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
+          <ProfileRow
+            title={i18n('doNotSolicit')}
+            editLabel={i18n('editDoNotSolicit')}
+            onEdit={() => setShowEditFieldModal('doNotEmailSolicit')}>
             <ProfileTextRow text={profile.doNotEmailSolicit ? i18n('on') : i18n('off')}/>
           </ProfileRow>
         </ProfileCard>
@@ -177,9 +199,9 @@ const HorizontalBar = () => {
 
 function ProfileRow(
   {
-    title, children, onEdit
+    title, editLabel, children, onEdit
   }: {
-    title: string, children: React.ReactNode, onEdit: () => void
+    title: string, editLabel: string, children: React.ReactNode, onEdit: () => void
   }
 ) {
   return <>
@@ -195,7 +217,7 @@ function ProfileRow(
         <button
           className="btn btn-outline-primary float-end"
           onClick={onEdit}
-          aria-label={`Edit ${title}`}
+          aria-label={editLabel}
         >
           <FontAwesomeIcon icon={faPencil} className={''}/>
         </button>
