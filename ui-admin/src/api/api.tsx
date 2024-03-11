@@ -375,6 +375,14 @@ export type TaskUpdateSpec = {
   newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
 }
 
+export type StudyTemplate = 'BASIC' | undefined
+
+export type StudyCreationDto = {
+  shortcode: string,
+  name: string,
+  template: StudyTemplate
+}
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -489,7 +497,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createStudy(portalShortcode: string, study: { shortcode: string, name: string }): Promise<Study> {
+  async createStudy(portalShortcode: string, study: StudyCreationDto): Promise<Study> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies`
     const response = await fetch(url, {
       method: 'POST',

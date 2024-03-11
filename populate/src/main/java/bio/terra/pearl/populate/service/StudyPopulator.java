@@ -1,8 +1,5 @@
 package bio.terra.pearl.populate.service;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
@@ -34,6 +31,9 @@ import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopulateContext> {

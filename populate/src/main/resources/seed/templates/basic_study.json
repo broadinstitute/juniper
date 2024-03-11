@@ -1,0 +1,123 @@
+{
+  "name" : "Study Template",
+  "shortcode" : "template",
+  "studyPortals" : [ ],
+  "surveyFiles" : [ ],
+  "consentFormFiles" : [ ],
+  "emailTemplateFiles": [
+    "emails/surveyReminder.json",
+    "emails/kitSent.json",
+    "emails/kitReturned.json",
+    "emails/consentReminder.json",
+    "emails/enrollment.json",
+    "emails/consentSigned.json"
+  ],
+  "studyEnvironmentDtos" : [ {
+    "environmentName" : "sandbox",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : true,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : true
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/consentReminder.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "KIT_RECEIVED",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/kitReturned.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/enrollment.json"
+    }, {
+      "active" : true,
+      "triggerType" : "TASK_REMINDER",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_ENROLLMENT",
+      "taskType" : "SURVEY",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 10080,
+      "maxNumReminders" : 2,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/surveyReminder.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "KIT_SENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/kitSent.json"
+    }, {
+      "active" : true,
+      "triggerType" : "EVENT",
+      "deliveryType" : "EMAIL",
+      "eventType" : "STUDY_CONSENT",
+      "afterMinutesIncomplete" : 4320,
+      "reminderIntervalMinutes" : 4320,
+      "maxNumReminders" : 3,
+      "emailTemplateVersion" : 0,
+      "populateFileName" : "emails/consentSigned.json"
+    }],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ]
+  }, {
+    "environmentName" : "irb",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : true,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : false
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ]
+  }, {
+    "environmentName" : "live",
+    "studyEnvironmentConfig" : {
+      "passwordProtected" : true,
+      "password" : "broad_institute",
+      "acceptingEnrollment" : true,
+      "initialized" : false
+    },
+    "triggers" : [ ],
+    "configuredSurveyDtos" : [ ],
+    "configuredConsentDtos" : [ ],
+    "triggerDtos" : [ ],
+    "preEnrollmentResponseDtos" : [ ],
+    "kitTypeNames" : [ ],
+    "enrolleeFiles" : [ ]
+  } ]
+}

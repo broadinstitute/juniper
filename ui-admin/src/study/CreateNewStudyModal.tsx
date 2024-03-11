@@ -5,7 +5,7 @@ import Select from 'react-select'
 import { Portal } from '@juniper/ui-core'
 import useReactSingleSelect from 'util/react-select-utils'
 import LoadingSpinner from '../util/LoadingSpinner'
-import Api from '../api/api'
+import Api, { StudyTemplate } from '../api/api'
 import { doApiLoad } from '../api/api-utils'
 import { successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
@@ -17,6 +17,12 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
   const { portalList, reload } = useNavContext()
   const [studyName, setStudyName] = useState('')
   const [studyShortcode, setStudyShortcode] = useState('')
+  const [template, setTemplate] = useState<{ value: string, label: string } | undefined>(
+    { value: 'BASIC', label: 'Basic' }
+  )
+  const templateOptions = [
+    { value: 'BASIC', label: 'Basic' }
+  ]
   const [selectedPortal, setSelectedPortal] = useState<Portal | undefined>(portalList[0])
   const { onChange, options, selectedOption, selectInputId } =
         useReactSingleSelect(
@@ -30,7 +36,7 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
     if (!selectedPortal) { return }
     doApiLoad(async () => {
       await Api.createStudy(selectedPortal.shortcode, {
-        shortcode: studyShortcode, name: studyName
+        shortcode: studyShortcode, name: studyName, template: template?.value as StudyTemplate
       })
       Store.addNotification(successNotification('Study created'))
       reload()
@@ -59,6 +65,15 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
                     indicate this study.  Must be all lowercase with no spaces`}/>
         <input type="text" size={20} id="studyShortcode" className="form-control" value={studyShortcode}
           onChange={e => setStudyShortcode(e.target.value.trim().toLowerCase())}/>
+
+        <label className="form-label mt-3" htmlFor="studyTemplate">
+          Study Template
+        </label>
+        <Select
+          id="studyTemplate"
+          value={template}
+          onChange={val => val ? setTemplate(val) : setTemplate(undefined)}
+          options={templateOptions} isClearable={true}/>
       </form>
     </Modal.Body>
     <Modal.Footer>
