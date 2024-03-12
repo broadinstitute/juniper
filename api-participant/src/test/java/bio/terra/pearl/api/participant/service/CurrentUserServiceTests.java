@@ -6,10 +6,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -23,9 +28,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class CurrentUserServiceTests extends BaseSpringBootTest {
   @Autowired CurrentUserService currentUserService;
+  @Autowired PortalParticipantUserService portalParticipantUserService;
   @Autowired ParticipantUserFactory participantUserFactory;
   @Autowired PortalEnvironmentFactory portalEnvironmentFactory;
+  @Autowired StudyEnvironmentFactory studyEnvironmentFactory;
   @Autowired PortalService portalService;
+  @Autowired EnrolleeFactory enrolleeFactory;
 
   @Test
   @Transactional
@@ -51,14 +59,10 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
     String token = generateFakeJwtToken(userBundle.user().getUsername());
 
-    try {
-      CurrentUserService.UserWithEnrollees loadedUser =
-          currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
-      assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
-      assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
-    } catch (Exception e) {
-      Assertions.fail("Unexpected exception: " + e.getMessage());
-    }
+    CurrentUserService.UserLoginDto loadedUser =
+        currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
+    assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
+    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
 
     String missingUsername = "missing" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
     String missingUserToken = generateFakeJwtToken(missingUsername);
@@ -72,6 +76,66 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
           containsString(
               "User not found for environment %s".formatted(portalEnv.getEnvironmentName())));
     }
+  }
+
+  @Test
+  @Transactional
+  public void testUserLoginWithEnrollees(TestInfo info) {
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+    EnrolleeFactory.EnrolleeBundle enrolleeBundle =
+        enrolleeFactory.buildWithPortalUser(
+            getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+
+    String token = generateFakeJwtToken(enrolleeBundle.participantUser().getUsername());
+
+    // see if we can login with the user while they have one enrollee
+    CurrentUserService.UserLoginDto loadedUser =
+        currentUserService.tokenLogin(
+            token,
+            studyEnvBundle.getPortal().getShortcode(),
+            studyEnvBundle.getStudyEnv().getEnvironmentName());
+    assertThat(
+        loadedUser.user().getUsername(), equalTo(enrolleeBundle.participantUser().getUsername()));
+    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+    assertThat(loadedUser.enrollees(), hasSize(1));
+
+    // now see if we can do it with two enrollees attached to the user
+    StudyEnvironment studyEnv2 =
+        studyEnvironmentFactory.buildPersisted(studyEnvBundle.getPortalEnv(), getTestName(info));
+    Enrollee enrollee2 =
+        enrolleeFactory.buildPersisted(
+            getTestName(info),
+            studyEnv2.getId(),
+            enrolleeBundle.participantUser().getId(),
+            enrolleeBundle.portalParticipantUser().getProfileId());
+    loadedUser =
+        currentUserService.tokenLogin(
+            token,
+            studyEnvBundle.getPortal().getShortcode(),
+            studyEnvBundle.getStudyEnv().getEnvironmentName());
+    assertThat(
+        loadedUser.user().getUsername(), equalTo(enrolleeBundle.participantUser().getUsername()));
+    assertThat(loadedUser.enrollees(), hasSize(2));
+  }
+
+  @Test
+  @Transactional
+  public void testUserLoginWithProxy(TestInfo info) {
+    String email = "proxy" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
+    EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy =
+        enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), email);
+    String token = generateFakeJwtToken(email);
+    String portalShortcode =
+        portalService.find(enrolleeAndProxy.portalEnv().getPortalId()).get().getShortcode();
+    // see if we can login with the user while they have one enrollee
+    CurrentUserService.UserLoginDto loadedUser =
+        currentUserService.tokenLogin(
+            token, portalShortcode, enrolleeAndProxy.portalEnv().getEnvironmentName());
+    assertThat(loadedUser.user().getUsername(), equalTo(email));
+    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+    assertThat(loadedUser.enrollees(), hasSize(1));
+    assertThat(loadedUser.relations(), hasSize(1));
   }
 
   @Test

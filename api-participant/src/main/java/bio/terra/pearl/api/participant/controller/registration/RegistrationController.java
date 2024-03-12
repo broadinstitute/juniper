@@ -44,9 +44,9 @@ public class RegistrationController implements RegistrationApi {
     String token = requestUtilService.requireToken(request);
     registrationService.register(
         portalShortcode, environmentName, body.getEmail(), preRegResponseId);
-    CurrentUserService.UserWithEnrollees userWithEnrollees =
+    CurrentUserService.UserLoginDto userLoginDto =
         currentUserService.tokenLogin(token, portalShortcode, environmentName);
-    return ResponseEntity.ok(userWithEnrollees);
+    return ResponseEntity.ok(userLoginDto);
   }
 
   @Override
@@ -59,12 +59,14 @@ public class RegistrationController implements RegistrationApi {
             portalShortcode, environmentName, body.getEmail(), preRegResponseId);
     // log in the user if not already
     if (registrationResult.participantUser().getToken() == null) {
-      CurrentUserService.UserWithEnrollees loggedInUser =
+      CurrentUserService.UserLoginDto loggedInUser =
           currentUnauthedUserService.unauthedLogin(
               registrationResult.participantUser().getUsername(), portalShortcode, environmentName);
       registrationResult =
           new RegistrationService.RegistrationResult(
-              loggedInUser.user(), registrationResult.portalParticipantUser());
+              loggedInUser.user(),
+              registrationResult.portalParticipantUser(),
+              registrationResult.profile());
     }
     return ResponseEntity.ok(registrationResult);
   }

@@ -6,8 +6,11 @@ import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -73,6 +76,12 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected ConsentFormService consentFormService;
     @Autowired
     protected SiteContentService siteContentService;
+    @Autowired
+    protected EnrolleeRelationService enrolleeRelationService;
+    @Autowired
+    protected PortalParticipantUserService portalParticipantUserService;
+    @Autowired
+    protected ProfileService profileService;
 
     protected void setUpEnvironments() {
         for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {

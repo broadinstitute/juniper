@@ -1,5 +1,7 @@
 import {
+  AddressValidationResult,
   ConsentResponse,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -52,7 +54,9 @@ export type ParticipantUser = {
 
 export type LoginResult = {
   user: ParticipantUser,
-  enrollees: Enrollee[]
+  ppUser: PortalParticipantUser,
+  enrollees: Enrollee[],
+  profile: Profile
 }
 
 export type Enrollee = {
@@ -73,7 +77,15 @@ export type Enrollee = {
 }
 
 export type Profile = {
-  sexAtBirth: string
+  givenName?: string,
+  familyName?: string,
+  contactEmail?: string,
+  doNotEmail?: boolean,
+  doNotEmailSolicit?: boolean,
+  mailingAddress?: MailingAddress,
+  phoneNumber?: string,
+  birthDate?: number[],
+  sexAtBirth?: string
 }
 
 export type KitRequest = {
@@ -95,7 +107,8 @@ export type KitType = {
 
 export type RegistrationResponse = {
   participantUser: ParticipantUser,
-  portalParticipantUser: PortalParticipantUser
+  portalParticipantUser: PortalParticipantUser,
+  profile: Profile
 }
 
 export type ConsentWithResponses = {
@@ -125,7 +138,9 @@ export type TaskWithSurvey = {
 }
 
 export type PortalParticipantUser = {
-  profile: object
+  profile: Profile,
+  profileId: string,
+  id: string
 }
 
 export type Config = {
@@ -194,6 +209,12 @@ export default {
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
     return parsedResponse
+  },
+
+  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
+    const url = `${API_ROOT}/public/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
   },
 
   async getPortalEnvDashboardAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
@@ -383,6 +404,46 @@ export default {
     return await this.processJsonResponse(result, { alertErrors })
   },
 
+  async findProfile(
+    {
+      ppUserId, alertErrors = true
+    }: {
+      ppUserId: string, alertErrors?: boolean
+    }
+  ): Promise<Profile> {
+    const url = `${baseEnvUrl(false)}/portalParticipantUsers/${ppUserId}/profile`
+
+    const response = await fetch(url, { headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response, { alertErrors })
+  },
+
+  async updateProfile(
+    {
+      profile, ppUserId, alertErrors = true
+    }: {
+      profile: Profile, ppUserId: string, alertErrors?: boolean
+    }
+  ): Promise<Profile> {
+    const url = `${baseEnvUrl(false)}/portalParticipantUsers/${ppUserId}/profile`
+
+    const result = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(profile)
+    })
+    return await this.processJsonResponse(result, { alertErrors })
+  },
+
+  async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
+    const url = `${baseEnvUrl(false)}/address/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async submitMailingListContact(name: string, email: string) {
     const url = `${baseEnvUrl(true)}/mailingListContact`
     const result = await fetch(url, {
@@ -484,7 +545,7 @@ function baseStudyEnvUrl(isPublic: boolean, studyShortcode: string) {
  * Returns a url suitable for inclusion in an <img> tag based on a image shortcode
  */
 export function getImageUrl(cleanFileName: string, version: number) {
-  return `${baseEnvUrl(true)}/siteImages/${version}/${cleanFileName}`
+  return `${baseEnvUrl(true)}/siteMedia/${version}/${cleanFileName}`
 }
 
 export type EnvSpec = {

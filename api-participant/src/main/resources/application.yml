@@ -15,6 +15,10 @@ env:
     basePath: ${DSM_ADDRESS:https://dsm-dev.datadonationplatform.org/dsm}
     issuerClaim: ${DSM_JWT_ISSUER:admin-d2p.ddp-dev.envs.broadinstitute.org}
     secret: ${DSM_JWT_SIGNING_SECRET:}
+  addrValidation:
+    addrValidationServiceClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationServiceStub}
+    smartyAuthId: ${SMARTY_AUTH_ID:}
+    smartyAuthToken: ${SMARTY_AUTH_TOKEN:}
   swagger:
     # if true, the swagger UI page will be made available at swagger-ui.html -- should be false for production
     enabled: ${SWAGGER_ENABLED:false}

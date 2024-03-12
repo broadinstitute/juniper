@@ -5,10 +5,10 @@ import { Study } from 'api/api'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import StudyEnvironmentRouter from './StudyEnvironmentRouter'
 import StudyDashboard from './StudyDashboard'
-import PortalUserList from '../user/PortalUserList'
 import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
 import StudyPublishingView from './publishing/StudyPublishingView'
 import LoadingSpinner from '../util/LoadingSpinner'
+import { PortalAdminUserRouter } from '../user/AdminUserRouter'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
@@ -63,7 +63,8 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
           studyShortcode={study.shortcode}/>}/>
       <Route path="publishing" element={<StudyPublishingView portal={portalContext.portal}
         studyShortcode={study.shortcode}/>}/>
-      <Route path="users" element={<PortalUserList portal={portalContext.portal}/>}/>
+      <Route path="users/*" element={<PortalAdminUserRouter portal={portalContext.portal}
+        study={study}/>}/>
       <Route index element={<StudyDashboard study={study}/>}/>
     </Routes>
   </>

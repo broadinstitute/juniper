@@ -1,12 +1,13 @@
 import React, { useId, useState } from 'react'
-import Api, { AdminTask, AdminTaskStatus, AdminUser } from 'api/api'
+import Api, { AdminTask, AdminTaskStatus } from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import { Modal } from 'react-bootstrap'
 import Select from 'react-select'
 import LoadingSpinner from 'util/LoadingSpinner'
 import AdminUserSelect from 'user/AdminUserSelect'
 import { doApiLoad } from 'api/api-utils'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { instantToDefaultString } from '../../util/timeUtils'
+import { instantToDefaultString } from '@juniper/ui-core'
 
 
 /** Form for editing an admin task */

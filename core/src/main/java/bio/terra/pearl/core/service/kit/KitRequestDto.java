@@ -35,6 +35,7 @@ public class KitRequestDto {
   private Instant receivedAt;
   private String trackingNumber;
   private String returnTrackingNumber;
+  private boolean skipAddressValidation;
   private String errorMessage;
   /**
    * JSON blob for additional kit request details
@@ -55,6 +56,7 @@ public class KitRequestDto {
     this.trackingNumber = kitRequest.getTrackingNumber();
     this.returnTrackingNumber = kitRequest.getReturnTrackingNumber();
     this.errorMessage = kitRequest.getErrorMessage();
+    this.skipAddressValidation = kitRequest.isSkipAddressValidation();
     this.details = createRequestDetails(kitRequest, objectMapper);
     this.enrolleeShortcode = enrolleeShortcode;
   }

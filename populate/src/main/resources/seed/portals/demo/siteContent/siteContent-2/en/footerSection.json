@@ -30,14 +30,26 @@
         "type": "mailingList",
         "text": "Mailing List"
       },{
-        "text": "Twitter",
-        "href": "https://twitter.com/ourhealthstudy"
+        "text": "X",
+        "href": "https://x.com/ourhealthstudy"
       },{
         "text": "Instagram",
         "href": "https://instagram.com/ourhealthstudy"
       },{
         "text": "Facebook",
         "href": "https://facebook.com/ourhealthstudy"
+      },{
+        "text": "LinkedIn",
+        "href": "https://linkedin.com/in/ourhealthstudy"
+      },{
+        "text": "TikTok",
+        "href": "https://tiktok.com/@ourhealthstudy"
+      },{
+        "text": "Threads",
+        "href": "https://threads.net/@ourhealthstudy"
+      },{
+        "text": "YouTube",
+        "href": "https://youtube.com/@ourhealthstudy"
       }]
     },{
       "title": "Contact Us",

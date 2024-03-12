@@ -59,83 +59,84 @@
     },
     "mailingListContacts" : [ ]
   } ],
-  "siteImageDtos" : [ {
+  "siteMediaDtos": [
+    {
     "version" : 1,
-    "populateFileName" : "images/select_imperial_-_final_selects_page_1_c.png"
+      "populateFileName": "media/select_imperial_-_final_selects_page_1_c.png"
   }, {
     "version" : 1,
-    "populateFileName" : "images/imperial_college.webp"
+      "populateFileName": "media/imperial_college.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/wellcome-logo-black.webp"
+      "populateFileName": "media/wellcome-logo-black.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/sams_rainbow.webp"
+      "populateFileName": "media/sams_rainbow.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/alexander_jansons_fund.webp"
+      "populateFileName": "media/alexander_jansons_fund.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/logo_of_department_of_health_and_social_.webp"
+      "populateFileName": "media/logo_of_department_of_health_and_social_.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/step_1.png"
+      "populateFileName": "media/step_1.png"
   }, {
     "cleanFileName" : "step_1.png",
     "version" : 2,
-    "populateFileName" : "images/2-step_1.png"
+      "populateFileName": "media/2-step_1.png"
   }, {
     "version" : 1,
-    "populateFileName" : "images/email_logo.webp"
+      "populateFileName": "media/email_logo.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/privacy_notice.pdf"
+      "populateFileName": "media/privacy_notice.pdf"
   }, {
     "version" : 1,
-    "populateFileName" : "images/cureheart_singleline_logo_rgb.png"
+      "populateFileName": "media/cureheart_singleline_logo_rgb.png"
   }, {
     "version" : 1,
-    "populateFileName" : "images/main_banner.webp"
+      "populateFileName": "media/main_banner.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/participant_smile.webp"
+      "populateFileName": "media/participant_smile.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/hex_round.webp"
+      "populateFileName": "media/hex_round.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/favicon.ico"
+      "populateFileName": "media/favicon.ico"
   }, {
     "version" : 1,
-    "populateFileName" : "images/hearthive_participant_1.webp"
+      "populateFileName": "media/hearthive_participant_1.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/cardiomyopathy-uk-logo.webp"
+      "populateFileName": "media/cardiomyopathy-uk-logo.webp"
   }, {
     "version" : 1,
-    "populateFileName" : "images/broad_logo.svg"
+      "populateFileName": "media/broad_logo.svg"
   }, {
     "version" : 1,
-    "populateFileName" : "images/step_2.png"
+      "populateFileName": "media/step_2.png"
   }, {
     "version" : 1,
-    "populateFileName" : "images/step_3.png"
+      "populateFileName": "media/step_3.png"
   }, {
     "cleanFileName" : "step_2.png",
     "version" : 2,
-    "populateFileName" : "images/2-step_2.png"
+      "populateFileName": "media/2-step_2.png"
   }, {
     "cleanFileName" : "step_3.png",
     "version" : 2,
-    "populateFileName" : "images/2-step_3.png"
+      "populateFileName": "media/2-step_3.png"
   }, {
     "cleanFileName" : "email_logo.webp",
     "version" : 2,
-    "populateFileName" : "images/2-email_logo.webp"
+      "populateFileName": "media/2-email_logo.webp"
   }, {
     "cleanFileName" : "privacy_notice.pdf",
     "version" : 2,
-    "populateFileName" : "images/2-privacy_notice.pdf"
+      "populateFileName": "media/2-privacy_notice.pdf"
   } ],
   "emailTemplateFiles" : [ "emails/hearthive_heartHiveEnrollment-2.json", "emails/hearthive_heartHiveEnrollment-3.json", "emails/hearthive_consentReminder-1.json", "emails/hearthive_heartHiveEnrollment-1.json", "emails/hearthive_consentReminder-2.json", "emails/hearthive_consentReminder-3.json", "emails/hearthive_heartHiveEnrollment-4.json", "emails/hearthive_consentReminder-4.json", "emails/hh_cymop_studyEnroll-1.json" ],
   "adminUsers" : [ ]

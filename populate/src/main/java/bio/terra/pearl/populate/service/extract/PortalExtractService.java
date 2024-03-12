@@ -31,7 +31,7 @@ public class PortalExtractService {
     private final SurveyExtractor surveyExtractor;
     private final SiteContentExtractor siteContentExtractor;
     private final StudyExtractor studyExtractor;
-    private final ImageExtractor imageExtractor;
+    private final MediaExtractor mediaExtractor;
     private final ConsentFormExtractor consentFormExtractor;
     private final EmailTemplateExtractor emailTemplateExtractor;
     private final ObjectMapper objectMapper;
@@ -42,7 +42,7 @@ public class PortalExtractService {
                                 SurveyExtractor surveyExtractor,
                                 SiteContentExtractor siteContentExtractor,
                                 StudyExtractor studyExtractor,
-                                ImageExtractor imageExtractor,
+                                MediaExtractor mediaExtractor,
                                 ConsentFormExtractor consentFormExtractor,
                                 EmailTemplateExtractor emailTemplateExtractor,
                                 @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
@@ -52,7 +52,7 @@ public class PortalExtractService {
         this.surveyExtractor = surveyExtractor;
         this.siteContentExtractor = siteContentExtractor;
         this.studyExtractor = studyExtractor;
-        this.imageExtractor = imageExtractor;
+        this.mediaExtractor = mediaExtractor;
         this.consentFormExtractor = consentFormExtractor;
         this.emailTemplateExtractor = emailTemplateExtractor;
         this.objectMapper = objectMapper;
@@ -64,7 +64,7 @@ public class PortalExtractService {
                 .orElseThrow(() -> new NotFoundException("Portal not found: " + portalShortcode));
         ZipOutputStream zipOut = new ZipOutputStream(os);
         ExtractPopulateContext context = new ExtractPopulateContext(portal, zipOut);
-        imageExtractor.writeImages(portal, context);
+        mediaExtractor.writeMedia(portal, context);
         siteContentExtractor.writeSiteContents(portal, context);
         consentFormExtractor.writeForms(portal, context);
         surveyExtractor.writeSurveys(portal, context);

@@ -84,6 +84,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
+                .skipAddressValidation(kitRequest.isSkipAddressValidation())
                 .build();
         PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)

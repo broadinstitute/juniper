@@ -5,6 +5,7 @@ import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,23 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
         } catch (IOException e) {
             throw new IOInternalException("Error populating " + context.getRootFileName(), e);
         }
+    }
 
+    @Transactional
+    public void populateList(P context, boolean overwrite) {
+        try {
+            String fileString = filePopulateService.readFile(context.getRootFileName(), context);
+            List<D> popDtos = objectMapper.readValue(fileString, objectMapper.getTypeFactory().constructCollectionType(List.class, getDtoClazz()));
+            popDtos.forEach(popDto -> {
+                try {
+                    populateFromDto(popDto, context, overwrite);
+                } catch (IOException e) {
+                    throw new IOInternalException("Error populating " + context.getRootFileName(), e);
+                }
+            });
+        } catch (IOException e) {
+            throw new IOInternalException("Error populating " + context.getRootFileName(), e);
+        }
     }
 
     public T populateFromString(String fileString, P context, boolean overwrite) throws IOException {
@@ -65,7 +82,9 @@ public abstract class BasePopulator<T extends BaseEntity, D extends T, P extends
 
     public abstract Optional<T> findFromDto(D popDto, P context);
 
+    @Transactional
     public abstract T overwriteExisting(T existingObj, D popDto, P context) throws IOException;
     public abstract T createPreserveExisting(T existingObj, D popDto, P context) throws IOException;
+    @Transactional
     public abstract T createNew(D popDto, P context, boolean overwrite) throws IOException;
 }

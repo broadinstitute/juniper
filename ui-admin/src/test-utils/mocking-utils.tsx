@@ -4,17 +4,22 @@ import {
   Answer,
   ConsentForm,
   DatasetDetails,
-  Enrollee, EnrolleeSearchFacet,
+  Enrollee,
+  EnrolleeSearchFacet,
   EnrolleeSearchResult,
   KitRequest,
   KitType,
-  Trigger,
-  ParticipantNote, PepperKit,
+  ParticipantNote,
+  PepperKit,
   Portal,
-  PortalStudy, SiteImageMetadata,
-  StudyEnvironmentConsent, SurveyResponse, StudyEnvironment
+  PortalStudy,
+  SiteMediaMetadata,
+  StudyEnvironment,
+  StudyEnvironmentConsent,
+  SurveyResponse,
+  Trigger
 } from 'api/api'
-import { Survey, ParticipantTask, ParticipantTaskType, defaultSurvey, ParticipantTaskStatus } from '@juniper/ui-core'
+import { defaultSurvey, ParticipantTask, ParticipantTaskStatus, ParticipantTaskType, Survey } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -23,10 +28,10 @@ import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import {
-  FacetValue,
   EntityOptionsArrayFacet,
   EntityOptionsArrayFacetValue,
   EntityOptionsValue,
+  FacetValue,
   StringOptionsFacet,
   StringOptionsFacetValue
 } from '../api/enrolleeSearch'
@@ -271,7 +276,8 @@ export const mockKitRequest: (args?: {
   sentAt: 1704393046,
   trackingNumber: 'ABC123',
   details: '{"shippingId": "1234"}',
-  enrolleeShortcode: enrolleeShortcode || 'JOSALK'
+  enrolleeShortcode: enrolleeShortcode || 'JOSALK',
+  skipAddressValidation: false
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
@@ -456,8 +462,8 @@ export const mockAnswer = (): Answer => {
     questionStableId: 'question1'
   }
 }
-/** mock siteImageMetadata */
-export const mockSiteImage = (): SiteImageMetadata => {
+/** mock siteMediaMetadata */
+export const mockSiteMedia = (): SiteMediaMetadata => {
   return {
     id: 'image1',
     createdAt: Date.now(),

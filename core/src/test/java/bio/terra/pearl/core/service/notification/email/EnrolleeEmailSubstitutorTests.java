@@ -135,7 +135,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
-        assertThat(replacer.replace("here's an image: <img src=\"${siteImageBaseUrl}/1/ourhealth-logo.png\"/>"),
-                equalTo("here's an image: <img src=\"https://irb.newstudy.org/api/public/portals/v1/foo/env/irb/siteImages/1/ourhealth-logo.png\"/>"));
+        assertThat(replacer.replace("here's an image: <img src=\"${siteMediaBaseUrl}/1/ourhealth-logo.png\"/>"),
+                equalTo("here's an image: <img src=\"https://irb.newstudy.org/api/public/portals/v1/foo/env/irb/siteMedia/1/ourhealth-logo.png\"/>"));
     }
 }

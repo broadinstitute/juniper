@@ -5,11 +5,7 @@ import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -20,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -43,6 +38,20 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
         Survey fetchedSurvey = surveyService.findByStableId(savedSurvey.getStableId(), savedSurvey.getVersion()).get();
         Assertions.assertEquals(fetchedSurvey.getId(), savedSurvey.getId());
+    }
+
+    @Test
+    @Transactional
+    public void testFindNoContent(TestInfo info) {
+        Survey survey = surveyFactory.builder(getTestName(info)).build();
+        survey.setSurveyType(SurveyType.OUTREACH);
+        survey.setAssignToAllNewEnrollees(true);
+        surveyService.create(survey);
+
+        Survey fetchedSurvey = surveyService.findByStableId(survey.getStableId()).get(0);
+        Survey fetchedNoContentSurvey = surveyService.findByStableIdNoContent(survey.getStableId()).get(0);
+        assertThat(fetchedSurvey, samePropertyValuesAs(fetchedNoContentSurvey, "content"));
+        assertThat(fetchedNoContentSurvey.getContent(), nullValue());
     }
 
     @Test

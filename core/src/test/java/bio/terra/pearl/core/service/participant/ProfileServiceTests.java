@@ -1,16 +1,21 @@
 package bio.terra.pearl.core.service.participant;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import java.util.List;
+
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -21,11 +26,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 public class ProfileServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -188,14 +188,13 @@ public class ProfileServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserProfile(TestInfo testInfo){
-        HubResponse hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
-        Enrollee enrollee = hubResponse.getEnrollee();
-        Profile governedUserProfile = profileService.find(enrollee.getProfileId()).get();
-        List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(enrollee.getId(), RelationshipType.PROXY);
-        Enrollee proxyEnrollee = enrolleeService.find(relations.get(0).getEnrolleeId()).get();
-        PortalParticipantUser proxyPpUser = portalParticipantUserService.findByParticipantUserId(proxyEnrollee.getParticipantUserId()).get(0);
-        Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
-        Assert.assertTrue(StringUtils.isNoneEmpty(governedUserProfile.getContactEmail()));
-        Assert.assertEquals(proxyProfile.getContactEmail(), governedUserProfile.getContactEmail());
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), getTestName(testInfo));
+        Enrollee proxyEnrollee = enrolleeAndProxy.proxy();
+        Profile proxyUserProfile = profileService.find(proxyEnrollee.getProfileId()).get();
+        List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(proxyEnrollee.getId(), RelationshipType.PROXY);
+        Enrollee governedEnrollee = enrolleeService.find(relations.get(0).getEnrolleeId()).get();
+        Profile governedProfile = profileService.find(governedEnrollee.getProfileId()).orElseThrow();
+        Assert.assertTrue(StringUtils.isNoneEmpty(governedProfile.getContactEmail()));
+        Assert.assertEquals(governedProfile.getContactEmail(), proxyUserProfile.getContactEmail());
     }
 }

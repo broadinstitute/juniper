@@ -1,5 +1,6 @@
 import React, { useId, useState } from 'react'
-import Api, { AdminTask, AdminUser, Enrollee, ParticipantNote } from 'api/api'
+import Api, { AdminTask, Enrollee, ParticipantNote } from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'

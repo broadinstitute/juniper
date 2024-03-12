@@ -10,32 +10,37 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.portal.*;
+import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.portal.MailingListContactService;
+import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
-import bio.terra.pearl.populate.dto.AdminUserDto;
+import bio.terra.pearl.populate.dto.AdminUserPopDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
-import bio.terra.pearl.populate.dto.site.SiteImagePopDto;
+import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import bio.terra.pearl.populate.util.ZipUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
-
-import bio.terra.pearl.populate.util.ZipUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePopulateContext> {
     private final PortalService portalService;
     private final PortalEnvironmentService portalEnvironmentService;
-    private final SiteImagePopulator siteImagePopulator;
+    private final SiteMediaPopulator siteMediaPopulator;
     private final StudyPopulator studyPopulator;
     private final SurveyPopulator surveyPopulator;
     private final SiteContentPopulator siteContentPopulator;
@@ -56,7 +61,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            PortalParticipantUserPopulator portalParticipantUserPopulator,
                            PortalEnvironmentService portalEnvironmentService,
                            PortalDashboardConfigService portalDashboardConfigService,
-                           SiteImagePopulator siteImagePopulator, SurveyPopulator surveyPopulator,
+                           SiteMediaPopulator siteMediaPopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
                            ConsentFormPopulator consentFormPopulator,
@@ -66,7 +71,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalDashboardConfigService = portalDashboardConfigService;
-        this.siteImagePopulator = siteImagePopulator;
+        this.siteMediaPopulator = siteMediaPopulator;
         this.surveyPopulator = surveyPopulator;
         this.portalService = portalService;
         this.studyPopulator = studyPopulator;
@@ -147,13 +152,23 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     }
 
     @Override
+    public void preProcessDto(PortalPopDto popDto, FilePopulateContext context) {
+        if (context.getShortcodeOverride() != null) {
+            popDto.setShortcode(context.getShortcodeOverride());
+            popDto.setName(context.getShortcodeOverride());
+        }
+    }
+
+    @Override
     public Optional<Portal> findFromDto(PortalPopDto popDto, FilePopulateContext context) {
         return portalService.findOneByShortcode(popDto.getShortcode());
     }
 
     @Override
     public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
-        portalService.delete(existingObj.getId(), Set.of(PortalService.AllowedCascades.STUDY));
+        Set<CascadeProperty> set = new HashSet<>();
+        set.add(PortalService.AllowedCascades.STUDY);
+        portalService.delete(existingObj.getId(), set);
         return createNew(popDto, context, true);
     }
 
@@ -173,11 +188,11 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     protected Portal populateChildren(Portal portal, PortalPopDto popDto, FilePopulateContext context, boolean overwrite) throws IOException {
         PortalPopulateContext portalPopContext = new PortalPopulateContext(context, portal.getShortcode(), null);
 
-        for (AdminUserDto adminUserDto : popDto.getAdminUsers()) {
-            adminUserPopulator.populateForPortal(adminUserDto, portalPopContext, overwrite, portal);
+        for (AdminUserPopDto adminUserPopDto : popDto.getAdminUsers()) {
+            adminUserPopulator.populateForPortal(adminUserPopDto, portalPopContext, overwrite, portal);
         }
-        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
-            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
+            siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
@@ -211,12 +226,12 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         String portalFileString = filePopulateService.readFile(fileContext.getRootFileName(), fileContext);
         PortalPopDto popDto = readValue(portalFileString);
         PortalPopulateContext portalPopContext = new PortalPopulateContext(fileContext, popDto.getShortcode(), null);
-        for (SiteImagePopDto imagePopDto : popDto.getSiteImageDtos()) {
-            siteImagePopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
+        for (SiteMediaPopDto imagePopDto : popDto.getSiteMediaDtos()) {
+            siteMediaPopulator.populateFromDto(imagePopDto, portalPopContext, overwrite);
         }
     }
 
-    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {
+    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite, String shortcodeOverride) throws IOException {
         String folderName =
                 "portal_%s_%s"
                         .formatted(
@@ -227,6 +242,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         tempDir.mkdirs();
         ZipUtils.unzipFile(tempDir, zipInputStream);
         return populate(
-                new FilePopulateContext(folderName + "/portal.json", true), overwrite);
+                new FilePopulateContext(folderName + "/portal.json", true, shortcodeOverride), overwrite);
     }
 }

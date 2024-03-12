@@ -9,9 +9,14 @@ import { useSearchParams } from 'react-router-dom'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { SURVEY_JS_OTHER_SUFFIX, surveyJSModelFromForm, SurveyJsResumeData } from '@juniper/ui-core'
+import {
+  createAddressValidator,
+  SURVEY_JS_OTHER_SUFFIX,
+  surveyJSModelFromForm,
+  SurveyJsResumeData
+} from '@juniper/ui-core'
 
-import { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
+import Api, { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
@@ -119,6 +124,7 @@ export function useSurveyJSModel(
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
+    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
     return newSurveyModel
   }
 

@@ -19,17 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEnrollee, WithdrawnEnrolleeDao> {
   private EnrolleeService enrolleeService;
+  private EnrolleeRelationService enrolleerelationService;
   private ObjectMapper objectMapper;
   private PortalParticipantUserService portalParticipantUserService;
   private ParticipantUserService participantUserService;
 
   public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
-                                  PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService) {
+                                  PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
+                                  EnrolleeRelationService enrolleerelationService) {
     super(dao);
     this.enrolleeService = enrolleeService;
     this.objectMapper = objectMapper;
     this.portalParticipantUserService = portalParticipantUserService;
     this.participantUserService = participantUserService;
+    this.enrolleerelationService = enrolleerelationService;
   }
 
   public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -61,7 +64,17 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
               .userData(objectMapper.writeValueAsString(user))
               .build();
       withdrawnEnrollee = create(withdrawnEnrollee);
+      //if a participant is withdrawing all of their relations are going to end too,
+      // otherwise the foreign key constraint will fail when deleting from enrollee table
+      // TODO in future, we may want to allow for a participant to
+      //  transfer their governed enrollees to another person before withdrawing
+      List<Enrollee> targetEnrolleesOnlyProxiedByEnrollee = enrolleerelationService.findExclusiveProxiedEnrollees(enrollee.getId());
+      enrolleerelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
       enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
+      //now withdraw all of the governed users that didn't have any other proxies
+        for (Enrollee targetEnrollee : targetEnrolleesOnlyProxiedByEnrollee) {
+            withdrawEnrollee(targetEnrollee);
+        }
 
       return withdrawnEnrollee;
     } catch (JsonProcessingException e) {

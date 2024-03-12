@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
-import Api, { AdminUser } from 'api/api'
+import Api from 'api/api'
+import { AdminUser } from 'api/adminUser'
 
 export type AdminUserContextT = {
   users: AdminUser[],

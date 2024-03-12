@@ -3,7 +3,7 @@ import './surveyjs'
 import { cloneDeep } from 'lodash'
 import { SurveyModel } from 'survey-core'
 
-import { FormContent, FormElement, VersionedForm, Answer } from './types/forms'
+import { Answer, FormContent, FormElement, VersionedForm } from './types/forms'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,

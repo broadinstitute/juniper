@@ -7,6 +7,7 @@ import { ApiErrorResponse, defaultApiErrorHandle, useLoadingEffect } from 'api/a
 import LoadingSpinner from 'util/LoadingSpinner'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
+import InfoPopup from 'components/forms/InfoPopup'
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function RequestKitModal({
@@ -20,11 +21,12 @@ export default function RequestKitModal({
   const { portal, study, currentEnv } = studyEnvContext
   const [isLoading, setIsLoading] = useState(false)
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
+  const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
       await Api.createKitRequest(portal.shortcode, study.shortcode,
-        currentEnv.environmentName, enrolleeShortcode, kitType)
+        currentEnv.environmentName, enrolleeShortcode, { kitType, skipAddressValidation })
       Store.addNotification(successNotification('Kit request created'))
       onSubmit()
     } catch (e) {
@@ -49,11 +51,12 @@ export default function RequestKitModal({
           Enrollee: {enrolleeShortcode}
         </div>
         <div>
-          <label className='form-label'>
+          <label className="form-label mt-2">
             Kit type
             {KitSelect}
           </label>
         </div>
+        { OverrideControl }
       </form>
     </Modal.Body>
     <Modal.Footer>
@@ -83,4 +86,22 @@ export const useKitTypeSelect = (studyEnvParams: StudyEnvParams) => {
     kitType, KitSelect: <Select options={kitTypeOptions} value={selectedKitTypeOption}
       onChange={option => setKitType(option?.value ?? '')}/>
   }
+}
+
+/**
+ *
+ */
+export const useBadAddressOverride = (initialValue: boolean) => {
+  const [skipAddressValidation, setSkipAddressValidation] = useState(initialValue)
+
+  const OverrideControl = <div className="d-flex align-items-center">
+    <label className="form-label mt-2">
+      <input type="checkbox" checked={skipAddressValidation}
+        onChange={e => setSkipAddressValidation(e.target.checked)}
+      /> Override address validation
+    </label>
+    <InfoPopup content="Checking this box will create the kit
+            request even if the address does not pass mailing address validation."/>
+  </div>
+  return { skipAddressValidation, setSkipAddressValidation, OverrideControl }
 }

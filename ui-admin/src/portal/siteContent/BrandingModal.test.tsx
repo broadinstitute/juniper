@@ -9,7 +9,7 @@ import { select } from 'react-select-event'
 
 describe('BrandingModal', () => {
   test('branding color is updatable', async () => {
-    jest.spyOn(Api, 'getPortalImages').mockResolvedValue([])
+    jest.spyOn(Api, 'getPortalMedia').mockResolvedValue([])
     const updateSpy = jest.fn()
     render(<BrandingModal portalShortcode="test"
       onDismiss={jest.fn()}
@@ -27,7 +27,7 @@ describe('BrandingModal', () => {
   })
 
   test('nav logo is updatable', async () => {
-    jest.spyOn(Api, 'getPortalImages').mockResolvedValue([{
+    jest.spyOn(Api, 'getPortalMedia').mockResolvedValue([{
       cleanFileName: 'test2.png', version: 1, id: 'teest', createdAt: 0
     }])
     const updateSpy = jest.fn()

@@ -79,7 +79,19 @@ public class EnrolleeEmailService implements NotificationSender {
             FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
             backOffPolicy.setBackOffPeriod(2000);  // this will retry once every two seconds for 3 tries
             retryTemplate.setBackOffPolicy(backOffPolicy);
-            retryTemplate.execute(arg -> notificationService.update(notification));
+            try {
+                retryTemplate.execute(arg -> notificationService.update(notification));
+            } catch (Exception e) {
+                if (routingPaths.getDeploymentZone().equals("local") &&
+                        ruleData.getEnrollee().getShortcode().endsWith("GONE")) {
+                    // for these participants, they are deleted before the async process to send out the welcome
+                    // email starts, so the notification update will fail. This is expected and not a problem.
+                    log.info("notification update failed for populated withdrawn participant -- this is expected");
+                } else {
+                    log.error("failed to update notification: {}", notification.getId());
+                }
+            }
+
         } else {
             notificationService.create(notification);
         }

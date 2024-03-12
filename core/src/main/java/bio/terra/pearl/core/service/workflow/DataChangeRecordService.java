@@ -2,23 +2,40 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import java.util.List;
-import java.util.UUID;
-
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class DataChangeRecordService extends ImmutableEntityService<DataChangeRecord, DataChangeRecordDao> {
     private EnrolleeService enrolleeService;
+    private PortalParticipantUserService portalParticipantUserService;
 
 
-    public DataChangeRecordService(DataChangeRecordDao dao, @Lazy EnrolleeService enrolleeService) {
+    public DataChangeRecordService(
+            DataChangeRecordDao dao,
+            @Lazy EnrolleeService enrolleeService,
+            @Lazy PortalParticipantUserService portalParticipantUserService) {
         super(dao);
         this.enrolleeService = enrolleeService;
+        this.portalParticipantUserService = portalParticipantUserService;
+    }
+
+    // There can be records which exist for an enrollee which, for one reason or another,
+    // are tied only to the PortalParticipantUser. This grabs all of them
+    // to ensure that we are missing nothing for a given enrollee.
+    public List<DataChangeRecord> findAllRecordsForEnrollee(Enrollee enrollee) {
+        PortalParticipantUser ppUser = portalParticipantUserService
+                .findForEnrollee(enrollee);
+        return dao.findAllRecordsForEnrollee(enrollee.getId(), ppUser.getId());
     }
 
     public List<DataChangeRecord> findByEnrollee(UUID enrolleeId) {
@@ -34,6 +51,11 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     @Transactional
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         dao.deleteByPortalParticipantUserId(ppUserId);
+    }
+
+    @Transactional
+    public void deleteByResponsibleUserId(UUID responsibleUserId) {
+        dao.deleteByResponsibleUserId(responsibleUserId);
     }
 
     @Transactional

@@ -36,7 +36,10 @@
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
-        "participants/oldVersion.json"
+        "participants/oldVersion.json",
+        "participants/proxy.json",
+        "participants/proxyFamily2.json"
+
       ],
       "mailingListContacts": [
         {
@@ -83,61 +86,63 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@heartdemo.org"}
+    {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
+    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
   ],
-  "siteImageDtos": [{
-    "populateFileName": "images/Banner-image.png"
+  "siteMediaDtos": [
+    {
+      "populateFileName": "media/Banner-image.png"
   }, {
-    "populateFileName": "images/family.png"
+      "populateFileName": "media/family.png"
   }, {
-    "populateFileName": "images/juniper-demo-logo.png"
+      "populateFileName": "media/juniper-demo-logo.png"
   }, {
-    "populateFileName": "images/discover.svg"
+      "populateFileName": "media/discover.svg"
   }, {
-    "populateFileName": "images/engage.svg"
+      "populateFileName": "media/engage.svg"
   }, {
-    "populateFileName": "images/anthony_philippakis.jpg"
+      "populateFileName": "media/anthony_philippakis.jpg"
   }, {
-    "populateFileName": "images/consent_step.png"
+      "populateFileName": "media/consent_step.png"
   }, {
-    "populateFileName": "images/survey_step.png"
+      "populateFileName": "media/survey_step.png"
   }, {
-    "populateFileName": "images/saliva_step.png"
+      "populateFileName": "media/saliva_step.png"
   }, {
-    "populateFileName": "images/engagement_step.png"
+      "populateFileName": "media/engagement_step.png"
   }, {
-    "populateFileName": "images/infographic_risk.png"
+      "populateFileName": "media/infographic_risk.png"
   }, {
-    "populateFileName": "images/risk_factors.png"
+      "populateFileName": "media/risk_factors.png"
   }, {
-    "populateFileName": "images/population_rates.png"
+      "populateFileName": "media/population_rates.png"
   }, {
-    "populateFileName": "images/individual_rates.png"
+      "populateFileName": "media/individual_rates.png"
   }, {
-    "populateFileName": "images/people_laughing.jpg"
+      "populateFileName": "media/people_laughing.jpg"
   }, {
-    "populateFileName": "images/idea_bulb.png"
+      "populateFileName": "media/idea_bulb.png"
   }, {
-    "populateFileName": "images/step_1.png"
+      "populateFileName": "media/step_1.png"
   }, {
-    "populateFileName": "images/step_2.png"
+      "populateFileName": "media/step_2.png"
   }, {
-    "populateFileName": "images/step_3.png"
+      "populateFileName": "media/step_3.png"
   }, {
-    "populateFileName": "images/step_4.png"
+      "populateFileName": "media/step_4.png"
   }, {
-    "populateFileName": "images/hands_banner.jpg"
+      "populateFileName": "media/hands_banner.jpg"
   }, {
-    "populateFileName": "images/scientists_banner.jpg"
+      "populateFileName": "media/scientists_banner.jpg"
   }, {
-    "populateFileName": "images/logos/broad_logo.png"
+      "populateFileName": "media/logos/broad_logo.png"
   }, {
-    "populateFileName": "images/logos/mgh_logo.png"
+      "populateFileName": "media/logos/mgh_logo.png"
   }, {
-    "populateFileName": "images/logos/mgb_logo.svg"
+      "populateFileName": "media/logos/mgb_logo.svg"
   },{
-    "populateFileName": "images/globe_and_hearts.png"
+      "populateFileName": "media/globe_and_hearts.png"
   }, {
-    "populateFileName": "images/favicon.ico"
+      "populateFileName": "media/favicon.ico"
   }]
 }

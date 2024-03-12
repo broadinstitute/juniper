@@ -152,11 +152,14 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
             >
               {_.map(logos, (logo, i) => {
                 return (
-                  <ConfiguredMedia
-                    key={i}
-                    media={logo}
-                    className={classNames({ 'mt-4': i !== 0 }, 'mt-sm-0', 'me-sm-4')}
-                  />
+                  <div style={{ width: '250px', paddingRight: '10px' }}>
+                    <ConfiguredMedia
+                      key={i}
+                      media={logo}
+                      style={{ maxWidth: '100%' }}
+                      className={classNames({ 'mt-4': i !== 0 }, 'mt-sm-0', 'me-sm-4')}
+                    />
+                  </div>
                 )
               })}
             </div>

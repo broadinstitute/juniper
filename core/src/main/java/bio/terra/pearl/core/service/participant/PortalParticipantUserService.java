@@ -3,10 +3,10 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.PortalParticipantUserDao;
 import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
@@ -112,7 +112,9 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
     @Transactional
     public void deleteByParticipantUserId(UUID participantUserId) {
         List<PortalParticipantUser> users = dao.findByParticipantUserId(participantUserId);
+        dataChangeRecordService.deleteByResponsibleUserId(participantUserId);
         for(PortalParticipantUser ppUser : users) {
+            dataChangeRecordService.deleteByPortalParticipantUserId(ppUser.getId());
             delete(ppUser.getId(), CascadeProperty.EMPTY_SET);
         }
     }

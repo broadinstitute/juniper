@@ -1,7 +1,7 @@
 import React from 'react'
 import Select from 'react-select'
 import { Portal } from '@juniper/ui-core'
-import { getImageUrl } from 'api/api'
+import { getMediaUrl } from 'api/api'
 
 /** selects a given study and containing portal */
 export default function StudySelector({ portalList, selectedShortcode, setSelectedStudy }:
@@ -22,7 +22,7 @@ export default function StudySelector({ portalList, selectedShortcode, setSelect
     }}
     formatOptionLabel={opt => (<div>
       <img
-        src={getImageUrl(opt.portalCode, 'favicon.ico', 1)}
+        src={getMediaUrl(opt.portalCode, 'favicon.ico', 1)}
         className="me-2" style={{ maxHeight: '1.5em' }}/>
       {opt.label}
     </div>)}

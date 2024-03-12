@@ -11,13 +11,13 @@ import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTemplatePopDto, PortalPopulateContext> {
@@ -59,6 +59,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
         String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
         popDto.setBody(bodyContent);
+        popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElse(
                 /** if the context doesn't have a portal, it's because we're populating admin config
                  * so we want the portalId to be null

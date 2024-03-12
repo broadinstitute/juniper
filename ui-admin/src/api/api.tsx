@@ -24,6 +24,7 @@ import {
 import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 import queryString from 'query-string'
+import { AdminUser, NewAdminUser } from './adminUser'
 
 export type {
   Answer,
@@ -59,26 +60,6 @@ export type {
   SurveyResponse,
   VersionedForm
 } from '@juniper/ui-core'
-
-export type AdminUser = {
-  id: string,
-  username: string,
-  token: string,
-  superuser: boolean,
-  portalPermissions: Record<string, string[]>,
-  isAnonymous: boolean,
-  portalAdminUsers?: PortalAdminUser[]
-};
-
-export type NewAdminUser = {
-  username: string,
-  superuser: boolean,
-  portalShortcode: string | null
-}
-
-export type PortalAdminUser = {
-  portalId: string
-}
 
 export type StudyEnvironmentUpdate = {
   id: string,
@@ -210,7 +191,7 @@ export type AdminTask = {
   dispositionNote?: string
 }
 
-export type SiteImageMetadata = {
+export type SiteMediaMetadata = {
   id: string,
   createdAt: number,
   cleanFileName: string,
@@ -230,7 +211,8 @@ export type KitRequest = {
   returnTrackingNumber?: string,
   errorMessage?: string,
   details?: string,
-  enrolleeShortcode?: string
+  enrolleeShortcode?: string,
+  skipAddressValidation: boolean
 }
 
 export type Config = {
@@ -393,6 +375,14 @@ export type TaskUpdateSpec = {
   newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
 }
 
+export type StudyTemplate = 'BASIC' | undefined
+
+export type StudyCreationDto = {
+  shortcode: string,
+  name: string,
+  template: StudyTemplate
+}
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -507,7 +497,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createStudy(portalShortcode: string, study: { shortcode: string, name: string }): Promise<Study> {
+  async createStudy(portalShortcode: string, study: StudyCreationDto): Promise<Study> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies`
     const response = await fetch(url, {
       method: 'POST',
@@ -526,14 +516,14 @@ export default {
     return await this.processResponse(response)
   },
 
-  async getPortalImages(portalShortcode: string): Promise<SiteImageMetadata[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteImages`, this.getGetInit())
+  async getPortalMedia(portalShortcode: string): Promise<SiteMediaMetadata[]> {
+    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/siteMedia`, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async uploadPortalImage(portalShortcode: string, uploadFileName: string, version: number, file: File):
-    Promise<SiteImageMetadata> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteImages/upload/${uploadFileName}/${version}`
+  async uploadPortalMedia(portalShortcode: string, uploadFileName: string, version: number, file: File):
+    Promise<SiteMediaMetadata> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/upload/${uploadFileName}/${version}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
     const formData = new FormData()
@@ -544,6 +534,15 @@ export default {
       body: formData
     })
     return await this.processJsonResponse(response)
+  },
+
+  async deletePortalMedia(portalShortcode: string, id: string): Promise<Response> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/${id}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async getSurvey(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
@@ -903,12 +902,15 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitType: string
+    kitOptions: { kitType: string, skipAddressValidation: boolean}
   ): Promise<string> {
-    const params = new URLSearchParams({ kitType })
     const url =
-      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
-    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitOptions)
+    })
     return await this.processJsonResponse(response)
   },
 
@@ -917,14 +919,16 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitType: string
+    kitOptions: { kitType: string, skipAddressValidation: boolean }
   ): Promise<KitRequestListResponse> {
-    const params = new URLSearchParams({ kitType })
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(enrolleeShortcodes)
+      body: JSON.stringify({
+        creationDto: kitOptions,
+        enrolleeShortcodes
+      })
     })
     return await this.processJsonResponse(response)
   },
@@ -1129,6 +1133,15 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
+  async fetchAdminUser(adminUserId: string, portalShortcode?: string): Promise<AdminUser> {
+    let url = `${API_ROOT}/adminUsers/v1/${adminUserId}`
+    if (portalShortcode) {
+      url += `?portalShortcode=${portalShortcode}`
+    }
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
     envName: string, include: string[]): Promise<AdminTaskListDto> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
@@ -1249,8 +1262,9 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async populatePortal(fileName: string, overwrite: boolean) {
-    const url = `${basePopulateUrl()}/portal?filePathName=${fileName}&overwrite=${overwrite}`
+  async populatePortal(fileName: string, overwrite: boolean, shortcodeOverride: string | undefined) {
+    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride  })
+    const url = `${basePopulateUrl()}/portal?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -1258,9 +1272,10 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async uploadPortal(file: File, overwrite: boolean):
-      Promise<SiteImageMetadata> {
-    const url = `${basePopulateUrl()}/portal/upload?overwrite=${overwrite}`
+  async uploadPortal(file: File, overwrite: boolean, shortcodeOverride: string | undefined):
+    Promise<SiteMediaMetadata> {
+    const params = queryString.stringify({ overwrite, shortcodeOverride })
+    const url = `${basePopulateUrl()}/portal/upload?${params}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
     const formData = new FormData()
@@ -1320,14 +1335,14 @@ Promise<Trigger> {
   }
 }
 
-/** gets an image url for a SiteImage suitable for including in an img tag */
-export function getImageUrl(portalShortcode: string, cleanFileName: string, version: number) {
-  return `${getImageBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
+/** gets an image url for SiteMedia */
+export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number) {
+  return `${getMediaBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 
-/** gets the base url for public site images */
-export function getImageBaseUrl(portalShortcode: string) {
-  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteImages`
+/** gets the base url for public site media (e.g., images) */
+export function getMediaBaseUrl(portalShortcode: string) {
+  return `${basePublicPortalEnvUrl(portalShortcode, 'live')}/siteMedia`
 }
 
 /** base api path for study-scoped api requests */

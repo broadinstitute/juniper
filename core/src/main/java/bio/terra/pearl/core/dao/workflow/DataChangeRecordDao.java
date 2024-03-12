@@ -2,10 +2,11 @@ package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
-import java.util.List;
-import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
@@ -23,6 +24,20 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public List<DataChangeRecord> findAllRecordsForEnrollee(UUID enrolleeId, UUID portalParticipantUserId) {
+        return jdbi.withHandle(handle ->
+                handle
+                        .createQuery("SELECT * FROM data_change_record" +
+                                "    WHERE enrollee_id = :enrolleeId" +
+                                "    OR portal_participant_user_id = :portalParticipantUserId;")
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("portalParticipantUserId", portalParticipantUserId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+
     public List<DataChangeRecord> findByModelId(UUID modelId) {
         return findAllByProperty("model_id", modelId);
     }
@@ -33,6 +48,10 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
 
     public void deleteByPortalParticipantUserId(UUID ppUserId) {
         deleteByProperty("portal_participant_user_id", ppUserId);
+    }
+
+    public void deleteByResponsibleUserId(UUID participantUserId) {
+        deleteByProperty("responsible_user_id", participantUserId);
     }
 
     public void deleteByPortalEnvironmentId(UUID portalEnvId) {
