@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockSurvey } from 'test-utils/mocking-utils'
-import FormOptions from './FormOptionsModal'
+import FormOptionsModal from './FormOptionsModal'
 import userEvent from '@testing-library/user-event'
 
 jest.mock('api/api', () => ({
@@ -13,7 +13,7 @@ jest.mock('api/api', () => ({
 describe('FormOptions', () => {
   test('allows changing a survey to be required', async () => {
     const updateWorkingForm = jest.fn()
-    render(<FormOptions
+    render(<FormOptionsModal
       workingForm={mockSurvey()}
       updateWorkingForm={updateWorkingForm}
       onDismiss={jest.fn()}
@@ -28,7 +28,7 @@ describe('FormOptions', () => {
 
   test('allows changing a survey to be auto-updating of versions', async () => {
     const updateWorkingForm = jest.fn()
-    render(<FormOptions
+    render(<FormOptionsModal
       workingForm={mockSurvey()}
       updateWorkingForm={updateWorkingForm}
       onDismiss={jest.fn()}

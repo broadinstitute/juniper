@@ -10,7 +10,7 @@ import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'fo
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import FormOptions from './FormOptionsModal'
+import FormOptionsModal from './FormOptionsModal'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
@@ -217,7 +217,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           isConsentForm={!isSurvey}
           onDismiss={() => setShowVersionSelector(false)}
         />}
-        { showAdvancedOptions && <FormOptions
+        { showAdvancedOptions && <FormOptionsModal
           workingForm={{ ...currentForm, ...draft }}
           updateWorkingForm={(props: SaveableFormProps) => {
             setDraft({ ...draft, ...props, date: Date.now() })

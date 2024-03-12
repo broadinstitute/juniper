@@ -15,8 +15,6 @@ export default function FormOptionsModal({
                                           { workingForm: VersionedForm,
                                             updateWorkingForm: (props: SaveableFormProps) => void,
                                             onDismiss: () => void}) {
-  const isSurvey = !!(workingForm as Survey).surveyType
-
   return <Modal show={true} onHide={onDismiss} size="lg">
     <Modal.Header closeButton>
       <Modal.Title>{workingForm.name} - configuration</Modal.Title>
@@ -47,11 +45,12 @@ export const FormOptions = ({ workingForm, updateWorkingForm }:
   return <>
     { isSurvey &&
         <div>
-          <h3 className="h5">Configuration <InfoPopup placement="right" content={<div>
+          <div className="d-flex mt-3">Survey options <InfoPopup placement="right" content={<div>
             See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
             our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
             information on the options below.
-          </div>}/></h3>
+          </div>}/>
+          </div>
           <form className="p-2">
             <label className="form-label d-block">
               <input type="checkbox" checked={(workingForm as Survey).required}
