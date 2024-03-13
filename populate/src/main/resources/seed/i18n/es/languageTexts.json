@@ -18,5 +18,20 @@
   {"keyName": "taskTypeForms", "text": "Formas", "language": "es"},
   {"keyName": "taskStart", "text": "Comenzar", "language": "es"},
   {"keyName": "taskContinue", "text": "Continuar", "language": "es"},
-  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"}
+  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"},
+  {"keyName": "privacyPolicy", "text": "Política de Privacidad", "language": "es"},
+  {"keyName": "termsOfUse", "text": "Términos de Uso", "language": "es"},
+  {"keyName": "contactUs", "text": "Contáctenos", "language": "es"},
+  {"keyName": "aboutUs", "text": "Sobre Nosotros", "language": "es"},
+  {"keyName": "navbarHome", "text": "Inicio", "language": "es"},
+  {"keyName": "navbarStudies", "text": "Estudios", "language": "es"},
+  {"keyName": "navbarAbout", "text": "Acerca de", "language": "es"},
+  {"keyName": "navbarContact", "text": "Contacto", "language": "es"},
+  {"keyName": "navbarPrivacy", "text": "Privacidad", "language": "es"},
+  {"keyName": "navbarTerms", "text": "Términos", "language": "es"},
+  {"keyName": "navbarLearnMore", "text": "Aprende Más", "language": "es"},
+  {"keyName": "navbarAboutUs", "text": "Sobre Nosotros", "language": "es"},
+  {"keyName": "navbarContactUs", "text": "Contáctenos", "language": "es"},
+  {"keyName": "navbarPrivacyPolicy", "text": "Política de Privacidad", "language": "es"},
+  {"keyName": "navbarTermsOfUse", "text": "Términos de Uso", "language": "es"}
 ]

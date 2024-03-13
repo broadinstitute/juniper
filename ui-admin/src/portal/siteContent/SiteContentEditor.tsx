@@ -41,6 +41,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
+  console.log(previewApi)
   const { portalEnv } = portalEnvContext
   const initialContent = siteContent
   // TODO (JN-863): Use the default language

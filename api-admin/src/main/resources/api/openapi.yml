@@ -101,6 +101,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/i18n/v1:
+    get:
+      summary: Lists the language texts for a given language
+      tags: [ i18n ]
+      operationId: listLanguageTexts
+      parameters:
+        - { name: language, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/adminUsers:
     get:
       summary: Gets the admin users specific to this portal

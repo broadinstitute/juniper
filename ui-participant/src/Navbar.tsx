@@ -7,9 +7,8 @@ import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
-import { MailingListModal, PortalEnvironmentLanguage } from '@juniper/ui-core'
+import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { useI18n } from 'providers/I18nProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
@@ -23,9 +22,9 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 /** renders the navbar for participants */
 export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
-  const { i18n } = useI18n()
+  const { i18n, selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
-  const { user, logoutUser, selectedLanguage, changeLanguage } = useUser()
+  const { user, logoutUser } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 

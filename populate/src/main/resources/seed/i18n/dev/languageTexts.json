@@ -18,5 +18,7 @@
   {"keyName": "taskTypeForms", "text": "DEV_Forms", "language": "dev"},
   {"keyName": "taskStart", "text": "DEV_Start", "language": "dev"},
   {"keyName": "taskContinue", "text": "DEV_Continue", "language": "dev"},
-  {"keyName": "outreachLearnMore", "text": "DEV_Learn More", "language": "dev"}
+  {"keyName": "outreachLearnMore", "text": "DEV_Learn More", "language": "dev"},
+  {"keyName": "privacyPolicy", "text": "DEV_Privacy Policy", "language": "dev"},
+  {"keyName": "termsOfUse", "text": "DEV_Terms of Use", "language": "dev"}
 ]
