@@ -13,7 +13,14 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect, useI18n } from '@juniper/ui-core'
+import {
+  ApiProvider,
+  makeSurveyJsData,
+  Markdown,
+  SurveyJsResumeData,
+  useAutosaveEffect,
+  useI18n
+} from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
