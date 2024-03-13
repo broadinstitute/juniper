@@ -27,7 +27,7 @@
   {"keyName": "familyName", "text": "DEV_Family Name", "language": "dev"},
   {"keyName": "editName", "text": "DEV_Edit Name", "language": "dev"},
   {"keyName": "editBirthDate", "text": "DEV_Edit Birthday", "language": "dev"},
-  {"keyname": "birthDate", "text": "DEV_Birthday", "language": "dev"},
+  {"keyName": "birthDate", "text": "DEV_Birthday", "language": "dev"},
   {"keyName": "mailingAddress", "text": "DEV_Mailing Address", "language": "dev"},
   {"keyName": "editMailingAddress", "text": "DEV_Edit Mailing Address", "language": "en"},
   {"keyName": "primaryAddress", "text": "DEV_Primary Address", "language": "dev"},

@@ -28,7 +28,7 @@
   {"keyName": "familyName", "text": "Apellido", "language": "es"},
   {"keyName": "editName", "text": "Editar nombre", "language": "es"},
   {"keyName": "editBirthDate", "text": "Editar fecha de nacimiento", "language": "es"},
-  {"keyname": "birthDate", "text": "Cumpleaños", "language": "es"},
+  {"keyName": "birthDate", "text": "Cumpleaños", "language": "es"},
   {"keyName": "mailingAddress", "text": "Dirección de envío", "language": "es"},
   {"keyName": "editMailingAddress", "text": "Editar dirección de envío", "language": "en"},
   {"keyName": "primaryAddress", "text": "Dirección principal", "language": "es"},
