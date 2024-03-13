@@ -45,7 +45,7 @@ function HomePage() {
                     aria-expanded="false" aria-label="configure study"/>
                   <div className="dropdown-menu">
                     <ul className="list-unstyled">
-                      <li key={`delete-${portal.shortcode}-${study.shortcode}`}>
+                      <li>
                         <button className="dropdown-item"
                           onClick={
                             () => {
