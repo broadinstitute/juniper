@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { getAllCountries } from '../i18nUtils'
 import { isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
+import { useI18n } from '../participant/I18nProvider'
 
 /**
  * Editable address component. Displays errors if a validation result is provided,
@@ -15,19 +16,20 @@ export function EditAddress(
     mailingAddress,
     setMailingAddress,
     validationResult,
-    showLabels = true,
-    language = 'en',
-    i18n
+    showLabels = true
   }: {
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,
     validationResult?: AddressValidationResult,
-    showLabels: boolean,
-    language: string,
-    i18n?: (key: string) => string
+    showLabels: boolean
   }
 ) {
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
+
+  const {
+    selectedLanguage,
+    i18n
+  } = useI18n()
 
   const onFieldChange = (field: keyof MailingAddress, value: string) => {
     if (!hasChangedSinceValidation.includes(field)) {
@@ -46,7 +48,7 @@ export function EditAddress(
     setHasChangedSinceValidation([])
   }, [validationResult])
 
-  const countryOptions = getAllCountries(language).map(
+  const countryOptions = getAllCountries(selectedLanguage).map(
     country => {
       return {
         value: country.code,
@@ -88,22 +90,6 @@ export function EditAddress(
     return undefined
   }
 
-  const labels = i18n ? {
-    'street1': i18n('street1'),
-    'street2': i18n('street2'),
-    'city': i18n('city'),
-    'country': i18n('country'),
-    'postalCode': i18n('postalCode'),
-    'state': i18n('state')
-  } : {
-    'street1': 'Street 1',
-    'street2': 'Street 2',
-    'city': 'City',
-    'country': 'Country',
-    'postalCode': 'Postal Code',
-    'state': 'State'
-  }
-
   return <>
     <div className='row mb-2'>
       <div className="col">
@@ -112,7 +98,7 @@ export function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          {labels['street1']}
+          {i18n('street1')}
         </label>
         <input
           className={classNames(
@@ -123,7 +109,7 @@ export function EditAddress(
           type="text"
           id="street1"
           value={mailingAddress.street1 || ''}
-          placeholder={labels['street1']}
+          placeholder={i18n('street1')}
           onChange={e => onFieldChange('street1', e.target.value)}/>
       </div>
     </div>
@@ -133,7 +119,7 @@ export function EditAddress(
         className={'fs-6 fw-bold'}
         hidden={!showLabels}
       >
-        {labels['street2']}
+        {i18n('street2')}
       </label>
       <div className="col">
         <input
@@ -144,7 +130,7 @@ export function EditAddress(
             })}
           type="text" value={mailingAddress.street2 || ''}
           id="street2"
-          placeholder={labels['street2']}
+          placeholder={i18n('street2')}
           onChange={e => onFieldChange('street2', e.target.value)}/>
       </div>
     </div>
@@ -155,7 +141,7 @@ export function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          {labels['city']}
+          {i18n('city')}
         </label>
         <input
           className={classNames(
@@ -165,7 +151,7 @@ export function EditAddress(
             })}
           type="text" value={mailingAddress.city || ''}
           id="city"
-          placeholder={labels['city']}
+          placeholder={i18n('city')}
           onChange={e => onFieldChange('city', e.target.value)}/>
       </div>
       <div className='col'>
@@ -174,7 +160,7 @@ export function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          {labels['state']}
+          {i18n('state')}
         </label>
         <input
           className={classNames(
@@ -184,7 +170,7 @@ export function EditAddress(
             })}
           type="text" value={mailingAddress.state || ''}
           id="state"
-          placeholder={labels['state']}
+          placeholder={i18n('state')}
           onChange={e => onFieldChange('state', e.target.value)}/>
       </div>
     </div>
@@ -195,7 +181,7 @@ export function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          {labels['postalCode']}
+          {i18n('postalCode')}
         </label>
         <input
           className={classNames(
@@ -205,7 +191,7 @@ export function EditAddress(
             })}
           type="text" value={mailingAddress.postalCode || ''}
           id="postalCode"
-          placeholder={labels['postalCode']}
+          placeholder={i18n('postalCode')}
           onChange={e => onFieldChange('postalCode', e.target.value)}/>
       </div>
       <div className='col'>
@@ -214,7 +200,7 @@ export function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          {labels['country']}
+          {i18n('country')}
         </label>
         <CreatableSelect
           styles={{
@@ -223,7 +209,7 @@ export function EditAddress(
               borderColor: 'var(--bs-border-color)' // use same border color as all other components
             })
           }}
-          placeholder={labels['country']}
+          placeholder={i18n('country')}
           id="country"
           options={sortBy(countryOptions, opt => opt.label)}
           value={{

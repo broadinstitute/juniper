@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import { useUser } from 'providers/UserProvider'
-import { dateToDefaultString, MailingAddress } from '@juniper/ui-core'
+import { dateToDefaultString, MailingAddress, useI18n } from '@juniper/ui-core'
 import Api, { Profile } from 'api/api'
 import { isEmpty } from 'lodash'
 import {
@@ -13,7 +13,6 @@ import {
   EditNameModal,
   EditPhoneNumber
 } from './EditParticipantProfileModals'
-import { useI18n } from '../providers/I18nProvider'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -101,8 +100,8 @@ export function ParticipantProfile(
             }/>
           </ProfileRow>
           <ProfileRow
-            title={i18n('birthday')}
-            editLabel={i18n('editBirthday')}
+            title={i18n('birthDate')}
+            editLabel={i18n('editBirthDate')}
             onEdit={() => setShowEditFieldModal('birthDate')}
           >
             <ProfileTextRow text={

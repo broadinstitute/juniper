@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Profile } from '../api/api'
-import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
+import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress, useI18n } from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
-import { useI18n } from '../providers/I18nProvider'
-import { useUser } from '../providers/UserProvider'
-
 
 // skeleton for all profile edit modals
 function ProfileRowEditModal(
@@ -154,16 +151,16 @@ export function EditBirthDateModal(props: EditModalProps) {
 
 
   return <ProfileRowEditModal
-    title={i18n('editBirthday')}
+    title={i18n('editBirthDate')}
     onSave={onSave}
     onDismiss={onDismiss}>
 
     <label htmlFor={'birthDate'} className={'fs-6 fw-bold'}>
-      {i18n('birthday')}
+      {i18n('birthDate')}
     </label>
     <input className="form-control" type="date" id='birthDate'
       defaultValue={javaLocalDateToJsDate(editedProfile.birthDate)?.toISOString().split('T')[0] || ''}
-      placeholder={i18n('birthday')} max={'9999-12-31'} aria-label={i18n('birthday')}
+      placeholder={i18n('birthDate')} max={'9999-12-31'} aria-label={i18n('birthDate')}
       onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
 
   </ProfileRowEditModal>
@@ -306,8 +303,6 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onFieldChange('mailingAddress', mailingAddress)
   }, [mailingAddress])
 
-  const { selectedLanguage } = useUser()
-
 
   return <ProfileRowEditModal
     title={i18n('editMailingAddress')}
@@ -317,8 +312,6 @@ export function EditMailingAddressModal(props: EditModalProps) {
       mailingAddress={mailingAddress}
       setMailingAddress={setMailingAddress}
       showLabels={true}
-      language={selectedLanguage || 'en'}
-      i18n={i18n}
     />
   </ProfileRowEditModal>
 }
