@@ -70,7 +70,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({AddressValidationException.class})
   public ResponseEntity<ErrorReport> addressValidationExceptionHandler(
-          AddressValidationException ex) {
+      AddressValidationException ex) {
     return buildErrorReport(ex, ex.getHttpStatusCode(), request);
   }
 
