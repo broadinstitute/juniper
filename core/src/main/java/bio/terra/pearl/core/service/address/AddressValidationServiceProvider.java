@@ -15,11 +15,15 @@ public class AddressValidationServiceProvider {
 
     public AddressValidationServiceProvider(AddressValidationConfig addressValidationConfig,
                                             AddressValidationServiceStub stubbedClient,
-                                            SmartyAddressValidationService realClient) {
+                                            SmartyAddressValidationService fullClient,
+                                            SmartyUSAddressValidationService usClient,
+                                            SmartyInternationalAddressValidationService internationalClient) {
         defaultClient = addressValidationConfig.getAddressValidationClass();
 
         clientMap.put("AddressValidationServiceStub", stubbedClient);
-        clientMap.put("SmartyAddressValidationService", realClient);
+        clientMap.put("SmartyAddressValidationService", fullClient);
+        clientMap.put("SmartyUSAddressValidationService", usClient);
+        clientMap.put("SmartyInternationalAddressValidationService", internationalClient);
     }
 
     public AddressValidationService get() {

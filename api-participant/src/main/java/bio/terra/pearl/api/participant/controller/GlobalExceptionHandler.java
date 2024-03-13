@@ -6,6 +6,7 @@ import bio.terra.common.exception.NotFoundException;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.exception.ValidationException;
 import bio.terra.pearl.api.participant.model.ErrorReport;
+import bio.terra.pearl.core.service.address.AddressValidationException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,12 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({InternalServerErrorException.class, Exception.class})
   public ResponseEntity<ErrorReport> internalErrorExceptionHandler(Exception ex) {
     return buildErrorReport(ex, HttpStatus.INTERNAL_SERVER_ERROR, request);
+  }
+
+  @ExceptionHandler({AddressValidationException.class})
+  public ResponseEntity<ErrorReport> addressValidationExceptionHandler(
+          AddressValidationException ex) {
+    return buildErrorReport(ex, ex.getHttpStatusCode(), request);
   }
 
   protected static ResponseEntity<ErrorReport> buildErrorReport(
