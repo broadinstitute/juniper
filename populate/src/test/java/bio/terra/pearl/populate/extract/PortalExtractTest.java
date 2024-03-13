@@ -44,7 +44,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         portalService.delete(portal.getId(), Set.of(PortalService.AllowedCascades.STUDY));
 
         ZipInputStream zis = new ZipInputStream(new FileInputStream(tmpFileName));
-        Portal restoredPortal = portalPopulator.populateFromZipFile(zis, true);
+        Portal restoredPortal = portalPopulator.populateFromZipFile(zis, true, null);
 
         // confirm all templates got repopulated
         assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(12));
@@ -59,6 +59,5 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
         assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(5));
     }
-
 
 }

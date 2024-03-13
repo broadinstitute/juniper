@@ -13,7 +13,14 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect } from '@juniper/ui-core'
+import {
+  ApiProvider,
+  makeSurveyJsData,
+  Markdown,
+  SurveyJsResumeData,
+  useAutosaveEffect,
+  useI18n
+} from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -43,8 +50,9 @@ export function RawSurveyView({
   form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
   resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
 }) {
+  const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
-  const { selectedLanguage, updateEnrollee, profile, updateProfile } = useUser()
+  const { updateEnrollee, profile, updateProfile } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
 

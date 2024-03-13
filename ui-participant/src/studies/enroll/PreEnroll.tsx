@@ -3,7 +3,7 @@ import Api, { PreEnrollmentResponse, Survey } from 'api/api'
 import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { useUser } from 'providers/UserProvider'
+import { useI18n } from '@juniper/ui-core'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -15,7 +15,7 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
   const { studyEnv, updatePreEnrollResponseId } = enrollContext
-  const { selectedLanguage } = useUser()
+  const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }

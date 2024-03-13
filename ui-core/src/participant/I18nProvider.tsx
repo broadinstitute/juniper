@@ -1,12 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import Api from 'api/api'
-import { useUser } from './UserProvider'
+import { useApiContext } from './ApiProvider'
 
 export const I18nContext = createContext<I18nContextT | null>(null)
 
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string) => string
+  i18n: (key: string) => string,
+  selectedLanguage: string,
+  changeLanguage: (language: string) => void
 }
 
 /**
@@ -20,18 +21,28 @@ export function useI18n(): I18nContextT {
   }
   return {
     i18n: i18nContext.i18n,
-    languageTexts: i18nContext.languageTexts
+    languageTexts: i18nContext.languageTexts,
+    selectedLanguage: i18nContext.selectedLanguage,
+    changeLanguage: i18nContext.changeLanguage
   }
 }
+
+const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
 
 /**
  * Provider for the current users i18n context.
  */
-export default function I18nProvider({ children }: { children: React.ReactNode }) {
-  const { selectedLanguage } = useUser()
+export function I18nProvider({ children }: { children: React.ReactNode }) {
+  const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
+  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem(SELECTED_LANGUAGE_KEY) || 'en')
+
+  const changeLanguage = (language: string) => {
+    setSelectedLanguage(language)
+    localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
+  }
 
   useEffect(() => {
     reloadLanguageTexts(selectedLanguage)
@@ -63,7 +74,7 @@ export default function I18nProvider({ children }: { children: React.ReactNode }
         If this is an error, contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>.
       </div>
     </div>}
-    {!isLoading && !isError && <I18nContext.Provider value={{ languageTexts, i18n }}>
+    {!isLoading && !isError && <I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
       {children}
     </I18nContext.Provider>}
   </>

@@ -13,19 +13,24 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -150,5 +155,36 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Disagre"));
         // confirm answer from question that was removed in current version is still exported
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
+    }
+
+    @Test
+    @Transactional
+    public void testPopulateWithShortcodeOverride() {
+        setUpEnvironments();
+        String newShortcode = RandomStringUtils.randomAlphabetic(6);
+        Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, newShortcode), true);
+        assertThat(portal.getShortcode(), equalTo(newShortcode));
+        Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
+        assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
+        List<Survey> surveys = surveyService.findByPortalId(portal.getId());
+        assertThat(surveys, hasSize(12));
+        surveys.forEach(survey -> {
+            assertThat(survey.getStableId(), Matchers.startsWith(newShortcode));
+        });
+        List<ConsentForm> consentForms = consentFormService.findByPortalId(portal.getId());
+        assertThat(consentForms, hasSize(1));
+        consentForms.forEach(consentForm -> {
+            assertThat(consentForm.getStableId(), Matchers.startsWith(newShortcode));
+        });
+        List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
+        assertThat(siteContents, hasSize(2));
+        siteContents.forEach(siteContent -> {
+            assertThat(siteContent.getStableId(), Matchers.startsWith(newShortcode));
+        });
+        List<EmailTemplate> emailTemplates = emailTemplateService.findByPortalId(portal.getId());
+        assertThat(emailTemplates, hasSize(5));
+        emailTemplates.forEach(emailTemplate -> {
+            assertThat(emailTemplate.getStableId(), Matchers.startsWith(newShortcode));
+        });
     }
 }

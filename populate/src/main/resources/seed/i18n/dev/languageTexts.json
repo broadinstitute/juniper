@@ -52,6 +52,8 @@
   {"keyName": "on", "text": "DEV_On", "language": "dev"},
   {"keyName": "off", "text": "DEV_Off", "language": "dev"},
   {"keyName": "notProvided", "text": "DEV_Not Provided", "language": "dev"},
-  {"keyName": "editProfileContactEmailWarning", "text": "DEV_Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "dev"}
+  {"keyName": "editProfileContactEmailWarning", "text": "DEV_Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "dev"},
+  {"keyName": "privacyPolicy", "text": "DEV_Privacy Policy", "language": "dev"},
+  {"keyName": "termsOfUse", "text": "DEV_Terms of Use", "language": "dev"}
 
 ]

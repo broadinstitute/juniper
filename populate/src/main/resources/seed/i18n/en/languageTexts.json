@@ -52,6 +52,7 @@
   {"keyName": "on", "text": "On", "language": "en"},
   {"keyName": "off", "text": "Off", "language": "en"},
   {"keyName": "notProvided", "text": "Not Provided", "language": "en"},
-  {"keyName": "editProfileContactEmailWarning", "text": "Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "en"}
-
+  {"keyName": "editProfileContactEmailWarning", "text": "Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "en"},
+  {"keyName": "privacyPolicy", "text": "Privacy Policy", "language": "en"},
+  {"keyName": "termsOfUse", "text": "Terms of Use", "language": "en"}
 ]

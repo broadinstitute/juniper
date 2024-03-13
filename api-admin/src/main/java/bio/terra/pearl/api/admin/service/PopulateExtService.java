@@ -69,26 +69,30 @@ public class PopulateExtService {
     }
   }
 
-  public Portal populatePortal(MultipartFile zipFile, AdminUser user, boolean overwrite) {
+  public Portal populatePortal(
+      MultipartFile zipFile, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
     try {
       ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
-      return portalPopulator.populateFromZipFile(zis, overwrite);
+      return portalPopulator.populateFromZipFile(zis, overwrite, shortcodeOverride);
     } catch (IOException e) {
       throw new IllegalArgumentException("error reading/writing zip file", e);
     }
   }
 
-  public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
+  public Portal populatePortal(
+      String filePathName, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
-    return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
+    return portalPopulator.populate(
+        new FilePopulateContext(filePathName, false, shortcodeOverride), overwrite);
   }
 
   public Survey populateSurvey(
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
+        new PortalPopulateContext(
+            filePathName, portalShortcode, null, new HashMap<>(), false, null);
     return surveyPopulator.populate(config, overwrite);
   }
 
@@ -96,7 +100,8 @@ public class PopulateExtService {
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
+        new PortalPopulateContext(
+            filePathName, portalShortcode, null, new HashMap<>(), false, null);
     try {
       // first, repopulate images to cove any new/changed images.
       String portalFilePath = "portals/%s/portal.json".formatted(portalShortcode);
@@ -118,7 +123,7 @@ public class PopulateExtService {
     authorizeUser(user);
     StudyPopulateContext config =
         new StudyPopulateContext(
-            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false);
+            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
     return enrolleePopulator.populate(config, overwrite);
   }
 

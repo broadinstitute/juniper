@@ -21,10 +21,9 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
-import { ApiProvider } from '@juniper/ui-core'
+import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
-import I18nProvider from './providers/I18nProvider'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))

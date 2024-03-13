@@ -2,8 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { MockI18nProvider, mockTextsDefault } from 'test-utils/i18n-testing-utils'
-
+import { MockI18nProvider, mockTextsDefault } from '@juniper/ui-core'
 
 jest.mock('../providers/PortalProvider', () => {
   return {
