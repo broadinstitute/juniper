@@ -10,11 +10,7 @@ import { useI18n } from '../../I18nProvider'
  */
 export function SiteFooter({ footerSection }: { footerSection?: HtmlSection }) {
   const hasFooter = !!footerSection
-  const { i18n, selectedLanguage, languageTexts } = useI18n()
-
-  console.log(selectedLanguage)
-  console.log(languageTexts)
-  console.log('ahhhhh')
+  const { i18n } = useI18n()
 
   return <footer>
     <div

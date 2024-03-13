@@ -34,7 +34,6 @@ const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
  */
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const Api = useApiContext()
-  console.log(Api)
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
@@ -50,7 +49,6 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const reloadLanguageTexts = (selectedLanguage: string) => {
-    console.log('reloading language texts')
     setIsLoading(true)
     Api.getLanguageTexts(selectedLanguage).then(result => {
       setLanguageTexts(result)
