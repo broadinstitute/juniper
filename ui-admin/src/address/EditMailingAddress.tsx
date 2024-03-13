@@ -83,7 +83,6 @@ export default function EditMailingAddress(
       setMailingAddress={setMailingAddress}
       showLabels={false}
       validationResult={addressValidationResults}
-      language={'en'}
     />
     {(user.user.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
