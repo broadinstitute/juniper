@@ -9,7 +9,7 @@ import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { doApiLoad, useLoadingEffect } from '../../api/api-utils'
+import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -21,7 +21,7 @@ export type SaveableFormProps = {
   required?: boolean
   assignToAllNewEnrollees?: boolean
   assignToExistingEnrollees?: boolean
-  rule?: string
+  eligibilityRule?: string
   autoUpdateTaskAssignments?: boolean
 }
 

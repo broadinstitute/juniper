@@ -16,7 +16,7 @@ export type Survey = VersionedForm & {
   surveyType: SurveyType
   blurb?: string
   required: boolean
-  rule?: string
+  eligibilityRule?: string
   assignToAllNewEnrollees: boolean
   assignToExistingEnrollees: boolean
   autoUpdateTaskAssignments: boolean
