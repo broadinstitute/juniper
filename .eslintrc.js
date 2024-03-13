@@ -124,10 +124,19 @@ module.exports = {
   },
   overrides: [
     {
-      files: 'e2e-tests/**/*.test.ts',
+      files: 'e2e-tests/**',
       rules: {
         // ESLint thinks the Playwright test function is jest's objects to its parameters.
-        'jest/no-done-callback': 'off'
+        'jest/no-done-callback': 'off',
+        'jest/expect-expect': 'off',
+        '@typescript-eslint/promise-function-async': 'error',
+        '@typescript-eslint/no-floating-promises': 'error',
+        '@typescript-eslint/no-misused-promises': 'error',
+        'require-await': 'off', // Note: disable the base rule for @typescript-eslint/require-await
+        '@typescript-eslint/require-await': 'error'
+      },
+      parserOptions: {
+        project: ['e2e-tests/tsconfig.json']
       }
     }
   ],
@@ -138,7 +147,8 @@ module.exports = {
         project: [
           'ui-admin/tsconfig.json',
           'ui-core/tsconfig.json',
-          'ui-participant/tsconfig.json'
+          'ui-participant/tsconfig.json',
+          'e2e-tests/tsconfig.json'
         ]
       }
     },

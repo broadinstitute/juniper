@@ -1,0 +1,18 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "./build",
+    "strict": true,
+    "module": "commonjs",
+    "emitDeclarationOnly": true,
+    "noEmit": true,
+    "paths": {
+      "lib/*": ["src/lib/*"],
+      "pages/*": ["src/pages/*"],
+      "tests/*": ["src/tests/*"]
+    }
+  },
+  "include": ["src/**/*.ts"],
+  //"exclude": ["build/**/*", "node_modules"]
+}
