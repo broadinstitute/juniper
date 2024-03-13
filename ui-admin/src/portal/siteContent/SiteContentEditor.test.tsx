@@ -6,6 +6,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
+import { MockI18nProvider } from '@juniper/ui-core'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
@@ -55,10 +56,13 @@ test('readOnly hides save button', async () => {
 test('clicking on the Preview tab shows full page preview', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
-    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
-      loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
-      switchToVersion={jest.fn()}
-      portalEnvContext={mockPortalEnvContext('sandbox')}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+        loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
+        switchToVersion={jest.fn()}
+        portalEnvContext={mockPortalEnvContext('sandbox')}/>
+    </MockI18nProvider>
+  )
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Preview'))

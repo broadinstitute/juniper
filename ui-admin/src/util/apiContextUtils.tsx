@@ -1,4 +1,5 @@
 import { ApiContextT } from '@juniper/ui-core'
+import Api from '../api/api'
 
 /** uses the admin image retrieval endpoint */
 const createGetImageUrl = (portalShortcode: string, portalEnvName: string) => {
@@ -14,6 +15,9 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
   const getImageUrl = createGetImageUrl(portalShortcode, portalEnvName)
   return {
     getImageUrl,
-    submitMailingListContact: () => Promise.resolve({})
+    submitMailingListContact: () => Promise.resolve({}),
+    getLanguageTexts: (selectedLanguage: string) => {
+      return Api.getLanguageTexts(selectedLanguage)
+    }
   }
 }

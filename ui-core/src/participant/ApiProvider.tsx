@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
+export type GetLanguageTextsFunc = (selectedLanguage: string) => Promise<Record<string, string>>
 
 /**
  * represents a minimal set of api functions needed to make the participant ui functional outside of the
@@ -9,12 +10,14 @@ export type SubmitMailingListContactFunc = (name: string, email: string) => Prom
  */
 export type ApiContextT = {
   getImageUrl: ImageUrlFunc,
-  submitMailingListContact: SubmitMailingListContactFunc
+  submitMailingListContact: SubmitMailingListContactFunc,
+  getLanguageTexts: GetLanguageTextsFunc
 }
 
 export const emptyApi: ApiContextT = {
   getImageUrl: () => '',
-  submitMailingListContact: () => Promise.resolve({})
+  submitMailingListContact: () => Promise.resolve({}),
+  getLanguageTexts: () => Promise.resolve({})
 }
 
 const ApiContext = React.createContext<ApiContextT>(emptyApi)
