@@ -287,7 +287,7 @@ export function EditCommunicationPreferences(props: EditModalProps) {
 /**
  * Modal for editing the mailing address properties on a profile.
  */
-export function EditMailingAddressModal(props: EditModalProps) {
+export function EditMailingAddressModal(props: EditModalProps & { enableAddressValidation: boolean }) {
   const {
     onDismiss,
     onSave,
@@ -322,7 +322,15 @@ export function EditMailingAddressModal(props: EditModalProps) {
     return {
       ...editedProfile,
       mailingAddress: {
-        ...editedProfile.mailingAddress,
+        ...editedProfile.mailingAddress, // grab id, createdAt, etc.
+        ...{ // clear out any old values
+          street1: '',
+          street2: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: ''
+        },
         ...addr
       }
     }
@@ -331,6 +339,11 @@ export function EditMailingAddressModal(props: EditModalProps) {
   const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
 
   const validateAndSave = async () => {
+    if (!props.enableAddressValidation) {
+      onSave(buildUpdatedProfile(mailingAddress))
+      return
+    }
+
     setIsLoadingValidation(true)
     try {
       const newValidationResult = await Api.validateAddress(mailingAddress)
