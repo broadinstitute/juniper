@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
 
 /**
- *
+ * Shows past versions of a form and controls for slecting them
  */
 export default function FormHistoryModal({
   studyEnvContext, workingForm, visibleVersionPreviews, setVisibleVersionPreviews, isConsentForm = false, onDismiss

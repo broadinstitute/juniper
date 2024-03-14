@@ -35,7 +35,7 @@ export default function FormOptionsModal({
 }
 
 /**
- *
+ * Renders the 'options' for a form, e.g. who is allowed to take it, if it's required, how it's assigned, etc...
  */
 export const FormOptions = ({ workingForm, updateWorkingForm }:
 { workingForm: VersionedForm,
@@ -83,5 +83,8 @@ export const FormOptions = ({ workingForm, updateWorkingForm }:
           </form>
         </div>
     }
+    { !isSurvey && <>
+      This form has no configurable options
+    </> }
   </>
 }
