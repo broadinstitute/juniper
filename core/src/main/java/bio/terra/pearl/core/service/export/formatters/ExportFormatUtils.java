@@ -5,6 +5,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -39,9 +40,21 @@ public class ExportFormatUtils {
         return localDate.format(DateTimeFormatter.ofPattern(ANALYSIS_DATE_FORMAT));
     }
 
+    public static LocalDate importLocalDate(String localDateString) {
+        return LocalDate.parse(localDateString, DateTimeFormatter.ofPattern(ANALYSIS_DATE_FORMAT));
+    }
+
     public static String formatInstant(Instant instant) {
         return DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
                 .withZone(ZoneOffset.UTC).format(instant);
+    }
+
+    public static Instant importInstant(String instantString) {
+        return Instant.from(
+                DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
+                        .withZone(ZoneId.of("Z")) // for now do everything in UTC
+                        .parse(instantString)
+        );
     }
 
     /** simple property formatter -- just branches on the class of the thing to format */

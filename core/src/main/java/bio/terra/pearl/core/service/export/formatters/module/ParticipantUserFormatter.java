@@ -7,6 +7,8 @@ import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUser> {
@@ -23,5 +25,10 @@ public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUse
     @Override
     public ParticipantUser getBean(EnrolleeExportData enrolleeExportData) {
         return enrolleeExportData.getParticipantUser();
+    }
+
+    @Override
+    public ParticipantUser newBean() {
+        return new ParticipantUser();
     }
 }
