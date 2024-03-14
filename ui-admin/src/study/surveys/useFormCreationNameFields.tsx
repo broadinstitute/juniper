@@ -1,36 +1,39 @@
 import React, { useState } from 'react'
 import { generateStableId } from 'util/pearlSurveyUtils'
+import { VersionedForm } from '@juniper/ui-core'
 
 /** hook for a form that sets a name and stableId */
-export const useFormCreationNameFields = () => {
-  const [formName, setFormName] = useState('')
-  const [formStableId, setFormStableId] = useState('')
+export function useFormCreationNameFields<T extends VersionedForm>(form: T, setForm: (form: T) => void) {
   const [enableAutofillStableId, setEnableAutofillStableId] = useState(true)
 
   const clearFields = () => {
-    setFormName('')
-    setFormStableId('')
+    setForm({
+      ...form,
+      name: '',
+      stableId: ''
+    })
     setEnableAutofillStableId(true)
   }
 
-  const nameInput = <input type="text" size={50} className="form-control"
-    id="inputFormName" value={formName}
+  const NameInput = <input type="text" size={50} className="form-control"
+    id="inputFormName" value={form.name}
     onChange={event => {
-      setFormName(event.target.value)
-      if (enableAutofillStableId) {
-        setFormStableId(generateStableId(event.target.value))
-      }
+      setForm({
+        ...form,
+        name: event.target.value,
+        stableId: enableAutofillStableId ? generateStableId(event.target.value) : form.stableId
+      })
     }}/>
 
-  const stableIdInput = <input type="text" size={50} className="form-control"
-    id="inputFormStableId" value={formStableId}
+  const StableIdInput = <input type="text" size={50} className="form-control"
+    id="inputFormStableId" value={form.stableId}
     onChange={event => {
-      setFormStableId(event.target.value)
+      setForm({ ...form, stableId: event.target.value })
       //Once the user has modified the stable ID on their own,
       // disable autofill in order to prevent overwriting
       setEnableAutofillStableId(false)
     }
     }/>
 
-  return { formName, formStableId, clearFields, nameInput, stableIdInput }
+  return { clearFields, NameInput, StableIdInput }
 }

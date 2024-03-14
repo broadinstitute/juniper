@@ -6,12 +6,17 @@ import { useNavigate } from 'react-router-dom'
 import { PortalContext, PortalContextT } from 'portal/PortalProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
-import Api from 'api/api'
+import Api, { Survey } from 'api/api'
 import { useFormCreationNameFields } from './useFormCreationNameFields'
 import { defaultSurvey, SurveyType } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faLightbulb, faUsersViewfinder } from '@fortawesome/free-solid-svg-icons'
+import { FormOptions } from './FormOptionsModal'
+
+const QUESTIONNAIRE_TEMPLATE = '{"pages":[]}'
+const randomSuffix = Math.random().toString(36).substring(2, 15)
+const HTML_TEMPLATE = `{"pages":[{"elements":[{"type":"html","name":"outreach_content_${randomSuffix}"}]}]}`
 
 /** renders a modal that creates a new survey in a portal and configures it to the current study env */
 const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
@@ -20,30 +25,33 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
 
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
-  const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
-  const [formRequired, setFormRequired] = useState(false)
-  const [isOutreachScreener, setIsOutreachScreener] = useState(false)
-  const [surveyBlurb, setSurveyBlurb] = useState<string>()
-
-  //Screeners and research surveys default to an empty form, but marketing
+  // Screeners and research surveys default to an empty form, but marketing
   // outreach defaults to a template with an HTML question. Users can edit that
   // HTML from the survey editor. Alternatively, we could allow them to design the
   // content within this modal and insert the content into the survey on their behalf.
-  const randomSuffix = Math.random().toString(36).substring(2, 15)
-  const defaultTemplateJson = type === 'RESEARCH' || isOutreachScreener ?
-    '{"pages":[]}' :
-    `{"pages":[{"elements":[{"type":"html","name":"outreach_content_${randomSuffix}"}]}]}`
+
+  const [isOutreachScreener, setIsOutreachScreener] = useState(false)
+
+  const [form, setForm] = useState<Survey>({
+    ...defaultSurvey,
+    autoUpdateTaskAssignments: type === 'OUTREACH',
+    assignToExistingEnrollees: type === 'OUTREACH',
+    stableId: '',
+    name: '',
+    surveyType: type,
+    version: 1,
+    content: type === 'OUTREACH' ? HTML_TEMPLATE : QUESTIONNAIRE_TEMPLATE,
+    id: '',
+    createdAt: new Date().getDate(),
+    lastUpdatedAt: new Date().getDate()
+  })
+
+  const { clearFields, NameInput, StableIdInput } = useFormCreationNameFields(form, setForm)
 
   const createSurvey = async () => {
     doApiLoad(async () => {
       const createdSurvey = await Api.createNewSurvey(studyEnvContext.portal.shortcode,
-        {
-          ...defaultSurvey,
-          autoUpdateTaskAssignments: type === 'OUTREACH',
-          assignToExistingEnrollees: type === 'OUTREACH',
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: type, blurb: surveyBlurb,
-          content: defaultTemplateJson, name: formName, stableId: formStableId
-        })
+        form)
       try {
         await Api.createConfiguredSurvey(studyEnvContext.portal.shortcode,
           studyEnvContext.study.shortcode,
@@ -61,7 +69,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       }
 
       await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
-      navigate(`surveys/${formStableId}`)
+      navigate(`surveys/${form.stableId}`)
       onDismiss()
     }, { setIsLoading })
   }
@@ -76,15 +84,13 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputFormName">Name</label>
-        { nameInput }
+        { NameInput }
         <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
-        { stableIdInput }
-        { type === 'RESEARCH' && <div className="form-check mt-3">
-          <label className="form-check-label" htmlFor="formRequired">Required</label>
-          <input type="checkbox" className="form-check-input" id="formRequired"
-            checked={formRequired} onChange={event => setFormRequired(event.target.checked)}/>
-        </div>}
+        { StableIdInput }
+        <FormOptions workingForm={form}
+          updateWorkingForm={(updates => { setForm({ ...form, ...updates }) })}
+        />
         { type === 'OUTREACH' && <>
           <label className="form-label mt-3">Outreach Type</label>
           <div className="row">
@@ -92,7 +98,10 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
               icon={faLightbulb}
               title="Marketing"
               description="Marketing opportunities allow you to display messages in the participant dashboard."
-              onSelect={() => setIsOutreachScreener(false)}
+              onSelect={() => {
+                setIsOutreachScreener(false)
+                setForm({ ...form, content: HTML_TEMPLATE })
+              }}
               isSelected={!isOutreachScreener}
             />
             <CardButton
@@ -100,7 +109,10 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
               title="Screener"
               description="Screener opportunities allow you to send a questionnaire to your participants
               so you can follow up with qualified participants."
-              onSelect={() => setIsOutreachScreener(true)}
+              onSelect={() => {
+                setIsOutreachScreener(true)
+                setForm({ ...form, content: QUESTIONNAIRE_TEMPLATE })
+              }}
               isSelected={isOutreachScreener}
             />
           </div>
@@ -108,8 +120,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
             <label className="form-label" htmlFor="outreachBlurb">Blurb</label>
             <InfoPopup content={'A brief description of your outreach. ' +
                   'This will be displayed in the participant dashboard.'}/>
-            <textarea className="form-control" id="outreachBlurb" rows={5} value={surveyBlurb}
-              onChange={event => setSurveyBlurb(event.target.value)}/>
+            <textarea className="form-control" id="outreachBlurb" rows={5} value={form.blurb}
+              onChange={event =>
+                setForm({ ...form, blurb: event.target.value })}/>
           </div>
         </>}
       </form>
@@ -118,7 +131,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       <LoadingSpinner isLoading={isLoading}>
         <button
           className="btn btn-primary"
-          disabled={!formName || !formStableId}
+          disabled={!form.name || !form.stableId}
           onClick={createSurvey}
         >Create</button>
         <button className="btn btn-secondary" onClick={() => {
