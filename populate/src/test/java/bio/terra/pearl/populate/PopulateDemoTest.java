@@ -151,6 +151,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(exportData, hasSize(8));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
+        assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));
         // confirm text (including typo) from prior version is carried through
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodSharesValues"), equalTo("Disagre"));
         // confirm answer from question that was removed in current version is still exported
