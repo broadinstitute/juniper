@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Stores the path and current filename to populate from.
@@ -96,7 +97,7 @@ public class FilePopulateContext {
     }
 
     public String applyShortcodeOverride(String stableId) {
-        if (shortcodeOverride != null) {
+        if (!StringUtils.isBlank(shortcodeOverride)) {
             String newStableId = stableId;
             // if the stableId is already prefixed, strip it
             if (stableId.lastIndexOf("_") != -1) {
