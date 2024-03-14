@@ -1,15 +1,20 @@
 package bio.terra.pearl.core.service.workflow;
 
+import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -27,6 +32,8 @@ import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,6 +56,7 @@ public class EnrollmentService {
     private EventService eventService;
     private ObjectMapper objectMapper;
     private RandomUtilService randomUtilService;
+    private AnswerMappingDao answerMappingDao;
 
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
@@ -61,7 +69,8 @@ public class EnrollmentService {
                              PortalService portalService,
                              EnrolleeRelationService enrolleeRelationService,
                              RandomUtilService randomUtilService,
-                             ParticipantUserService participantUserService) {
+                             ParticipantUserService participantUserService,
+                             AnswerMappingDao answerMappingDao) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -75,6 +84,7 @@ public class EnrollmentService {
         this.enrolleeRelationService = enrolleeRelationService;
         this.randomUtilService = randomUtilService;
         this.participantUserService = participantUserService;
+        this.answerMappingDao = answerMappingDao;
     }
 
     /**
@@ -140,6 +150,47 @@ public class EnrollmentService {
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
+    }
+
+    /**
+     * This method uses the preEnrollResponseId to find the preEnroll Survey for the study and also the user's responses.
+     * It then checks if there is a PROXY answer mapping for any of the questions in the preEnroll survey.
+     * If there is one, it will check the user's response to the question in the PreEnrollment Response.
+     * If the user's response is true, it will return true, otherwise it returns false;
+     *
+     * */
+    private boolean isProxyEnrollment(UUID preEnrollResponseId) {
+        PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
+        if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
+            return false;
+        }
+        UUID surveyId = preEnrollResponse.getSurveyId();
+        Optional<AnswerMapping> answerMappingForProxyOpt = answerMappingDao.findByTargetField(surveyId, AnswerMappingTargetType.PROXY, "isProxy");
+        if (answerMappingForProxyOpt.isEmpty()) {
+            return false;
+        }
+        String questionStableIdL = answerMappingForProxyOpt.get().getQuestionStableId();
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                JsonNode rootNode = objectMapper.readTree(preEnrollResponse.getFullData());
+                if (rootNode.isArray()) {
+                    for (JsonNode node : rootNode) {
+                        String questionStableId = node.get("questionStableId").asText();
+                        if (questionStableIdL.equals(questionStableId)) {
+                            // Parsing the JSON array string to a List
+                            List<String> objectValues = objectMapper.readValue(node.get("objectValue").asText(), new TypeReference<List<String>>(){});
+                            return Boolean.parseBoolean(objectValues.get(0));
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {   // should not happen
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
@@ -216,4 +267,14 @@ public class EnrollmentService {
         return response;
     }
 
+    /**
+     * This method calls the isProxyEnrollment method using the preEnrollResponseId to determine if the user is enrolling
+     * as a proxy. If they are, it will call the enrollAsProxy method, otherwise it will call the enroll method.
+     * */
+    public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user, PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
+        if (isProxyEnrollment(preEnrollResponseId)) {
+            return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
+        }
+        return enroll(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
+    }
 }

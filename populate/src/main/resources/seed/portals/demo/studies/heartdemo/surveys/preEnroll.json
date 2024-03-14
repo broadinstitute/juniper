@@ -2,6 +2,14 @@
   "stableId": "hd_hd_preenroll",
   "version": 1,
   "name": "Pre-enroll",
+  "answerMappings": [
+    {
+      "questionStableId": "proxy_enrollment",
+      "targetType": "PROXY",
+      "targetField": "isProxy",
+      "mapType": "STRING_TO_BOOLEAN"
+    }
+  ],
   "jsonContent": {
     "title": "OurHealth pre-enroll",
     "logoPosition": "right",
@@ -76,6 +84,27 @@
               {
                 "value": "no",
                 "text": "No"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "elements": [
+          {
+            "type": "checkbox",
+            "name": "proxy_enrollment",
+            "title": "Who are you enrolling?",
+            "description": "",
+            "isRequired": true,
+            "choices": [
+              {
+                "text": "I am enrolling myself",
+                "value": "false"
+              },
+              {
+                "text": "I am enrolling on behalf of my child or and adult dependent",
+                "value": "true"
               }
             ]
           }
