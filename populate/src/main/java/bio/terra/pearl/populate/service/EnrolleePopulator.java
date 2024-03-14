@@ -150,9 +150,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
-                                  PortalParticipantUser ppUser, boolean simulateSubmissions)
+                                  PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context)
             throws JsonProcessingException {
-        Survey survey = surveyService.findByStableIdWithMappings(responsePopDto.getSurveyStableId(),
+        Survey survey = surveyService.findByStableIdWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
                 responsePopDto.getSurveyVersion()).get();
 
         SurveyResponse response = SurveyResponse.builder()
@@ -215,12 +215,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     /** persists any preEnrollmentResponse, and then attaches it to the enrollee */
-    private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv) throws JsonProcessingException {
+    private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv, StudyPopulateContext context) throws JsonProcessingException {
         PreEnrollmentResponsePopDto responsePopDto = enrolleeDto.getPreEnrollmentResponseDto();
         if (responsePopDto == null) {
             return null;
         }
-        Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
+        Survey survey = surveyService.findByStableId(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
                 responsePopDto.getSurveyVersion()).get();
         String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
@@ -235,8 +235,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private void populateConsent(Enrollee enrollee, PortalParticipantUser ppUser, ConsentResponsePopDto responsePopDto,
-                                 List<ParticipantTask> tasks, boolean simulateSubmissions) throws JsonProcessingException {
-        ConsentForm consentForm = consentFormService.findByStableId(responsePopDto.getConsentStableId(),
+                                 List<ParticipantTask> tasks, boolean simulateSubmissions, StudyPopulateContext context) throws JsonProcessingException {
+        ConsentForm consentForm = consentFormService.findByStableId(context.applyShortcodeOverride(responsePopDto.getConsentStableId()),
                 responsePopDto.getConsentVersion()).get();
 
         ConsentResponse savedResponse;
@@ -285,6 +285,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .creatingAdminUserId(adminUser.getId())
                 .enrolleeId(enrollee.getId())
                 .kitTypeId(kitType.getId())
+                .skipAddressValidation(kitRequestPopDto.isSkipAddressValidation())
                 .sentToAddress(objectMapper.writeValueAsString(sentToAddress))
                 .status(kitRequestPopDto.getStatus())
                 .externalKit(kitRequestPopDto.getExternalKitJson().toString())
@@ -361,7 +362,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 .findByStudy(context.getStudyShortcode(), context.getEnvironmentName()).get();
         popDto.setStudyEnvironmentId(attachedEnv.getId());
 
-        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv);
+        PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv, context);
         popDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
         EnrolleePopulationEntities enrolleePopulationEntities = null;
         if (!popDto.getProxyPopDtos().isEmpty()) {
@@ -386,7 +387,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         );
         popDto.setProfileId(ppUser.getProfileId());
         populateEnrolleeData(enrolleePopulationEntities.getEnrollee(), popDto, ppUser, profile,
-                enrolleePopulationEntities.getTasks(), attachedEnv);
+                enrolleePopulationEntities.getTasks(), attachedEnv, context);
 
         return enrolleePopulationEntities.getEnrollee();
     }
@@ -417,14 +418,15 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return new EnrolleePopulationEntities(popDto, enrollee, ppUser, tasks, null);
     }
 
-    private void populateEnrolleeData(Enrollee enrollee, EnrolleePopDto popDto, PortalParticipantUser ppUser, Profile profile, List<ParticipantTask> tasks, StudyEnvironment attachedEnv)
+    private void populateEnrolleeData(Enrollee enrollee, EnrolleePopDto popDto, PortalParticipantUser ppUser,
+                                      Profile profile, List<ParticipantTask> tasks, StudyEnvironment attachedEnv, StudyPopulateContext context)
             throws JsonProcessingException {
         boolean isDoNotEmail = profile.isDoNotEmail();
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
-            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions());
+            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context);
         }
         for (ConsentResponsePopDto consentPopDto : popDto.getConsentResponseDtos()) {
-            populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions());
+            populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions(), context);
         }
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
@@ -487,7 +489,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     public void bulkPopulateEnrollees(String portalShortcode, EnvironmentName envName, String studyShortcode, List<String> usernamesToLink) {
-        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/studies/" + studyShortcode + "/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>(), false);
+        StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/studies/" + studyShortcode + "/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
 
         usernamesToLink.forEach(username -> {
             try {

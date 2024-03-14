@@ -1,5 +1,5 @@
 import React from 'react'
-import { I18nContext, I18nContextT } from 'providers/I18nProvider'
+import { I18nContextT, I18nContext } from './I18nProvider'
 
 export const mockTextsDefault: Record<string, string> = { taskTypeConsent: 'Consent', taskStart: 'Start' }
 
@@ -11,6 +11,9 @@ export const MockI18nProvider = ({ children, mockTexts }: {
 }) => {
   const fakeI18nContext: I18nContextT = {
     languageTexts: mockTexts,
+    selectedLanguage: 'en',
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    changeLanguage: () => {},
     i18n: (key: string) => mockTexts[key]
   }
   return <I18nContext.Provider value={fakeI18nContext}>

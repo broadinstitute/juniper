@@ -43,6 +43,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
     protected void preProcessDto(SurveyPopDto popDto, PortalPopulateContext context) {
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).get().getId();
         popDto.setPortalId(portalId);
+        popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         String newContent = popDto.getJsonContent().toString();
         popDto.setContent(newContent);
     }

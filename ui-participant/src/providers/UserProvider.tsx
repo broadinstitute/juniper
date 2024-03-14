@@ -19,8 +19,6 @@ export type UserContextT = {
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
   ppUser?: PortalParticipantUser,
   profile?: Profile,
-  selectedLanguage: string,
-  changeLanguage: (language: string) => void
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
@@ -32,10 +30,6 @@ export type UserContextT = {
 const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   enrollees: [],
-  selectedLanguage: 'en',
-  changeLanguage: () => {
-    throw new Error('context not yet initialized')
-  },
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -54,7 +48,6 @@ const UserContext = React.createContext<UserContextT>({
 })
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
 const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
-const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -66,12 +59,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
   const navigate = useNavigate()
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem(SELECTED_LANGUAGE_KEY) || 'en')
-
-  const changeLanguage = (language: string) => {
-    setSelectedLanguage(language)
-    localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
-  }
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
@@ -156,8 +143,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     enrollees: loginState ? loginState.enrollees : [],
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
-    selectedLanguage,
-    changeLanguage,
     loginUser,
     loginUserInternal,
     logoutUser,

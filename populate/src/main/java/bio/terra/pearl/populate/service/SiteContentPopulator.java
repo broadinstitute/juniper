@@ -83,6 +83,7 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
     protected void preProcessDto(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
+        popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
             initializeLandingPage(lsc, context);
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {

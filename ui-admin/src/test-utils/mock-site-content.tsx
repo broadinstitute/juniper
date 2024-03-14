@@ -51,5 +51,6 @@ export const mockHtmlSection = (): HtmlSection => {
 /** no-op apiContext for rendering preview participant content in tests */
 export const emptyApi = {
   getImageUrl: () => '',
-  submitMailingListContact: () => Promise.resolve({})
+  submitMailingListContact: () => Promise.resolve({}),
+  getLanguageTexts: () => Promise.resolve({})
 }

@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -141,5 +142,26 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
 
         List<AdminUser> emptyPortalUsers = adminUserService.findAllWithRolesByPortal(emptyPortal.getId());
         assertThat(emptyPortalUsers, hasSize(0));
+    }
+
+    @Test
+    @Transactional
+    public void testAdminUserMoreThanOnePortal(TestInfo info) {
+        Portal portal1 = portalFactory.buildPersisted(getTestName(info));
+        Portal portal2 = portalFactory.buildPersisted(getTestName(info));
+
+        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
+
+        //Add the admin user to the first portal
+        adminUser.setPortalAdminUsers(List.of(PortalAdminUser.builder().portalId(portal1.getId()).build()));
+        adminUserService.create(adminUser);
+
+        //Add the admin user to the second portal
+        adminUser.setPortalAdminUsers(List.of(PortalAdminUser.builder().portalId(portal2.getId()).build()));
+        adminUserService.create(adminUser);
+
+        List<AdminUser> adminUsersList = adminUserService.findAllWithRoles();
+        List<UUID> portalIds = adminUsersList.get(0).getPortalAdminUsers().stream().map(PortalAdminUser::getPortalId).toList();
+        assertThat(portalIds, hasItems(portal1.getId(), portal2.getId()));
     }
 }

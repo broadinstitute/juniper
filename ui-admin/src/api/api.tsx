@@ -211,7 +211,8 @@ export type KitRequest = {
   returnTrackingNumber?: string,
   errorMessage?: string,
   details?: string,
-  enrolleeShortcode?: string
+  enrolleeShortcode?: string,
+  skipAddressValidation: boolean
 }
 
 export type Config = {
@@ -374,6 +375,14 @@ export type TaskUpdateSpec = {
   newStatus?: string // if specified, will change the status -- if, e.g. you want to make the updated tasks incomplete
 }
 
+export type StudyTemplate = 'BASIC' | undefined
+
+export type StudyCreationDto = {
+  shortcode: string,
+  name: string,
+  template: StudyTemplate
+}
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -488,7 +497,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async createStudy(portalShortcode: string, study: { shortcode: string, name: string }): Promise<Study> {
+  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
+    const url = `${API_ROOT}/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createStudy(portalShortcode: string, study: StudyCreationDto): Promise<Study> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies`
     const response = await fetch(url, {
       method: 'POST',
@@ -893,12 +908,15 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitType: string
+    kitOptions: { kitType: string, skipAddressValidation: boolean}
   ): Promise<string> {
-    const params = new URLSearchParams({ kitType })
     const url =
-      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit?${params}`
-    const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitOptions)
+    })
     return await this.processJsonResponse(response)
   },
 
@@ -907,14 +925,16 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcodes: string[],
-    kitType: string
+    kitOptions: { kitType: string, skipAddressValidation: boolean }
   ): Promise<KitRequestListResponse> {
-    const params = new URLSearchParams({ kitType })
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits?${params}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/requestKits`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(enrolleeShortcodes)
+      body: JSON.stringify({
+        creationDto: kitOptions,
+        enrolleeShortcodes
+      })
     })
     return await this.processJsonResponse(response)
   },
@@ -1248,8 +1268,9 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async populatePortal(fileName: string, overwrite: boolean) {
-    const url = `${basePopulateUrl()}/portal?filePathName=${fileName}&overwrite=${overwrite}`
+  async populatePortal(fileName: string, overwrite: boolean, shortcodeOverride: string | undefined) {
+    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride  })
+    const url = `${basePopulateUrl()}/portal?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -1257,9 +1278,10 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
-  async uploadPortal(file: File, overwrite: boolean):
+  async uploadPortal(file: File, overwrite: boolean, shortcodeOverride: string | undefined):
     Promise<SiteMediaMetadata> {
-    const url = `${basePopulateUrl()}/portal/upload?overwrite=${overwrite}`
+    const params = queryString.stringify({ overwrite, shortcodeOverride })
+    const url = `${basePopulateUrl()}/portal/upload?${params}`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
     const formData = new FormData()

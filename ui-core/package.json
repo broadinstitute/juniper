@@ -11,8 +11,8 @@
     "diff": "^5.2.0",
     "downshift": "^7.6.0",
     "inputmask": "3.3.10",
-    "lodash": "^4.17.21",
-    "react-select": "^5.4.0"
+    "react-select": "^5.4.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@babel/cli": "^7.21.5",

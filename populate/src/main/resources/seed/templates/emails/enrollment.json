@@ -1,0 +1,9 @@
+{
+  "createdAt" : 1707343139.618698000,
+  "lastUpdatedAt" : 1707343139.618698000,
+  "subject" : "Welcome to ${study.name}!",
+  "name" : "Enrollment",
+  "stableId" : "enrollment",
+  "version" : 10,
+  "bodyPopulateFile" : "enrollment.html"
+}

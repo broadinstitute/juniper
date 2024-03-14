@@ -18,5 +18,7 @@
   {"keyName": "taskTypeForms", "text": "Formas", "language": "es"},
   {"keyName": "taskStart", "text": "Comenzar", "language": "es"},
   {"keyName": "taskContinue", "text": "Continuar", "language": "es"},
-  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"}
+  {"keyName": "outreachLearnMore", "text": "Aprende Más", "language": "es"},
+  {"keyName": "privacyPolicy", "text": "Política de Privacidad", "language": "es"},
+  {"keyName": "termsOfUse", "text": "Términos de Uso", "language": "es"}
 ]

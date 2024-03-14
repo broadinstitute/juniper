@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.model.kit;
 
 import bio.terra.pearl.core.model.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,8 @@ public class KitRequest extends BaseEntity {
      * In the future, we might decide to store separate fields, or maybe use the postgres jsonb type.
      */
     private String sentToAddress;
+    @Builder.Default
+    private boolean skipAddressValidation = false;
     private KitRequestStatus status;
     private Instant labeledAt;
     private Instant sentAt;

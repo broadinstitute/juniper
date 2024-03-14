@@ -101,6 +101,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/i18n/v1:
+    get:
+      summary: Lists the language texts for a given language
+      tags: [ i18n ]
+      operationId: listLanguageTexts
+      parameters:
+        - { name: language, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/adminUsers:
     get:
       summary: Gets the admin users specific to this portal
@@ -528,10 +541,9 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
-        description: JSON array of enrollee shortcodes
+        description: kit request list creation dto
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
@@ -833,7 +845,10 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: kit request creation dto
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: Kit request
@@ -1327,6 +1342,7 @@ paths:
       parameters:
         - { name: filePathName, in: query, required: true, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       responses:
         '201':
           description: portal object
@@ -1343,6 +1359,7 @@ paths:
       operationId: uploadPortal
       parameters:
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       requestBody:
         content:
           multipart/form-data:
