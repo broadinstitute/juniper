@@ -30,12 +30,22 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
         this.baseColumnKey = propertyName;
     }
 
-    public Class<?> getPropertyClass(Class<T> beanClass, String propertyName) {
+    public Class<?> getPropertyClass(Class<?> beanClass, String propertyName) {
         try {
             BeanInfo info = Introspector.getBeanInfo(beanClass);
-            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(propertyName))
+            String simplePropertyName;
+            if (propertyName.contains(".")) {
+                simplePropertyName = propertyName.substring(0, propertyName.indexOf("."));
+            } else {
+                simplePropertyName = propertyName;
+            }
+            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(simplePropertyName))
                     .findFirst().get();
-            return descriptor.getPropertyType();
+            Class<?> clazz = descriptor.getPropertyType();
+            if (propertyName.contains(".")) {
+                return getPropertyClass(clazz, propertyName.substring(propertyName.indexOf(".") + 1));
+            }
+            return clazz;
         } catch (Exception e) {
             throw new IllegalStateException("Can't determine property class", e);
         }
