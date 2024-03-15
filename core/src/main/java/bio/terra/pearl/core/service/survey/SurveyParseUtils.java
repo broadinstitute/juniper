@@ -1,17 +1,13 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.poi.ss.formula.functions.T;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -156,25 +152,24 @@ public class SurveyParseUtils {
     /**
      * This method is used to get the answer to a question by its stableId
      * The method will return the answer as the specified class in returnClass
-     * The method will return null if the questionStableIdL is not found in the surveyJsonData
+     * The method will return null if the questionStableId is not found in the surveyJsonData
      * @param surveyJsonData the survey json data
      *                       The method assumes the surveyJsonData is a valid survey json of an array of questions with different stableIds
-     * @param questionStableIdL the stableId of the question to get the answer for
+     * @param questionStableId the stableId of the question to get the answer for
      * @param returnClass the class to return the answer as
      *                    The method assumes the returnClass is a valid class that can be used to convert the answer to
      * @param objectMapper the object mapper to use to convert the answer to the returnClass
      * @param <T> the class to return the answer as
-     * @return the answer to the question with the stableId questionStableIdL as the class returnClass
+     * @return the answer to the question with the stableId questionStableId as the class returnClass
      * */
-    public static <T> T getAnswerByStableId(String surveyJsonData, String questionStableIdL, Class<T> returnClass,
-                                            ObjectMapper objectMapper) {
+    public static <T> T getAnswerByStableId(String surveyJsonData, String questionStableId, Class<T> returnClass,
+                                            ObjectMapper objectMapper, String answerField) {
         try {
             JsonNode rootNode = objectMapper.readTree(surveyJsonData);
             if (rootNode.isArray()) {
                 for (JsonNode node : rootNode) {
-                    if (questionStableIdL.equals(getQuestionStableId(node))) {
-                        return convertNodeToClass(node, returnClass, objectMapper);
-
+                    if (questionStableId.equals(getQuestionStableId(node))) {
+                        return convertQuestionAnswerToClass(node, answerField, returnClass, objectMapper);
                     }
                 }
             }
@@ -186,22 +181,20 @@ public class SurveyParseUtils {
 
     /**
      * This method is used to convert the answer to a survey to the returnClass. The method assumes the answer is a valid and is
-     * in the objectValue field of the node
+     * in the answerField of the node
      * */
-    static <T> T convertNodeToClass(JsonNode node, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
-        // Assuming `node` is the JsonNode containing the stringified array in `objectValue`
-        String objectValueString = node.get("objectValue").asText();
-        List<String> objectValues = objectMapper.readValue(objectValueString, new TypeReference<List<String>>() {});
-        String valueToConvert = objectValues.get(0);
+    static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
+        String objectValueString = node.get(answerField).asText();
+        String value = objectMapper.readValue(objectValueString, String.class);
         // Direct conversion for String
         if (returnClass == String.class) {
-            return returnClass.cast(valueToConvert);
+            return returnClass.cast(value);
         }
 
         // Attempt to use a constructor that takes a single String argument for other types
         try {
             Constructor<T> constructor = returnClass.getConstructor(String.class);
-            return constructor.newInstance(valueToConvert);
+            return constructor.newInstance(value);
         } catch (Exception e) {
             throw new IllegalArgumentException("The provided returnClass does not have a String constructor that we can use.", e);
         }

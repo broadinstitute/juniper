@@ -169,7 +169,7 @@ public class EnrollmentService {
             return false;
         }
         String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
-        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId    , Boolean.class, objectMapper);
+        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, "stringValue");
         return proxyAnswer != null && proxyAnswer;
     }
 

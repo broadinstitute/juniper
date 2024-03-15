@@ -257,7 +257,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         String surveyJsonData = "[{\"questionStableId\":\"q1\",\"objectValue\":\"[\\\"answer\\\"]\"}]";
         String questionStableId = "q1";
         Class<String> returnClass = String.class;
-        String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper);
+        String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper, "objectValue");
         assertEquals("answer", result);
     }
 
@@ -287,31 +287,32 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         objectMapper = new ObjectMapper();
         String json = "{\"objectValue\": \"[\\\"answer1\\\", \\\"answer2\\\"]\"}";
         JsonNode node = objectMapper.readTree(json);
-        String result = SurveyParseUtils.convertNodeToClass(node, String.class, objectMapper);
+        String result = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", String.class, objectMapper);
 
         assertEquals("answer1", result);
         String json2 = "{\"objectValue\": \"[\\\"true\\\"]\"}";
         node = objectMapper.readTree(json2);
-        Boolean booleanResult = SurveyParseUtils.convertNodeToClass(node, Boolean.class, objectMapper);
+        Boolean booleanResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Boolean.class, objectMapper);
         assertEquals(true, booleanResult);
     }
 
     @Test
     void testGetSurveyAnswerFromPreEnrollSurveyJsonData() {
         String jsonInput =
-                "[{\"createdAt\":1710437952.818327000,\"lastUpdatedAt\":1710437952.818330000,\"questionStableId\":"
+                "[{\"createdAt\":1710527621.050828000,\"lastUpdatedAt\":1710527621.050828000,\"questionStableId\":"
                         + "\"hd_hd_preenroll_southAsianAncestry\",\"surveyVersion\":0,\"viewedLanguage\":\"en\","
-                        + "\"stringValue\":\"yes\"},{\"createdAt\":1710437952.818368000,\"lastUpdatedAt\":1710437952.818368000,"
-                        + "\"questionStableId\":\"hd_hd_preenroll_understandsEnglish\",\"surveyVersion\":0,\"viewedLanguage\":\"en\","
-                        + "\"stringValue\":\"yes\"},{\"createdAt\":1710437952.818382000,\"lastUpdatedAt\":1710437952.818383000,\"questionStableId\""
-                        + ":\"hd_hd_preenroll_isAdult\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"yes\"},"
-                        + "{\"createdAt\":1710437952.821090000,\"lastUpdatedAt\":1710437952.821091000,\"questionStableId\":\"hd_hd_preenroll_livesInUS\""
-                        + ",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"yes\"},{\"createdAt\":1710437952.823822000,\"lastUpdatedAt\":1710437952.823823000,"
-                        + "\"questionStableId\":\"proxy_enrollment\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"objectValue\":\"[\\\"true\\\"]\"},"
-                        + "{\"createdAt\":1710437952.823861000,\"lastUpdatedAt\":1710437952.823862000,\"questionStableId\":\"qualified\",\"surveyVersion\":0,"
-                        + "\"viewedLanguage\":\"en\",\"booleanValue\":true}]";
+                        + "\"stringValue\":\"yes\"},{\"createdAt\":1710527621.050843000,\"lastUpdatedAt\":1710527621.050843000,"
+                        + "\"questionStableId\":\"hd_hd_preenroll_understandsEnglish\",\"surveyVersion\":0,\"viewedLanguage\":"
+                        + "\"en\",\"stringValue\":\"yes\"},{\"createdAt\":1710527621.050851000,\"lastUpdatedAt\":1710527621.050851000,"
+                        + "\"questionStableId\":\"hd_hd_preenroll_isAdult\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\""
+                        + ":\"yes\"},{\"createdAt\":1710527621.051394000,\"lastUpdatedAt\":1710527621.051394000,\"questionStableId\":"
+                        + "\"hd_hd_preenroll_livesInUS\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"yes\"},"
+                        + "{\"createdAt\":1710527621.051735000,\"lastUpdatedAt\":1710527621.051735000,\"questionStableId\":"
+                        + "\"proxy_enrollment\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"true\"},"
+                        + "{\"createdAt\":1710527621.051748000,\"lastUpdatedAt\":1710527621.051748000,\"questionStableId\":\"qualified\""
+                        + ",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"booleanValue\":true}]";
 
-        Boolean result = SurveyParseUtils.getAnswerByStableId(jsonInput, "proxy_enrollment", Boolean.class, new ObjectMapper());
+        Boolean result = SurveyParseUtils.getAnswerByStableId(jsonInput, "proxy_enrollment", Boolean.class, new ObjectMapper(), "stringValue");
         assertEquals(true, result);
     }
 
