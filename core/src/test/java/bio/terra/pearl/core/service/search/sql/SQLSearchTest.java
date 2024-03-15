@@ -22,7 +22,8 @@ class SQLSearchTest extends BaseSpringBootTest {
         ));
 
         // :0 is expected, as it is a bound paramater and should not be present unsanitized in the raw query
-        Assertions.assertEquals("SELECT enrollee.* FROM enrollee enrollee  WHERE (enrollee.id = :0)",
+        Assertions.assertEquals("SELECT enrollee.* FROM enrollee enrollee  WHERE (enrollee.id = :0)" +
+                        " AND enrollee.study_environment_id = :studyEnvironmentId",
                 sqlSearch.generateQueryString());
     }
 
@@ -38,7 +39,8 @@ class SQLSearchTest extends BaseSpringBootTest {
         ));
 
         Assertions.assertEquals("SELECT enrollee.*, profile.given_name FROM enrollee enrollee INNER JOIN " +
-                        "profile profile ON enrollee.profile_id = profile.id WHERE (profile.given_name != :0)",
+                        "profile profile ON enrollee.profile_id = profile.id WHERE (profile.given_name != :0)" +
+                        " AND enrollee.study_environment_id = :studyEnvironmentId",
                 sqlSearch.generateQueryString());
     }
 
@@ -65,7 +67,8 @@ class SQLSearchTest extends BaseSpringBootTest {
         Assertions.assertEquals(
                 "SELECT enrollee.*, profile.given_name, profile.family_name FROM enrollee enrollee " +
                         "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
-                        "WHERE ((profile.given_name = :0) AND ((profile.family_name = :1) AND (enrollee.id = :2)))",
+                        "WHERE ((profile.given_name = :0) AND ((profile.family_name = :1) AND (enrollee.id = :2)))" +
+                        " AND enrollee.study_environment_id = :studyEnvironmentId",
                 sqlSearch.generateQueryString());
     }
 }

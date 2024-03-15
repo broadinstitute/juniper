@@ -42,7 +42,8 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
         assertEquals("SELECT enrollee.*, profile.given_name, profile.family_name FROM enrollee enrollee " +
                         "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
-                        "WHERE ((profile.given_name = :0) OR ((profile.family_name = :1) AND (:2 > :3)))",
+                        "WHERE ((profile.given_name = :0) OR ((profile.family_name = :1) AND (:2 > :3)))" +
+                        " AND enrollee.study_environment_id = :studyEnvironmentId",
                 expression.generateSqlSearch(fakeStudyEnvId).generateQueryString());
     }
 

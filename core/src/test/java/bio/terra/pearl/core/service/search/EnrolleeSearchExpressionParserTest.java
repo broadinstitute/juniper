@@ -22,7 +22,8 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
         assertEquals("SELECT enrollee.*, profile.given_name FROM enrollee enrollee " +
                 "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
-                "WHERE (profile.given_name = :0)", searchExp.generateSqlSearch(fakeStudyEnvId).generateQueryString());
+                        "WHERE (profile.given_name = :0) AND enrollee.study_environment_id = :studyEnvironmentId",
+                searchExp.generateSqlSearch(fakeStudyEnvId).generateQueryString());
     }
 
 }
