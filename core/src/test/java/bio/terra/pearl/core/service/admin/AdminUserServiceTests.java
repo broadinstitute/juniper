@@ -26,10 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class AdminUserServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -161,7 +158,10 @@ public class AdminUserServiceTests extends BaseSpringBootTest {
         adminUserService.create(adminUser);
 
         List<AdminUser> adminUsersList = adminUserService.findAllWithRoles();
-        List<UUID> portalIds = adminUsersList.get(0).getPortalAdminUsers().stream().map(PortalAdminUser::getPortalId).toList();
-        assertThat(portalIds, hasItems(portal1.getId(), portal2.getId()));
+        List<UUID> portalIds = adminUsersList.stream()
+                .filter(user -> user.getUsername().equals(adminUser.getUsername()))
+                .findFirst().get()
+                .getPortalAdminUsers().stream().map(PortalAdminUser::getPortalId).toList();
+        assertThat(portalIds, containsInAnyOrder(portal1.getId(), portal2.getId()));
     }
 }
