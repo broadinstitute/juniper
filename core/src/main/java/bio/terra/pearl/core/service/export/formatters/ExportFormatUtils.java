@@ -41,6 +41,9 @@ public class ExportFormatUtils {
     }
 
     public static LocalDate importLocalDate(String localDateString) {
+        if (StringUtils.isBlank(localDateString)) {
+            return null;
+        }
         return LocalDate.parse(localDateString, DateTimeFormatter.ofPattern(ANALYSIS_DATE_FORMAT));
     }
 
@@ -50,6 +53,9 @@ public class ExportFormatUtils {
     }
 
     public static Instant importInstant(String instantString) {
+        if (StringUtils.isBlank(instantString)) {
+            return null;
+        }
         return Instant.from(
                 DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
                         .withZone(ZoneId.of("Z")) // for now do everything in UTC

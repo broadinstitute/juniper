@@ -20,6 +20,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +42,7 @@ public class EnrolleeImportService {
         this.profileService = profileService;
     }
 
+    @Transactional
     /**
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
@@ -52,7 +54,8 @@ public class EnrolleeImportService {
         }
     }
 
-    List<Map<String, String>> generateImportMaps(InputStream in) {
+    /** transforms a TSV import input stream into a List of string maps, one map per enrollee */
+        public List<Map<String, String>> generateImportMaps(InputStream in) {
         List<Map<String, String>> importMaps = new ArrayList<>();
         CSVParser parser = new CSVParserBuilder()
                 .withSeparator('\t').build();
@@ -88,7 +91,7 @@ public class EnrolleeImportService {
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, participantUser, regResult.portalParticipantUser(), null, enrollee.isSubject());
+        HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
         /** restore email */
         profile.setDoNotEmail(false);
