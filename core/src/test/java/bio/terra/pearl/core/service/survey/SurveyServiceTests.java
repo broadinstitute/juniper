@@ -289,12 +289,17 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         String json = "{\"objectValue\": \"[\\\"answer1\\\", \\\"answer2\\\"]\"}";
         JsonNode node = objectMapper.readTree(json);
         String result = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", String.class, objectMapper);
-
         assertEquals("[\"answer1\", \"answer2\"]", result);
+
         String json2 = "{\"objectValue\": \"true\"}";
         node = objectMapper.readTree(json2);
         Boolean booleanResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Boolean.class, objectMapper);
         assertEquals(true, booleanResult);
+
+        String json3 = "{\"objectValue\": \"3\"}";
+        node = objectMapper.readTree(json3);
+        int integerResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Integer.class, objectMapper);
+        assertEquals(3, integerResult);
     }
 
     @Test
