@@ -1,8 +1,6 @@
 package bio.terra.pearl.core.service.workflow;
 
-import java.io.IOException;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +28,7 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
+import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -157,40 +156,21 @@ public class EnrollmentService {
      * It then checks if there is a PROXY answer mapping for any of the questions in the preEnroll survey.
      * If there is one, it will check the user's response to the question in the PreEnrollment Response.
      * If the user's response is true, it will return true, otherwise it returns false;
-     *
-     * */
+     */
     private boolean isProxyEnrollment(UUID preEnrollResponseId) {
         PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
         }
         UUID surveyId = preEnrollResponse.getSurveyId();
-        Optional<AnswerMapping> answerMappingForProxyOpt = answerMappingDao.findByTargetField(surveyId, AnswerMappingTargetType.PROXY, "isProxy");
+        Optional<AnswerMapping> answerMappingForProxyOpt =
+                answerMappingDao.findByTargetField(surveyId, AnswerMappingTargetType.PROXY, "isProxy");
         if (answerMappingForProxyOpt.isEmpty()) {
             return false;
         }
-        String questionStableIdL = answerMappingForProxyOpt.get().getQuestionStableId();
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                JsonNode rootNode = objectMapper.readTree(preEnrollResponse.getFullData());
-                if (rootNode.isArray()) {
-                    for (JsonNode node : rootNode) {
-                        String questionStableId = node.get("questionStableId").asText();
-                        if (questionStableIdL.equals(questionStableId)) {
-                            // Parsing the JSON array string to a List
-                            List<String> objectValues = objectMapper.readValue(node.get("objectValue").asText(), new TypeReference<List<String>>(){});
-                            return Boolean.parseBoolean(objectValues.get(0));
-                        }
-                    }
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {   // should not happen
-            e.printStackTrace();
-        }
-        return false;
+        String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
+        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId    , Boolean.class, objectMapper);
+        return proxyAnswer != null && proxyAnswer;
     }
 
     /**
@@ -270,8 +250,9 @@ public class EnrollmentService {
     /**
      * This method calls the isProxyEnrollment method using the preEnrollResponseId to determine if the user is enrolling
      * as a proxy. If they are, it will call the enrollAsProxy method, otherwise it will call the enroll method.
-     * */
-    public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user, PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
+     */
+    public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user,
+                              PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
         if (isProxyEnrollment(preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }

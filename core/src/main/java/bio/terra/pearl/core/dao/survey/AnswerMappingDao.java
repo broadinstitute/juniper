@@ -28,6 +28,7 @@ public class AnswerMappingDao extends BaseJdbiDao<AnswerMapping> {
     public void deleteBySurveyId(UUID surveyId) {
         deleteByProperty("survey_id", surveyId);
     }
+
     public Optional<AnswerMapping> findByTargetField(UUID surveyId, AnswerMappingTargetType targetType, String targetFieldName) {
             return jdbi.withHandle(handle ->
                     handle.createQuery("select * from " + tableName + " where survey_id = :surveyId"

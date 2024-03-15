@@ -92,18 +92,18 @@
       {
         "elements": [
           {
-            "type": "checkbox",
+            "type": "radiogroup",
             "name": "proxy_enrollment",
-            "title": "Who are you enrolling?",
-            "description": "",
+            "title": "Who are you enrolling in the study?",
+            "description": "Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent",
             "isRequired": true,
             "choices": [
               {
-                "text": "I am enrolling myself",
+                "text": "I am enrolling myself.",
                 "value": "false"
               },
               {
-                "text": "I am enrolling on behalf of my child or and adult dependent",
+                "text": "I am enrolling on behalf of my child / my legal dependent.",
                 "value": "true"
               }
             ]
