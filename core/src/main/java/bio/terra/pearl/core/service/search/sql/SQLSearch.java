@@ -1,11 +1,13 @@
 package bio.terra.pearl.core.service.search.sql;
 
 import bio.terra.pearl.core.service.search.BooleanOperator;
+import lombok.Getter;
 import lombok.Setter;
 import org.jdbi.v3.core.statement.Query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class SQLSearch {
@@ -14,15 +16,22 @@ public class SQLSearch {
     private final List<SQLSelectClause> sqlSelectClauseList = new ArrayList<>();
     private final List<SQLJoinClause> sqlJoinClauseList = new ArrayList<>();
 
+    private final UUID studyEnvId;
+
     /**
      * Recursive tree of SQLWhereClause objects
      */
+    @Getter
     @Setter
     private SQLWhereClause sqlWhereClause;
 
+    public SQLSearch(UUID studyEnvId) {
+        this.studyEnvId = studyEnvId;
+    }
 
     public String generateQueryString() {
-        return String.format("SELECT enrollee.*%s FROM %s %s %s WHERE %s",
+        return String.format(
+                "SELECT enrollee.*%s FROM %s %s %s WHERE %s",
             generateSelectClause(),
             sqlFromTable,
             sqlFromAlias,
@@ -32,11 +41,18 @@ public class SQLSearch {
 
     public void bindSqlParams(Query query) {
         sqlWhereClause.bindSqlParams(query);
+        query.bind("studyEnvironmentId", studyEnvId);
     }
 
     private String generateWhereClause() {
         SQLContext sqlContext = new SQLContext();
-        return sqlWhereClause.generateSql(sqlContext);
+        String whereSql = sqlWhereClause.generateSql(sqlContext);
+        String studyEnvSql = "enrollee.study_environment_id = :studyEnvironmentId";
+
+        if (whereSql.isEmpty()) {
+            return studyEnvSql;
+        }
+        return whereSql + " AND " + studyEnvSql;
     }
 
     private String generateSelectClause() {

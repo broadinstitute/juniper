@@ -8,7 +8,7 @@ import bio.terra.pearl.core.service.search.sql.SQLWhereValue;
 
 import java.util.List;
 
-public class ConstantTermExtractor implements EnrolleeTermExtractor{
+public class ConstantTermExtractor implements EnrolleeTermExtractor {
 
     private final Term term;
 

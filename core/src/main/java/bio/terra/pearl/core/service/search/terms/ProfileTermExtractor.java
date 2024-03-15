@@ -26,7 +26,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor{
             case FAMILY_NAME -> {
                 return new Term(context.getProfile().getFamilyName());
             }
-            case EMAIL -> {
+            case CONTACT_EMAIL -> {
                 return new Term(context.getProfile().getContactEmail());
             }
             case PHONE_NUMBER -> {
@@ -60,7 +60,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor{
     public enum ProfileField {
         GIVEN_NAME("given_name"),
         FAMILY_NAME("family_name"),
-        EMAIL("contact_email"),
+        CONTACT_EMAIL("contact_email"),
         PHONE_NUMBER("phone_number"),
         BIRTH_DATE("birth_date");
         final String value;

@@ -7,7 +7,9 @@ import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
 import bio.terra.pearl.core.service.search.terms.Term;
 
-public abstract class EnrolleeSearchFacet implements EnrolleeSearchExpression{
+import java.util.UUID;
+
+public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
     EnrolleeTermExtractor leftTermExtractor;
     EnrolleeTermExtractor rightTermExtractor;
     ComparisonOperator operator;
@@ -35,8 +37,8 @@ public abstract class EnrolleeSearchFacet implements EnrolleeSearchExpression{
     }
 
     @Override
-    public SQLSearch generateSql() {
-        SQLSearch search = new SQLSearch();
+    public SQLSearch generateSqlSearch(UUID studyEnvId) {
+        SQLSearch search = new SQLSearch(studyEnvId);
         leftTermExtractor.requiredJoinClauses().forEach(search::addJoinClause);
         leftTermExtractor.requiredSelectClauses().forEach(search::addSelectClause);
         rightTermExtractor.requiredJoinClauses().forEach(search::addJoinClause);
@@ -47,6 +49,7 @@ public abstract class EnrolleeSearchFacet implements EnrolleeSearchExpression{
                 rightTermExtractor.termClause(),
                 operator
         ));
+
         return search;
     }
 

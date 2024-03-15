@@ -4,6 +4,8 @@ import bio.terra.pearl.core.service.search.BooleanOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLSearch;
 
+import java.util.UUID;
+
 public class BooleanSearchExpression implements EnrolleeSearchExpression {
 
     private final EnrolleeSearchExpression left;
@@ -25,9 +27,9 @@ public class BooleanSearchExpression implements EnrolleeSearchExpression {
     }
 
     @Override
-    public SQLSearch generateSql() {
-        SQLSearch leftSQL = left.generateSql();
-        SQLSearch rightSQL = right.generateSql();
+    public SQLSearch generateSqlSearch(UUID studyEnvId) {
+        SQLSearch leftSQL = left.generateSqlSearch(studyEnvId);
+        SQLSearch rightSQL = right.generateSqlSearch(studyEnvId);
         return leftSQL.merge(rightSQL, operator);
     }
 

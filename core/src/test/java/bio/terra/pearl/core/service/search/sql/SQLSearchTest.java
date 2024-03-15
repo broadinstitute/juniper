@@ -6,11 +6,15 @@ import bio.terra.pearl.core.service.search.ComparisonOperator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 class SQLSearchTest extends BaseSpringBootTest {
+
+    UUID fakeStudyEnvId = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     @Test
     void testBasicQueryGeneration() {
-        SQLSearch sqlSearch = new SQLSearch();
+        SQLSearch sqlSearch = new SQLSearch(fakeStudyEnvId);
         sqlSearch.setSqlWhereClause(new SQLWhereComparisonExpression(
                 new SQLWhereField("enrollee", "id"),
                 new SQLWhereValue(123),
@@ -24,7 +28,7 @@ class SQLSearchTest extends BaseSpringBootTest {
 
     @Test
     void testComplexJoinsAndSelectsQueryGeneration() {
-        SQLSearch sqlSearch = new SQLSearch();
+        SQLSearch sqlSearch = new SQLSearch(fakeStudyEnvId);
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "given_name"));
         sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         sqlSearch.setSqlWhereClause(new SQLWhereComparisonExpression(
@@ -40,7 +44,7 @@ class SQLSearchTest extends BaseSpringBootTest {
 
     @Test
     void testNestedWhereQueries() {
-        SQLSearch sqlSearch = new SQLSearch();
+        SQLSearch sqlSearch = new SQLSearch(fakeStudyEnvId);
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "given_name"));
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "family_name"));
         sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
