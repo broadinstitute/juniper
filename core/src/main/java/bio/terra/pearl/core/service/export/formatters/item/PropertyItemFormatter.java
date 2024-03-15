@@ -11,6 +11,7 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import static bio.terra.pearl.core.service.export.formatters.ExportFormatUtils.DATA_TYPE_MAP;
@@ -73,6 +74,10 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
     public Object getValueFromString(String exportString) {
         if (propertyClass.equals(Instant.class)) {
             return ExportFormatUtils.importInstant(exportString);
+        } else if (propertyClass.equals(LocalDate.class)) {
+            return ExportFormatUtils.importLocalDate(exportString);
+        } else if (propertyClass.equals(boolean.class) || propertyClass.equals(Boolean.class)) {
+            return Boolean.valueOf(exportString);
         }
         return exportString;
     }

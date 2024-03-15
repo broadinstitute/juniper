@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
@@ -81,20 +82,36 @@ public class EnrolleeImportService {
         /** first create the participant user */
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         ParticipantUser participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        if (participantUser.getUsername() == null) {
+            throw new IllegalArgumentException("username must be provided for enrollee import");
+        }
         RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null);
         /** temporarily update the profile to no emails since they'll receive a special welcome email */
         regResult.profile().setDoNotEmail(true);
-        Profile profile = profileService.update(regResult.profile(), auditInfo);
+        profileService.update(regResult.profile(), auditInfo);
 
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
+        /** now update the profile */
+        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
+
         /** restore email */
         profile.setDoNotEmail(false);
-        profileService.update(regResult.profile(), auditInfo);
+        profileService.update(profile, auditInfo);
         return response.getEnrollee();
+    }
+
+    protected Profile importProfile(Map<String, String> enrolleeMap,  Profile registrationProfile,
+                                    ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
+        ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
+        Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        profile.setId(registrationProfile.getId());
+        profile.setMailingAddressId(registrationProfile.getMailingAddressId());
+        profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
+        return profileService.updateWithMailingAddress(profile, auditInfo);
     }
 
 }

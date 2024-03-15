@@ -40,12 +40,19 @@ public abstract class BeanModuleFormatter<T> extends ModuleFormatter<T, Property
         for (PropertyItemFormatter<T> itemInfo : getItemFormatters()) {
             String columnName = getColumnKey(itemInfo, false, null, 1);
             String stringVal = enrolleeMap.get(columnName);
-            Object value = itemInfo.getValueFromString(stringVal);
-            try {
-                PropertyUtils.setNestedProperty(bean, itemInfo.getPropertyName(), value);
-            } catch (Exception e) {
-                log.error("error importing property " + itemInfo.getPropertyName(), e);
+            /**
+             * don't attempt to set null values -- if the value was not in the import map, we want to use
+             * the application default
+             */
+            if (stringVal != null) {
+                Object value = itemInfo.getValueFromString(stringVal);
+                try {
+                    PropertyUtils.setNestedProperty(bean, itemInfo.getPropertyName(), value);
+                } catch (Exception e) {
+                    log.error("error importing property " + itemInfo.getPropertyName(), e);
+                }
             }
+
         }
         return bean;
     }

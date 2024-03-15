@@ -5,9 +5,11 @@ import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +33,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private EnrolleeService enrolleeService;
     @Autowired
     private ParticipantUserService participantUserService;
+    @Autowired
+    private ProfileService profileService;
 
     @Test
     @Transactional
@@ -49,7 +54,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testSingleEnrolleeImport(TestInfo info) {
+    public void testBaseEnrolleeImport(TestInfo info) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
         Map<String, String> enrolleeMap = Map.of("enrollee.subject", "true", "account.username", username);
@@ -63,5 +68,34 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
     }
+
+    @Test
+    @Transactional
+    public void testEnrolleeProfileImport(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        String username = "test-%s@test.com".formatted(RandomStringUtils.randomAlphabetic(5));
+        Map<String, String> enrolleeMap = Map.of(
+                "account.username", username,
+                "profile.givenName", "Alex",
+                "profile.birthDate", "1998-05-14",
+                "profile.doNotEmailSolicit", "true",
+                "profile.mailingAddress.street1", "105 Broadway",
+                "profile.mailingAddress.postalCode", "45455");
+
+        Enrollee enrolle = enrolleeImportService.importEnrollee(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                enrolleeMap,
+                new ExportOptions());
+        Profile profile = profileService.loadWithMailingAddress(enrolle.getProfileId()).orElseThrow();
+        assertThat(profile.getGivenName(), equalTo("Alex"));
+        assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1998, 5, 14)));
+        assertThat(profile.isDoNotEmailSolicit(), equalTo(true));
+        assertThat(profile.getMailingAddress().getStreet1(), equalTo("105 Broadway"));
+        assertThat(profile.getMailingAddress().getPostalCode(), equalTo("45455"));
+    }
+
+
 
 }
