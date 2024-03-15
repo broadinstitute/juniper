@@ -1,10 +1,13 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.study.StudyEnvWithShortcode;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
@@ -42,10 +45,10 @@ public class EnrolleeImportService {
      * exports the specified number of enrollees from the given environment
      * The enrollees will be returned most-recently-created first
      * */
-    public void importEnrollees(String portalShortcode, StudyEnvironment studyEnv, InputStream in) {
+    public void importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in) {
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            Enrollee enrollee = importEnrollee(portalShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
+            Enrollee enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
         }
     }
 
@@ -69,7 +72,7 @@ public class EnrolleeImportService {
         }
     }
 
-    public Enrollee importEnrollee(String portalShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions) {
+    public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions) {
 
         DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
@@ -78,18 +81,19 @@ public class EnrolleeImportService {
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         ParticipantUser participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null);
-        /** update the profile to no emails since they'll receive a special welcome email */
+        /** temporarily update the profile to no emails since they'll receive a special welcome email */
         regResult.profile().setDoNotEmail(true);
         Profile profile = profileService.update(regResult.profile(), auditInfo);
 
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, participantUser, regResult.portalParticipantUser(), null, enrollee.isSubject());
 
         /** restore email */
         profile.setDoNotEmail(false);
         profileService.update(regResult.profile(), auditInfo);
-        return null;
+        return response.getEnrollee();
     }
 
 }
