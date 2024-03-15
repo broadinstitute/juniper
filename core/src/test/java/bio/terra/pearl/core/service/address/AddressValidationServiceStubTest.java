@@ -86,8 +86,8 @@ class AddressValidationServiceStubTest extends BaseSpringBootTest {
 
         Assertions.assertEquals(result.getSuggestedAddress().getStreet1(), "415 Main St");
         Assertions.assertEquals(result.getSuggestedAddress().getCity(), "Cambridge");
-        Assertions.assertEquals(result.getSuggestedAddress().getPostalCode(), "02142");
-        Assertions.assertEquals(result.getSuggestedAddress().getCountry(), "USA");
+        Assertions.assertEquals(result.getSuggestedAddress().getPostalCode(), "02142-1027");
+        Assertions.assertEquals(result.getSuggestedAddress().getCountry(), "US");
     }
 
     @Test
@@ -102,8 +102,8 @@ class AddressValidationServiceStubTest extends BaseSpringBootTest {
 
         Assertions.assertEquals(result.getSuggestedAddress().getStreet1(), "415 Main St");
         Assertions.assertEquals(result.getSuggestedAddress().getCity(), "Cambridge");
-        Assertions.assertEquals(result.getSuggestedAddress().getPostalCode(), "02142");
-        Assertions.assertEquals(result.getSuggestedAddress().getCountry(), "USA");
+        Assertions.assertEquals(result.getSuggestedAddress().getPostalCode(), "02142-1027");
+        Assertions.assertEquals(result.getSuggestedAddress().getCountry(), "US");
 
         Assertions.assertTrue(result.getHasInferredComponents());
     }

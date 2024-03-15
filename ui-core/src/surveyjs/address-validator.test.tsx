@@ -333,8 +333,8 @@ describe('invalid address validation', () => {
     }, errors, question)
 
     expect(errors).toEqual({
-      'mock_city_question': 'City could not be validated.',
-      'mock_street1_question': 'The first address line could not be validated.'
+      'mock_city_question': 'The city could not be verified.',
+      'mock_street1_question': 'The house number could not be verified.'
     })
 
     expect(setQuestionStateSpy).toHaveBeenCalledWith({
