@@ -6,7 +6,7 @@ import org.jdbi.v3.core.statement.Query;
 import java.time.Instant;
 import java.time.LocalDate;
 
-public class SQLWhereValue implements SQLWhereClause {
+public class SQLWhereValueTerm implements SQLWhereClause {
     private String stringValue = null;
     private Integer integerValue = null;
     private Double doubleValue = null;
@@ -14,34 +14,34 @@ public class SQLWhereValue implements SQLWhereClause {
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
     private Integer boundIndex;
-    private Type type;
+    private final Type type;
 
-    public SQLWhereValue(String stringValue) {
+    public SQLWhereValueTerm(String stringValue) {
         this.stringValue = stringValue;
         this.type = Type.STRING;
     }
 
-    public SQLWhereValue(Integer integerValue) {
+    public SQLWhereValueTerm(Integer integerValue) {
         this.integerValue = integerValue;
         this.type = Type.INTEGER;
     }
 
-    public SQLWhereValue(Double doubleValue) {
+    public SQLWhereValueTerm(Double doubleValue) {
         this.doubleValue = doubleValue;
         this.type = Type.DOUBLE;
     }
 
-    public SQLWhereValue(Instant instantValue) {
+    public SQLWhereValueTerm(Instant instantValue) {
         this.instantValue = instantValue;
         this.type = Type.INSTANT;
     }
 
-    public SQLWhereValue(LocalDate dateValue) {
+    public SQLWhereValueTerm(LocalDate dateValue) {
         this.dateValue = dateValue;
         this.type = Type.DATE;
     }
 
-    public SQLWhereValue(Boolean booleanValue) {
+    public SQLWhereValueTerm(Boolean booleanValue) {
         this.booleanValue = booleanValue;
         this.type = Type.BOOLEAN;
     }

@@ -2,11 +2,11 @@ package bio.terra.pearl.core.service.search.sql;
 
 import org.jdbi.v3.core.statement.Query;
 
-public class SQLWhereField implements SQLWhereClause {
+public class SQLWhereFieldTerm implements SQLWhereClause {
     private String alias;
     private String field;
 
-    public SQLWhereField(String alias, String value) {
+    public SQLWhereFieldTerm(String alias, String value) {
         this.alias = alias;
         this.field = value;
     }

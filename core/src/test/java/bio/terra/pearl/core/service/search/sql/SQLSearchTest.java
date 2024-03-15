@@ -16,8 +16,8 @@ class SQLSearchTest extends BaseSpringBootTest {
     void testBasicQueryGeneration() {
         SQLSearch sqlSearch = new SQLSearch(fakeStudyEnvId);
         sqlSearch.setSqlWhereClause(new SQLWhereComparisonExpression(
-                new SQLWhereField("enrollee", "id"),
-                new SQLWhereValue(123),
+                new SQLWhereFieldTerm("enrollee", "id"),
+                new SQLWhereValueTerm(123),
                 ComparisonOperator.EQUALS
         ));
 
@@ -33,8 +33,8 @@ class SQLSearchTest extends BaseSpringBootTest {
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "given_name"));
         sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         sqlSearch.setSqlWhereClause(new SQLWhereComparisonExpression(
-                new SQLWhereField("profile", "given_name"),
-                new SQLWhereValue("John"),
+                new SQLWhereFieldTerm("profile", "given_name"),
+                new SQLWhereValueTerm("John"),
                 ComparisonOperator.NOT_EQUALS
         ));
 
@@ -51,16 +51,16 @@ class SQLSearchTest extends BaseSpringBootTest {
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "family_name"));
         sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         sqlSearch.setSqlWhereClause(new SQLWhereBooleanExpression(new SQLWhereComparisonExpression(
-                new SQLWhereField("profile", "given_name"),
-                new SQLWhereValue("Jonas"),
+                new SQLWhereFieldTerm("profile", "given_name"),
+                new SQLWhereValueTerm("Jonas"),
                 ComparisonOperator.EQUALS
         ), new SQLWhereBooleanExpression(new SQLWhereComparisonExpression(
-                new SQLWhereField("profile", "family_name"),
-                new SQLWhereValue("Salk"),
+                new SQLWhereFieldTerm("profile", "family_name"),
+                new SQLWhereValueTerm("Salk"),
                 ComparisonOperator.EQUALS
         ), new SQLWhereComparisonExpression(
-                new SQLWhereField("enrollee", "id"),
-                new SQLWhereValue(123),
+                new SQLWhereFieldTerm("enrollee", "id"),
+                new SQLWhereValueTerm(123),
                 ComparisonOperator.EQUALS
         ), BooleanOperator.AND), BooleanOperator.AND));
 

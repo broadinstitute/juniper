@@ -13,7 +13,8 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     UUID fakeStudyEnvId = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
-    @Autowired EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    @Autowired
+    EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     @Test
     public void testParseRule() {
@@ -21,7 +22,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         assertEquals("SELECT enrollee.*, profile.given_name FROM enrollee enrollee " +
-                "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
+                        "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
                         "WHERE (profile.given_name = :0) AND enrollee.study_environment_id = :studyEnvironmentId",
                 searchExp.generateSqlSearch(fakeStudyEnvId).generateQueryString());
     }

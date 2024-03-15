@@ -38,10 +38,10 @@ You can invoke expressions to match against an enrollee or to generate SQL.
 ```java
 expression.evaluate(new EnrolleeSearchContext(enrollee, profile));
 
-# or 
+// or 
 
-# Creates a search object which will search for enrollees in a specific
-# study environment.
+// Creates a search object which will search for enrollees in a specific
+// study environment.
 SQLSearch search = expression.generateSqlSearch(studyEnvId);
 enrolleeSearchExpressionDao.search(search);
 ```

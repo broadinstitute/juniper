@@ -4,7 +4,7 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
 import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereValue;
+import bio.terra.pearl.core.service.search.sql.SQLWhereValueTerm;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class ConstantTermExtractor implements EnrolleeTermExtractor {
             default -> "";
         };
 
-        return new SQLWhereValue(value);
+        return new SQLWhereValueTerm(value);
     }
 
 

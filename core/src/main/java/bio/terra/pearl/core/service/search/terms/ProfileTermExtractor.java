@@ -4,12 +4,12 @@ import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
 import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereField;
+import bio.terra.pearl.core.service.search.sql.SQLWhereFieldTerm;
 import lombok.Getter;
 
 import java.util.List;
 
-public class ProfileTermExtractor implements EnrolleeTermExtractor{
+public class ProfileTermExtractor implements EnrolleeTermExtractor {
 
     private final ProfileField field;
 
@@ -53,7 +53,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor{
 
     @Override
     public SQLWhereClause termClause() {
-        return new SQLWhereField("profile", field.getValue());
+        return new SQLWhereFieldTerm("profile", field.getValue());
     }
 
     @Getter

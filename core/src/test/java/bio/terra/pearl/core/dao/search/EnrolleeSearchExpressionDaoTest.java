@@ -13,8 +13,8 @@ import bio.terra.pearl.core.service.search.sql.SQLSearch;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
 import bio.terra.pearl.core.service.search.sql.SQLWhereBooleanExpression;
 import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereField;
-import bio.terra.pearl.core.service.search.sql.SQLWhereValue;
+import bio.terra.pearl.core.service.search.sql.SQLWhereFieldTerm;
+import bio.terra.pearl.core.service.search.sql.SQLWhereValueTerm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -45,12 +45,12 @@ class EnrolleeSearchExpressionDaoTest extends BaseSpringBootTest {
         sqlSearch.addSelectClause(new SQLSelectClause("profile", "family_name"));
         sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         sqlSearch.setSqlWhereClause(new SQLWhereBooleanExpression(new SQLWhereComparisonExpression(
-                new SQLWhereField("profile", "given_name"),
-                new SQLWhereValue("Jonas"),
+                new SQLWhereFieldTerm("profile", "given_name"),
+                new SQLWhereValueTerm("Jonas"),
                 ComparisonOperator.EQUALS
         ),new SQLWhereComparisonExpression(
-                new SQLWhereField("profile", "family_name"),
-                new SQLWhereValue("Salk"),
+                new SQLWhereFieldTerm("profile", "family_name"),
+                new SQLWhereValueTerm("Salk"),
                 ComparisonOperator.EQUALS
         ), BooleanOperator.AND));
 
