@@ -254,14 +254,10 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     void testGetAnswerByStableId_HappyPath() throws Exception {
         objectMapper = new ObjectMapper();
-        // Prepare test data
         String surveyJsonData = "[{\"questionStableId\":\"q1\",\"objectValue\":\"[\\\"answer\\\"]\"}]";
         String questionStableId = "q1";
         Class<String> returnClass = String.class;
-        // Execute the method under test
         String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper);
-
-        // Assertions
         assertEquals("answer", result);
     }
 
@@ -289,7 +285,6 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     void testConvertNodeToClass() throws JsonProcessingException {
         objectMapper = new ObjectMapper();
-        // Prepare the JSON node
         String json = "{\"objectValue\": \"[\\\"answer1\\\", \\\"answer2\\\"]\"}";
         JsonNode node = objectMapper.readTree(json);
         String result = SurveyParseUtils.convertNodeToClass(node, String.class, objectMapper);
@@ -316,10 +311,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
                         + "{\"createdAt\":1710437952.823861000,\"lastUpdatedAt\":1710437952.823862000,\"questionStableId\":\"qualified\",\"surveyVersion\":0,"
                         + "\"viewedLanguage\":\"en\",\"booleanValue\":true}]";
 
-        ObjectMapper objectMapper = new ObjectMapper();
         Boolean result = SurveyParseUtils.getAnswerByStableId(jsonInput, "proxy_enrollment", Boolean.class, new ObjectMapper());
-
-        // Assertions
         assertEquals(true, result);
     }
 
