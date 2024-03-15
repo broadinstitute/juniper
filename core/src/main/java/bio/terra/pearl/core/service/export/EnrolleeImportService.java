@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
@@ -114,4 +115,7 @@ public class EnrolleeImportService {
         return profileService.updateWithMailingAddress(profile, auditInfo);
     }
 
+    protected List<SurveyResponse> importSurveyResponses(Map<String, String> enrolleeMap, ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
+
+    }
 }
