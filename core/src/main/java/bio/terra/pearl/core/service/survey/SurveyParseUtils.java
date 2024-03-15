@@ -185,12 +185,11 @@ public class SurveyParseUtils {
      * */
     static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
         String objectValueString = node.get(answerField).asText();
-        String value = objectMapper.readValue(objectValueString, String.class);
         // Direct conversion for String
         if (returnClass == String.class) {
-            return returnClass.cast(value);
+            return returnClass.cast(objectValueString);
         }
-
+        String value = objectMapper.readValue(objectValueString, String.class);
         // Attempt to use a constructor that takes a single String argument for other types
         try {
             Constructor<T> constructor = returnClass.getConstructor(String.class);

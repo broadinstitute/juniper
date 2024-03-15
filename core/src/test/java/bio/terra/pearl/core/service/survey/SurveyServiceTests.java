@@ -252,12 +252,13 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     }
 
     @Test
-    void testGetAnswerByStableId_HappyPath() throws Exception {
+    void testGetAnswerByStableId_HappyPath()  {
         objectMapper = new ObjectMapper();
-        String surveyJsonData = "[{\"questionStableId\":\"q1\",\"objectValue\":\"[\\\"answer\\\"]\"}]";
+        String surveyJsonData = "[{\"createdAt\":1710527621.051735000,\"lastUpdatedAt\":1710527621.051735000,\"questionStableId\":"
+                + "\"q1\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"answer\"}]";
         String questionStableId = "q1";
         Class<String> returnClass = String.class;
-        String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper, "objectValue");
+        String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper, "stringValue");
         assertEquals("answer", result);
     }
 
@@ -289,8 +290,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         JsonNode node = objectMapper.readTree(json);
         String result = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", String.class, objectMapper);
 
-        assertEquals("answer1", result);
-        String json2 = "{\"objectValue\": \"[\\\"true\\\"]\"}";
+        assertEquals("[\"answer1\", \"answer2\"]", result);
+        String json2 = "{\"objectValue\": \"true\"}";
         node = objectMapper.readTree(json2);
         Boolean booleanResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Boolean.class, objectMapper);
         assertEquals(true, booleanResult);
