@@ -10,8 +10,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.Arrays;
 
 import static bio.terra.pearl.core.service.export.formatters.ExportFormatUtils.DATA_TYPE_MAP;
@@ -71,14 +69,20 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
         return ExportFormatUtils.formatForExport(getRawExportValue(bean));
     }
 
-    public Object getValueFromString(String exportString) {
-        if (propertyClass.equals(Instant.class)) {
-            return ExportFormatUtils.importInstant(exportString);
-        } else if (propertyClass.equals(LocalDate.class)) {
-            return ExportFormatUtils.importLocalDate(exportString);
-        } else if (propertyClass.equals(boolean.class) || propertyClass.equals(Boolean.class)) {
-            return Boolean.valueOf(exportString);
+
+    @Override
+    public void importValueToBean(T bean, String exportString) {
+        /**
+         * don't attempt to set null values -- if the value was not in the import map, we want to use
+         * the application default
+         */
+        if (exportString != null) {
+            Object value = ExportFormatUtils.getValueFromString(exportString, dataType);
+            try {
+                PropertyUtils.setNestedProperty(bean, getPropertyName(), value);
+            } catch (Exception e) {
+                log.error("error setting property " + getPropertyName(), e);
+            }
         }
-        return exportString;
     }
 }

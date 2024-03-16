@@ -148,8 +148,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * This method does not do any validation or authorization -- callers should ensure the user
      * is authorized to update the given task/enrollee, and that the task corresponds to the snapshot
      */
-    @Transactional
-    public SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
+    protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
                                                   UUID participantUserId, SurveyResponse responseDto) {
         UUID taskResponseId = task.getSurveyResponseId();
         Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion()).get();
