@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
@@ -24,7 +24,7 @@ export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
-  const { user, logoutUser } = useUser()
+  const { user, relations, logoutUser } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
 
@@ -115,18 +115,27 @@ export default function Navbar(props: NavbarProps) {
           )}
           {!user.isAnonymous && (
             <>
-              <li className="nav-item">
-                <Link
-                  className={classNames(
-                    'btn btn-lg btn-outline-primary',
-                    'd-flex justify-content-center',
-                    'ms-lg-3'
-                  )}
-                  to="/hub"
+              <li className="nav-item dropdown d-flex flex-column">
+                <button
+                  aria-expanded="false"
+                  aria-haspopup="true"
+                  className="btn btn-lg btn-outline-primary d-flex justify-content-center dropdown-toggle"
+                  data-bs-toggle="dropdown"
                 >
                   {i18n('navbarDashboard')}
-                </Link>
+                </button>
+                <div className="dropdown-menu dropdown-menu-end">
+                  <NavLink to="/hub" className="dropdown-item">
+                      Your Dashboard
+                  </NavLink>
+                  {relations.map((relation, index) => (
+                    <NavLink key={index} to={`/hub/${relation.targetEnrollee.shortcode}`} className="dropdown-item">
+                      {relation.relationshipType} Dashboard
+                    </NavLink>
+                  ))}
+                </div>
               </li>
+
               <li className="nav-item dropdown d-flex flex-column">
                 <button
                   aria-expanded="false"

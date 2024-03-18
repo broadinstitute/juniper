@@ -56,6 +56,7 @@ export type LoginResult = {
   user: ParticipantUser,
   ppUser: PortalParticipantUser,
   enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile: Profile
 }
 
@@ -72,6 +73,23 @@ export type Enrollee = {
   profile: Profile
   profileId: string
   shortcode: string
+  studyEnvironmentId: string
+  surveyResponses: []
+}
+
+export type EnrolleeRelation = {
+  id: string
+  relationshipType: string,
+  targetEnrollee: Enrollee,
+  consentResponses: []
+  createdAt: number
+  kitRequests: []
+  lastUpdatedAt: number
+  participantTasks: ParticipantTask[]
+  participantUserId: string
+  preEnrollmentResponseId?: string
+  profile: Profile
+  profileId: string
   studyEnvironmentId: string
   surveyResponses: []
 }

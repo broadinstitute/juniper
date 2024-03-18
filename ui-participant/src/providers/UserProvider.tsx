@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
@@ -16,7 +16,8 @@ const anonymousUser: User = {
 
 export type UserContextT = {
   user: User,
-  enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
+  enrollees: Enrollee[],
+  relations: EnrolleeRelation[], // this data is included to speed initial hub rendering.  it is NOT kept current
   ppUser?: PortalParticipantUser,
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
@@ -30,6 +31,7 @@ export type UserContextT = {
 const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   enrollees: [],
+  relations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -141,6 +143,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const userContext: UserContextT = {
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
+    relations: loginState ? loginState.relations : [],
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
     loginUser,

@@ -15,7 +15,8 @@ const UpdateEnrolleeTestComponent = () => {
       user: mockParticipantUser(),
       ppUser: { profile: {}, profileId: '', id: '' },
       profile: {},
-      enrollees: []
+      enrollees: [],
+      relations: []
     })
   }, [])
 
