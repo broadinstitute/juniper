@@ -158,6 +158,7 @@ public class RegistrationService {
         Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Profile governedProfile =  Profile.builder()
                 .contactEmail(proxyProfile.getContactEmail())
+                .doNotEmail(proxyProfile.isDoNotEmail())
                 .givenName(null)
                 .familyName(null)
                 .build();
