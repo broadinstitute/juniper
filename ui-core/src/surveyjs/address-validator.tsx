@@ -1,7 +1,7 @@
 import { Question, SurveyModel } from 'survey-core'
-import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
+import { AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { findDifferencesBetweenObjects } from '../objectUtils'
+import { explainAddressValidationResultsByField, isSameAddress } from '../addressUtils'
 
 /**
  * Creates SurveyJS address validator using the provided async function
@@ -117,17 +117,14 @@ const shouldSkipValidation = (
   existingValidationState: AddressValidationQuestionValue, mailingAddress: MailingAddress
 ) => {
   return existingValidationState && existingValidationState.inputAddress
-    && isSameAddress(existingValidationState.inputAddress, mailingAddress)
     && (
-      existingValidationState.canceledSuggestedAddress
-      || existingValidationState.acceptedSuggestedAddress
-      || existingValidationState.modalDismissed)
-}
-
-const isSameAddress = (addr1: MailingAddress, addr2: MailingAddress): boolean => {
-  return findDifferencesBetweenObjects(addr1, addr2)
-    .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
-    .length === 0
+      isSameAddress(existingValidationState.inputAddress, mailingAddress)
+      || (
+        existingValidationState.addressValidationResult.suggestedAddress
+        && isSameAddress(existingValidationState.addressValidationResult.suggestedAddress, mailingAddress)
+      )
+    )
+    && existingValidationState.modalDismissed
 }
 
 // TODO: this is _not_ internationalized, and only works well for US address formats. See JN-935
@@ -137,26 +134,25 @@ const displayAppropriateErrors = (
   errors: { [index: string]: any; } // eslint-disable-line @typescript-eslint/no-explicit-any
 ) => {
   if (validationResult.invalidComponents && validationResult.invalidComponents.length > 0) {
-    const invalidComponents = validationResult.invalidComponents
+    const explanation = explainAddressValidationResultsByField(validationResult)
 
-    if (anyInvalid(invalidComponents, 'HOUSE_NUMBER', 'STREET_NAME', 'STREET_TYPE', 'SUBPREMISE')) {
-      errors[addressValidationQuestion.street1] = 'The first address line could not be validated.'
+    if (explanation['street1']) {
+      errors[addressValidationQuestion.street1] = explanation['street1']
     }
-
-    if (anyInvalid(invalidComponents, 'CITY')) {
-      errors[addressValidationQuestion.city] = 'City could not be validated.'
+    if (explanation['street2']) {
+      errors[addressValidationQuestion.street2] = explanation['street2']
     }
-
-    if (anyInvalid(invalidComponents, 'POSTAL_CODE')) {
-      errors[addressValidationQuestion.postalCode] = 'ZIP code could not be validated'
+    if (explanation['country']) {
+      errors[addressValidationQuestion.country] = explanation['country']
     }
-
-    if (anyInvalid(invalidComponents, 'STATE_PROVINCE')) {
-      errors[addressValidationQuestion.stateProvince] = 'State could not be validated.'
+    if (explanation['city']) {
+      errors[addressValidationQuestion.city] = explanation['city']
     }
-
-    if (anyInvalid(invalidComponents, 'COUNTRY')) {
-      errors[addressValidationQuestion.stateProvince] = 'Country could not be validated.'
+    if (explanation['postalCode']) {
+      errors[addressValidationQuestion.postalCode] = explanation['postalCode']
+    }
+    if (explanation['stateProvince']) {
+      errors[addressValidationQuestion.stateProvince] = explanation['stateProvince']
     }
   } else {
     errors[addressValidationQuestion.street1] = 'Address could not be validated.'
@@ -166,10 +162,6 @@ const displayAppropriateErrors = (
     errors[addressValidationQuestion.postalCode] = 'Address could not be validated.'
     errors[addressValidationQuestion.stateProvince] = 'Address could not be validated.'
   }
-}
-
-const anyInvalid = (invalidComponents: AddressComponent[], ...searchComponents: AddressComponent[]) => {
-  return searchComponents.some(component => invalidComponents.includes(component))
 }
 
 const assembleAddressFromFormData = (data: {

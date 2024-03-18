@@ -11,6 +11,7 @@ import { useUser } from './user/UserProvider'
 import DeleteStudyModal from './study/adminTasks/DeleteStudyModal'
 import { Study } from '@juniper/ui-core/build/types/study'
 import CreateNewCohortModal from './study/CreateNewCohortModal'
+import { Portal } from '@juniper/ui-core/build/types/portal'
 
 /** Shows a user the list of portals available to them */
 function HomePage() {
@@ -20,6 +21,7 @@ function HomePage() {
   const [showNewCohortModal, setShowNewCohortModal] = useState(false)
   const [showDeleteStudyModal, setShowDeleteStudyModal] = useState(false)
   const [selectedStudy, setSelectedStudy] = useState<Study>()
+  const [selectedPortal, setSelectedPortal] = useState<Portal>()
 
   return <div className="container">
     <h1 className="h2">Juniper Home</h1>
@@ -49,11 +51,12 @@ function HomePage() {
                             () => {
                               setShowDeleteStudyModal(!showDeleteStudyModal)
                               setSelectedStudy(study)
+                              setSelectedPortal(portal)
                             }}>Delete
                         </button>
-                        { selectedStudy && showDeleteStudyModal &&
+                        { selectedStudy && showDeleteStudyModal && selectedPortal &&
                           <DeleteStudyModal study={selectedStudy}
-                            portal={portal}
+                            portal={selectedPortal}
                             onDismiss={() => setShowDeleteStudyModal(false)}
                             reload={reload}/> }
                       </li>

@@ -20,6 +20,7 @@ import {
  * saving changes to profile data.
  */
 export function ParticipantProfile(
+  { enableAddressValidation = false }: { enableAddressValidation?: boolean }
 ) {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
@@ -58,6 +59,7 @@ export function ParticipantProfile(
     const modalProps = {
       profile,
       dismissModal: () => setShowEditFieldModal(undefined),
+      enableAddressValidation,
       save
     }
 

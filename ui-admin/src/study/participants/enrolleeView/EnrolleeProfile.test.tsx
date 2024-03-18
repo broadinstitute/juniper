@@ -209,7 +209,7 @@ test('shows modal on improvable address validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  expect(screen.getByText('Please verify the improvements made to the address',
+  expect(screen.getByText('We were able to verify a similar address. Please select which you would like to use.',
     { exact: false })).toBeInTheDocument()
 })
 

@@ -4,6 +4,7 @@ import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddre
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
 
+
 // skeleton for all profile edit modals
 function ProfileRowEditModal(
   {
@@ -36,6 +37,7 @@ type EditModalProps = {
   profile: Profile,
   dismissModal: () => void,
   save: (p: Profile) => void
+
 }
 
 // internal profile editing methods
@@ -151,7 +153,7 @@ export function EditBirthDateModal(props: EditModalProps) {
 
 
   return <ProfileRowEditModal
-    title={i18n('editBirthDate')}
+    title={'Birthday'}
     onSave={onSave}
     onDismiss={onDismiss}>
 
@@ -220,7 +222,7 @@ export function EditContactEmail(props: EditModalProps) {
         {i18n('editProfileContactEmailWarning')}
       </p>
       <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
-        Email
+        {i18n('contactEmail')}
       </label>
       <input
         className={'form-control'}
@@ -240,13 +242,12 @@ export function EditCommunicationPreferences(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
 
   return <ProfileRowEditModal
-    title={i18n('editCommunicationPreferences')}
+    title={'Communication Preferences'}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div className='row mt-2'>
@@ -254,10 +255,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
-            aria-label={i18n('doNotContact')}
+            aria-label={'Do Not Email'}
             onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotEmailCheckbox">
-            {i18n('doNotContact')}
+            Do Not Email
           </label>
         </div>
       </div>
@@ -265,10 +266,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmailSolicit}
-            id="doNotSolicitCheckbox" aria-label={i18n('doNotSolicit')}
+            id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
             onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
-            {i18n('doNotSolicit')}
+            Do Not Solicit
           </label>
         </div>
       </div>
@@ -284,8 +285,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
@@ -303,14 +303,14 @@ export function EditMailingAddressModal(props: EditModalProps) {
     onFieldChange('mailingAddress', mailingAddress)
   }, [mailingAddress])
 
-
   return <ProfileRowEditModal
-    title={i18n('editMailingAddress')}
+    title={'Mailing Address'}
     onSave={onSave}
     onDismiss={onDismiss}>
     <EditAddress
       mailingAddress={mailingAddress}
       setMailingAddress={setMailingAddress}
+      language={'en'}
       showLabels={true}
     />
   </ProfileRowEditModal>

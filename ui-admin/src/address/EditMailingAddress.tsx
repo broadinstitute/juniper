@@ -1,7 +1,6 @@
 import {
   AddressValidationResult,
   EditAddress,
-  explainAddressValidationResults,
   findDifferencesBetweenObjects,
   MailingAddress,
   SuggestBetterAddressModal
@@ -104,7 +103,6 @@ export default function EditMailingAddress(
         <SuggestBetterAddressModal
           inputtedAddress={mailingAddress}
           improvedAddress={addressValidationResults.suggestedAddress}
-          hasInferredComponents={addressValidationResults.hasInferredComponents || false}
           accept={() => {
             if (addressValidationResults && addressValidationResults.suggestedAddress) {
               const suggested = addressValidationResults.suggestedAddress
@@ -130,9 +128,5 @@ export default function EditMailingAddress(
             clearSuggestedAddress()
           }}
         />}
-    {!addressValidationResults?.valid && explainAddressValidationResults(addressValidationResults)
-      .map((explanation, idx) =>
-        <p key={idx} className="text-danger-emphasis">{explanation}</p>
-      )}
   </div>
 }

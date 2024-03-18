@@ -7,9 +7,11 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -35,6 +37,7 @@ public class EnrolleeExportService {
     private final ParticipantTaskService participantTaskService;
     private final EnrolleeService enrolleeService;
     private final KitRequestService kitRequestService;
+    private final ParticipantUserService participantUserService;
     private final KitTypeDao kitTypeDao;
     private final ObjectMapper objectMapper;
 
@@ -43,7 +46,9 @@ public class EnrolleeExportService {
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService, SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
-                                 EnrolleeService enrolleeService, KitRequestService kitRequestService, KitTypeDao kitTypeDao, ObjectMapper objectMapper) {
+                                 EnrolleeService enrolleeService, KitRequestService kitRequestService,
+                                 ParticipantUserService participantUserService,
+                                 KitTypeDao kitTypeDao, ObjectMapper objectMapper) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
@@ -52,6 +57,7 @@ public class EnrolleeExportService {
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
         this.kitRequestService = kitRequestService;
+        this.participantUserService = participantUserService;
         this.kitTypeDao = kitTypeDao;
         this.objectMapper = objectMapper;
     }
@@ -103,6 +109,7 @@ public class EnrolleeExportService {
     public List<ModuleFormatter> generateModuleInfos(ExportOptions exportOptions, UUID studyEnvironmentId)  {
         List<ModuleFormatter> moduleFormatters = new ArrayList<>();
         moduleFormatters.add(new EnrolleeFormatter(exportOptions));
+        moduleFormatters.add(new ParticipantUserFormatter(exportOptions));
         moduleFormatters.add(new ProfileFormatter(exportOptions));
         moduleFormatters.add(new KitRequestFormatter());
         moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
@@ -145,6 +152,7 @@ public class EnrolleeExportService {
     protected EnrolleeExportData loadEnrolleeData(Enrollee enrollee) {
         return new EnrolleeExportData(
                 enrollee,
+                participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(),
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).get(),
                 answerDao.findByEnrolleeId(enrollee.getId()),
                 participantTaskService.findByEnrolleeId(enrollee.getId()),

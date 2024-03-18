@@ -21,7 +21,7 @@ export function EditAddress(
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,
     validationResult?: AddressValidationResult,
-    showLabels: boolean
+    showLabels?: boolean
   }
 ) {
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])

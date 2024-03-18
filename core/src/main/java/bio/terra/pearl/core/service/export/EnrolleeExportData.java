@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Getter @Setter @Builder @AllArgsConstructor
 public class EnrolleeExportData {
     private Enrollee enrollee;
+    private ParticipantUser participantUser;
     private Profile profile;
     private List<Answer> answers;
     private List<ParticipantTask> tasks;
