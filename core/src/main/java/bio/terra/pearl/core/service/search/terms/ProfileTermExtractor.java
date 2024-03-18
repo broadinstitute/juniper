@@ -56,6 +56,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
         return new SQLWhereFieldTerm("profile", field.getValue());
     }
 
+    // TODO: make it not an enum, also use cameltosnake util function
     @Getter
     public enum ProfileField {
         GIVEN_NAME("given_name"),
