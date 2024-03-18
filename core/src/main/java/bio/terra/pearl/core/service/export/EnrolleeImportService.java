@@ -3,14 +3,18 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;
@@ -27,24 +31,33 @@ import java.util.*;
 
 @Service
 public class EnrolleeImportService {
-    /** for now, we only support importing from a specific style of export. */
+    /**
+     * for now, we only support importing from a specific style of export.
+     */
     ExportOptions IMPORT_OPTIONS = new ExportOptions(false, true, true, ExportFileFormat.TSV, null);
 
     private final RegistrationService registrationService;
     private final EnrollmentService enrollmentService;
     private final ProfileService profileService;
+    private final EnrolleeExportService enrolleeExportService;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
 
-    public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService, ProfileService profileService) {
+    public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
+                                 ProfileService profileService, EnrolleeExportService enrolleeExportService,
+                                 SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
+        this.enrolleeExportService = enrolleeExportService;
+        this.surveyResponseService = surveyResponseService;
+        this.participantTaskService = participantTaskService;
     }
 
     @Transactional
     /**
-     * exports the specified number of enrollees from the given environment
-     * The enrollees will be returned most-recently-created first
-     * */
+     * imports the enrollees serialized in the inputstream to the given environment
+     */
     public void importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in) {
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
@@ -52,8 +65,10 @@ public class EnrolleeImportService {
         }
     }
 
-    /** transforms a TSV import input stream into a List of string maps, one map per enrollee */
-        public List<Map<String, String>> generateImportMaps(InputStream in) {
+    /**
+     * transforms a TSV import input stream into a List of string maps, one map per enrollee
+     */
+    public List<Map<String, String>> generateImportMaps(InputStream in) {
         List<Map<String, String>> importMaps = new ArrayList<>();
         CSVParser parser = new CSVParserBuilder()
                 .withSeparator('\t').build();
@@ -77,24 +92,64 @@ public class EnrolleeImportService {
 
         DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
-                ).build();
+        ).build();
         /** first create the participant user */
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         ParticipantUser participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        if (participantUser.getUsername() == null) {
+            throw new IllegalArgumentException("username must be provided for enrollee import");
+        }
         RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null);
         /** temporarily update the profile to no emails since they'll receive a special welcome email */
         regResult.profile().setDoNotEmail(true);
-        Profile profile = profileService.update(regResult.profile(), auditInfo);
+        profileService.update(regResult.profile(), auditInfo);
 
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
+        /** now update the profile */
+        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
+
+        List<SurveyResponse> surveyResponses = importSurveyResponses(enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), response.getEnrollee(), auditInfo);
+
         /** restore email */
         profile.setDoNotEmail(false);
-        profileService.update(regResult.profile(), auditInfo);
+        profileService.update(profile, auditInfo);
         return response.getEnrollee();
     }
 
+    protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
+                                    ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
+        ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
+        Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        profile.setId(registrationProfile.getId());
+        profile.setMailingAddressId(registrationProfile.getMailingAddressId());
+        profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
+        return profileService.updateWithMailingAddress(profile, auditInfo);
+    }
+
+    protected List<SurveyResponse> importSurveyResponses(Map<String, String> enrolleeMap,
+                                                         ExportOptions exportOptions,
+                                                         StudyEnvironment studyEnv,
+                                                         PortalParticipantUser ppUser,
+                                                         Enrollee enrollee,
+                                                         DataAuditInfo auditInfo) {
+        List<SurveyFormatter> surveyModules = enrolleeExportService.generateSurveyModules(exportOptions, studyEnv.getId());
+        List<SurveyResponse> responses = new ArrayList<>();
+        for (SurveyFormatter formatter : surveyModules) {
+            responses.add(importSurveyResponse(formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo));
+        }
+        return null;
+    }
+
+    protected SurveyResponse importSurveyResponse(SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
+                                                  StudyEnvironment studyEnv, PortalParticipantUser ppUser, Enrollee enrollee, DataAuditInfo auditInfo) {
+        SurveyResponse response = formatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        ParticipantTask relatedTask = participantTaskService.findTaskForActivity(ppUser.getId(), studyEnv.getId(), formatter.getModuleName())
+                .orElseThrow(() -> new IllegalStateException("Task not found to enable import of response for " + formatter.getModuleName()));
+        // we're not worrying about dating the response yet
+        return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId()).getResponse();
+    }
 }

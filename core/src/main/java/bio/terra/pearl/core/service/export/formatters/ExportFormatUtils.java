@@ -30,7 +30,9 @@ public class ExportFormatUtils {
             Double.class, DataValueExportType.NUMBER,
             Integer.class, DataValueExportType.NUMBER,
             LocalDate.class, DataValueExportType.DATE,
-            Instant.class, DataValueExportType.DATE_TIME
+            Instant.class, DataValueExportType.DATE_TIME,
+            Boolean.class, DataValueExportType.BOOLEAN,
+            boolean.class, DataValueExportType.BOOLEAN
     );
     public static String formatBoolean(Boolean bool) {
         return bool.toString();
@@ -96,6 +98,17 @@ public class ExportFormatUtils {
         String spacedString = camelCased.replace(".", " - ");
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(
                         StringUtils.capitalize(spacedString)), " ");
+    }
+
+    public static Object getValueFromString(String exportString, DataValueExportType dataType) {
+        if (dataType.equals(DataValueExportType.DATE_TIME)) {
+            return ExportFormatUtils.importInstant(exportString);
+        } else if (dataType.equals(DataValueExportType.DATE)) {
+            return ExportFormatUtils.importLocalDate(exportString);
+        } else if (dataType.equals(DataValueExportType.BOOLEAN)) {
+            return Boolean.valueOf(exportString);
+        }
+        return exportString;
     }
 
 }
