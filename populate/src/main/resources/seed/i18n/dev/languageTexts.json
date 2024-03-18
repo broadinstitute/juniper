@@ -29,7 +29,7 @@
   {"keyName": "editBirthDate", "text": "DEV_Edit Birthday", "language": "dev"},
   {"keyName": "birthDate", "text": "DEV_Birthday", "language": "dev"},
   {"keyName": "mailingAddress", "text": "DEV_Mailing Address", "language": "dev"},
-  {"keyName": "editMailingAddress", "text": "DEV_Edit Mailing Address", "language": "en"},
+  {"keyName": "editMailingAddress", "text": "DEV_Edit Mailing Address", "language": "dev"},
   {"keyName": "primaryAddress", "text": "DEV_Primary Address", "language": "dev"},
   {"keyName": "editPrimaryAddress", "text": "DEV_Edit Primary Address", "language": "dev"},
   {"keyName": "street1", "text": "DEV_Street 1", "language": "dev"},
