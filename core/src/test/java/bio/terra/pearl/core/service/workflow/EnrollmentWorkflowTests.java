@@ -29,6 +29,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
@@ -277,6 +278,14 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         PreEnrollmentResponse preEnrollmentResponse = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForRegularUser, userBundle.ppUser().getId(), userBundle.user().getId(), studyEnv.getId());
         preEnrollmentResponseProxy.setQualified(true);
         Assertions.assertFalse(enrollmentService.isProxyEnrollment(preEnrollmentResponse.getId()));
+
+        Study study = studyService.find(studyEnv.getStudyId()).get();
+        HubResponse<Enrollee> hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), study.getShortcode(),
+                userProxyBundle.user(), userProxyBundle.ppUser(), preEnrollmentResponseProxy.getId());
+        // confirm that two enrollees were created, and only one is a subject
+        assertThat(hubResponse.getEnrollee().isSubject(), equalTo(false));
+        assertThat(hubResponse.getResponse().isSubject(), equalTo(true));
+
 
     }
 
