@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -105,7 +106,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<SurveyFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(moduleFormatters, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = moduleFormatters.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
@@ -173,7 +174,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
                 .build());
         surveyFactory.attachToEnv(survey2, studyEnv.getId(), true);
 
-        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<SurveyFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(exportModuleInfo, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));

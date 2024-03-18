@@ -5,7 +5,6 @@ import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.beanutils.PropertyUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,20 +38,9 @@ public abstract class BeanModuleFormatter<T> extends ModuleFormatter<T, Property
         T bean = newBean();
         for (PropertyItemFormatter<T> itemInfo : getItemFormatters()) {
             String columnName = getColumnKey(itemInfo, false, null, 1);
-            String stringVal = enrolleeMap.get(columnName);
-            /**
-             * don't attempt to set null values -- if the value was not in the import map, we want to use
-             * the application default
-             */
-            if (stringVal != null) {
-                Object value = itemInfo.getValueFromString(stringVal);
-                try {
-                    PropertyUtils.setNestedProperty(bean, itemInfo.getPropertyName(), value);
-                } catch (Exception e) {
-                    log.error("error importing property " + itemInfo.getPropertyName(), e);
-                }
-            }
 
+            String stringVal = enrolleeMap.get(columnName);
+            itemInfo.importValueToBean(bean, stringVal);
         }
         return bean;
     }
