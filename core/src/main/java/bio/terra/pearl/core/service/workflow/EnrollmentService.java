@@ -157,7 +157,7 @@ public class EnrollmentService {
      * If there is one, it will check the user's response to the question in the PreEnrollment Response.
      * If the user's response is true, it will return true, otherwise it returns false;
      */
-    private boolean isProxyEnrollment(UUID preEnrollResponseId) {
+   protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
         PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;

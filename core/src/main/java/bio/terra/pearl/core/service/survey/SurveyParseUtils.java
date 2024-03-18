@@ -183,7 +183,7 @@ public class SurveyParseUtils {
      * This method is used to convert the answer to a survey to the returnClass. The method assumes the answer is a valid and is
      * in the answerField of the node
      * */
-    static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
+    protected static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
         String objectValueString = node.get(answerField).asText();
         // Direct conversion for String
         if (returnClass == String.class) {
@@ -199,7 +199,7 @@ public class SurveyParseUtils {
         }
     }
 
-    static String getQuestionStableId(JsonNode node) {
+    protected static String getQuestionStableId(JsonNode node) {
         JsonNode questionStableIdNode = node.get("questionStableId");
         return questionStableIdNode != null ? questionStableIdNode.asText() : null;
     }

@@ -20,6 +20,7 @@ import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
+import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
@@ -29,6 +30,7 @@ import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -249,6 +251,35 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(governedEnrollee2.getId()), hasSize(1));
     }
 
+    @Test
+    @Transactional
+    public void testDetectingProxyWhileEnrollment(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        Survey preEnrollmentSurvey = surveyFactory.buildPersisted(getTestName(info));
+        StudyEnvironmentSurvey.builder()
+                .surveyId(preEnrollmentSurvey.getId())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+        String proxyQuestionStableId = "proxyQuestion";
+        preEnrollmentSurveyFactory.buildPersistedProxyAnswerMapping(getTestName(info), preEnrollmentSurvey.getId(), proxyQuestionStableId);
+        String preEnrollmentSurveyResponseForProxy = """
+                [{"questionStableId":"proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"true"},
+                {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
+        ParticipantUserFactory.ParticipantUserAndPortalUser userProxyBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        PreEnrollmentResponse preEnrollmentResponseProxy = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForProxy, userProxyBundle.ppUser().getId(), userProxyBundle.user().getId(), studyEnv.getId());
+        Assertions.assertTrue(enrollmentService.isProxyEnrollment(preEnrollmentResponseProxy.getId()));
+
+        String preEnrollmentSurveyResponseForRegularUser = """
+                [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
+                {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        PreEnrollmentResponse preEnrollmentResponse = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForRegularUser, userBundle.ppUser().getId(), userBundle.user().getId(), studyEnv.getId());
+        preEnrollmentResponseProxy.setQualified(true);
+        Assertions.assertFalse(enrollmentService.isProxyEnrollment(preEnrollmentResponse.getId()));
+
+    }
+
 
 
     @Autowired
@@ -284,4 +315,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ConsentResponseService consentResponseService;
     @Autowired
     private SurveyResponseService surveyResponseService;
+    @Autowired
+    private PreEnrollmentSurveyFactory preEnrollmentSurveyFactory;
 }
