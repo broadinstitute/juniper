@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.search.expressions;
 
-import bio.terra.pearl.core.service.search.BooleanOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLSearch;
+import org.jooq.Operator;
 
 import java.util.UUID;
 
@@ -10,9 +10,9 @@ public class BooleanSearchExpression implements EnrolleeSearchExpression {
 
     private final EnrolleeSearchExpression left;
     private final EnrolleeSearchExpression right;
-    private final BooleanOperator operator;
+    private final Operator operator;
 
-    public BooleanSearchExpression(EnrolleeSearchExpression left, EnrolleeSearchExpression right, BooleanOperator operator) {
+    public BooleanSearchExpression(EnrolleeSearchExpression left, EnrolleeSearchExpression right, Operator operator) {
         this.left = left;
         this.right = right;
         this.operator = operator;
@@ -23,6 +23,7 @@ public class BooleanSearchExpression implements EnrolleeSearchExpression {
         return switch (operator) {
             case AND -> left.evaluate(enrolleeCtx) && right.evaluate(enrolleeCtx);
             case OR -> left.evaluate(enrolleeCtx) || right.evaluate(enrolleeCtx);
+            case XOR -> left.evaluate(enrolleeCtx) ^ right.evaluate(enrolleeCtx);
         };
     }
 

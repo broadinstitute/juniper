@@ -1,10 +1,10 @@
 package bio.terra.pearl.core.service.search.sql;
 
 import bio.terra.pearl.core.service.search.Type;
-import org.jdbi.v3.core.statement.Query;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 public class SQLWhereValueTerm implements SQLWhereClause {
     private String stringValue = null;
@@ -47,25 +47,21 @@ public class SQLWhereValueTerm implements SQLWhereClause {
     }
 
     @Override
-    public String generateSql(SQLContext context) {
-        this.boundIndex = context.incrementParamIndex();
-        return ":" + boundIndex;
+    public String generateSql() {
+        return "?";
     }
 
     @Override
-    public void bindSqlParams(Query query) {
-        if (boundIndex == null) {
-            throw new IllegalStateException("bindSqlParams called before generateSql");
-        }
-
-        switch (type) {
-            case STRING -> query.bind(boundIndex.toString(), stringValue);
-            case INTEGER -> query.bind(boundIndex.toString(), integerValue);
-            case DOUBLE -> query.bind(boundIndex.toString(), doubleValue);
-            case INSTANT -> query.bind(boundIndex.toString(), instantValue);
-            case DATE -> query.bind(boundIndex.toString(), dateValue);
-            case BOOLEAN -> query.bind(boundIndex.toString(), booleanValue);
-        }
+    public List<Object> boundObjects() {
+        return switch (type) {
+            case STRING -> List.of(stringValue);
+            case INTEGER -> List.of(integerValue);
+            case DOUBLE -> List.of(doubleValue);
+            case INSTANT -> List.of(instantValue);
+            case DATE -> List.of(dateValue);
+            case BOOLEAN -> List.of(booleanValue);
+            default -> throw new IllegalArgumentException("Unknown type: " + type);
+        };
     }
 
 

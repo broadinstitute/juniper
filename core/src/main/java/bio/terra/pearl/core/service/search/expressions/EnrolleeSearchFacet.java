@@ -1,15 +1,19 @@
 package bio.terra.pearl.core.service.search.expressions;
 
-import bio.terra.pearl.core.service.search.BooleanOperator;
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLSearch;
-import bio.terra.pearl.core.service.search.sql.SQLWhereBooleanExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
 import bio.terra.pearl.core.service.search.terms.Term;
+import org.jooq.Condition;
+import org.jooq.DSLContext;
+import org.jooq.Query;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 
 import java.util.UUID;
+
+import static org.jooq.impl.DSL.condition;
 
 public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
     EnrolleeTermExtractor leftTermExtractor;
@@ -40,38 +44,14 @@ public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
 
     @Override
     public SQLSearch generateSqlSearch(UUID studyEnvId) {
-        SQLSearch search = new SQLSearch(studyEnvId);
-        leftTermExtractor.requiredJoinClauses().forEach(search::addJoinClause);
-        leftTermExtractor.requiredSelectClauses().forEach(search::addSelectClause);
-        rightTermExtractor.requiredJoinClauses().forEach(search::addJoinClause);
-        rightTermExtractor.requiredSelectClauses().forEach(search::addSelectClause);
+        DSLContext create = DSL.using(SQLDialect.POSTGRES);
 
-        search.setSqlWhereClause(new SQLWhereComparisonExpression(
-                leftTermExtractor.termClause(),
-                rightTermExtractor.termClause(),
-                operator
-        ));
+        Query query = create
+                .select()
+                .from("enrollee")
+                .where(leftTermExtractor.termClause().toSql()).sql;
 
-        if (leftTermExtractor.requiredWhereClause() != null) {
-            search.setSqlWhereClause(
-                    new SQLWhereBooleanExpression(
-                            search.getSqlWhereClause(),
-                            leftTermExtractor.requiredWhereClause(),
-                            BooleanOperator.AND
-                    )
-            );
-        }
-
-        if (rightTermExtractor.requiredWhereClause() != null) {
-            search.setSqlWhereClause(
-                    new SQLWhereBooleanExpression(
-                            search.getSqlWhereClause(),
-                            rightTermExtractor.requiredWhereClause(),
-                            BooleanOperator.AND
-                    )
-            );
-        }
-
+        Condition condition = condition(this.leftTermExtractor., 2);
 
         return search;
     }

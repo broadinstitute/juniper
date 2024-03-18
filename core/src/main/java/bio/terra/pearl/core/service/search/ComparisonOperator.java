@@ -17,4 +17,8 @@ public enum ComparisonOperator {
         this.operator = operator;
     }
 
+    public String getOperator() {
+        return operator;
+    }
+
 }

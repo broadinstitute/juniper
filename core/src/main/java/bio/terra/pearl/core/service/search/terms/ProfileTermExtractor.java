@@ -3,11 +3,11 @@ package bio.terra.pearl.core.service.search.terms;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereFieldTerm;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ProfileTermExtractor implements EnrolleeTermExtractor {
 
@@ -50,13 +50,18 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
     }
 
     @Override
-    public SQLWhereClause requiredWhereClause() {
-        return null;
+    public Optional<Condition> requiredConditions() {
+        return Optional.empty();
     }
 
     @Override
-    public SQLWhereClause termClause() {
-        return new SQLWhereFieldTerm("profile", field);
+    public String termClause() {
+        return "profile." + field;
+    }
+
+    @Override
+    public List<Object> boundObjects() {
+        return List.of();
     }
 
     public static final List<String> ACCEPTABLE_FIELDS = List.of(

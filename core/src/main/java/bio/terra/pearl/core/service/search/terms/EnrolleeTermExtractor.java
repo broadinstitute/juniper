@@ -3,9 +3,10 @@ package bio.terra.pearl.core.service.search.terms;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
+import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface EnrolleeTermExtractor {
     Term extract(EnrolleeSearchContext enrollee);
@@ -13,9 +14,11 @@ public interface EnrolleeTermExtractor {
     List<SQLJoinClause> requiredJoinClauses();
     List<SQLSelectClause> requiredSelectClauses();
 
-    SQLWhereClause requiredWhereClause();
+    Optional<Condition> requiredConditions();
 
     // Clause which is either a SQL field (e.g., profile.givenName)
     // or a bound constant from user input (e.g., "John")
-    SQLWhereClause termClause();
+    String termClause();
+
+    List<Object> boundObjects();
 }
