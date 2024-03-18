@@ -56,9 +56,8 @@ public class EnrolleeImportService {
 
     @Transactional
     /**
-     * exports the specified number of enrollees from the given environment
-     * The enrollees will be returned most-recently-created first
-     * */
+     * imports the enrollees serialized in the inputstream to the given environment
+     */
     public void importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in) {
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
