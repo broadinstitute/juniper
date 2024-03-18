@@ -12,6 +12,9 @@ public interface EnrolleeTermExtractor {
 
     List<SQLJoinClause> requiredJoinClauses();
     List<SQLSelectClause> requiredSelectClauses();
+
+    SQLWhereClause requiredWhereClause();
+
     // Clause which is either a SQL field (e.g., profile.givenName)
     // or a bound constant from user input (e.g., "John")
     SQLWhereClause termClause();

@@ -2,12 +2,13 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.survey.Answer;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class AnswerDao extends BaseMutableJdbiDao<Answer> {
@@ -55,5 +56,21 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
 
     public List<Answer> findByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
+    }
+
+    public Answer findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName +
+                                " where enrollee_id = :enrolleeId " +
+                                "and survey_stable_id = :surveyStableId " +
+                                "and question_stable_id = :questionStableId " +
+                                "order by last_updated_at desc limit 1")
+                        .bind("enrolleeId", enrolleeID)
+                        .bind("surveyStableId", surveyStableId)
+                        .bind("questionStableId", questionStableId)
+                        .mapTo(clazz)
+                        .findFirst()
+                        .orElse(null)
+        );
     }
 }

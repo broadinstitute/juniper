@@ -32,6 +32,11 @@ public class ConstantTermExtractor implements EnrolleeTermExtractor {
     }
 
     @Override
+    public SQLWhereClause requiredWhereClause() {
+        return null;
+    }
+
+    @Override
     public SQLWhereClause termClause() {
         String value = switch (term.getType()) {
             case BOOLEAN -> term.getBooleanValue().toString();

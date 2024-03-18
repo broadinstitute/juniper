@@ -1,8 +1,10 @@
 package bio.terra.pearl.core.service.search.expressions;
 
+import bio.terra.pearl.core.service.search.BooleanOperator;
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLSearch;
+import bio.terra.pearl.core.service.search.sql.SQLWhereBooleanExpression;
 import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
 import bio.terra.pearl.core.service.search.terms.Term;
@@ -49,6 +51,27 @@ public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
                 rightTermExtractor.termClause(),
                 operator
         ));
+
+        if (leftTermExtractor.requiredWhereClause() != null) {
+            search.setSqlWhereClause(
+                    new SQLWhereBooleanExpression(
+                            search.getSqlWhereClause(),
+                            leftTermExtractor.requiredWhereClause(),
+                            BooleanOperator.AND
+                    )
+            );
+        }
+
+        if (rightTermExtractor.requiredWhereClause() != null) {
+            search.setSqlWhereClause(
+                    new SQLWhereBooleanExpression(
+                            search.getSqlWhereClause(),
+                            rightTermExtractor.requiredWhereClause(),
+                            BooleanOperator.AND
+                    )
+            );
+        }
+
 
         return search;
     }

@@ -5,16 +5,25 @@ import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchFacet;
+import bio.terra.pearl.core.service.search.terms.AnswerTermExtractor;
 import bio.terra.pearl.core.service.search.terms.ConstantTermExtractor;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
 import bio.terra.pearl.core.service.search.terms.ProfileTermExtractor;
 import bio.terra.pearl.core.service.search.terms.Term;
+import bio.terra.pearl.core.service.survey.AnswerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EnrolleeSearchExpressionParser {
+    private final AnswerService answerService;
+
+    public EnrolleeSearchExpressionParser(AnswerService answerService) {
+        this.answerService = answerService;
+    }
+
+
     public EnrolleeSearchExpression parseRule(String rule) {
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -71,29 +80,51 @@ public class EnrolleeSearchExpressionParser {
 
     private EnrolleeTermExtractor parseVariableTerm(String variable) {
         String trimmedVar = variable.substring(1, variable.length() - 1).trim();
-        String[] split = trimmedVar.split("\\.");
-
-        String model = split[0];
+        String model = parseModel(trimmedVar);
 
 
         switch (model) {
             case "profile":
-                if (split.length != 2)
-                    throw new IllegalArgumentException("Invalid profile term; expected format: profile.<field>");
-                return parseProfileTerm(split[1]);
+                String field = parseField(trimmedVar);
+                return parseProfileTerm(field);
+            case "answer":
+                String[] fields = parseFields(trimmedVar);
+                if (fields.length != 2) {
+                    throw new IllegalArgumentException("Invalid answer variable");
+                }
+
+                return parseAnswerTerm(fields[0], fields[1]);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
     }
 
+    private String parseModel(String variable) {
+        if (variable.contains(".")) {
+            return variable.substring(0, variable.indexOf("."));
+        }
+        return variable;
+    }
+
+    private String parseField(String variable) {
+        if (variable.contains(".")) {
+            return variable.substring(variable.indexOf(".") + 1);
+        }
+        throw new IllegalArgumentException("No field in variable");
+    }
+
+    private String[] parseFields(String variable) {
+        if (variable.contains(".")) {
+            return variable.substring(variable.indexOf(".") + 1).split("\\.");
+        }
+        throw new IllegalArgumentException("No field in variable");
+    }
+
     private ProfileTermExtractor parseProfileTerm(String field) {
-        return switch (field) {
-            case "givenName" -> new ProfileTermExtractor(ProfileTermExtractor.ProfileField.GIVEN_NAME);
-            case "familyName" -> new ProfileTermExtractor(ProfileTermExtractor.ProfileField.FAMILY_NAME);
-            case "contactEmail" -> new ProfileTermExtractor(ProfileTermExtractor.ProfileField.CONTACT_EMAIL);
-            case "phoneNumber" -> new ProfileTermExtractor(ProfileTermExtractor.ProfileField.PHONE_NUMBER);
-            case "birthDate" -> new ProfileTermExtractor(ProfileTermExtractor.ProfileField.BIRTH_DATE);
-            default -> throw new IllegalArgumentException("Unknown profile field");
-        };
+        return new ProfileTermExtractor(field);
+    }
+
+    private AnswerTermExtractor parseAnswerTerm(String surveyStableId, String questionStableId) {
+        return new AnswerTermExtractor(answerService, surveyStableId, questionStableId);
     }
 }
