@@ -304,7 +304,7 @@ export function EditMailingAddressModal(props: EditModalProps) {
   }, [mailingAddress])
 
   return <ProfileRowEditModal
-    title={i18n('mailingAddress')}
+    title={i18n('editMailingAddress')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <EditAddress
