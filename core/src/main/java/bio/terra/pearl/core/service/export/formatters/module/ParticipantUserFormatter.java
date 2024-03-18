@@ -24,4 +24,9 @@ public class ParticipantUserFormatter extends BeanModuleFormatter<ParticipantUse
     public ParticipantUser getBean(EnrolleeExportData enrolleeExportData) {
         return enrolleeExportData.getParticipantUser();
     }
+
+    @Override
+    public ParticipantUser newBean() {
+        return new ParticipantUser();
+    }
 }

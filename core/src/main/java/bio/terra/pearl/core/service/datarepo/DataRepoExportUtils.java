@@ -11,7 +11,7 @@ public class DataRepoExportUtils {
             //TODO: Properly format DATETIMEs instead of using STRING.
             case DATE_TIME -> TableDataType.STRING;
             case DATE -> TableDataType.DATE;
-            case STRING -> TableDataType.STRING;
+            case STRING, OBJECT_STRING -> TableDataType.STRING;
             case NUMBER -> TableDataType.INTEGER;
             case BOOLEAN -> TableDataType.BOOLEAN;
         };

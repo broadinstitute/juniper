@@ -120,7 +120,7 @@ public class EnrolleeExportService {
      * returns a ModuleExportInfo for each unique survey stableId that has ever been attached to the studyEnvironment
      * If multiple versions of a survey have been attached, those will be consolidated into a single ModuleExportInfo
      */
-    protected List<ModuleFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) {
+    protected List<SurveyFormatter> generateSurveyModules(ExportOptions exportOptions, UUID studyEnvironmentId) {
         // get all surveys that have ever been attached to the StudyEnvironment, including inactive ones
         List<StudyEnvironmentSurvey> configuredSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(studyEnvironmentId, null);
         Map<String, List<StudyEnvironmentSurvey>> configuredSurveysByStableId = configuredSurveys.stream().collect(
@@ -132,7 +132,7 @@ public class EnrolleeExportService {
                 .stream().sorted(Comparator.comparingInt(entry -> entry.getValue().get(0).getSurveyOrder())).toList();
 
         // create one moduleExportInfo for each survey stableId.
-        List<ModuleFormatter> moduleFormatters = new ArrayList<>();
+        List<SurveyFormatter> moduleFormatters = new ArrayList<>();
         for (Map.Entry<String, List<StudyEnvironmentSurvey>> surveysOfStableId : sortedCfgSurveysByStableId) {
             List<Survey> surveys = surveysOfStableId.getValue().stream().map(StudyEnvironmentSurvey::getSurvey).toList();
             List<SurveyQuestionDefinition> surveyQuestionDefinitions = surveyQuestionDefinitionDao.findAllBySurveyIds(surveys.stream().map(Survey::getId).toList());
