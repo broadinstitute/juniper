@@ -42,7 +42,7 @@
   {"keyName": "editCommunicationPreferences", "text": "DEV_Edit Communication Preferences", "language": "dev"},
   {"keyName": "contactEmail", "text": "DEV_Contact Email", "language": "dev"},
   {"keyName": "editContactEmail", "text": "DEV_Edit Contact Email", "language": "dev"},
-  {"keyName": "phoneNumber", "text": "DEV_Contact Email", "language": "dev"},
+  {"keyName": "phoneNumber", "text": "DEV_Phone Number", "language": "dev"},
   {"keyName": "editPhoneNumber", "text": "DEV_Edit Phone Number", "language": "dev"},
   {"keyName": "doNotSolicit", "text": "DEV_Do Not Solicit", "language": "dev"},
   {"keyName": "doNotContact", "text": "DEV_Do Not Contact", "language": "dev"},

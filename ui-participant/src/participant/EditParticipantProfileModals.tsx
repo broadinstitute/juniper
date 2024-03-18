@@ -48,8 +48,6 @@ const useProfileEditMethods = (props: EditModalProps) => {
     save
   } = props
 
-  const { i18n } = useI18n()
-
   const [editedProfile, setEditedProfile] = useState<Profile>(profile)
 
   const onDismiss = () => {
@@ -90,8 +88,7 @@ const useProfileEditMethods = (props: EditModalProps) => {
     onSave,
     onDateFieldChange,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   }
 }
 
@@ -103,10 +100,10 @@ export function EditNameModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
     title={i18n('editName')}
@@ -147,13 +144,13 @@ export function EditBirthDateModal(props: EditModalProps) {
     onDismiss,
     onSave,
     onDateFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Birthday'}
+    title={i18n('editBirthDate')}
     onSave={onSave}
     onDismiss={onDismiss}>
 
@@ -176,10 +173,10 @@ export function EditPhoneNumber(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
     title={i18n('editPhoneNumber')}
@@ -208,10 +205,10 @@ export function EditContactEmail(props: EditModalProps) {
     onDismiss,
     onSave,
     onFieldChange,
-    editedProfile,
-    i18n
+    editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
     title={i18n('editContactEmail')}
@@ -245,9 +242,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Communication Preferences'}
+    title={i18n('editCommunicationPreferences')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <div className='row mt-2'>
@@ -255,10 +253,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
-            aria-label={'Do Not Email'}
+            aria-label={i18n('doNotContact')}
             onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotEmailCheckbox">
-            Do Not Email
+            {i18n('doNotContact')}
           </label>
         </div>
       </div>
@@ -266,10 +264,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmailSolicit}
-            id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
+            id="doNotSolicitCheckbox" aria-label={i18n('doNotSolicit')}
             onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
-            Do Not Solicit
+            {i18n('doNotSolicit')}
           </label>
         </div>
       </div>
@@ -288,6 +286,8 @@ export function EditMailingAddressModal(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
+
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
     editedProfile.mailingAddress || {
       street1: '',
@@ -304,13 +304,12 @@ export function EditMailingAddressModal(props: EditModalProps) {
   }, [mailingAddress])
 
   return <ProfileRowEditModal
-    title={'Mailing Address'}
+    title={i18n('mailingAddress')}
     onSave={onSave}
     onDismiss={onDismiss}>
     <EditAddress
       mailingAddress={mailingAddress}
       setMailingAddress={setMailingAddress}
-      language={'en'}
       showLabels={true}
     />
   </ProfileRowEditModal>
