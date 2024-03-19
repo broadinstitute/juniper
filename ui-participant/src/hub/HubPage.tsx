@@ -16,7 +16,7 @@ import OutreachTasks from './OutreachTasks'
 /** renders the logged-in hub page */
 export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees, activeEnrollee, relations } = useUser()
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
@@ -34,7 +34,9 @@ export default function HubPage() {
 
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
-  const hasActiveTasks = enrollees.some(enrollee => enrollee.participantTasks.some(task => isTaskActive(task)))
+  const hasActiveTasks = activeEnrollee?.participantTasks.some(isTaskActive)
+  console.log('activeEnrollee', activeEnrollee)
+
 
   return (
     <>
@@ -69,7 +71,7 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
+          {activeEnrollee && <StudySection key={activeEnrollee.id} enrollee={activeEnrollee} portal={portal} /> }
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>

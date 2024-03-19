@@ -18,6 +18,7 @@ export type UserContextT = {
   user: User,
   enrollees: Enrollee[],
   relations: EnrolleeRelation[], // this data is included to speed initial hub rendering.  it is NOT kept current
+  activeEnrollee: Enrollee | null,
   ppUser?: PortalParticipantUser,
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
@@ -25,6 +26,7 @@ export type UserContextT = {
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
+  setActiveEnrollee: (enrollee: Enrollee) => void
 }
 
 /** current user object context */
@@ -32,6 +34,7 @@ const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   enrollees: [],
   relations: [],
+  activeEnrollee: null,
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -46,7 +49,8 @@ const UserContext = React.createContext<UserContextT>({
   },
   updateProfile: () => {
     throw new Error('context not yet initialized')
-  }
+  },
+  setActiveEnrollee: () => { throw new Error('context not yet initialized') }
 })
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
 const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
@@ -59,6 +63,7 @@ export const useUser = () => useContext(UserContext)
 export default function UserProvider({ children }: { children: React.ReactNode }) {
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [activeEnrollee, setActiveEnrollee] = useState<Enrollee | null>(null)
   const auth = useAuth()
   const navigate = useNavigate()
 
@@ -144,13 +149,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     relations: loginState ? loginState.relations : [],
+    activeEnrollee,
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
     loginUser,
     loginUserInternal,
     logoutUser,
     updateEnrollee,
-    updateProfile
+    updateProfile,
+    setActiveEnrollee
   }
 
   useEffect(() => {

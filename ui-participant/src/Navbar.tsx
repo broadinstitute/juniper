@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
+import Api, { getEnvSpec, Enrollee, getImageUrl, NavbarItem, PortalStudy, EnrolleeRelation } from 'api/api'
 import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -24,9 +24,13 @@ export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
   const config = useConfig()
-  const { user, relations, logoutUser } = useUser()
+  const { user, enrollees, relations, activeEnrollee, logoutUser, setActiveEnrollee } = useUser()
   const envSpec = getEnvSpec()
   const navLinks = localContent.navbarItems
+  const mappingRelationships: Map<string, string> = new Map([
+    ['PROXY', 'Dependent User'],
+    ['PARENT', 'Child']
+  ])
 
   const languageOptions = portalEnv.supportedLanguages
 
@@ -48,6 +52,16 @@ export default function Navbar(props: NavbarProps) {
     })
   }
 
+  const navigate = useNavigate()
+
+
+  const changeActiveUser = (enrollee: Enrollee) => {
+    console.log('changing active user to', enrollee)
+    setActiveEnrollee(enrollee)
+    navigate('/hub/')
+  }
+
+
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const location = useLocation()
   useEffect(() => {
@@ -57,6 +71,11 @@ export default function Navbar(props: NavbarProps) {
   }, [location.pathname])
 
   const dropdownId = uniqueId('navDropdown')
+
+  function getRightTitle(relationshipType: string, relation: EnrolleeRelation) {
+    return (relation.profile && (`${relation.profile.givenName } ${relation.profile.familyName}`)) ||
+      mappingRelationships.get(relationshipType) || relationshipType
+  }
 
   return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
@@ -125,13 +144,13 @@ export default function Navbar(props: NavbarProps) {
                   {i18n('navbarDashboard')}
                 </button>
                 <div className="dropdown-menu dropdown-menu-end">
-                  <NavLink to="/hub" className="dropdown-item">
-                      Your Dashboard
-                  </NavLink>
+                  <button onClick={() => changeActiveUser(enrollees[0])} className="dropdown-item">
+                    {i18n('navbarDashboard')}
+                  </button>
                   {relations.map((relation, index) => (
-                    <NavLink key={index} to={`/hub/${relation.targetEnrollee.shortcode}`} className="dropdown-item">
-                      {relation.relationshipType} Dashboard
-                    </NavLink>
+                    <button onClick={() => changeActiveUser(relation.targetEnrollee)} className="dropdown-item">
+                      {getRightTitle(relation.relationshipType, relation)} {i18n('navbarDashboard')}
+                    </button>
                   ))}
                 </div>
               </li>
