@@ -3,10 +3,10 @@ package bio.terra.pearl.core.service.search.terms;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereValueTerm;
+import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ConstantTermExtractor implements EnrolleeTermExtractor {
 
@@ -32,22 +32,42 @@ public class ConstantTermExtractor implements EnrolleeTermExtractor {
     }
 
     @Override
-    public SQLWhereClause requiredWhereClause() {
-        return null;
+    public Optional<Condition> requiredConditions() {
+        return Optional.empty();
     }
 
     @Override
-    public SQLWhereClause termClause() {
-        String value = switch (term.getType()) {
-            case BOOLEAN -> term.getBooleanValue().toString();
-            case STRING -> term.getStringValue();
-            case INTEGER -> term.getIntegerValue().toString();
-            case DOUBLE -> term.getDoubleValue().toString();
-            case INSTANT -> term.getInstantValue().toString();
-            default -> "";
-        };
+    public List<Object> boundObjects() {
+        switch (term.getType()) {
+            case STRING -> {
+                return List.of(term.getStringValue());
+            }
+            case INTEGER -> {
+                return List.of(term.getIntegerValue());
+            }
+            case DOUBLE -> {
+                return List.of(term.getDoubleValue());
+            }
+            case BOOLEAN -> {
+                return List.of(term.getBooleanValue());
+            }
+            case INSTANT -> {
+                return List.of(term.getInstantValue());
+            }
+            case DATE -> {
+                return List.of(term.getDateValue());
+            }
+            default -> {
+                throw new IllegalArgumentException("Unsupported term type: " + term.getType());
+            }
+        }
+    }
 
-        return new SQLWhereValueTerm(value);
+    @Override
+    public String termClause() {
+
+
+        return "?";
     }
 
 

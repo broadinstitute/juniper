@@ -9,6 +9,8 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
+import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
+
 public class ProfileTermExtractor implements EnrolleeTermExtractor {
 
     private final String field;
@@ -46,7 +48,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
 
     @Override
     public List<SQLSelectClause> requiredSelectClauses() {
-        return List.of(new SQLSelectClause("profile", field));
+        return List.of(new SQLSelectClause("profile", toSnakeCase(field)));
     }
 
     @Override
@@ -56,7 +58,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
 
     @Override
     public String termClause() {
-        return "profile." + field;
+        return "profile." + toSnakeCase(field);
     }
 
     @Override

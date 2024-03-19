@@ -2,15 +2,14 @@ package bio.terra.pearl.core.service.search.expressions;
 
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
-import bio.terra.pearl.core.service.search.sql.SQLSearch;
+import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
 import bio.terra.pearl.core.service.search.terms.Term;
 import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
+import org.jooq.Operator;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.jooq.impl.DSL.condition;
@@ -43,17 +42,34 @@ public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
     }
 
     @Override
-    public SQLSearch generateSqlSearch(UUID studyEnvId) {
-        DSLContext create = DSL.using(SQLDialect.POSTGRES);
+    public EnrolleeSearchQueryBuilder generateQueryBuilder(UUID studyEnvId) {
+        EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(studyEnvId);
 
-        Query query = create
-                .select()
-                .from("enrollee")
-                .where(leftTermExtractor.termClause().toSql()).sql;
+        leftTermExtractor.requiredJoinClauses().forEach(enrolleeSearchQueryBuilder::addJoinClause);
+        leftTermExtractor.requiredSelectClauses().forEach(enrolleeSearchQueryBuilder::addSelectClause);
+        rightTermExtractor.requiredJoinClauses().forEach(enrolleeSearchQueryBuilder::addJoinClause);
+        rightTermExtractor.requiredSelectClauses().forEach(enrolleeSearchQueryBuilder::addSelectClause);
 
-        Condition condition = condition(this.leftTermExtractor., 2);
 
-        return search;
+        List<Object> boundObjects = new ArrayList<>();
+        boundObjects.addAll(leftTermExtractor.boundObjects());
+        boundObjects.addAll(rightTermExtractor.boundObjects());
+
+        Condition whereCondition = condition(
+                this.leftTermExtractor.termClause() + " " + this.operator.getOperator() + " " + this.rightTermExtractor.termClause(),
+                boundObjects.toArray());
+
+        if (leftTermExtractor.requiredConditions().isPresent()) {
+            whereCondition = condition(Operator.AND, leftTermExtractor.requiredConditions().get(), whereCondition);
+        }
+
+        if (rightTermExtractor.requiredConditions().isPresent()) {
+            whereCondition = condition(Operator.AND, rightTermExtractor.requiredConditions().get(), whereCondition);
+        }
+
+        enrolleeSearchQueryBuilder.addCondition(whereCondition);
+
+        return enrolleeSearchQueryBuilder;
     }
 
 }

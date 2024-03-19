@@ -6,15 +6,9 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.search.BooleanOperator;
-import bio.terra.pearl.core.service.search.ComparisonOperator;
-import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
-import bio.terra.pearl.core.service.search.sql.SQLSearch;
-import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereBooleanExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereFieldTerm;
-import bio.terra.pearl.core.service.search.sql.SQLWhereValueTerm;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
+import org.jooq.Query;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -23,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-class EnrolleeSearchExpressionDaoTest extends BaseSpringBootTest {
+public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Autowired
     EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
@@ -34,35 +28,28 @@ class EnrolleeSearchExpressionDaoTest extends BaseSpringBootTest {
     @Autowired
     StudyEnvironmentFactory studyEnvironmentFactory;
 
+    @Autowired
+    EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+
+
     @Test
     @Transactional
-    void testExecuteBasicSearch(TestInfo info) {
+    public void testExecuteBasicSearch(TestInfo info) {
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment otherEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
 
-        SQLSearch sqlSearch = new SQLSearch(studyEnv.getId());
-        sqlSearch.addSelectClause(new SQLSelectClause("profile", "given_name"));
-        sqlSearch.addSelectClause(new SQLSelectClause("profile", "family_name"));
-        sqlSearch.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
-        sqlSearch.setSqlWhereClause(new SQLWhereBooleanExpression(new SQLWhereComparisonExpression(
-                new SQLWhereFieldTerm("profile", "given_name"),
-                new SQLWhereValueTerm("Jonas"),
-                ComparisonOperator.EQUALS
-        ),new SQLWhereComparisonExpression(
-                new SQLWhereFieldTerm("profile", "family_name"),
-                new SQLWhereValueTerm("Salk"),
-                ComparisonOperator.EQUALS
-        ), BooleanOperator.AND));
+        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{profile.givenName} = 'Jonas' && {profile.familyName} = 'Salk'");
 
-        // does not bind user inputted parameters (SQLWhereValues)
+        Query query = exp.generateQuery(studyEnv.getId());
+
         Assertions.assertEquals(
-                "SELECT enrollee.*, profile.given_name, profile.family_name FROM enrollee enrollee " +
-                        "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
-                        "WHERE ((profile.given_name = :0) AND (profile.family_name = :1)) " +
-                        "AND enrollee.study_environment_id = :studyEnvironmentId",
-                sqlSearch.generateQueryString());
+                "select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
+                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "where ((profile.family_name = ?) and (profile.given_name = ?) " +
+                        "and (enrollee.study_environment_id = ?))",
+                query.getSQL());
 
-        Assertions.assertEquals(0, enrolleeSearchExpressionDao.executeSearch(sqlSearch).size());
+        Assertions.assertEquals(0, enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId()).size());
 
         Enrollee salk1 = enrolleeFactory.buildPersisted(
                 getTestName(info),
@@ -82,7 +69,7 @@ class EnrolleeSearchExpressionDaoTest extends BaseSpringBootTest {
                 Profile.builder().givenName("Jonas").familyName("Salk").build());
 
 
-        List<Enrollee> results = enrolleeSearchExpressionDao.executeSearch(sqlSearch);
+        List<Enrollee> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(2, results.size());
         Assertions.assertTrue(results.contains(salk1));
@@ -91,4 +78,5 @@ class EnrolleeSearchExpressionDaoTest extends BaseSpringBootTest {
         Assertions.assertFalse(results.contains(notSalk));
 
     }
+
 }

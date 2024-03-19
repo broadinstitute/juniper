@@ -9,14 +9,10 @@ public class SQLJoinClause {
     private final String table;
     private final String on;
 
-    public SQLJoinClause(String alias, String table, String on) {
+    public SQLJoinClause(String table, String alias, String on) {
         this.alias = alias;
         this.table = table;
         this.on = on;
-    }
-
-    public String generateSql() {
-        return String.format("%s JOIN %s %s ON %s", joinType, table, alias, on);
     }
 
     public enum JoinType {

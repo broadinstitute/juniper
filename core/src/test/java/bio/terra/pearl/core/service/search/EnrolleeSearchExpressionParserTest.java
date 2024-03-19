@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
+import org.jooq.Query;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,10 +22,56 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         String rule = "{profile.givenName} = 'John'";
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
-        assertEquals("SELECT enrollee.*, profile.given_name FROM enrollee enrollee " +
-                        "INNER JOIN profile profile ON enrollee.profile_id = profile.id " +
-                        "WHERE (profile.given_name = :0) AND enrollee.study_environment_id = :studyEnvironmentId",
-                searchExp.generateSqlSearch(fakeStudyEnvId).generateQueryString());
+        Query query = searchExp.generateQuery(fakeStudyEnvId);
+        assertEquals("select *, profile.given_name from enrollee enrollee " +
+                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "where ((profile.given_name = ?) and (enrollee.study_environment_id = ?))",
+                query.getSQL());
+
+        assertEquals("John", query.getBindValues().get(0));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(1));
+    }
+
+    @Test
+    public void testNestedParsing() {
+        String rule = "{profile.givenName} = 'John' && {profile.familyName} = 'Doe'";
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
+
+        Query query = searchExp.generateQuery(fakeStudyEnvId);
+        assertEquals("select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
+                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "where ((profile.family_name = ?) and (profile.given_name = ?) " +
+                        "and (enrollee.study_environment_id = ?))",
+                query.getSQL());
+
+        assertEquals(3, query.getBindValues().size());
+        assertEquals("Doe", query.getBindValues().get(0));
+        assertEquals("John", query.getBindValues().get(1));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(2));
+    }
+
+    @Test
+    public void testComplexParsing() {
+        String rule = "{profile.givenName} = 'John' && {answer.oh_oh_basics.oh_oh_givenName} = 'John'";
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
+
+        Query query = searchExp.generateQuery(fakeStudyEnvId);
+        assertEquals("select enrollee.*, profile.given_name, oh_oh_givenName.string_value, " +
+                        "oh_oh_givenName.question_stable_id, oh_oh_givenName.survey_stable_id " +
+                        "from enrollee enrollee " +
+                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "join answer oh_oh_givenName on (enrollee.id = oh_oh_givenName.enrollee_id) " +
+                        "where ((oh_oh_givenName.survey_stable_id = ? AND oh_oh_givenName.question_stable_id = ?) " +
+                        "and (oh_oh_givenName.string_value = ?) and (profile.given_name = ?) " +
+                        "and (enrollee.study_environment_id = ?))",
+                query.getSQL());
+
+        assertEquals(5, query.getBindValues().size());
+        assertEquals("oh_oh_basics", query.getBindValues().get(0));
+        assertEquals("oh_oh_givenName", query.getBindValues().get(1));
+        assertEquals("John", query.getBindValues().get(2));
+        assertEquals("John", query.getBindValues().get(3));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(4));
     }
 
 }

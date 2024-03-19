@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.search.terms.Term;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.jooq.Operator;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,11 +43,11 @@ public class EnrolleeSearchExpressionParser {
         return new EnrolleeSearchFacet(parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
     }
 
-    private BooleanOperator expToBooleanOperator(CohortRuleParser.ExprContext ctx) {
+    private Operator expToBooleanOperator(CohortRuleParser.ExprContext ctx) {
         if (ctx.AND() != null) {
-            return BooleanOperator.AND;
+            return Operator.AND;
         } else if (ctx.OR() != null) {
-            return BooleanOperator.OR;
+            return Operator.OR;
         } else {
             throw new IllegalArgumentException("Unknown joiner");
         }
@@ -68,7 +69,8 @@ public class EnrolleeSearchExpressionParser {
         if (ctx.BOOLEAN() != null) {
             return new ConstantTermExtractor(new Term(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
         } else if (ctx.STRING() != null) {
-            return new ConstantTermExtractor(new Term(ctx.STRING().getText()));
+            // remove outer quotes, e.g., 'John' -> John
+            return new ConstantTermExtractor(new Term(ctx.STRING().getText().substring(1, ctx.STRING().getText().length() - 1)));
         } else if (ctx.NUMBER() != null) {
             return new ConstantTermExtractor(new Term(Double.parseDouble(ctx.NUMBER().getText())));
         } else if (ctx.VARIABLE() != null) {

@@ -1,19 +1,16 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.service.search.BooleanOperator;
-import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
 import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereBooleanExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereClause;
-import bio.terra.pearl.core.service.search.sql.SQLWhereComparisonExpression;
-import bio.terra.pearl.core.service.search.sql.SQLWhereFieldTerm;
-import bio.terra.pearl.core.service.search.sql.SQLWhereValueTerm;
 import bio.terra.pearl.core.service.survey.AnswerService;
+import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Optional;
+
+import static org.jooq.impl.DSL.condition;
 
 public class AnswerTermExtractor implements EnrolleeTermExtractor {
 
@@ -54,23 +51,18 @@ public class AnswerTermExtractor implements EnrolleeTermExtractor {
     }
 
     @Override
-    public SQLWhereClause requiredWhereClause() {
-        return new SQLWhereBooleanExpression(
-                new SQLWhereComparisonExpression(
-                        new SQLWhereFieldTerm(questionStableId, "survey_stable_id"),
-                        new SQLWhereValueTerm(this.surveyStableId),
-                        ComparisonOperator.EQUALS),
-                new SQLWhereComparisonExpression(
-                        new SQLWhereFieldTerm(questionStableId, "question_stable_id"),
-                        new SQLWhereValueTerm(this.questionStableId),
-                        ComparisonOperator.EQUALS),
-                BooleanOperator.AND
-        );
+    public Optional<Condition> requiredConditions() {
+        return Optional.of(condition(questionStableId + ".survey_stable_id = ? AND " + questionStableId + ".question_stable_id = ?", surveyStableId, questionStableId));
     }
 
     @Override
-    public SQLWhereClause termClause() {
-        return new SQLWhereFieldTerm(questionStableId, "string_value");
+    public String termClause() {
+        return questionStableId + ".string_value";
+    }
+
+    @Override
+    public List<Object> boundObjects() {
+        return List.of();
     }
 
 }
