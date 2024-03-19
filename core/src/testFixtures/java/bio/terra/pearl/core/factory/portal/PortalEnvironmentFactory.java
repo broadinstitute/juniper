@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.factory.portal;
 
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -15,8 +14,6 @@ import java.util.UUID;
 @Component
 public class PortalEnvironmentFactory {
     @Autowired
-    private EnvironmentFactory environmentFactory;
-    @Autowired
     private PortalFactory portalFactory;
     @Autowired
     private PortalEnvironmentService portalEnvironmentService;
@@ -28,7 +25,6 @@ public class PortalEnvironmentFactory {
     }
 
     public PortalEnvironment.PortalEnvironmentBuilder builderWithDependencies(String testName, EnvironmentName envName, UUID portalId) {
-        environmentFactory.buildPersisted(testName, envName);
         return builder(testName)
                 .portalId(portalId)
                 .portalEnvironmentConfig(new PortalEnvironmentConfig())

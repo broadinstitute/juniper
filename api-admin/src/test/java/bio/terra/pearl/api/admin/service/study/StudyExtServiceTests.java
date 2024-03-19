@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.not;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
@@ -36,7 +35,6 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private StudyEnvironmentService studyEnvironmentService;
   @Autowired private StudyService studyService;
-  @Autowired private EnvironmentFactory environmentFactory;
   @Autowired private PortalStudyService portalStudyService;
   @Autowired private TriggerService triggerService;
 
@@ -45,9 +43,6 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   public void testStudyCreation(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
-    for (EnvironmentName envName : EnvironmentName.values()) {
-      environmentFactory.buildPersisted(getTestName(testInfo), envName);
-    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyCreationDto studyDto = new StudyCreationDto(newStudyShortcode, "the new study");
     studyExtService.create(portal.getShortcode(), studyDto, operator);
@@ -78,9 +73,6 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   public void testStudyDeletion(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
-    for (EnvironmentName envName : EnvironmentName.values()) {
-      environmentFactory.buildPersisted(getTestName(testInfo), envName);
-    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyCreationDto studyDto = new StudyCreationDto(newStudyShortcode, "the new study");
     studyExtService.create(portal.getShortcode(), studyDto, operator);
@@ -97,9 +89,6 @@ public class StudyExtServiceTests extends BaseSpringBootTest {
   public void testStudyDeletionNeedsSuperUser(TestInfo testInfo) {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
-    for (EnvironmentName envName : EnvironmentName.values()) {
-      environmentFactory.buildPersisted(getTestName(testInfo), envName);
-    }
     String newStudyShortcode = "newStudy" + RandomStringUtils.randomAlphabetic(5);
     StudyCreationDto studyDto = new StudyCreationDto(newStudyShortcode, "the new study");
     studyExtService.create(portal.getShortcode(), studyDto, operator);

@@ -1,6 +1,5 @@
 package bio.terra.pearl.populate.service;
 
-import bio.terra.pearl.core.service.EnvironmentService;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import java.io.IOException;
