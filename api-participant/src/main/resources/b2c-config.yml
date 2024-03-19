@@ -10,7 +10,7 @@ b2c:
     policyName: B2C_1A_ddp_participant_signup_signin_hearthive-dev
     changePasswordPolicyName: B2C_1A_ddp_participant_change_password_hearthive-dev
   demo:
-    tenantName: doesNotExist
-    clientId: doesNotExist
-    policyName: doesNotExist-dev
-    changePasswordPolicyName: doesNotExist-dev
+    tenantName: juniperdemodev
+    clientId: 37d95cc4-7c71-465e-9fc2-66be9a54c202
+    policyName: B2C_1A_ddp_participant_signup_signin_demo-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_demo-dev
