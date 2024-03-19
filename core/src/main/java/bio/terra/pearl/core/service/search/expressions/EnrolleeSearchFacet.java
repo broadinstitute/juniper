@@ -3,8 +3,8 @@ package bio.terra.pearl.core.service.search.expressions;
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
-import bio.terra.pearl.core.service.search.terms.Term;
+import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
+import bio.terra.pearl.core.service.search.terms.SearchValue;
 import org.jooq.Condition;
 import org.jooq.Operator;
 
@@ -15,11 +15,11 @@ import java.util.UUID;
 import static org.jooq.impl.DSL.condition;
 
 public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
-    EnrolleeTermExtractor leftTermExtractor;
-    EnrolleeTermExtractor rightTermExtractor;
+    EnrolleeTerm leftTermExtractor;
+    EnrolleeTerm rightTermExtractor;
     ComparisonOperator operator;
 
-    public EnrolleeSearchFacet(EnrolleeTermExtractor leftTermExtractor, EnrolleeTermExtractor rightTermExtractor, ComparisonOperator operator) {
+    public EnrolleeSearchFacet(EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
         this.leftTermExtractor = leftTermExtractor;
         this.rightTermExtractor = rightTermExtractor;
         this.operator = operator;
@@ -27,16 +27,16 @@ public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
 
     @Override
     public boolean evaluate(EnrolleeSearchContext enrolleeCtx) {
-        Term leftTerm = leftTermExtractor.extract(enrolleeCtx);
-        Term rightTerm = rightTermExtractor.extract(enrolleeCtx);
+        SearchValue leftSearchValue = leftTermExtractor.extract(enrolleeCtx);
+        SearchValue rightSearchValue = rightTermExtractor.extract(enrolleeCtx);
 
         return switch (operator) {
-            case EQUALS -> leftTerm.equals(rightTerm);
-            case NOT_EQUALS -> !leftTerm.equals(rightTerm);
-            case GREATER_THAN -> leftTerm.greaterThan(rightTerm);
-            case LESS_THAN -> rightTerm.greaterThan(leftTerm);
-            case GREATER_THAN_EQ -> leftTerm.greaterThanOrEqualTo(rightTerm);
-            case LESS_THAN_EQ -> rightTerm.greaterThanOrEqualTo(leftTerm);
+            case EQUALS -> leftSearchValue.equals(rightSearchValue);
+            case NOT_EQUALS -> !leftSearchValue.equals(rightSearchValue);
+            case GREATER_THAN -> leftSearchValue.greaterThan(rightSearchValue);
+            case LESS_THAN -> rightSearchValue.greaterThan(leftSearchValue);
+            case GREATER_THAN_EQ -> leftSearchValue.greaterThanOrEqualTo(rightSearchValue);
+            case LESS_THAN_EQ -> rightSearchValue.greaterThanOrEqualTo(leftSearchValue);
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
         };
     }

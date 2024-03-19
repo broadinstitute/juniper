@@ -11,11 +11,11 @@ import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 
-public class ProfileTermExtractor implements EnrolleeTermExtractor {
+public class ProfileTerm implements EnrolleeTerm {
 
     private final String field;
 
-    public ProfileTermExtractor(String field) {
+    public ProfileTerm(String field) {
         if (!ACCEPTABLE_FIELDS.contains(field)) {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
@@ -23,11 +23,11 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
     }
 
     @Override
-    public Term extract(EnrolleeSearchContext context) {
+    public SearchValue extract(EnrolleeSearchContext context) {
 
         // other than birthDate, all fields are strings
         if (field.equals("birthDate")) {
-            return new Term(context.getProfile().getBirthDate());
+            return new SearchValue(context.getProfile().getBirthDate());
         }
 
         String strValue = null;
@@ -38,7 +38,7 @@ public class ProfileTermExtractor implements EnrolleeTermExtractor {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
 
-        return new Term(strValue);
+        return new SearchValue(strValue);
     }
 
     @Override

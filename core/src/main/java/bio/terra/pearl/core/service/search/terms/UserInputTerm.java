@@ -8,17 +8,17 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
-public class ConstantTermExtractor implements EnrolleeTermExtractor {
+public class UserInputTerm implements EnrolleeTerm {
 
-    private final Term term;
+    private final SearchValue searchValue;
 
-    public ConstantTermExtractor(Term term) {
-        this.term = term;
+    public UserInputTerm(SearchValue searchValue) {
+        this.searchValue = searchValue;
     }
 
     @Override
-    public Term extract(EnrolleeSearchContext enrollee) {
-        return term;
+    public SearchValue extract(EnrolleeSearchContext enrollee) {
+        return searchValue;
     }
 
     @Override
@@ -38,35 +38,33 @@ public class ConstantTermExtractor implements EnrolleeTermExtractor {
 
     @Override
     public List<Object> boundObjects() {
-        switch (term.getType()) {
+        switch (searchValue.getType()) {
             case STRING -> {
-                return List.of(term.getStringValue());
+                return List.of(searchValue.getStringValue());
             }
             case INTEGER -> {
-                return List.of(term.getIntegerValue());
+                return List.of(searchValue.getIntegerValue());
             }
             case DOUBLE -> {
-                return List.of(term.getDoubleValue());
+                return List.of(searchValue.getDoubleValue());
             }
             case BOOLEAN -> {
-                return List.of(term.getBooleanValue());
+                return List.of(searchValue.getBooleanValue());
             }
             case INSTANT -> {
-                return List.of(term.getInstantValue());
+                return List.of(searchValue.getInstantValue());
             }
             case DATE -> {
-                return List.of(term.getDateValue());
+                return List.of(searchValue.getDateValue());
             }
             default -> {
-                throw new IllegalArgumentException("Unsupported term type: " + term.getType());
+                throw new IllegalArgumentException("Unsupported term type: " + searchValue.getType());
             }
         }
     }
 
     @Override
     public String termClause() {
-
-
         return "?";
     }
 

@@ -12,26 +12,30 @@ import java.util.Optional;
 
 import static org.jooq.impl.DSL.condition;
 
-public class AnswerTermExtractor implements EnrolleeTermExtractor {
+public class AnswerTerm implements EnrolleeTerm {
 
     private final String questionStableId;
     private final String surveyStableId;
     private final AnswerService answerService;
 
-    public AnswerTermExtractor(AnswerService answerService, String surveyStableId, String questionStableId) {
+    public AnswerTerm(AnswerService answerService, String surveyStableId, String questionStableId) {
+        if (!isAlphaNumeric(questionStableId) || !isAlphaNumeric(surveyStableId)) {
+            throw new IllegalArgumentException("Invalid stable ids: must be alphanumeric and underscore only");
+        }
+
         this.questionStableId = questionStableId;
         this.surveyStableId = surveyStableId;
         this.answerService = answerService;
     }
 
     @Override
-    public Term extract(EnrolleeSearchContext context) {
+    public SearchValue extract(EnrolleeSearchContext context) {
         Answer answer = answerService.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
         return switch (answer.getAnswerType()) {
-            case STRING -> new Term(answer.getStringValue());
-            case NUMBER -> new Term(answer.getNumberValue());
-            case BOOLEAN -> new Term(answer.getBooleanValue());
-            case OBJECT -> new Term(answer.getObjectValue());
+            case STRING -> new SearchValue(answer.getStringValue());
+            case NUMBER -> new SearchValue(answer.getNumberValue());
+            case BOOLEAN -> new SearchValue(answer.getBooleanValue());
+            case OBJECT -> new SearchValue(answer.getObjectValue());
             default -> throw new IllegalArgumentException("Unsupported answer type: " + answer.getAnswerType());
         };
     }
@@ -63,6 +67,10 @@ public class AnswerTermExtractor implements EnrolleeTermExtractor {
     @Override
     public List<Object> boundObjects() {
         return List.of();
+    }
+
+    private static boolean isAlphaNumeric(String s) {
+        return s.matches("^[a-zA-Z0-9_]*$");
     }
 
 }

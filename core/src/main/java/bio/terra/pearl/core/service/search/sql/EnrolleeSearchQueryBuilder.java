@@ -29,11 +29,15 @@ public class EnrolleeSearchQueryBuilder {
 
     public SelectQuery<Record> toQuery(DSLContext context) {
 
-        return addJoins(context.select(field("enrollee.*")).select(sqlSelectClauseList
+        SelectJoinStep<Record> selectQuery = context
+                .select(field("enrollee.*"))
+                .select(sqlSelectClauseList
                         .stream()
                         .map(select -> field(select.generateSql()))
                         .collect(Collectors.toList()))
-                .from("enrollee enrollee"))
+                .from("enrollee enrollee");
+
+        return addJoins(selectQuery)
                 .where(
                         whereConditions,
                         condition("enrollee.study_environment_id = ?", studyEnvId)

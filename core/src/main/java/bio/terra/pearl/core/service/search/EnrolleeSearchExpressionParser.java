@@ -5,11 +5,11 @@ import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchFacet;
-import bio.terra.pearl.core.service.search.terms.AnswerTermExtractor;
-import bio.terra.pearl.core.service.search.terms.ConstantTermExtractor;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTermExtractor;
-import bio.terra.pearl.core.service.search.terms.ProfileTermExtractor;
-import bio.terra.pearl.core.service.search.terms.Term;
+import bio.terra.pearl.core.service.search.terms.AnswerTerm;
+import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
+import bio.terra.pearl.core.service.search.terms.ProfileTerm;
+import bio.terra.pearl.core.service.search.terms.SearchValue;
+import bio.terra.pearl.core.service.search.terms.UserInputTerm;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -65,14 +65,14 @@ public class EnrolleeSearchExpressionParser {
         };
     }
 
-    private EnrolleeTermExtractor parseTerm(CohortRuleParser.TermContext ctx) {
+    private EnrolleeTerm parseTerm(CohortRuleParser.TermContext ctx) {
         if (ctx.BOOLEAN() != null) {
-            return new ConstantTermExtractor(new Term(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
+            return new UserInputTerm(new SearchValue(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
         } else if (ctx.STRING() != null) {
             // remove outer quotes, e.g., 'John' -> John
-            return new ConstantTermExtractor(new Term(ctx.STRING().getText().substring(1, ctx.STRING().getText().length() - 1)));
+            return new UserInputTerm(new SearchValue(ctx.STRING().getText().substring(1, ctx.STRING().getText().length() - 1)));
         } else if (ctx.NUMBER() != null) {
-            return new ConstantTermExtractor(new Term(Double.parseDouble(ctx.NUMBER().getText())));
+            return new UserInputTerm(new SearchValue(Double.parseDouble(ctx.NUMBER().getText())));
         } else if (ctx.VARIABLE() != null) {
             return parseVariableTerm(ctx.VARIABLE().getText());
         } else {
@@ -80,7 +80,7 @@ public class EnrolleeSearchExpressionParser {
         }
     }
 
-    private EnrolleeTermExtractor parseVariableTerm(String variable) {
+    private EnrolleeTerm parseVariableTerm(String variable) {
         String trimmedVar = variable.substring(1, variable.length() - 1).trim();
         String model = parseModel(trimmedVar);
 
@@ -122,11 +122,11 @@ public class EnrolleeSearchExpressionParser {
         throw new IllegalArgumentException("No field in variable");
     }
 
-    private ProfileTermExtractor parseProfileTerm(String field) {
-        return new ProfileTermExtractor(field);
+    private ProfileTerm parseProfileTerm(String field) {
+        return new ProfileTerm(field);
     }
 
-    private AnswerTermExtractor parseAnswerTerm(String surveyStableId, String questionStableId) {
-        return new AnswerTermExtractor(answerService, surveyStableId, questionStableId);
+    private AnswerTerm parseAnswerTerm(String surveyStableId, String questionStableId) {
+        return new AnswerTerm(answerService, surveyStableId, questionStableId);
     }
 }

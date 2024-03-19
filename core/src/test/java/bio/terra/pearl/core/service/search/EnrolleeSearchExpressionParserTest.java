@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
@@ -23,7 +24,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
-        assertEquals("select *, profile.given_name from enrollee enrollee " +
+        assertEquals("select enrollee.*, profile.given_name from enrollee enrollee " +
                         "join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((profile.given_name = ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
@@ -34,7 +35,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     @Test
     public void testNestedParsing() {
-        String rule = "{profile.givenName} = 'John' && {profile.familyName} = 'Doe'";
+        String rule = "{profile.givenName} = 'John' and {profile.familyName} = 'Doe'";
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
@@ -52,7 +53,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     @Test
     public void testComplexParsing() {
-        String rule = "{profile.givenName} = 'John' && {answer.oh_oh_basics.oh_oh_givenName} = 'John'";
+        String rule = "{profile.givenName} = 'John' and {answer.oh_oh_basics.oh_oh_givenName} = 'John'";
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
@@ -72,6 +73,21 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertEquals("John", query.getBindValues().get(2));
         assertEquals("John", query.getBindValues().get(3));
         assertEquals(fakeStudyEnvId, query.getBindValues().get(4));
+    }
+
+    @Test
+    public void testSanitizesAnswer() {
+
+        // parses ok with normal stable id
+        enrolleeSearchExpressionParser.parseRule("{answer.oh_oh_basics.question_stable_id} = 2");
+
+        // does not parse ok with invalid stable id
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{answer.oh_oh_basics.SELECT * FROM enrollee} = 2"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{answer.SELECT * FROM enrollee.oh_oh_givenName} = 2"));
+
     }
 
 }

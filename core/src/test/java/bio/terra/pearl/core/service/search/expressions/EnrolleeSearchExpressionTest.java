@@ -10,10 +10,10 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
-import bio.terra.pearl.core.service.search.terms.AnswerTermExtractor;
-import bio.terra.pearl.core.service.search.terms.ConstantTermExtractor;
-import bio.terra.pearl.core.service.search.terms.ProfileTermExtractor;
-import bio.terra.pearl.core.service.search.terms.Term;
+import bio.terra.pearl.core.service.search.terms.AnswerTerm;
+import bio.terra.pearl.core.service.search.terms.ProfileTerm;
+import bio.terra.pearl.core.service.search.terms.SearchValue;
+import bio.terra.pearl.core.service.search.terms.UserInputTerm;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.jooq.Operator;
 import org.jooq.Query;
@@ -54,17 +54,17 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     public void testBasicSearchExpressionToSQL() {
         EnrolleeSearchExpression expression = new BooleanSearchExpression(
                 new EnrolleeSearchFacet(
-                        new ProfileTermExtractor("givenName"),
-                        new ConstantTermExtractor(new Term("John")),
+                        new ProfileTerm("givenName"),
+                        new UserInputTerm(new SearchValue("John")),
                         ComparisonOperator.EQUALS),
                 new BooleanSearchExpression(
                         new EnrolleeSearchFacet(
-                                new ProfileTermExtractor("familyName"),
-                                new ConstantTermExtractor(new Term("Salk")),
+                                new ProfileTerm("familyName"),
+                                new UserInputTerm(new SearchValue("Salk")),
                                 ComparisonOperator.EQUALS),
                         new EnrolleeSearchFacet(
-                                new ConstantTermExtractor(new Term(124.)),
-                                new ConstantTermExtractor(new Term(123.)),
+                                new UserInputTerm(new SearchValue(124.)),
+                                new UserInputTerm(new SearchValue(123.)),
                                 ComparisonOperator.GREATER_THAN),
                         Operator.AND),
                 Operator.OR);
@@ -136,14 +136,14 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
         EnrolleeSearchExpression expression1 =
                 new EnrolleeSearchFacet(
-                        new AnswerTermExtractor(answerService, survey.getStableId(), "test_question"),
-                        new ConstantTermExtractor(new Term("some_value")),
+                        new AnswerTerm(answerService, survey.getStableId(), "test_question"),
+                        new UserInputTerm(new SearchValue("some_value")),
                         ComparisonOperator.EQUALS);
 
         EnrolleeSearchExpression expression2 =
                 new EnrolleeSearchFacet(
-                        new AnswerTermExtractor(answerService, survey.getStableId(), "test_question"),
-                        new ConstantTermExtractor(new Term("diff_value")),
+                        new AnswerTerm(answerService, survey.getStableId(), "test_question"),
+                        new UserInputTerm(new SearchValue("diff_value")),
                         ComparisonOperator.EQUALS);
 
         EnrolleeSearchContext enrolleeCtx = new EnrolleeSearchContext();

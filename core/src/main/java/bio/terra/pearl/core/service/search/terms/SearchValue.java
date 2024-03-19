@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 @Getter
-public class Term {
+public class SearchValue {
     private String stringValue = null;
     private Integer integerValue = null;
     private Double doubleValue = null;
@@ -18,37 +18,37 @@ public class Term {
     private final Type type;
 
 
-    public Term(String stringValue) {
+    public SearchValue(String stringValue) {
         this.stringValue = stringValue;
         this.type = Type.STRING;
     }
 
-    public Term(Integer integerValue) {
+    public SearchValue(Integer integerValue) {
         this.integerValue = integerValue;
         this.type = Type.INTEGER;
     }
 
-    public Term(Double doubleValue) {
+    public SearchValue(Double doubleValue) {
         this.doubleValue = doubleValue;
         this.type = Type.DOUBLE;
     }
 
-    public Term(Instant instantValue) {
+    public SearchValue(Instant instantValue) {
         this.instantValue = instantValue;
         this.type = Type.INSTANT;
     }
 
-    public Term(LocalDate dateValue) {
+    public SearchValue(LocalDate dateValue) {
         this.dateValue = dateValue;
         this.type = Type.DATE;
     }
 
-    public Term(Boolean booleanValue) {
+    public SearchValue(Boolean booleanValue) {
         this.booleanValue = booleanValue;
         this.type = Type.BOOLEAN;
     }
 
-    public boolean equals(Term right) {
+    public boolean equals(SearchValue right) {
         return switch (this.type) {
             case STRING -> this.stringValue.equals(right.stringValue);
             case INTEGER -> {
@@ -68,7 +68,7 @@ public class Term {
         };
     }
 
-    public boolean greaterThan(Term right) {
+    public boolean greaterThan(SearchValue right) {
         return switch (this.type) {
             case INTEGER -> {
                 if (right.doubleValue != null)
@@ -86,7 +86,7 @@ public class Term {
         };
     }
 
-    public boolean greaterThanOrEqualTo(Term right) {
+    public boolean greaterThanOrEqualTo(SearchValue right) {
         return switch (this.type) {
             case INTEGER -> {
                 if (right.doubleValue != null)
