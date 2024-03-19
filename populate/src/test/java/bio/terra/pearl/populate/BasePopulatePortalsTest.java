@@ -21,11 +21,8 @@ import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
-import bio.terra.pearl.populate.service.BaseSeedPopulator;
-import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
-import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -36,8 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected PortalPopulator portalPopulator;
-    @Autowired
-    protected EnvironmentPopulator environmentPopulator;
     @Autowired
     protected StudyEnvironmentService studyEnvironmentService;
     @Autowired
@@ -82,10 +77,4 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected PortalParticipantUserService portalParticipantUserService;
     @Autowired
     protected ProfileService profileService;
-
-    protected void setUpEnvironments() {
-        for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
-            environmentPopulator.populate(new FilePopulateContext(fileName), true);
-        }
-    }
 }

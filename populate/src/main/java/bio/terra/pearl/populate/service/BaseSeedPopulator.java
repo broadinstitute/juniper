@@ -19,10 +19,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class BaseSeedPopulator {
     private AdminUserPopulator adminUserPopulator;
-    private EnvironmentPopulator environmentPopulator;
     private AdminConfigPopulator adminConfigPopulator;
     private AdminUserService adminUserService;
-    private EnvironmentService environmentService;
     private LanguageTextPopulator languageTextPopulator;
     private KitTypePopulator kitTypePopulator;
 
@@ -32,21 +30,15 @@ public class BaseSeedPopulator {
                     "adminUsers/mflinn.json", "adminUsers/nwatts.json",
                     "adminUsers/mbemis.json", "adminUsers/cunningh.json",
                     "adminUsers/andrew.json", "adminUsers/pegah.json");
-    public static final List<String> ENVIRONMENTS_TO_POPULATE =
-            Arrays.asList("environments/sandbox.json", "environments/irb.json", "environments/live.json");
-
     public static final List<String> LANGUAGE_TEXTS_TO_POPULATE =
             Arrays.asList("i18n/en/languageTexts.json", "i18n/es/languageTexts.json", "i18n/dev/languageTexts.json");
 
-    public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, EnvironmentPopulator environmentPopulator,
-                             AdminConfigPopulator adminConfigPopulator, AdminUserService adminUserService,
-                             EnvironmentService environmentService, KitTypePopulator kitTypePopulator,
+    public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, AdminConfigPopulator adminConfigPopulator,
+                             AdminUserService adminUserService, KitTypePopulator kitTypePopulator,
                              LanguageTextPopulator languageTextPopulator) {
         this.adminUserPopulator = adminUserPopulator;
-        this.environmentPopulator = environmentPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
-        this.environmentService = environmentService;
         this.kitTypePopulator = kitTypePopulator;
         this.languageTextPopulator = languageTextPopulator;
     }
@@ -56,13 +48,9 @@ public class BaseSeedPopulator {
         for (String file : ADMIN_USERS_TO_POPULATE) {
             adminUserPopulator.populate(new FilePopulateContext(file), false);
         }
-        for (String file : ENVIRONMENTS_TO_POPULATE) {
-            environmentPopulator.populate(new FilePopulateContext(file), false);
-        }
         AdminConfigPopulator.AdminConfigStats configStats = adminConfigPopulator.populate(true);
         return SetupStats.builder()
                 .numAdminUsers(adminUserService.count())
-                .numEnvironments(environmentService.count())
                 .adminConfigStats(configStats)
                 .build();
     }
@@ -80,7 +68,6 @@ public class BaseSeedPopulator {
     @SuperBuilder
     public static class SetupStats {
         private int numAdminUsers;
-        private int numEnvironments;
         private AdminConfigPopulator.AdminConfigStats adminConfigStats;
     }
 }
