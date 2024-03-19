@@ -37,7 +37,16 @@ public class EnrolleeSearchQueryBuilder {
                         .collect(Collectors.toList()))
                 .from("enrollee enrollee");
 
-        return addJoins(selectQuery)
+        for (SQLJoinClause join : sqlJoinClauseList) {
+            String tableName = Objects.nonNull(join.getAlias())
+                    ? join.getTable() + " " + join.getAlias()
+                    : join.getTable();
+
+            // default to left join to get as much enrollee data as possible
+            selectQuery = selectQuery.leftJoin(tableName).on(join.getOn());
+        }
+
+        return selectQuery
                 .where(
                         whereConditions,
                         condition("enrollee.study_environment_id = ?", studyEnvId)
@@ -89,18 +98,5 @@ public class EnrolleeSearchQueryBuilder {
 
         whereConditions = condition(operator, other.whereConditions, this.whereConditions);
         return this;
-    }
-
-    private SelectJoinStep<Record> addJoins(SelectJoinStep<Record> query) {
-        for (SQLJoinClause joinClause : sqlJoinClauseList) {
-            String joinSql = joinClause.getTable();
-            if (Objects.nonNull(joinClause.getAlias())) {
-                joinSql += " " + joinClause.getAlias();
-            }
-
-            query = query.join(joinSql).on(joinClause.getOn());
-        }
-
-        return query;
     }
 }

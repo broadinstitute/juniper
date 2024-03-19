@@ -56,7 +56,10 @@ public class AnswerTerm implements EnrolleeTerm {
 
     @Override
     public Optional<Condition> requiredConditions() {
-        return Optional.of(condition(questionStableId + ".survey_stable_id = ? AND " + questionStableId + ".question_stable_id = ?", surveyStableId, questionStableId));
+        return Optional.of(
+                condition(
+                        questionStableId + ".survey_stable_id = ? AND " + questionStableId + ".question_stable_id = ?",
+                        surveyStableId, questionStableId));
     }
 
     @Override

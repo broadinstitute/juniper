@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface EnrolleeTerm {
     /**
-     * Extract the term from the enrollee.
+     * Extract the term's value from the enrollee.
      */
     SearchValue extract(EnrolleeSearchContext enrollee);
 

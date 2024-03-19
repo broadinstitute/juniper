@@ -4,7 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class SQLJoinClause {
-    private JoinType joinType = JoinType.INNER;
     private final String alias;
     private final String table;
     private final String on;
@@ -15,9 +14,4 @@ public class SQLJoinClause {
         this.on = on;
     }
 
-    public enum JoinType {
-        INNER,
-        LEFT,
-        RIGHT
-    }
 }

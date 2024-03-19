@@ -25,7 +25,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
         assertEquals("select enrollee.*, profile.given_name from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((profile.given_name = ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
@@ -40,7 +40,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
         assertEquals("select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((profile.family_name = ?) and (profile.given_name = ?) " +
                         "and (enrollee.study_environment_id = ?))",
                 query.getSQL());
@@ -60,8 +60,8 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertEquals("select enrollee.*, profile.given_name, oh_oh_givenName.string_value, " +
                         "oh_oh_givenName.question_stable_id, oh_oh_givenName.survey_stable_id " +
                         "from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
-                        "join answer oh_oh_givenName on (enrollee.id = oh_oh_givenName.enrollee_id) " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join answer oh_oh_givenName on (enrollee.id = oh_oh_givenName.enrollee_id) " +
                         "where ((oh_oh_givenName.survey_stable_id = ? AND oh_oh_givenName.question_stable_id = ?) " +
                         "and (oh_oh_givenName.string_value = ?) and (profile.given_name = ?) " +
                         "and (enrollee.study_environment_id = ?))",

@@ -6,6 +6,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.search.ComparisonOperator;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
@@ -73,7 +74,7 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         Query query = enrolleeSearchQueryBuilder.toQuery(DSL.using(SQLDialect.POSTGRES));
 
         assertEquals("select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((((? > ?) and (profile.family_name = ?)) " +
                         "or (profile.given_name = ?)) " +
                         "and (enrollee.study_environment_id = ?))",
@@ -88,41 +89,40 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     }
 
-    // TODO
-//    @Test
-//    public void testBasicSearchExpressionEvaluate() {
-//        EnrolleeSearchExpression expression = new BooleanSearchExpression(
-//                new EnrolleeSearchFacet(
-//                        new ProfileTermExtractor("givenName"),
-//                        new ConstantTermExtractor(new Term("Jonas")),
-//                        ComparisonOperator.EQUALS),
-//                new EnrolleeSearchFacet(
-//                        new ProfileTermExtractor("familyName"),
-//                        new ConstantTermExtractor(new Term("Salk")),
-//                        ComparisonOperator.EQUALS),
-//                BooleanOperator.AND);
-//
-//        EnrolleeSearchContext enrolleeCtx = new EnrolleeSearchContext();
-//
-//        enrolleeCtx.setEnrollee(
-//                new Enrollee()
-//        );
-//
-//        enrolleeCtx.setProfile(
-//                Profile.builder().givenName("Jonas").familyName("Salk").build()
-//        );
-//
-//        assertTrue(expression.evaluate(enrolleeCtx));
-//
-//        enrolleeCtx.getProfile().setGivenName("John");
-//
-//        assertFalse(expression.evaluate(enrolleeCtx));
-//
-//        enrolleeCtx.getProfile().setGivenName("Jonas");
-//        enrolleeCtx.getProfile().setFamilyName("Smith");
-//
-//        assertFalse(expression.evaluate(enrolleeCtx));
-//    }
+    @Test
+    public void testBasicSearchExpressionEvaluate() {
+        EnrolleeSearchExpression expression = new BooleanSearchExpression(
+                new EnrolleeSearchFacet(
+                        new ProfileTerm("givenName"),
+                        new UserInputTerm(new SearchValue("Jonas")),
+                        ComparisonOperator.EQUALS),
+                new EnrolleeSearchFacet(
+                        new ProfileTerm("familyName"),
+                        new UserInputTerm(new SearchValue("Salk")),
+                        ComparisonOperator.EQUALS),
+                Operator.AND);
+
+        EnrolleeSearchContext enrolleeCtx = new EnrolleeSearchContext();
+
+        enrolleeCtx.setEnrollee(
+                new Enrollee()
+        );
+
+        enrolleeCtx.setProfile(
+                Profile.builder().givenName("Jonas").familyName("Salk").build()
+        );
+
+        assertTrue(expression.evaluate(enrolleeCtx));
+
+        enrolleeCtx.getProfile().setGivenName("John");
+
+        assertFalse(expression.evaluate(enrolleeCtx));
+
+        enrolleeCtx.getProfile().setGivenName("Jonas");
+        enrolleeCtx.getProfile().setFamilyName("Smith");
+
+        assertFalse(expression.evaluate(enrolleeCtx));
+    }
 
     @Test
     @Transactional
@@ -153,26 +153,4 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         assertFalse(expression2.evaluate(enrolleeCtx));
     }
 
-    // TODO
-//    @Test
-//    public void testAnswerSearchExpressionSQLGeneration() {
-//        EnrolleeSearchExpression expression1 =
-//                new EnrolleeSearchFacet(
-//                        new AnswerTermExtractor(answerService, "survey_stable_id", "test_question"),
-//                        new ConstantTermExtractor(new Term("some_value")),
-//                        ComparisonOperator.EQUALS);
-//
-//        assertEquals(
-//                "SELECT enrollee.*, test_question.string_value, " +
-//                        "test_question.question_stable_id, test_question.survey_stable_id " +
-//                        "FROM enrollee enrollee " +
-//                        "INNER JOIN test_question answer " +
-//                        "ON enrollee.id = test_question.enrollee_id " +
-//                        "WHERE " +
-//                        "((test_question.string_value = :0) " +
-//                        "AND ((test_question.survey_stable_id = :1) " +
-//                        "AND (test_question.question_stable_id = :2))) " +
-//                        "AND enrollee.study_environment_id = :studyEnvironmentId",
-//                expression1.generateSqlSearch(fakeStudyEnvId).generateQueryString());
-//    }
 }

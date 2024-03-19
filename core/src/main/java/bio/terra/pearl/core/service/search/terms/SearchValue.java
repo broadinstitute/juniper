@@ -6,6 +6,10 @@ import lombok.Getter;
 import java.time.Instant;
 import java.time.LocalDate;
 
+/**
+ * Result of a search term (profile.givenName) or user input ("John"). Useful when executing a
+ * search expression outside of SQL.
+ */
 @Getter
 public class SearchValue {
     private String stringValue = null;

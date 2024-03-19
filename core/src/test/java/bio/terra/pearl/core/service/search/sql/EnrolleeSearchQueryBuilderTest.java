@@ -22,7 +22,7 @@ class EnrolleeSearchQueryBuilderTest extends BaseSpringBootTest {
 
         Query query = enrolleeSearchQueryBuilder.toQuery(DSL.using(SQLDialect.POSTGRES));
 
-        Assertions.assertEquals("select * from enrollee enrollee " +
+        Assertions.assertEquals("select enrollee.* from enrollee enrollee " +
                         "where ((enrollee.id = ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
@@ -31,15 +31,15 @@ class EnrolleeSearchQueryBuilderTest extends BaseSpringBootTest {
     }
 
     @Test
-    void testComplexJoinsAndSelectsQueryGeneration() {
+    void testJoinsAndSelectsQueryGeneration() {
         EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(fakeStudyEnvId);
         enrolleeSearchQueryBuilder.addSelectClause(new SQLSelectClause("profile", "given_name"));
         enrolleeSearchQueryBuilder.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         enrolleeSearchQueryBuilder.addCondition(condition("profile.given_name != ?", "Jonas"));
 
         Query query = enrolleeSearchQueryBuilder.toQuery(DSL.using(SQLDialect.POSTGRES));
-        Assertions.assertEquals("select *, profile.given_name from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
+        Assertions.assertEquals("select enrollee.*, profile.given_name from enrollee enrollee " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((profile.given_name != ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
