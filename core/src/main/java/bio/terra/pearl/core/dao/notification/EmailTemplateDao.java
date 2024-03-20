@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
     private final LocalizedEmailTemplateDao localizedEmailTemplateDao;
+
     public EmailTemplateDao(Jdbi jdbi, LocalizedEmailTemplateDao localizedEmailTemplateDao) {
         super(jdbi);
         this.localizedEmailTemplateDao = localizedEmailTemplateDao;
@@ -39,7 +39,7 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
         return emailTemplate;
     }
     
-    public EmailTemplate attachLocalizedTemplates(EmailTemplate emailTemplate) {
+    public EmailTemplate attachAllLocalizedTemplates(EmailTemplate emailTemplate) {
         emailTemplate.setLocalizedEmailTemplates(localizedEmailTemplateDao.findByEmailTemplate(emailTemplate.getId()));
         return emailTemplate;
     }

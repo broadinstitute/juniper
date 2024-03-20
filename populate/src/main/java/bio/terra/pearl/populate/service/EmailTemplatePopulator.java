@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
+import bio.terra.pearl.populate.dto.notifications.LocalizedEmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import org.springframework.beans.BeanUtils;
@@ -67,6 +68,11 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         ).getId();
         popDto.setPortalId(portalId);
 
+        for(LocalizedEmailTemplatePopDto localizedEmailTemplatePopDto : popDto.getLocalizedEmailTemplateDtos()) {
+            localizedEmailTemplatePopDto.setEmailTemplateId(popDto.getId());
+        }
+
+        popDto.getLocalizedEmailTemplates().addAll(popDto.getLocalizedEmailTemplateDtos());
     }
 
     @Override

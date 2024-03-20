@@ -6,12 +6,7 @@ import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.notification.TriggerType;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -27,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -67,9 +64,14 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = PortalEnvironment.builder()
                 .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
         Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate localizedEmailTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
         EmailTemplate emailTemplate = EmailTemplate.builder()
-                    .body("family name ${profile.familyName}")
-                    .subject("Welcome ${profile.givenName}").build();
+                .defaultLanguage("en")
+                .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
 
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
         Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());

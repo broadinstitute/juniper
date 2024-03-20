@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitutor;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
@@ -15,6 +16,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public class SendgridClientTests extends BaseSpringBootTest {
   @Autowired
   private ApplicationRoutingPaths applicationRoutingPaths;
@@ -25,9 +28,13 @@ public class SendgridClientTests extends BaseSpringBootTest {
     Environment env = new MockEnvironment().withProperty(SendgridClient.EMAIL_REDIRECT_VAR, "")
         .withProperty("env.hostnames.adminUi", "someserver.com");
     SendgridClient sendgridClient = new SendgridClient(env, applicationRoutingPaths);
-    EmailTemplate emailTemplate = EmailTemplate.builder().build();
-//        .body("hello ${adminUsername}")
-//        .subject("Welcome to Juniper ${loginLink}").build();
+    LocalizedEmailTemplate localizedEmailTemplate = LocalizedEmailTemplate.builder()
+            .body("hello ${adminUsername}")
+            .language("en")
+            .subject("Welcome to Juniper ${loginLink}").build();
+    EmailTemplate emailTemplate = EmailTemplate.builder()
+            .defaultLanguage("en")
+            .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
       NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths);
 

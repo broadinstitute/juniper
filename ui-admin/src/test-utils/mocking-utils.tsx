@@ -306,6 +306,7 @@ export const mockEnrollee: () => Enrollee = () => {
       birthDate: [1994, 11, 20],
       doNotEmail: false,
       doNotEmailSolicit: false,
+      preferredLanguage: 'en',
       phoneNumber: '555.1212',
       mailingAddress: {
         street1: '123 fake street',

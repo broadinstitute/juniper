@@ -3,11 +3,9 @@ package bio.terra.pearl.core.service.notification.email;
 import bio.terra.pearl.core.dao.notification.EmailTemplateDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +38,7 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
     }
 
     public EmailTemplate attachLocalizedTemplates(EmailTemplate emailTemplate) {
-        dao.attachLocalizedTemplates(emailTemplate);
+        dao.attachAllLocalizedTemplates(emailTemplate);
         return emailTemplate;
     }
 
