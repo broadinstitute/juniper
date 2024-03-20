@@ -25,10 +25,6 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
         return EmailTemplate.class;
     }
 
-    public Optional<EmailTemplate> findByStableId(String stableId, int version) {
-        return findByTwoProperties("stable_id", stableId, "version", version);
-    }
-
     public List<EmailTemplate> findAllWithLocalizedTemplates(List<UUID> templateIds) {
         List<EmailTemplate> emailTemplates = findAll(templateIds);
         for (EmailTemplate emailTemplate : emailTemplates) {
@@ -40,6 +36,11 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
     public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {
         LocalizedEmailTemplate localizedEmailTemplate = localizedEmailTemplateDao.findByEmailTemplate(emailTemplate.getId(), language).orElseThrow(() -> new NotFoundException("LocalizedEmailTemplate not found for language " + language));
         emailTemplate.setLocalizedEmailTemplates(List.of(localizedEmailTemplate));
+        return emailTemplate;
+    }
+    
+    public EmailTemplate attachLocalizedTemplates(EmailTemplate emailTemplate) {
+        emailTemplate.setLocalizedEmailTemplates(localizedEmailTemplateDao.findByEmailTemplate(emailTemplate.getId()));
         return emailTemplate;
     }
 

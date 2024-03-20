@@ -81,7 +81,7 @@ public class SendgridClient {
   }
 
   public Mail buildEmail(NotificationContextInfo contextInfo, String toAddress, String fromAddress, String fromName,
-                         StringSubstitutor stringSubstitutor) {
+                         StringSubstitutor stringSubstitutor, String language) {
     Email from = new Email(fromAddress);
     Email to = new Email(toAddress);
 
@@ -93,7 +93,8 @@ public class SendgridClient {
     }
     from.setName(fromName);
 
-    LocalizedEmailTemplate localizedEmailTemplate = contextInfo.template().getLocalizedEmailTemplates().get(0); //todo
+    LocalizedEmailTemplate localizedEmailTemplate = contextInfo.template().getLocalizedEmailTemplates().stream().filter(
+        template -> template.getLanguage().equals(language)).findFirst().get(); //todo: handle missing language
 
     String subject = stringSubstitutor.replace(localizedEmailTemplate.getSubject());
     String contentString = stringSubstitutor.replace(localizedEmailTemplate.getBody());

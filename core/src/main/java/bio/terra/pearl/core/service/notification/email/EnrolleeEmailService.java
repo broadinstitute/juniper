@@ -63,14 +63,14 @@ public class EnrolleeEmailService implements NotificationSender {
             notification.setSentTo(ruleData.getProfile().getContactEmail());
             try {
                 buildAndSendEmail(contextInfo, ruleData, notification);
-                log.info("Email sent: config: {}, enrollee: {}", config.getId(),
-                        ruleData.getEnrollee().getShortcode());
+                log.info("Email sent: config: {}, enrollee: {}, language: {}", config.getId(),
+                        ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
-                log.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
-                        ruleData.getEnrollee().getShortcode());
+                log.error("Email failed to send: config: {}, enrollee: {}, language: {}", config.getId(),
+                        ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
             }
         }
         if (notification.getId() != null) {
@@ -137,7 +137,8 @@ public class EnrolleeEmailService implements NotificationSender {
                 ruleData.getProfile().getContactEmail(),
                 fromAddress,
                 fromName,
-                substitutor);
+                substitutor,
+                ruleData.getProfile().getPreferredLanguage());
         return mail;
     }
 
@@ -179,7 +180,7 @@ public class EnrolleeEmailService implements NotificationSender {
         Study study = studyService.findByStudyEnvironmentId(config.getStudyEnvironmentId()).get();
 
         EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).orElse(null);
-        emailTemplateService.attachLocalizedTemplate(emailTemplate, "en");
+        emailTemplateService.attachLocalizedTemplates(emailTemplate);
 
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return new NotificationContextInfo(

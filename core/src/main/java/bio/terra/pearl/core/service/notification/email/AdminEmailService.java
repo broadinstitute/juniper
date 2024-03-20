@@ -41,13 +41,15 @@ public class AdminEmailService {
     if (!shouldSendEmail(contextInfo)) {
       return;
     }
-    LocalizedEmailTemplate localizedTemplate = contextInfo.template().getLocalizedEmailTemplates().get(0);
+    LocalizedEmailTemplate localizedTemplate = contextInfo.template().getLocalizedEmailTemplates().stream().filter(
+        template -> template.getLanguage().equals("en")).findFirst().get();
+
     try {
       buildAndSendEmail(contextInfo, adminUser.getUsername());
-      log.info("Email sent: adminUsername: {}, subject: {}", adminUser.getUsername(), localizedTemplate.getSubject());
+      log.info("Email sent: adminUsername: {}, subject: {}, language: {}", adminUser.getUsername(), localizedTemplate.getSubject(), localizedTemplate.getLanguage());
     } catch (Exception e) {
-      log.error("Email failed: adminUsername: {}, subject: {}, {} ",
-          adminUser.getUsername(), localizedTemplate.getSubject(), e.getMessage());
+      log.error("Email failed: adminUsername: {}, subject: {}, language: {}, {} ",
+          adminUser.getUsername(), localizedTemplate.getSubject(), localizedTemplate.getLanguage(), e.getMessage());
     }
   }
 
@@ -64,7 +66,7 @@ public class AdminEmailService {
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(adminUsername,
         contextInfo, routingPaths);
     String fromAddress = routingPaths.getSupportEmailAddress();
-    Mail mail = sendgridClient.buildEmail(contextInfo, adminUsername, fromAddress, "Juniper", substitutor);
+    Mail mail = sendgridClient.buildEmail(contextInfo, adminUsername, fromAddress, "Juniper", substitutor, "en");
     sendgridClient.sendEmail(mail);
   }
 
@@ -82,6 +84,7 @@ public class AdminEmailService {
    */
   public NotificationContextInfo loadContextInfo(String templateStableId, int version, Portal portal) {
     EmailTemplate emailTemplate = emailTemplateService.findByStableId(templateStableId, version).get();
+    //There are no current plans to localize the admin tool, so we just attach the English version
     emailTemplateService.attachLocalizedTemplate(emailTemplate, "en");
     return new NotificationContextInfo(
         portal,

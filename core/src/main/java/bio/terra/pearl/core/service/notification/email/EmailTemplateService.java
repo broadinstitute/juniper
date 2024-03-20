@@ -39,6 +39,11 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
         return emailTemplate;
     }
 
+    public EmailTemplate attachLocalizedTemplates(EmailTemplate emailTemplate) {
+        dao.attachLocalizedTemplates(emailTemplate);
+        return emailTemplate;
+    }
+
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
     }

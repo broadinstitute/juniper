@@ -29,4 +29,8 @@ public class LocalizedEmailTemplateDao extends BaseJdbiDao<LocalizedEmailTemplat
         return findByTwoProperties("email_template_id", emailTemplateId, "language", language);
     }
 
+    public void deleteByEmailTemplateId(UUID emailTemplateId) {
+        deleteByProperty("email_template_id", emailTemplateId);
+    }
+
 }
