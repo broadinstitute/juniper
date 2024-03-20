@@ -6,9 +6,14 @@ import org.jooq.Query;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface EnrolleeSearchExpression {
+    default boolean evaluate(List<EnrolleeSearchContext> enrollees) {
+        return enrollees.stream().allMatch(this::evaluate);
+    }
+
     boolean evaluate(EnrolleeSearchContext enrollee);
 
     EnrolleeSearchQueryBuilder generateQueryBuilder(UUID studyEnvId);

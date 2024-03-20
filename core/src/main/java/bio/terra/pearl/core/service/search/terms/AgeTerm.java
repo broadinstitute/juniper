@@ -16,7 +16,7 @@ public class AgeTerm implements EnrolleeTerm {
     public SearchValue extract(EnrolleeSearchContext context) {
         Period period = Period.between(LocalDate.now(), context.getProfile().getBirthDate());
         return new SearchValue(
-                (period.toTotalMonths() / 12.0) + (period.getDays() / 365.0)
+                period.getYears()
         );
     }
 
@@ -39,7 +39,7 @@ public class AgeTerm implements EnrolleeTerm {
 
     @Override
     public String termClause() {
-        return "AGE(profile.birth_date)";
+        return "EXTRACT('YEAR' FROM AGE(profile.birth_date))";
     }
 
     @Override
