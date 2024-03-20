@@ -80,6 +80,7 @@ export type EmailTemplate = {
 }
 
 export type LocalizedEmailTemplate = {
+  id?: string  // id may not be present if the template is newly created client-side
   subject: string
   body: string
   name: string

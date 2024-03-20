@@ -43,6 +43,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
           ...emailTemplateRef.current,
           localizedEmailTemplates: [{
             ...localizedEmailTemplate,
+            id: undefined,
             body: insertPlaceholders(data.html)
           }]
         })
@@ -92,6 +93,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
               ...emailTemplate,
               localizedEmailTemplates: [{
                 ...localizedEmailTemplate,
+                id: undefined,
                 body: e.target.value
               }]
             })}/>

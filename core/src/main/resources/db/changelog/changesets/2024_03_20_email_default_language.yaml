@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_email_default_language"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: email_template
+            columns:
+              - column: { name: default_language, type: text }
