@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.participant;
 
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -23,6 +24,8 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.search.facets.*;
 import bio.terra.pearl.core.service.participant.search.facets.sql.*;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -50,6 +53,10 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
   private KitRequestFactory kitRequestFactory;
   @Autowired
   private ParticipantUserService participantUserService;
+  @Autowired
+  private EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
+  @Autowired
+  private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
   @Test
   @Transactional
@@ -62,12 +69,17 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     participantUser.setLastLogin(Instant.now());
     participantUserService.update(participantUser);
 
-      List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
+    List<EnrolleeSearchResult> result = enrolleeSearchDao.search(studyEnv.getId(), List.of());
     assertThat(result, hasSize(1));
     assertThat(result.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
 
     assertThat(result.get(0).getParticipantUser().getUsername(), equalTo(participantUser.getUsername()));
     assertThat(result.get(0).getParticipantUser().getLastLogin(), greaterThan(Instant.now().minusMillis(3000)));
+
+    EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("");
+    List<Enrollee> enrollees = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+    assertThat(enrollees, hasSize(1));
+    assertThat(enrollees.get(0).getShortcode(), equalTo(enrollee.getShortcode()));
   }
 
   @Test

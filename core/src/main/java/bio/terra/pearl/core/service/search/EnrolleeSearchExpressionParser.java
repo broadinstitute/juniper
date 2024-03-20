@@ -4,6 +4,7 @@ import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
+import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
 import bio.terra.pearl.core.service.search.terms.AgeTerm;
 import bio.terra.pearl.core.service.search.terms.AnswerTerm;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.search.terms.UserInputTerm;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +29,9 @@ public class EnrolleeSearchExpressionParser {
 
 
     public EnrolleeSearchExpression parseRule(String rule) {
+        if (StringUtils.isBlank(rule)) {
+            return new DefaultSearchExpression();
+        }
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         CohortRuleParser parser = new CohortRuleParser(tokens);
