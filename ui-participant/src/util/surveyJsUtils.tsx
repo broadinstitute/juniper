@@ -19,6 +19,8 @@ import {
 import Api, { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
+import '../components/ThemedSurveyAddressValidation'
+
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
 /** used for paging surveys */

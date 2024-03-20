@@ -129,13 +129,14 @@ public class RegistrationService {
         ppUser.setProfile(profile);
 
         ppUser = portalParticipantUserService.create(ppUser);
+
         if (preRegResponse != null) {
             preRegResponse.setPortalParticipantUserId(ppUser.getId());
             preregistrationResponseDao.update(preRegResponse);
         }
         eventService.publishPortalRegistrationEvent(user, ppUser, portalEnv);
         log.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
-        return new RegistrationResult(user, ppUser, profile);
+        return new RegistrationResult(user, ppUser, ppUser.getProfile());
     }
 
     @Transactional
@@ -157,6 +158,7 @@ public class RegistrationService {
         Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Profile governedProfile =  Profile.builder()
                 .contactEmail(proxyProfile.getContactEmail())
+                .doNotEmail(proxyProfile.isDoNotEmail())
                 .givenName(null)
                 .familyName(null)
                 .build();

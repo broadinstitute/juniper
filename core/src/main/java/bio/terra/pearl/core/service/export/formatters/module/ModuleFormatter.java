@@ -6,10 +6,12 @@ import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Getter
 public abstract class ModuleFormatter<T, F extends ItemFormatter<T>> {
@@ -40,4 +42,8 @@ public abstract class ModuleFormatter<T, F extends ItemFormatter<T>> {
     }
 
     public abstract Map<String, String> toStringMap(EnrolleeExportData enrolleeExportData);
+
+    public T fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
+        throw new NotImplementedException();
+    };
 }

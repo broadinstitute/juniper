@@ -254,4 +254,15 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             return answer.getObjectValue();
         }
     }
+
+    @Override
+    public SurveyResponse fromStringMap(UUID studyEnvironmentId,  Map<String, String> enrolleeMap) {
+        SurveyResponse response = new SurveyResponse();
+        for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
+            String columnName = getColumnKey(itemFormatter, false, null, 1);
+            String stringVal = enrolleeMap.get(columnName);
+            itemFormatter.importValueToBean(response, stringVal);
+        }
+        return response;
+    }
 }
