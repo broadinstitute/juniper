@@ -5,6 +5,7 @@ import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchFacet;
+import bio.terra.pearl.core.service.search.terms.AgeTerm;
 import bio.terra.pearl.core.service.search.terms.AnswerTerm;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
 import bio.terra.pearl.core.service.search.terms.ProfileTerm;
@@ -54,7 +55,7 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private ComparisonOperator expToComparisonOperator(CohortRuleParser.ExprContext ctx) {
-        return switch (ctx.OPERATOR().getText()) {
+        return switch (ctx.OPERATOR().getText().trim()) {
             case "=" -> ComparisonOperator.EQUALS;
             case "!=" -> ComparisonOperator.NOT_EQUALS;
             case ">" -> ComparisonOperator.GREATER_THAN;
@@ -96,6 +97,12 @@ public class EnrolleeSearchExpressionParser {
                 }
 
                 return parseAnswerTerm(fields[0], fields[1]);
+            case "age":
+                if (!trimmedVar.equals(model)) {
+                    throw new IllegalArgumentException("Invalid age variable");
+                }
+
+                return new AgeTerm();
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }

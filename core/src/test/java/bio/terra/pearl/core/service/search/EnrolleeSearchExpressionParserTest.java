@@ -76,7 +76,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
     }
 
     @Test
-    public void testSanitizesAnswer() {
+    public void testSanitizesAnswerName() {
 
         // parses ok with normal stable id
         enrolleeSearchExpressionParser.parseRule("{answer.oh_oh_basics.question_stable_id} = 2");
@@ -88,6 +88,21 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertThrows(IllegalArgumentException.class,
                 () -> enrolleeSearchExpressionParser.parseRule("{answer.SELECT * FROM enrollee.oh_oh_givenName} = 2"));
 
+    }
+
+    @Test
+    public void testParseAge() {
+        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{age} > 18");
+
+        Query query = exp.generateQuery(fakeStudyEnvId);
+        assertEquals("select enrollee.*, profile.birth_date from enrollee enrollee " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id ) " +
+                        "where ((AGE(profile.birth_date) > ?) and (enrollee.study_environment_id = ?))",
+                query.getSQL());
+ 
+        assertEquals(2, query.getBindValues().size());
+        assertEquals(18.0, query.getBindValues().get(0));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(1));
     }
 
 }

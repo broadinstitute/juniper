@@ -14,7 +14,7 @@ VARIABLE: '{' (~[\\'\r\n])* '}';
 BOOLEAN: 'true' | 'false';
 NULL: 'null';
 WS: [ \t\r\n]+ -> skip;
-OPERATOR: '=' | '!=';
+OPERATOR: '=' | '!=' | '>' | '<' | '>=' | '<=';
 AND: 'and';
 OR: 'or';
 PAR_OPEN: '(';
