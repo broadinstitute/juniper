@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.dao.participant.MailingAddressDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -14,11 +16,17 @@ import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 public class ProfileTerm implements EnrolleeTerm {
 
     private final String field;
+    private final ProfileDao profileDao;
+    private final MailingAddressDao mailingAddressDao;
 
-    public ProfileTerm(String field) {
+    public ProfileTerm(ProfileDao profileDao, MailingAddressDao mailingAddressDao, String field) {
         if (!ACCEPTABLE_FIELDS.contains(field)) {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
+
+        this.profileDao = profileDao;
+        this.mailingAddressDao = mailingAddressDao;
+
         this.field = field;
     }
 
@@ -57,10 +65,10 @@ public class ProfileTerm implements EnrolleeTerm {
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         if (field.startsWith("mailingAddress")) {
-            return List.of(new EnrolleeSearchQueryBuilder.SelectClause("mailing_address", toSnakeCase(field.substring(field.indexOf(".") + 1))));
+            return List.of(new EnrolleeSearchQueryBuilder.SelectClause("mailing_address", mailingAddressDao));
         }
 
-        return List.of(new EnrolleeSearchQueryBuilder.SelectClause("profile", toSnakeCase(field)));
+        return List.of(new EnrolleeSearchQueryBuilder.SelectClause("profile", profileDao));
     }
 
     @Override

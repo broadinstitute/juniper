@@ -2,6 +2,9 @@ package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
+import bio.terra.pearl.core.dao.participant.MailingAddressDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
@@ -11,7 +14,6 @@ import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
 import bio.terra.pearl.core.service.search.terms.ProfileTerm;
 import bio.terra.pearl.core.service.search.terms.SearchValue;
 import bio.terra.pearl.core.service.search.terms.UserInputTerm;
-import bio.terra.pearl.core.service.survey.AnswerService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.jooq.Operator;
@@ -19,10 +21,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EnrolleeSearchExpressionParser {
-    private final AnswerService answerService;
+    private final AnswerDao answerDao;
+    private final ProfileDao profileDao;
+    private final MailingAddressDao mailingAddressDao;
 
-    public EnrolleeSearchExpressionParser(AnswerService answerService) {
-        this.answerService = answerService;
+
+    public EnrolleeSearchExpressionParser(AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao) {
+        this.answerDao = answerDao;
+        this.profileDao = profileDao;
+        this.mailingAddressDao = mailingAddressDao;
     }
 
 
@@ -102,7 +109,7 @@ public class EnrolleeSearchExpressionParser {
                     throw new IllegalArgumentException("Invalid age variable");
                 }
 
-                return new AgeTerm();
+                return new AgeTerm(profileDao);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -130,10 +137,10 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private ProfileTerm parseProfileTerm(String field) {
-        return new ProfileTerm(field);
+        return new ProfileTerm(profileDao, mailingAddressDao, field);
     }
 
     private AnswerTerm parseAnswerTerm(String surveyStableId, String questionStableId) {
-        return new AnswerTerm(answerService, surveyStableId, questionStableId);
+        return new AnswerTerm(answerDao, surveyStableId, questionStableId);
     }
 }

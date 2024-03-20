@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -10,6 +11,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class AgeTerm implements EnrolleeTerm {
+
+    private final ProfileDao profileDao;
+
+    public AgeTerm(ProfileDao profileDao) {
+        this.profileDao = profileDao;
+    }
+
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
@@ -27,7 +35,7 @@ public class AgeTerm implements EnrolleeTerm {
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.SelectClause("profile", "birth_date")
+                new EnrolleeSearchQueryBuilder.SelectClause("profile", profileDao)
         );
     }
 

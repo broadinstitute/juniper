@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.sql;
 
+import bio.terra.pearl.core.dao.BaseJdbiDao;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Operator;
@@ -30,7 +32,12 @@ public class EnrolleeSearchQueryBuilder {
 
     public SelectQuery<Record> toQuery(DSLContext context) {
         SelectJoinStep<Record> selectQuery = context
-                .select(field("enrollee.*"))
+                .select(field("enrollee.id as enrollee_id"))
+                .select(field("enrollee.profile_id as enrollee_profile_id"))
+                .select(field("enrollee.created_at as enrollee_created_at"))
+                .select(field("enrollee.last_updated_at as enrollee_last_updated_at"))
+                .select(field("enrollee.participant_user_id as enrollee_participant_user_id"))
+                .select(field("enrollee.study_environment_id as enrollee_study_environment_id"))
                 .select(selectClauseList
                         .stream()
                         .map(select -> field(select.generateSql()))
@@ -58,8 +65,7 @@ public class EnrolleeSearchQueryBuilder {
         if (selectClauseList
                 .stream()
                 .anyMatch(
-                        existing -> existing.getAlias().equals(selectClause.getAlias())
-                                && existing.getField().equals(selectClause.getField())))
+                        existing -> existing.getAlias().equals(selectClause.getAlias())))
             return;
         selectClauseList.add(selectClause);
     }
@@ -117,15 +123,19 @@ public class EnrolleeSearchQueryBuilder {
     @Getter
     public static class SelectClause {
         private String alias;
-        private String field;
+        private BaseJdbiDao dao;
 
-        public SelectClause(String alias, String value) {
+        public SelectClause(String alias, BaseJdbiDao dao) {
             this.alias = alias;
-            this.field = value;
+            this.dao = dao;
         }
 
         public String generateSql() {
-            return String.format("%s.%s", alias, field);
+            List<String> columns = dao.getGetQueryColumns();
+            List<String> columnsWithPrefix = columns.stream().map(
+                    column -> alias + "." + column + " as " + alias + "_" + column
+            ).toList();
+            return StringUtils.join(columnsWithPrefix, ", ");
         }
     }
 }

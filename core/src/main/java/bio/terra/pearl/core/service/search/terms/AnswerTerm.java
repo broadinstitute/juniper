@@ -1,9 +1,9 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
-import bio.terra.pearl.core.service.survey.AnswerService;
 import org.jooq.Condition;
 
 import java.util.List;
@@ -15,21 +15,21 @@ public class AnswerTerm implements EnrolleeTerm {
 
     private final String questionStableId;
     private final String surveyStableId;
-    private final AnswerService answerService;
+    private final AnswerDao answerDao;
 
-    public AnswerTerm(AnswerService answerService, String surveyStableId, String questionStableId) {
+    public AnswerTerm(AnswerDao answerDao, String surveyStableId, String questionStableId) {
         if (!isAlphaNumeric(questionStableId) || !isAlphaNumeric(surveyStableId)) {
             throw new IllegalArgumentException("Invalid stable ids: must be alphanumeric and underscore only");
         }
 
         this.questionStableId = questionStableId;
         this.surveyStableId = surveyStableId;
-        this.answerService = answerService;
+        this.answerDao = answerDao;
     }
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        Answer answer = answerService.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
+        Answer answer = answerDao.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
         return switch (answer.getAnswerType()) {
             case STRING -> new SearchValue(answer.getStringValue());
             case NUMBER -> new SearchValue(answer.getNumberValue());
@@ -41,15 +41,13 @@ public class AnswerTerm implements EnrolleeTerm {
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
-        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("answer", questionStableId, "enrollee.id = %s.enrollee_id".formatted(questionStableId)));
+        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), "enrollee.id = %s.enrollee_id".formatted(alias())));
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of(
-                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "string_value"),
-                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "question_stable_id"),
-                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "survey_stable_id")
+                new EnrolleeSearchQueryBuilder.SelectClause(alias(), answerDao)
         );
     }
 
@@ -57,13 +55,13 @@ public class AnswerTerm implements EnrolleeTerm {
     public Optional<Condition> requiredConditions() {
         return Optional.of(
                 condition(
-                        questionStableId + ".survey_stable_id = ? AND " + questionStableId + ".question_stable_id = ?",
+                        alias() + ".survey_stable_id = ? AND " + alias() + ".question_stable_id = ?",
                         surveyStableId, questionStableId));
     }
 
     @Override
     public String termClause() {
-        return questionStableId + ".string_value";
+        return alias() + ".string_value";
     }
 
     @Override
@@ -75,4 +73,7 @@ public class AnswerTerm implements EnrolleeTerm {
         return s.matches("^[a-zA-Z0-9_]*$");
     }
 
+    private String alias() {
+        return "answer_" + questionStableId;
+    }
 }
