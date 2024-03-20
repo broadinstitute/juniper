@@ -1,12 +1,20 @@
 {
   "stableId": "hd_hd_studyConsent",
+  "name": "Consent email",
   "version": 1,
   "publishedVersion": 1,
   "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
-    "name": "Consent email",
     "subject": "Thank you!",
-    "bodyPopulateFile": "studyConsent.html"
+    "bodyPopulateFile": "en/studyConsent.html"
+  },{
+    "language": "es",
+    "subject": "¡Gracias!",
+    "bodyPopulateFile": "es/studyConsent.html"
+  }, {
+    "language": "dev",
+    "subject": "DEV_Thank you!",
+    "bodyPopulateFile": "dev/studyConsent.html"
   }]
 }

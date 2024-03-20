@@ -1,12 +1,20 @@
 {
   "stableId": "hd_hd_adhoc",
+  "name": "Ad-hoc email template",
   "version": 1,
   "publishedVersion": 1,
   "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
-    "name": "Ad-hoc email template",
     "subject": "${adHocSubject}",
-    "bodyPopulateFile": "adHoc.html"
+    "bodyPopulateFile": "en/adHoc.html"
+  },{
+    "language": "es",
+    "subject": "${adHocSubject}",
+    "bodyPopulateFile": "es/adHoc.html"
+  },{
+    "language": "dev",
+    "subject": "DEV_${adHocSubject}",
+    "bodyPopulateFile": "dev/adHoc.html"
   }]
 }

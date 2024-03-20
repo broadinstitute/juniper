@@ -428,6 +428,7 @@ export const mockTrigger = (): Trigger => {
 export const mockEmailTemplate = (): EmailTemplate => {
   return {
     id: 'emailTemplate1',
+    name: 'Mock template',
     stableId: 'mock1',
     version: 1,
     defaultLanguage: 'en',

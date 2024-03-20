@@ -1,12 +1,20 @@
 {
   "stableId": "hd_hd_reminderConsent",
+  "name": "Consent reminder",
   "version": 1,
   "publishedVersion": 1,
   "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
-    "name": "Consent reminder",
     "subject": "Reminder: Please complete the ${study.name} Consent form",
-    "bodyPopulateFile": "consentReminder.html"
+    "bodyPopulateFile": "en/consentReminder.html"
+  },{
+    "language": "es",
+    "subject": "Recordatorio: complete el formulario de consentimiento de ${study.name}",
+    "bodyPopulateFile": "es/consentReminder.html"
+  },{
+    "language": "dev",
+    "subject": "DEV_Reminder: Please complete the ${study.name} Consent form",
+    "bodyPopulateFile": "dev/consentReminder.html"
   }]
 }

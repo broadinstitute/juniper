@@ -1,97 +1,3 @@
-
-import React, { useState } from 'react'
-import { StudyEnvParams } from '../StudyEnvironmentRouter'
-import { Trigger } from '@juniper/ui-core'
-import Modal from 'react-bootstrap/Modal'
-import LoadingSpinner from 'util/LoadingSpinner'
-import { Button } from 'components/forms/Button'
-import { generateStableId } from 'util/pearlSurveyUtils'
-import { doApiLoad } from 'api/api-utils'
-import Api from 'api/api'
-import { successNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
-import { TriggerBaseForm } from './TriggerView'
-
-/** gets a default config -- eventually we'll want this to load from a template study instead of being in source code */
-const getDefaultConfig = (): Trigger => {
-  return {
-    id: '',
-    triggerType: 'EVENT',
-    deliveryType: 'EMAIL',
-    eventType: 'STUDY_ENROLLMENT',
-    active: true,
-    portalEnvironmentId: '',
-    studyEnvironmentId: '',
-    afterMinutesIncomplete: 72 * 60,
-    reminderIntervalMinutes: 72 * 60,
-    maxNumReminders: 3,
-    emailTemplate: {
-      stableId: 'placeholderStableId',
-      name: '',
-      version: 1,
-      defaultLanguage: 'en',
-      localizedEmailTemplates: [{ language: 'en', name: '', subject: 'Insert subject', body: EMAIL_TEMPLATE }]
-    },
-    emailTemplateId: ''
-  }
-}
-
-/** Modal for a new notification config -- only specifies the basic attributes */
-export default function CreateTriggerModal({ studyEnvParams, onDismiss, onCreate }:
-{studyEnvParams: StudyEnvParams, onDismiss: () => void, onCreate: (config: Trigger) => void}) {
-  const [config, setConfig] = React.useState<Trigger>(getDefaultConfig())
-  const [isLoading, setIsLoading] = useState(false)
-  const localizedEmailTemplate = config.emailTemplate.localizedEmailTemplates[0]
-
-  const createConfig = async () => {
-    doApiLoad(async () => {
-      const savedConfig = await Api.createTrigger(studyEnvParams, config)
-      Store.addNotification(successNotification('Notification created'))
-      onCreate(savedConfig)
-    }, { setIsLoading })
-  }
-
-  // the email template stableId is the portalShortcode plus sanitized name
-  const generateTemplateStableId = (name: string) => {
-    return `${studyEnvParams.portalShortcode  }_${  generateStableId(name)}`
-  }
-
-  return <Modal show={true} className="modal-lg" onHide={onDismiss}>
-    <Modal.Header closeButton>
-      <Modal.Title>Create Notification</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <form className="bg-white p-3 my-2">
-        <label className="form-label" htmlFor="templateName">
-                    Notification name (this name is only for staff use -- participants will not see it)
-        </label>
-        <input type="text" size={20} id="templateName" className="form-control mb-3"
-          value={localizedEmailTemplate.name}
-          onChange={e => setConfig({
-            ...config,
-            emailTemplate: {
-              ...config.emailTemplate,
-              stableId: generateTemplateStableId(e.target.value),
-              localizedEmailTemplates: [{ ...localizedEmailTemplate, name: e.target.value }]
-            }
-          })}/>
-        <TriggerBaseForm config={config} setConfig={setConfig}/>
-      </form>
-    </Modal.Body>
-    <Modal.Footer>
-      <LoadingSpinner isLoading={isLoading}>
-        <Button variant="primary"
-          disabled={!config.emailTemplate.localizedEmailTemplates[0].name}
-          onClick={createConfig}
-        >Create</Button>
-        <button className="btn btn-secondary" onClick={onDismiss}>Cancel</button>
-      </LoadingSpinner>
-    </Modal.Footer>
-  </Modal>
-}
-
-/* eslint-disable max-len */
-const EMAIL_TEMPLATE = `
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -214,7 +120,11 @@ const EMAIL_TEMPLATE = `
                                                 <tr>
                                                     <td style="padding-right: 0px;padding-left: 0px;" align="center">
 
-                                                        <img align="center" border="0" src="\${siteMediaBaseUrl}/1/email_logo.webp" alt="OurHealth logo" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 34%;max-width: 204px;" width="204" class="v-src-width v-src-max-width"/>
+                                                        <img align="center" border="0"
+                                                             src="${siteMediaBaseUrl}/1/ourhealth-logo.png"
+                                                             alt="OurHealth logo"
+                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 34%;max-width: 204px;"
+                                                             width="204" class="v-src-width v-src-max-width"/>
 
                                                     </td>
                                                 </tr>
@@ -252,9 +162,9 @@ const EMAIL_TEMPLATE = `
                                         <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 50px;font-family:'Montserrat',sans-serif;" align="left">
 
                                             <div style="font-family: 'Montserrat',sans-serif; font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                                <p style="line-height: 140%;">Hello.</p>
-                                                <p style="line-height: 140%;">&nbsp;This is an email from us </p>
-                                                <p style="line-height: 140%;">Here is some more text.</p>
+                                                <p style="line-height: 140%;">Thank you for participating in OurHealth. It's very important to complete each of the study activities in order to provide as much information to our researchers as possible.</p>
+                                                <p style="line-height: 140%;">&nbsp;</p>
+                                                <p style="line-height: 140%;">Please return to the study at your earliest convenience to finish your activities.</p>
                                             </div>
 
                                         </td>
@@ -289,7 +199,7 @@ const EMAIL_TEMPLATE = `
                                         <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 50px;font-family:'Montserrat',sans-serif;" align="left">
 
                                             <div style="font-family: 'Montserrat',sans-serif; font-size: 14px; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                                <p style="line-height: 140%;">\${dashboardLink}</p>
+                                                <p style="line-height: 140%;">${dashboardLink}</p>
                                             </div>
 
                                         </td>
@@ -323,7 +233,7 @@ const EMAIL_TEMPLATE = `
                                         <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 50px;font-family:'Montserrat',sans-serif;" align="left">
 
                                             <div style="font-family: 'Montserrat',sans-serif; line-height: 140%; text-align: left; word-wrap: break-word;">
-                                                <p style="font-size: 14px; line-height: 140%; text-align: left;"><span style="font-family: Montserrat, sans-serif; line-height: 19.6px;">Please contact us at \${participantSupportEmailLink} if you have any questions.</span></p>
+                                                <p style="font-size: 14px; line-height: 140%; text-align: left;"><span style="font-family: Montserrat, sans-serif; line-height: 19.6px;">Please contact us at ${participantSupportEmailLink} if you have any questions.</span></p>
                                             </div>
 
                                         </td>
@@ -340,7 +250,7 @@ const EMAIL_TEMPLATE = `
                                                 <p style="line-height: 140%;">We are so grateful for your participation - thank you again!</p>
                                                 <p style="line-height: 140%;">&nbsp;</p>
                                                 <p style="line-height: 140%;">Best regards,</p>
-                                                <p style="line-height: 140%;"><em>The Staff</em></p>
+                                                <p style="line-height: 140%;"><em>The OurHealth Study Staff</em></p>
                                             </div>
 
                                         </td>
@@ -368,4 +278,3 @@ const EMAIL_TEMPLATE = `
 </body>
 
 </html>
-`

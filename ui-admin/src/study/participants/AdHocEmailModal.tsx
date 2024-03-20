@@ -56,7 +56,7 @@ export default function AdHocEmailModal({ enrolleeShortcodes, onDismiss, studyEn
       <form onSubmit={e => e.preventDefault()} className="py-3">
         <label>Email template:
           <Select options={configs} value={selectedConfig} onChange={opt => setSelectedConfig(opt)}
-            getOptionLabel={config => config.emailTemplate.localizedEmailTemplates[0].name}
+            getOptionLabel={config => config.emailTemplate.name}
             getOptionValue={config => config.id}
             styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}/>
         </label>
