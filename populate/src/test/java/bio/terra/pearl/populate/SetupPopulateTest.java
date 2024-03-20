@@ -22,6 +22,5 @@ public class SetupPopulateTest extends BaseSpringBootTest {
     public void testSetup() throws IOException {
         BaseSeedPopulator.SetupStats setupStats = baseSeedPopulator.populate("");
         Assertions.assertEquals(BaseSeedPopulator.ADMIN_USERS_TO_POPULATE.size(), setupStats.getNumAdminUsers());
-        Assertions.assertEquals(BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE.size(), setupStats.getNumEnvironments());
     }
 }

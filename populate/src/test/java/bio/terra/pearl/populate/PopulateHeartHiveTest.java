@@ -32,7 +32,6 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
     public void testPopulateHeartHive() {
         // manually manage the transaction so that we can add a save point midway through for a rollback
         txTemplate.execute(status -> {
-            setUpEnvironments();
             Portal portal = portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
             Assertions.assertEquals("hearthive", portal.getShortcode());
             PortalEnvironment sandbox = portalEnvironmentService.findOne("hearthive", EnvironmentName.sandbox).get();

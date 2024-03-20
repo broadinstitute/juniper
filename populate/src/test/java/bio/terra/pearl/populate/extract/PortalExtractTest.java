@@ -32,7 +32,6 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
     public void testExtractDemoPortal() throws Exception {
         // populate a portal, then see if we can extract it, delete it, and repopulate it
 
-        setUpEnvironments();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
         String tmpFileName = "/tmp/demo-%s.zip".formatted(RandomStringUtils.randomAlphanumeric(8));
         File tmpFile = new File(tmpFileName);
