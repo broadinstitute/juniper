@@ -37,11 +37,12 @@ public class EmailTemplateExtractor {
                 fileNameForTemplate(template, false, true)
             );
             // the path to the html will be relative to the .json file, so omits the "emails/" directory prefix
-            templatePopDto.setBodyPopulateFile(fileNameForTemplate(template, false, false));
-            List<String> fileContents = List.of(
-                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(templatePopDto),
-                template.getBody()
-            );
+//            templatePopDto.setBodyPopulateFile(fileNameForTemplate(template, false, false));
+//            List<String> fileContents = List.of(
+//                objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(templatePopDto),
+//                template.getBody()
+//            );
+            List<String> fileContents = List.of();
             context.writeFilesForEntity(fileNames, fileContents, template.getId());
             context.getPortalPopDto().getEmailTemplateFiles().add(fileNames.get(0));
         } catch (Exception e) {

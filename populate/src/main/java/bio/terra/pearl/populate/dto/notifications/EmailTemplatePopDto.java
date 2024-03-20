@@ -6,8 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter @Setter @NoArgsConstructor
-public class EmailTemplatePopDto extends EmailTemplate implements FilePopulatable {
-    private String bodyPopulateFile;
-    private String populateFileName;
+public class EmailTemplatePopDto extends EmailTemplate {
+    private List<LocalizedEmailTemplatePopDto> localizedEmailTemplateDtos;
 }

@@ -19,7 +19,14 @@ import {
   SurveyResponse,
   Trigger
 } from 'api/api'
-import { defaultSurvey, ParticipantTask, ParticipantTaskStatus, ParticipantTaskType, Survey } from '@juniper/ui-core'
+import {
+  defaultSurvey,
+  LocalizedEmailTemplate,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
+  Survey
+} from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -421,10 +428,21 @@ export const mockTrigger = (): Trigger => {
 export const mockEmailTemplate = (): EmailTemplate => {
   return {
     id: 'emailTemplate1',
-    name: 'Mock template',
-    subject: 'Mock subject',
     stableId: 'mock1',
     version: 1,
+    defaultLanguage: 'en',
+    localizedEmailTemplates: [mockLocalizedEmailTemplate()]
+  }
+}
+
+/**
+ *
+ */
+export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
+  return {
+    language: 'en',
+    name: 'Mock template',
+    subject: 'Mock subject',
     body: 'Mock email message'
   }
 }

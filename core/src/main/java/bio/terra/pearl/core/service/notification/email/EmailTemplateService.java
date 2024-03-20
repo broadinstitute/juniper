@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.dao.notification.EmailTemplateDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
 
@@ -20,6 +21,16 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
 
     public List<EmailTemplate> findByPortalId(UUID portalId) {
         return dao.findByPortalId(portalId);
+    }
+
+    @Override
+    public EmailTemplate create(EmailTemplate emailTemplate) {
+        EmailTemplate template = dao.create(emailTemplate);
+        for (LocalizedEmailTemplate localizedEmailTemplate : emailTemplate.getLocalizedEmailTemplates()) {
+            localizedEmailTemplate.setEmailTemplateId(emailTemplate.getId());
+            localizedEmailTemplateService.create(localizedEmailTemplate);
+        }
+        return template;
     }
 
     public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {

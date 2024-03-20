@@ -57,8 +57,6 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
     @Override
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
-        String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
-        popDto.setBody(bodyContent);
         popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElse(
                 /** if the context doesn't have a portal, it's because we're populating admin config
@@ -68,6 +66,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
                 new Portal()
         ).getId();
         popDto.setPortalId(portalId);
+
     }
 
     @Override
@@ -77,28 +76,24 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
     @Override
     public Optional<EmailTemplate> findFromDto(EmailTemplatePopDto popDto, PortalPopulateContext context) {
-        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
-        if (existingOpt.isPresent()) {
-            return existingOpt;
-        }
+//        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
+//        if (existingOpt.isPresent()) {
+//            return existingOpt;
+//        }
         return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }
 
     @Override
     public EmailTemplate overwriteExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
         // don't delete the template, since it may have other entities attached to it. Just mod the content
-        existingObj.setBody(popDto.getBody());
-        existingObj.setSubject(popDto.getSubject());
-        existingObj.setName(popDto.getName());
+        existingObj.setLocalizedEmailTemplates(popDto.getLocalizedEmailTemplates());
         existingObj.setPortalId(popDto.getPortalId());
         return emailTemplatePopulateDao.update(existingObj);
     }
 
     @Override
     public EmailTemplate createPreserveExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
-        if (Objects.equals(existingObj.getBody(), popDto.getBody()) &&
-                Objects.equals(existingObj.getSubject(), popDto.getSubject()) &&
-                Objects.equals(existingObj.getName(), popDto.getName())) {
+        if (Objects.equals(existingObj.getLocalizedEmailTemplates(), popDto.getLocalizedEmailTemplates())) {
             // the things are the same, don't bother creating a new version
             return existingObj;
         }

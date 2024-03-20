@@ -1,8 +1,12 @@
 {
   "name": "Enrollment email",
-  "bodyPopulateFile": "studyEnroll.html",
-  "subject": "Welcome!",
-  "stableId": "hd_hd_studyEnroll",
   "version": 1,
-  "publishedVersion": 1
+  "publishedVersion": 1,
+  "defaultLanguage": "en",
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "name": "Enrollment email",
+    "subject": "Welcome!",
+    "bodyPopulateFile": "studyEnroll.html"
+  }]
 }
