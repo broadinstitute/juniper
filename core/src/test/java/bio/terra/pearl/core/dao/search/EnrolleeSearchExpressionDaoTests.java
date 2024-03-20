@@ -6,8 +6,8 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
 import org.jooq.Query;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,13 +38,13 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
         StudyEnvironment otherEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
 
-        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{profile.givenName} = 'Jonas' && {profile.familyName} = 'Salk'");
+        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{profile.givenName} = 'Jonas' and {profile.familyName} = 'Salk'");
 
         Query query = exp.generateQuery(studyEnv.getId());
 
         Assertions.assertEquals(
                 "select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
-                        "join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
                         "where ((profile.family_name = ?) and (profile.given_name = ?) " +
                         "and (enrollee.study_environment_id = ?))",
                 query.getSQL());

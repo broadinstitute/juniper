@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.search.expressions;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Operator;
 

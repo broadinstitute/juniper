@@ -1,8 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
-import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
-import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
+import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
 import java.util.List;
@@ -17,12 +16,12 @@ public interface EnrolleeTerm {
     /**
      * Joins required to extract this term in a SQL search.
      */
-    List<SQLJoinClause> requiredJoinClauses();
+    List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses();
 
     /**
      * Select clauses required to extract this term in a SQL search.
      */
-    List<SQLSelectClause> requiredSelectClauses();
+    List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses();
 
     /**
      * Required where conditions - for example, if the term is an answer field, the survey and question stable ids

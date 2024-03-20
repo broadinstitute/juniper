@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.search.expressions;
+package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;

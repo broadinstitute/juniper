@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.search.terms;
 
-import bio.terra.pearl.core.service.search.Type;
 import lombok.Getter;
 
 import java.time.Instant;
@@ -108,4 +107,12 @@ public class SearchValue {
         };
     }
 
+    public enum Type {
+        STRING,
+        INTEGER,
+        DOUBLE,
+        INSTANT,
+        DATE,
+        BOOLEAN
+    }
 }

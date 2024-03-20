@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
 import org.jooq.Query;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +98,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
                         "left outer join profile profile on (enrollee.profile_id = profile.id ) " +
                         "where ((AGE(profile.birth_date) > ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
- 
+
         assertEquals(2, query.getBindValues().size());
         assertEquals(18.0, query.getBindValues().get(0));
         assertEquals(fakeStudyEnvId, query.getBindValues().get(1));

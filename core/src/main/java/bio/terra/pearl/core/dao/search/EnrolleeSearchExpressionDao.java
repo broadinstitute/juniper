@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.dao.search;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;

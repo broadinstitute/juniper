@@ -1,8 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
-import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
-import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
+import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Condition;
 
@@ -42,13 +41,13 @@ public class ProfileTerm implements EnrolleeTerm {
     }
 
     @Override
-    public List<SQLJoinClause> requiredJoinClauses() {
-        return List.of(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
+    public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
+        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
     }
 
     @Override
-    public List<SQLSelectClause> requiredSelectClauses() {
-        return List.of(new SQLSelectClause("profile", toSnakeCase(field)));
+    public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
+        return List.of(new EnrolleeSearchQueryBuilder.SelectClause("profile", toSnakeCase(field)));
     }
 
     @Override

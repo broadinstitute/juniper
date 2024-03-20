@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.search;
+package bio.terra.pearl.core.service.search.expressions;
 
 import lombok.Getter;
 

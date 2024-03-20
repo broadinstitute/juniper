@@ -33,8 +33,8 @@ class EnrolleeSearchQueryBuilderTest extends BaseSpringBootTest {
     @Test
     void testJoinsAndSelectsQueryGeneration() {
         EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(fakeStudyEnvId);
-        enrolleeSearchQueryBuilder.addSelectClause(new SQLSelectClause("profile", "given_name"));
-        enrolleeSearchQueryBuilder.addJoinClause(new SQLJoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
+        enrolleeSearchQueryBuilder.addSelectClause(new EnrolleeSearchQueryBuilder.SelectClause("profile", "given_name"));
+        enrolleeSearchQueryBuilder.addJoinClause(new EnrolleeSearchQueryBuilder.JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
         enrolleeSearchQueryBuilder.addCondition(condition("profile.given_name != ?", "Jonas"));
 
         Query query = enrolleeSearchQueryBuilder.toQuery(DSL.using(SQLDialect.POSTGRES));

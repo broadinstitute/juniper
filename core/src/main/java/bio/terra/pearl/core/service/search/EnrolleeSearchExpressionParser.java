@@ -3,7 +3,7 @@ package bio.terra.pearl.core.service.search;
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchFacet;
 import bio.terra.pearl.core.service.search.terms.AgeTerm;
 import bio.terra.pearl.core.service.search.terms.AnswerTerm;

@@ -1,8 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
-import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
-import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
+import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
 import java.util.List;
@@ -22,12 +21,12 @@ public class UserInputTerm implements EnrolleeTerm {
     }
 
     @Override
-    public List<SQLJoinClause> requiredJoinClauses() {
+    public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
         return List.of();
     }
 
     @Override
-    public List<SQLSelectClause> requiredSelectClauses() {
+    public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of();
     }
 

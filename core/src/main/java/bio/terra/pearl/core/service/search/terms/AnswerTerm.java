@@ -2,8 +2,7 @@ package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
-import bio.terra.pearl.core.service.search.sql.SQLJoinClause;
-import bio.terra.pearl.core.service.search.sql.SQLSelectClause;
+import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import org.jooq.Condition;
 
@@ -41,16 +40,16 @@ public class AnswerTerm implements EnrolleeTerm {
     }
 
     @Override
-    public List<SQLJoinClause> requiredJoinClauses() {
-        return List.of(new SQLJoinClause("answer", questionStableId, "enrollee.id = %s.enrollee_id".formatted(questionStableId)));
+    public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
+        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("answer", questionStableId, "enrollee.id = %s.enrollee_id".formatted(questionStableId)));
     }
 
     @Override
-    public List<SQLSelectClause> requiredSelectClauses() {
+    public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
         return List.of(
-                new SQLSelectClause(questionStableId, "string_value"),
-                new SQLSelectClause(questionStableId, "question_stable_id"),
-                new SQLSelectClause(questionStableId, "survey_stable_id")
+                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "string_value"),
+                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "question_stable_id"),
+                new EnrolleeSearchQueryBuilder.SelectClause(questionStableId, "survey_stable_id")
         );
     }
 
