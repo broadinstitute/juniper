@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.notification.email;
 
+import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Notification;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
@@ -177,13 +178,16 @@ public class EnrolleeEmailService implements NotificationSender {
 
         Study study = studyService.findByStudyEnvironmentId(config.getStudyEnvironmentId()).get();
 
+        EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).orElse(null);
+        emailTemplateService.attachLocalizedTemplate(emailTemplate, "en");
+
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return new NotificationContextInfo(
                 portal,
                 portalEnvironment,
                 portalEnvironment.getPortalEnvironmentConfig(),
                 study,
-                emailTemplateService.find(config.getEmailTemplateId()).orElse(null)
+                emailTemplate
         );
     }
 }

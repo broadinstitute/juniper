@@ -6,13 +6,18 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
-    public EmailTemplateDao(Jdbi jdbi) {
+    private final LocalizedEmailTemplateDao localizedEmailTemplateDao;
+    public EmailTemplateDao(Jdbi jdbi, LocalizedEmailTemplateDao localizedEmailTemplateDao) {
         super(jdbi);
+        this.localizedEmailTemplateDao = localizedEmailTemplateDao;
     }
 
     @Override
@@ -22,6 +27,12 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
 
     public Optional<EmailTemplate> findByStableId(String stableId, int version) {
         return findByTwoProperties("stable_id", stableId, "version", version);
+    }
+
+    public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {
+        LocalizedEmailTemplate localizedEmailTemplate = localizedEmailTemplateDao.findByEmailTemplate(emailTemplate.getId(), language).orElseThrow(() -> new NotFoundException("LocalizedEmailTemplate not found for language " + language));
+        emailTemplate.setLocalizedEmailTemplates(List.of(localizedEmailTemplate));
+        return emailTemplate;
     }
 
     public List<EmailTemplate> findByPortalId(UUID portalId) {

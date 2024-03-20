@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.notification.email;
 
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.model.notification.SendgridEvent;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
@@ -92,8 +93,10 @@ public class SendgridClient {
     }
     from.setName(fromName);
 
-    String subject = stringSubstitutor.replace(contextInfo.template().getSubject());
-    String contentString = stringSubstitutor.replace(contextInfo.template().getBody());
+    LocalizedEmailTemplate localizedEmailTemplate = contextInfo.template().getLocalizedEmailTemplates().get(0); //todo
+
+    String subject = stringSubstitutor.replace(localizedEmailTemplate.getSubject());
+    String contentString = stringSubstitutor.replace(localizedEmailTemplate.getBody());
 
     if (!StringUtils.isEmpty(emailRedirectAddress)) {
       to =  new Email(emailRedirectAddress);

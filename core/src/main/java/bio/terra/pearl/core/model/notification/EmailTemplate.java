@@ -18,9 +18,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class EmailTemplate extends BaseEntity implements Versioned {
-    private String body;
-    private String subject;
-    private String name;
     private String stableId;
     private int version;
     private Integer publishedVersion;

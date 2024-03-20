@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitutor;
@@ -40,12 +41,13 @@ public class AdminEmailService {
     if (!shouldSendEmail(contextInfo)) {
       return;
     }
+    LocalizedEmailTemplate localizedTemplate = contextInfo.template().getLocalizedEmailTemplates().get(0);
     try {
       buildAndSendEmail(contextInfo, adminUser.getUsername());
-      log.info("Email sent: adminUsername: {}, subject: {}", adminUser.getUsername(), contextInfo.template().getSubject());
+      log.info("Email sent: adminUsername: {}, subject: {}", adminUser.getUsername(), localizedTemplate.getSubject());
     } catch (Exception e) {
       log.error("Email failed: adminUsername: {}, subject: {}, {} ",
-          adminUser.getUsername(), contextInfo.template().getSubject(), e.getMessage());
+          adminUser.getUsername(), localizedTemplate.getSubject(), e.getMessage());
     }
   }
 
@@ -80,6 +82,7 @@ public class AdminEmailService {
    */
   public NotificationContextInfo loadContextInfo(String templateStableId, int version, Portal portal) {
     EmailTemplate emailTemplate = emailTemplateService.findByStableId(templateStableId, version).get();
+    emailTemplateService.attachLocalizedTemplate(emailTemplate, "en");
     return new NotificationContextInfo(
         portal,
         null,

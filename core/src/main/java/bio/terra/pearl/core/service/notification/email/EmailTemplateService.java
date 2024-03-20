@@ -12,12 +12,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EmailTemplateService extends VersionedEntityService<EmailTemplate, EmailTemplateDao> {
-    public EmailTemplateService(EmailTemplateDao dao) {
+    private final LocalizedEmailTemplateService localizedEmailTemplateService;
+    public EmailTemplateService(EmailTemplateDao dao, LocalizedEmailTemplateService localizedEmailTemplateService) {
         super(dao);
+        this.localizedEmailTemplateService = localizedEmailTemplateService;
     }
 
     public List<EmailTemplate> findByPortalId(UUID portalId) {
         return dao.findByPortalId(portalId);
+    }
+
+    public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {
+        dao.attachLocalizedTemplate(emailTemplate, language);
+        return emailTemplate;
     }
 
     public void deleteByPortalId(UUID portalId) {
