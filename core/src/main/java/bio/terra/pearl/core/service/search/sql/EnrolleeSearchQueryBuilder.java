@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.sql;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Condition;
@@ -26,18 +28,15 @@ public class EnrolleeSearchQueryBuilder {
 
     private Condition whereConditions;
 
-    public EnrolleeSearchQueryBuilder(UUID studyEnvId) {
+    public EnrolleeSearchQueryBuilder(EnrolleeDao enrolleeDao, ProfileDao profileDao, UUID studyEnvId) {
         this.studyEnvId = studyEnvId;
+
+        this.selectClauseList.add(new SelectClause("enrollee", enrolleeDao));
+        this.selectClauseList.add(new SelectClause("profile", profileDao));
     }
 
     public SelectQuery<Record> toQuery(DSLContext context) {
         SelectJoinStep<Record> selectQuery = context
-                .select(field("enrollee.id as enrollee_id"))
-                .select(field("enrollee.profile_id as enrollee_profile_id"))
-                .select(field("enrollee.created_at as enrollee_created_at"))
-                .select(field("enrollee.last_updated_at as enrollee_last_updated_at"))
-                .select(field("enrollee.participant_user_id as enrollee_participant_user_id"))
-                .select(field("enrollee.study_environment_id as enrollee_study_environment_id"))
                 .select(selectClauseList
                         .stream()
                         .map(select -> field(select.generateSql()))

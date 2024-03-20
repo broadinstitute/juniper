@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
@@ -23,12 +24,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EnrolleeSearchExpressionParser {
+    private final EnrolleeDao enrolleeDao;
     private final AnswerDao answerDao;
     private final ProfileDao profileDao;
     private final MailingAddressDao mailingAddressDao;
 
 
-    public EnrolleeSearchExpressionParser(AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao) {
+        this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
         this.mailingAddressDao = mailingAddressDao;
@@ -37,7 +40,7 @@ public class EnrolleeSearchExpressionParser {
 
     public EnrolleeSearchExpression parseRule(String rule) {
         if (StringUtils.isBlank(rule)) {
-            return new DefaultSearchExpression();
+            return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
         CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -53,7 +56,7 @@ public class EnrolleeSearchExpressionParser {
             EnrolleeSearchExpression right = parseExpression(ctx.expr(1));
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
-        return new EnrolleeTermComparisonFacet(parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
+        return new EnrolleeTermComparisonFacet(enrolleeDao, profileDao, parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
     }
 
     private Operator expToBooleanOperator(CohortRuleParser.ExprContext ctx) {

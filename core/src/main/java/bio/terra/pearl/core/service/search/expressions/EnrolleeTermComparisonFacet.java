@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.search.expressions;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
@@ -15,14 +17,18 @@ import java.util.UUID;
 import static org.jooq.impl.DSL.condition;
 
 public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
-    EnrolleeTerm leftTermExtractor;
-    EnrolleeTerm rightTermExtractor;
-    ComparisonOperator operator;
+    private final EnrolleeDao enrolleeDao;
+    private final ProfileDao profileDao;
+    private final EnrolleeTerm leftTermExtractor;
+    private final EnrolleeTerm rightTermExtractor;
+    private final ComparisonOperator operator;
 
-    public EnrolleeTermComparisonFacet(EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
+    public EnrolleeTermComparisonFacet(EnrolleeDao enrolleeDao, ProfileDao profileDao, EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
         this.leftTermExtractor = leftTermExtractor;
         this.rightTermExtractor = rightTermExtractor;
         this.operator = operator;
+        this.enrolleeDao = enrolleeDao;
+        this.profileDao = profileDao;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
 
     @Override
     public EnrolleeSearchQueryBuilder generateQueryBuilder(UUID studyEnvId) {
-        EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(studyEnvId);
+        EnrolleeSearchQueryBuilder enrolleeSearchQueryBuilder = new EnrolleeSearchQueryBuilder(enrolleeDao, profileDao, studyEnvId);
 
         leftTermExtractor.requiredJoinClauses().forEach(enrolleeSearchQueryBuilder::addJoinClause);
         leftTermExtractor.requiredSelectClauses().forEach(enrolleeSearchQueryBuilder::addSelectClause);

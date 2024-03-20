@@ -13,7 +13,7 @@ public class EnrolleeSearchResultReducer implements LinkedHashMapRowReducer<UUID
         final EnrolleeSearchResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
                 id -> rowView.getRow(EnrolleeSearchResult.class));
 
-
-        
+        // currently, does nothing, but in the future could reduce down rows from tables which
+        // could return multiple values; e.g., kits
     }
 }

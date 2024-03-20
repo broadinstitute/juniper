@@ -1,14 +1,10 @@
 package bio.terra.pearl.core.dao.search;
 
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchResult;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
-import org.jdbi.v3.sqlobject.config.RegisterBeanMapper;
-import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.springframework.stereotype.Component;
@@ -27,9 +23,6 @@ public class EnrolleeSearchExpressionDao {
         return executeSearch(expression.generateQueryBuilder(studyEnvId));
     }
 
-    @RegisterBeanMapper(value = Enrollee.class, prefix = "enrollee")
-    @RegisterBeanMapper(value = Profile.class, prefix = "profile")
-    @RegisterRowMapper(EnrolleeSearchResultMapper.class)
     private List<EnrolleeSearchResult> executeSearch(EnrolleeSearchQueryBuilder search) {
         return jdbi.withHandle(handle -> {
             org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES));
@@ -39,9 +32,8 @@ public class EnrolleeSearchExpressionDao {
             }
             return query
                     .registerRowMapper(EnrolleeSearchResult.class, new EnrolleeSearchResultMapper())
-//                    .reduceRows(new EnrolleeSearchResultReducer())
-                    .mapTo(EnrolleeSearchResult.class)
-                    .list();
+                    .reduceRows(new EnrolleeSearchResultReducer())
+                    .toList();
         });
     }
 }
