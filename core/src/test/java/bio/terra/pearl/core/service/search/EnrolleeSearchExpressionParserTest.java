@@ -96,7 +96,8 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         Query query = exp.generateQuery(fakeStudyEnvId);
         assertEquals("select enrollee.*, profile.birth_date from enrollee enrollee " +
                         "left outer join profile profile on (enrollee.profile_id = profile.id ) " +
-                        "where ((AGE(profile.birth_date) > ?) and (enrollee.study_environment_id = ?))",
+                        "where ((EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) " +
+                        "and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
         assertEquals(2, query.getBindValues().size());
