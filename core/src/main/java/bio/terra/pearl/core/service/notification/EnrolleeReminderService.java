@@ -78,6 +78,7 @@ public class EnrolleeReminderService {
             // config will likely be < 100
             EnrolleeRuleData ruleData = enrolleeData.stream()
                     .filter(erd -> erd.getEnrollee().getId().equals(enrolleeWithTask.getEnrolleeId())).findFirst().get();
+            String participantPreferredLanguage = ruleData.getProfile().getPreferredLanguage();
             // don't send non-consent task reminders to enrollees who haven't consented
             if (trigger.getTaskType().equals(TaskType.CONSENT) || ruleData.getEnrollee().isConsented()) {
                 notificationDispatcher.dispatchNotification(trigger, ruleData, envContext);

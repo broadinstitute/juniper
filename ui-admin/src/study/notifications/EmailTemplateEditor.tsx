@@ -54,7 +54,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const templateVersionString = `v${emailTemplate.version}`
   return <div className="mt-3">
     <div className="d-flex align-items-baseline">
-      <h3 className="h6">{localizedEmailTemplate.name}</h3>
+      <h3 className="h6">{emailTemplate.name}</h3>
       <div className="ms-2 text-muted fst-italic">
                 ({emailTemplate.stableId} {templateVersionString})
       </div>
@@ -66,6 +66,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
             ...emailTemplate,
             localizedEmailTemplates: [{
               ...localizedEmailTemplate,
+              id: undefined,
               subject: e.target.value
             }]
           })}/>

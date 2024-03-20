@@ -213,8 +213,7 @@ export const renderStudyEnvironmentConsent = (change: StudyEnvironmentConsent) =
 
 /** summarizes a notification config */
 export const renderNotificationConfig = (change: Trigger) => {
-  const localizedEmailTemplate = change.emailTemplate.localizedEmailTemplates[0]
-  return <span>{localizedEmailTemplate.name} - {change.triggerType}<span className="text-muted fst-italic ms-2">
+  return <span>{change.emailTemplate.name} - {change.triggerType}<span className="text-muted fst-italic ms-2">
     ({change.emailTemplate.stableId} v{change.emailTemplate.version})
   </span></span>
 }

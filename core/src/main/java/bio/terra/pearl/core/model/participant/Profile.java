@@ -19,6 +19,8 @@ public class Profile extends BaseEntity {
     private MailingAddress mailingAddress;
     private UUID mailingAddressId;
 
+    private String preferredLanguage;
+
     private String contactEmail;
     private boolean doNotEmail; // do not send any emails to this user
     private boolean doNotEmailSolicit; // do not send any emails not directly related to study participation

@@ -442,7 +442,6 @@ export const mockEmailTemplate = (): EmailTemplate => {
 export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
   return {
     language: 'en',
-    name: 'Mock template',
     subject: 'Mock subject',
     body: 'Mock email message'
   }
