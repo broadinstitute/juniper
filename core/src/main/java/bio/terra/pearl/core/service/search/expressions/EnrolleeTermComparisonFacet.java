@@ -14,12 +14,12 @@ import java.util.UUID;
 
 import static org.jooq.impl.DSL.condition;
 
-public class EnrolleeSearchFacet implements EnrolleeSearchExpression {
+public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
     EnrolleeTerm leftTermExtractor;
     EnrolleeTerm rightTermExtractor;
     ComparisonOperator operator;
 
-    public EnrolleeSearchFacet(EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
+    public EnrolleeTermComparisonFacet(EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
         this.leftTermExtractor = leftTermExtractor;
         this.rightTermExtractor = rightTermExtractor;
         this.operator = operator;

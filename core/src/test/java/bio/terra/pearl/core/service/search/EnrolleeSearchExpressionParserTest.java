@@ -105,4 +105,17 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertEquals(fakeStudyEnvId, query.getBindValues().get(1));
     }
 
+    @Test
+    public void testParseMailingAddress() {
+        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{profile.mailingAddress.state} = 'CA'");
+
+        Query query = exp.generateQuery(fakeStudyEnvId);
+        assertEquals("select enrollee.*, mailing_address.state " +
+                        "from enrollee enrollee " +
+                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
+                        "left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) " +
+                        "where ((mailing_address.state = ?) and (enrollee.study_environment_id = ?))",
+                query.getSQL());
+    }
+
 }

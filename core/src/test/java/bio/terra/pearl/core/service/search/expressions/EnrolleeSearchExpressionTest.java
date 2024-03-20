@@ -54,16 +54,16 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     @Test
     public void testBasicSearchExpressionToSQL() {
         EnrolleeSearchExpression expression = new BooleanSearchExpression(
-                new EnrolleeSearchFacet(
+                new EnrolleeTermComparisonFacet(
                         new ProfileTerm("givenName"),
                         new UserInputTerm(new SearchValue("John")),
                         ComparisonOperator.EQUALS),
                 new BooleanSearchExpression(
-                        new EnrolleeSearchFacet(
+                        new EnrolleeTermComparisonFacet(
                                 new ProfileTerm("familyName"),
                                 new UserInputTerm(new SearchValue("Salk")),
                                 ComparisonOperator.EQUALS),
-                        new EnrolleeSearchFacet(
+                        new EnrolleeTermComparisonFacet(
                                 new UserInputTerm(new SearchValue(124.)),
                                 new UserInputTerm(new SearchValue(123.)),
                                 ComparisonOperator.GREATER_THAN),
@@ -92,11 +92,11 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
     @Test
     public void testBasicSearchExpressionEvaluate() {
         EnrolleeSearchExpression expression = new BooleanSearchExpression(
-                new EnrolleeSearchFacet(
+                new EnrolleeTermComparisonFacet(
                         new ProfileTerm("givenName"),
                         new UserInputTerm(new SearchValue("Jonas")),
                         ComparisonOperator.EQUALS),
-                new EnrolleeSearchFacet(
+                new EnrolleeTermComparisonFacet(
                         new ProfileTerm("familyName"),
                         new UserInputTerm(new SearchValue("Salk")),
                         ComparisonOperator.EQUALS),
@@ -135,13 +135,13 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 Map.of("test_question", "some_value"));
 
         EnrolleeSearchExpression expression1 =
-                new EnrolleeSearchFacet(
+                new EnrolleeTermComparisonFacet(
                         new AnswerTerm(answerService, survey.getStableId(), "test_question"),
                         new UserInputTerm(new SearchValue("some_value")),
                         ComparisonOperator.EQUALS);
 
         EnrolleeSearchExpression expression2 =
-                new EnrolleeSearchFacet(
+                new EnrolleeTermComparisonFacet(
                         new AnswerTerm(answerService, survey.getStableId(), "test_question"),
                         new UserInputTerm(new SearchValue("diff_value")),
                         ComparisonOperator.EQUALS);

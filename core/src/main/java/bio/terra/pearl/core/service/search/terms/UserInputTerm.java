@@ -37,7 +37,7 @@ public class UserInputTerm implements EnrolleeTerm {
 
     @Override
     public List<Object> boundObjects() {
-        switch (searchValue.getType()) {
+        switch (searchValue.getSearchValueType()) {
             case STRING -> {
                 return List.of(searchValue.getStringValue());
             }
@@ -57,7 +57,7 @@ public class UserInputTerm implements EnrolleeTerm {
                 return List.of(searchValue.getDateValue());
             }
             default -> {
-                throw new IllegalArgumentException("Unsupported term type: " + searchValue.getType());
+                throw new IllegalArgumentException("Unsupported term type: " + searchValue.getSearchValueType());
             }
         }
     }

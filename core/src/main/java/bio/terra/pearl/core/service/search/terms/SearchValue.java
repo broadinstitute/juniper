@@ -18,41 +18,41 @@ public class SearchValue {
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
 
-    private final Type type;
+    private final SearchValueType searchValueType;
 
 
     public SearchValue(String stringValue) {
         this.stringValue = stringValue;
-        this.type = Type.STRING;
+        this.searchValueType = SearchValueType.STRING;
     }
 
     public SearchValue(Integer integerValue) {
         this.integerValue = integerValue;
-        this.type = Type.INTEGER;
+        this.searchValueType = SearchValueType.INTEGER;
     }
 
     public SearchValue(Double doubleValue) {
         this.doubleValue = doubleValue;
-        this.type = Type.DOUBLE;
+        this.searchValueType = SearchValueType.DOUBLE;
     }
 
     public SearchValue(Instant instantValue) {
         this.instantValue = instantValue;
-        this.type = Type.INSTANT;
+        this.searchValueType = SearchValueType.INSTANT;
     }
 
     public SearchValue(LocalDate dateValue) {
         this.dateValue = dateValue;
-        this.type = Type.DATE;
+        this.searchValueType = SearchValueType.DATE;
     }
 
     public SearchValue(Boolean booleanValue) {
         this.booleanValue = booleanValue;
-        this.type = Type.BOOLEAN;
+        this.searchValueType = SearchValueType.BOOLEAN;
     }
 
     public boolean equals(SearchValue right) {
-        return switch (this.type) {
+        return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
             case INTEGER -> {
                 if (right.doubleValue != null)
@@ -72,7 +72,7 @@ public class SearchValue {
     }
 
     public boolean greaterThan(SearchValue right) {
-        return switch (this.type) {
+        return switch (this.searchValueType) {
             case INTEGER -> {
                 if (right.doubleValue != null)
                     yield Double.valueOf(this.integerValue) > right.doubleValue;
@@ -90,7 +90,7 @@ public class SearchValue {
     }
 
     public boolean greaterThanOrEqualTo(SearchValue right) {
-        return switch (this.type) {
+        return switch (this.searchValueType) {
             case INTEGER -> {
                 if (right.doubleValue != null)
                     yield Double.valueOf(this.integerValue) >= right.doubleValue;
@@ -107,7 +107,7 @@ public class SearchValue {
         };
     }
 
-    public enum Type {
+    public enum SearchValueType {
         STRING,
         INTEGER,
         DOUBLE,

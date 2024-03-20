@@ -4,7 +4,7 @@ import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeSearchFacet;
+import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
 import bio.terra.pearl.core.service.search.terms.AgeTerm;
 import bio.terra.pearl.core.service.search.terms.AnswerTerm;
 import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
@@ -41,7 +41,7 @@ public class EnrolleeSearchExpressionParser {
             EnrolleeSearchExpression right = parseExpression(ctx.expr(1));
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
-        return new EnrolleeSearchFacet(parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
+        return new EnrolleeTermComparisonFacet(parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
     }
 
     private Operator expToBooleanOperator(CohortRuleParser.ExprContext ctx) {

@@ -29,7 +29,6 @@ public class EnrolleeSearchQueryBuilder {
     }
 
     public SelectQuery<Record> toQuery(DSLContext context) {
-
         SelectJoinStep<Record> selectQuery = context
                 .select(field("enrollee.*"))
                 .select(selectClauseList

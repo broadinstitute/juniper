@@ -5,6 +5,7 @@ import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Condition;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,11 +43,23 @@ public class ProfileTerm implements EnrolleeTerm {
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
-        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
+        List<EnrolleeSearchQueryBuilder.JoinClause> joinClauses = new ArrayList<>();
+
+        joinClauses.add(new EnrolleeSearchQueryBuilder.JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
+
+        if (field.startsWith("mailingAddress")) {
+            joinClauses.add(new EnrolleeSearchQueryBuilder.JoinClause("mailing_address", "mailing_address", "profile.mailing_address_id = mailing_address.id"));
+        }
+
+        return joinClauses;
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
+        if (field.startsWith("mailingAddress")) {
+            return List.of(new EnrolleeSearchQueryBuilder.SelectClause("mailing_address", toSnakeCase(field.substring(field.indexOf(".") + 1))));
+        }
+
         return List.of(new EnrolleeSearchQueryBuilder.SelectClause("profile", toSnakeCase(field)));
     }
 
@@ -57,6 +70,8 @@ public class ProfileTerm implements EnrolleeTerm {
 
     @Override
     public String termClause() {
+        if (field.startsWith("mailingAddress"))
+            return "mailing_address." + toSnakeCase(field.substring(field.indexOf(".") + 1));
         return "profile." + toSnakeCase(field);
     }
 
@@ -70,7 +85,8 @@ public class ProfileTerm implements EnrolleeTerm {
             "familyName",
             "contactEmail",
             "phoneNumber",
-            "birthDate"
+            "birthDate",
+            "mailingAddress.state"
     );
 
 }
