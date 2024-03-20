@@ -17,5 +17,4 @@ public class LocalizedEmailTemplate extends BaseEntity {
     private String language;
     private String body;
     private String subject;
-    private String name;
 }

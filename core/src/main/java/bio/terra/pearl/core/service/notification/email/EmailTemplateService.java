@@ -27,7 +27,7 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
     public EmailTemplate create(EmailTemplate emailTemplate) {
         EmailTemplate template = dao.create(emailTemplate);
         for (LocalizedEmailTemplate localizedEmailTemplate : emailTemplate.getLocalizedEmailTemplates()) {
-            localizedEmailTemplate.setEmailTemplateId(emailTemplate.getId());
+            localizedEmailTemplate.setEmailTemplateId(template.getId());
             LocalizedEmailTemplate savedTemplate = localizedEmailTemplateService.create(localizedEmailTemplate);
             template.getLocalizedEmailTemplates().add(savedTemplate);
         }
