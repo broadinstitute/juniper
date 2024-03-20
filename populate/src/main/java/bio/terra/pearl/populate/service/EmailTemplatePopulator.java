@@ -69,6 +69,8 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         popDto.setPortalId(portalId);
 
         for(LocalizedEmailTemplatePopDto localizedEmailTemplatePopDto : popDto.getLocalizedEmailTemplateDtos()) {
+            String bodyContent = filePopulateService.readFile(localizedEmailTemplatePopDto.getBodyPopulateFile(), context);
+            localizedEmailTemplatePopDto.setBody(bodyContent);
             localizedEmailTemplatePopDto.setEmailTemplateId(popDto.getId());
         }
 
