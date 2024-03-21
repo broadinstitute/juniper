@@ -23,10 +23,24 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
-  const { user } = useUser()
+  const { user, profile, ppUser } = useUser()
   const navLinks = localContent.navbarItems
 
   const languageOptions = portalEnv.supportedLanguages
+
+  function updatePreferredLanguage(languageCode: string) {
+    if (profile && ppUser) {
+      Api.updateProfile({
+        profile: { ...profile, preferredLanguage: languageCode },
+        ppUserId: ppUser.id
+      })
+    }
+  }
+
+  const changeLanguageAndUpdate = (languageCode: string) => {
+    changeLanguage(languageCode)
+    updatePreferredLanguage(languageCode)
+  }
 
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const location = useLocation()
@@ -62,7 +76,7 @@ export default function Navbar(props: NavbarProps) {
           <LanguageDropdown
             languageOptions={languageOptions}
             selectedLanguage={selectedLanguage}
-            changeLanguage={changeLanguage}
+            changeLanguage={changeLanguageAndUpdate}
             reloadPortal={reloadPortal}
           />
           {user.isAnonymous && (
