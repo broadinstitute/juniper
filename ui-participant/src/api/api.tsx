@@ -56,7 +56,7 @@ export type LoginResult = {
   user: ParticipantUser,
   ppUser: PortalParticipantUser,
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  relations: EnrolleeRelationDto[],
   profile: Profile
 }
 
@@ -76,7 +76,10 @@ export type Enrollee = {
   studyEnvironmentId: string
   surveyResponses: []
 }
-
+export type EnrolleeRelationDto = {
+  relation: EnrolleeRelation,
+  profile: Profile
+}
 export type EnrolleeRelation = {
   id: string
   relationshipType: string,

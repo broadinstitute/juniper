@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, Enrollee, getImageUrl, NavbarItem, PortalStudy, EnrolleeRelation } from 'api/api'
+import Api, { getEnvSpec, Enrollee, getImageUrl, NavbarItem, PortalStudy, EnrolleeRelationDto } from 'api/api'
 import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -56,11 +56,9 @@ export default function Navbar(props: NavbarProps) {
 
 
   const changeActiveUser = (enrollee: Enrollee) => {
-    console.log('changing active user to', enrollee)
     setActiveEnrollee(enrollee)
     navigate('/hub/')
   }
-
 
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const location = useLocation()
@@ -72,9 +70,9 @@ export default function Navbar(props: NavbarProps) {
 
   const dropdownId = uniqueId('navDropdown')
 
-  function getRightTitle(relationshipType: string, relation: EnrolleeRelation) {
+  function getRightTitle(relation: EnrolleeRelationDto) {
     return (relation.profile && (`${relation.profile.givenName } ${relation.profile.familyName}`)) ||
-      mappingRelationships.get(relationshipType) || relationshipType
+      mappingRelationships.get(relation.relation.relationshipType) || relation.relation.relationshipType
   }
 
   return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
@@ -145,11 +143,12 @@ export default function Navbar(props: NavbarProps) {
                 </button>
                 <div className="dropdown-menu dropdown-menu-end">
                   <button onClick={() => changeActiveUser(enrollees[0])} className="dropdown-item">
-                    {i18n('navbarDashboard')}
+                    Your {i18n('navbarDashboard')}
                   </button>
                   {relations.map((relation, index) => (
-                    <button onClick={() => changeActiveUser(relation.targetEnrollee)} className="dropdown-item">
-                      {getRightTitle(relation.relationshipType, relation)} {i18n('navbarDashboard')}
+                    <button onClick={() => changeActiveUser(relation.relation.targetEnrollee)}
+                      className="dropdown-item">
+                      {getRightTitle(relation)} {i18n('navbarDashboard')}
                     </button>
                   ))}
                 </div>

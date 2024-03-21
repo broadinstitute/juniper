@@ -74,7 +74,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
 // eslint-disable-next-line jsdoc/require-jsdoc
 const PrintConsentView = () => {
   const { portal } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees, activeEnrollee } = useUser()
   const params = useParams()
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
@@ -82,7 +82,7 @@ const PrintConsentView = () => {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
 
   const { loading, surveyModel } = usePrintableConsent({ studyShortcode, enrollee, stableId, version })
 

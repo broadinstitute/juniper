@@ -1,7 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, {
+  Enrollee,
+  EnrolleeRelationDto,
+  LoginResult,
+  ParticipantUser,
+  PortalParticipantUser,
+  Profile
+} from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
@@ -17,8 +24,8 @@ const anonymousUser: User = {
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[], // this data is included to speed initial hub rendering.  it is NOT kept current
-  activeEnrollee: Enrollee | null,
+  relations: EnrolleeRelationDto[], // this data is included to speed initial hub rendering.  it is NOT kept current
+  activeEnrollee?: Enrollee,
   ppUser?: PortalParticipantUser,
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
@@ -34,7 +41,7 @@ const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   enrollees: [],
   relations: [],
-  activeEnrollee: null,
+  activeEnrollee: undefined,
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -50,7 +57,9 @@ const UserContext = React.createContext<UserContextT>({
   updateProfile: () => {
     throw new Error('context not yet initialized')
   },
-  setActiveEnrollee: () => { throw new Error('context not yet initialized') }
+  setActiveEnrollee: () => {
+    throw new Error('context not yet initialized')
+  }
 })
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
 const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
@@ -149,7 +158,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     relations: loginState ? loginState.relations : [],
-    activeEnrollee,
+    activeEnrollee: activeEnrollee || undefined,
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
     loginUser,

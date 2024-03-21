@@ -6,7 +6,12 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.EnrolleeRelationDto;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -66,8 +71,12 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
     }
-    enrollee.getRelations().addAll(enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId()));
-    enrollee.getRelations().addAll(enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId()));
+    List<EnrolleeRelation> relationsListByEnrolleeId = enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId());
+    List<EnrolleeRelation> relationsListByTargetEnrolleeId = enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId());
+    List<EnrolleeRelationDto> relations = new ArrayList<>();
+    relationsListByEnrolleeId.stream().forEach(enrolleeRelation -> relations.add(EnrolleeRelationDto.builder().relation(enrolleeRelation).build()));
+    relationsListByTargetEnrolleeId.stream().forEach(enrolleeRelation -> relations.add(EnrolleeRelationDto.builder().relation(enrolleeRelation).build()));
+    enrollee.getRelations().addAll(relations);
     return enrollee;
   }
 }

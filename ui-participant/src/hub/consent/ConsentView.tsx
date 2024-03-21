@@ -114,7 +114,7 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }:
 /** handles loading the consent form and responses from the server */
 export default function ConsentView() {
   const { portal } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees, activeEnrollee } = useUser()
   const [formAndResponses, setFormAndResponses] = useState<ConsentWithResponses | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -125,7 +125,7 @@ export default function ConsentView() {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
 
   useEffect(() => {
     Api.fetchConsentAndResponses({
@@ -153,11 +153,12 @@ export default function ConsentView() {
 }
 
 /** Gets the enrollee object matching the given study */
-export function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal): Enrollee {
+export function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal,
+  activeEnrollee: Enrollee|undefined): Enrollee {
   const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
     .studyEnvironments[0].id
 
-  const enrollee = enrollees.find(enrollee => enrollee.studyEnvironmentId === studyEnvId)
+  const enrollee = activeEnrollee
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
   }

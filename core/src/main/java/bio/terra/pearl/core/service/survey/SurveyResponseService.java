@@ -114,7 +114,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId) {
 
-        ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
+        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).get();
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion()).get();
         validateResponse(survey, task, responseDto.getAnswers());
