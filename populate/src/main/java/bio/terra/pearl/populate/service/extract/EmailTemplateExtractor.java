@@ -40,7 +40,7 @@ public class EmailTemplateExtractor {
             String fileNameForLocalizedTemplate = "emails/%s/%s".formatted(localizedTemplate.getLanguage(), fileNameForTemplate(template, false, false));
             try {
                 context.writeFileForEntity(fileNameForLocalizedTemplate, localizedTemplate.getBody(), localizedTemplate.getId());
-                localizedTemplatePopDto.setBodyPopulateFile(fileNameForLocalizedTemplate);
+                localizedTemplatePopDto.setBodyPopulateFile("%s/%s".formatted(localizedTemplate.getLanguage(), fileNameForTemplate(template, false, false)));
             } catch (Exception e) {
                 throw new RuntimeException("Error writing localized email template %s-%s to html".formatted(template.getStableId(), template.getVersion()), e);
             }

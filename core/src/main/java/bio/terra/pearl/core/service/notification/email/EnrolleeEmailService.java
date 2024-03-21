@@ -183,7 +183,9 @@ public class EnrolleeEmailService implements NotificationSender {
         Study study = studyService.findByStudyEnvironmentId(config.getStudyEnvironmentId()).get();
 
         EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).orElse(null);
-        emailTemplateService.attachLocalizedTemplates(emailTemplate);
+        if (emailTemplate != null) {
+            emailTemplateService.attachLocalizedTemplates(emailTemplate);
+        }
 
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return new NotificationContextInfo(
