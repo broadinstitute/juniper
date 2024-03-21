@@ -62,10 +62,10 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
     assertThat(result.get(0).getParticipantUser().getLastLogin(), greaterThan(Instant.now().minusMillis(3000)));
 
     EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("");
-    // TODO
-//    List<Enrollee> enrollees = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
-//    assertThat(enrollees, hasSize(1));
-//    assertThat(enrollees.get(0).getShortcode(), equalTo(enrollee.getShortcode()));
+
+    List<bio.terra.pearl.core.model.search.EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+    assertThat(results, hasSize(1));
+    assertThat(results.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
   }
 
   @Test
