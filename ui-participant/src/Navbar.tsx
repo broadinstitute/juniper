@@ -28,14 +28,21 @@ export default function Navbar(props: NavbarProps) {
 
   const languageOptions = portalEnv.supportedLanguages
 
-  function updatePreferredLanguage(languageCode: string) {
+  async function updatePreferredLanguage(selectedLanguage: string) {
     if (profile && ppUser) {
-      Api.updateProfile({
-        profile: { ...profile, preferredLanguage: languageCode },
+      await Api.updateProfile({
+        profile: { ...profile, preferredLanguage: selectedLanguage },
         ppUserId: ppUser.id
       })
     }
   }
+
+  //If the logged-in participant has chosen a preferred language, set the language to that
+  useEffect(() => {
+    if (profile?.preferredLanguage) {
+      changeLanguage(profile.preferredLanguage)
+    }
+  }, [])
 
   const changeLanguageAndUpdate = (languageCode: string) => {
     changeLanguage(languageCode)

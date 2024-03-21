@@ -102,15 +102,13 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
       </div>
       }
       <div>
-        <div>
-          <label className="form-label">Delivery
-            <Select options={deliveryTypeOptions} isDisabled={true}
-              value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
-          </label>
-        </div>
+        <label className="form-label">Delivery
+          <Select options={deliveryTypeOptions} isDisabled={true}
+            value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
+        </label>
       </div>
 
-      {hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
+      { hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
         portalShortcode={portal.shortcode}
         updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
           // we have to use currentConfig since the template editor might call a stale version of this handler
