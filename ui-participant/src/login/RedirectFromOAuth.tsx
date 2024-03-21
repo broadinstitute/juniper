@@ -54,13 +54,10 @@ export const RedirectFromOAuth = () => {
 
           const email = auth.user.profile.email as string
           const accessToken = auth.user.access_token
-          //TODO this should change to true when a proxy is registering someone else
-          const isProxy = false
-
           // Register or login
           try {
             const loginResult = auth.user.profile.newUser
-              ? await Api.register({ preRegResponseId, email, accessToken, isProxy })
+              ? await Api.register({ preRegResponseId, email, accessToken })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)
@@ -73,7 +70,7 @@ export const RedirectFromOAuth = () => {
             if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
               const response = await Api.createEnrollee({
                 studyShortcode: portalStudy.study.shortcode,
-                preEnrollResponseId, isProxy
+                preEnrollResponseId
               })
               const hubUpdate: HubUpdate = {
                 message: {

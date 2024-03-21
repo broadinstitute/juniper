@@ -1,12 +1,13 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,15 +23,20 @@ public class SurveyParseUtils {
     public static final String SURVEY_JS_NONE_VALUE_PROP = "noneValue";
     public static final String SURVEY_JS_NONE_TEXT_PROP = "noneText";
     public static final String DERIVED_QUESTION_TYPE = "derived";
+    public static final Pattern EXPRESSION_DEPENDENCY = Pattern.compile(".*\\{(.+?)\\}.*");
 
-/** recursively gets all questions from the given node */
+    /**
+     * recursively gets all questions from the given node
+     */
     public static List<JsonNode> getAllQuestions(JsonNode containerElement) {
         List<JsonNode> elements = new ArrayList<>();
-        if(containerElement.has("elements")) {
-            for(JsonNode element : containerElement.get("elements")) {
+        if (containerElement.has("elements")) {
+            for (JsonNode element : containerElement.get("elements")) {
                 elements.addAll(getAllQuestions(element));
             }
-        } else elements.add(containerElement);
+        } else {
+            elements.add(containerElement);
+        }
 
         return elements;
     }
@@ -64,17 +70,17 @@ public class SurveyParseUtils {
 
         //For normal elements, we'll store the title in the question_text column
         //For HTML elements which don't have a title, we'll store the HTML instead
-        if(templatedQuestion.has("title")) {
+        if (templatedQuestion.has("title")) {
             definition.setQuestionText(templatedQuestion.get("title").asText());
-        } else if(templatedQuestion.has("html")) {
+        } else if (templatedQuestion.has("html")) {
             definition.setQuestionText(templatedQuestion.get("html").asText());
         }
 
-        if(templatedQuestion.has("isRequired")){
+        if (templatedQuestion.has("isRequired")) {
             definition.setRequired(templatedQuestion.get("isRequired").asBoolean());
         }
 
-        if(templatedQuestion.has("choices")){
+        if (templatedQuestion.has("choices")) {
             definition.setChoices(unmarshalSurveyQuestionChoices(templatedQuestion));
         }
 
@@ -83,7 +89,7 @@ public class SurveyParseUtils {
 
     public static String unmarshalSurveyQuestionChoices(JsonNode question) {
         List<QuestionChoice> choices = new ArrayList<>();
-        for(JsonNode choice : question.get("choices")) {
+        for (JsonNode choice : question.get("choices")) {
             // if all text/value pairs are the same, surveyjs transforms the choices into an array of strings.  grrrr...
             if (choice.isTextual()) {
                 choices.add(new QuestionChoice(choice.asText(), choice.asText()));
@@ -116,11 +122,12 @@ public class SurveyParseUtils {
         return result;
     }
 
-
-    /** gets any calculated value nodes that should be included in results */
+    /**
+     * gets any calculated value nodes that should be included in results
+     */
     public static List<JsonNode> getCalculatedValues(JsonNode surveyJsDef) {
         List<JsonNode> calculatedValues = new ArrayList<>();
-        if(surveyJsDef.has("calculatedValues")) {
+        if (surveyJsDef.has("calculatedValues")) {
             for (JsonNode val : surveyJsDef.get("calculatedValues")) {
                 if (Boolean.TRUE.equals(val.get("includeIntoResult").asBoolean())) {
                     calculatedValues.add(val);
@@ -130,10 +137,8 @@ public class SurveyParseUtils {
         return calculatedValues;
     }
 
-
-    public static final Pattern EXPRESSION_DEPENDENCY = Pattern.compile(".*\\{(.+?)\\}.*");
-
-    /** returns the last stableId that this calculatedValue is dependent on, or null
+    /**
+     * returns the last stableId that this calculatedValue is dependent on, or null
      * if it is independent.
      * e.g. if the expression is "{heightInInches} * 2.54", this will return "heightInInches"
      */
@@ -142,6 +147,61 @@ public class SurveyParseUtils {
         Matcher matcher = EXPRESSION_DEPENDENCY.matcher(expression);
         matcher.find();
         return matcher.matches() ? matcher.group(1).trim() : null;
+    }
+
+    /**
+     * This method is used to get the answer to a question by its stableId
+     * The method will return the answer as the specified class in returnClass
+     * The method will return null if the questionStableId is not found in the surveyJsonData
+     * @param surveyJsonData the survey json data
+     *                       The method assumes the surveyJsonData is a valid survey json of an array of questions with different stableIds
+     * @param questionStableId the stableId of the question to get the answer for
+     * @param returnClass the class to return the answer as
+     *                    The method assumes the returnClass is a valid class that can be used to convert the answer to
+     * @param objectMapper the object mapper to use to convert the answer to the returnClass
+     * @param <T> the class to return the answer as
+     * @return the answer to the question with the stableId questionStableId as the class returnClass
+     * */
+    public static <T> T getAnswerByStableId(String surveyJsonData, String questionStableId, Class<T> returnClass,
+                                            ObjectMapper objectMapper, String answerField) {
+        try {
+            JsonNode rootNode = objectMapper.readTree(surveyJsonData);
+            if (rootNode.isArray()) {
+                for (JsonNode node : rootNode) {
+                    if (questionStableId.equals(getQuestionStableId(node))) {
+                        return convertQuestionAnswerToClass(node, answerField, returnClass, objectMapper);
+                    }
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    /**
+     * This method is used to convert the answer to a survey to the returnClass. The method assumes the answer is a valid and is
+     * in the answerField of the node
+     * */
+    protected static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
+        String objectValueString = node.get(answerField).asText();
+        // Direct conversion for String
+        if (returnClass == String.class) {
+            return returnClass.cast(objectValueString);
+        }
+        String value = objectMapper.readValue(objectValueString, String.class);
+        // Attempt to use a constructor that takes a single String argument for other types
+        try {
+            Constructor<T> constructor = returnClass.getConstructor(String.class);
+            return constructor.newInstance(value);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("The provided returnClass does not have a String constructor that we can use.", e);
+        }
+    }
+
+    protected static String getQuestionStableId(JsonNode node) {
+        JsonNode questionStableIdNode = node.get("questionStableId");
+        return questionStableIdNode != null ? questionStableIdNode.asText() : null;
     }
 
 }
