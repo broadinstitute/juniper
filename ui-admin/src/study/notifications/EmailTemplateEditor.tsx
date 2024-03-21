@@ -43,7 +43,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
           ...emailTemplateRef.current,
           localizedEmailTemplates: [{
             ...localizedEmailTemplate,
-            id: undefined,
+            id: undefined, //todo: handle this in the backend
             body: insertPlaceholders(data.html)
           }]
         })

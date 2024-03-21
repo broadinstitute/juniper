@@ -8,7 +8,8 @@ import {
   dateToDefaultString,
   findDifferencesBetweenObjects,
   javaLocalDateToJsDate,
-  jsDateToJavaLocalDate, PortalEnvironmentLanguage
+  jsDateToJavaLocalDate,
+  PortalEnvironmentLanguage
 } from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

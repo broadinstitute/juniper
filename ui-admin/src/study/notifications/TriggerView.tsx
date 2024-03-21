@@ -108,12 +108,6 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
               value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
           </label>
         </div>
-        <div>
-          <label className="form-label">Language
-            <Select options={[{ label: 'English', value: 'en' }]} isDisabled={true}
-              value={{ label: 'English', value: 'en' }}/>
-          </label>
-        </div>
       </div>
 
       {hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}

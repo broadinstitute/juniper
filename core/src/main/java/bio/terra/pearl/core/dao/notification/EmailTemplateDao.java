@@ -28,7 +28,7 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
     public List<EmailTemplate> findAllWithLocalizedTemplates(List<UUID> templateIds) {
         List<EmailTemplate> emailTemplates = findAll(templateIds);
         for (EmailTemplate emailTemplate : emailTemplates) {
-            emailTemplate.setLocalizedEmailTemplates(localizedEmailTemplateDao.findByEmailTemplate(emailTemplate.getId()));
+            attachAllLocalizedTemplates(emailTemplate);
         }
         return emailTemplates;
     }
