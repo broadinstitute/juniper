@@ -1,7 +1,11 @@
 {
-  "name": "Ad-hoc email template",
-  "bodyPopulateFile": "adHoc.html",
-  "subject": "${adHocSubject}",
   "stableId": "oh_oh_adhoc",
-  "version": 1
+  "name": "Ad-hoc email template",
+  "defaultLanguage": "en",
+  "version": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "${adHocSubject}",
+    "bodyPopulateFile": "en/adHoc.html"
+  }]
 }

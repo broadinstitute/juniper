@@ -1,7 +1,11 @@
 {
   "name": "Consent email",
-  "bodyPopulateFile": "studyConsent.html",
-  "subject": "Thank you!",
   "stableId": "oh_oh_studyConsent",
-  "version": 1
+  "defaultLanguage": "en",
+  "version": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Thank you!",
+    "bodyPopulateFile": "en/studyConsent.html"
+  }]
 }
