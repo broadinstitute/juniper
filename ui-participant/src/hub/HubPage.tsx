@@ -35,8 +35,6 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
   const hasActiveTasks = activeEnrollee?.participantTasks.some(isTaskActive)
-  console.log('activeEnrollee', activeEnrollee)
-
 
   return (
     <>
