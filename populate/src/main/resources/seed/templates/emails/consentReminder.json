@@ -1,9 +1,13 @@
 {
   "createdAt" : 1707344628.314072000,
   "lastUpdatedAt" : 1707344628.314071000,
-  "subject" : "Reminder: Please complete the ${study.name} Consent form",
   "name" : "Consent Reminder",
   "stableId" : "consentReminder",
   "version" : 2,
-  "bodyPopulateFile" : "consentReminder.html"
+  "defaultLanguage": "en",
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Reminder: Please complete the ${study.name} Consent form",
+    "bodyPopulateFile": "en/consentReminder.html"
+  }]
 }

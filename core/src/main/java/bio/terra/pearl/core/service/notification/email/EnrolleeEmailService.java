@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationSender;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -27,19 +28,21 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class EnrolleeEmailService implements NotificationSender {
-    private NotificationService notificationService;
-    private PortalEnvironmentService portalEnvService;
-    private PortalService portalService;
-    private StudyService studyService;
-    private EmailTemplateService emailTemplateService;
-    private ApplicationRoutingPaths routingPaths;
-    private SendgridClient sendgridClient;
+    private final NotificationService notificationService;
+    private final LanguageTextService languageTextService;
+    private final PortalEnvironmentService portalEnvService;
+    private final PortalService portalService;
+    private final StudyService studyService;
+    private final EmailTemplateService emailTemplateService;
+    private final ApplicationRoutingPaths routingPaths;
+    private final SendgridClient sendgridClient;
 
-    public EnrolleeEmailService(NotificationService notificationService,
+    public EnrolleeEmailService(NotificationService notificationService, LanguageTextService languageTextService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
                                 StudyService studyService, EmailTemplateService emailTemplateService,
                                 ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
         this.notificationService = notificationService;
+        this.languageTextService = languageTextService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
         this.studyService = studyService;
