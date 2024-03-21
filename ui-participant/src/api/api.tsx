@@ -309,9 +309,8 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email, accessToken, isProxy }: {
-    preRegResponseId: string | null, email: string, accessToken: string, isProxy : boolean
-  }): Promise<LoginResult> {
+  async register({ preRegResponseId, email, accessToken }: {
+    preRegResponseId: string | null, email: string, accessToken: string }): Promise<LoginResult> {
     bearerToken = accessToken
     let url = `${baseEnvUrl(false)}/register`
     if (preRegResponseId) {
@@ -320,7 +319,7 @@ export default {
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ email, isProxy })
+      body: JSON.stringify({ email })
     })
     return await this.processJsonResponse(response)
   },
@@ -345,8 +344,8 @@ export default {
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId, isProxy }:
-                         { studyShortcode: string, preEnrollResponseId: string | null, isProxy : boolean | false }):
+  async createEnrollee({ studyShortcode, preEnrollResponseId }:
+                         { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<HubResponse> {
     let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
     const queryParams = []
@@ -354,10 +353,6 @@ export default {
     if (preEnrollResponseId) {
       queryParams.push(`preEnrollResponseId=${preEnrollResponseId}`)
     }
-
-    // Adding isProxy to the query parameters
-    queryParams.push(`isProxy=${isProxy}`)
-
     // Joining all parameters with '&' and appending to the url
     if (queryParams.length > 0) {
       url += `?${queryParams.join('&')}`

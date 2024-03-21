@@ -6,10 +6,14 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,9 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.springframework.test.util.AssertionErrors.fail;
 
 public class SurveyServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -25,6 +32,9 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
     @Autowired
     private AdminUserFactory adminUserFactory;
+
+    @Mock
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     @Transactional
@@ -239,6 +249,77 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         // check that the question got inserted after the first one it is derived from
         assertThat(defs.get(2).getQuestionStableId(), equalTo("computedHeight"));
         assertThat(defs.get(2).getQuestionType(), equalTo(SurveyParseUtils.DERIVED_QUESTION_TYPE));
+    }
+
+    @Test
+    void testGetAnswerByStableId_HappyPath()  {
+        objectMapper = new ObjectMapper();
+        String surveyJsonData = "[{\"createdAt\":1710527621.051735000,\"lastUpdatedAt\":1710527621.051735000,\"questionStableId\":"
+                + "\"q1\",\"surveyVersion\":0,\"viewedLanguage\":\"en\",\"stringValue\":\"answer\"}]";
+        String questionStableId = "q1";
+        Class<String> returnClass = String.class;
+        String result = SurveyParseUtils.getAnswerByStableId(surveyJsonData, questionStableId, returnClass, objectMapper, "stringValue");
+        assertEquals("answer", result);
+    }
+
+    @Test
+    void testGetQuestionStableId_WhenFieldExists() throws Exception {
+        objectMapper = new ObjectMapper();
+        String json = "{\"questionStableId\": \"expectedId\"}";
+        JsonNode rootNode = objectMapper.readTree(json);
+        String result = SurveyParseUtils.getQuestionStableId(rootNode);
+
+        assertEquals("expectedId", result);
+    }
+
+    @Test
+    void testGetQuestionStableId_WhenFieldDoesNotExist() {
+        objectMapper = new ObjectMapper();
+        String json = "{\"someOtherField\": \"value\"}";
+        try {
+            assertNull(SurveyParseUtils.getQuestionStableId(objectMapper.readTree(json)));
+        } catch (Exception e) {
+            fail("Failed to parse JSON");
+        }
+    }
+
+    @Test
+    void testConvertNodeToClass() throws JsonProcessingException {
+        objectMapper = new ObjectMapper();
+        String json = "{\"objectValue\": \"[\\\"answer1\\\", \\\"answer2\\\"]\"}";
+        JsonNode node = objectMapper.readTree(json);
+        String result = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", String.class, objectMapper);
+        assertEquals("[\"answer1\", \"answer2\"]", result);
+
+        String json2 = "{\"objectValue\": \"true\"}";
+        node = objectMapper.readTree(json2);
+        Boolean booleanResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Boolean.class, objectMapper);
+        assertEquals(true, booleanResult);
+
+        String json3 = "{\"objectValue\": \"3\"}";
+        node = objectMapper.readTree(json3);
+        int integerResult = SurveyParseUtils.convertQuestionAnswerToClass(node, "objectValue", Integer.class, objectMapper);
+        assertEquals(3, integerResult);
+    }
+
+    @Test
+    void testGetSurveyAnswerFromPreEnrollSurveyJsonData() {
+        String jsonInput = """
+                [{"createdAt":1710527621.050828000,"lastUpdatedAt":1710527621.050828000,"questionStableId":
+                "hd_hd_preenroll_southAsianAncestry","surveyVersion":0,"viewedLanguage":"en","stringValue":"yes"},
+                {"createdAt":1710527621.050843000,"lastUpdatedAt":1710527621.050843000,"questionStableId":
+                "hd_hd_preenroll_understandsEnglish","surveyVersion":0,"viewedLanguage":"en","stringValue":"yes"},
+                {"createdAt":1710527621.050851000,"lastUpdatedAt":1710527621.050851000,"questionStableId":
+                "hd_hd_preenroll_isAdult","surveyVersion":0,"viewedLanguage":"en","stringValue":"yes"},
+                {"createdAt":1710527621.051394000,"lastUpdatedAt":1710527621.051394000,"questionStableId":
+                "hd_hd_preenroll_livesInUS","surveyVersion":0,"viewedLanguage":"en","stringValue":"yes"},
+                {"createdAt":1710527621.051735000,"lastUpdatedAt":1710527621.051735000,"questionStableId":
+                "proxy_enrollment","surveyVersion":0,"viewedLanguage":"en","stringValue":"true"},
+                {"createdAt":1710527621.051748000,"lastUpdatedAt":1710527621.051748000,"questionStableId":
+                "qualified","surveyVersion":0,"viewedLanguage":"en","booleanValue":true}]""";
+
+        Boolean result = SurveyParseUtils.getAnswerByStableId(jsonInput, "proxy_enrollment", Boolean.class, new ObjectMapper(), "stringValue");
+        assertEquals(true, result);
     }
 
 }

@@ -13,7 +13,7 @@
         {
           "text": "Conviértase en participante",
           "type": "join",
-          "studyShortcode": "ourheart"
+          "studyShortcode": "heartdemo"
         }
       ],
       "logos": [
@@ -60,7 +60,7 @@
         {
           "text": "Comience",
           "type": "join",
-          "studyShortcode": "ourheart"
+          "studyShortcode": "heartdemo"
         }
       ],
       "image": {"cleanFileName": "people_laughing.jpg", "alt": "", "version": 1},
@@ -115,7 +115,7 @@
         },
         {
           "question": "¿Cómo puedo participar?",
-          "answer": "Si tiene más de 18 años, vive en los Estados Unidos y se identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/ourheart/join)."
+          "answer": "Si tiene más de 18 años, vive en los Estados Unidos y se identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/heartdemo/join)."
         },
         {
           "question": "¿Qué hace OurHealth con los datos?",
@@ -169,7 +169,7 @@
       "buttons": [{
         "type": "join",
         "text": "Únase a OurHealth",
-        "studyShortcode": "ourheart"
+        "studyShortcode": "heartdemo"
       }],
       "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
     }

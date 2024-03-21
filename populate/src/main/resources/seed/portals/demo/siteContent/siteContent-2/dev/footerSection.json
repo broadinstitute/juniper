@@ -63,7 +63,7 @@
       },{
         "type": "join",
         "text": "DEV_Join OurHealth",
-        "studyShortcode": "ourheart"
+        "studyShortcode": "heartdemo"
       }]
     }]
   }
