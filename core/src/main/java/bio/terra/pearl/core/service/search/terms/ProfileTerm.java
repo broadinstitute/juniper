@@ -8,8 +8,10 @@ import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Condition;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
@@ -21,7 +23,7 @@ public class ProfileTerm implements EnrolleeTerm {
     private final MailingAddressDao mailingAddressDao;
 
     public ProfileTerm(ProfileDao profileDao, MailingAddressDao mailingAddressDao, String field) {
-        if (!ACCEPTABLE_FIELDS.contains(field)) {
+        if (!FIELDS.containsKey(field)) {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
 
@@ -33,16 +35,20 @@ public class ProfileTerm implements EnrolleeTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-
-        // other than birthDate, all fields are strings
-        if (field.equals("birthDate")) {
-            return new SearchValue(context.getProfile().getBirthDate());
-        }
-
-        String strValue = null;
+        SearchValue value;
         try {
             Object objValue = PropertyUtils.getNestedProperty(context.getProfile(), field);
-            strValue = objValue.toString();
+
+            SearchValue.SearchValueType type = FIELDS.get(field);
+
+            switch (type) {
+                case STRING -> value = new SearchValue(objValue.toString());
+                case DATE -> value = new SearchValue((LocalDate) objValue);
+                case INTEGER -> value = new SearchValue((Integer) objValue);
+                case DOUBLE -> value = new SearchValue((Double) objValue);
+                case BOOLEAN -> value = new SearchValue((Boolean) objValue);
+                default -> throw new IllegalArgumentException("Unsupported field type: " + type);
+            }
         } catch (NullPointerException | NestedNullException e) {
             // if the field is null / not provided, we want to return null/empty search value
             return new SearchValue();
@@ -50,7 +56,7 @@ public class ProfileTerm implements EnrolleeTerm {
             throw new IllegalArgumentException("Invalid field: " + field);
         }
 
-        return new SearchValue(strValue);
+        return value;
     }
 
     @Override
@@ -92,13 +98,12 @@ public class ProfileTerm implements EnrolleeTerm {
         return List.of();
     }
 
-    public static final List<String> ACCEPTABLE_FIELDS = List.of(
-            "givenName",
-            "familyName",
-            "contactEmail",
-            "phoneNumber",
-            "birthDate",
-            "mailingAddress.state"
+    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.of(
+            "givenName", SearchValue.SearchValueType.STRING,
+            "familyName", SearchValue.SearchValueType.STRING,
+            "contactEmail", SearchValue.SearchValueType.STRING,
+            "phoneNumber", SearchValue.SearchValueType.STRING,
+            "birthDate", SearchValue.SearchValueType.DATE,
+            "mailingAddress.state", SearchValue.SearchValueType.STRING
     );
-
 }
