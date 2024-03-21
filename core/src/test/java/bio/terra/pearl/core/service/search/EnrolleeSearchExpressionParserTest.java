@@ -88,5 +88,24 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     }
 
+    @Test
+    public void testInvalidSyntax() {
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{dasfas} = 2"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{age = 2"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{age} !! 2"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{profile.givenName} = Jonas"));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule("{profile .givenName} = 'Jonas'"));
+
+    }
+
 
 }

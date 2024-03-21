@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
+import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Condition;
 
@@ -42,6 +43,9 @@ public class ProfileTerm implements EnrolleeTerm {
         try {
             Object objValue = PropertyUtils.getNestedProperty(context.getProfile(), field);
             strValue = objValue.toString();
+        } catch (NullPointerException | NestedNullException e) {
+            // if the field is null / not provided, we want to return null/empty search value
+            return new SearchValue();
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid field: " + field);
         }

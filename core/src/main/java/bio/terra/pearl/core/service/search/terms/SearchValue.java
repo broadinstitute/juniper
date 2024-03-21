@@ -51,6 +51,10 @@ public class SearchValue {
         this.searchValueType = SearchValueType.BOOLEAN;
     }
 
+    public SearchValue() {
+        this.searchValueType = SearchValueType.NULL;
+    }
+
     public boolean equals(SearchValue right) {
         return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
@@ -113,6 +117,7 @@ public class SearchValue {
         DOUBLE,
         INSTANT,
         DATE,
-        BOOLEAN
+        BOOLEAN,
+        NULL
     }
 }

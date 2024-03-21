@@ -6,6 +6,7 @@ import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
@@ -18,6 +19,7 @@ import bio.terra.pearl.core.service.search.terms.SearchValue;
 import bio.terra.pearl.core.service.search.terms.UserInputTerm;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
@@ -42,12 +44,22 @@ public class EnrolleeSearchExpressionParser {
         if (StringUtils.isBlank(rule)) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
-        CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        CohortRuleParser parser = new CohortRuleParser(tokens);
-        CohortRuleParser.ExprContext exp = parser.expr();
 
-        return parseExpression(exp);
+        try {
+            CohortRuleLexer lexer = new CohortRuleLexer(CharStreams.fromString(rule));
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(new RuleParsingErrorListener());
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            CohortRuleParser parser = new CohortRuleParser(tokens);
+            parser.removeErrorListeners();
+            parser.addErrorListener(new RuleParsingErrorListener());
+            CohortRuleParser.ExprContext exp = parser.expr();
+
+            return parseExpression(exp);
+        } catch (ParseCancellationException e) {
+            throw new IllegalArgumentException("Error parsing rule: " + e.getMessage());
+        }
+
     }
 
     private EnrolleeSearchExpression parseExpression(CohortRuleParser.ExprContext ctx) {

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.jooq.impl.DSL.condition;
@@ -30,6 +31,9 @@ public class AnswerTerm implements EnrolleeTerm {
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
         Answer answer = answerDao.findForEnrolleeByQuestion(context.getEnrollee().getId(), surveyStableId, questionStableId);
+        if (Objects.isNull(answer)) {
+            return new SearchValue();
+        }
         return switch (answer.getAnswerType()) {
             case STRING -> new SearchValue(answer.getStringValue());
             case NUMBER -> new SearchValue(answer.getNumberValue());
