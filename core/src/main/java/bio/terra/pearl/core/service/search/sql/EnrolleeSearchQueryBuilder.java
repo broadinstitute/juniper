@@ -33,6 +33,7 @@ public class EnrolleeSearchQueryBuilder {
 
         this.selectClauseList.add(new SelectClause("enrollee", enrolleeDao));
         this.selectClauseList.add(new SelectClause("profile", profileDao));
+        this.joinClauseList.add(new JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
     }
 
     public SelectQuery<Record> toQuery(DSLContext context) {

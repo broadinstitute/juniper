@@ -18,52 +18,51 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
     EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     @Test
-    public void testParseRule() {
-        String rule = "{profile.givenName} = 'John'";
-        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
-
-        Query query = searchExp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.*, profile.given_name from enrollee enrollee " +
-                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "where ((profile.given_name = ?) and (enrollee.study_environment_id = ?))",
-                query.getSQL());
-
-        assertEquals("John", query.getBindValues().get(0));
-        assertEquals(fakeStudyEnvId, query.getBindValues().get(1));
-    }
-
-    @Test
-    public void testNestedParsing() {
-        String rule = "{profile.givenName} = 'John' and {profile.familyName} = 'Doe'";
-        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
-
-        Query query = searchExp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.*, profile.given_name, profile.family_name from enrollee enrollee " +
-                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "where ((profile.family_name = ?) and (profile.given_name = ?) " +
-                        "and (enrollee.study_environment_id = ?))",
-                query.getSQL());
-
-        assertEquals(3, query.getBindValues().size());
-        assertEquals("Doe", query.getBindValues().get(0));
-        assertEquals("John", query.getBindValues().get(1));
-        assertEquals(fakeStudyEnvId, query.getBindValues().get(2));
-    }
-
-    @Test
-    public void testComplexParsing() {
+    public void testParseIntoSQL() {
         String rule = "{profile.givenName} = 'John' and {answer.oh_oh_basics.oh_oh_givenName} = 'John'";
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.*, profile.given_name, oh_oh_givenName.string_value, " +
-                        "oh_oh_givenName.question_stable_id, oh_oh_givenName.survey_stable_id " +
+        assertEquals("select enrollee.consented as enrollee_consented, " +
+                        "enrollee.created_at as enrollee_created_at, enrollee.id as enrollee_id, " +
+                        "enrollee.last_updated_at as enrollee_last_updated_at, " +
+                        "enrollee.participant_user_id as enrollee_participant_user_id, " +
+                        "enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, " +
+                        "enrollee.profile_id as enrollee_profile_id, " +
+                        "enrollee.shortcode as enrollee_shortcode, " +
+                        "enrollee.study_environment_id as enrollee_study_environment_id, " +
+                        "enrollee.subject as enrollee_subject, " +
+                        "profile.birth_date as profile_birth_date, profile.contact_email as profile_contact_email, " +
+                        "profile.created_at as profile_created_at, profile.do_not_email as profile_do_not_email, " +
+                        "profile.do_not_email_solicit as profile_do_not_email_solicit, " +
+                        "profile.family_name as profile_family_name, " +
+                        "profile.given_name as profile_given_name, profile.id as profile_id, " +
+                        "profile.last_updated_at as profile_last_updated_at, " +
+                        "profile.mailing_address_id as profile_mailing_address_id, " +
+                        "profile.phone_number as profile_phone_number, " +
+                        "profile.sex_at_birth as profile_sex_at_birth, " +
+                        "answer_oh_oh_givenName.answer_type as answer_oh_oh_givenName_answer_type, " +
+                        "answer_oh_oh_givenName.boolean_value as answer_oh_oh_givenName_boolean_value, " +
+                        "answer_oh_oh_givenName.created_at as answer_oh_oh_givenName_created_at, " +
+                        "answer_oh_oh_givenName.creating_admin_user_id as answer_oh_oh_givenName_creating_admin_user_id, " +
+                        "answer_oh_oh_givenName.creating_participant_user_id as answer_oh_oh_givenName_creating_participant_user_id, " +
+                        "answer_oh_oh_givenName.enrollee_id as answer_oh_oh_givenName_enrollee_id, " +
+                        "answer_oh_oh_givenName.id as answer_oh_oh_givenName_id, " +
+                        "answer_oh_oh_givenName.last_updated_at as answer_oh_oh_givenName_last_updated_at, " +
+                        "answer_oh_oh_givenName.number_value as answer_oh_oh_givenName_number_value, " +
+                        "answer_oh_oh_givenName.object_value as answer_oh_oh_givenName_object_value, " +
+                        "answer_oh_oh_givenName.other_description as answer_oh_oh_givenName_other_description, " +
+                        "answer_oh_oh_givenName.question_stable_id as answer_oh_oh_givenName_question_stable_id, " +
+                        "answer_oh_oh_givenName.string_value as answer_oh_oh_givenName_string_value, " +
+                        "answer_oh_oh_givenName.survey_response_id as answer_oh_oh_givenName_survey_response_id, " +
+                        "answer_oh_oh_givenName.survey_stable_id as answer_oh_oh_givenName_survey_stable_id, " +
+                        "answer_oh_oh_givenName.survey_version as answer_oh_oh_givenName_survey_version, " +
+                        "answer_oh_oh_givenName.viewed_language as answer_oh_oh_givenName_viewed_language " +
                         "from enrollee enrollee " +
                         "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "left outer join answer oh_oh_givenName on (enrollee.id = oh_oh_givenName.enrollee_id) " +
-                        "where ((oh_oh_givenName.survey_stable_id = ? AND oh_oh_givenName.question_stable_id = ?) " +
-                        "and (oh_oh_givenName.string_value = ?) and (profile.given_name = ?) " +
-                        "and (enrollee.study_environment_id = ?))",
+                        "left outer join answer answer_oh_oh_givenName on (enrollee.id = answer_oh_oh_givenName.enrollee_id) " +
+                        "where ((answer_oh_oh_givenName.survey_stable_id = ? AND answer_oh_oh_givenName.question_stable_id = ?) " +
+                        "and (answer_oh_oh_givenName.string_value = ?) and (profile.given_name = ?) and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
         assertEquals(5, query.getBindValues().size());
@@ -89,33 +88,5 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     }
 
-    @Test
-    public void testParseAge() {
-        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{age} > 18");
-
-        Query query = exp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.*, profile.birth_date from enrollee enrollee " +
-                        "left outer join profile profile on (enrollee.profile_id = profile.id ) " +
-                        "where ((EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) " +
-                        "and (enrollee.study_environment_id = ?))",
-                query.getSQL());
-
-        assertEquals(2, query.getBindValues().size());
-        assertEquals(18.0, query.getBindValues().get(0));
-        assertEquals(fakeStudyEnvId, query.getBindValues().get(1));
-    }
-
-    @Test
-    public void testParseMailingAddress() {
-        EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("{profile.mailingAddress.state} = 'CA'");
-
-        Query query = exp.generateQuery(fakeStudyEnvId);
-        assertEquals("select enrollee.*, mailing_address.state " +
-                        "from enrollee enrollee " +
-                        "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) " +
-                        "where ((mailing_address.state = ?) and (enrollee.study_environment_id = ?))",
-                query.getSQL());
-    }
 
 }

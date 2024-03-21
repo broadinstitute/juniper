@@ -10,7 +10,7 @@ term: NUMBER | STRING | VARIABLE | BOOLEAN | NULL;
 // Lexer rules
 NUMBER: [0-9]+ ('.' [0-9]+)?;
 STRING: '\'' (~[\\'\r\n])* '\'';
-VARIABLE: '{' (~[\\'\r\n])* '}';
+VARIABLE: '{' ([a-zA-Z0-9_]|'.')+ '}';
 BOOLEAN: 'true' | 'false';
 NULL: 'null';
 WS: [ \t\r\n]+ -> skip;

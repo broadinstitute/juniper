@@ -27,7 +27,6 @@ public class EnrolleeSearchResultMapper implements RowMapper<EnrolleeSearchResul
                         .map(rs, ctx)
         );
 
-
         // Loop through all the columns to see if any of the possible extra objects
         // are present. We cannot check on their existence without throwing and catching
         // SQL exceptions, so it is better to loop through columns to check presence.

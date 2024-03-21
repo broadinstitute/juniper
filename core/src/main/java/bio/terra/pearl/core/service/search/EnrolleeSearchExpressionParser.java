@@ -56,7 +56,12 @@ public class EnrolleeSearchExpressionParser {
             EnrolleeSearchExpression right = parseExpression(ctx.expr(1));
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
-        return new EnrolleeTermComparisonFacet(enrolleeDao, profileDao, parseTerm(ctx.term(0)), parseTerm(ctx.term(1)), expToComparisonOperator(ctx));
+        return new EnrolleeTermComparisonFacet(
+                enrolleeDao,
+                profileDao,
+                parseTerm(ctx.term(0)),
+                parseTerm(ctx.term(1)),
+                expToComparisonOperator(ctx));
     }
 
     private Operator expToBooleanOperator(CohortRuleParser.ExprContext ctx) {
