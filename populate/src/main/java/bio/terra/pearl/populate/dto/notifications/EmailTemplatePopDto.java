@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter @NoArgsConstructor
-public class EmailTemplatePopDto extends EmailTemplate {
-    private List<LocalizedEmailTemplatePopDto> localizedEmailTemplateDtos = new ArrayList<>();;
+public class EmailTemplatePopDto extends EmailTemplate implements FilePopulatable {
+    private List<LocalizedEmailTemplatePopDto> localizedEmailTemplateDtos = new ArrayList<>();
+    private String populateFileName;
 }

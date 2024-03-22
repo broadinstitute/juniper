@@ -84,10 +84,10 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
     @Override
     public Optional<EmailTemplate> findFromDto(EmailTemplatePopDto popDto, PortalPopulateContext context) {
-//        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
-//        if (existingOpt.isPresent()) {
-//            return existingOpt;
-//        }
+        Optional<EmailTemplate> existingOpt = context.fetchFromPopDto(popDto, emailTemplateService);
+        if (existingOpt.isPresent()) {
+            return existingOpt;
+        }
         return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
     }
 
