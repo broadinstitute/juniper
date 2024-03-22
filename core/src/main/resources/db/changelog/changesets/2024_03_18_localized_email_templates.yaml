@@ -24,3 +24,7 @@ databaseChangeLog:
         - dropColumn:
             tableName: email_template
             columnName: body
+        - addColumn:
+            tableName: email_template
+            columns:
+              - column: { name: default_language, type: text, defaultValue: 'en' }
