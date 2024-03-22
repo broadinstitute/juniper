@@ -42,6 +42,9 @@ public class EnrolleeSearchQueryBuilder {
         this.joinClauseList.add(new JoinClause("profile", "profile", "enrollee.profile_id = profile.id"));
     }
 
+    /**
+     * Converts the builder to a jOOQ query.
+     */
     public SelectQuery<Record> toQuery(DSLContext context) {
         SelectJoinStep<Record> selectQuery = context
                 .select(selectClauseList
@@ -67,6 +70,9 @@ public class EnrolleeSearchQueryBuilder {
                 .getQuery();
     }
 
+    /**
+     * Adds a select clause to the query. If a select already exists with the same alias, it will not be added again.
+     */
     public void addSelectClause(SelectClause selectClause) {
         if (selectClauseList
                 .stream()
@@ -76,6 +82,9 @@ public class EnrolleeSearchQueryBuilder {
         selectClauseList.add(selectClause);
     }
 
+    /**
+     * Adds a join clause to the query. If a join already exists with the same alias and table, it will not be added again.
+     */
     public void addJoinClause(JoinClause joinClause) {
         if (joinClauseList
                 .stream()
@@ -86,6 +95,10 @@ public class EnrolleeSearchQueryBuilder {
         joinClauseList.add(joinClause);
     }
 
+    /**
+     * Adds a condition to the query. If a condition already exists, it will be combined with the new condition using the
+     * provided operator.
+     */
     public void addCondition(Condition condition, Operator operator) {
         if (Objects.isNull(whereConditions)) {
             whereConditions = condition;
@@ -94,10 +107,18 @@ public class EnrolleeSearchQueryBuilder {
         whereConditions = condition(operator, whereConditions, condition);
     }
 
+    /**
+     * Adds a condition to the query. If a condition already exists, it will be combined with the new condition with an
+     * AND.
+     */
     public void addCondition(Condition condition) {
         addCondition(condition, Operator.AND);
     }
 
+    /**
+     * Merges another query builder into this one. The other query builder's select and join clauses will be added to
+     * this one, and the where conditions will be combined with the provided operator.
+     */
     public EnrolleeSearchQueryBuilder merge(EnrolleeSearchQueryBuilder other, Operator operator) {
 
         for (SelectClause selectClause : other.selectClauseList) {
@@ -112,6 +133,9 @@ public class EnrolleeSearchQueryBuilder {
         return this;
     }
 
+    /**
+     * A clause to join a table to the query.
+     */
     @Getter
     public static class JoinClause {
         private final String alias;
@@ -126,6 +150,9 @@ public class EnrolleeSearchQueryBuilder {
 
     }
 
+    /**
+     * A clause to select columns from a table. Uses a {@link BaseJdbiDao} to get all columns from the table.
+     */
     @Getter
     public static class SelectClause {
         private String alias;
