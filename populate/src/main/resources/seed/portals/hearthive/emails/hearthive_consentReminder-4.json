@@ -1,10 +1,14 @@
 {
   "createdAt" : 1700067540.414227000,
   "lastUpdatedAt" : 1700078709.326467000,
-  "subject" : "Please Complete Your Enrollment in Heart Hive",
   "name" : "Consent Reminder",
   "stableId" : "hearthive_consentReminder",
   "version" : 4,
   "publishedVersion" : 1,
-  "bodyPopulateFile" : "hearthive_consentReminder-4.html"
+  "defaultLanguage": "en",
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject" : "Please Complete Your Enrollment in Heart Hive",
+    "bodyPopulateFile" : "en/hearthive_consentReminder-4.html"
+  }]
 }
