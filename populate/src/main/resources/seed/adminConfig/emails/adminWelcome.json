@@ -1,7 +1,11 @@
 {
   "name": "New admin user",
-  "bodyPopulateFile": "adminWelcome.html",
-  "subject": "Welcome to Juniper!",
   "stableId": "broad_admin_welcome",
-  "version": 1
+  "version": 1,
+  "defaultLanguage": "en",
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Welcome to Juniper!",
+    "bodyPopulateFile": "en/adminWelcome.html"
+  }]
 }

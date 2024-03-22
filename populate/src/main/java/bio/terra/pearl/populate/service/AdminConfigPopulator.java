@@ -21,7 +21,7 @@ public class AdminConfigPopulator {
       // these templates are not specific to a portal, so the shortcode and environment is null
       PortalPopulateContext context = new PortalPopulateContext(emailFile, null, null, new HashMap<>(), false, null);
       // always overwrite, we don't care about versioning for admin emails yet
-//      emailTemplatePopulator.populate(context, overwrite);
+      emailTemplatePopulator.populate(context, overwrite);
     }
     return new AdminConfigStats(EMAILS_TO_POPULATE.size());
   }
