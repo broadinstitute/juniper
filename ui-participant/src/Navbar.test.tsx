@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 
 import {
@@ -10,7 +10,8 @@ import {
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import { AccountDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import { MockI18nProvider } from '@juniper/ui-core'
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -158,6 +159,31 @@ describe('joinPath', () => {
     }] as PortalStudy[]
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
+  })
+})
+
+describe('UserDropdown', () => {
+  it('displays three options when dropdown is clicked', async () => {
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider mockTexts={{}}>
+        <AccountDropdown doChangePassword={jest.fn()} doLogout={jest.fn()}/>
+      </MockI18nProvider>
+    )
+
+    render(RoutedComponent)
+
+    const dropdownButton = screen.getByLabelText('anonymous')
+    dropdownButton.click()
+
+    await waitFor(() => {
+      const profileOption = screen.getByText('navbarProfile')
+      const changePasswordOption = screen.getByText('navbarChangePassword')
+      const logoutOption = screen.getByText('navbarLogout')
+
+      expect(profileOption).toBeInTheDocument()
+      expect(changePasswordOption).toBeInTheDocument()
+      expect(logoutOption).toBeInTheDocument()
+    })
   })
 })
 
