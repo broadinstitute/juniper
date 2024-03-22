@@ -12,7 +12,8 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
 import { uniqueId } from 'lodash'
-import { changePasswordRedirect } from './authUtils'
+import { UserManager } from 'oidc-client-ts'
+import { getOidcConfig } from './authConfig'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -224,7 +225,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
 }
 
 /**
- *
+ * User account dropdown menu, with options to edit profile, change password, and log out
  */
 export const AccountDropdown = () => {
   const { user, logoutUser } = useUser()
@@ -235,7 +236,16 @@ export const AccountDropdown = () => {
 
   /** invoke B2C change password flow */
   function doChangePassword() {
-    changePasswordRedirect(config, envSpec, selectedLanguage)
+    const oidcConfig = getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cChangePasswordPolicyName)
+    const userManager = new UserManager(oidcConfig)
+    userManager.signinRedirect({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        portalShortcode: envSpec.shortcode as string,
+        // eslint-disable-next-line camelcase
+        ui_locales: selectedLanguage
+      }
+    })
   }
 
   /** send a logout to the api then logout */

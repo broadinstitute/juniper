@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
 import {
@@ -169,7 +169,7 @@ describe('AccountDropdown', () => {
   it('displays user account options when clicked', async () => {
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider mockTexts={{}}>
-        <AccountDropdown doChangePassword={jest.fn()} doLogout={jest.fn()}/>
+        <AccountDropdown/>
       </MockI18nProvider>
     )
 
@@ -178,15 +178,13 @@ describe('AccountDropdown', () => {
     const dropdownButton = screen.getByLabelText('anonymous')
     dropdownButton?.click()
 
-    await waitFor(() => {
-      const profileOption = screen.getByLabelText('edit profile')
-      const changePasswordOption = screen.getByLabelText('change password')
-      const logoutOption = screen.getByLabelText('log out')
+    const profileOption = screen.getByLabelText('edit profile')
+    const changePasswordOption = screen.getByLabelText('change password')
+    const logoutOption = screen.getByLabelText('log out')
 
-      expect(profileOption).toBeInTheDocument()
-      expect(changePasswordOption).toBeInTheDocument()
-      expect(logoutOption).toBeInTheDocument()
-    })
+    expect(profileOption).toBeInTheDocument()
+    expect(changePasswordOption).toBeInTheDocument()
+    expect(logoutOption).toBeInTheDocument()
   })
 
   it('change password should redirect to b2c with the users chosen language', async () => {
