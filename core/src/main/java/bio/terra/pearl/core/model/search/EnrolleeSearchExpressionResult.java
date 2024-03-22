@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class EnrolleeSearchResult {
+public class EnrolleeSearchExpressionResult {
     private Enrollee enrollee;
     private Profile profile;
     private MailingAddress mailingAddress;

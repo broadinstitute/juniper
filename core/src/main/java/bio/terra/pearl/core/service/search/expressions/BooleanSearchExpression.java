@@ -7,8 +7,10 @@ import org.jooq.Operator;
 
 import java.util.UUID;
 
+/**
+ * High level search expression which represents a boolean operation (AND, OR) between two other search expressions.
+ */
 public class BooleanSearchExpression implements EnrolleeSearchExpression {
-
     private final EnrolleeSearchExpression left;
     private final EnrolleeSearchExpression right;
     private final Operator operator;

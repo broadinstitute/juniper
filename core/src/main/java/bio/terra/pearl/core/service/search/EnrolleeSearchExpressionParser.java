@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
+import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
@@ -24,6 +25,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
 
+/**
+ * Parses a rule expression into a {@link EnrolleeSearchExpression}. The rule expression is a string
+ * in a similar format to SurveyJS rules, e.g., "{age} > 18".
+ */
 @Component
 public class EnrolleeSearchExpressionParser {
     private final EnrolleeDao enrolleeDao;
@@ -40,7 +45,7 @@ public class EnrolleeSearchExpressionParser {
     }
 
 
-    public EnrolleeSearchExpression parseRule(String rule) {
+    public EnrolleeSearchExpression parseRule(String rule) throws RuleParsingException {
         if (StringUtils.isBlank(rule)) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
@@ -57,7 +62,7 @@ public class EnrolleeSearchExpressionParser {
 
             return parseExpression(exp);
         } catch (ParseCancellationException e) {
-            throw new IllegalArgumentException("Error parsing rule: " + e.getMessage());
+            throw new RuleParsingException("Error parsing rule: " + e.getMessage());
         }
 
     }

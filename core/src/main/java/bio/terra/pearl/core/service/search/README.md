@@ -2,8 +2,9 @@
 
 The search package allows searching through enrollee records to create a cohort.
 Search expressions are specified in the form of a string rule, e.g.,
-`{age} > 18 and {answer.demographics_survey.sex_at_birth} = 'F'`. These can then be
-parsed into a search expression object, which allows either the creation of a SQL
+`{age} > 18 and {answer.demographics_survey.sex_at_birth} = 'F'`. The rule syntax was modeled
+after [SurveyJS conditionals](https://surveyjs.io/form-library/documentation/design-survey/conditional-logic#conditional-visibility).
+These can then be parsed into a search expression object, which allows either the creation of a SQL
 query or direct evaluation on an enrollee.
 
 ```java

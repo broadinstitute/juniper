@@ -16,8 +16,10 @@ import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 
+/**
+ * This term can be used to search for any of the profile or mailing address fields within a search expression.
+ */
 public class ProfileTerm implements EnrolleeTerm {
-
     private final String field;
     private final ProfileDao profileDao;
     private final MailingAddressDao mailingAddressDao;

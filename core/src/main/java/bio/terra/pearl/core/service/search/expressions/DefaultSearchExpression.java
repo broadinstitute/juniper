@@ -8,9 +8,10 @@ import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 
 import java.util.UUID;
 
-/** represents an empty search/filter rule, which means return everything */
+/**
+ * Default search expression that returns all enrollees.
+ */
 public class DefaultSearchExpression implements EnrolleeSearchExpression {
-
     private EnrolleeDao enrolleeDao;
     private ProfileDao profileDao;
 

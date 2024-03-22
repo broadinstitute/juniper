@@ -7,6 +7,10 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a term that can be used to search for enrollees. This can be anything from a field on the enrollee's profile
+ * to a derived field like age.
+ */
 public interface EnrolleeTerm {
     /**
      * Extract the term's value from the enrollee.

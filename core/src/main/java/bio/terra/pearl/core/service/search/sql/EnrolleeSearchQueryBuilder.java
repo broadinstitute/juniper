@@ -21,6 +21,12 @@ import java.util.stream.Collectors;
 import static org.jooq.impl.DSL.condition;
 import static org.jooq.impl.DSL.field;
 
+/**
+ * A builder for constructing a jOOQ SQL query to search for enrollees via an
+ * {@link bio.terra.pearl.core.service.search.EnrolleeSearchExpression}. This should not be used directly, but rather
+ * the expression should be passed to the {@link bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao}.
+ * where the query building will occur.
+ */
 public class EnrolleeSearchQueryBuilder {
     private final List<SelectClause> selectClauseList = new ArrayList<>();
     private final List<JoinClause> joinClauseList = new ArrayList<>();

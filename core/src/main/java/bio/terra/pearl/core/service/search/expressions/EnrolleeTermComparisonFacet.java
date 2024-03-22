@@ -16,6 +16,10 @@ import java.util.UUID;
 
 import static org.jooq.impl.DSL.condition;
 
+/**
+ * Search expression that compares two enrollee terms using a comparison operator. This is where the majority
+ * of the search logic is implemented.
+ */
 public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
     private final EnrolleeDao enrolleeDao;
     private final ProfileDao profileDao;

@@ -10,6 +10,10 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * This term can be used to search for the age of an enrollee. It uses the `birthDate` field from the enrollee's profile
+ * and converts it to an integer representing the age in years.
+ */
 public class AgeTerm implements EnrolleeTerm {
 
     private final ProfileDao profileDao;

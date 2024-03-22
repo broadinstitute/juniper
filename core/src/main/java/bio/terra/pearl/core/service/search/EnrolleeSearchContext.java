@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/**
+ * Context for evaluating a search expression on an enrollee.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

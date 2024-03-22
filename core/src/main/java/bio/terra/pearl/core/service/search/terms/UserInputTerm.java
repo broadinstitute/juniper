@@ -7,6 +7,9 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a search term that is based on user input, for example `John` in `{profile.givenName} = 'John'`.
+ */
 public class UserInputTerm implements EnrolleeTerm {
 
     private final SearchValue searchValue;

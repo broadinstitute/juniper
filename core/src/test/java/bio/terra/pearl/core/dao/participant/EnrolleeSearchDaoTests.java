@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
@@ -63,7 +64,7 @@ public class EnrolleeSearchDaoTests extends BaseSpringBootTest {
 
     EnrolleeSearchExpression exp = enrolleeSearchExpressionParser.parseRule("");
 
-    List<bio.terra.pearl.core.model.search.EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+    List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
     assertThat(results, hasSize(1));
     assertThat(results.get(0).getEnrollee().getShortcode(), equalTo(enrollee.getShortcode()));
   }

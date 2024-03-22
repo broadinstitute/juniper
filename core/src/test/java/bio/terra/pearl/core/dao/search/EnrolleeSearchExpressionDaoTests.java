@@ -7,7 +7,7 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.search.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
@@ -100,7 +100,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                 Map.of("test_question", "answer")
         );
 
-        List<EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(salk.getId())));
@@ -141,11 +141,11 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                         "another_question", "something else")
         );
 
-        List<EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
 
-        EnrolleeSearchResult result = results.get(0);
+        EnrolleeSearchExpressionResult result = results.get(0);
 
         Assertions.assertEquals(enrollee.getId(), result.getEnrollee().getId());
 
@@ -195,10 +195,10 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                 Map.of("example_question", "asdf")
         );
 
-        List<EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
-        EnrolleeSearchResult result = results.get(0);
+        EnrolleeSearchExpressionResult result = results.get(0);
         Assertions.assertEquals(enrollee.getId(), result.getEnrollee().getId());
 
         Assertions.assertEquals(2, result.getAnswers().size());
@@ -238,7 +238,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
                 Profile.builder().birthDate(LocalDate.now().minusYears(25)).build());
 
 
-        List<EnrolleeSearchResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(3, results.size());
 

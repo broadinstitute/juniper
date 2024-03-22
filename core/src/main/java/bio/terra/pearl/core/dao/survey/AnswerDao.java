@@ -58,6 +58,9 @@ public class AnswerDao extends BaseMutableJdbiDao<Answer> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    /**
+     * Returns the most recent answer for a given enrollee, survey, and question.
+     */
     public Answer findForEnrolleeByQuestion(UUID enrolleeID, String surveyStableId, String questionStableId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName +
