@@ -4,7 +4,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString } from '@juniper/ui-core'
+import { dateToDefaultString, MockI18nProvider } from '@juniper/ui-core'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -53,9 +53,12 @@ test('displays updates before submitting', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>
+  )
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -67,8 +70,8 @@ test('displays updates before submitting', async () => {
   await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
   await userEvent.clear(screen.getByPlaceholderText('Family Name'))
   await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
-  await userEvent.clear(screen.getByPlaceholderText('City'))
-  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+  await userEvent.clear(screen.getByPlaceholderText('{city}'))
+  await userEvent.type(screen.getByPlaceholderText('{city}'), 'London')
 
   await userEvent.click(screen.getByText('Next: Add Justification'))
 
@@ -88,9 +91,11 @@ test('profile update is sent appropriately with justification', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -102,8 +107,8 @@ test('profile update is sent appropriately with justification', async () => {
   await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
   await userEvent.clear(screen.getByPlaceholderText('Family Name'))
   await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
-  await userEvent.clear(screen.getByPlaceholderText('City'))
-  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+  await userEvent.clear(screen.getByPlaceholderText('{city}'))
+  await userEvent.type(screen.getByPlaceholderText('{city}'), 'London')
 
   await userEvent.click(screen.getByText('Next: Add Justification'))
 
@@ -145,9 +150,11 @@ test('shows error message on address validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -161,10 +168,10 @@ test('shows error message on address validation', async () => {
   expect(screen.getByText('could not be verified', { exact: false })).toBeInTheDocument()
 
   // makes the field red
-  const streetClasses = screen.getByPlaceholderText('Street 1').className
+  const streetClasses = screen.getByPlaceholderText('{street1}').className
   expect(streetClasses).toContain('is-invalid')
 
-  const countryClasses = screen.getByPlaceholderText('City').className
+  const countryClasses = screen.getByPlaceholderText('{city}').className
   expect(countryClasses.includes('is-invalid')).toBeFalsy()
   expect(countryClasses.includes('is-valid')).toBeFalsy()
 })
@@ -188,9 +195,11 @@ test('shows modal on improvable address validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -215,9 +224,11 @@ test('makes all fields green upon positive validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider mockTexts={{}}>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -227,6 +238,6 @@ test('makes all fields green upon positive validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  const classes = screen.getByPlaceholderText('Street 1').className
+  const classes = screen.getByPlaceholderText('{street1}').className
   expect(classes).toContain('is-valid')
 })
