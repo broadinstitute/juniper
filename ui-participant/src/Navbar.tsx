@@ -22,25 +22,10 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
-  const config = useConfig()
-  const { user, logoutUser } = useUser()
-  const envSpec = getEnvSpec()
+  const { user } = useUser()
   const navLinks = localContent.navbarItems
 
   const languageOptions = portalEnv.supportedLanguages
-
-  /** invoke B2C change password flow */
-  function doChangePassword() {
-    changePasswordRedirect(config, envSpec, selectedLanguage)
-  }
-
-  /** send a logout to the api then logout */
-  function doLogout() {
-    Api.logout().then(() => {
-      logoutUser()
-      window.location.href = '/'
-    })
-  }
 
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const location = useLocation()
@@ -107,8 +92,21 @@ export default function Navbar(props: NavbarProps) {
               </li>
             </>
           )}
-          {user.isAnonymous &&
-            <AccountDropdown doChangePassword={doChangePassword} doLogout={doLogout}/>
+          {user.isAnonymous && <>
+            <li className="nav-item">
+              <Link
+                className={classNames(
+                  'btn btn-lg btn-outline-primary',
+                  'd-flex justify-content-center',
+                  'ms-lg-3'
+                )}
+                to="/hub"
+              >
+                {i18n('navbarDashboard')}
+              </Link>
+            </li>
+            <AccountDropdown/>
+          </>
           }
         </ul>
       </div>
@@ -228,26 +226,28 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
 /**
  *
  */
-export const AccountDropdown = ({ doChangePassword, doLogout }: {
-  doChangePassword: () => void,
-  doLogout: () => void
-}) => {
-  const { user } = useUser()
-  const { i18n } = useI18n()
+export const AccountDropdown = () => {
+  const { user, logoutUser } = useUser()
+  const { i18n, selectedLanguage } = useI18n()
+  const config = useConfig()
+  const envSpec = getEnvSpec()
+
+
+  /** invoke B2C change password flow */
+  function doChangePassword() {
+    changePasswordRedirect(config, envSpec, selectedLanguage)
+  }
+
+  /** send a logout to the api then logout */
+  function doLogout() {
+    Api.logout().then(() => {
+      logoutUser()
+      window.location.href = '/'
+    })
+  }
+
   return (
     <>
-      <li className="nav-item">
-        <Link
-          className={classNames(
-            'btn btn-lg btn-outline-primary',
-            'd-flex justify-content-center',
-            'ms-lg-3'
-          )}
-          to="/hub"
-        >
-          {i18n('navbarDashboard')}
-        </Link>
-      </li>
       <li className="nav-item dropdown d-flex flex-column">
         <button
           aria-expanded="false"
@@ -276,14 +276,14 @@ export const AccountDropdown = ({ doChangePassword, doLogout }: {
           </p>
           <hr className="dropdown-divider d-none d-lg-block"/>
           <NavLink to="/hub/profile">
-            <button className="dropdown-item">
+            <button className="dropdown-item" aria-label="edit profile">
               {i18n('profile')}
             </button>
           </NavLink>
-          <button className="dropdown-item" onClick={doChangePassword}>
+          <button className="dropdown-item" aria-label="change password" onClick={doChangePassword}>
             {i18n('navbarChangePassword')}
           </button>
-          <button className="dropdown-item" onClick={doLogout}>
+          <button className="dropdown-item" aria-label="log out" onClick={doLogout}>
             {i18n('navbarLogout')}
           </button>
         </div>

@@ -12,6 +12,9 @@ import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 import { AccountDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
 import { MockI18nProvider } from '@juniper/ui-core'
+import { UserManager } from 'oidc-client-ts'
+
+jest.mock('oidc-client-ts')
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -162,8 +165,8 @@ describe('joinPath', () => {
   })
 })
 
-describe('UserDropdown', () => {
-  it('displays three options when dropdown is clicked', async () => {
+describe('AccountDropdown', () => {
+  it('displays user account options when clicked', async () => {
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider mockTexts={{}}>
         <AccountDropdown doChangePassword={jest.fn()} doLogout={jest.fn()}/>
@@ -173,16 +176,48 @@ describe('UserDropdown', () => {
     render(RoutedComponent)
 
     const dropdownButton = screen.getByLabelText('anonymous')
-    dropdownButton.click()
+    dropdownButton?.click()
 
     await waitFor(() => {
-      const profileOption = screen.getByText('navbarProfile')
-      const changePasswordOption = screen.getByText('navbarChangePassword')
-      const logoutOption = screen.getByText('navbarLogout')
+      const profileOption = screen.getByLabelText('edit profile')
+      const changePasswordOption = screen.getByLabelText('change password')
+      const logoutOption = screen.getByLabelText('log out')
 
       expect(profileOption).toBeInTheDocument()
       expect(changePasswordOption).toBeInTheDocument()
       expect(logoutOption).toBeInTheDocument()
+    })
+  })
+
+  it('change password should redirect to b2c with the users chosen language', async () => {
+    const mockSigninRedirect = jest.fn()
+    // @ts-expect-error "TS doesn't know about mocks"
+    UserManager.mockImplementation(() => {
+      return {
+        signinRedirect: mockSigninRedirect
+      }
+    })
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider selectedLanguage={'es'}>
+        <AccountDropdown/>
+      </MockI18nProvider>
+    )
+
+    render(RoutedComponent)
+
+    const dropdownButton = screen.getByLabelText('anonymous')
+    dropdownButton?.click()
+    const changePasswordOption = screen.getByLabelText('change password')
+    changePasswordOption.click()
+
+    expect(mockSigninRedirect).toHaveBeenCalledWith({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        portalShortcode: undefined,
+        // eslint-disable-next-line camelcase
+        ui_locales: 'es'
+      }
     })
   })
 })
