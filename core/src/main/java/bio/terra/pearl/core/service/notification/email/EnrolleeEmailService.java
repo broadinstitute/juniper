@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class EnrolleeEmailService implements NotificationSender {
     private final NotificationService notificationService;
-    private final LanguageTextService languageTextService;
     private final PortalEnvironmentService portalEnvService;
     private final PortalService portalService;
     private final StudyService studyService;
@@ -37,12 +36,11 @@ public class EnrolleeEmailService implements NotificationSender {
     private final ApplicationRoutingPaths routingPaths;
     private final SendgridClient sendgridClient;
 
-    public EnrolleeEmailService(NotificationService notificationService, LanguageTextService languageTextService,
+    public EnrolleeEmailService(NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
                                 StudyService studyService, EmailTemplateService emailTemplateService,
                                 ApplicationRoutingPaths routingPaths, SendgridClient sendgridClient) {
         this.notificationService = notificationService;
-        this.languageTextService = languageTextService;
         this.portalEnvService = portalEnvService;
         this.portalService = portalService;
         this.studyService = studyService;

@@ -18,3 +18,9 @@ databaseChangeLog:
               INSERT INTO localized_email_template (email_template_id, language, subject, body, created_at, last_updated_at)
               SELECT id, 'en', subject, body, created_at, last_updated_at
               FROM email_template;
+        - dropColumn:
+            tableName: email_template
+            columnName: subject
+        - dropColumn:
+            tableName: email_template
+            columnName: body

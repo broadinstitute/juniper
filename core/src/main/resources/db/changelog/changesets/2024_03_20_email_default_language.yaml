@@ -6,4 +6,4 @@ databaseChangeLog:
         - addColumn:
             tableName: email_template
             columns:
-              - column: { name: default_language, type: text }
+              - column: { name: default_language, type: text, defaultValue: 'en'}

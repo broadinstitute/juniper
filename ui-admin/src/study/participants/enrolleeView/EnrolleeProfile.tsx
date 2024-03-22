@@ -117,8 +117,10 @@ function ReadOnlyProfile(
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
     <ReadOnlyRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
-    <ReadOnlyRow title={'Preferred Language'} values={[supportedLanguages.find(lang =>
-      lang.languageCode === profile.preferredLanguage)?.languageName || '']}/>
+    { supportedLanguages.length > 0 &&
+        <ReadOnlyRow title={'Preferred Language'} values={[supportedLanguages.find(lang =>
+          lang.languageCode === profile.preferredLanguage)?.languageName || '']}/>
+    }
   </>
 }
 
