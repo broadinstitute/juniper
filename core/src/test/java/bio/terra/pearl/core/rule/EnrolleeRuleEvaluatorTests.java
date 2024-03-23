@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class EnrolleeRuleEvaluatorTests {
 
-    private EnrolleeRuleData EMPTY_RULE_DATA = new EnrolleeRuleData(null, null);
+    private EnrolleeRuleData EMPTY_RULE_DATA = new EnrolleeRuleData(null, null, null);
 
     @Test
     public void testStringEvaluation() throws Exception {
@@ -49,37 +49,37 @@ public class EnrolleeRuleEvaluatorTests {
     public void testStringVariableInsertion() throws Exception {
         String rule = "{profile.sexAtBirth} = 'M'";
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build())),
+                new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build(), null)),
                 equalTo(true));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth("F").build())),
+                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth("F").build(), null)),
                 equalTo(false));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth(null).build())),
+                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth(null).build(), null)),
                 equalTo(false));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, null)),
+                        new EnrolleeRuleData(null, null, null)),
                 equalTo(false));
     }
 
     @Test
     public void testBooleanVariableInsertion() throws Exception {
         String rule = "{enrollee.consented} = true";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(true).build(), null)), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(false).build(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(true).build(), null, null)), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(false).build(), null, null)), equalTo(false));
     }
 
     @Test
     public void testUnrecognizedVariableInsertion() throws Exception {
         String rule = "{enrollee.doesNotExistZZZ} = true";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null, null)), equalTo(false));
     }
 
     @Test
     public void testVariableNullCheck() throws Exception {
         String rule = "{enrollee.shortcode} = null";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null)), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().shortcode("FOO").build(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null, null)), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().shortcode("FOO").build(), null, null)), equalTo(false));
     }
 
     /**

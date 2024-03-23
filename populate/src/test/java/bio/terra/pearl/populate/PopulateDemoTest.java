@@ -1,11 +1,7 @@
 package bio.terra.pearl.populate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 import java.util.List;
 import java.util.Map;
@@ -15,10 +11,7 @@ import java.util.stream.Collectors;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -53,9 +46,10 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(10, enrollees.size());//3 new governed enrollees and 2 proxies
+        Assertions.assertEquals(11, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
+        checkPrefixedEnrollee(enrollees);
         checkProxyWithOneGovernedEnrollee(enrollees);
         checkProxyWithTwoGovernedEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
@@ -77,6 +71,14 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 Matchers.both(hasProperty("questionStableId", equalTo("hd_hd_socialHealth_neighborhoodIsNoisy")))
                         .and(hasProperty("surveyVersion", equalTo(2))))
         );
+    }
+
+    private void checkPrefixedEnrollee(List<Enrollee> sandboxEnrollees) {
+        Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDINVI".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
+        assertThat(user.getUsername(), startsWith("invited-"));
+        assertThat(user.getUsername(), endsWith("test.com"));
     }
 
     /** confirm the proxy enrollee with one governed user was enrolled appropriately */
@@ -147,7 +149,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
 
-        assertThat(exportData, hasSize(8));
+        assertThat(exportData, hasSize(9));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));

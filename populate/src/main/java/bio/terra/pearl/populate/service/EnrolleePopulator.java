@@ -60,6 +60,7 @@ import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
 import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
@@ -79,33 +80,36 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
-    private EnrolleeService enrolleeService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private SurveyService surveyService;
-    private SurveyResponseService surveyResponseService;
-    private ConsentFormService consentFormService;
-    private ConsentResponseService consentResponseService;
-    private ParticipantTaskService participantTaskService;
-    private TriggerService triggerService;
-    private NotificationService notificationService;
-    private AnswerProcessingService answerProcessingService;
-    private EnrollmentService enrollmentService;
-    private ProfileService profileService;
-    private WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private TimeShiftPopulateDao timeShiftPopulateDao;
-    private KitRequestService kitRequestService;
-    private KitTypeDao kitTypeDao;
-    private AdminUserDao adminUserDao;
-    private ParticipantNotePopulator participantNotePopulator;
-    private ObjectMapper objectMapper;
+    private final EnrolleeService enrolleeService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final SurveyService surveyService;
+    private final SurveyResponseService surveyResponseService;
+    private final ConsentFormService consentFormService;
+    private final ConsentResponseService consentResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final TriggerService triggerService;
+    private final NotificationService notificationService;
+    private final AnswerProcessingService answerProcessingService;
+    private final EnrollmentService enrollmentService;
+    private final ProfileService profileService;
+    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final KitRequestService kitRequestService;
+    private final KitTypeDao kitTypeDao;
+    private final AdminUserDao adminUserDao;
+    private final ParticipantNotePopulator participantNotePopulator;
+    private final ParticipantUserPopulateDao participantUserPopulateDao;
+    private final ObjectMapper objectMapper;
 
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
@@ -123,7 +127,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              TimeShiftPopulateDao timeShiftPopulateDao,
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
                              ParticipantNotePopulator participantNotePopulator,
-                             ObjectMapper objectMapper
+                             ParticipantUserPopulateDao participantUserPopulateDao, ObjectMapper objectMapper
     ) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
@@ -146,6 +150,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
+        this.participantUserPopulateDao = participantUserPopulateDao;
         this.objectMapper = objectMapper;
     }
 
@@ -385,8 +390,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
     //creates a new independent adult (non-governed) enrollee
     private EnrolleePopulationData createNewEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context) {
-        ParticipantUser attachedUser = participantUserService
-                .findOne(popDto.getLinkedUsername(), context.getEnvironmentName()).get();
+        ParticipantUser attachedUser = findLinkedUser(popDto, environmentName);
         PortalParticipantUser ppUser = portalParticipantUserService
                 .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
         popDto.setParticipantUserId(attachedUser.getId());
@@ -402,10 +406,26 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             enrollee.setShortcode(popDto.getShortcode());
             enrolleeService.update(enrollee);
         } else {
+            popDto.setProfileId(ppUser.getProfileId());
             enrollee = enrolleeService.create(popDto);
             tasks = new ArrayList<>();
         }
         return new EnrolleePopulationData(popDto, enrollee, ppUser, tasks, null, prevEmailSetting);
+    }
+
+    private ParticipantUser findLinkedUser(EnrolleePopDto popDto, EnvironmentName environmentName) {
+        if (popDto.getLinkedUsernamePrefix() != null) {
+            List<ParticipantUser> users = participantUserPopulateDao.findUserByPrefix(popDto.getLinkedUsernamePrefix(), environmentName);
+            if (users.size() > 1) {
+                throw new IllegalStateException("Multiple usernames found for enrollee with prefix: " + popDto.getLinkedUsernamePrefix());
+            }
+            if (users.size() == 0) {
+                throw new IllegalStateException("No usernames found for enrollee with prefix: " + popDto.getLinkedUsernamePrefix());
+            }
+            return users.get(0);
+        }
+        return participantUserService
+                .findOne(popDto.getLinkedUsername(), environmentName).get();
     }
 
     /**

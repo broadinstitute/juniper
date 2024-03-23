@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,6 +41,9 @@ public class PortalParticipantUserPopulator extends BasePopulator<PortalParticip
     protected void preProcessDto(PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
         ParticipantUserPopDto userDto = popDto.getParticipantUser();
         userDto.setEnvironmentName(context.getEnvironmentName());
+        if (userDto.getUsernamePrefix() != null) {
+            userDto.setUsername("%s-%s@test.com".formatted(userDto.getUsernamePrefix(), RandomStringUtils.randomAlphabetic(8)));
+        }
         Optional<ParticipantUser> existingUserOpt = participantUserService
                 .findOne(userDto.getUsername(), context.getEnvironmentName());
         ParticipantUser user = existingUserOpt.orElseGet(() -> participantUserService.create(userDto));

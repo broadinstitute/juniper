@@ -11,4 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ParticipantUserPopDto extends ParticipantUser {
     private Integer lastLoginHoursAgo;
+    /** for cases where we want to generate a unique user on every populate to avoid b2c conflicts */
+    private String usernamePrefix;
 }
