@@ -3,7 +3,7 @@
  * https://github.com/DataBiosphere/terra-ui/blob/dev/packages/test-utils/src/asMockedFn.ts
  */
 
-export type AnyFn = (...args: any[]) => any;
+export type AnyFn = (...args: never[]) => never;
 
 /**
  * Use when working with a function mocked with jest.mock to tell TypeScript that
