@@ -178,7 +178,7 @@ describe('AccountOptionsDropdown', () => {
     render(RoutedComponent)
 
     const dropdownButton = screen.getByLabelText('anonymous')
-    dropdownButton?.click()
+    dropdownButton.click()
 
     const profileOption = screen.getByLabelText('edit profile')
     const changePasswordOption = screen.getByLabelText('change password')
@@ -202,7 +202,7 @@ describe('AccountOptionsDropdown', () => {
     render(RoutedComponent)
 
     const dropdownButton = screen.getByLabelText('anonymous')
-    dropdownButton?.click()
+    dropdownButton.click()
     const changePasswordOption = screen.getByLabelText('change password')
     changePasswordOption.click()
 

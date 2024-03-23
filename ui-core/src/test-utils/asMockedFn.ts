@@ -2,8 +2,8 @@
  * This has been lifted directly from Terra UI:
  * https://github.com/DataBiosphere/terra-ui/blob/dev/packages/test-utils/src/asMockedFn.ts
  */
-
-export type AnyFn = (...args: never[]) => never;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyFn = (...args: any[]) => any;
 
 /**
  * Use when working with a function mocked with jest.mock to tell TypeScript that
