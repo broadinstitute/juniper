@@ -261,7 +261,7 @@ export const AccountOptionsDropdown = () => {
       <li className="nav-item dropdown d-flex flex-column">
         <button
           aria-expanded="false"
-          aria-label={user.username}
+          aria-label={`account options for ${user.username}`}
           className={classNames(
             navLinkClasses,
             'btn btn-text dropdown-toggle text-start'

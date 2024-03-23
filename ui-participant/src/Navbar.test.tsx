@@ -10,11 +10,21 @@ import {
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
-import { MockI18nProvider } from '@juniper/ui-core'
+import Navbar, { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
+import { useUser } from './providers/UserProvider'
+import { usePortalEnv } from './providers/PortalProvider'
+import { mockUsePortalEnv } from './test-utils/test-portal-factory'
 
 jest.mock('oidc-client-ts')
+jest.mock('providers/UserProvider')
+jest.mock('providers/PortalProvider', () => {
+  return {
+    ...jest.requireActual('providers/PortalProvider'),
+    usePortalEnv: jest.fn()
+  }
+})
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -164,6 +174,46 @@ describe('joinPath', () => {
     }] as PortalStudy[]
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
+  })
+})
+
+describe('Navbar', () => {
+  it('renders an account dropdown when the user is logged in', async () => {
+    asMockedFn(useUser).mockReturnValue({
+      user: { isAnonymous: false, token: '', username: 'testUser' },
+      logoutUser: jest.fn(),
+      updateProfile: jest.fn(),
+      updateEnrollee: jest.fn(),
+      loginUserInternal: jest.fn(),
+      loginUser: jest.fn(),
+      enrollees: []
+    })
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
+    render(RoutedComponent)
+
+    const accountDropdown = await screen.findByLabelText('account options for testUser')
+    expect(accountDropdown).toBeInTheDocument()
+  })
+
+  it('does not render an account dropdown when the user is not logged in', () => {
+    asMockedFn(useUser).mockReturnValue({
+      user: { isAnonymous: true, token: '', username: 'anonymous' },
+      logoutUser: jest.fn(),
+      updateProfile: jest.fn(),
+      updateEnrollee: jest.fn(),
+      loginUserInternal: jest.fn(),
+      loginUser: jest.fn(),
+      enrollees: []
+    })
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
+    render(RoutedComponent)
+
+    const dropdownButton = screen.queryByLabelText('account options for anonymous')
+    expect(dropdownButton).not.toBeInTheDocument()
   })
 })
 
