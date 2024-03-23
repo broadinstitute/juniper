@@ -259,7 +259,7 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
         studyShortcode={'study'} taskId={'guid34'}/>
     </MockI18nProvider>)

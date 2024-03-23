@@ -82,7 +82,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       </div>
     </Modal.Header>
     <Modal.Body>
-      <form onSubmit={e => e.preventDefault()}>
+      <div>
         <label className="form-label" htmlFor="inputFormName">Name</label>
         { NameInput }
         <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
@@ -125,7 +125,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
                 setForm({ ...form, blurb: event.target.value })}/>
           </div>
         </>}
-      </form>
+      </div>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>

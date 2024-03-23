@@ -36,7 +36,7 @@ test('renders jsalk profile', async () => {
     <ProvideFullTestUserContext
       profile={jsalkProfile}
     >
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <ParticipantProfile/>
       </MockI18nProvider>
     </ProvideFullTestUserContext>)
@@ -63,7 +63,7 @@ test('renders empty profile', async () => {
     <ProvideFullTestUserContext
       profile={{}}
     >
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <ParticipantProfile/>
       </MockI18nProvider>
     </ProvideFullTestUserContext>)
@@ -86,7 +86,7 @@ test('opens expected modals', async () => {
     <ProvideFullTestUserContext
       profile={jsalkProfile}
     >
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <ParticipantProfile/>
       </MockI18nProvider>
     </ProvideFullTestUserContext>)
@@ -159,7 +159,7 @@ test('updates name properly', async () => {
       profile={jsalkProfile}
       ppUser={{ id: 'testppuserid', profile: jsalkProfile, profileId: '' }}
     >
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <ParticipantProfile/>
       </MockI18nProvider>
     </ProvideFullTestUserContext>)

@@ -22,6 +22,13 @@ jest.mock('user/UserProvider', () => {
   }
 })
 
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  fetchEnrolleeAdminTasks: jest.fn(() => Promise.resolve([])),
+  updateProfileForEnrollee: jest.fn(() => Promise.resolve()),
+  validateAddress: jest.fn(() => Promise.resolve({}))
+}))
+
 test('renders enrollee profile', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
@@ -30,12 +37,12 @@ test('renders enrollee profile', async () => {
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
 
   const profile = enrollee.profile
   const mailingAddress = profile.mailingAddress
+  await waitFor(() => expect(screen.getByText('Notes')).toBeInTheDocument())
 
   expect(screen.getByText(`${enrollee.profile.givenName} ${enrollee.profile.familyName}`)).toBeInTheDocument()
   expect(screen.getByText(dateToDefaultString(enrollee.profile.birthDate))).toBeInTheDocument()
@@ -53,7 +60,7 @@ test('displays updates before submitting', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
         // nothing
       }}/>
@@ -91,7 +98,7 @@ test('profile update is sent appropriately with justification', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
         // nothing
       }}/>
@@ -150,7 +157,7 @@ test('shows error message on address validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
         // nothing
       }}/>
@@ -195,7 +202,7 @@ test('shows modal on improvable address validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
         // nothing
       }}/>
@@ -224,7 +231,7 @@ test('makes all fields green upon positive validation', async () => {
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
         // nothing
       }}/>

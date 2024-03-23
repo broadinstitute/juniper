@@ -8,6 +8,11 @@ import { Store } from 'react-notifications-component'
 
 jest.mock('../navbar/NavContextProvider')
 
+jest.mock('../api/api', () => ({
+  ...jest.requireActual('../api/api'),
+  exportEnrollees: jest.fn(() => Promise.resolve({ json: () => ({ columnKeys: [] }) }))
+}))
+
 describe('CreateNewCohortModal', () => {
   test('enables Create button when cohort name, study, and portal are filled out', async () => {
     const user = userEvent.setup()

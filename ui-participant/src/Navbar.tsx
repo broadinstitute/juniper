@@ -93,7 +93,7 @@ export default function Navbar(props: NavbarProps) {
               </li>
             </>
           )}
-          {user.isAnonymous && <>
+          {!user.isAnonymous && <>
             <li className="nav-item">
               <Link
                 className={classNames(
@@ -106,7 +106,7 @@ export default function Navbar(props: NavbarProps) {
                 {i18n('navbarDashboard')}
               </Link>
             </li>
-            <AccountDropdown/>
+            <AccountOptionsDropdown/>
           </>
           }
         </ul>
@@ -227,7 +227,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
 /**
  * User account dropdown menu, with options to edit profile, change password, and log out
  */
-export const AccountDropdown = () => {
+export const AccountOptionsDropdown = () => {
   const { user, logoutUser } = useUser()
   const { i18n, selectedLanguage } = useI18n()
   const config = useConfig()

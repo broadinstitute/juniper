@@ -10,7 +10,7 @@ import {
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { AccountDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
 import { MockI18nProvider } from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
 
@@ -113,6 +113,7 @@ describe('joinPath', () => {
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
   })
+
   it('joins the portal if there are two studies', () => {
     const portalStudies = [{
       study: {
@@ -138,6 +139,7 @@ describe('joinPath', () => {
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/join')
   })
+
   it('joins the portal if only one study is accepting enrollment', () => {
     const portalStudies = [{
       study: {
@@ -165,11 +167,11 @@ describe('joinPath', () => {
   })
 })
 
-describe('AccountDropdown', () => {
+describe('AccountOptionsDropdown', () => {
   it('displays user account options when clicked', async () => {
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider mockTexts={{}}>
-        <AccountDropdown/>
+      <MockI18nProvider>
+        <AccountOptionsDropdown/>
       </MockI18nProvider>
     )
 
@@ -187,18 +189,13 @@ describe('AccountDropdown', () => {
     expect(logoutOption).toBeInTheDocument()
   })
 
-  it('change password should redirect to b2c with the users chosen language', async () => {
+  it('change password option should redirect to b2c with the users chosen language', async () => {
     const mockSigninRedirect = jest.fn()
-    // @ts-expect-error "TS doesn't know about mocks"
-    UserManager.mockImplementation(() => {
-      return {
-        signinRedirect: mockSigninRedirect
-      }
-    })
+    jest.spyOn(UserManager.prototype, 'signinRedirect').mockImplementation(mockSigninRedirect)
 
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider selectedLanguage={'es'}>
-        <AccountDropdown/>
+        <AccountOptionsDropdown/>
       </MockI18nProvider>
     )
 

@@ -96,3 +96,15 @@ export const mockHtmlPage = (): HtmlPage => {
     sections: []
   }
 }
+
+/**
+ *
+ */
+export const mockUsePortalEnv = () => {
+  return {
+    portal: mockPortal(),
+    reloadPortal: jest.fn(),
+    portalEnv: mockPortalEnvironment(),
+    localContent: mockLocalSiteContent()
+  }
+}
