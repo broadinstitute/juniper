@@ -16,6 +16,7 @@ import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
 import { mockUsePortalEnv } from './test-utils/test-portal-factory'
+import { mockUseUser } from './test-utils/user-mocking-utils'
 
 jest.mock('oidc-client-ts')
 jest.mock('providers/UserProvider')
@@ -179,15 +180,7 @@ describe('joinPath', () => {
 
 describe('Navbar', () => {
   it('renders an account dropdown when the user is logged in', async () => {
-    asMockedFn(useUser).mockReturnValue({
-      user: { isAnonymous: false, token: '', username: 'testUser' },
-      logoutUser: jest.fn(),
-      updateProfile: jest.fn(),
-      updateEnrollee: jest.fn(),
-      loginUserInternal: jest.fn(),
-      loginUser: jest.fn(),
-      enrollees: []
-    })
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
     asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
@@ -198,15 +191,7 @@ describe('Navbar', () => {
   })
 
   it('does not render an account dropdown when the user is not logged in', () => {
-    asMockedFn(useUser).mockReturnValue({
-      user: { isAnonymous: true, token: '', username: 'anonymous' },
-      logoutUser: jest.fn(),
-      updateProfile: jest.fn(),
-      updateEnrollee: jest.fn(),
-      loginUserInternal: jest.fn(),
-      loginUser: jest.fn(),
-      enrollees: []
-    })
+    asMockedFn(useUser).mockReturnValue(mockUseUser(true))
     asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 
     const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
@@ -219,6 +204,8 @@ describe('Navbar', () => {
 
 describe('AccountOptionsDropdown', () => {
   it('displays user account options when clicked', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider>
         <AccountOptionsDropdown/>
@@ -227,7 +214,7 @@ describe('AccountOptionsDropdown', () => {
 
     render(RoutedComponent)
 
-    const dropdownButton = screen.getByLabelText('anonymous')
+    const dropdownButton = screen.getByLabelText('account options for testUser')
     dropdownButton.click()
 
     const profileOption = screen.getByLabelText('edit profile')
@@ -242,6 +229,7 @@ describe('AccountOptionsDropdown', () => {
   it('change password option should redirect to b2c with the users chosen language', async () => {
     const mockSigninRedirect = jest.fn()
     jest.spyOn(UserManager.prototype, 'signinRedirect').mockImplementation(mockSigninRedirect)
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
 
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider selectedLanguage={'es'}>
@@ -251,7 +239,7 @@ describe('AccountOptionsDropdown', () => {
 
     render(RoutedComponent)
 
-    const dropdownButton = screen.getByLabelText('anonymous')
+    const dropdownButton = screen.getByLabelText('account options for testUser')
     dropdownButton.click()
     const changePasswordOption = screen.getByLabelText('change password')
     changePasswordOption.click()
