@@ -226,7 +226,7 @@ describe('AccountOptionsDropdown', () => {
     expect(logoutOption).toBeInTheDocument()
   })
 
-  it('change password option should redirect to b2c with the users chosen language', async () => {
+  it('changePassword calls signinRedirect with the correct ui_locales param', async () => {
     const mockSigninRedirect = jest.fn()
     jest.spyOn(UserManager.prototype, 'signinRedirect').mockImplementation(mockSigninRedirect)
     asMockedFn(useUser).mockReturnValue(mockUseUser(false))
