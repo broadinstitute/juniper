@@ -5,9 +5,14 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,9 +114,14 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
 
     /** gets a link the participant can use to create their b2c account, given that they already exist in Juniper */
     public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser) {
-        return "%s%s?accountName=%s".formatted(
-                routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
-                routingPaths.getParticipantInvitationPath() ,
-                participantUser != null ? participantUser.getUsername() : "");
+        try {
+            return "%s%s?accountName=%s".formatted(
+                    routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
+                    routingPaths.getParticipantInvitationPath() ,
+                    participantUser != null ?
+                            URLEncoder.encode(participantUser.getUsername(), StandardCharsets.UTF_8.toString())  : "");
+        } catch (UnsupportedEncodingException e) {
+            throw new IOInternalException("unable to encode username");
+        }
     }
 }

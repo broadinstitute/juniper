@@ -16,11 +16,12 @@ public class ParticipantUserPopulateDao extends ParticipantUserDao {
         super(jdbi);
     }
 
-    public List<ParticipantUser> findUserByPrefix(String usernamePrefix, EnvironmentName environmentName) {
+    /** finds users with a keyed username from populating.  e.g. dbush+invite-f232@broadinstitute.org */
+    public List<ParticipantUser> findUserByPrefix(String usernameKey, EnvironmentName environmentName) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " where username LIKE :usernamePrefix"
+                handle.createQuery("select * from " + tableName + " where username LIKE :usernameKey"
                                 + " and environment_name = :environmentName")
-                        .bind("usernamePrefix", usernamePrefix + "%")
+                        .bind("usernameKey", "%+" + usernameKey + "-%")
                         .bind("environmentName", environmentName)
                         .mapTo(clazz)
                         .list()

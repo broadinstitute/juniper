@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.service.notification.email.SendgridClient;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -21,28 +22,34 @@ import java.util.stream.IntStream;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PortalParticipantUserPopulator extends BasePopulator<PortalParticipantUser, PortalParticipantUserPopDto, PortalPopulateContext> {
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private PortalEnvironmentService portalEnvironmentService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final String emailRedirectUsername;
 
     public PortalParticipantUserPopulator(ParticipantUserService participantUserService,
                                           PortalParticipantUserService portalParticipantUserService,
-                                          PortalEnvironmentService portalEnvironmentService) {
+                                          PortalEnvironmentService portalEnvironmentService,
+                                          Environment env) {
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.portalEnvironmentService = portalEnvironmentService;
+        emailRedirectUsername = env.getProperty(SendgridClient.EMAIL_REDIRECT_VAR, "nobody@nowhere")
+                .split("@")[0];
     }
 
     @Override
     protected void preProcessDto(PortalParticipantUserPopDto popDto, PortalPopulateContext context) {
         ParticipantUserPopDto userDto = popDto.getParticipantUser();
         userDto.setEnvironmentName(context.getEnvironmentName());
-        if (userDto.getUsernamePrefix() != null) {
-            userDto.setUsername("%s-%s@test.com".formatted(userDto.getUsernamePrefix(), RandomStringUtils.randomAlphabetic(8)));
+        if (userDto.getUsernameKey() != null) {
+            // concoct a username with the email redirect user and the key, so that b2c can be repeatedly tested
+            userDto.setUsername("%s+%s-%s@broadinstitute.org".formatted(emailRedirectUsername, userDto.getUsernameKey(), RandomStringUtils.randomAlphabetic(8)));
         }
         Optional<ParticipantUser> existingUserOpt = participantUserService
                 .findOne(userDto.getUsername(), context.getEnvironmentName());

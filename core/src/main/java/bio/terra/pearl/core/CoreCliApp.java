@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * Placeholder application to make spring and liquibase configuration and testing easier.
@@ -12,7 +11,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
  */
 @SpringBootApplication
 @Slf4j
-@ConfigurationPropertiesScan("bio.terra.pearl.core.config.b2c")
 public class CoreCliApp
         implements CommandLineRunner {
 

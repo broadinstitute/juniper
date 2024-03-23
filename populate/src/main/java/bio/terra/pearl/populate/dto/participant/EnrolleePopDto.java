@@ -19,7 +19,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private String linkedUsername;
-    private String linkedUsernamePrefix; // for enrollees linked to users with prefix-specified accounts
+    private String linkedUsernameKey; // for enrollees linked to users with key-specified accounts
     /**
      * if true, the data for this enrollee will be processed through service calls as if they were submitted
      * via the API, so all side effects, including tasks and events, will be created.

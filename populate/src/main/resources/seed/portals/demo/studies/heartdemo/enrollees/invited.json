@@ -1,5 +1,5 @@
 {
-  "linkedUsernamePrefix": "invited",
+  "linkedUsernameKey": "invited",
   "shortcode": "HDINVI",
   "simulateSubmissions": true,
   "surveyResponseDtos": [

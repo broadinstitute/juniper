@@ -1,6 +1,6 @@
 {
   "participantUser": {
-    "usernamePrefix": "invited",
+    "usernameKey": "invited",
     "lastLoginHoursAgo": 5
   },
   "profile": {

@@ -49,7 +49,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Assertions.assertEquals(11, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
-        checkPrefixedEnrollee(enrollees);
+        checkKeyedEnrollee(enrollees);
         checkProxyWithOneGovernedEnrollee(enrollees);
         checkProxyWithTwoGovernedEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
@@ -73,12 +73,12 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         );
     }
 
-    private void checkPrefixedEnrollee(List<Enrollee> sandboxEnrollees) {
+    private void checkKeyedEnrollee(List<Enrollee> sandboxEnrollees) {
         Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDINVI".equals(sandboxEnrollee.getShortcode()))
                 .findFirst().get();
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
-        assertThat(user.getUsername(), startsWith("invited-"));
-        assertThat(user.getUsername(), endsWith("test.com"));
+        assertThat(user.getUsername().contains("+invited-"), equalTo(true));
+        assertThat(user.getUsername(), endsWith("broadinstitute.org"));
     }
 
     /** confirm the proxy enrollee with one governed user was enrolled appropriately */

@@ -154,7 +154,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's an invite: ${invitationLink}"),
-                equalTo("here's an invite: https://irb.newstudy.org/invitation?accountName=test123@test.com"));
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=test123%40test.com"));
 
     }
 }

@@ -414,13 +414,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private ParticipantUser findLinkedUser(EnrolleePopDto popDto, EnvironmentName environmentName) {
-        if (popDto.getLinkedUsernamePrefix() != null) {
-            List<ParticipantUser> users = participantUserPopulateDao.findUserByPrefix(popDto.getLinkedUsernamePrefix(), environmentName);
+        if (popDto.getLinkedUsernameKey() != null) {
+            List<ParticipantUser> users = participantUserPopulateDao.findUserByPrefix(popDto.getLinkedUsernameKey(), environmentName);
             if (users.size() > 1) {
-                throw new IllegalStateException("Multiple usernames found for enrollee with prefix: " + popDto.getLinkedUsernamePrefix());
+                throw new IllegalStateException("Multiple usernames found for enrollee with prefix: " + popDto.getLinkedUsernameKey());
             }
             if (users.size() == 0) {
-                throw new IllegalStateException("No usernames found for enrollee with prefix: " + popDto.getLinkedUsernamePrefix());
+                throw new IllegalStateException("No usernames found for enrollee with prefix: " + popDto.getLinkedUsernameKey());
             }
             return users.get(0);
         }
