@@ -23,8 +23,6 @@ public class EmailTemplate extends BaseEntity implements Versioned {
     private int version;
     private Integer publishedVersion;
     @Builder.Default
-    private String defaultLanguage = "en";
-    @Builder.Default
     private List<LocalizedEmailTemplate> localizedEmailTemplates = new ArrayList<>();
     private UUID portalId;
 }

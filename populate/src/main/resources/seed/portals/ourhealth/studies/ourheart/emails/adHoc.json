@@ -1,7 +1,6 @@
 {
   "stableId": "oh_oh_adhoc",
   "name": "Ad-hoc email template",
-  "defaultLanguage": "en",
   "version": 1,
   "localizedEmailTemplateDtos": [{
     "language": "en",

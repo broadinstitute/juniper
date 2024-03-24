@@ -4,7 +4,6 @@
   "name" : "Heart Hive Enrollment",
   "stableId" : "hearthive_heartHiveEnrollment",
   "version" : 2,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject" : "Welcome  to The Heart Hive Community!",

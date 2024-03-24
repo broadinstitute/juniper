@@ -2,7 +2,6 @@
   "name": "New admin user",
   "stableId": "broad_admin_welcome",
   "version": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Welcome to Juniper!",

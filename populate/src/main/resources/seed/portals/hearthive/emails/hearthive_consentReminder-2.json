@@ -4,7 +4,6 @@
   "name" : "Consent Reminder",
   "stableId" : "hearthive_consentReminder",
   "version" : 2,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject" : "Please Complete Your Enrollment in Heart Hive",

@@ -4,7 +4,6 @@
   "name" : "Consent Signed",
   "stableId" : "consentSigned",
   "version" : 2,
-  "defaultLanguage" : "en",
   "localizedEmailTemplateDtos": [{
     "language" : "en",
     "subject" : "Thank you for your ${study.name} consent!",

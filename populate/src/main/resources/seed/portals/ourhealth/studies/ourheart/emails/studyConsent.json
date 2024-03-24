@@ -1,7 +1,6 @@
 {
   "name": "Consent email",
   "stableId": "oh_oh_studyConsent",
-  "defaultLanguage": "en",
   "version": 1,
   "localizedEmailTemplateDtos": [{
     "language": "en",

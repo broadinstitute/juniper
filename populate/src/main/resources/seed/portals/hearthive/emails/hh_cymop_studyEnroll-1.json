@@ -4,7 +4,6 @@
   "name" : "Enrollment email",
   "stableId" : "hh_cymop_studyEnroll",
   "version" : 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject" : "Thank you for Signing Up!",

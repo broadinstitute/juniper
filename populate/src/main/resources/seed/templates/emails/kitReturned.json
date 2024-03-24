@@ -4,7 +4,6 @@
   "name" : "Kit Returned",
   "stableId" : "kitReturned",
   "version" : 2,
-  "defaultLanguage" : "en",
   "localizedEmailTemplateDtos": [{
     "language" : "en",
     "subject" : "Your ${study.name} sample kit has been received",

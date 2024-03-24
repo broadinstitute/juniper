@@ -432,7 +432,6 @@ export const mockEmailTemplate = (): EmailTemplate => {
     name: 'Mock template',
     stableId: 'mock1',
     version: 1,
-    defaultLanguage: 'en',
     localizedEmailTemplates: [mockLocalizedEmailTemplate()]
   }
 }

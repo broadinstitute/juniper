@@ -4,7 +4,6 @@
   "name" : "Survey Reminder",
   "stableId" : "surveyReminder",
   "version" : 3,
-  "defaultLanguage" : "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Reminder: please complete your ${study.name} survey",

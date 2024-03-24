@@ -3,7 +3,6 @@
   "name": "Enrollment email",
   "version": 1,
   "publishedVersion": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Welcome!",

@@ -2,7 +2,6 @@
   "name": "Survey reminder",
   "stableId": "oh_oh_reminderSurvey",
   "version": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Please come back to finish your study activities",

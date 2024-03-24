@@ -33,7 +33,6 @@ public class SendgridClientTests extends BaseSpringBootTest {
             .language("en")
             .subject("Welcome to Juniper ${loginLink}").build();
     EmailTemplate emailTemplate = EmailTemplate.builder()
-            .defaultLanguage("en")
             .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
       NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths);

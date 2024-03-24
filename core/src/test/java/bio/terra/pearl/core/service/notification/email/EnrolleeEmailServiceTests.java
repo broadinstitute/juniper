@@ -70,7 +70,6 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .language("en")
                 .subject("Welcome ${profile.givenName}").build();
         EmailTemplate emailTemplate = EmailTemplate.builder()
-                .defaultLanguage("en")
                 .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
 
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);

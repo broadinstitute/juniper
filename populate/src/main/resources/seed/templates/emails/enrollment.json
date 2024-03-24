@@ -4,7 +4,6 @@
   "name" : "Enrollment",
   "stableId" : "enrollment",
   "version" : 10,
-  "defaultLanguage" : "en",
   "localizedEmailTemplateDtos": [{
     "language" : "en",
     "subject" : "Welcome to ${study.name}!",

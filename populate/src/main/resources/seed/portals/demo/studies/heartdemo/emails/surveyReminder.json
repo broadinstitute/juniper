@@ -3,7 +3,6 @@
   "name": "Survey reminder",
   "version": 1,
   "publishedVersion": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Please come back to finish your study activities",

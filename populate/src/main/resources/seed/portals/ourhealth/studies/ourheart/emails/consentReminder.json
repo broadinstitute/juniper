@@ -2,7 +2,6 @@
   "stableId": "oh_oh_reminderConsent",
   "name": "Consent reminder",
   "version": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Reminder: Please complete the ${study.name} Consent form",

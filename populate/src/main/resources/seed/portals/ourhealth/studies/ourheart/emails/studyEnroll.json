@@ -2,7 +2,6 @@
   "name": "Enrollment email",
   "stableId": "oh_oh_studyEnroll",
   "version": 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Welcome!",

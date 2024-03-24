@@ -4,7 +4,6 @@
   "name" : "Heart Hive Enrollment",
   "stableId" : "hearthive_heartHiveEnrollment",
   "version" : 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject" : "Insert subject",

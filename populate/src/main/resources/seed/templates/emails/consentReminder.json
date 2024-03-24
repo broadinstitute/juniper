@@ -4,7 +4,6 @@
   "name" : "Consent Reminder",
   "stableId" : "consentReminder",
   "version" : 2,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject": "Reminder: Please complete the ${study.name} Consent form",

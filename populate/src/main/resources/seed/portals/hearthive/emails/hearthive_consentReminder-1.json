@@ -4,7 +4,6 @@
   "name" : "Consent Reminder",
   "stableId" : "hearthive_consentReminder",
   "version" : 1,
-  "defaultLanguage": "en",
   "localizedEmailTemplateDtos": [{
     "language": "en",
     "subject" : "Insert subject",

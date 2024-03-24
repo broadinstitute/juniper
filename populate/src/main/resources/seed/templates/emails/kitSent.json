@@ -4,7 +4,6 @@
   "name" : "Kit Sent",
   "stableId" : "kitSent",
   "version" : 3,
-  "defaultLanguage" : "en",
   "localizedEmailTemplateDtos": [{
     "language" : "en",
     "subject" : "Your ${study.name} sample kit is on its way!",

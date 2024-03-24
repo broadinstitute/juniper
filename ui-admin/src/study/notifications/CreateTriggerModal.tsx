@@ -29,7 +29,6 @@ const getDefaultConfig = (): Trigger => {
       stableId: 'placeholderStableId',
       name: '',
       version: 1,
-      defaultLanguage: 'en',
       localizedEmailTemplates: [{ language: 'en', subject: 'Insert subject', body: EMAIL_TEMPLATE }]
     },
     emailTemplateId: ''

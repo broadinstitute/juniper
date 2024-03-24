@@ -42,6 +42,7 @@ public class AdminEmailService {
       return;
     }
     LocalizedEmailTemplate localizedTemplate = contextInfo.template().getLocalizedEmailTemplates().stream().filter(
+        // admin emails are hardcoded to be sent in english for now
         template -> template.getLanguage().equals("en")).findFirst().get();
 
     try {
