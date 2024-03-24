@@ -37,7 +37,7 @@ public class SendgridClientTests extends BaseSpringBootTest {
       NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths);
 
-    Mail email = sendgridClient.buildEmail(contextInfo, "admin@admin.com", "us@broad.org", "Broad", substitutor, "en");
+    Mail email = sendgridClient.buildEmail(localizedEmailTemplate, "admin@admin.com", "us@broad.org", "Broad", substitutor);
     assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("admin@admin.com"));
     assertThat(email.content.get(0).getValue(), equalTo("hello admin@admin.com"));
     assertThat(email.from.getEmail(), equalTo("us@broad.org"));
@@ -48,7 +48,7 @@ public class SendgridClientTests extends BaseSpringBootTest {
     // now test that the to address is replaced if configured
     Environment devEnv = new MockEnvironment().withProperty(SendgridClient.EMAIL_REDIRECT_VAR, "developer@broad.org");
     SendgridClient devSendgridClient = new SendgridClient(devEnv, applicationRoutingPaths);
-    Mail devEmail = devSendgridClient.buildEmail(contextInfo, "foo@bar.com", "us@broad.org", "Broad", substitutor, "en");
+    Mail devEmail = devSendgridClient.buildEmail(localizedEmailTemplate, "foo@bar.com", "us@broad.org", "Broad", substitutor);
     assertThat(devEmail.personalization.get(0).getTos().get(0).getEmail(), equalTo("developer@broad.org"));
     assertThat(devEmail.getFrom().getName(), equalTo("Broad (local)"));
   }

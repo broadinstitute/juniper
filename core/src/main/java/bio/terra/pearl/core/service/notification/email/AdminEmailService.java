@@ -45,8 +45,10 @@ public class AdminEmailService {
         // admin emails are hardcoded to be sent in english for now
         template -> template.getLanguage().equals("en")).findFirst().get();
 
+    StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(adminUser.getUsername(), contextInfo, routingPaths);
+
     try {
-      buildAndSendEmail(contextInfo, adminUser.getUsername());
+      buildAndSendEmail(localizedTemplate, adminUser.getUsername(), substitutor);
       log.info("Email sent: adminUsername: {}, subject: {}, language: {}", adminUser.getUsername(), localizedTemplate.getSubject(), localizedTemplate.getLanguage());
     } catch (Exception e) {
       log.error("Email failed: adminUsername: {}, subject: {}, language: {}, {} ",
@@ -54,20 +56,9 @@ public class AdminEmailService {
     }
   }
 
-  /**
-   * skips processing, checks, and logging, and just sends the email. Should only be used for debugging and
-   * test emails, since we want all regular emails to be logged.
-   * */
-  public void sendTestNotification(Portal portal, String templateStableId, int version, String adminUsername) throws Exception {
-    NotificationContextInfo contextInfo = loadContextInfo(templateStableId, version, portal);
-    buildAndSendEmail(contextInfo, adminUsername);
-  }
-
-  protected void buildAndSendEmail(NotificationContextInfo contextInfo, String adminUsername) throws Exception {
-    StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(adminUsername,
-        contextInfo, routingPaths);
+  protected void buildAndSendEmail(LocalizedEmailTemplate localizedEmailTemplate, String adminUsername, StringSubstitutor substitutor) throws Exception {
     String fromAddress = routingPaths.getSupportEmailAddress();
-    Mail mail = sendgridClient.buildEmail(contextInfo, adminUsername, fromAddress, "Juniper", substitutor, "en");
+    Mail mail = sendgridClient.buildEmail(localizedEmailTemplate, adminUsername, fromAddress, "Juniper", substitutor);
     sendgridClient.sendEmail(mail);
   }
 
@@ -85,8 +76,7 @@ public class AdminEmailService {
    */
   public NotificationContextInfo loadContextInfo(String templateStableId, int version, Portal portal) {
     EmailTemplate emailTemplate = emailTemplateService.findByStableId(templateStableId, version).get();
-    //There are no current plans to localize the admin tool, so we just attach the English version
-    emailTemplateService.attachLocalizedTemplate(emailTemplate, "en");
+    emailTemplateService.attachLocalizedTemplates(emailTemplate);
     return new NotificationContextInfo(
         portal,
         null,

@@ -1,9 +1,6 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -117,6 +114,13 @@ public class EnrolleeEmailService implements NotificationSender {
     }
 
     protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
+        String preferredLanguage = ruleData.getProfile().getPreferredLanguage();
+        LocalizedEmailTemplate localizedEmailTemplate = contextInfo.template().getLocalizedEmailTemplates()
+                .stream()
+                .filter(template -> template.getLanguage().equals(preferredLanguage))
+                .findFirst()
+                .orElse(null);
+
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
             .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
         String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
@@ -134,12 +138,11 @@ public class EnrolleeEmailService implements NotificationSender {
         }
 
         Mail mail = sendgridClient.buildEmail(
-                contextInfo,
+                localizedEmailTemplate,
                 ruleData.getProfile().getContactEmail(),
                 fromAddress,
                 fromName,
-                substitutor,
-                ruleData.getProfile().getPreferredLanguage());
+                substitutor);
         return mail;
     }
 
