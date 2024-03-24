@@ -34,7 +34,7 @@ public class SendgridClient {
   }
 
 
-  public void sendEmail(Mail mail) {
+  public String sendEmail(Mail mail) {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
       log.info("Email send skipped: no sendgrid api provided");
@@ -47,7 +47,8 @@ public class SendgridClient {
     request.setEndpoint("mail/send");
     try {
       request.setBody(mail.build());
-      sg.api(request);
+      Response response = sg.api(request);
+      return response.getHeaders().get("X-Message-Id");
     } catch (IOException ex) {
       // this likely means the network failed, not that the email failed to send
       throw new IOInternalException("Error sending email", ex);

@@ -30,4 +30,11 @@ public class SendgridEvent extends BaseEntity {
     private Integer clicksCount;
     @JsonProperty("last_event_time")
     private Instant lastEventTime;
+    private String apiRequestId;
+
+    @JsonProperty("msg_id")
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+        this.apiRequestId = msgId.split("\\.")[0];
+    }
 }

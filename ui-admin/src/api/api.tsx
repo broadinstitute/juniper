@@ -117,6 +117,16 @@ export type ProfileUpdateDto = {
   profile: Profile
 }
 
+export type NotificationEventDetails = {
+  subject: string,
+  toEmail: string,
+  fromEmail: string,
+  status: string,
+  opensCount: number,
+  clicksCount: number,
+  lastEventTime: number
+}
+
 export type Notification = {
   id: string,
   triggerId: string,
@@ -126,7 +136,8 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
-  trigger?: Trigger
+  trigger?: Trigger,
+  notificationEventDetails?: NotificationEventDetails
 }
 
 export type Event = {

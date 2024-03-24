@@ -10,6 +10,8 @@ import _startCase from 'lodash/startCase'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
 import { useLoadingEffect } from 'api/api-utils'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleQuestion, faEnvelope, faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons'
 
 
 const isEvent = (val: Event | Notification): val is Event => {
@@ -17,7 +19,7 @@ const isEvent = (val: Event | Notification): val is Event => {
 }
 
 const isNotification = (val: Event | Notification): val is Notification => {
-  return Object.keys(val).includes('notificationConfigId')
+  return Object.keys(val).includes('triggerId')
 }
 
 /** loads the list of notifications and events for a given enrollee and displays them in the UI */
@@ -45,6 +47,25 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     {
       header: 'delivery status',
       accessorKey: 'deliveryStatus'
+    },
+    {
+      id: 'opened',
+      header: 'opened',
+      accessorKey: 'opened',
+      cell: ({ row }) => {
+        {
+          return <div>
+            {isNotification(row.original) ?
+              (row.original.notificationEventDetails ?
+                (row.original.notificationEventDetails.opensCount > 0 ?
+                  <FontAwesomeIcon icon={faEnvelopeOpen}/> :
+                  <FontAwesomeIcon icon={faEnvelope}/>) :
+                <FontAwesomeIcon icon={faCircleQuestion}/>) :
+              null
+            }
+          </div>
+        }
+      }
     },
     {
       header: 'time',
