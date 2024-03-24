@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.Versioned;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import lombok.Builder;
@@ -25,4 +26,8 @@ public class EmailTemplate extends BaseEntity implements Versioned {
     @Builder.Default
     private List<LocalizedEmailTemplate> localizedEmailTemplates = new ArrayList<>();
     private UUID portalId;
+
+    public Optional<LocalizedEmailTemplate> getTemplateForLanguage(String language) {
+        return this.getLocalizedEmailTemplates().stream().filter(template -> template.getLanguage().equals(language)).findFirst();
+    }
 }

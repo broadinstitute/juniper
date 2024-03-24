@@ -115,11 +115,7 @@ public class EnrolleeEmailService implements NotificationSender {
 
     protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
         String preferredLanguage = ruleData.getProfile().getPreferredLanguage();
-        LocalizedEmailTemplate localizedEmailTemplate = contextInfo.template().getLocalizedEmailTemplates()
-                .stream()
-                .filter(template -> template.getLanguage().equals(preferredLanguage))
-                .findFirst()
-                .orElse(null);
+        LocalizedEmailTemplate localizedEmailTemplate = getPreferredTemplateWithDefault(contextInfo.template(), preferredLanguage);
 
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
             .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
@@ -196,5 +192,11 @@ public class EnrolleeEmailService implements NotificationSender {
                 study,
                 emailTemplate
         );
+    }
+
+    public LocalizedEmailTemplate getPreferredTemplateWithDefault(EmailTemplate template, String preferredLanguage) {
+        //TODO JN-863 eventually this will take in a portalEnvironment which will have a defaultLanguage
+        // attached to it. We should use that here instead of hard-coding English
+        return template.getTemplateForLanguage(preferredLanguage).orElseGet(() -> template.getTemplateForLanguage("en").get());
     }
 }

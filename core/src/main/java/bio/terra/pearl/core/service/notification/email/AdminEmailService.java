@@ -41,10 +41,7 @@ public class AdminEmailService {
     if (!shouldSendEmail(contextInfo)) {
       return;
     }
-    LocalizedEmailTemplate localizedTemplate = contextInfo.template().getLocalizedEmailTemplates().stream().filter(
-        // admin emails are hardcoded to be sent in english for now
-        template -> template.getLanguage().equals("en")).findFirst().get();
-
+    LocalizedEmailTemplate localizedTemplate = contextInfo.template().getTemplateForLanguage("en").get();
     StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(adminUser.getUsername(), contextInfo, routingPaths);
 
     try {

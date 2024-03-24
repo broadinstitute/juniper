@@ -83,6 +83,76 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testEmailBuildingWithPreferredTemplate(TestInfo info) {
+        Profile profile = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("es")
+                .build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@portal.org").build();
+        PortalEnvironment portalEnv = PortalEnvironment.builder()
+                .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate englishTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
+        LocalizedEmailTemplate spanishTemplate = LocalizedEmailTemplate.builder()
+                .body("apellido ${profile.familyName}")
+                .language("es")
+                .subject("Bienvenido ${profile.givenName}").build();
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .localizedEmailTemplates(List.of(englishTemplate, spanishTemplate)).build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("apellido tester"));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("Bienvenido given"));
+    }
+
+    @Test
+    @Transactional
+    public void testEmailBuildingWithMissingPreferredTemplate(TestInfo info) {
+        Profile profile = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("es")
+                .build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@portal.org").build();
+        PortalEnvironment portalEnv = PortalEnvironment.builder()
+                .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate englishTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .localizedEmailTemplates(List.of(englishTemplate)).build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("Welcome given"));
+    }
+
+    @Test
+    @Transactional
     public void testEmailSendOrSkip(TestInfo info) {
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
         EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
