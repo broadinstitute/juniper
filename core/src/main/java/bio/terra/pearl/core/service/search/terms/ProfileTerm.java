@@ -100,12 +100,17 @@ public class ProfileTerm implements EnrolleeTerm {
         return List.of();
     }
 
-    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.of(
-            "givenName", SearchValue.SearchValueType.STRING,
-            "familyName", SearchValue.SearchValueType.STRING,
-            "contactEmail", SearchValue.SearchValueType.STRING,
-            "phoneNumber", SearchValue.SearchValueType.STRING,
-            "birthDate", SearchValue.SearchValueType.DATE,
-            "mailingAddress.state", SearchValue.SearchValueType.STRING
+    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
+            Map.entry("givenName", SearchValue.SearchValueType.STRING),
+            Map.entry("familyName", SearchValue.SearchValueType.STRING),
+            Map.entry("contactEmail", SearchValue.SearchValueType.STRING),
+            Map.entry("phoneNumber", SearchValue.SearchValueType.STRING),
+            Map.entry("birthDate", SearchValue.SearchValueType.DATE),
+            Map.entry("mailingAddress.state", SearchValue.SearchValueType.STRING),
+            Map.entry("mailingAddress.city", SearchValue.SearchValueType.STRING),
+            Map.entry("mailingAddress.postalCode", SearchValue.SearchValueType.STRING),
+            Map.entry("mailingAddress.street1", SearchValue.SearchValueType.STRING),
+            Map.entry("mailingAddress.street2", SearchValue.SearchValueType.STRING),
+            Map.entry("mailingAddress.country", SearchValue.SearchValueType.STRING)
     );
 }
