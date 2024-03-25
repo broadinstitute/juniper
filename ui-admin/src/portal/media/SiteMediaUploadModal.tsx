@@ -9,11 +9,7 @@ import { Button } from 'components/forms/Button'
 import { LoadedPortalContextT } from '../PortalProvider'
 import { useFileUploadButton } from 'util/uploadUtils'
 
-
-export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
-export const allowedDocumentTypes = ['pdf', 'json']
-export const allowedTextTypes = ['csv', 'txt']
-export const allowedFileTypes = [...allowedImageTypes, ...allowedDocumentTypes, ...allowedTextTypes]
+export const allowedFileTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp', 'pdf', 'json', 'csv', 'txt']
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
@@ -66,7 +62,7 @@ export default function SiteMediaUploadModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          <p>Supported extensions are {[...allowedImageTypes, ...allowedDocumentTypes].join(', ')}.
+          <p>Supported extensions are {allowedFileTypes.join(', ')}.
             Maximum size is 10MB</p>
           File:
           <div>
