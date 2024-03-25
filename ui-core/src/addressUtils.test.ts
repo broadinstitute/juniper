@@ -1,5 +1,5 @@
 import { AddressValidationResult } from 'src/types/address'
-import { isAddressFieldValid } from 'src/addressUtils'
+import { getErrorsByField, isAddressFieldValid } from 'src/addressUtils'
 
 describe('isAddressFieldValid tests', () => {
   it('considers fields valid by default if there are invalid components', () => {
@@ -37,62 +37,54 @@ describe('isAddressFieldValid tests', () => {
   })
 })
 
-// TODO add back
+const mockI18n = (key: string) => `{${key}}`
 
-// describe('explainAddressValidationResults', () => {
-//   it('explains singular missing components', () => {
-//     const validation: AddressValidationResult = {
-//       valid: false,
-//       invalidComponents: ['COUNTRY']
-//     }
-//
-//     const explanation = explainAddressValidationResults(validation)
-//
-//     expect(explanation).toHaveLength(1)
-//
-//     expect(explanation[0]).toEqual(
-//       'The country could not be verified.'
-//     )
-//   })
-//   it('explains two missing components', () => {
-//     const validation: AddressValidationResult = {
-//       valid: false,
-//       invalidComponents: ['COUNTRY', 'CITY']
-//     }
-//
-//     const explanation = explainAddressValidationResults(validation)
-//
-//     expect(explanation).toHaveLength(1)
-//
-//     expect(explanation[0]).toEqual(
-//       'The country and city could not be verified.'
-//     )
-//   })
-//   it('explains n missing components', () => {
-//     const validation: AddressValidationResult = {
-//       valid: false,
-//       invalidComponents: ['COUNTRY', 'CITY', 'SUBPREMISE']
-//     }
-//
-//     const explanation = explainAddressValidationResults(validation)
-//
-//     expect(explanation).toHaveLength(1)
-//
-//     expect(explanation[0]).toEqual(
-//       'The country, city and unit number could not be verified.'
-//     )
-//   })
-//   it('explains 0 missing components', () => {
-//     const validation: AddressValidationResult = {
-//       valid: false
-//     }
-//
-//     const explanation = explainAddressValidationResults(validation)
-//
-//     expect(explanation).toHaveLength(1)
-//
-//     expect(explanation[0]).toEqual(
-//       'The address could not be verified. Please verify that the information is correct and try again.'
-//     )
-//   })
-// })a
+describe('explainAddressValidationResults', () => {
+  it('explains singular missing components', () => {
+    const validation: AddressValidationResult = {
+      valid: false,
+      invalidComponents: ['COUNTRY']
+    }
+
+    const explanation = getErrorsByField(validation, mockI18n)
+
+    expect(explanation).toEqual({
+      'country': [
+        '{addressInvalidCountry}'
+      ]
+    })
+  })
+  it('explains many missing components', () => {
+    const validation: AddressValidationResult = {
+      valid: false,
+      invalidComponents: ['COUNTRY', 'CITY', 'POSTAL_CODE', 'SUBPREMISE', 'HOUSE_NUMBER']
+    }
+
+    const explanation = getErrorsByField(validation, mockI18n)
+
+    expect(explanation).toEqual({
+      'city': [
+        '{addressInvalidCity}'
+      ],
+      'country': [
+        '{addressInvalidCountry}'
+      ],
+      'postalCode': [
+        '{addressInvalidPostalCode}'
+      ],
+      'street1': [
+        '{addressNeedsSubpremise}',
+        '{addressInvalidHouseNumber}'
+      ]
+    })
+  })
+  it('explains 0 missing components', () => {
+    const validation: AddressValidationResult = {
+      valid: false
+    }
+
+    const explanation = getErrorsByField(validation, mockI18n)
+
+    expect(explanation).toEqual({})
+  })
+})
