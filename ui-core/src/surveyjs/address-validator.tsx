@@ -141,8 +141,7 @@ const displayAppropriateErrors = (
   if (validationResult.invalidComponents && validationResult.invalidComponents.length > 0) {
     const errorListByField = getErrorsByField(validationResult, i18n)
     const errorByField: { [index: string]: string } = {}
-    console.log(errorListByField)
-    console.log(errorByField)
+
     Object.keys(errorListByField).forEach(key => {
       errorByField[key] = errorListByField[key].join('\n')
     })

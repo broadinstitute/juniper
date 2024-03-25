@@ -3,7 +3,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, MockI18nProvider } from '@juniper/ui-core'
 
 import { FormPreview } from './FormPreview'
 
@@ -32,7 +32,10 @@ const formContent: FormContent = {
 describe('FormPreview', () => {
   it('renders form', () => {
     // Act
-    render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
+    render(
+      <MockI18nProvider mockTexts={{}}>
+        <FormPreview formContent={formContent} supportedLanguages={[]}/>
+      </MockI18nProvider>)
 
     // Assert
     screen.getAllByLabelText('First name')
@@ -71,7 +74,10 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+          </MockI18nProvider>)
 
         // Act
         // Attempt to advance to the next page.
@@ -87,7 +93,10 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} supportedLanguages={[]} />)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+          </MockI18nProvider>)
 
         // Act
         // Turn off 'Ignore validation'
@@ -138,7 +147,10 @@ describe('FormPreview', () => {
       }
 
       it('defaults to English', () => {
-        render(<FormPreview formContent={localizedFormContent as unknown as FormContent} supportedLanguages={[]} />)
+        render(<MockI18nProvider mockTexts={{}}>
+          <FormPreview formContent={localizedFormContent as unknown as FormContent}
+            supportedLanguages={[]}/>
+        </MockI18nProvider>)
 
         screen.getByText('First name')
         screen.getByText('Last name')
@@ -147,13 +159,16 @@ describe('FormPreview', () => {
       it('can switch to Spanish', async () => {
         const user = userEvent.setup()
 
-        render(<FormPreview
-          formContent={localizedFormContent as unknown as FormContent}
-          supportedLanguages={[
-            { languageCode: 'en', languageName: 'English' },
-            { languageCode: 'es', languageName: 'Spanish' }
-          ]}
-        />)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview
+              formContent={localizedFormContent as unknown as FormContent}
+              supportedLanguages={[
+                { languageCode: 'en', languageName: 'English' },
+                { languageCode: 'es', languageName: 'Spanish' }
+              ]}
+            />
+          </MockI18nProvider>)
 
         const languageSelector = screen.getByLabelText('Language')
         await act(() => user.click(languageSelector))
@@ -166,10 +181,13 @@ describe('FormPreview', () => {
       })
 
       it('does not render when there is only one language', () => {
-        render(<FormPreview
-          formContent={localizedFormContent as unknown as FormContent}
-          supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
-        />)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview
+              formContent={localizedFormContent as unknown as FormContent}
+              supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+            />
+          </MockI18nProvider>)
 
         expect(screen.queryByLabelText('Language')).not.toBeInTheDocument()
       })
@@ -199,7 +217,10 @@ describe('FormPreview', () => {
 
       it('hides invisible questions by default', () => {
         // Act
-        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+          </MockI18nProvider>)
 
         // Assert
         expect(screen.queryAllByLabelText('Hidden question')).toHaveLength(0)
@@ -209,7 +230,10 @@ describe('FormPreview', () => {
         // Arrange
         const user = userEvent.setup()
 
-        render(<FormPreview formContent={formContent} supportedLanguages={[]}/>)
+        render(
+          <MockI18nProvider mockTexts={{}}>
+            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+          </MockI18nProvider>)
 
         // Act
         // Show invisible questions
