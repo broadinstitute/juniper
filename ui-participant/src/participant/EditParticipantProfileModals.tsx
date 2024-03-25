@@ -295,7 +295,6 @@ export function EditMailingAddressModal(props: EditModalProps & { enableAddressV
   const {
     onDismiss,
     onSave,
-    onFieldChange,
     editedProfile
   } = useProfileEditMethods(props)
 

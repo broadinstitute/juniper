@@ -63,5 +63,9 @@
   {"keyName": "addressInvalidStreetName", "text": "The street name could not be verified.", "language": "en"},
   {"keyName": "addressInvalidStreetType", "text": "The street type could not be verified.", "language": "en"},
   {"keyName": "addressNeedsSubpremise", "text": "Please provide a unit/suite number.", "language": "en"},
-  {"keyName": "addressFailedToValidate", "text": "Address could not be validated.", "language": "en"}
+  {"keyName": "addressFailedToValidate", "text": "Address could not be validated.", "language": "en"},
+  {"keyName": "suggestBetterAddressHeader", "text": "Is this the correct address?", "language": "en"},
+  {"keyName": "suggestBetterAddressBody", "text": "We were able to verify a similar address. Please select which you would like to use.", "language": "en"},
+  {"keyName": "newAddress", "text": "New Address", "language": "en"},
+  {"keyName": "oldAddress", "text": "Old Address", "language": "en"}
 ]

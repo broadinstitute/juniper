@@ -75,10 +75,6 @@ export const validateSurveyJsAddress = async (
   // hit API
   const results = await validateAddress(mailingAddress)
 
-  results.invalidComponents = [
-    'SUBPREMISE', 'HOUSE_NUMBER', 'STREET_NAME', 'CITY', 'STATE_PROVINCE', 'POSTAL_CODE', 'COUNTRY'
-  ]
-
   const newValidationState: AddressValidationQuestionValue = {
     inputAddress: mailingAddress,
     canceledSuggestedAddress: false,
@@ -145,6 +141,8 @@ const displayAppropriateErrors = (
   if (validationResult.invalidComponents && validationResult.invalidComponents.length > 0) {
     const errorListByField = getErrorsByField(validationResult, i18n)
     const errorByField: { [index: string]: string } = {}
+    console.log(errorListByField)
+    console.log(errorByField)
     Object.keys(errorListByField).forEach(key => {
       errorByField[key] = errorListByField[key].join('\n')
     })

@@ -23,17 +23,6 @@ const ADDR_COMPONENTS_TO_FIELD: { [index: string]: keyof MailingAddress } = {
   'POSTAL_CODE': 'postalCode'
 }
 
-const ADDR_COMPONENT_TO_NAME = {
-  'CITY': 'City',
-  'HOUSE_NUMBER': 'House Number',
-  'STREET_NAME': 'Street Name',
-  'COUNTRY': 'Country',
-  'POSTAL_CODE': 'Postal Code',
-  'SUBPREMISE': 'Unit Number',
-  'STREET_TYPE': 'Street Type',
-  'STATE_PROVINCE': 'State/Province'
-}
-
 const ADDR_COMPONENT_TO_I18N_ERROR_KEY = {
   'CITY': 'addressInvalidCity',
   'HOUSE_NUMBER': 'addressInvalidHouseNumber',
@@ -72,7 +61,7 @@ export function isAddressFieldValid(
 
 
 /**
- * TODO
+ * Returns a list of internationalized error messages for each field in the address.
  */
 export function getErrorsByField(
   validation: AddressValidationResult | undefined,
@@ -107,7 +96,7 @@ export function isSameAddress(addr1: MailingAddress, addr2: MailingAddress): boo
 }
 
 /**
- * todo
+ * Converts an address to a series of strings suitable for display when joined with a newline.
  */
 export function toAddressLines(address: MailingAddress): string[] {
   return [
