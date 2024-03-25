@@ -49,7 +49,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(12));
         assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
         assertThat(consentFormService.findByPortalId(restoredPortal.getId()), hasSize(1));
-        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(5));
+        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(6));
         // confirm both the old and current versions of the site content got populated
         assertThat(siteContentService.findByPortalId(restoredPortal.getId()), hasSize(2));
 
