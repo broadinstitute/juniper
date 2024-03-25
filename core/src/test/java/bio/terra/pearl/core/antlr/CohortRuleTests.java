@@ -1,14 +1,16 @@
 package bio.terra.pearl.core.antlr;
 
-import java.util.List;
-
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Token;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 public class CohortRuleTests {
     @Test
@@ -34,37 +36,37 @@ public class CohortRuleTests {
 
     @Test
     public void testCompoundParsing() {
-        CohortRuleParser parser = setupParser("{foo} = 'yes' && {bar} = 'no'");
+        CohortRuleParser parser = setupParser("{foo} = 'yes' and {bar} = 'no'");
         CohortRuleParser.ExprContext exp = parser.expr();
         assertThat(exp.term().size(), equalTo(0));
-        assertThat(exp.AND().getText(), equalTo("&&"));
+        assertThat(exp.AND().getText(), equalTo("and"));
         assertThat(exp.expr(0).getText(), equalTo("{foo}='yes'"));
         assertThat(exp.expr(1).getText(), equalTo("{bar}='no'"));
     }
 
     @Test
     public void testThreeExpressionCompoundParsing() {
-        CohortRuleParser parser = setupParser("{foo} = 'yes' && {bar} = 'no' && {baz} = 1");
+        CohortRuleParser parser = setupParser("{foo} = 'yes' and {bar} = 'no' and {baz} = 1");
         CohortRuleParser.ExprContext rootExp = parser.expr();
         assertThat(rootExp.term().size(), equalTo(0));
         assertThat(rootExp.expr().size(), equalTo(2));
-        assertThat(rootExp.AND().getText(), equalTo("&&"));
+        assertThat(rootExp.AND().getText(), equalTo("and"));
 
-        assertThat(rootExp.expr(0).getText(), equalTo("{foo}='yes'&&{bar}='no'"));
+        assertThat(rootExp.expr(0).getText(), equalTo("{foo}='yes'and{bar}='no'"));
         assertThat(rootExp.expr(1).getText(), equalTo("{baz}=1"));
     }
 
     @Test
     public void testParenthesesParsing() {
-        CohortRuleParser parser = setupParser("{foo} = 'yes' && ({bar} = 'no' || {baz} = 1)");
+        CohortRuleParser parser = setupParser("{foo} = 'yes' and ({bar} = 'no' or {baz} = 1)");
         CohortRuleParser.ExprContext rootExp = parser.expr();
         assertThat(rootExp.term().size(), equalTo(0));
         assertThat(rootExp.expr().size(), equalTo(2));
-        assertThat(rootExp.AND().getText(), equalTo("&&"));
+        assertThat(rootExp.AND().getText(), equalTo("and"));
 
 
         assertThat(rootExp.expr(0).getText(), equalTo("{foo}='yes'"));
-        assertThat(rootExp.expr(1).getText(), equalTo("({bar}='no'||{baz}=1)"));
+        assertThat(rootExp.expr(1).getText(), equalTo("({bar}='no'or{baz}=1)"));
     }
 
     protected CohortRuleParser setupParser(String input) {
