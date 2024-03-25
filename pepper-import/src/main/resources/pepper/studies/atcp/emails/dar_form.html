@@ -1,0 +1,40 @@
+<html>
+<body>
+    <h2>Data Access Request</h2>
+    <h3>Researcher Information</h3>
+    <b>Name:</b> {{researcher_name}}<br/>
+    <b>Email:</b> {{researcher_email}}<br/>
+    <b>Phone:</b> {{researcher_phone}}<br/><br/>
+
+    <h3>Organization Information</h3>
+    <b>Organization Name:</b> {{org_name}}<br/>
+    <b>Department:</b> {{org_dept}}<br/>
+    <b>Address 1:</b> {{org_address_1}}<br/>
+    <b>Address 2:</b> {{org_address_2}}<br/>
+    <b>City/Town:</b> {{org_city}}<br/>
+    <b>State/Province:</b> {{org_state}}<br/>
+    <b>Country:</b> {{org_country}}<br/>
+    <b>Zip/Postal Code:</b> {{org_zip}}<br/><br/>
+
+    <h3>Research Project Overview</h3>
+    <b>Descriptive Title of Project:</b><br/><pre>{{project_description}}</pre><br/>
+    <b>Names and Institutions of Collaborators:</b><br/><pre>{{collaborators}}</pre><br/>
+    <b>Research Use Statement:</b><br/><pre>{{research_use}}</pre><br/><br/>
+
+    <h3>Type of Research</h3>
+    {{#if disease_study}}<b>Disease study</b><br/>{{/if}}
+    {{#if methods_development_study}}<b>Methods development and validation studies</b><br/>{{/if}}
+    {{#if controls_study}}<b>Controls</b><br/>{{/if}}
+    {{#if variation_study}}<b>Population structure or normal variation studies</b><br/>{{/if}}
+    {{#if other_study}}<b>Other:</b><br/><pre>{{other_study_text}}</pre><br/>{{/if}}<br/>
+
+    <h3>Dataset(s) requested</h3>
+    {{#if survey_data_requested}}<b>Clinical Survey Data</b><br/>{{/if}}
+    {{#if genomic_data_requested}}<b>Genomic Data</b><br/>{{/if}}
+    <b>Specific Requests:</b><br/><pre>{{specific_request}}</pre><br/>
+    <b>Disease area(s), that this study focuses on:</b> <br/><pre>{{a_t_disease_areas}}</pre><br/><br/>
+
+    <b>Signature of Applying Researcher:</b> {{researcher_signature}}<br/>
+    <b>Signature date:</b> {{signature_date}}<br/>
+</body>
+</html>
