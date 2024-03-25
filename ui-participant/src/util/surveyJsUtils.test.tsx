@@ -10,17 +10,13 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateSurvey, generateThreePageSurvey } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
 beforeEach(() => {
-  // @ts-expect-error TS doesn't realize this function is mocked
-  usePortalEnv.mockReturnValue({
-    portalEnv: {
-      environmentName: 'sandbox'
-    }
-  })
+  asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
@@ -35,7 +31,7 @@ function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm |
 
 test('it starts on the first page', () => {
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
     </MockI18nProvider>)
   render(RoutedComponent)
@@ -44,7 +40,7 @@ test('it starts on the first page', () => {
 
 test('handles page numbers in initial url', () => {
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
     </MockI18nProvider>,
     ['/foo?page=2'])
@@ -55,7 +51,7 @@ test('handles page numbers in initial url', () => {
 test('updates urls on page navigation', async () => {
   const user = userEvent.setup()
   const { RoutedComponent, router } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
     </MockI18nProvider>)
   render(RoutedComponent)
@@ -98,7 +94,7 @@ const dynamicSurvey = generateSurvey({
 test('enables hide on profile attributes', () => {
   const maleProfile: Profile = { sexAtBirth: 'male' }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PlainSurveyComponent formModel={dynamicSurvey}
         profile={maleProfile}/>
     </MockI18nProvider>)
@@ -111,7 +107,7 @@ test('enables hide on profile attributes', () => {
 test('enables show on profile attributes', () => {
   const femaleProfile: Profile = { sexAtBirth: 'female' }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PlainSurveyComponent formModel={dynamicSurvey}
         profile={femaleProfile}/>
     </MockI18nProvider>)

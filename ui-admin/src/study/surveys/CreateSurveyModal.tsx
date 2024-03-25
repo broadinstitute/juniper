@@ -84,14 +84,16 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputFormName">Name</label>
-        { NameInput }
+        {NameInput}
         <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
-        { StableIdInput }
+        {StableIdInput}
         <FormOptions workingForm={form}
-          updateWorkingForm={(updates => { setForm({ ...form, ...updates }) })}
+          updateWorkingForm={(updates => {
+            setForm({ ...form, ...updates })
+          })}
         />
-        { type === 'OUTREACH' && <>
+        {type === 'OUTREACH' && <>
           <label className="form-label mt-3">Outreach Type</label>
           <div className="row">
             <CardButton
@@ -119,7 +121,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
           <div className="form-group mt-3">
             <label className="form-label" htmlFor="outreachBlurb">Blurb</label>
             <InfoPopup content={'A brief description of your outreach. ' +
-                  'This will be displayed in the participant dashboard.'}/>
+                'This will be displayed in the participant dashboard.'}/>
             <textarea className="form-control" id="outreachBlurb" rows={5} value={form.blurb}
               onChange={event =>
                 setForm({ ...form, blurb: event.target.value })}/>

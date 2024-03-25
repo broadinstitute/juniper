@@ -96,3 +96,15 @@ export const mockHtmlPage = (): HtmlPage => {
     sections: []
   }
 }
+
+/**
+ * Returns a mock object that can be returned by the usePortalEnv hook
+ */
+export const mockUsePortalEnv = () => {
+  return {
+    portal: mockPortal(),
+    reloadPortal: jest.fn(),
+    portalEnv: mockPortalEnvironment(),
+    localContent: mockLocalSiteContent()
+  }
+}

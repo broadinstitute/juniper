@@ -3,6 +3,10 @@ import { render, screen } from '@testing-library/react'
 import HtmlPageView from './HtmlPageView'
 import { HtmlPage } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { asMockedFn } from '@juniper/ui-core'
+import {
+  mockUsePortalEnv
+} from '../test-utils/test-portal-factory'
 
 jest.mock('providers/PortalProvider', () => {
   return {
@@ -14,10 +18,7 @@ jest.mock('providers/PortalProvider', () => {
 
 describe('HTMLPageView', () => {
   beforeEach(() => {
-    // @ts-expect-error "TS doesn't know about mocks"
-    usePortalEnv.mockReturnValue({
-      portal: { name: 'Test portal' }
-    })
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
   })
 
   it('handles trivial landing page', () => {

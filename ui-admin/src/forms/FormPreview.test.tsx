@@ -33,7 +33,7 @@ describe('FormPreview', () => {
   it('renders form', () => {
     // Act
     render(
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <FormPreview formContent={formContent} supportedLanguages={[]}/>
       </MockI18nProvider>)
 
@@ -75,7 +75,7 @@ describe('FormPreview', () => {
         const user = userEvent.setup()
 
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview formContent={formContent} supportedLanguages={[]}/>
           </MockI18nProvider>)
 
@@ -94,7 +94,7 @@ describe('FormPreview', () => {
         const user = userEvent.setup()
 
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview formContent={formContent} supportedLanguages={[]}/>
           </MockI18nProvider>)
 
@@ -147,7 +147,7 @@ describe('FormPreview', () => {
       }
 
       it('defaults to English', () => {
-        render(<MockI18nProvider mockTexts={{}}>
+        render(<MockI18nProvider>
           <FormPreview formContent={localizedFormContent as unknown as FormContent}
             supportedLanguages={[]}/>
         </MockI18nProvider>)
@@ -160,7 +160,7 @@ describe('FormPreview', () => {
         const user = userEvent.setup()
 
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
               supportedLanguages={[
@@ -182,7 +182,7 @@ describe('FormPreview', () => {
 
       it('does not render when there is only one language', () => {
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
               supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
@@ -218,7 +218,7 @@ describe('FormPreview', () => {
       it('hides invisible questions by default', () => {
         // Act
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview formContent={formContent} supportedLanguages={[]}/>
           </MockI18nProvider>)
 
@@ -231,7 +231,7 @@ describe('FormPreview', () => {
         const user = userEvent.setup()
 
         render(
-          <MockI18nProvider mockTexts={{}}>
+          <MockI18nProvider>
             <FormPreview formContent={formContent} supportedLanguages={[]}/>
           </MockI18nProvider>)
 

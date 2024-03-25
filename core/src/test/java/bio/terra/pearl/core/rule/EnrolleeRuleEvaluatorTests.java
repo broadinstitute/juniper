@@ -2,8 +2,8 @@ package bio.terra.pearl.core.rule;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -89,13 +89,13 @@ public class EnrolleeRuleEvaluatorTests {
 
     @Test
     public void testOrderOfOperationsAndOr() throws Exception {
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 && 2 = 3 || 3 = 3", EMPTY_RULE_DATA), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 1 && 2 = 2 || 3 = 4", EMPTY_RULE_DATA), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 1 || 2 = 3 && 3 = 4", EMPTY_RULE_DATA), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 || 2 = 2 && 3 = 3", EMPTY_RULE_DATA), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 and 2 = 3 or 3 = 3", EMPTY_RULE_DATA), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 1 and 2 = 2 or 3 = 4", EMPTY_RULE_DATA), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 1 or 2 = 3 and 3 = 4", EMPTY_RULE_DATA), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 or 2 = 2 and 3 = 3", EMPTY_RULE_DATA), equalTo(true));
 
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 || 2 = 3 && 3 = 3", EMPTY_RULE_DATA), equalTo(false));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 || 2 = 2 && 3 = 4", EMPTY_RULE_DATA), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 or 2 = 3 and 3 = 3", EMPTY_RULE_DATA), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked("1 = 2 or 2 = 2 and 3 = 4", EMPTY_RULE_DATA), equalTo(false));
     }
 
 }

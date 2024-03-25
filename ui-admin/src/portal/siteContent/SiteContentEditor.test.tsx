@@ -56,7 +56,7 @@ test('readOnly hides save button', async () => {
 test('clicking on the Preview tab shows full page preview', async () => {
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
         loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
         switchToVersion={jest.fn()}

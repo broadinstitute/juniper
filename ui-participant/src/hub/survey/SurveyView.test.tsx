@@ -54,7 +54,7 @@ const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Surv
 describe('SurveyFooter', () => {
   it('does not render if not on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<MockI18nProvider mockTexts={{}}>
+    render(<MockI18nProvider>
       <FooterTestComponent survey={survey} pageNum={1}/>
     </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeNull()
@@ -63,7 +63,7 @@ describe('SurveyFooter', () => {
   it('renders if on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
     render(
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <FooterTestComponent survey={survey} pageNum={3}/>
       </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeTruthy()
@@ -249,8 +249,7 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse')
-    .mockImplementation(() => Promise.resolve(mockHubResponse()))
+  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };
@@ -265,7 +264,7 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
         studyShortcode={'study'} taskId={'guid34'}/>
     </MockI18nProvider>)
