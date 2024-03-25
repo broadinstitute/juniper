@@ -25,7 +25,7 @@
 
 * Read environment variables from a `.env.*` file to specify non-default environment variables.
   
-  Example: reading `.env.local` file and run a test
+  Example: reading `.env.local` file and run a specific test (pass the TEST_ENV and test name as arguments)
   > TEST_ENV=local npx playwright test src/tests/mailing-list.test.ts
 
 ### Test report

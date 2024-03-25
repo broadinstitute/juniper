@@ -168,10 +168,9 @@ export default defineConfig({
       url: 'http://localhost:8081/status',
       timeout: 180 * 1000,
       reuseExistingServer: !CI
-    }
+    },
     // In CI, test against the UI bundled into the Java app.
     // Otherwise, test against the UI dev server.
-    /*
     ...(
       CI ? [] : [
         {
@@ -189,6 +188,6 @@ export default defineConfig({
           ignoreHTTPSErrors: true
         }
       ]
-    ) */
+    )
   ]
 })
