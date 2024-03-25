@@ -12,14 +12,9 @@ import { useFileUploadButton } from 'util/uploadUtils'
 
 export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
 export const allowedDocumentTypes = ['pdf', 'json']
-export const allowedTextTypes = ['csv', 'plain']
-const FILE_TYPE_REGEX = new RegExp(
-  [
-    `^(?:image\\/(${allowedImageTypes.join('|')}))`,
-    `(?:application\\/(${allowedDocumentTypes.join('|')}))`,
-    `(?:text\\/(${allowedTextTypes.join('|')}))$`
-  ].join('|')
-)
+export const allowedTextTypes = ['csv', 'txt']
+export const allowedFileTypes = [...allowedImageTypes, ...allowedDocumentTypes, ...allowedTextTypes]
+
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
   portalContext,
@@ -56,7 +51,7 @@ export default function SiteMediaUploadModal({
   }
 
   const validationMessages = []
-  if (file && !file.type.match(FILE_TYPE_REGEX)) {
+  if (file && !file.name.match(new RegExp(`\\.(${allowedFileTypes.join('|')})$`))) {
     validationMessages.push('This file extension is not supported.')
   }
   if (file && file.size > 10 * 1024 * 1024) {
