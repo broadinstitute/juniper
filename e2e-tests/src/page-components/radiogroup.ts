@@ -1,20 +1,18 @@
 import { Locator, Page } from '@playwright/test'
+import ComponentBase from 'src/page-components/component-base'
 import Question from 'src/page-components/question'
 
-export default class Radiogroup {
-  private readonly root: Locator
+export default class Radiogroup extends  ComponentBase {
+  root: Locator
 
-  constructor(private readonly page: Page, private readonly question: Question) {
+  constructor(page: Page, private readonly question: Question) {
+    super(page)
     this.root = this.question.locator.locator('.sd-question__content')
   }
 
-  get locator(): Locator {
-    return this.root
-  }
-
   /** Click a radiogroup item or checkbox **/
-  async select(label: string): Promise<this> {
-    const radioItem = this.radio(label)
+  async select(label: string | RegExp): Promise<this> {
+    const radioItem = this.radioButton(label)
     const checked = await this.isSelected(label)
     if (!checked) {
       await radioItem.click()
@@ -22,8 +20,8 @@ export default class Radiogroup {
     return this
   }
 
-  async isSelected(label: string): Promise<boolean> {
-    const clasAttr = await this.radio(label).getAttribute('class')
+  async isSelected(label: string | RegExp): Promise<boolean> {
+    const clasAttr = await this.radioButton(label).getAttribute('class')
     return clasAttr?.indexOf('--checked') !== -1
   }
 
@@ -31,7 +29,7 @@ export default class Radiogroup {
     return this.locator.locator('label').allInnerTexts()
   }
 
-  private radio(label: string | RegExp): Locator {
+  radioButton(label: string | RegExp): Locator {
     if (typeof label === 'string') {
       return this.locator.locator('.sd-radio label')
         .filter({ has: this.page.locator(`xpath=//*[normalize-space()="${label}"]`) })

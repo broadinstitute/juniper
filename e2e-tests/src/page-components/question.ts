@@ -1,20 +1,19 @@
-import { Locator, Page, expect } from '@playwright/test'
-import { PageComponentInterface } from 'src/models/page-component-interface'
+import { Page, expect, Locator } from '@playwright/test'
+import ComponentBase from 'src/page-components/component-base'
 import Radiogroup from 'src/page-components/radiogroup'
 import Textbox from 'src/page-components/textbox'
 
-export default class Question implements PageComponentInterface {
-  private readonly root: Locator
+export default class Question extends ComponentBase {
+  root: Locator
 
   /**
    *
    * @param {Page} page
    * @param {{parent?: string, qText?: string | RegExp, dataName?: string}} opts
    */
-  constructor(private readonly page: Page, opts: {
-    readonly qText?: string | RegExp,
-    dataName?: string,
-    readonly parent?: string } = {}) {
+  constructor(page: Page, opts: { qText?: string | RegExp, dataName?: string, parent?: string } = {}) {
+    super(page)
+
     const { parent, qText, dataName } = opts
     const defaultRoot = 'form .sd-page__row > [data-key] > [id][role]'
 
@@ -39,10 +38,6 @@ export default class Question implements PageComponentInterface {
     }
   }
 
-  get locator(): Locator {
-    return this.root
-  }
-
   async error(): Promise<string | null> {
     const err = this.locator.locator('[role="alert"].sd-question__erbox')
     try {
@@ -52,15 +47,6 @@ export default class Question implements PageComponentInterface {
       /* empty */
     }
     return null
-  }
-
-  async isVisible(): Promise<boolean> {
-    return this.locator.isVisible()
-  }
-
-  async waitReady(): Promise<this> {
-    await expect(this.locator).toBeVisible()
-    return this
   }
 
   /** Question texts */

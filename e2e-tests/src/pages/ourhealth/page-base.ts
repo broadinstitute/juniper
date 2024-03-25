@@ -111,10 +111,6 @@ export default abstract class PageBase implements RegisterPageInterface {
     return this
   }
 
-  protected get questionRoot(): Locator {
-    return this.formBody.locator('.sd-row > [data-key]')
-  }
-
   protected get formTitle(): Locator {
     return this.formBody.locator('.sd-page__title')
   }

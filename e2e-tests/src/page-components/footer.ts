@@ -1,17 +1,12 @@
-import { Page } from '@playwright/test'
-import { PageComponentInterface } from 'src/models/page-component-interface'
+import { Locator, Page } from '@playwright/test'
+import ComponentBase from 'src/page-components/component-base'
 
 /* footer is located at the bottom of OurHealth page */
-export default class Footer implements PageComponentInterface {
-  constructor(private readonly page: Page) {
-  }
+export default class Footer extends ComponentBase {
+  root: Locator
 
-  async isVisible(): Promise<boolean> {
-    return Promise.resolve(false)
-  }
-
-  async waitReady(): Promise<this> {
-    await this.isVisible()
-    throw new Error(undefined)
+  constructor(page: Page) {
+    super(page)
+    this.root = this.page.locator('footer')
   }
 }

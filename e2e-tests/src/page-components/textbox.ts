@@ -1,17 +1,15 @@
 import { Locator, Page } from '@playwright/test'
+import ComponentBase from 'src/page-components/component-base'
 
-export default class Textbox {
-  private readonly root: Locator
+export default class Textbox extends ComponentBase {
+  root: Locator
 
-  constructor(private readonly page: Page, opts: { label?: string, parent?: Locator }) {
+  constructor(page: Page, opts: { label?: string, parent?: Locator }) {
+    super(page)
     const { parent, label } = opts
     this.root = parent
       ? label ? parent.locator(`input[aria-label="${label}"]`) :  parent.locator('input[aria-label]').first()
       : label ? this.page.locator(`input[aria-label="${label}"]`)  :  this.page.locator('input[aria-label]').first()
-  }
-
-  get locator(): Locator {
-    return this.root
   }
 
   async fill(value: string | number): Promise<void> {
