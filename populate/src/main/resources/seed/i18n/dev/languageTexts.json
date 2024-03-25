@@ -54,6 +54,14 @@
   {"keyName": "notProvided", "text": "DEV_Not Provided", "language": "dev"},
   {"keyName": "editProfileContactEmailWarning", "text": "DEV_Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "dev"},
   {"keyName": "privacyPolicy", "text": "DEV_Privacy Policy", "language": "dev"},
-  {"keyName": "termsOfUse", "text": "DEV_Terms of Use", "language": "dev"}
-
+  {"keyName": "termsOfUse", "text": "DEV_Terms of Use", "language": "dev"},
+  {"keyName": "addressInvalidPostalCode", "text": "DEV_The postal code could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidCountry", "text": "DEV_The country could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidState", "text": "DEV_The state/province could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidCity", "text": "DEV_The city could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidHouseNumber", "text": "DEV_The house number could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidStreetName", "text": "DEV_The street name could not be verified.", "language": "dev"},
+  {"keyName": "addressInvalidStreetType", "text": "DEV_The street type could not be verified.", "language": "dev"},
+  {"keyName": "addressNeedsSubpremise", "text": "DEV_Please provide a unit/suite number.", "language": "dev"},
+  {"keyName": "addressFailedToValidate", "text": "DEV_Address could not be validated.", "language": "dev"}
 ]

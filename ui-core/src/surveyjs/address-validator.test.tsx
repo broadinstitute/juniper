@@ -2,6 +2,7 @@
 import { validateSurveyJsAddress } from 'src/surveyjs/address-validator'
 import { QuestionAddressValidationModel } from 'src/surveyjs/address-validation-modal-question'
 
+const mockI18n = (val: string) => val
 
 const setupMocks = (question: QuestionAddressValidationModel) => {
   jest
@@ -68,7 +69,7 @@ describe('valid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(Object.keys(errors)).toHaveLength(0)
 
@@ -123,7 +124,7 @@ describe('valid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(errors).toEqual({
       'mock_question_validation_name': 'Please review the suggested address.'
@@ -203,7 +204,7 @@ describe('valid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(errors).toEqual({})
 
@@ -267,7 +268,7 @@ describe('valid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(errors).toEqual({
       'mock_question_validation_name': 'Please review the suggested address.'
@@ -330,7 +331,7 @@ describe('invalid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(errors).toEqual({
       'mock_city_question': 'The city could not be verified.',
@@ -383,7 +384,7 @@ describe('invalid address validation', () => {
       'mock_postalCode_question': '02142',
       'mock_city_question': 'Cambridge'
       // state & country implied
-    }, errors, question)
+    }, errors, question, mockI18n)
 
     expect(errors).toEqual({
       'mock_city_question': 'Address could not be validated.',

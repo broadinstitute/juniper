@@ -54,5 +54,14 @@
   {"keyName": "notProvided", "text": "Not Provided", "language": "en"},
   {"keyName": "editProfileContactEmailWarning", "text": "Press \"Save\"  to update the email used for communication. Note that your login information will not change.", "language": "en"},
   {"keyName": "privacyPolicy", "text": "Privacy Policy", "language": "en"},
-  {"keyName": "termsOfUse", "text": "Terms of Use", "language": "en"}
+  {"keyName": "termsOfUse", "text": "Terms of Use", "language": "en"},
+  {"keyName": "addressInvalidPostalCode", "text": "The postal code could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidCountry", "text": "The country could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidState", "text": "The state/province could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidCity", "text": "The city could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidHouseNumber", "text": "The house number could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidStreetName", "text": "The street name could not be verified.", "language": "en"},
+  {"keyName": "addressInvalidStreetType", "text": "The street type could not be verified.", "language": "en"},
+  {"keyName": "addressNeedsSubpremise", "text": "Please provide a unit/suite number.", "language": "en"},
+  {"keyName": "addressFailedToValidate", "text": "Address could not be validated.", "language": "en"}
 ]

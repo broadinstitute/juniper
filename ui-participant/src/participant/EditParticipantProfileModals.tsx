@@ -1,34 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import { Profile } from '../api/api'
-import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress, useI18n } from '@juniper/ui-core'
+import React, { useState } from 'react'
+import Api, { Profile } from '../api/api'
+import {
+  AddressValidationResult,
+  EditAddress,
+  isSameAddress,
+  javaLocalDateToJsDate,
+  jsDateToJavaLocalDate,
+  MailingAddress,
+  SuggestBetterAddressModal,
+  useI18n
+} from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
+import { isNil } from 'lodash'
 
 
 // skeleton for all profile edit modals
 function ProfileRowEditModal(
   {
-    title, children, onSave, onDismiss
+    title, children, onSave, onDismiss, animated
   }: {
-    title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void
+    title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void, animated?: boolean
   }
 ) {
   const { i18n } = useI18n()
-  return <ThemedModal show={true} onHide={onDismiss} size={'lg'}>
-    <Modal.Header>
-      <Modal.Title>
-        <h2 className="fw-bold pb-0 mb-0">{title}</h2>
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      {children}
-    </Modal.Body>
-    <Modal.Footer>
-      <div className={'d-flex w-100'}>
-        <button className={'btn btn-primary m-2'} onClick={onSave}>{i18n('save')}</button>
-        <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>{i18n('cancel')}</button>
-      </div>
-    </Modal.Footer>
+  return <ThemedModal show={true} onHide={onDismiss} size={'lg'} animation={animated}> <Modal.Header>
+    <Modal.Title>
+      <h2 className="fw-bold pb-0 mb-0">{title}</h2>
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {children}
+  </Modal.Body>
+  <Modal.Footer>
+    <div className={'d-flex w-100'}>
+      <button className={'btn btn-primary m-2'} onClick={onSave}>{i18n('save')}</button>
+      <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>{i18n('cancel')}</button>
+    </div>
+  </Modal.Footer>
   </ThemedModal>
 }
 
@@ -78,8 +87,12 @@ const useProfileEditMethods = (props: EditModalProps) => {
     })
   }
 
-  const onSave = () => {
-    save(editedProfile)
+  const onSave = (profile?: Profile) => {
+    if (profile) {
+      save(profile)
+    } else {
+      save(editedProfile)
+    }
     dismissModal()
   }
 
@@ -278,7 +291,7 @@ export function EditCommunicationPreferences(props: EditModalProps) {
 /**
  * Modal for editing the mailing address properties on a profile.
  */
-export function EditMailingAddressModal(props: EditModalProps) {
+export function EditMailingAddressModal(props: EditModalProps & { enableAddressValidation: boolean }) {
   const {
     onDismiss,
     onSave,
@@ -286,7 +299,6 @@ export function EditMailingAddressModal(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
-  const { i18n } = useI18n()
 
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
     editedProfile.mailingAddress || {
@@ -299,18 +311,96 @@ export function EditMailingAddressModal(props: EditModalProps) {
     }
   )
 
-  useEffect(() => {
-    onFieldChange('mailingAddress', mailingAddress)
-  }, [mailingAddress])
+  const [validationResults, setValidationResults] = useState<AddressValidationResult>()
+
+  const [animateModal, setAnimateModal] = useState<boolean>(true)
+
+  const shouldShowSuggestedAddress = (results: AddressValidationResult) => {
+    if (!results) {
+      return false
+    }
+
+    return results.valid &&
+      (!isNil(results.suggestedAddress) && !isSameAddress(results.suggestedAddress, mailingAddress))
+  }
+
+  const buildUpdatedProfile = (addr: MailingAddress) => {
+    return {
+      ...editedProfile,
+      mailingAddress: {
+        ...editedProfile.mailingAddress, // grab id, createdAt, etc.
+        ...{ // clear out any old values
+          street1: '',
+          street2: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: ''
+        },
+        ...addr
+      }
+    }
+  }
+
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+
+  const validateAndSave = async () => {
+    if (!props.enableAddressValidation) {
+      onSave(buildUpdatedProfile(mailingAddress))
+      return
+    }
+
+    setIsLoadingValidation(true)
+    try {
+      const newValidationResult = await Api.validateAddress(mailingAddress)
+
+      setValidationResults(newValidationResult)
+      setAnimateModal(false)
+
+      if (newValidationResult?.valid && !shouldShowSuggestedAddress(newValidationResult)) {
+        onSave(buildUpdatedProfile(mailingAddress))
+      }
+    } finally {
+      setIsLoadingValidation(false)
+    }
+  }
+
+  if (validationResults && shouldShowSuggestedAddress(validationResults) && validationResults?.suggestedAddress) {
+    return <SuggestBetterAddressModal
+      inputtedAddress={mailingAddress}
+      improvedAddress={validationResults?.suggestedAddress}
+      accept={() => {
+        if (!validationResults?.suggestedAddress) {
+          return
+        }
+        onSave(buildUpdatedProfile(validationResults.suggestedAddress))
+      }}
+      reject={() => {
+        onSave(buildUpdatedProfile(mailingAddress))
+      }}
+      goBack={() => {
+        setValidationResults(undefined)
+      }}
+      animated={false}
+      onDismiss={onDismiss}
+      ModalComponent={ThemedModal}
+    />
+  }
 
   return <ProfileRowEditModal
-    title={i18n('editMailingAddress')}
-    onSave={onSave}
+    title={'Mailing Address'}
+    onSave={() => validateAndSave()}
+    animated={animateModal}
     onDismiss={onDismiss}>
-    <EditAddress
-      mailingAddress={mailingAddress}
-      setMailingAddress={setMailingAddress}
-      showLabels={true}
-    />
+    {
+      isLoadingValidation
+        ? <p>Loading...</p>
+        : <EditAddress
+          mailingAddress={mailingAddress}
+          setMailingAddress={setMailingAddress}
+          showLabels={true}
+          validationResult={validationResults}
+        />
+    }
   </ProfileRowEditModal>
 }

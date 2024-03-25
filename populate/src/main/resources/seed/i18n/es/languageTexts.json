@@ -55,5 +55,14 @@
   {"keyName": "notProvided", "text": "No proporcionado", "language": "es"},
   {"keyName": "editProfileContactEmailWarning", "text": "Presiona \"Guardar\" para actualizar el correo electrónico utilizado para la comunicación. Ten en cuenta que tu información de inicio de sesión no cambiará.", "language": "es"},
   {"keyName": "privacyPolicy", "text": "Política de Privacidad", "language": "es"},
-  {"keyName": "termsOfUse", "text": "Términos de Uso", "language": "es"}
+  {"keyName": "termsOfUse", "text": "Términos de Uso", "language": "es"},
+  {"keyName": "addressInvalidPostalCode", "text": "El código postal no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressInvalidCountry", "text": "El país no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressInvalidState", "text": "El estado/provincia no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressInvalidCity", "text": "La ciudad no pudo ser verificada.", "language": "es"},
+  {"keyName": "addressInvalidHouseNumber", "text": "El número de casa no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressInvalidStreetName", "text": "El nombre de la calle no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressInvalidStreetType", "text": "El tipo de calle no pudo ser verificado.", "language": "es"},
+  {"keyName": "addressNeedsSubpremise", "text": "Por favor, proporcione un número de unidad/suite.", "language": "es"},
+  {"keyName": "addressFailedToValidate", "text": "No se pudo validar la dirección.", "language": "es"}
 ]

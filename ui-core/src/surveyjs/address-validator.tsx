@@ -1,7 +1,7 @@
 import { Question, SurveyModel } from 'survey-core'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { explainAddressValidationResultsByField, isSameAddress } from '../addressUtils'
+import { getI18nErrorKeysByField, isSameAddress } from '../addressUtils'
 
 /**
  * Creates SurveyJS address validator using the provided async function
@@ -11,7 +11,8 @@ import { explainAddressValidationResultsByField, isSameAddress } from '../addres
  * survey response.
  */
 export function createAddressValidator(
-  validateAddress: (val: MailingAddress) => Promise<AddressValidationResult>
+  validateAddress: (val: MailingAddress) => Promise<AddressValidationResult>,
+  i18n: (val: string) => string = (val: string) => val
 ) {
   return (
     sender: SurveyModel,
@@ -37,7 +38,8 @@ export function createAddressValidator(
             validateAddress,
             data,
             errors,
-            addressValidationQuestion)
+            addressValidationQuestion,
+            i18n)
         })
     ).then(() => {
       complete()
@@ -53,7 +55,8 @@ export const validateSurveyJsAddress = async (
   validateAddress: (val: MailingAddress) => Promise<AddressValidationResult>,
   data: { [index: string]: any; }, // eslint-disable-line @typescript-eslint/no-explicit-any
   errors: { [index: string]: any; }, // eslint-disable-line @typescript-eslint/no-explicit-any
-  addressValidationQuestion: Question) => {
+  addressValidationQuestion: Question,
+  i18n: (key: string) => string) => {
   const mailingAddress: MailingAddress | undefined = assembleAddressFromFormData(data, addressValidationQuestion)
 
   if (!mailingAddress) {
@@ -71,6 +74,10 @@ export const validateSurveyJsAddress = async (
 
   // hit API
   const results = await validateAddress(mailingAddress)
+
+  results.invalidComponents = [
+    'SUBPREMISE', 'HOUSE_NUMBER', 'STREET_NAME', 'CITY', 'STATE_PROVINCE', 'POSTAL_CODE', 'COUNTRY'
+  ]
 
   const newValidationState: AddressValidationQuestionValue = {
     inputAddress: mailingAddress,
@@ -91,7 +98,7 @@ export const validateSurveyJsAddress = async (
   if (results.suggestedAddress) {
     errors[addressValidationQuestion.name] = 'Please review the suggested address.'
   } else if (!results.valid) {
-    displayAppropriateErrors(addressValidationQuestion, newValidationState.addressValidationResult, errors)
+    displayAppropriateErrors(addressValidationQuestion, newValidationState.addressValidationResult, errors, i18n)
   }
 
   return await Promise.resolve()
@@ -131,36 +138,40 @@ const shouldSkipValidation = (
 const displayAppropriateErrors = (
   addressValidationQuestion: Question,
   validationResult: AddressValidationResult,
-  errors: { [index: string]: any; } // eslint-disable-line @typescript-eslint/no-explicit-any
+  errors: {
+    [index: string]: any // eslint-disable-line @typescript-eslint/no-explicit-any
+  },
+  i18n: (key: string) => string
 ) => {
   if (validationResult.invalidComponents && validationResult.invalidComponents.length > 0) {
-    const explanation = explainAddressValidationResultsByField(validationResult)
+    const explanation = getI18nErrorKeysByField(validationResult)
 
+    // TODO make nicer
     if (explanation['street1']) {
-      errors[addressValidationQuestion.street1] = explanation['street1']
+      errors[addressValidationQuestion.street1] = explanation['street1']?.map(i18n).join('\n')
     }
     if (explanation['street2']) {
-      errors[addressValidationQuestion.street2] = explanation['street2']
+      errors[addressValidationQuestion.street2] = explanation['street2']?.map(i18n).join('\n')
     }
     if (explanation['country']) {
-      errors[addressValidationQuestion.country] = explanation['country']
+      errors[addressValidationQuestion.country] = explanation['country']?.map(i18n).join('\n')
     }
     if (explanation['city']) {
-      errors[addressValidationQuestion.city] = explanation['city']
+      errors[addressValidationQuestion.city] = explanation['city']?.map(i18n).join('\n')
     }
     if (explanation['postalCode']) {
-      errors[addressValidationQuestion.postalCode] = explanation['postalCode']
+      errors[addressValidationQuestion.postalCode] = explanation['postalCode']?.map(i18n).join('\n')
     }
-    if (explanation['stateProvince']) {
-      errors[addressValidationQuestion.stateProvince] = explanation['stateProvince']
+    if (explanation['state']) {
+      errors[addressValidationQuestion.stateProvince] = explanation['state']?.map(i18n).join('\n')
     }
   } else {
-    errors[addressValidationQuestion.street1] = 'Address could not be validated.'
-    errors[addressValidationQuestion.street2] = 'Address could not be validated.'
-    errors[addressValidationQuestion.country] = 'Address could not be validated.'
-    errors[addressValidationQuestion.city] = 'Address could not be validated.'
-    errors[addressValidationQuestion.postalCode] = 'Address could not be validated.'
-    errors[addressValidationQuestion.stateProvince] = 'Address could not be validated.'
+    errors[addressValidationQuestion.street1] = i18n('addressFailedToValidate')
+    errors[addressValidationQuestion.street2] = i18n('addressFailedToValidate')
+    errors[addressValidationQuestion.country] = i18n('addressFailedToValidate')
+    errors[addressValidationQuestion.city] = i18n('addressFailedToValidate')
+    errors[addressValidationQuestion.postalCode] = i18n('addressFailedToValidate')
+    errors[addressValidationQuestion.stateProvince] = i18n('addressFailedToValidate')
   }
 }
 
