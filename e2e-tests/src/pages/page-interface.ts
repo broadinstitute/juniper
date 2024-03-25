@@ -1,6 +1,4 @@
-import { Page } from '@playwright/test'
-
 export interface PageInterface {
-  page: Page
-  title: string
+  readonly title: string
+  waitReady(): Promise<void>
 }
