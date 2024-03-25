@@ -92,7 +92,7 @@ export const validateSurveyJsAddress = async (
   }
 
   if (results.suggestedAddress) {
-    errors[addressValidationQuestion.name] = 'Please review the suggested address.'
+    errors[addressValidationQuestion.name] = i18n('suggestBetterAddressBody')
   } else if (!results.valid) {
     displayAppropriateErrors(addressValidationQuestion, newValidationState.addressValidationResult, errors, i18n)
   }

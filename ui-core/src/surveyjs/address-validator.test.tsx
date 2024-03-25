@@ -127,7 +127,7 @@ describe('valid address validation', () => {
     }, errors, question, mockI18n)
 
     expect(errors).toEqual({
-      'mock_question_validation_name': 'Please review the suggested address.'
+      'mock_question_validation_name': '{suggestBetterAddressBody}'
     })
 
     expect(setQuestionStateSpy).toHaveBeenCalledWith({
@@ -271,7 +271,7 @@ describe('valid address validation', () => {
     }, errors, question, mockI18n)
 
     expect(errors).toEqual({
-      'mock_question_validation_name': 'Please review the suggested address.'
+      'mock_question_validation_name': '{suggestBetterAddressBody}'
     })
 
     expect(setQuestionStateSpy).toHaveBeenCalledWith({
