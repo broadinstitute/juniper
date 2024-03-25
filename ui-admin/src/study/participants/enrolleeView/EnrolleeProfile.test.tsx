@@ -165,7 +165,7 @@ test('shows error message on address validation', async () => {
   await userEvent.click(screen.getByText('Validate'))
 
   // starting part of the error
-  expect(screen.getByText('could not be verified', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('{addressInvalidStreetName}')).toBeInTheDocument()
 
   // makes the field red
   const streetClasses = screen.getByPlaceholderText('{street1}').className
@@ -209,8 +209,7 @@ test('shows modal on improvable address validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  expect(screen.getByText('We were able to verify a similar address. Please select which you would like to use.',
-    { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('{suggestBetterAddressBody}')).toBeInTheDocument()
 })
 
 test('makes all fields green upon positive validation', async () => {
