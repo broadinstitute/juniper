@@ -3,7 +3,8 @@ import React from 'react'
 import {
   generateThreePageSurvey,
   mockConfiguredSurvey,
-  mockSurveyWithHiddenQuestion, mockSurveyWithHiddenQuestionClearOnHidden
+  mockSurveyWithHiddenQuestion,
+  mockSurveyWithHiddenQuestionClearOnHidden
 } from 'test-utils/test-survey-factory'
 import { PageNumberControl, useSurveyJSModel } from 'util/surveyJsUtils'
 import { render, screen } from '@testing-library/react'
@@ -53,13 +54,18 @@ const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Surv
 describe('SurveyFooter', () => {
   it('does not render if not on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={1}/>)
+    render(<MockI18nProvider mockTexts={{}}>
+      <FooterTestComponent survey={survey} pageNum={1}/>
+    </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeNull()
   })
 
   it('renders if on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={3}/>)
+    render(
+      <MockI18nProvider mockTexts={{}}>
+        <FooterTestComponent survey={survey} pageNum={3}/>
+      </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeTruthy()
   })
 })
