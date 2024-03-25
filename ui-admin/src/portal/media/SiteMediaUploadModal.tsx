@@ -9,7 +9,11 @@ import { Button } from 'components/forms/Button'
 import { LoadedPortalContextT } from '../PortalProvider'
 import { useFileUploadButton } from 'util/uploadUtils'
 
-export const allowedFileTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp', 'pdf', 'json', 'csv', 'txt']
+
+export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
+export const allowedDocumentTypes = ['pdf', 'json']
+export const allowedTextTypes = ['csv', 'txt']
+export const allowedFileTypes = [...allowedImageTypes, ...allowedDocumentTypes, ...allowedTextTypes]
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
