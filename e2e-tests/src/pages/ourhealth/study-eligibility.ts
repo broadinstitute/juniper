@@ -6,8 +6,4 @@ export default class StudyEligibility extends PageBase {
   constructor(protected readonly page: Page) {
     super(page)
   }
-
-  async waitReady(): Promise<void> {
-    await super.waitReady()
-  }
 }
