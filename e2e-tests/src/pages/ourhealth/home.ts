@@ -10,8 +10,6 @@ export enum Label {
 }
 
 export  default  class Home extends PageBase {
-  title = 'OurHealth'
-
   // Locators to find web elements
   linkBecomeParticipant: Locator
 
