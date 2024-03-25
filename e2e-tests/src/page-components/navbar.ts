@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { PageComponentInterface } from 'pages/page-component-interface'
+import { PageComponentInterface } from 'src/models/page-component-interface'
 
 /* navbar is located at the top of OurHealth page */
 export default class Navbar implements PageComponentInterface {

@@ -1,4 +1,4 @@
-import { PageInterface } from 'pages/page-interface'
+import { PageInterface } from 'src/models/page-interface'
 
 export interface RegisterPageInterface extends PageInterface {
   fillIn(question: string, value: string): Promise<this>

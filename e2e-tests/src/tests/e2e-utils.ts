@@ -1,5 +1,5 @@
 import { expect, Page } from '@playwright/test'
-import StudyEligibility from 'src/ourhealth/pages/study-eligibility'
+import StudyEligibility from 'pages/ourhealth/study-eligibility'
 import Navbar from 'src/page-components/navbar'
 
 /**

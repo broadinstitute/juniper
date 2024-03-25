@@ -1,17 +1,20 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { RegisterPageInterface } from 'pages/register-page-interface'
+import { RegisterPageInterface } from 'src/models/register-page-interface'
 import Footer from 'src/page-components/footer'
 import Navbar from 'src/page-components/navbar'
 import Question from 'src/page-components/question'
 
 export default abstract class PageBase implements RegisterPageInterface {
+  protected readonly page: Page
+
   title = 'OurHealth'
 
   navbar: Navbar
 
   footer: Footer
 
-  protected constructor(protected readonly page: Page) {
+  protected constructor(page: Page) {
+    this.page = page
     this.navbar = new Navbar(page)
     this.footer = new Footer(page)
   }
@@ -70,7 +73,7 @@ export default abstract class PageBase implements RegisterPageInterface {
     return this
   }
 
-  async draw(question: string): Promise<this> {
+  async drawLine(question: string): Promise<this> {
     const q = new Question(this.page, { qText: question })
     const canvas = q.locator.locator('canvas')
     await canvas.scrollIntoViewIfNeeded()
@@ -78,15 +81,13 @@ export default abstract class PageBase implements RegisterPageInterface {
     if (!box) {
       throw new Error('canvas boundingBox is null')
     }
-    console.log(`canvas bounding box: ${box.x} ${box.y} ${box.width} ${box.height}`)
+
     await this.page.mouse.move(box.x + 50, box.y + 50)
     await this.page.mouse.down()
     for (let i = 0; i < 20; ++i) {
       await this.page.mouse.move(box.x, box.y, { steps: 1.1 })
     }
     await this.page.mouse.up()
-
-    console.log('draw completed')
     return this
   }
 

@@ -1,5 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test'
-import PageBase from 'src/ourhealth/pages/page-base'
+import PageBase from 'pages/ourhealth/page-base'
 
 export enum Label {
   HelpUsUnderstand = 'Help us understand cardiovascular disease risk among South Asian populations.',
@@ -27,7 +27,7 @@ export  default  class Home extends PageBase {
 
   linkJoinOurHealth: Locator
 
-  constructor(protected readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.linkBecomeParticipant = this.page.locator('a.btn', { hasText: /^Become a Participant$/ })
     this.linkScientificBackground = this.page.locator('a.btn', { hasText: /^Scientific Background$/ })

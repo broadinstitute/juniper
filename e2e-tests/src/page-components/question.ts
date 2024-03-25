@@ -1,5 +1,5 @@
 import { Locator, Page, expect } from '@playwright/test'
-import { PageComponentInterface } from 'pages/page-component-interface'
+import { PageComponentInterface } from 'src/models/page-component-interface'
 import Radiogroup from 'src/page-components/radiogroup'
 import Textbox from 'src/page-components/textbox'
 

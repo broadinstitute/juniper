@@ -131,6 +131,7 @@ module.exports = {
         'jest/expect-expect': 'off',
         'jest/no-standalone-expect': 'off',
         'jest/no-conditional-expect': 'off',
+        'jest/valid-expect': 'off',
         '@typescript-eslint/promise-function-async': 'error',
         '@typescript-eslint/no-floating-promises': 'error',
         '@typescript-eslint/no-misused-promises': 'error',

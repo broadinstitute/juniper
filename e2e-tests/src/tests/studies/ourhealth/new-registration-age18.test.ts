@@ -2,29 +2,18 @@ import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
 import * as process from 'process'
 import { Study } from 'src/data/constants'
-import StudyConsent from 'src/ourhealth/pages/study-consent'
-import StudyCreateAcct from 'src/ourhealth/pages/study-create-acct'
-import StudyDashboard from 'src/ourhealth/pages/study-dashboard'
+import StudyConsent from 'pages/ourhealth/study-consent'
+import StudyCreateAcct from 'pages/ourhealth/study-create-acct'
+import StudyDashboard, { Activities } from 'pages/ourhealth/study-dashboard'
 import { emailAlias, goToStudyEligibility } from 'tests/e2e-utils'
 
 test.describe('Home page', () => {
   test('UI @ourhealth @registration', {
     annotation: [
-      { type: 'New registration workflow example', description: 'Participant is older than 18 years' }
+      { type: 'New registration workflow unfinished example', description: 'Participant is older than 18 years' }
     ]
   }, async ({ page }) => {
     const testEmail = emailAlias(process.env.PARTICIPANT_EMAIL_1!) // not real
-
-    const activities = [
-      'OurHealth Consent',
-      'The Basics',
-      'Cardiometabolic Medical History',
-      'Other Medical History',
-      'Family History',
-      'Medications',
-      'Lifestyle',
-      'Mental Health'
-    ]
 
     await test.step('Answer "Yes" to all eligibility questions', async () => {
       const prequal = await goToStudyEligibility(page)
@@ -52,12 +41,13 @@ test.describe('Home page', () => {
 
     const dashboard = await test.step('Landing on Dashboard for the first time', async (): Promise<StudyDashboard> => {
       const dashboard = new StudyDashboard(page)
+      await dashboard.waitReady()
 
-      // activities are visible and match expected status
-      for (const name of activities) {
+      // activities are visible and match expected initial status
+      for (const name of Object.values(Activities)) {
         const dashboardActivity = dashboard.activity
         const isVisible = await dashboardActivity.isVisible(name)
-        expect(isVisible).toBe(true)
+        expect(isVisible, `"${name}" activity is not visible in Dashboard`).toBe(true)
         if (name === 'OurHealth Consent') {
           expect(await dashboardActivity.status(name)).toStrictEqual('Not Started')
         } else {
@@ -86,11 +76,18 @@ test.describe('Home page', () => {
       progress = await consent.progress()
       expect(progress).toStrictEqual('Page 3 of 3')
       await consent.fillIn(Study.Standard.QLabel.FullName, 'Tony Junior Stark') // TODO randomize
-      await consent.draw(Study.Standard.QLabel.Signature)
+      await consent.drawLine(Study.Standard.QLabel.Signature)
 
       await consent.click('button', 'Complete')
     })
 
-    await page.pause()
+    await test.step('Step 2: Start Surveys', async () => {
+      // back on Dashboard automatically
+      await dashboard.waitReady()
+
+      await dashboard.click('link', 'Start Surveys')
+    })
+
+    // await page.pause()
   })
 })

@@ -1,11 +1,11 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
-import Home, { Label } from 'src/ourhealth/pages/home'
+import Home, { Label } from 'pages/ourhealth/home'
 
 test.describe('Home page', () => {
   test('UI @visual @ourhealth', {
     annotation: [
-      { type: 'visual test example', description: 'screenshots comparisons' }
+      { type: 'screenshot-test example', description: 'screenshots comparisons' }
     ]
   }, async ({ page }) => {
     const home = new Home(page)

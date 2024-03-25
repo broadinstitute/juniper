@@ -1,5 +1,17 @@
-import { Locator, Page } from '@playwright/test'
-import PageBase from 'src/ourhealth/pages/page-base'
+import { expect, Locator, Page } from '@playwright/test'
+import PageBase from 'pages/ourhealth/page-base'
+
+export enum Activities
+{
+  Consent = 'OurHealth Consent',
+  Basics = 'The Basics',
+  CardiometabolicMedicalHistory = 'Cardiometabolic Medical History',
+  OtherMedicalHistory = 'Other Medical History',
+  FamilyHistory = 'Family History',
+  Medications = 'Medications',
+  Lifestyle = 'Lifestyle',
+  MentalHealth = 'Mental Health'
+}
 
 export default class StudyDashboard extends PageBase {
   title = 'Dashboard | OurHealth'
@@ -13,6 +25,11 @@ export default class StudyDashboard extends PageBase {
 
   get locator(): Locator {
     return this.root
+  }
+
+  async waitReady(): Promise<void> {
+    await super.waitReady()
+    await this.activity.isVisible(Activities.Consent)
   }
 
   /* inner class */
@@ -32,8 +49,14 @@ export default class StudyDashboard extends PageBase {
         return text
       }
 
-      async isVisible(name: string | RegExp): Promise<boolean> {
-        return this.row(name).isVisible()
+      async isVisible(name: string | RegExp, opts: { timeout?: number } = {}): Promise<boolean> {
+        const { timeout } = opts
+        try {
+          await expect(this.row(name)).toBeVisible({ timeout })
+          return true
+        } catch {
+          return false
+        }
       }
 
       async all(): Promise<string []> {

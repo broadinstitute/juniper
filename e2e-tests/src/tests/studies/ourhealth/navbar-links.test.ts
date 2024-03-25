@@ -1,12 +1,12 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
-import HomeAboutUs from 'src/ourhealth/pages/home-about-us'
-import Home from 'src/ourhealth/pages/home'
+import HomeAboutUs from 'pages/ourhealth/home-about-us'
+import Home from 'pages/ourhealth/home'
 
 test.describe('Home page navbar', () => {
   test('navigation', {
     annotation: [
-      { type: 'ui component test example', description: 'Click navbar link' }
+      { type: 'page component unit-test example', description: 'Click navbar link' }
     ]
   }, async ({ page }) => {
     const home = new Home(page)
@@ -21,7 +21,7 @@ test.describe('Home page navbar', () => {
     await aboutUs.navbar.linkOurHealthLogo.click()
     await home.waitReady()
 
-    // Loading /aboutUs URL
+    // Loading href in URL directly
     await home.goTo(href!)
     await aboutUs.waitReady()
   })

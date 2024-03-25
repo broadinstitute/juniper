@@ -1,6 +1,6 @@
 import { Fixtures, expect } from '@playwright/test'
 import { fixtureBase as base } from 'src/lib/fixtures/fixture-base'
-import Home from 'src/ourhealth/pages/home'
+import Home from 'pages/ourhealth/home'
 
 // Use this fixture for login in studies tests
 export const test = base.extend<Fixtures>({

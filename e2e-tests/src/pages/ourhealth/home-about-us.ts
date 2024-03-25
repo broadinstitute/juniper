@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import PageBase from 'src/ourhealth/pages/page-base'
+import PageBase from 'pages/ourhealth/page-base'
 
 export  default  class HomeAboutUs extends PageBase {
   title = 'About Us | OurHealth'
@@ -9,7 +9,7 @@ export  default  class HomeAboutUs extends PageBase {
 
   linkScientificBackground: Locator
 
-  constructor(protected readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.linkLearnMoreAboutParticipation = this.page.locator('a.nav-link',
       { hasText: /^Learn More About Participation$/ })
