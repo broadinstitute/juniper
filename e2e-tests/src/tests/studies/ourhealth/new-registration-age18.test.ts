@@ -8,7 +8,7 @@ import StudyDashboard from 'src/ourhealth/pages/study-dashboard'
 import { emailAlias, goToStudyEligibility } from 'tests/e2e-utils'
 
 test.describe('Home page', () => {
-  test('UI @visual @ourhealth', {
+  test('UI @ourhealth @registration', {
     annotation: [
       { type: 'New registration workflow example', description: 'Participant is older than 18 years' }
     ]

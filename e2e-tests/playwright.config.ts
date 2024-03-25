@@ -21,7 +21,6 @@ if (TEST_ENV) {
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-  //testDir: './src/tests',
   testMatch: '**/*.test.ts',
   /* timeout for each test, 30 seconds by default. */
   timeout: 60 * 1000,
@@ -70,12 +69,28 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    /* Running OurHealth study tests:
-     * npx playwright test --project="OurHealth-Chrome"
-     */
+    /*  Running only the OurHealth study tests: npx playwright test --project="OurHealth-Chrome"  */
     {
       name: 'OurHealth-Chrome',
-      testDir: './src/tests/studies/ourhealth',
+      testDir: 'src/tests/studies/ourhealth',
+      use: {
+        ...devices['Desktop Chrome'],
+        contextOptions: {
+          ignoreHTTPSErrors: true
+        },
+        ignoreHTTPSErrors: true,
+        // set OURHEALTH_PARTICIPANT_URL environment variable to override default URLs
+        baseURL: OURHEALTH_PARTICIPANT_URL
+          ? OURHEALTH_PARTICIPANT_URL
+          : CI
+            ? 'http://sandbox.ourhealth.localhost:8081'
+            : 'https://sandbox.ourhealth.localhost:3001'
+      }
+    },
+    /* Running all tests exclude any study tests */
+    {
+      name: 'Chrome',
+      testIgnore: ['src/tests/studies/**/*.test.ts'],
       use: {
         ...devices['Desktop Chrome'],
         contextOptions: {

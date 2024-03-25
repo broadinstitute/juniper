@@ -74,15 +74,15 @@ export default abstract class PageBase implements RegisterPageInterface {
     const q = new Question(this.page, { qText: question })
     const canvas = q.locator.locator('canvas')
     await canvas.scrollIntoViewIfNeeded()
-    const boundingBox = await canvas.boundingBox()
-    if (!boundingBox) {
+    const box = await canvas.boundingBox()
+    if (!box) {
       throw new Error('canvas boundingBox is null')
     }
-    console.log(`canvas bounding box: ${boundingBox.x} ${boundingBox.y} ${boundingBox.width} ${boundingBox.height}`)
-    await this.page.mouse.move(boundingBox.x + 50, boundingBox.y + 50)
+    console.log(`canvas bounding box: ${box.x} ${box.y} ${box.width} ${box.height}`)
+    await this.page.mouse.move(box.x + 50, box.y + 50)
     await this.page.mouse.down()
-    for (let i = 0; i < 100; ++i) {
-      await this.page.mouse.move(boundingBox.x + i, boundingBox.y + i)
+    for (let i = 0; i < 20; ++i) {
+      await this.page.mouse.move(box.x, box.y, { steps: 1.1 })
     }
     await this.page.mouse.up()
 

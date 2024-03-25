@@ -9,10 +9,23 @@
   >
 
 ### Run tests
-* Run all tests against local running development environment:
-  >`npx playwright test`
+* Show all tests in all projects:
+  > npx playwright test --list
 
-* Read environment variables from a `.env` file against any environment.</p>*Example*: reading `.env.local` file and run one test
+* Run all tests in all projects:
+  > npx playwright test
+
+* Run tests in the one specific project
+
+  Example: OurHealth-Chrome
+  > npx playwright test --project="OurHealth-Chrome"
+
+* Run **@ourhealth** tagged tests
+  > npx playwright test --grep @ourhealth
+
+* Read environment variables from a `.env.*` file to specify non-default environment variables.
+  
+  Example: reading `.env.local` file and run a test
   > TEST_ENV=local npx playwright test src/tests/mailing-list.test.ts
 
 ### Test report
@@ -22,7 +35,5 @@
 * Test trace viewer: https://trace.playwright.dev/
 
 
-### Run tests
-* Run OurHealth UI visual tests
-  > `npx `
+### placeholder
 
