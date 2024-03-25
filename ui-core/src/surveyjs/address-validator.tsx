@@ -1,7 +1,7 @@
 import { Question, SurveyModel } from 'survey-core'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { getI18nErrorKeysByField, isSameAddress } from '../addressUtils'
+import { getErrorsByField, isSameAddress } from '../addressUtils'
 
 /**
  * Creates SurveyJS address validator using the provided async function
@@ -134,7 +134,6 @@ const shouldSkipValidation = (
     && existingValidationState.modalDismissed
 }
 
-// TODO: this is _not_ internationalized, and only works well for US address formats. See JN-935
 const displayAppropriateErrors = (
   addressValidationQuestion: Question,
   validationResult: AddressValidationResult,
@@ -144,26 +143,29 @@ const displayAppropriateErrors = (
   i18n: (key: string) => string
 ) => {
   if (validationResult.invalidComponents && validationResult.invalidComponents.length > 0) {
-    const explanation = getI18nErrorKeysByField(validationResult)
+    const errorListByField = getErrorsByField(validationResult, i18n)
+    const errorByField: { [index: string]: string } = {}
+    Object.keys(errorListByField).forEach(key => {
+      errorByField[key] = errorListByField[key].join('\n')
+    })
 
-    // TODO make nicer
-    if (explanation['street1']) {
-      errors[addressValidationQuestion.street1] = explanation['street1']?.map(i18n).join('\n')
+    if (errorByField['street1']) {
+      errors[addressValidationQuestion.street1] = errorByField['street1']
     }
-    if (explanation['street2']) {
-      errors[addressValidationQuestion.street2] = explanation['street2']?.map(i18n).join('\n')
+    if (errorByField['street2']) {
+      errors[addressValidationQuestion.street2] = errorByField['street2']
     }
-    if (explanation['country']) {
-      errors[addressValidationQuestion.country] = explanation['country']?.map(i18n).join('\n')
+    if (errorByField['country']) {
+      errors[addressValidationQuestion.country] = errorByField['country']
     }
-    if (explanation['city']) {
-      errors[addressValidationQuestion.city] = explanation['city']?.map(i18n).join('\n')
+    if (errorByField['city']) {
+      errors[addressValidationQuestion.city] = errorByField['city']
     }
-    if (explanation['postalCode']) {
-      errors[addressValidationQuestion.postalCode] = explanation['postalCode']?.map(i18n).join('\n')
+    if (errorByField['postalCode']) {
+      errors[addressValidationQuestion.postalCode] = errorByField['postalCode']
     }
-    if (explanation['state']) {
-      errors[addressValidationQuestion.stateProvince] = explanation['state']?.map(i18n).join('\n')
+    if (errorByField['state']) {
+      errors[addressValidationQuestion.stateProvince] = errorByField['state']
     }
   } else {
     errors[addressValidationQuestion.street1] = i18n('addressFailedToValidate')

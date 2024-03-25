@@ -74,8 +74,9 @@ export function isAddressFieldValid(
 /**
  * TODO
  */
-export function getI18nErrorKeysByField(
-  validation: AddressValidationResult | undefined
+export function getErrorsByField(
+  validation: AddressValidationResult | undefined,
+  i18n: (key: string) => string
 ): { [index: string]: string[] } {
   const out: { [index: string]: string[] } = {}
 
@@ -91,7 +92,7 @@ export function getI18nErrorKeysByField(
       out[field] = []
     }
 
-    out[field].push(i18nKey)
+    out[field].push(i18n(i18nKey))
   }
 
   return out

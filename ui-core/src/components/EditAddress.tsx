@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { isNil, sortBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { getAllCountries } from '../i18nUtils'
-import { getI18nErrorKeysByField, isAddressFieldValid } from '../addressUtils'
+import { getErrorsByField, isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
 import { useI18n } from '../participant/I18nProvider'
 
@@ -224,8 +224,8 @@ export function EditAddress(
       </div>
 
       {
-        showErrors && Object.values(getI18nErrorKeysByField(validationResult)).map(
-          errors => errors.map(error => <div key={error} className={'text-danger'}>{i18n(error)}</div>)
+        showErrors && Object.values(getErrorsByField(validationResult, i18n)).map(
+          errors => errors.map(error => <div key={error} className={'text-danger'}>{error}</div>)
         )
       }
     </div>
