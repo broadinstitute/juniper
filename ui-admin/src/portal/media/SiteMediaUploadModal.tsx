@@ -14,6 +14,7 @@ export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'we
 export const allowedDocumentTypes = ['pdf', 'json']
 export const allowedTextTypes = ['csv', 'txt']
 export const allowedFileTypes = [...allowedImageTypes, ...allowedDocumentTypes, ...allowedTextTypes]
+const FILE_TYPE_REGEX = new RegExp(`\\.(${allowedFileTypes.join('|')})$`)
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
@@ -51,7 +52,7 @@ export default function SiteMediaUploadModal({
   }
 
   const validationMessages = []
-  if (file && !file.name.match(new RegExp(`\\.(${allowedFileTypes.join('|')})$`))) {
+  if (file && !file.name.match(FILE_TYPE_REGEX)) {
     validationMessages.push('This file extension is not supported.')
   }
   if (file && file.size > 10 * 1024 * 1024) {
