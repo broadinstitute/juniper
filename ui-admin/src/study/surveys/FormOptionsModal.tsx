@@ -20,7 +20,9 @@ export default function FormOptionsModal({
       <Modal.Title>{workingForm.name} - configuration</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <FormOptions workingForm={workingForm} updateWorkingForm={updateWorkingForm}/>
+      <form>
+        <FormOptions workingForm={workingForm} updateWorkingForm={updateWorkingForm}/>
+      </form>
       <div className="fw-light fst-italic mt-4">
         Note: you must  &quot;Save&quot; the form
         for changes to these options to take effect.
@@ -51,7 +53,7 @@ export const FormOptions = ({ workingForm, updateWorkingForm }:
             information on the options below.
           </div>}/>
           </div>
-          <form className="p-2">
+          <div className="p-2">
             <label className="form-label d-block">
               <input type="checkbox" checked={(workingForm as Survey).required}
                 onChange={e => updateWorkingForm({
@@ -80,7 +82,7 @@ export const FormOptions = ({ workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-          </form>
+          </div>
         </div>
     }
     { !isSurvey && <>

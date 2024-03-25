@@ -18,16 +18,15 @@ import {
 } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { asMockedFn } from '@juniper/ui-core'
+import {
+  mockUsePortalEnv
+} from '../test-utils/test-portal-factory'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
 beforeEach(() => {
-  // @ts-expect-error TS doesn't realize this function is mocked
-  usePortalEnv.mockReturnValue({
-    portalEnv: {
-      environmentName: 'sandbox'
-    }
-  })
+  asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */

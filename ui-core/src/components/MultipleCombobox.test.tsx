@@ -34,7 +34,7 @@ describe('MultipleCombobox', () => {
 
   test('fetches combobox choices by url', async () => {
     const mockResponse = new Response(JSON.stringify(['optionA', 'optionB']))
-    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(mockResponse))
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
 
     await act(async () => render(<MultipleComboBox<ItemValue>
       id={'test'}
@@ -48,7 +48,7 @@ describe('MultipleCombobox', () => {
 
   test('fetches combobox choices by file', async () => {
     const mockResponse = new Response(JSON.stringify(['optionA', 'optionB']))
-    const fetchSpy = jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve(mockResponse))
+    const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(mockResponse)
 
     await act(async () => render(<MultipleComboBox<ItemValue>
       id={'test'}

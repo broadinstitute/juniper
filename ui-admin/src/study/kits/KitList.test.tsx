@@ -45,10 +45,10 @@ describe('KitList', () => {
 })
 
 function mockFetchKits() {
-  jest.spyOn(Api, 'fetchKitsByStudyEnvironment').mockImplementation(() => {
-    return Promise.resolve([mockKitRequest({
+  jest.spyOn(Api, 'fetchKitsByStudyEnvironment').mockResolvedValue(
+    [mockKitRequest({
       enrolleeShortcode: mockEnrollee().shortcode,
       status: 'CREATED'
-    })])
-  })
+    })]
+  )
 }

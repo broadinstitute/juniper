@@ -243,8 +243,7 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse')
-    .mockImplementation(() => Promise.resolve(mockHubResponse()))
+  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };
@@ -259,7 +258,7 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider mockTexts={{}}>
+    <MockI18nProvider>
       <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
         studyShortcode={'study'} taskId={'guid34'}/>
     </MockI18nProvider>)

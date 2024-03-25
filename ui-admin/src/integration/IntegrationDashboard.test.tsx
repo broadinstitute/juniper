@@ -6,10 +6,10 @@ import { setupRouterTest } from '../test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 
 test('routes to integration paths', async () => {
-  jest.spyOn(Api, 'fetchInternalConfig').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchInternalConfig').mockResolvedValue({
     pepperDsmConfig: {},
     addrValidationConfig: {}
-  }))
+  })
   const { RoutedComponent } = setupRouterTest(<IntegrationDashboard/>)
   render(RoutedComponent)
   expect(screen.queryByText('useLiveDsm')).not.toBeInTheDocument()
