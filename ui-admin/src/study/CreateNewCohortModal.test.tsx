@@ -10,7 +10,7 @@ jest.mock('../navbar/NavContextProvider')
 
 jest.mock('../api/api', () => ({
   ...jest.requireActual('../api/api'),
-  exportEnrollees: jest.fn(() => Promise.resolve({ json: () => ({ columnKeys: [] }) }))
+  exportEnrollees: jest.fn().mockResolvedValue({ json: () => ({ columnKeys: [] }) })
 }))
 
 describe('CreateNewCohortModal', () => {

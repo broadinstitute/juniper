@@ -24,14 +24,14 @@ jest.mock('user/UserProvider', () => {
 
 jest.mock('api/api', () => ({
   ...jest.requireActual('api/api'),
-  fetchEnrolleeAdminTasks: jest.fn(() => Promise.resolve([])),
-  updateProfileForEnrollee: jest.fn(() => Promise.resolve()),
-  validateAddress: jest.fn(() => Promise.resolve({}))
+  fetchEnrolleeAdminTasks: jest.fn().mockResolvedValue([]),
+  updateProfileForEnrollee: jest.fn().mockResolvedValue({}),
+  validateAddress: jest.fn().mockResolvedValue({})
 }))
 
 test('renders enrollee profile', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
@@ -55,7 +55,7 @@ test('renders enrollee profile', async () => {
 
 test('displays updates before submitting', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
@@ -91,7 +91,7 @@ test('displays updates before submitting', async () => {
 
 test('profile update is sent appropriately with justification', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   jest.spyOn(Api, 'updateProfileForEnrollee')
   jest.spyOn(Store, 'addNotification').mockReturnValue('')
   const studyEnvContext = mockStudyEnvContext()
@@ -147,11 +147,11 @@ test('profile update is sent appropriately with justification', async () => {
 
 test('shows error message on address validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: false,
     invalidComponents: ['STREET_NAME']
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
@@ -185,8 +185,8 @@ test('shows error message on address validation', async () => {
 
 test('shows modal on improvable address validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: true,
     suggestedAddress: {
       street1: '415 Main St',
@@ -196,7 +196,7 @@ test('shows modal on improvable address validation', async () => {
       street2: '',
       state: 'MA'
     }
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
@@ -222,10 +222,10 @@ test('shows modal on improvable address validation', async () => {
 
 test('makes all fields green upon positive validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: true
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()

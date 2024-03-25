@@ -28,9 +28,7 @@ const jsalkProfile: Profile = {
 
 
 test('renders jsalk profile', async () => {
-  jest.spyOn(Api, 'findProfile').mockImplementation(
-    () => Promise.resolve(jsalkProfile))
-
+  jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const { RoutedComponent } = setupRouterTest(
     <ProvideFullTestUserContext
@@ -55,8 +53,7 @@ test('renders jsalk profile', async () => {
 })
 
 test('renders empty profile', async () => {
-  jest.spyOn(Api, 'findProfile').mockImplementation(
-    () => Promise.resolve({}))
+  jest.spyOn(Api, 'findProfile').mockResolvedValue({})
 
 
   const { RoutedComponent } = setupRouterTest(
@@ -78,8 +75,7 @@ test('renders empty profile', async () => {
 })
 
 test('opens expected modals', async () => {
-  jest.spyOn(Api, 'findProfile').mockImplementation(
-    () => Promise.resolve(jsalkProfile))
+  jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
 
   const { RoutedComponent } = setupRouterTest(
@@ -141,8 +137,7 @@ test('opens expected modals', async () => {
 })
 
 test('updates name properly', async () => {
-  jest.spyOn(Api, 'findProfile').mockImplementation(
-    () => Promise.resolve(jsalkProfile))
+  jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const updatedProfile: Profile = {
     ...jsalkProfile,
@@ -150,9 +145,7 @@ test('updates name properly', async () => {
     familyName: 'McTester'
   }
 
-  const updateProfileSpy = jest.spyOn(Api, 'updateProfile').mockImplementation(
-    () => Promise.resolve(updatedProfile))
-
+  const updateProfileSpy = jest.spyOn(Api, 'updateProfile').mockResolvedValue(updatedProfile)
 
   const { RoutedComponent } = setupRouterTest(
     <ProvideFullTestUserContext

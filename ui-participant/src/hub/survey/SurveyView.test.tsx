@@ -243,8 +243,7 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse')
-    .mockImplementation(() => Promise.resolve(mockHubResponse()))
+  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };

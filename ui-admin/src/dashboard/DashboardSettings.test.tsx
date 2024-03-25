@@ -13,7 +13,7 @@ test('DashboardSettings renders a list of AlertEditorViews', async () => {
   const noActivitiesAlert = alertDefaults['NO_ACTIVITIES_REMAIN']
   const welcomeAlert = alertDefaults['WELCOME']
 
-  jest.spyOn(Api, 'listPortalEnvAlerts').mockImplementation(() => Promise.resolve([noActivitiesAlert, welcomeAlert]))
+  jest.spyOn(Api, 'listPortalEnvAlerts').mockResolvedValue([noActivitiesAlert, welcomeAlert])
 
   render(<DashboardSettings portalContext={portalContext} studyEnvContext={studyEnvContext}/>)
 

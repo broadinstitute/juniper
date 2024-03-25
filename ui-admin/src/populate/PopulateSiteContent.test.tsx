@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { Store } from 'react-notifications-component'
 
 test('populate control can set params', async () => {
-  jest.spyOn(Api, 'populateSiteContent').mockImplementation(() => Promise.resolve())
+  jest.spyOn(Api, 'populateSiteContent').mockResolvedValue({})
   jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
   render(<PopulateSiteContent initialPortalShortcode={''}/>)
