@@ -45,6 +45,16 @@ test('upload api is called on submit', async () => {
     .toHaveBeenCalledWith(portalContext.portal.shortcode, file.name, 1, file))
 })
 
+test('uploading an invalid file type displays a validation error message', async () => {
+  const { RoutedComponent } = setupRouterTest(
+    <SiteMediaUploadModal portalContext={mockPortalContext()} onDismiss={jest.fn()} onSubmit={jest.fn()}/>)
+  render(RoutedComponent)
+  const file = new File(['hello'], 'hello.notallowed')
+  const fileInput = screen.getByTestId('fileInput') as HTMLInputElement
+  await userEvent.upload(fileInput, file)
+  expect(screen.getByText('This file extension is not supported.')).toBeInTheDocument()
+})
+
 test('cleanFileName handles names', async () => {
   expect(cleanFileName('hello.png')).toBe('hello.png')
 })

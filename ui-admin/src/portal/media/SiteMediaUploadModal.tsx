@@ -73,7 +73,7 @@ export default function SiteMediaUploadModal({
             {FileChooser}
             <span className="text-muted fst-italic ms-2">{file?.name}</span>
           </div>
-          {validationMessages.map(msg => <div className='text-danger'>{msg}</div>)}
+          {validationMessages.map((msg, index) => <div key={index} className='text-danger'>{msg}</div>)}
         </div>
         <label className="mt-3 mb-2 form-label">
           Name:
