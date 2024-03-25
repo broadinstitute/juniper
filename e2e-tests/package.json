@@ -7,6 +7,7 @@
     "test": "npx playwright test"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@playwright/test": "^1.42.1"
   },
   "dependencies": {

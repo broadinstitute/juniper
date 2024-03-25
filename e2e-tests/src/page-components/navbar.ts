@@ -35,7 +35,8 @@ export default class Navbar implements PageComponentInterface {
     return this.root.isVisible()
   }
 
-  async waitReady(): Promise<void> {
+  async waitReady(): Promise<this> {
     await expect(this.linkOurHealthLogo).toBeEnabled()
+    return this
   }
 }

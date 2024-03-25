@@ -15,7 +15,7 @@ export const Study = {
     }
   },
 
-  Standard: {
+  Common: {
     QLabel: {
       FullName: 'Full legal name',
       IsAdult: 'I am 18 years old or older.',

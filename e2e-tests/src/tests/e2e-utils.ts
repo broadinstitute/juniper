@@ -1,22 +1,14 @@
-import { expect, Page } from '@playwright/test'
+import { faker } from '@faker-js/faker'
+import { expect, Page, test } from '@playwright/test'
 import StudyEligibility from 'pages/ourhealth/study-eligibility'
 import Navbar from 'src/page-components/navbar'
 
 /**
  * Generate a random alphanumerical string
  */
-export function randomChars(length: number) {
-  let result = ''
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-  const charactersLength = characters.length
-  let counter = 0
-  while (counter < length) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength))
-    counter += 1
-  }
-  return result
+export const randomChars = (length: 6): string => {
+  return faker.string.alphanumeric(length)
 }
-
 
 /**
  * login as the given admin user using development mode.
@@ -49,7 +41,7 @@ export async function goToStudyEligibility(page: Page): Promise<StudyEligibility
   const navbar = new Navbar(page)
   await navbar.linkRegister.click()
   const prequal = new StudyEligibility(page)
-  await  prequal.waitReady()
+  await prequal.waitReady()
   return prequal
 }
 
@@ -65,4 +57,31 @@ export function emailAlias(email: string): string {
   const name = splintedEmail[0]
   const domain = splintedEmail[1]
   return `${name}+${Math.floor(Math.random() * 1000000000)}@${domain}`
+}
+
+/**
+ *
+ */
+export function localTime() {
+  return new Date().toLocaleTimeString()
+}
+
+/**
+ *
+ */
+export function logError(err: string) {
+  test.info().annotations.push({
+    type: 'Error',
+    description: `:x: @${localTime()}: ${err}`
+  })
+}
+
+/**
+ *
+ */
+export function logInfo(info: string) {
+  test.info().annotations.push({
+    type: 'Info',
+    description: `:heavy_check_mark: @${localTime()}: ${info}`
+  })
 }

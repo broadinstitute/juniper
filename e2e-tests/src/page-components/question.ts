@@ -58,8 +58,9 @@ export default class Question implements PageComponentInterface {
     return this.locator.isVisible()
   }
 
-  async waitReady(): Promise<void> {
-    return Promise.resolve(undefined)
+  async waitReady(): Promise<this> {
+    await expect(this.locator).toBeVisible()
+    return this
   }
 
   /** Question texts */
@@ -91,14 +92,14 @@ export default class Question implements PageComponentInterface {
         await new Textbox(this.page, { parent: this.locator }).fill(value)
         break
       default:
-        break
+        throw new Error(`undefined case: ${qRole}`)
     }
     return this
   }
 
   /**
    * Gets value in role attribute
-   * @returns {Promise<string>} radiogroup, input, etc.
+   * @returns {Promise<string>} radiogroup, textbox, etc.
    */
   private async role(): Promise<string> {
     const role = await this.locator.getAttribute('role')

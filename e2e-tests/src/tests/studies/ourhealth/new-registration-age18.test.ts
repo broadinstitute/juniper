@@ -21,13 +21,13 @@ test.describe('Home page', () => {
       await prequal.select(Study.OurHealth.QLabel.SouthAsianAncestry, 'Yes')
       expect(await prequal.progress()).toMatch('Answered 1/4 questions')
 
-      await prequal.select(Study.Standard.QLabel.UnderstandEnglish, 'Yes')
+      await prequal.select(Study.Common.QLabel.UnderstandEnglish, 'Yes')
       expect(await prequal.progress()).toMatch('Answered 2/4 questions')
 
-      await prequal.select(Study.Standard.QLabel.IsAdult, 'Yes')
+      await prequal.select(Study.Common.QLabel.IsAdult, 'Yes')
       expect(await prequal.progress()).toMatch('Answered 3/4 questions')
 
-      await prequal.select(Study.Standard.QLabel.LiveInUS, 'Yes')
+      await prequal.select(Study.Common.QLabel.LiveInUS, 'Yes')
       expect(await prequal.progress()).toMatch('Answered 4/4 questions')
 
       await prequal.submit()
@@ -75,8 +75,8 @@ test.describe('Home page', () => {
 
       progress = await consent.progress()
       expect(progress).toStrictEqual('Page 3 of 3')
-      await consent.fillIn(Study.Standard.QLabel.FullName, 'Tony Junior Stark') // TODO randomize
-      await consent.drawLine(Study.Standard.QLabel.Signature)
+      await consent.fillIn(Study.Common.QLabel.FullName, 'Tony Junior Stark') // TODO randomize
+      await consent.drawLine(Study.Common.QLabel.Signature)
 
       await consent.click('button', 'Complete')
     })

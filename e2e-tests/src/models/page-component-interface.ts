@@ -1,4 +1,4 @@
 export interface PageComponentInterface {
-  waitReady(): Promise<void>
+  waitReady(): Promise<this>
   isVisible(): Promise<boolean>
 }
