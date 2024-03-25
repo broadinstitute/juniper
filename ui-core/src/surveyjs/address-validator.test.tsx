@@ -2,7 +2,7 @@
 import { validateSurveyJsAddress } from 'src/surveyjs/address-validator'
 import { QuestionAddressValidationModel } from 'src/surveyjs/address-validation-modal-question'
 
-const mockI18n = (val: string) => val
+const mockI18n = (val: string) => `{${val}}`
 
 const setupMocks = (question: QuestionAddressValidationModel) => {
   jest
@@ -334,8 +334,8 @@ describe('invalid address validation', () => {
     }, errors, question, mockI18n)
 
     expect(errors).toEqual({
-      'mock_city_question': 'The city could not be verified.',
-      'mock_street1_question': 'The house number could not be verified.'
+      'mock_city_question': '{addressInvalidCity}',
+      'mock_street1_question': '{addressInvalidHouseNumber}'
     })
 
     expect(setQuestionStateSpy).toHaveBeenCalledWith({
@@ -387,12 +387,12 @@ describe('invalid address validation', () => {
     }, errors, question, mockI18n)
 
     expect(errors).toEqual({
-      'mock_city_question': 'Address could not be validated.',
-      'mock_country_question': 'Address could not be validated.',
-      'mock_postalCode_question': 'Address could not be validated.',
-      'mock_state_question': 'Address could not be validated.',
-      'mock_street1_question': 'Address could not be validated.',
-      'mock_street2_question': 'Address could not be validated.'
+      'mock_city_question': '{addressFailedToValidate}',
+      'mock_country_question': '{addressFailedToValidate}',
+      'mock_postalCode_question': '{addressFailedToValidate}',
+      'mock_state_question': '{addressFailedToValidate}',
+      'mock_street1_question': '{addressFailedToValidate}',
+      'mock_street2_question': '{addressFailedToValidate}'
     })
 
     expect(setQuestionStateSpy).toHaveBeenCalledWith({
