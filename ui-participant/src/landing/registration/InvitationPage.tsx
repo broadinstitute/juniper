@@ -25,7 +25,7 @@ export default function InvitationPage() {
     auth.signinRedirect({
       redirectMethod: 'replace',
       extraQueryParams: {
-        option: 'signup2',
+        option: 'signup',
         // eslint-disable-next-line camelcase
         login_hint: accountName
       }
