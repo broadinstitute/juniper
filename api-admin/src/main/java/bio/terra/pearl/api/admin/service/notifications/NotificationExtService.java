@@ -16,11 +16,10 @@ import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationExtService {
@@ -74,7 +73,7 @@ public class NotificationExtService {
 
     // bulk load the enrollees
     List<EnrolleeRuleData> enrolleeRuleData =
-            enrolleeRuleService.fetchData(
+        enrolleeRuleService.fetchData(
             enrollees.stream().map(enrollee -> enrollee.getId()).toList());
     NotificationContextInfo context = notificationDispatcher.loadContextInfo(config);
     for (EnrolleeRuleData enrolleeRuleDatum : enrolleeRuleData) {
