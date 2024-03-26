@@ -56,7 +56,7 @@ export default function HubPage() {
       })
     })
 
-    relations.forEach(enrolleeRelation => {
+    relations?.forEach(enrolleeRelation => {
       enrolleeRelation.relation.targetEnrollee.participantTasks.forEach(participantTask => {
         if (participantTask.status != 'COMPLETE') {
           totalTasks++
@@ -118,7 +118,7 @@ export default function HubPage() {
                 <HubPageParticipantSelector enrollee={enrollee} profile={enrollee.profile}
                   relationshipType={undefined}/>
               ))}
-              {relations.map(enrolleeRelation => (
+              {relations?.map(enrolleeRelation => (
                 <HubPageParticipantSelector enrollee={enrolleeRelation.relation.targetEnrollee}
                   profile={enrolleeRelation.profile}
                   relationshipType={enrolleeRelation.relation.relationshipType}/>
