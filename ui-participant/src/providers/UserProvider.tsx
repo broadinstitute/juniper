@@ -26,6 +26,7 @@ export type UserContextT = {
   enrollees: Enrollee[],
   relations: EnrolleeRelationDto[], // this data is included to speed initial hub rendering.  it is NOT kept current
   activeEnrollee?: Enrollee,
+  activeEnrolleeProfile?: Profile,
   ppUser?: PortalParticipantUser,
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
@@ -34,6 +35,7 @@ export type UserContextT = {
   updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
   setActiveEnrollee: (enrollee: Enrollee) => void
+  setActiveEnrolleeProfile: (profile: Profile) => void
 }
 
 /** current user object context */
@@ -42,6 +44,7 @@ const UserContext = React.createContext<UserContextT>({
   enrollees: [],
   relations: [],
   activeEnrollee: undefined,
+  activeEnrolleeProfile: undefined,
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -59,6 +62,9 @@ const UserContext = React.createContext<UserContextT>({
   },
   setActiveEnrollee: () => {
     throw new Error('context not yet initialized')
+  },
+  setActiveEnrolleeProfile: () => {
+    throw new Error('context not yet initialized')
   }
 })
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
@@ -73,6 +79,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeEnrollee, setActiveEnrollee] = useState<Enrollee | null>(null)
+  const [activeEnrolleeProfile, setActiveEnrolleeProfile] = useState<Profile | null>(null)
   const auth = useAuth()
   const navigate = useNavigate()
 
@@ -114,17 +121,44 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
       const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-      loginState.enrollees[matchIndex] = enrollee
+      if (matchIndex != -1) {
+        loginState.enrollees[matchIndex] = enrollee
+        setActiveEnrollee(enrollee)
+        setActiveEnrolleeProfile(enrollee.profile)
+      } else {
+        const index = loginState.relations.findIndex(relation =>
+          relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
+        if (index != -1) {
+          loginState.relations[index].relation.targetEnrollee = enrollee
+          setActiveEnrollee(enrollee)
+          setActiveEnrolleeProfile(loginState.relations[index].profile)
+        }
+      }
     } else {
       setLoginState(oldState => {
         if (oldState == null) {
           return oldState
         }
-        const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
-        updatedEnrollees.push(enrollee)
+        let updatedEnrollees = oldState.enrollees
+        const updatedRelations = oldState.relations
+        if (oldState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode) != -1) {
+          updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
+          updatedEnrollees.push(enrollee)
+          setActiveEnrollee(enrollee)
+          setActiveEnrolleeProfile(enrollee.profile)
+        } else {
+          const index = oldState.relations.findIndex(relation =>
+            relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
+          index != -1 ? updatedRelations[index].relation.targetEnrollee = enrollee : null
+          setActiveEnrollee(enrollee)
+          setActiveEnrolleeProfile(updatedRelations[index].profile)
+        }
         return {
           ...oldState,
-          enrollees: updatedEnrollees
+          enrollees: updatedEnrollees,
+          relations: updatedRelations,
+          activeEnrollee,
+          activeEnrolleeProfile
         }
       })
     }
@@ -158,7 +192,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     relations: loginState ? loginState.relations : [],
-    activeEnrollee: activeEnrollee || undefined,
+    activeEnrollee: activeEnrollee || loginState?.enrollees[0] || undefined,
+    activeEnrolleeProfile: activeEnrolleeProfile || loginState?.profile || undefined,
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
     loginUser,
@@ -166,7 +201,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     logoutUser,
     updateEnrollee,
     updateProfile,
-    setActiveEnrollee
+    setActiveEnrollee,
+    setActiveEnrolleeProfile
   }
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import Api, { Enrollee, Portal, Study } from '../api/api'
+import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -11,12 +11,22 @@ import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
+import HubPageParticipantSelector from './HubPageParticipantSelector'
 
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const { portal, portalEnv } = usePortalEnv()
-  const { enrollees, activeEnrollee, relations } = useUser()
+  const {
+    portal,
+    portalEnv
+  } = usePortalEnv()
+  const {
+    enrollees,
+    activeEnrollee,
+    activeEnrolleeProfile,
+    relations
+  } = useUser()
+
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
@@ -35,6 +45,26 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
   const hasActiveTasks = activeEnrollee?.participantTasks.some(isTaskActive)
+
+  function getTotalTasks() {
+    let totalTasks = 0
+    enrollees.forEach(enrollee => {
+      enrollee.participantTasks.forEach(participantTask => {
+        if (participantTask.status != 'COMPLETE') {
+          totalTasks++
+        }
+      })
+    })
+
+    relations.forEach(enrolleeRelation => {
+      enrolleeRelation.relation.targetEnrollee.participantTasks.forEach(participantTask => {
+        if (participantTask.status != 'COMPLETE') {
+          totalTasks++
+        }
+      })
+    })
+    return totalTasks
+  }
 
   return (
     <>
@@ -69,7 +99,36 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {activeEnrollee && <StudySection key={activeEnrollee.id} enrollee={activeEnrollee} portal={portal} /> }
+          <div className="dropdown hub-dashboard-background flex-grow-1">
+            <button
+              className="btn btn-outline-primary dropdown-toggle w-100 position-relative d-flex justify-content-center
+              align-items-center" type="button"
+              data-bs-toggle="dropdown" aria-expanded="false" id="dropdownMenuButton">
+              Participants and Tasks
+              <span className={` alert-circle position-absolute rounded-circle
+                    ${getTotalTasks() == 0 ? 'bg-secondary-subtle' : 'bg-danger text-white'}`}
+              style={{ right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
+                {getTotalTasks()}
+              </span>
+            </button>
+
+
+            <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
+              {enrollees.map((enrollee, index) => (
+                <HubPageParticipantSelector enrollee={enrollee} profile={enrollee.profile}
+                  relationshipType={undefined}/>
+              ))}
+              {relations.map((enrolleeRelation, index) => (
+                <HubPageParticipantSelector enrollee={enrolleeRelation.relation.targetEnrollee}
+                  profile={enrolleeRelation.profile}
+                  relationshipType={enrolleeRelation.relation.relationshipType}/>
+              ))}
+            </ul>
+          </div>
+          <br/>
+
+          {activeEnrollee && activeEnrolleeProfile && <StudySection key={activeEnrollee.id}
+            enrollee={activeEnrollee} portal={portal} profile={activeEnrolleeProfile}/>}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -82,18 +141,31 @@ export default function HubPage() {
 
 type StudySectionProps = {
   enrollee: Enrollee
-  portal: Portal
+  portal: Portal,
+  profile: Profile
 }
 
 const StudySection = (props: StudySectionProps) => {
-  const { enrollee, portal } = props
+  const {
+    enrollee,
+    portal,
+    profile
+  } = props
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
 
+  function getName(profile: Profile) {
+    if (!profile || !profile.givenName || !profile.familyName) {
+      return ''
+    }
+    return (profile && (`${profile.givenName} ${profile.familyName}`)) || ''
+  }
+
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
+      <h4 className="mb-4">{getName(profile)}</h4>
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
