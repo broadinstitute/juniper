@@ -51,7 +51,7 @@ export default abstract class PageBase implements RegistrationPageInterface {
   }
 
   // TODO
-  // eslint-disable-next-line @typescript-eslint/require-await
+  // eslint-disable-next-line @typescript-eslint/require-await,@typescript-eslint/no-unused-vars
   async check(question: string, value: string): Promise<this> {
     throw new Error('undefined')
   }
