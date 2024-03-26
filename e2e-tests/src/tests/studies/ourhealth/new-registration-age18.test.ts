@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
 import * as process from 'process'
-import { Study } from 'src/data/constants'
+import { Study } from 'src/data/constants-en'
 import StudyConsent from 'pages/ourhealth/study-consent'
 import StudyCreateAcct from 'pages/ourhealth/study-create-acct'
 import StudyDashboard, { Activities } from 'pages/ourhealth/study-dashboard'

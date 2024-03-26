@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
-import { Study } from 'src/data/constants'
+import { Study } from 'src/data/constants-en'
 import Question from 'src/page-components/question'
 import { goToStudyEligibility } from 'tests/e2e-utils'
 

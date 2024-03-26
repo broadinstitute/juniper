@@ -12,7 +12,7 @@ export default abstract class ComponentBase implements PageComponentInterface {
   }
 
   async isVisible(): Promise<boolean> {
-    return this.locator.isVisible()
+    return await this.locator.isVisible()
   }
 
   async waitReady(): Promise<this> {

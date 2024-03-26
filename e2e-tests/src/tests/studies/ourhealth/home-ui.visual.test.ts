@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
-import Home, { Label } from 'pages/ourhealth/home'
+import Home from 'pages/ourhealth/home'
+import { Study } from 'src/data/constants-en'
 
 test.describe('Home page', () => {
   test('UI @visual @ourhealth', {
@@ -12,19 +13,19 @@ test.describe('Home page', () => {
     await home.waitReady()
 
     await test.step('Verify "Help us understand cardiovascular disease risk"', async () => {
-      const header = home.divFor(Label.HelpUsUnderstand).locator('h2')
+      const header = home.divFor(Study.OurHealth.FAQ.HelpUsUnderstand).locator('h2')
       await expect(header).toHaveCount(1)
       await expect(home.linkBecomeParticipant).toHaveScreenshot('link-Become-Participant.png')
     })
 
     await test.step('Verify "Why is this needed"', async () => {
-      const header = home.divFor(Label.WhyIsNeeded).locator('h2')
+      const header = home.divFor(Study.OurHealth.FAQ.WhyIsNeeded).locator('h2')
       await expect(header).toHaveCount(1)
       await expect(home.linkScientificBackground).toHaveScreenshot('link-scientific-background.png')
     })
 
     await test.step('Verify "Who can join"', async () => {
-      const header = home.divFor(Label.WhoCanJoin).locator('h2')
+      const header = home.divFor(Study.OurHealth.FAQ.WhoCanJoin).locator('h2')
       await expect(header).toHaveCount(1)
       await expect(home.linkGetStarted).toHaveScreenshot('link-get-started.png')
       // verify list
@@ -33,7 +34,7 @@ test.describe('Home page', () => {
     })
 
     await test.step('Verify "How to Participate"', async () => {
-      const header = home.divFor(Label.HowToParticipant).locator('h2')
+      const header = home.divFor(Study.OurHealth.FAQ.HowToParticipant).locator('h2')
       await expect(header).toHaveCount(1)
       await expect(home.linkLearnMoreAboutParticipation).toHaveScreenshot('link-learn-more-participation.png')
       // verify steps display
@@ -45,7 +46,7 @@ test.describe('Home page', () => {
     })
 
     await test.step('Verify "Frequently Asked Questions"', async () => {
-      const header = home.divFor(Label.FAQ).locator('h2')
+      const header = home.divFor(Study.OurHealth.FAQ.FAQ).locator('h2')
       await expect(header).toHaveCount(1)
       await expect(home.linkMoreFAQ).toHaveScreenshot('link-more-faq.png')
       // verify expand & collapse question

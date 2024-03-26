@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test'
+import { expect, Locator, Page, Response } from '@playwright/test'
 import { RegistrationPageInterface } from 'src/models/registration-page-interface'
 import Footer from 'src/page-components/footer'
 import Navbar from 'src/page-components/navbar'
@@ -24,8 +24,8 @@ export default abstract class PageBase implements RegistrationPageInterface {
     return this
   }
 
-  async goTo(path: string): Promise<void> {
-    await this.page.goto(path)
+  async goTo(path: string): Promise<Response | null> {
+    return await this.page.goto(path)
   }
 
   /** Click +/- icon to expand or collapse hidden texts */
@@ -93,12 +93,13 @@ export default abstract class PageBase implements RegistrationPageInterface {
   }
 
   /** Click the Submit button **/
-  async submit(): Promise<void> {
+  async submit(): Promise<this> {
     await this.click('button', 'Submit')
+    return this
   }
 
   async progress(): Promise<string> {
-    return this.formProgress.locator('.sd-progress__text:visible').innerText()
+    return await this.formProgress.locator('.sd-progress__text:visible').innerText()
   }
 
   /**
