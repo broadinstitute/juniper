@@ -3,6 +3,10 @@ import { expect, Page, test } from '@playwright/test'
 import StudyEligibility from 'pages/ourhealth/study-eligibility'
 import Navbar from 'src/page-components/navbar'
 
+export type Study = 'OurHealth';
+
+export type Environment = 'local' | 'dev'
+
 /**
  * Generate a random alphanumerical string
  */
@@ -16,7 +20,7 @@ export const randomChars = (length: 6): string => {
  * @param {"local" | "dev"} env
  * @returns {string} Participant URL of a specific study
  */
-export function getParticipantUrl(study: 'OurHealth', env: 'local' | 'dev'): string {
+export function getParticipantUrl(study: Study, env: Environment): string {
   let url: string
   switch (study) {
     case 'OurHealth':

@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import OurhealthPageBase from 'pages/ourhealth/ourhealth-page-base'
+import OurHealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 
 export enum Activities
 {
@@ -13,7 +13,7 @@ export enum Activities
   MentalHealth = 'Mental Health'
 }
 
-export default class StudyDashboard extends OurhealthPageBase {
+export default class StudyDashboard extends OurHealthPageBase {
   title = 'Dashboard | OurHealth'
 
   private readonly root: Locator

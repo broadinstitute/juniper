@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test'
-import OurhealthPageBase from 'pages/ourhealth/ourhealth-page-base'
+import OurHealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 
-export default class StudySurveys extends OurhealthPageBase {
+export default class StudySurveys extends OurHealthPageBase {
   title = 'The Basics | OurHealth'
 
   constructor(page: Page) {
