@@ -115,6 +115,18 @@ public class EnrolleeFactory {
         return new EnrolleeBundle(enrollee, user, ppUser, portalEnv.getPortalId());
     }
 
+    public EnrolleeBundle buildWithPortalUser(String testName, PortalEnvironment portalEnv, StudyEnvironment studyEnv, Profile profile) {
+        ParticipantUser user = participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), testName);
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+                .profile(profile)
+                .participantUserId(user.getId())
+                .portalEnvironmentId(portalEnv.getId()).build();
+        ppUser = portalParticipantUserService.create(ppUser);
+        Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId(), ppUser.getProfileId());
+        enrollee.setProfile(ppUser.getProfile());
+        return new EnrolleeBundle(enrollee, user, ppUser, portalEnv.getPortalId());
+    }
+
     public EnrolleeAndProxy buildProxyAndGovernedEnrollee(String testName, String proxyEmail){
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);

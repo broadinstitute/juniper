@@ -2,7 +2,7 @@ package bio.terra.pearl.core.rule;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +11,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 public class EnrolleeRuleEvaluatorTests {
 
-    private EnrolleeRuleData EMPTY_RULE_DATA = new EnrolleeRuleData(null, null);
+    private EnrolleeProfileBundle EMPTY_RULE_DATA = new EnrolleeProfileBundle(null, null);
 
     @Test
     public void testStringEvaluation() throws Exception {
@@ -49,37 +49,37 @@ public class EnrolleeRuleEvaluatorTests {
     public void testStringVariableInsertion() throws Exception {
         String rule = "{profile.sexAtBirth} = 'M'";
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build())),
+                        new EnrolleeProfileBundle(null, Profile.builder().sexAtBirth("M").build())),
                 equalTo(true));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth("F").build())),
+                        new EnrolleeProfileBundle(null, Profile.builder().sexAtBirth("F").build())),
                 equalTo(false));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth(null).build())),
+                        new EnrolleeProfileBundle(null, Profile.builder().sexAtBirth(null).build())),
                 equalTo(false));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                        new EnrolleeRuleData(null, null)),
+                        new EnrolleeProfileBundle(null, null)),
                 equalTo(false));
     }
 
     @Test
     public void testBooleanVariableInsertion() throws Exception {
         String rule = "{enrollee.consented} = true";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(true).build(), null)), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().consented(false).build(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeProfileBundle(Enrollee.builder().consented(true).build(), null)), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeProfileBundle(Enrollee.builder().consented(false).build(), null)), equalTo(false));
     }
 
     @Test
     public void testUnrecognizedVariableInsertion() throws Exception {
         String rule = "{enrollee.doesNotExistZZZ} = true";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeProfileBundle(new Enrollee(), null)), equalTo(false));
     }
 
     @Test
     public void testVariableNullCheck() throws Exception {
         String rule = "{enrollee.shortcode} = null";
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(new Enrollee(), null)), equalTo(true));
-        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeRuleData(Enrollee.builder().shortcode("FOO").build(), null)), equalTo(false));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeProfileBundle(new Enrollee(), null)), equalTo(true));
+        assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule, new EnrolleeProfileBundle(Enrollee.builder().shortcode("FOO").build(), null)), equalTo(false));
     }
 
     /**

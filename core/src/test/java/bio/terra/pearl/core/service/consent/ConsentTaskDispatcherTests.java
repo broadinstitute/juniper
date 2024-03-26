@@ -10,7 +10,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -47,7 +47,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
                 .build();
-        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
+        EnrolleeProfileBundle enrolleeProfileBundle = new EnrolleeProfileBundle(enrollee, null);
         ConsentForm consent = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentForm(consent)
@@ -56,7 +56,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .build();
         List<StudyEnvironmentConsent> studyEnvConsents = Arrays.asList(studyEnvConsent);
         List<ParticipantTask> consentTasks = consentTaskDispatcher
-                .buildTasks(enrollee, enrolleeRuleData, ppUser.getId(), studyEnvConsents);
+                .buildTasks(enrollee, enrolleeProfileBundle, ppUser.getId(), studyEnvConsents);
 
         assertThat(consentTasks, hasSize(1));
         ParticipantTask newTask = consentTasks.get(0);
@@ -92,7 +92,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
                 .build();
-        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
+        EnrolleeProfileBundle enrolleeProfileBundle = new EnrolleeProfileBundle(enrollee, null);
         ConsentForm consent1 = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent1 = StudyEnvironmentConsent.builder()
                 .consentForm(consent1)
@@ -109,7 +109,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .build();
         List<StudyEnvironmentConsent> studyEnvConsents = Arrays.asList(studyEnvConsent1, studyEnvConsent2);
         List<ParticipantTask> consentTasks = consentTaskDispatcher
-                .buildTasks(enrollee, enrolleeRuleData, ppUser.getId(), studyEnvConsents);
+                .buildTasks(enrollee, enrolleeProfileBundle, ppUser.getId(), studyEnvConsents);
         consentTasks.sort(Comparator.comparing(ParticipantTask::getTaskOrder));
         assertThat(consentTasks, hasSize(2));
 

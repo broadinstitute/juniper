@@ -25,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 /**
  * Parses a rule expression into a {@link EnrolleeSearchExpression}. The rule expression is a string
  * in a similar format to SurveyJS rules, e.g., "{age} > 18".
@@ -46,7 +48,7 @@ public class EnrolleeSearchExpressionParser {
 
 
     public EnrolleeSearchExpression parseRule(String rule) throws RuleParsingException {
-        if (StringUtils.isBlank(rule)) {
+        if (Objects.isNull(rule) || StringUtils.isBlank(rule)) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
 

@@ -13,7 +13,7 @@ import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.rule.EnrolleeBundleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import java.util.List;
@@ -37,7 +37,7 @@ public class NotificationExtServiceAuthTests {
   @MockBean private EnrolleeService mockEnrolleeService;
   @MockBean private TriggerService mockTriggerService;
   @MockBean private NotificationDispatcher mockNotificationDispatcher;
-  @MockBean private EnrolleeRuleService mockEnrolleeRuleService;
+  @MockBean private EnrolleeBundleService mockEnrolleeBundleService;
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
   @MockBean private PortalEnvironmentService mockPortalEnvironmentService;
   @MockBean private StudyService mockStudyService;

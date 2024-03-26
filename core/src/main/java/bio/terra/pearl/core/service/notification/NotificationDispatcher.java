@@ -1,19 +1,23 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -40,8 +44,8 @@ public class NotificationDispatcher {
         for (Trigger config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
-                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeRuleData())) {
-                    dispatchNotificationAsync(config, event.getEnrolleeRuleData(),
+                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeProfileBundle())) {
+                    dispatchNotificationAsync(config, event.getEnrolleeProfileBundle(),
                             event.getPortalParticipantUser().getPortalEnvironmentId());
                 }
             }
@@ -55,32 +59,32 @@ public class NotificationDispatcher {
      * Where this will help is for bulk operations -- if we want to send out 2000 emails to all the ourHealth participants
      * because of a new survey, it lets us have just 1 database operation per notification instead of 2
      * */
-    protected void dispatchNotificationAsync(Trigger config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
-        Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId, null);
+    protected void dispatchNotificationAsync(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle, UUID portalEnvId) {
+        Notification notification = initializeNotification(config, enrolleeProfileBundle, portalEnvId, null);
         notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())
-                .processNotificationAsync(notification, config, enrolleeRuleData);
+                .processNotificationAsync(notification, config, enrolleeProfileBundle);
     }
 
-    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
+    public void dispatchNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle,
                                      NotificationContextInfo notificationContextInfo) {
-        dispatchNotification(config, enrolleeRuleData, notificationContextInfo, Map.of());
+        dispatchNotification(config, enrolleeProfileBundle, notificationContextInfo, Map.of());
     }
 
-    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
+    public void dispatchNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle,
                                      NotificationContextInfo notificationContextInfo, Map<String, String> customMessages) {
-        Notification notification = initializeNotification(config, enrolleeRuleData,
+        Notification notification = initializeNotification(config, enrolleeProfileBundle,
             notificationContextInfo.portalEnv().getId(), customMessages);
         senderMap.get(config.getDeliveryType())
-            .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
+                .processNotification(notification, config, enrolleeProfileBundle, notificationContextInfo);
     }
 
-    public void dispatchTestNotification(Trigger config, EnrolleeRuleData enrolleeRuleData) {
+    public void dispatchTestNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle) {
         senderMap.get(config.getDeliveryType())
-                .sendTestNotification(config, enrolleeRuleData);
+                .sendTestNotification(config, enrolleeProfileBundle);
     }
 
-    public Notification initializeNotification(Trigger config, EnrolleeRuleData ruleData,
+    public Notification initializeNotification(Trigger config, EnrolleeProfileBundle ruleData,
                                                UUID portalEnvId, Map<String, String> customMessages) {
         return Notification.builder()
                 .enrolleeId(ruleData.getEnrollee().getId())

@@ -82,6 +82,13 @@ export const FormOptions = ({ workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
+            <label className="form-label d-block">
+                  Eligibility Rule
+              <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, eligibilityRule: e.target.value
+                })}/>
+            </label>
           </div>
         </div>
     }

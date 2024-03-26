@@ -1,8 +1,8 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -12,7 +12,7 @@ import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.substitutors.EnrolleeEmailSubstitutor;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
@@ -49,12 +49,12 @@ public class EnrolleeEmailService implements NotificationSender {
 
     @Async
     @Override
-    public void processNotificationAsync(Notification notification, Trigger config, EnrolleeRuleData ruleData) {
+    public void processNotificationAsync(Notification notification, Trigger config, EnrolleeProfileBundle ruleData) {
         NotificationContextInfo contextInfo = loadContextInfo(config);
         processNotification(notification, config, ruleData, contextInfo);
     }
 
-    public void processNotification(Notification notification, Trigger config, EnrolleeRuleData ruleData,
+    public void processNotification(Notification notification, Trigger config, EnrolleeProfileBundle ruleData,
                                     NotificationContextInfo contextInfo) {
         if (!shouldSendEmail(config, ruleData, contextInfo)) {
             notification.setDeliveryStatus(NotificationDeliveryStatus.SKIPPED);
@@ -102,19 +102,19 @@ public class EnrolleeEmailService implements NotificationSender {
      * test emails, since we want all regular emails to be logged via notifications in standard ways.
      * */
     @Override
-    public void sendTestNotification(Trigger config, EnrolleeRuleData ruleData) {
+    public void sendTestNotification(Trigger config, EnrolleeProfileBundle ruleData) {
         NotificationContextInfo contextInfo = loadContextInfo(config);
         buildAndSendEmail(contextInfo, ruleData, new Notification());
     }
 
-    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData,
+    protected Mail buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeProfileBundle ruleData,
                                      Notification notification) {
         Mail mail = buildEmail(contextInfo, ruleData, notification);
         sendgridClient.sendEmail(mail);
         return mail;
     }
 
-    protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
+    protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeProfileBundle ruleData, Notification notification) {
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
             .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
         String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
@@ -141,7 +141,7 @@ public class EnrolleeEmailService implements NotificationSender {
     }
 
     public boolean shouldSendEmail(Trigger config,
-                                   EnrolleeRuleData ruleData,
+                                   EnrolleeProfileBundle ruleData,
                                    NotificationContextInfo contextInfo) {
         if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmail()) {
             log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
