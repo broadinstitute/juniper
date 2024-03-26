@@ -122,15 +122,7 @@ module.exports = {
       }
     }]
   },
-  overrides: [
-    {
-      files: 'e2e-tests/**/*.test.ts',
-      rules: {
-        // ESLint thinks the Playwright test function is jest's objects to its parameters.
-        'jest/no-done-callback': 'off'
-      }
-    }
-  ],
+  overrides: [],
   settings: {
     'import/resolver': {
       node: true,
@@ -138,7 +130,8 @@ module.exports = {
         project: [
           'ui-admin/tsconfig.json',
           'ui-core/tsconfig.json',
-          'ui-participant/tsconfig.json'
+          'ui-participant/tsconfig.json',
+          'e2e-tests/tsconfig.json'
         ]
       }
     },

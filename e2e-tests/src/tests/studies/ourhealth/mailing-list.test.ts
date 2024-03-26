@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { adminLogin, randomChars } from './e2e-utils'
+import { adminLogin, randomChars } from 'tests/e2e-utils'
 
 test('shows mailing list dialog on direct link', async ({ page }) => {
   await page.goto(`${process.env.PARTICIPANT_URL}/?showJoinMailingList=true `)
@@ -26,4 +26,6 @@ test('shows mailing list dialog on direct link', async ({ page }) => {
   const firstRow = tableBody.locator('tr').nth(0)
   await expect(firstRow.locator('td').nth(1)).toHaveText(email)
   await expect(firstRow.locator('td').nth(2)).toHaveText(name)
+
+  expect(test.info().errors).toHaveLength(0)
 })
