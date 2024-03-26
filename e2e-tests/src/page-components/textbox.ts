@@ -20,6 +20,6 @@ export default class Textbox extends ComponentBase {
   }
 
   async currentValue(): Promise<string> {
-    return this.locator.inputValue()
+    return await this.locator.inputValue()
   }
 }

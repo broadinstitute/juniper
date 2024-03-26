@@ -26,7 +26,7 @@ export default class Radiogroup extends  ComponentBase {
   }
 
   async allRadioLabels(): Promise<string[]> {
-    return this.locator.locator('label').allInnerTexts()
+    return await this.locator.locator('label').allInnerTexts()
   }
 
   radioButton(label: string | RegExp): Locator {

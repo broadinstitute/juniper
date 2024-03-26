@@ -51,7 +51,7 @@ export default class Question extends ComponentBase {
 
   /** Question texts */
   async title(): Promise<string> {
-    return (this.locator.locator('.sd-question__title .sv-string-viewer')).innerText()
+    return await (this.locator.locator('.sd-question__title .sv-string-viewer')).innerText()
   }
 
   async isRequired(): Promise<boolean> {

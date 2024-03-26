@@ -5,7 +5,7 @@ test('shows mailing list dialog on direct link', async ({ page }) => {
   await page.goto(`${process.env.PARTICIPANT_URL}/?showJoinMailingList=true `)
 
   await expect(page).toHaveTitle('Juniper Heart Demo')
-  const mailingListDialog = page.locator('div.modal-dialog')
+  const mailingListDialog = await page.locator('div.modal-dialog')
   await expect(mailingListDialog).toBeVisible()
   await expect(mailingListDialog.locator('h2'))
     .toHaveText('Join Mailing List')
