@@ -13,6 +13,7 @@ import static org.hamcrest.Matchers.samePropertyValuesAs;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -289,6 +290,12 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     }
 
+    @Test
+    @Transactional
+    public void testDetectingProxyNoPreEnroll(TestInfo info) {
+        Assertions.assertFalse(enrollmentService.isProxyEnrollment(null));
+        Assertions.assertFalse(enrollmentService.isProxyEnrollment(UUID.randomUUID()));
+    }
 
 
     @Autowired

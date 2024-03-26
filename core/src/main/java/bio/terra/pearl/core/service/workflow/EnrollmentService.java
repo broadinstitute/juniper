@@ -158,7 +158,7 @@ public class EnrollmentService {
      * If the user's response is true, it will return true, otherwise it returns false;
      */
    protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
-        PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
+        PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).orElse(null);
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
         }
@@ -253,7 +253,7 @@ public class EnrollmentService {
      */
     public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user,
                               PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
-        if (isProxyEnrollment(preEnrollResponseId)) {
+        if (preEnrollResponseId != null && isProxyEnrollment(preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
         return enroll(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
