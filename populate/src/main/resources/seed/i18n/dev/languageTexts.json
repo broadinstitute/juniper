@@ -64,7 +64,6 @@
   {"keyName": "addressInvalidStreetType", "text": "DEV_The street type could not be verified.", "language": "dev"},
   {"keyName": "addressNeedsSubpremise", "text": "DEV_Please provide a unit/suite number.", "language": "dev"},
   {"keyName": "addressFailedToValidate", "text": "DEV_Address could not be validated.", "language": "dev"},
-  {"keyName": "addressFailedToValidate", "text": "DEV_Address could not be validated.", "language": "dev"},
   {"keyName": "suggestBetterAddressHeader", "text": "DEV_Is this the correct address?", "language": "dev"},
   {"keyName": "suggestBetterAddressBody", "text": "DEV_We were able to verify a similar address. Please select which you would like to use.", "language": "dev"},
   {"keyName": "newAddress", "text": "DEV_New Address", "language": "dev"},

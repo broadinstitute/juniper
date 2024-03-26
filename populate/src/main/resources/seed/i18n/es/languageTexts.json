@@ -65,7 +65,6 @@
   {"keyName": "addressInvalidStreetType", "text": "El tipo de calle no pudo ser verificado.", "language": "es"},
   {"keyName": "addressNeedsSubpremise", "text": "Por favor, proporcione un número de unidad/suite.", "language": "es"},
   {"keyName": "addressFailedToValidate", "text": "No se pudo validar la dirección.", "language": "es"},
-  {"keyName": "addressFailedToValidate", "text": "La dirección no pudo ser validada.", "language": "es"},
   {"keyName": "suggestBetterAddressHeader", "text": "¿Es esta la dirección correcta?", "language": "es"},
   {"keyName": "suggestBetterAddressBody", "text": "Pudimos verificar una dirección similar. Por favor, seleccione cuál le gustaría usar.", "language": "es"},
   {"keyName": "newAddress", "text": "Nueva Dirección", "language": "es"},
