@@ -14,6 +14,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -41,6 +42,7 @@ public class SurveyExtServiceAuthTests {
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
   @MockBean private PortalEnvironmentService mockPortalEnvironmentService;
   @MockBean private EventService mockEventService;
+  @MockBean private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
   @Test
   public void createConfiguredRequiresPortalAuth() {

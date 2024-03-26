@@ -14,8 +14,9 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
@@ -45,18 +46,20 @@ public class SurveyTaskDispatcher {
     private EnrolleeService enrolleeService;
     private PortalParticipantUserService portalParticipantUserService;
     private EnrolleeRuleService enrolleeRuleService;
+    private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                 ParticipantTaskService participantTaskService,
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
-                                EnrolleeRuleService enrolleeRuleService) {
+                                EnrolleeRuleService enrolleeRuleService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.enrolleeRuleService = enrolleeRuleService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
 
@@ -191,8 +194,10 @@ public class SurveyTaskDispatcher {
         return Optional.empty();
     }
 
-    public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeRuleData);
+    public boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
+        return enrolleeSearchExpressionParser
+                .parseRule(eligibilityRule)
+                .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()));
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */

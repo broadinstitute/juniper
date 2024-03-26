@@ -108,7 +108,7 @@ public class ConsentTaskDispatcher {
                                                    List<StudyEnvironmentConsent> studyEnvConsents) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
-            if (enrolleeSearchExpressionParser
+            if (enrollee.isSubject() && enrolleeSearchExpressionParser
                     .parseRule(studyConsent.getEligibilityRule())
                     .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()))) {
                 ParticipantTask consentTask = buildTask(studyConsent, enrollee, portalParticipantUserId);
