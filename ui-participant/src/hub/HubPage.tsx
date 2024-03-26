@@ -12,10 +12,14 @@ import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
 import HubPageParticipantSelector from './HubPageParticipantSelector'
+import classNames from 'classnames'
+import { useNavigate } from 'react-router-dom'
 
 
 /** renders the logged-in hub page */
 export default function HubPage() {
+  const navigate = useNavigate()
+
   const {
     portal,
     portalEnv
@@ -64,6 +68,13 @@ export default function HubPage() {
       })
     })
     return totalTasks
+  }
+
+  function addParticipant() {
+    const matchedStudy = portal.portalStudies
+      .find(pStudy => pStudy.study.studyEnvironments[0].id === activeEnrollee?.studyEnvironmentId)?.study as Study
+    const studyShortCode = matchedStudy.shortcode
+    navigate(`/studies/${studyShortCode}/addParticipant`, { replace: true })
   }
 
   return (
@@ -126,9 +137,22 @@ export default function HubPage() {
             </ul>
           </div>
           <br/>
+          <br/>
 
           {activeEnrollee && activeEnrolleeProfile && <StudySection key={activeEnrollee.id}
             enrollee={activeEnrollee} portal={portal} profile={activeEnrolleeProfile}/>}
+
+          <div>
+            <button
+              className={classNames(
+                'btn btn-lg btn-outline-primary',
+                'd-flex justify-content-center', 'w-100'
+              )}
+              onClick={() => { addParticipant() }}
+            >
+                Add Participant
+            </button>
+          </div>
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>

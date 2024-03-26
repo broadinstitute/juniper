@@ -25,6 +25,7 @@ import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import InvitationPage from './landing/registration/InvitationPage'
+import AddParticipant from './hub/AddParticipant'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -108,6 +109,7 @@ function App() {
                           <Routes>
                             <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
                             <Route path="/studies/:studyShortcode">
+                              <Route path="addParticipant"  element={<AddParticipant/>}/>
                               <Route path="join/*" element={<StudyEnrollRouter/>}/>
                               <Route index element={<div>study specific page -- TBD</div>}/>
                               <Route path="*" element={<div>unmatched study route</div>}/>

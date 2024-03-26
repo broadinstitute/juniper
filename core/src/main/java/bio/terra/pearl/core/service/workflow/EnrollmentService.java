@@ -157,7 +157,7 @@ public class EnrollmentService {
      * If there is one, it will check the user's response to the question in the PreEnrollment Response.
      * If the user's response is true, it will return true, otherwise it returns false;
      */
-   protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
+    protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
         PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
@@ -169,7 +169,9 @@ public class EnrollmentService {
             return false;
         }
         String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
-        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, "stringValue");
+        Boolean proxyAnswer =
+                SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper,
+                        "stringValue");
         return proxyAnswer != null && proxyAnswer;
     }
 
@@ -256,6 +258,37 @@ public class EnrollmentService {
         if (isProxyEnrollment(preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
+        Optional<Enrollee> proxyEnrolleeOpt =
+                enrolleeService.findByParticipantUserIdAndStudyEnv(user.getId(), studyShortcode, environmentName);
+
+        if (proxyEnrolleeOpt.isPresent()) {
+            if (!proxyEnrolleeOpt.get().isSubject()) {
+               return  enrollProxyInStudy(proxyEnrolleeOpt.get(), environmentName, studyShortcode, user, portalParticipantUser,
+                        preEnrollResponseId);
+            } else {
+                throw new IllegalArgumentException("User is already enrolled in study");
+            }
+        }
         return enroll(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
+    }
+
+    private HubResponse enrollProxyInStudy(Enrollee proxyEnrollee, EnvironmentName envName, String studyShortcode, ParticipantUser user,
+                                           PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
+        PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId(), true);
+        proxyEnrollee.setSubject(true);
+        proxyEnrollee.setPreEnrollmentResponseId(preEnrollResponseId);
+        enrolleeService.update(proxyEnrollee);
+        if (preEnrollResponse != null) {
+            preEnrollResponse.setCreatingParticipantUserId(user.getId());
+            preEnrollResponse.setPortalParticipantUserId(portalParticipantUser.getId());
+            preEnrollmentResponseDao.update(preEnrollResponse);
+        }
+        EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(proxyEnrollee, portalParticipantUser);
+        log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
+                user.getId(), studyShortcode, proxyEnrollee.getShortcode(), proxyEnrollee.getParticipantTasks().size());
+        HubResponse hubResponse = eventService.buildHubResponse(event, proxyEnrollee);
+        return hubResponse;
     }
 }

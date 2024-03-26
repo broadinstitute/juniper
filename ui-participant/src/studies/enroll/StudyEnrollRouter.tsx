@@ -83,17 +83,17 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   // when either preEnrollment or login status changes, navigate accordingly
   useEffect(() => {
-    const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
-    if (isAlreadyEnrolled) {
-      const hubUpdate: HubUpdate = {
-        message: {
-          title: `You are already enrolled in ${studyName}.`,
-          type: alertDefaults['STUDY_ALREADY_ENROLLED'].type as AlertLevel
-        }
-      }
-      navigate('/hub', { replace: true, state: hubUpdate })
-      return
-    }
+    // const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+    // if (isAlreadyEnrolled) {
+    //   const hubUpdate: HubUpdate = {
+    //     message: {
+    //       title: `You are already enrolled in ${studyName}.`,
+    //       type: alertDefaults['STUDY_ALREADY_ENROLLED'].type as AlertLevel
+    //     }
+    //   }
+    //   navigate('/hub', { replace: true, state: hubUpdate })
+    //   return
+    // }
     if (mustProvidePassword) {
       return
     }
