@@ -1,21 +1,17 @@
 import { expect, Locator, Page, Response } from '@playwright/test'
 import { RegistrationPageInterface } from 'src/models/registration-page-interface'
 import Footer from 'src/page-components/footer'
-import Navbar from 'src/page-components/navbar'
 import Question from 'src/page-components/question'
 
 export default abstract class PageBase implements RegistrationPageInterface {
   page: Page
 
-  title = 'OurHealth'
-
-  navbar: Navbar
-
   footer: Footer
+
+  abstract title: string
 
   protected constructor(page: Page) {
     this.page = page
-    this.navbar = new Navbar(page)
     this.footer = new Footer(page)
   }
 

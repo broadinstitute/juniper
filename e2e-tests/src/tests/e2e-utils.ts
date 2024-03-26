@@ -11,6 +11,26 @@ export const randomChars = (length: 6): string => {
 }
 
 /**
+ *
+ * @param {"OurHealth"} study
+ * @param {"local" | "dev"} env
+ * @returns {string} Participant URL of a specific study
+ */
+export function getParticipantUrl(study: 'OurHealth', env: 'local' | 'dev'): string {
+  let url: string
+  switch (study) {
+    case 'OurHealth':
+      url = env === 'local'
+        ? 'https://sandbox.ourhealth.localhost:3001'
+        : 'https://ourhealth.ddp-dev.envs.broadinstitute.org'
+      break
+    default:
+      throw new Error(`undefined study name: ${study}`)
+  }
+  return url
+}
+
+/**
  * login as the given admin user using development mode.
  * This should eventually handle checking to see if the user is already logged in.
  */

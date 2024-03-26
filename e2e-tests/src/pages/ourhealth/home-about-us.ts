@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test'
-import PageBase from 'src/models/page-base'
+import OurhealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 
-export  default  class HomeAboutUs extends PageBase {
+export  default  class HomeAboutUs extends OurhealthPageBase {
   title = 'About Us | OurHealth'
 
   // Locators to find web elements

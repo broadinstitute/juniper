@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test'
-import PageBase from 'src/models/page-base'
+import OurhealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 
-export default class StudyCreateAcct extends PageBase {
+export default class StudyCreateAcct extends OurhealthPageBase {
   constructor(page: Page) {
     super(page)
   }

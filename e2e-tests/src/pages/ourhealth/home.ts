@@ -1,8 +1,8 @@
 import { Page, expect, Locator } from '@playwright/test'
+import OurhealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 import { Study } from 'src/data/constants-en'
-import PageBase from 'src/models/page-base'
 
-export  default  class Home extends PageBase {
+export  default  class Home extends OurhealthPageBase {
   // Locators to find web elements
   linkBecomeParticipant: Locator
 
