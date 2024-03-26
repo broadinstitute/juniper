@@ -114,11 +114,11 @@ export default function HubPage() {
 
 
             <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-              {enrollees.map((enrollee, index) => (
+              {enrollees.map(enrollee => (
                 <HubPageParticipantSelector enrollee={enrollee} profile={enrollee.profile}
                   relationshipType={undefined}/>
               ))}
-              {relations.map((enrolleeRelation, index) => (
+              {relations.map(enrolleeRelation => (
                 <HubPageParticipantSelector enrollee={enrolleeRelation.relation.targetEnrollee}
                   profile={enrolleeRelation.profile}
                   relationshipType={enrolleeRelation.relation.relationshipType}/>

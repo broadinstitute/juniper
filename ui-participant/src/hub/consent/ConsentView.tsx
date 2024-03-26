@@ -155,9 +155,6 @@ export default function ConsentView() {
 /** Gets the enrollee object matching the given study */
 export function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal,
   activeEnrollee: Enrollee|undefined): Enrollee {
-  const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
-    .studyEnvironments[0].id
-
   const enrollee = activeEnrollee
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
