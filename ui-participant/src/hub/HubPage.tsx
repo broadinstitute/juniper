@@ -24,7 +24,8 @@ export default function HubPage() {
     enrollees,
     activeEnrollee,
     activeEnrolleeProfile,
-    relations
+    relations,
+    profile
   } = useUser()
 
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
@@ -114,10 +115,10 @@ export default function HubPage() {
 
 
             <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-              {enrollees.map(enrollee => (
-                <HubPageParticipantSelector enrollee={enrollee} profile={enrollee.profile}
-                  relationshipType={undefined}/>
-              ))}
+
+              <HubPageParticipantSelector enrollee={enrollees[0]} profile={profile}
+                relationshipType={undefined}/>
+
               {relations?.map(enrolleeRelation => (
                 <HubPageParticipantSelector enrollee={enrolleeRelation.relation.targetEnrollee}
                   profile={enrolleeRelation.profile}

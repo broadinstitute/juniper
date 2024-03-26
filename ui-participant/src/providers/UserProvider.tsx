@@ -35,7 +35,7 @@ export type UserContextT = {
   updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
   setActiveEnrollee: (enrollee: Enrollee) => void
-  setActiveEnrolleeProfile: (profile: Profile) => void
+  setActiveEnrolleeProfile: (profile: Profile | undefined) => void
 }
 
 /** current user object context */
@@ -79,7 +79,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [activeEnrollee, setActiveEnrollee] = useState<Enrollee | null>(null)
-  const [activeEnrolleeProfile, setActiveEnrolleeProfile] = useState<Profile | null>(null)
+  const [activeEnrolleeProfile, setActiveEnrolleeProfile] = useState<Profile | undefined>(undefined)
   const auth = useAuth()
   const navigate = useNavigate()
 
