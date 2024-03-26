@@ -8,7 +8,6 @@ import Registration from './Registration'
 import { usePreRegResponseId } from 'browserPersistentState'
 import RegistrationUnauthed from './RegistrationUnauthed'
 
-
 export type RegistrationContextT = {
   preRegSurvey?: Survey,
   preRegResponseId: string | null,

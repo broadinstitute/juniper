@@ -25,7 +25,7 @@ public class ApplicationRoutingPathsTests extends BaseSpringBootTest {
                 .build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.live).build();
-        String result = routingPaths.getParticipantBaseUrl(portalEnv, "whatevs");
+        String result = routingPaths.getParticipantBaseUrl(portalEnv, portalEnvironmentConfig, "whatevs");
         assertThat(result, equalTo("https://newstudy.org"));
     }
 
@@ -36,7 +36,7 @@ public class ApplicationRoutingPathsTests extends BaseSpringBootTest {
                 .build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
-        String result = routingPaths.getParticipantBaseUrl(portalEnv, "whatevs");
+        String result = routingPaths.getParticipantBaseUrl(portalEnv, portalEnvironmentConfig,"whatevs");
         assertThat(result, equalTo("https://irb.newstudy.org"));
     }
 
@@ -47,7 +47,7 @@ public class ApplicationRoutingPathsTests extends BaseSpringBootTest {
                 .build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
                 .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.sandbox).build();
-        String result = routingPaths.getParticipantBaseUrl(portalEnv, "snazzportal");
+        String result = routingPaths.getParticipantBaseUrl(portalEnv, portalEnvironmentConfig,"snazzportal");
         assertThat(result, equalTo("https://sandbox.snazzportal.localhost:3001"));
     }
 }
