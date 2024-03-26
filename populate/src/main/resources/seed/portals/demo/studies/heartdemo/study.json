@@ -23,6 +23,7 @@
     "emails/studyEnroll.json",
     "emails/consentReminder.json",
     "emails/surveyReminder.json",
+    "emails/invite.json",
     "emails/adHoc.json"
   ],
   "studyEnvironmentDtos": [
@@ -77,6 +78,9 @@
       },{
         "triggerType": "AD_HOC",
         "populateFileName": "emails/adHoc.json"
+      },{
+        "triggerType": "AD_HOC",
+        "populateFileName": "emails/invite.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",
@@ -87,7 +91,8 @@
         "enrollees/oldVersion.json",
         "enrollees/child1.json",
         "enrollees/child1Family2.json",
-        "enrollees/child2Family2.json"
+        "enrollees/child2Family2.json",
+        "enrollees/invited.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,
