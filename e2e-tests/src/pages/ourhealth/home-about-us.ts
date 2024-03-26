@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import PageBase from 'pages/ourhealth/page-base'
+import PageBase from 'src/models/page-base'
 
 export  default  class HomeAboutUs extends PageBase {
   title = 'About Us | OurHealth'
@@ -17,8 +17,9 @@ export  default  class HomeAboutUs extends PageBase {
   }
 
   /* Minimum checks to ensure the page is loaded */
-  async waitReady(): Promise<void> {
+  async waitReady(): Promise<this> {
     await super.waitReady()
     await expect(this.page).toHaveURL(/\/aboutUs$/)
+    return this
   }
 }

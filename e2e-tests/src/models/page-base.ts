@@ -1,11 +1,11 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { RegisterPageInterface } from 'src/models/register-page-interface'
+import { RegistrationPageInterface } from 'src/models/registration-page-interface'
 import Footer from 'src/page-components/footer'
 import Navbar from 'src/page-components/navbar'
 import Question from 'src/page-components/question'
 
-export default abstract class PageBase implements RegisterPageInterface {
-  protected readonly page: Page
+export default abstract class PageBase implements RegistrationPageInterface {
+  page: Page
 
   title = 'OurHealth'
 
@@ -19,8 +19,9 @@ export default abstract class PageBase implements RegisterPageInterface {
     this.footer = new Footer(page)
   }
 
-  async waitReady(): Promise<void> {
+  async waitReady(): Promise<this> {
     await expect(this.page).toHaveTitle(this.title)
+    return this
   }
 
   async goTo(path: string): Promise<void> {

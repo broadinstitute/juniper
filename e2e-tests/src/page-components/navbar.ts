@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/page-components/component-base'
+import ComponentBase from 'src/models/component-base'
 
 /* navbar is located at the top of OurHealth page */
 export default class Navbar extends ComponentBase {

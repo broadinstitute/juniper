@@ -1,5 +1,5 @@
 import { Page, expect, Locator } from '@playwright/test'
-import PageBase from 'pages/ourhealth/page-base'
+import PageBase from 'src/models/page-base'
 
 export enum Label {
   HelpUsUnderstand = 'Help us understand cardiovascular disease risk among South Asian populations.',
@@ -37,9 +37,10 @@ export  default  class Home extends PageBase {
   }
 
   /* Minimum checks to ensure the page is loaded */
-  async waitReady(): Promise<void> {
+  async waitReady(): Promise<this> {
     await super.waitReady()
     await this.navbar.isVisible()
     await expect(this.linkBecomeParticipant).toBeEnabled()
+    return this
   }
 }

@@ -1,5 +1,5 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/page-components/component-base'
+import ComponentBase from 'src/models/component-base'
 import Question from 'src/page-components/question'
 
 export default class Radiogroup extends  ComponentBase {

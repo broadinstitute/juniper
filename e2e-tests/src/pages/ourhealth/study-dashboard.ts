@@ -1,5 +1,5 @@
 import { expect, Locator, Page } from '@playwright/test'
-import PageBase from 'pages/ourhealth/page-base'
+import PageBase from 'src/models/page-base'
 
 export enum Activities
 {
@@ -18,7 +18,7 @@ export default class StudyDashboard extends PageBase {
 
   private readonly root: Locator
 
-  constructor(protected readonly page: Page) {
+  constructor(page: Page) {
     super(page)
     this.root = this.page.locator('main.hub-dashboard')
   }
@@ -27,9 +27,10 @@ export default class StudyDashboard extends PageBase {
     return this.root
   }
 
-  async waitReady(): Promise<void> {
+  async waitReady(): Promise<this> {
     await super.waitReady()
     await this.activity.isVisible(Activities.Consent)
+    return this
   }
 
   /* inner class */

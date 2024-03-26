@@ -7,6 +7,7 @@ interface InterfaceConstructor {
 
 
 export interface PageInterface {
-  readonly title: string
-  waitReady(): Promise<void>
+  page: Page
+  title: string
+  waitReady(): Promise<this>
 }
