@@ -26,7 +26,7 @@ public class EnrolleeRuleService {
         this.participantUserService = participantUserService;
     }
 
-    public EnrolleeRuleData fetch(Enrollee enrollee) {
+    public EnrolleeRuleData fetchData(Enrollee enrollee) {
         return new EnrolleeRuleData(enrollee,
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null),
                 participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(() -> new IllegalStateException("no participant user for enrollee")));

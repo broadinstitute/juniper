@@ -114,7 +114,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
     }
 
     public EnrolleeCreationEvent publishEnrolleeCreationEvent(Enrollee enrollee, PortalParticipantUser ppUser) {
-        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetch(enrollee);
+        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetchData(enrollee);
         EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
@@ -175,7 +175,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
      */
     protected void populateEvent(EnrolleeEvent event) {
         Enrollee enrollee = event.getEnrollee();
-        event.setEnrolleeRuleData(enrolleeRuleService.fetch(enrollee));
+        event.setEnrolleeRuleData(enrolleeRuleService.fetchData(enrollee));
         enrollee.getParticipantTasks().clear();
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
     }
