@@ -40,6 +40,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("portalEnv", contextInfo.portalEnv());
         valueMap.put("envConfig", contextInfo.portalEnvConfig());
         valueMap.put("dashboardLink", getDashboardLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal(), contextInfo.study()));
+        valueMap.put("dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal()));
         valueMap.put("siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal()));
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
