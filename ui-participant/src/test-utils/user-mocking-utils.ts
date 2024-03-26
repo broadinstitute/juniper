@@ -9,6 +9,11 @@ export const mockUseUser = (isAnonymous: boolean) => {
     updateEnrollee: jest.fn(),
     loginUserInternal: jest.fn(),
     loginUser: jest.fn(),
-    enrollees: []
+    enrollees: [],
+    relations: [],
+    activeEnrollee: undefined,
+    activeEnrolleeProfile: undefined,
+    setActiveEnrollee: jest.fn(),
+    setActiveEnrolleeProfile: jest.fn()
   }
 }
