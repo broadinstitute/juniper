@@ -13,9 +13,9 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.rule.EnrolleeBundleService;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
@@ -44,19 +44,19 @@ public class SurveyTaskDispatcher {
     private ParticipantTaskService participantTaskService;
     private EnrolleeService enrolleeService;
     private PortalParticipantUserService portalParticipantUserService;
-    private EnrolleeBundleService enrolleeBundleService;
+    private EnrolleeRuleService enrolleeRuleService;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                 ParticipantTaskService participantTaskService,
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
-                                EnrolleeBundleService enrolleeBundleService) {
+                                EnrolleeRuleService enrolleeRuleService) {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
         this.portalParticipantUserService = portalParticipantUserService;
-        this.enrolleeBundleService = enrolleeBundleService;
+        this.enrolleeRuleService = enrolleeRuleService;
     }
 
 
@@ -72,7 +72,7 @@ public class SurveyTaskDispatcher {
         if (ppUsers.size() != enrollees.size()) {
             throw new IllegalStateException("Task dispatch failed: Portal participant user not matched to enrollee");
         }
-        List<EnrolleeProfileBundle> enrolleeProfileBundles = enrolleeBundleService.fetchAllWithProfile(enrollees.stream().map(Enrollee::getId).toList());
+        List<EnrolleeRuleData> enrolleeRuleData = enrolleeRuleService.fetchAllWithProfile(enrollees.stream().map(Enrollee::getId).toList());
 
         UUID auditOperationId = UUID.randomUUID();
         List<ParticipantTask> createdTasks = new ArrayList<>();
@@ -83,7 +83,7 @@ public class SurveyTaskDispatcher {
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
             } else {
                 List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
-                taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeProfileBundles.get(i),
+                taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleData.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
             }
             if (taskOpt.isPresent()) {
@@ -126,7 +126,7 @@ public class SurveyTaskDispatcher {
             if (studyEnvSurvey.getSurvey().isAssignToAllNewEnrollees()) {
                 Optional<ParticipantTask> taskOpt = buildTaskIfApplicable(enrolleeEvent.getEnrollee(),
                         enrolleeEvent.getEnrollee().getParticipantTasks(),
-                        enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeProfileBundle(),
+                        enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeRuleData(),
                         studyEnvSurvey, studyEnvSurvey.getSurvey());
                 if (taskOpt.isPresent()) {
                     ParticipantTask task = taskOpt.get();
@@ -180,9 +180,9 @@ public class SurveyTaskDispatcher {
     public Optional<ParticipantTask> buildTaskIfApplicable(Enrollee enrollee,
                                                       List<ParticipantTask> existingEnrolleeTasks,
                                                       PortalParticipantUser portalParticipantUser,
-                                                           EnrolleeProfileBundle enrolleeProfileBundle,
+                                                           EnrolleeRuleData enrolleeRuleData,
                                                       StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
-        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeProfileBundle)) {
+        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeRuleData)) {
             ParticipantTask task = buildTask(enrollee, portalParticipantUser, studyEnvSurvey, studyEnvSurvey.getSurvey());
             if (!isDuplicateTask(studyEnvSurvey, task, existingEnrolleeTasks)) {
                 return Optional.of(task);
@@ -191,8 +191,8 @@ public class SurveyTaskDispatcher {
         return Optional.empty();
     }
 
-    public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeProfileBundle enrolleeProfileBundle) {
-        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeProfileBundle);
+    public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
+        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeRuleData);
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */

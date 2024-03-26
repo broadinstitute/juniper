@@ -4,7 +4,7 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -20,16 +20,16 @@ import java.util.Map;
 @Slf4j
 public class EnrolleeEmailSubstitutor implements StringLookup {
     private final Map<String, Object> valueMap = new HashMap<>();
-    private EnrolleeProfileBundle enrolleeProfileBundle;
+    private EnrolleeRuleData enrolleeRuleData;
     private NotificationContextInfo contextInfo;
     private final ApplicationRoutingPaths routingPaths;
 
-    protected EnrolleeEmailSubstitutor(EnrolleeProfileBundle ruleData, NotificationContextInfo contextInfo,
+    protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, NotificationContextInfo contextInfo,
                                        ApplicationRoutingPaths routingPaths, Map<String, String> messages) {
-        this.enrolleeProfileBundle = ruleData;
+        this.enrolleeRuleData = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;
-        valueMap.putAll(Map.of("profile", enrolleeProfileBundle.getProfile(),
+        valueMap.putAll(Map.of("profile", enrolleeRuleData.getProfile(),
                 "portalEnv", contextInfo.portalEnv(),
                 "envConfig", contextInfo.portalEnv().getPortalEnvironmentConfig(),
                 "dashboardLink", getDashboardLink(contextInfo.portalEnv(),
@@ -49,13 +49,13 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
-    public static StringSubstitutor newSubstitutor(EnrolleeProfileBundle ruleData,
+    public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
                                                    NotificationContextInfo contextInfo,
                                                    ApplicationRoutingPaths routingPaths) {
         return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, null));
     }
 
-    public static StringSubstitutor newSubstitutor(EnrolleeProfileBundle ruleData,
+    public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
                                                    NotificationContextInfo contextInfo,
                                                    ApplicationRoutingPaths routingPaths,
                                                    Map<String, String> customMessages) {
@@ -70,7 +70,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
-                    key, contextInfo.portal().getShortcode(), enrolleeProfileBundle.getEnrollee().getShortcode());
+                    key, contextInfo.portal().getShortcode(), enrolleeRuleData.getEnrollee().getShortcode());
         }
         return "";
     }

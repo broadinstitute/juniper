@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
@@ -44,8 +44,8 @@ public class NotificationDispatcher {
         for (Trigger config: configs) {
             Class configClass = config.getEventType().eventClass;
             if (configClass.isInstance(event)) {
-                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeProfileBundle())) {
-                    dispatchNotificationAsync(config, event.getEnrolleeProfileBundle(),
+                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeRuleData())) {
+                    dispatchNotificationAsync(config, event.getEnrolleeRuleData(),
                             event.getPortalParticipantUser().getPortalEnvironmentId());
                 }
             }
@@ -59,32 +59,32 @@ public class NotificationDispatcher {
      * Where this will help is for bulk operations -- if we want to send out 2000 emails to all the ourHealth participants
      * because of a new survey, it lets us have just 1 database operation per notification instead of 2
      * */
-    protected void dispatchNotificationAsync(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle, UUID portalEnvId) {
-        Notification notification = initializeNotification(config, enrolleeProfileBundle, portalEnvId, null);
+    protected void dispatchNotificationAsync(Trigger config, EnrolleeRuleData enrolleeRuleData, UUID portalEnvId) {
+        Notification notification = initializeNotification(config, enrolleeRuleData, portalEnvId, null);
         notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())
-                .processNotificationAsync(notification, config, enrolleeProfileBundle);
+                .processNotificationAsync(notification, config, enrolleeRuleData);
     }
 
-    public void dispatchNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle,
+    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
                                      NotificationContextInfo notificationContextInfo) {
-        dispatchNotification(config, enrolleeProfileBundle, notificationContextInfo, Map.of());
+        dispatchNotification(config, enrolleeRuleData, notificationContextInfo, Map.of());
     }
 
-    public void dispatchNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle,
+    public void dispatchNotification(Trigger config, EnrolleeRuleData enrolleeRuleData,
                                      NotificationContextInfo notificationContextInfo, Map<String, String> customMessages) {
-        Notification notification = initializeNotification(config, enrolleeProfileBundle,
+        Notification notification = initializeNotification(config, enrolleeRuleData,
             notificationContextInfo.portalEnv().getId(), customMessages);
         senderMap.get(config.getDeliveryType())
-                .processNotification(notification, config, enrolleeProfileBundle, notificationContextInfo);
+                .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
     }
 
-    public void dispatchTestNotification(Trigger config, EnrolleeProfileBundle enrolleeProfileBundle) {
+    public void dispatchTestNotification(Trigger config, EnrolleeRuleData enrolleeRuleData) {
         senderMap.get(config.getDeliveryType())
-                .sendTestNotification(config, enrolleeProfileBundle);
+                .sendTestNotification(config, enrolleeRuleData);
     }
 
-    public Notification initializeNotification(Trigger config, EnrolleeProfileBundle ruleData,
+    public Notification initializeNotification(Trigger config, EnrolleeRuleData ruleData,
                                                UUID portalEnvId, Map<String, String> customMessages) {
         return Notification.builder()
                 .enrolleeId(ruleData.getEnrollee().getId())

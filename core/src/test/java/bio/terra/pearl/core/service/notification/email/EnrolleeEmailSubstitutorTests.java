@@ -11,7 +11,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.substitutors.EnrolleeEmailSubstitutor;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void profileVariablesAreReplaced() {
         Profile profile = Profile.builder().givenName("tester").build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
 
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder().build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("profileVariablesAreReplaced")
@@ -47,7 +47,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void envConfigVariablesAreReplaced() {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -64,7 +64,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void studyNameVariablesAreReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -82,7 +82,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void testDashLinkVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -107,7 +107,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void testMailLinkVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@test.edu")
                 .build();
@@ -125,7 +125,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void testImageVariablesReplaced(TestInfo info) {
         Profile profile = Profile.builder().build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeProfileBundle ruleData = new EnrolleeProfileBundle(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();

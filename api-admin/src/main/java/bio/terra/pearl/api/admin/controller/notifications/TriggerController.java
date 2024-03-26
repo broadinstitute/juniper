@@ -8,15 +8,16 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 
 @Controller
 public class TriggerController implements TriggerApi {
@@ -78,15 +79,15 @@ public class TriggerController implements TriggerApi {
   public ResponseEntity<Object> test(
       String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    EnrolleeProfileBundle enrolleeProfileBundle =
-        objectMapper.convertValue(body, EnrolleeProfileBundle.class);
+    EnrolleeRuleData enrolleeRuleData =
+        objectMapper.convertValue(body, EnrolleeRuleData.class);
     triggerExtService.test(
         operator,
         portalShortcode,
         studyShortcode,
         EnvironmentName.valueOfCaseInsensitive(envName),
         configId,
-        enrolleeProfileBundle);
+            enrolleeRuleData);
     return ResponseEntity.ok().build();
   }
 

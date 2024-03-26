@@ -1,8 +1,5 @@
 package bio.terra.pearl.api.admin.service.notifications;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -13,12 +10,9 @@ import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.rule.EnrolleeBundleService;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +20,13 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = NotificationExtService.class)
 @WebMvcTest
@@ -37,7 +38,8 @@ public class NotificationExtServiceAuthTests {
   @MockBean private EnrolleeService mockEnrolleeService;
   @MockBean private TriggerService mockTriggerService;
   @MockBean private NotificationDispatcher mockNotificationDispatcher;
-  @MockBean private EnrolleeBundleService mockEnrolleeBundleService;
+  @MockBean
+  private EnrolleeRuleService mockEnrolleeRuleService;
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
   @MockBean private PortalEnvironmentService mockPortalEnvironmentService;
   @MockBean private StudyService mockStudyService;

@@ -12,21 +12,22 @@ import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.rule.EnrolleeBundleService;
-import bio.terra.pearl.core.service.rule.EnrolleeProfileBundle;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class NotificationExtService {
   private TriggerService triggerService;
   private NotificationDispatcher notificationDispatcher;
   private EnrolleeService enrolleeService;
-  private EnrolleeBundleService enrolleeBundleService;
+  private EnrolleeRuleService enrolleeRuleService;
   private AuthUtilService authUtilService;
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
@@ -37,7 +38,7 @@ public class NotificationExtService {
       TriggerService triggerService,
       NotificationDispatcher notificationDispatcher,
       EnrolleeService enrolleeService,
-      EnrolleeBundleService enrolleeBundleService,
+      EnrolleeRuleService enrolleeRuleService,
       AuthUtilService authUtilService,
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
@@ -45,7 +46,7 @@ public class NotificationExtService {
     this.triggerService = triggerService;
     this.notificationDispatcher = notificationDispatcher;
     this.enrolleeService = enrolleeService;
-    this.enrolleeBundleService = enrolleeBundleService;
+    this.enrolleeRuleService = enrolleeRuleService;
     this.authUtilService = authUtilService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
@@ -72,11 +73,11 @@ public class NotificationExtService {
     Trigger config = triggerService.find(configId).get();
 
     // bulk load the enrollees
-    List<EnrolleeProfileBundle> enrolleeRuleData =
-        enrolleeBundleService.fetchAllWithProfile(
+    List<EnrolleeRuleData> enrolleeRuleData =
+            enrolleeRuleService.fetchAllWithProfile(
             enrollees.stream().map(enrollee -> enrollee.getId()).toList());
     NotificationContextInfo context = notificationDispatcher.loadContextInfo(config);
-    for (EnrolleeProfileBundle enrolleeRuleDatum : enrolleeRuleData) {
+    for (EnrolleeRuleData enrolleeRuleDatum : enrolleeRuleData) {
       notificationDispatcher.dispatchNotification(
           config, enrolleeRuleDatum, context, customMessages);
     }

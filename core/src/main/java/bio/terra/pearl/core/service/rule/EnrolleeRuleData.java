@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @AllArgsConstructor
 @SuperBuilder
-public class EnrolleeProfileBundle {
+public class EnrolleeRuleData {
     private final Enrollee enrollee;
     private final Profile profile;
 }

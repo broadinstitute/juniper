@@ -11,18 +11,18 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class EnrolleeBundleService {
+public class EnrolleeRuleService {
     private ProfileService profileService;
     private EnrolleeService enrolleeService;
 
 
-    public EnrolleeBundleService(ProfileService profileService, @Lazy EnrolleeService enrolleeService) {
+    public EnrolleeRuleService(ProfileService profileService, @Lazy EnrolleeService enrolleeService) {
         this.profileService = profileService;
         this.enrolleeService = enrolleeService;
     }
 
-    public EnrolleeProfileBundle fetchProfile(Enrollee enrollee) {
-        return new EnrolleeProfileBundle(enrollee,
+    public EnrolleeRuleData fetchProfile(Enrollee enrollee) {
+        return new EnrolleeRuleData(enrollee,
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
     }
 
@@ -31,13 +31,13 @@ public class EnrolleeBundleService {
      * this isn't terribly optimized -- we could do the join in the DB.  But this is assuming that the number of enrollees
      *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 2 total DB roundtrips
      */
-    public List<EnrolleeProfileBundle> fetchAllWithProfile(List<UUID> enrolleeIds) {
+    public List<EnrolleeRuleData> fetchAllWithProfile(List<UUID> enrolleeIds) {
         List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
         List<Profile> profiles = profileService.findAll(enrollees.stream().map(Enrollee::getProfileId).toList());
-        List<EnrolleeProfileBundle> ruleData = enrollees.stream().map(enrollee -> {
+        List<EnrolleeRuleData> ruleData = enrollees.stream().map(enrollee -> {
             Profile profile = profiles.stream().filter(p ->
                     p.getId().equals(enrollee.getProfileId())).findFirst().orElse(null);
-            return new EnrolleeProfileBundle(enrollee, profile);
+            return new EnrolleeRuleData(enrollee, profile);
         }).toList();
         return ruleData;
     }
