@@ -23,7 +23,7 @@ export default class StudyDashboard extends PageBase {
     this.root = this.page.locator('main.hub-dashboard')
   }
 
-  get locator(): Locator {
+  private get locator(): Locator {
     return this.root
   }
 

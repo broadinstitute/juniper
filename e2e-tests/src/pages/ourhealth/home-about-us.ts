@@ -5,14 +5,13 @@ export  default  class HomeAboutUs extends PageBase {
   title = 'About Us | OurHealth'
 
   // Locators to find web elements
-  linkLearnMoreAboutParticipation: Locator
+  linkLearnAboutParticipation: Locator
 
   linkScientificBackground: Locator
 
   constructor(page: Page) {
     super(page)
-    this.linkLearnMoreAboutParticipation = this.page.locator('a.nav-link',
-      { hasText: /^Learn More About Participation$/ })
+    this.linkLearnAboutParticipation = this.page.locator('a.nav-link', { hasText: /^Learn More About Participation$/ })
     this.linkScientificBackground = this.page.locator('a.btn', { hasText: new RegExp(/^Scientific Background$/) })
   }
 
