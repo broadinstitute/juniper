@@ -1,0 +1,8 @@
+{
+  "name": "Invitation email",
+  "bodyPopulateFile": "invite.html",
+  "subject": "Register for ${study.name}",
+  "stableId": "hd_hd_invite",
+  "version": 1,
+  "publishedVersion": 1
+}

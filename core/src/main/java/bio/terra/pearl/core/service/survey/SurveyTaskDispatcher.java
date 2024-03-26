@@ -72,7 +72,7 @@ public class SurveyTaskDispatcher {
         if (ppUsers.size() != enrollees.size()) {
             throw new IllegalStateException("Task dispatch failed: Portal participant user not matched to enrollee");
         }
-        List<EnrolleeRuleData> enrolleeRuleData = enrolleeRuleService.fetchAllWithProfile(enrollees.stream().map(Enrollee::getId).toList());
+        List<EnrolleeRuleData> enrolleeRuleData = enrolleeRuleService.fetchData(enrollees.stream().map(Enrollee::getId).toList());
 
         UUID auditOperationId = UUID.randomUUID();
         List<ParticipantTask> createdTasks = new ArrayList<>();

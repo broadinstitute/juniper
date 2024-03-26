@@ -47,7 +47,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
                 .build();
-        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
+        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null, null);
         ConsentForm consent = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
                 .consentForm(consent)
@@ -92,7 +92,7 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
                 .build();
-        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null);
+        EnrolleeRuleData enrolleeRuleData = new EnrolleeRuleData(enrollee, null, null);
         ConsentForm consent1 = consentFormFactory.builder(getTestName(info)).build();
         StudyEnvironmentConsent studyEnvConsent1 = StudyEnvironmentConsent.builder()
                 .consentForm(consent1)

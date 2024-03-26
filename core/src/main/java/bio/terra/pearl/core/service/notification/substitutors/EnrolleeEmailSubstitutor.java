@@ -1,8 +1,11 @@
 package bio.terra.pearl.core.service.notification.substitutors;
 
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
@@ -12,6 +15,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,20 +35,19 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         this.enrolleeRuleData = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;
-        valueMap.putAll(Map.of("profile", enrolleeRuleData.getProfile(),
-                "portalEnv", contextInfo.portalEnv(),
-                "envConfig", contextInfo.portalEnv().getPortalEnvironmentConfig(),
-                "dashboardLink", getDashboardLink(contextInfo.portalEnv(),
-                        contextInfo.portal(), contextInfo.study()),
-                "dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portal()),
-                "siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portal()),
-                "participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv()),
-                "siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
-                // legacy template substitution support
-                "siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portal().getShortcode()),
-                // providing a study isn't required, since emails might come from the portal, rather than a study
-                // but immutable map doesn't allow nulls
-                "study", contextInfo.study() != null ? contextInfo.study() : ""));
+        valueMap.put("profile", enrolleeRuleData.getProfile());
+        valueMap.put("portalEnv", contextInfo.portalEnv());
+        valueMap.put("envConfig", contextInfo.portalEnvConfig());
+        valueMap.put("dashboardLink", getDashboardLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal(), contextInfo.study()));
+        valueMap.put("dashboardUrl", getDashboardUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal()));
+        valueMap.put("siteLink", getSiteLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal()));
+        valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
+        valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
+        valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
+        valueMap.put("profile", enrolleeRuleData.getProfile());
+        valueMap.put("study", contextInfo.study());
+        valueMap.put("participantUser", ruleData.getParticipantUser());
+        valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
         if (messages != null) {
             valueMap.putAll(messages);
         }
@@ -75,31 +80,31 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return "";
     }
 
-    public String getSiteLink(PortalEnvironment portalEnv, Portal portal) {
-        String href = routingPaths.getParticipantBaseUrl(portalEnv, portal.getShortcode());
+    public String getSiteLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, Portal portal) {
+        String href = routingPaths.getParticipantBaseUrl(portalEnv, config, portal.getShortcode());
         return String.format("<a rel=\"noopener\" href=\"%s\" target=\"_blank\">%s</a>", href, href);
     }
 
 
-    public String getDashboardLink(PortalEnvironment portalEnv, Portal portal, Study study) {
-        String href = getDashboardUrl(portalEnv, portal);
+    public String getDashboardLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, Portal portal, Study study) {
+        String href = getDashboardUrl(portalEnv, config, portal);
         String linkNameText = study != null ? study.getName() : portal.getName();
         return String.format("<a href=\"%s\">Return to %s</a>", href, linkNameText);
     }
 
-    public String getDashboardUrl(PortalEnvironment portalEnv, Portal portal) {
-        return routingPaths.getParticipantBaseUrl(portalEnv, portal.getShortcode()) +
+    public String getDashboardUrl(PortalEnvironment portalEnv, PortalEnvironmentConfig config, Portal portal) {
+        return routingPaths.getParticipantBaseUrl(portalEnv, config, portal.getShortcode()) +
                 routingPaths.getParticipantDashboardPath();
     }
 
-    public String getImageBaseUrl(PortalEnvironment portalEnvironment, String portalShortcode) {
-        return routingPaths.getParticipantBaseUrl(portalEnvironment, portalShortcode)
-                + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnvironment.getEnvironmentName()
+    public String getImageBaseUrl(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode) {
+        return routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode)
+                + "/api/public/portals/v1/" + portalShortcode + "/env/" + portalEnv.getEnvironmentName()
                 + "/siteMedia";
     }
 
-    public String getParticipantSupportEmailLink(PortalEnvironment portalEnvironment) {
-        String emailAddress =portalEnvironment.getPortalEnvironmentConfig().getEmailSourceAddress();
+    public String getParticipantSupportEmailLink(PortalEnvironment portalEnvironment, PortalEnvironmentConfig config) {
+        String emailAddress = config.getEmailSourceAddress();
         if (StringUtils.isBlank(emailAddress)) {
             // if there's nothing configured for the study, default to the site-wide Juniper support email
             emailAddress = routingPaths.getSupportEmailAddress();
@@ -107,5 +112,18 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         return String.format("<a href=\"mailto:%s\" rel=\"noopener\" target=\"_blank\">%s</a>", emailAddress, emailAddress);
     }
 
-
+    /**
+     * gets a link the participant can use to create their b2c account, given that they already exist in Juniper
+     */
+    public String getInvitationLink(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode, ParticipantUser participantUser) {
+        try {
+            return "%s%s?accountName=%s".formatted(
+                    routingPaths.getParticipantBaseUrl(portalEnv, config, portalShortcode),
+                    routingPaths.getParticipantInvitationPath(),
+                    participantUser != null ?
+                            URLEncoder.encode(participantUser.getUsername(), StandardCharsets.UTF_8.toString()) : "");
+        } catch (UnsupportedEncodingException e) {
+            throw new IOInternalException("unable to encode username");
+        }
+    }
 }

@@ -38,7 +38,8 @@
         "participants/withdrawn.json",
         "participants/oldVersion.json",
         "participants/proxy.json",
-        "participants/proxyFamily2.json"
+        "participants/proxyFamily2.json",
+        "participants/invited.json"
 
       ],
       "mailingListContacts": [

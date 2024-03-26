@@ -110,7 +110,7 @@ public class ConsentTaskDispatcher {
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
             if (enrolleeSearchExpressionParser
                     .parseRule(studyConsent.getEligibilityRule())
-                    .evaluate(new EnrolleeSearchContext(enrolleeRuleData))) {
+                    .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()))) {
                 ParticipantTask consentTask = buildTask(studyConsent, enrollee, portalParticipantUserId);
                 if (!isDuplicateTask(consentTask, enrollee.getParticipantTasks())) {
                     tasks.add(consentTask);

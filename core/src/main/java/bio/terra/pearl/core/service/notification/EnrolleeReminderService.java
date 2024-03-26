@@ -69,7 +69,7 @@ public class EnrolleeReminderService {
 
         // bulk load the enrollees
         List<EnrolleeRuleData> enrolleeData = enrolleeRuleService
-                .fetchAllWithProfile(enrolleesWithTasks.stream().map(ewt -> ewt.getEnrolleeId()).toList());
+                .fetchData(enrolleesWithTasks.stream().map(ewt -> ewt.getEnrolleeId()).toList());
 
         NotificationContextInfo envContext = notificationDispatcher.loadContextInfo(trigger);
 
