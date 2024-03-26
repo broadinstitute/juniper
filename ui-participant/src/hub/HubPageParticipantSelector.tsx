@@ -7,24 +7,25 @@ import { useUser } from '../providers/UserProvider'
  *
  */
 export default function HubPageParticipantSelector({ enrollee, profile, relationshipType } :
-{enrollee: Enrollee, profile: Profile, relationshipType: string | undefined}) {
+{enrollee: Enrollee, profile: Profile |undefined, relationshipType: string | undefined}) {
   const mappingRelationships: Map<string, string> = new Map([
-    ['PROXY', 'Dependent'],
-    ['PARENT', 'Child']
+    ['PROXY', 'Your Dependent'],
+    ['PARENT', 'Your Child']
   ])
 
   const { setActiveEnrollee, setActiveEnrolleeProfile } = useUser()
-  const changeActiveUser = (enrollee: Enrollee, profile: Profile) => {
+  const changeActiveUser = (enrollee: Enrollee, profile: Profile | undefined) => {
     setActiveEnrollee(enrollee)
-    setActiveEnrolleeProfile(profile)
+    profile? setActiveEnrolleeProfile(profile) : setActiveEnrolleeProfile(undefined)
   }
 
   function getRightTitle() {
     if (!enrollee && !profile && !relationshipType) {
-      return 'Participant'
+      return 'Your Participant\'s'
     }
-    return (profile &&  (`${profile.givenName || ''} ${profile.familyName || ''}`)) ||
+    const title = (profile &&  (`${profile.givenName || ''}`)) ||
       (relationshipType && mappingRelationships.get(relationshipType)) || ''
+    return title !== '' ? `${title}'s` : 'Your Participant\'s'
   }
 
 
