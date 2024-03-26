@@ -120,19 +120,17 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-      if (matchIndex != -1) {
+      const index = loginState.relations.findIndex(relation =>
+        relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
+      if (index != -1) {
+        loginState.relations[index].relation.targetEnrollee = enrollee
+        setActiveEnrollee(enrollee)
+        setActiveEnrolleeProfile(loginState.relations[index].profile)
+      } else {
+        const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
         loginState.enrollees[matchIndex] = enrollee
         setActiveEnrollee(enrollee)
         setActiveEnrolleeProfile(enrollee.profile)
-      } else {
-        const index = loginState.relations.findIndex(relation =>
-          relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
-        if (index != -1) {
-          loginState.relations[index].relation.targetEnrollee = enrollee
-          setActiveEnrollee(enrollee)
-          setActiveEnrolleeProfile(loginState.relations[index].profile)
-        }
       }
     } else {
       setLoginState(oldState => {
@@ -149,9 +147,11 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         } else {
           const index = oldState.relations.findIndex(relation =>
             relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
-          index != -1 ? updatedRelations[index].relation.targetEnrollee = enrollee : null
-          setActiveEnrollee(enrollee)
-          setActiveEnrolleeProfile(updatedRelations[index].profile)
+          if (index != -1) {
+            updatedRelations[index].relation.targetEnrollee = enrollee
+            setActiveEnrollee(enrollee)
+            setActiveEnrolleeProfile(updatedRelations[index].profile)
+          }
         }
         return {
           ...oldState,

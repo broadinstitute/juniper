@@ -10,26 +10,27 @@ import { AuthProvider } from 'react-oidc-context'
 const UpdateEnrolleeTestComponent = () => {
   const { loginUserInternal, enrollees, updateEnrollee } = useUser()
   const [updated, setUpdated] = useState(false)
+  const mockEnrolleeObject = mockEnrollee()
   useEffect(() => {
     loginUserInternal({
       user: mockParticipantUser(),
       ppUser: { profile: {}, profileId: '', id: '' },
       profile: {},
-      enrollees: [],
+      enrollees: [mockEnrolleeObject],
       relations: []
     })
   }, [])
 
   const addEnrollee = () => {
-    updateEnrollee(mockEnrollee()).then(() => { setUpdated(true) })
+    updateEnrollee(mockEnrolleeObject).then(() => { setUpdated(true) })
   }
 
   return <div>
-    <button onClick={addEnrollee}>Add Enrollee</button>
-    { (enrollees.length === 0 && !updated) && <span>No updates yet</span>}
-    { (enrollees.length > 0 && !updated) && <span>Updated enrollee but not state</span>}
-    { (enrollees.length === 0 && updated) && <span>Updated state but not enrollee</span>}
-    { (enrollees.length > 0 && updated) && <span>Updated enrollee and state</span>}
+    <button onClick={addEnrollee}>Update Enrollee</button>
+    { (enrollees.length === 1 && !updated) && <span>No updates yet</span>}
+    { (enrollees.length > 1 && !updated) && <span>Updated enrollee but not state</span>}
+    { (enrollees.length === 1 && updated) && <span>Updated state but not enrollee</span>}
+    { (enrollees.length > 1 && updated) && <span>Updated enrollee and state</span>}
   </div>
 }
 
@@ -49,9 +50,9 @@ describe('UserProvider', () => {
     render(RoutedComponent)
     expect(screen.getByText('No updates yet')).toBeInTheDocument()
     act(() => {
-      userEvent.click(screen.getByText('Add Enrollee'))
+      userEvent.click(screen.getByText('Update Enrollee'))
     })
     expect(screen.queryByText('Updated state but not enrollee')).toBeNull()
-    await waitFor(() => expect(screen.getByText('Updated enrollee and state')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText('Updated state but not enrollee')).toBeInTheDocument())
   })
 })
