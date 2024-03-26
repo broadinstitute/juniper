@@ -1,11 +1,17 @@
 import { faker } from '@faker-js/faker'
-import { expect, Page, test } from '@playwright/test'
+import { errors, expect, Page, test, Response } from '@playwright/test'
 import StudyEligibility from 'pages/ourhealth/study-eligibility'
 import Navbar from 'src/page-components/navbar'
 
 export type Study = 'OurHealth';
 
 export type Environment = 'local' | 'dev'
+
+interface NetworkResponse {
+  uri: string;
+  status?: number;
+  timeout?: number;
+}
 
 /**
  * Generate a random alphanumerical string
@@ -108,4 +114,32 @@ export function logInfo(info: string) {
     type: 'Info',
     description: `:heavy_check_mark: @${localTime()}: ${info}`
   })
+}
+
+/**
+ *
+ */
+export async function waitForResponse(page: Page, { uri, status = 200, timeout }: NetworkResponse): Promise<Response> {
+  let response: Response
+  try {
+    response = await page.waitForResponse((resp: Response) => resp.url().includes(uri), { timeout })
+    await response.finished()
+  } catch (err) {
+    if (err instanceof errors.TimeoutError) {
+      throw new Error(`TimeoutError: waiting for URI: ${uri}: Timeout exceeded`)
+    }
+    throw err
+  }
+  const respStatus = response.status()
+  if (respStatus === status) {
+    return response
+  }
+  const url = response.url()
+  const method = response.request().method()
+  const body = await response.text()
+  const reqPayload = response.request().postData() || ''
+
+  throw new Error(
+      `Waiting for URI: ${uri} with status: ${status}.\n  ` +
+      `${method} ${url}\n  Status: ${respStatus}\n  Text: ${body}\n  Payload: ${reqPayload}`)
 }

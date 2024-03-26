@@ -89,9 +89,14 @@ export default abstract class PageBase implements RegistrationPageInterface {
   }
 
   /** Click the Submit button **/
-  async submit(): Promise<this> {
-    await this.click('button', 'Submit')
-    return this
+  async submit(opts: { callback?: () => Promise<Response> } = {}): Promise<Response | null> {
+    const { callback } = opts
+    const callbackPromise = callback ? callback() : Promise.resolve()
+    const [resp] = await Promise.all([
+      callbackPromise,
+      this.click('button', 'Submit')
+    ])
+    return typeof resp === 'object' ? resp : null
   }
 
   async progress(): Promise<string> {
