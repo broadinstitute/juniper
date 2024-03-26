@@ -22,6 +22,8 @@ export * from './addressUtils'
 export * from './i18nUtils'
 export * from './waitForImages'
 
+export * from './test-utils/asMockedFn'
+
 export * from './participant/dashboard/Alert'
 export * from './participant/landing/sections/HtmlSectionView'
 export * from './participant/landing/sections/SiteFooter'

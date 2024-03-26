@@ -22,7 +22,7 @@ const contacts: MailingListContact[] = [{
 test('renders a mailing list', async () => {
   // avoid cluttering the console with the info messages from the table creation
   jest.spyOn(console, 'info').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchMailingList').mockImplementation(() => Promise.resolve(contacts))
+  jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
@@ -36,7 +36,7 @@ test('renders a mailing list', async () => {
 })
 
 test('download is toggled depending on contacts selected', async () => {
-  jest.spyOn(Api, 'fetchMailingList').mockImplementation(() => Promise.resolve(contacts))
+  jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
@@ -56,7 +56,7 @@ test('download is toggled depending on contacts selected', async () => {
 
 
 test('delete button shows confirmation', async () => {
-  jest.spyOn(Api, 'fetchMailingList').mockImplementation(() => Promise.resolve(contacts))
+  jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
@@ -75,7 +75,7 @@ test('delete button shows confirmation', async () => {
 })
 
 test('sorts by join date by default', async () => {
-  jest.spyOn(Api, 'fetchMailingList').mockImplementation(() => Promise.resolve(contacts))
+  jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =

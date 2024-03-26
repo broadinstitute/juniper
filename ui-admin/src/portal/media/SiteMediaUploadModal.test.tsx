@@ -31,8 +31,7 @@ test('file name shown to user is cleaned', async () => {
 })
 
 test('upload api is called on submit', async () => {
-  const uploadSpy = jest.spyOn(Api, 'uploadPortalMedia')
-    .mockImplementation(() => Promise.resolve(mockSiteMedia()))
+  const uploadSpy = jest.spyOn(Api, 'uploadPortalMedia').mockResolvedValue(mockSiteMedia())
   jest.spyOn(Store, 'addNotification').mockImplementation(jest.fn())
   const file = new File(['databits'], 'hello.png', { type: 'image/png' })
   const portalContext = mockPortalContext()

@@ -42,7 +42,7 @@ describe('OutreachTasks', () => {
     ]
     jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
       </MockI18nProvider>
     )

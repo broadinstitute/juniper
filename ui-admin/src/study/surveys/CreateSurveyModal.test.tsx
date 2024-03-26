@@ -76,8 +76,8 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'OUTREACH'}
       onDismiss={jest.fn()}/>)
@@ -116,8 +116,8 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'OUTREACH'}
       onDismiss={jest.fn()}/>)
@@ -154,8 +154,8 @@ describe('CreateSurveyModal', () => {
   test('create a required survey', async () => {
     jest.spyOn(window, 'alert').mockImplementation(jest.fn())
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal

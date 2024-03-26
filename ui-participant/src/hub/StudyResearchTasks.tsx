@@ -61,8 +61,8 @@ export default function StudyResearchTasks(props: StudyResearchTasksProps) {
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
           >
             {enrolleeHasStartedTaskType(enrollee, nextTask.taskType)
-              ? i18n('taskContinue')
-              : i18n('taskStart')}
+              ? i18n('continue')
+              : i18n('start')}
             {' '}{i18n(taskTypeMap[nextTask.taskType])}
             {numTasksOfNextTaskType > 1 && 's'}
           </Link>
