@@ -4,6 +4,11 @@
   "version": 1,
   "jsonContent":
 {
+  "title": {
+    "default": "OurHealth Consent",
+    "es": "Consentimiento OurHealth",
+    "dev": "DEV_OurHealth Consent"
+  },
   "logoPosition": "right",
   "showQuestionNumbers": "off",
   "showProgressBar": "bottom",

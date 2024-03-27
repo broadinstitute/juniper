@@ -38,6 +38,11 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                 .stream().collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toList()));
     }
 
+    public Map<UUID, List<ParticipantTask>> findByEnrolleeIdsAndType(Collection<UUID> enrolleeIds, TaskType taskType) {
+        return findAllByTwoProperties("task_type", taskType.name(), "enrollee_id", enrolleeIds)
+                .stream().collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toList()));
+    }
+
     /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the first */
     public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId) {
         return jdbi.withHandle(handle ->

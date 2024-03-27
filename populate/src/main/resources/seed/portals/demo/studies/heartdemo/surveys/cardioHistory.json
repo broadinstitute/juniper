@@ -4,7 +4,11 @@
   "name": "Cardiometabolic Medical History",
   "footer": "Resources used for this survey:\n * All of Us\n * California Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
   "jsonContent": {
-    "title": "OurHealth Medical History",
+    "title": {
+      "default": "Cardiometabolic Medical History",
+      "es": "Historial Médico Cardiometabólico",
+      "dev": "DEV_Cardiometabolic Medical History"
+    },
     "showProgressBar": "bottom",
     "showQuestionNumbers": "off",
     "questionTemplates": [

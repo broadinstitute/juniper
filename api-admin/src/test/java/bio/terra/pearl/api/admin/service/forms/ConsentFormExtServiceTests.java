@@ -40,7 +40,10 @@ public class ConsentFormExtServiceTests extends BaseSpringBootTest {
 
     Portal portal = portalFactory.buildPersisted(getTestName(testInfo));
     ConsentForm.ConsentFormBuilder builder =
-        consentFormFactory.builderWithDependencies(getTestName(testInfo)).portalId(portal.getId());
+        (ConsentForm.ConsentFormBuilder)
+            consentFormFactory
+                .builderWithDependencies(getTestName(testInfo))
+                .portalId(portal.getId());
     ConsentForm form = consentFormFactory.buildPersisted(builder);
 
     List<ConsentForm> forms =

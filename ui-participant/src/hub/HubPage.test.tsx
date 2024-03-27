@@ -1,8 +1,10 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { MockI18nProvider, mockTextsDefault } from '@juniper/ui-core'
+import { mockParticipantTask, mockSurvey } from '../test-utils/test-participant-factory'
+import Api from '../api/api'
 
 jest.mock('../providers/PortalProvider', () => {
   return {
@@ -68,13 +70,26 @@ describe('HubPage', () => {
     expect(screen.getByText('Test Study')).toBeInTheDocument()
   })
 
-  it('is rendered with a Start button for the next new task', () => {
+  it('is rendered with a Start button for the next new task', async () => {
+    const mockTasks = {
+      surveyTasks: [],
+      consentTasks: [
+        {
+          task: mockParticipantTask('CONSENT', 'NEW'),
+          form: mockSurvey('test_consent')
+        }
+      ],
+      outreachTasks: []
+    }
+    jest.spyOn(Api, 'listTasksWithSurveys').mockResolvedValue(mockTasks)
+
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider mockTexts={mockTextsDefault}>
-        <HubPage />
+        <HubPage/>
       </MockI18nProvider>)
     render(RoutedComponent)
 
-    expect(screen.getByText('Start Consent')).toBeInTheDocument()
+    const startConsent = await waitFor(() => screen.getByText('Start Consent'))
+    expect(startConsent).toBeInTheDocument()
   })
 })

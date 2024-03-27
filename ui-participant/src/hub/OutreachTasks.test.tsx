@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-participant-factory'
 import OutreachTasks from './OutreachTasks'
 import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
-import Api, { TaskWithSurvey } from 'api/api'
+import { TaskWithSurvey } from 'api/api'
 import { MockI18nProvider } from '@juniper/ui-core'
 
 describe('OutreachTasks', () => {
@@ -21,7 +21,7 @@ describe('OutreachTasks', () => {
           targetStableId: 'outreach1',
           studyEnvironmentId: 'studyEnv1'
         },
-        survey: {
+        form: {
           ...mockSurvey('outreach1'),
           surveyType: 'OUTREACH',
           blurb: 'Survey 1 blurb'
@@ -33,17 +33,16 @@ describe('OutreachTasks', () => {
           targetStableId: 'outreach2',
           studyEnvironmentId: 'studyEnv1'
         },
-        survey: {
+        form: {
           ...mockSurvey('outreach2'),
           surveyType: 'OUTREACH',
           blurb: 'Survey 2 blurb'
         }
       }
     ]
-    jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
     const { RoutedComponent } = setupRouterTest(
       <MockI18nProvider>
-        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+        <OutreachTasks enrollees={[enrollee]} studies={[study]} outreachTasks={tasksWithSurvey}/>
       </MockI18nProvider>
     )
     render(RoutedComponent)

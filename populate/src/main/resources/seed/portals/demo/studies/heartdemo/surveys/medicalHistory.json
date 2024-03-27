@@ -4,7 +4,11 @@
   "name": "Other Medical History",
   "footer": "Resources used for this survey:\n * All of Us\n * California Teacher’s Study (CTS)\n * Mike Honigberg, American Heart Association\n * OurHealth",
   "jsonContent": {
-  "title": "Other Medical History",
+  "title": {
+    "default": "Other Medical History",
+    "es": "Otro Historial Médico",
+    "dev": "DEV_Other Medical History"
+  },
   "showQuestionNumbers": "off",
   "showProgressBar": "bottom",
   "questionTemplates": [

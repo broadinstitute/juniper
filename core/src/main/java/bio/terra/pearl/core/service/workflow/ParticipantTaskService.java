@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import java.time.Instant;
 import java.util.*;
 
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
@@ -32,6 +33,10 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
 
     public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(List<UUID> enrolleeIds) {
         return dao.findByEnrolleeIds(enrolleeIds);
+    }
+
+    public Map<UUID, List<ParticipantTask>> findByEnrolleeIdsAndType(List<UUID> enrolleeIds, TaskType taskType) {
+        return dao.findByEnrolleeIdsAndType(enrolleeIds, taskType);
     }
 
     public List<ParticipantTask> findTasksByStudyAndTarget(UUID studyEnvId, List<String> targetStableIds) {

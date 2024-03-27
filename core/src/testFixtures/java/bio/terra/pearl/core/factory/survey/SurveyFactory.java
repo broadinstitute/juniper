@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.factory.survey;
 
+import bio.terra.pearl.core.model.form.VersionedForm;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -39,6 +40,10 @@ public class SurveyFactory {
 
     public Survey buildPersisted(Survey.SurveyBuilder builder) {
         return surveyService.create(builder.build());
+    }
+
+    public Survey buildPersisted(VersionedForm.VersionedFormBuilder builder) {
+        return surveyService.create(((Survey.SurveyBuilder) builder).build());
     }
 
     public Survey buildPersisted(String testName, List<AnswerMapping> mappings) {

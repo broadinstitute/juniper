@@ -6,7 +6,7 @@ import Api, { Enrollee, Portal, StudyEnvironmentSurvey, Survey, SurveyResponse, 
 
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import {
-  getDataWithCalculatedValues,
+  getDataWithCalculatedValues, getLocalizedSurveyTitle,
   getResumeData,
   getUpdatedAnswers,
   PageNumberControl,
@@ -149,11 +149,13 @@ export function RawSurveyView({
 
   return (
     <>
-      <DocumentTitle title={form.name} />
+      <DocumentTitle title={getLocalizedSurveyTitle(form, selectedLanguage)} />
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         { showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/> }
-        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1> }
+        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
+          {getLocalizedSurveyTitle(form, selectedLanguage)}
+        </h1> }
         <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>
       </div>

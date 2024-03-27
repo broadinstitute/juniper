@@ -196,6 +196,23 @@ export function getSurveyJsAnswerList(surveyJSModel: SurveyModel, selectedLangua
     .map(([key, value]) => makeAnswer(value as SurveyJsValueType, key, surveyJSModel.data, selectedLanguage))
 }
 
+/**
+ * Returns the appropriate localized title for the survey
+ */
+export function getLocalizedSurveyTitle(survey: Survey, selectedLanguage?: string): string {
+  const parsedForm = JSON.parse(survey.content)
+
+  if (!parsedForm.title || typeof parsedForm.title !== 'object') {
+    return survey.name
+  }
+
+  if (!selectedLanguage || !parsedForm.title[selectedLanguage]) {
+    return parsedForm.title.default || survey.name
+  }
+
+  return parsedForm.title[selectedLanguage]
+}
+
 /** return an Answer for the given value.  This should be updated to take some sort of questionType/dataType param */
 export function makeAnswer(value: SurveyJsValueType, questionStableId: string,
   surveyJsData: Record<string, SurveyJsValueType>, viewedLanguage?: string): Answer {
