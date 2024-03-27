@@ -45,6 +45,7 @@ export const RedirectFromOAuth = () => {
           stackTrace: auth.error.stack || 'stack'
         })
         navigate('/redirect-from-oauth/error')
+        return
       }
 
       if (auth.user) {
