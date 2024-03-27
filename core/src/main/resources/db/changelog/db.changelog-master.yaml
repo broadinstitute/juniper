@@ -224,6 +224,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_03_18_remove_environment_constraints.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_25_study_env_config_proxy.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

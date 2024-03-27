@@ -36,7 +36,8 @@ export const mockStudyEnv = (): StudyEnvironment => {
       acceptingEnrollment: true,
       initialized: true,
       passwordProtected: false,
-      password: 'password'
+      password: 'password',
+      acceptingProxies: false
     },
     configuredSurveys: [],
     configuredConsents: [],

@@ -44,6 +44,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
 
   /** saves any changes to the server */
   const save = async () => {
+    console.log(config)
     doApiLoad(async () => {
       await Api.updateStudyEnvironmentConfig(portalContext.portal.shortcode,
         studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, config)
@@ -75,6 +76,14 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
           onChange={e => updateConfig('acceptingEnrollment', e.target.checked)}/>
       </label>
     </div>
+    { config.acceptingEnrollment && <div>
+      <label className="form-label">
+        accepting proxy and governed user enrollment <InfoPopup content={`Uncheck this to prevent an adult 
+        participant proxying another dependent`}/>
+        <input type="checkbox" checked={config.acceptingProxies} className="ms-2"
+          onChange={e => updateConfig('acceptingProxies', e.target.checked)}/>
+      </label>
+    </div>}
 
     <Button onClick={save}
       variant="primary" disabled={isLoading}

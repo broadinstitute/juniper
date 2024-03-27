@@ -147,7 +147,8 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
       initialized: true,
       password: 'blah',
       passwordProtected: false,
-      acceptingEnrollment: true
+      acceptingEnrollment: true,
+      acceptingProxies: false
     }
   }
   return {

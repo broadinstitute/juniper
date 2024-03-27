@@ -22,6 +22,7 @@ export type StudyEnvironment = {
 
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
+  acceptingProxies: boolean
   initialized: boolean
   passwordProtected: boolean
   password: string

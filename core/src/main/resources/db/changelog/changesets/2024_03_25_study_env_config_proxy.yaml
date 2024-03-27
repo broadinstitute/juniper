@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "studyEnvConfigProxy"
+      author: pegah
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: { name: accepting_proxies, type: boolean, defaultValueBoolean: false, constraints: { nullable: false } }

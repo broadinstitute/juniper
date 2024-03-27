@@ -14,6 +14,7 @@ import OutreachTasks from './OutreachTasks'
 import HubPageParticipantSelector from './HubPageParticipantSelector'
 import classNames from 'classnames'
 import { useNavigate } from 'react-router-dom'
+import addParticipant from './AddParticipant'
 
 
 /** renders the logged-in hub page */
@@ -143,17 +144,6 @@ export default function HubPage() {
           {activeEnrollee && activeEnrolleeProfile && <StudySection key={activeEnrollee.id}
             enrollee={activeEnrollee} portal={portal} profile={activeEnrolleeProfile}/>}
 
-          <div>
-            <button
-              className={classNames(
-                'btn btn-lg btn-outline-primary',
-                'd-flex justify-content-center', 'w-100'
-              )}
-              onClick={() => { addParticipant() }}
-            >
-                Add Participant
-            </button>
-          </div>
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -194,6 +184,19 @@ const StudySection = (props: StudySectionProps) => {
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
+      {matchedStudy.studyEnvironments[0].studyEnvironmentConfig.acceptingProxies && <div>
+        <button
+          className={classNames(
+            'btn btn-lg btn-outline-primary',
+            'd-flex justify-content-center', 'w-100'
+          )}
+          onClick={() => {
+            addParticipant()
+          }}
+        >
+          Add Participant
+        </button>
+      </div>}
     </>
   )
 }
