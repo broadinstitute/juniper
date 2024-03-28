@@ -6,12 +6,7 @@ import bio.terra.pearl.core.factory.notification.NotificationFactory;
 import bio.terra.pearl.core.factory.notification.TriggerFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
-import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.notification.TriggerType;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -27,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -67,9 +64,83 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = PortalEnvironment.builder()
                 .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
         Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate localizedEmailTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
         EmailTemplate emailTemplate = EmailTemplate.builder()
-                    .body("family name ${profile.familyName}")
-                    .subject("Welcome ${profile.givenName}").build();
+                .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("family name tester"));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("Welcome given"));
+    }
+
+    @Test
+    @Transactional
+    public void testEmailBuildingWithPreferredTemplate(TestInfo info) {
+        Profile profile = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("es")
+                .build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
+        PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@portal.org").build();
+        PortalEnvironment portalEnv = PortalEnvironment.builder()
+                .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate englishTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
+        LocalizedEmailTemplate spanishTemplate = LocalizedEmailTemplate.builder()
+                .body("apellido ${profile.familyName}")
+                .language("es")
+                .subject("Bienvenido ${profile.givenName}").build();
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .localizedEmailTemplates(List.of(englishTemplate, spanishTemplate)).build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
+        Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());
+        assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("test@test.com"));
+        assertThat(email.content.get(0).getValue(), equalTo("apellido tester"));
+        assertThat(email.from.getEmail(), equalTo("info@portal.org"));
+        assertThat(email.from.getName(), equalTo("MyPortal (irb) (local)"));
+        assertThat(email.getSubject(), equalTo("Bienvenido given"));
+    }
+
+    @Test
+    @Transactional
+    public void testEmailBuildingWithMissingPreferredTemplate(TestInfo info) {
+        Profile profile = Profile.builder()
+                .familyName("tester")
+                .givenName("given")
+                .contactEmail("test@test.com")
+                .preferredLanguage("es")
+                .build();
+        Enrollee enrollee = Enrollee.builder().build();
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
+        PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
+                .emailSourceAddress("info@portal.org").build();
+        PortalEnvironment portalEnv = PortalEnvironment.builder()
+                .environmentName(EnvironmentName.irb).portalEnvironmentConfig(portalEnvConfig).build();
+        Portal portal = Portal.builder().shortcode("portal1").name("MyPortal").build();
+
+        LocalizedEmailTemplate englishTemplate = LocalizedEmailTemplate.builder()
+                .body("family name ${profile.familyName}")
+                .language("en")
+                .subject("Welcome ${profile.givenName}").build();
+        EmailTemplate emailTemplate = EmailTemplate.builder()
+                .localizedEmailTemplates(List.of(englishTemplate)).build();
 
         NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvConfig, null, emailTemplate);
         Mail email = enrolleeEmailService.buildEmail(contextInfo, ruleData, new Notification());

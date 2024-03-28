@@ -1,11 +1,10 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.model.notification.Notification;
-import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
-import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationSender;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -26,13 +25,13 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class EnrolleeEmailService implements NotificationSender {
-    private NotificationService notificationService;
-    private PortalEnvironmentService portalEnvService;
-    private PortalService portalService;
-    private StudyService studyService;
-    private EmailTemplateService emailTemplateService;
-    private ApplicationRoutingPaths routingPaths;
-    private SendgridClient sendgridClient;
+    private final NotificationService notificationService;
+    private final PortalEnvironmentService portalEnvService;
+    private final PortalService portalService;
+    private final StudyService studyService;
+    private final EmailTemplateService emailTemplateService;
+    private final ApplicationRoutingPaths routingPaths;
+    private final SendgridClient sendgridClient;
 
     public EnrolleeEmailService(NotificationService notificationService,
                                 PortalEnvironmentService portalEnvService, PortalService portalService,
@@ -62,14 +61,14 @@ public class EnrolleeEmailService implements NotificationSender {
             notification.setSentTo(ruleData.getProfile().getContactEmail());
             try {
                 buildAndSendEmail(contextInfo, ruleData, notification);
-                log.info("Email sent: config: {}, enrollee: {}", config.getId(),
-                        ruleData.getEnrollee().getShortcode());
+                log.info("Email sent: config: {}, enrollee: {}, language: {}", config.getId(),
+                        ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
                 notification.setDeliveryStatus(NotificationDeliveryStatus.SENT);
             } catch (Exception e) {
                 notification.setDeliveryStatus(NotificationDeliveryStatus.FAILED);
                 // don't log the exception itself since the trace might have PII in it.
-                log.error("Email failed to send: config: {}, enrollee: {}", config.getId(),
-                        ruleData.getEnrollee().getShortcode());
+                log.error("Email failed to send: config: {}, enrollee: {}, language: {}", config.getId(),
+                        ruleData.getEnrollee().getShortcode(), ruleData.getProfile().getPreferredLanguage());
             }
         }
         if (notification.getId() != null) {
@@ -115,6 +114,9 @@ public class EnrolleeEmailService implements NotificationSender {
     }
 
     protected Mail buildEmail(NotificationContextInfo contextInfo, EnrolleeRuleData ruleData, Notification notification) {
+        String preferredLanguage = ruleData.getProfile().getPreferredLanguage();
+        LocalizedEmailTemplate localizedEmailTemplate = getPreferredTemplateWithDefault(contextInfo.template(), preferredLanguage);
+
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
             .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
         String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
@@ -132,7 +134,7 @@ public class EnrolleeEmailService implements NotificationSender {
         }
 
         Mail mail = sendgridClient.buildEmail(
-                contextInfo,
+                localizedEmailTemplate,
                 ruleData.getProfile().getContactEmail(),
                 fromAddress,
                 fromName,
@@ -177,13 +179,24 @@ public class EnrolleeEmailService implements NotificationSender {
 
         Study study = studyService.findByStudyEnvironmentId(config.getStudyEnvironmentId()).get();
 
+        EmailTemplate emailTemplate = emailTemplateService.find(config.getEmailTemplateId()).orElse(null);
+        if (emailTemplate != null) {
+            emailTemplateService.attachLocalizedTemplates(emailTemplate);
+        }
+
         Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
         return new NotificationContextInfo(
                 portal,
                 portalEnvironment,
                 portalEnvironment.getPortalEnvironmentConfig(),
                 study,
-                emailTemplateService.find(config.getEmailTemplateId()).orElse(null)
+                emailTemplate
         );
+    }
+
+    public LocalizedEmailTemplate getPreferredTemplateWithDefault(EmailTemplate template, String preferredLanguage) {
+        //TODO JN-863 eventually this will take in a portalEnvironment which will have a defaultLanguage
+        // attached to it. We should use that here instead of hard-coding English
+        return template.getTemplateForLanguage(preferredLanguage).orElseGet(() -> template.getTemplateForLanguage("en").get());
     }
 }

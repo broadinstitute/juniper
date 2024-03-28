@@ -1,8 +1,19 @@
 {
   "name": "Invitation email",
-  "bodyPopulateFile": "invite.html",
-  "subject": "Register for ${study.name}",
   "stableId": "hd_hd_invite",
   "version": 1,
-  "publishedVersion": 1
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Register for ${study.name}",
+    "bodyPopulateFile": "en/invite.html"
+  },{
+    "language": "es",
+    "subject": "Regístrate para ${study.name}",
+    "bodyPopulateFile": "es/invite.html"
+  }, {
+    "language": "dev",
+    "subject": "DEV_Register for ${study.name}",
+    "bodyPopulateFile": "dev/invite.html"
+  }]
 }
