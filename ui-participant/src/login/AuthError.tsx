@@ -22,8 +22,10 @@ export default function AuthError() {
         </div>
         <div className="fs-2 fw-light d-flex justify-content-center text-center">
           <div>
-            <span>There was an issue with our authentication service. Please try again.</span>
-            <span>If the problem persists, please contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.</span>
+            <span>
+              There was an issue with our authentication service. Please try again. If the problem persists, please
+              contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
+            </span>
           </div>
         </div>
       </main>
