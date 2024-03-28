@@ -7,8 +7,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SaveableFormProps } from './SurveyView'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
-import { useSearchExpressionQueryBuilder } from '../../search/SearchQueryBuilder'
+import { SearchQueryBuilder } from '../../search/SearchQueryBuilder'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { userHasPermission, useUser } from '../../user/UserProvider'
 
 /** component for selecting versions of a form */
 export default function FormOptionsModal({
@@ -52,18 +53,25 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                               }) => {
   const isSurvey = !!(workingForm as Survey).surveyType
 
-  const {
-    enrolleeSearchExpression,
-    EnrolleeSearchQueryBuilder
-  } = useSearchExpressionQueryBuilder({ studyEnvContext })
+
+  // useEffect(() => {
+  //   if (enrolleeSearchExpression) {
+  //     updateWorkingForm({
+  //       ...workingForm,
+  //       eligibilityRule: enrolleeSearchExpression
+  //     })
+  //   }
+  // }, [enrolleeSearchExpression])
+
+  const { user } = useUser()
 
   return <>
-    { isSurvey &&
+    {isSurvey &&
         <div>
           <div className="d-flex mt-3">Survey options <InfoPopup placement="right" content={<div>
-            See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
-            our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
-            information on the options below.
+              See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
+              our <ZendeskLink doc={DocsKey.SURVEY_EDIT}>survey editing docs</ZendeskLink> for
+              information on the options below.
           </div>}/>
           </div>
           <div className="p-2">
@@ -95,10 +103,15 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            {EnrolleeSearchQueryBuilder}
-            <p>{enrolleeSearchExpression}</p>
             <label className="form-label d-block">
-                  Eligibility Rule
+                    Eligibility Rule
+              {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
+                    && <div className="my-2"><SearchQueryBuilder
+                      studyEnvContext={studyEnvContext}
+                      onSearchExpressionChange={exp => updateWorkingForm({
+                        ...workingForm, eligibilityRule: exp
+                      })}/></div>}
+
               <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
                 onChange={e => updateWorkingForm({
                   ...workingForm, eligibilityRule: e.target.value
@@ -107,8 +120,8 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
           </div>
         </div>
     }
-    { !isSurvey && <>
-      This form has no configurable options
-    </> }
+    {!isSurvey && <>
+        This form has no configurable options
+    </>}
   </>
 }

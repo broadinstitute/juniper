@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FieldSelectorProps, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder'
 import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
 import { useLoadingEffect } from '../api/api-utils'
@@ -15,10 +15,31 @@ const operators = [
   { name: '>=', label: '>=' }
 ]
 
+const CustomFieldSelector = (props: FieldSelectorProps) => {
+  const options = props.options.map(option => {
+    return { label: option.label, value: option.label }
+  })
+  console.log('reload')
+  return <div className="w-100">
+    <Select
+      // options={options}
+      options={[{ label: 'profile.givenName', value: 'profile.givenName' }]}
+      value={{ label: props.value || '', value: props.value || '' }}
+      onChange={newVal => {
+        if (newVal?.label != props.value) {
+          props.handleOnChange(newVal?.label || '')
+        }
+      }}/>
+  </div>
+}
+
+
 /**
  *
  */
-export const useSearchExpressionQueryBuilder = ({ studyEnvContext } : {studyEnvContext: StudyEnvContextT}) => {
+export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }: {
+  studyEnvContext: StudyEnvContextT, onSearchExpressionChange: (searchExpression: string) => void
+}) => {
   const [query, setQuery] = React.useState<RuleGroupType>({
     combinator: 'and',
     rules: []
@@ -37,7 +58,6 @@ export const useSearchExpressionQueryBuilder = ({ studyEnvContext } : {studyEnvC
       .filter(
         field => !field.startsWith('profile') && !field.startsWith('enrollee') && !field.startsWith('sample_kit')))
 
-  console.log(participantFields)
   useLoadingEffect(async () => {
     const response = await Api.exportEnrollees(
       studyEnvContext.portal.shortcode,
@@ -48,12 +68,17 @@ export const useSearchExpressionQueryBuilder = ({ studyEnvContext } : {studyEnvC
   }, [], 'Failed to load cohort criteria options')
 
 
-  const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
-    format: 'spel', // not the actual format, but for some reason formatquery requires you specify one of their formats
-    ruleProcessor: ruleProcessorEnrolleeSearchExpression
-  }) : ''
+  useEffect(() => {
+    const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
+      format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
+      ruleProcessor: ruleProcessorEnrolleeSearchExpression
+    }) : ''
 
-  const EnrolleeSearchQueryBuilder = <QueryBuilder
+    onSearchExpressionChange(enrolleeSearchExpression)
+  }, [query])
+
+
+  return <QueryBuilder
     controlClassnames={{
       fields: 'form-select',
       value: 'form-control',
@@ -66,26 +91,11 @@ export const useSearchExpressionQueryBuilder = ({ studyEnvContext } : {studyEnvC
     }}
     fields={fields.concat(surveyAnswerFields?.map(field => ({ name: field, label: field })) || [])}
     controlElements={{
-      fieldSelector: (props: FieldSelectorProps) => {
-        const options = props.options.map(option => {
-          return { label: option.label, value: option.label }
-        })
-        return <div className="w-100">
-          <Select
-            options={options}
-            value={{ label: props.value, value: props.value }}
-            onChange={newVal => props.handleOnChange(newVal?.label || '')}/>
-        </div>
-      }
+      fieldSelector: CustomFieldSelector
     }}
     operators={operators}
     query={query}
     onQueryChange={q => setQuery(q)}/>
-
-  return {
-    query,
-    setQuery,
-    enrolleeSearchExpression,
-    EnrolleeSearchQueryBuilder
-  }
 }
+
+
