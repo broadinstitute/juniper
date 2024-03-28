@@ -44,5 +44,5 @@ public class Enrollee extends BaseEntity {
     @Builder.Default
     private List<KitRequestDto> kitRequests = new ArrayList<>();
     @Builder.Default
-    private List<EnrolleeRelation> relations = new ArrayList<>();
+    private List<EnrolleeRelationDto> relations = new ArrayList<>();
 }

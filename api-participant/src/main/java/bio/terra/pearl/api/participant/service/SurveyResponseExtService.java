@@ -54,10 +54,11 @@ public class SurveyResponseExtService {
       SurveyResponse responseDto,
       String enrolleeShortcode,
       UUID taskId) {
-    PortalWithPortalUser portalWithPortalUser =
-        authUtilService.authParticipantToPortal(user.getId(), portalShortcode, envName);
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(user.getId(), enrolleeShortcode);
+    PortalWithPortalUser portalWithPortalUser =
+        authUtilService.authParticipantToPortal(
+            enrollee.getParticipantUserId(), portalShortcode, envName);
     HubResponse result =
         surveyResponseService.updateResponse(
             responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId);

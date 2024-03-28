@@ -195,7 +195,7 @@ export function PagedSurveyView({
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   const { portal } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees, activeEnrollee } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -208,7 +208,7 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
 
   useEffect(() => {
     Api.fetchSurveyAndResponse({
@@ -243,11 +243,13 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
 export default withErrorBoundary(SurveyView)
 
 /** Gets the enrollee object matching the given study */
-function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal): Enrollee {
+function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal,
+  activeEnrollee: Enrollee|undefined): Enrollee {
   const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
     .studyEnvironments[0].id
 
-  const enrollee = enrollees.find(enrollee => enrollee.studyEnvironmentId === studyEnvId)
+  const enrollee =  activeEnrollee?.studyEnvironmentId === studyEnvId ? activeEnrollee
+    : enrollees.find(e => e.studyEnvironmentId === studyEnvId)
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
   }

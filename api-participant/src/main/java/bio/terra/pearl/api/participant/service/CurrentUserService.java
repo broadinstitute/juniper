@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.EnrolleeRelationDto;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -17,6 +18,7 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -101,8 +103,10 @@ public class CurrentUserService {
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
-    List<EnrolleeRelation> proxyRelations = List.of();
+
+    List<EnrolleeRelationDto> relations = new ArrayList<>();
     if (!enrollees.isEmpty()) {
+      List<EnrolleeRelation> proxyRelations = List.of();
       proxyRelations =
           enrolleeRelationService.findByEnrolleeIdsAndRelationType(
               enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
@@ -110,16 +114,22 @@ public class CurrentUserService {
       for (EnrolleeRelation relation : proxyRelations) {
         enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
       }
-    }
-    return new UserLoginDto(user, ppUser, profile, enrollees, proxyRelations);
-  }
 
-  public record UserLoginDto(
-      ParticipantUser user,
-      PortalParticipantUser ppUser,
-      Profile profile,
-      List<Enrollee> enrollees,
-      List<EnrolleeRelation> relations) {}
+      proxyRelations.forEach(
+          proxyRelation -> {
+            Profile relationProfile =
+                profileService
+                    .find(proxyRelation.getTargetEnrollee().getProfileId())
+                    .orElseThrow(IllegalStateException::new);
+            relations.add(
+                EnrolleeRelationDto.builder()
+                    .relation(proxyRelation)
+                    .profile(relationProfile)
+                    .build());
+          });
+    }
+    return new UserLoginDto(user, ppUser, profile, enrollees, relations);
+  }
 
   @Transactional
   public void logout(ParticipantUser user) {
@@ -131,4 +141,11 @@ public class CurrentUserService {
       String username, EnvironmentName environmentName) {
     return participantUserDao.findOne(username, environmentName);
   }
+
+  public record UserLoginDto(
+      ParticipantUser user,
+      PortalParticipantUser ppUser,
+      Profile profile,
+      List<Enrollee> enrollees,
+      List<EnrolleeRelationDto> relations) {}
 }

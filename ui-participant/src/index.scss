@@ -171,3 +171,14 @@ a {
     display: none !important;
   }
 }
+
+.alert-circle {
+  width: 25px;
+  height: 25px; /* Should match width */
+  border-radius: 50%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+}
