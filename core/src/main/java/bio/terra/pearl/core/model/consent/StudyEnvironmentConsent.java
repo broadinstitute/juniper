@@ -3,12 +3,13 @@ package bio.terra.pearl.core.model.consent;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
-import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.UUID;
 
 /** See https://broadworkbench.atlassian.net/wiki/spaces/PEARL/pages/2669281289/Consent+forms */
 @Getter

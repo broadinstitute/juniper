@@ -97,6 +97,13 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
             </label>
             {EnrolleeSearchQueryBuilder}
             <p>{enrolleeSearchExpression}</p>
+            <label className="form-label d-block">
+                  Eligibility Rule
+              <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
+                onChange={e => updateWorkingForm({
+                  ...workingForm, eligibilityRule: e.target.value
+                })}/>
+            </label>
           </div>
         </div>
     }

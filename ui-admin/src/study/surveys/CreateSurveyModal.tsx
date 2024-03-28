@@ -43,7 +43,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     content: type === 'OUTREACH' ? HTML_TEMPLATE : QUESTIONNAIRE_TEMPLATE,
     id: '',
     createdAt: new Date().getDate(),
-    lastUpdatedAt: new Date().getDate()
+    lastUpdatedAt: new Date().getDate(),
+    eligibilityRule: ''
   })
 
   const { clearFields, NameInput, StableIdInput } = useFormCreationNameFields(form, setForm)

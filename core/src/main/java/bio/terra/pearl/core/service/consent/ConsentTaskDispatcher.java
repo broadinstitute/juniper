@@ -1,28 +1,29 @@
 package bio.terra.pearl.core.service.consent;
 
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
-import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /** Holds logic for building and processing consent tasks, and event listeners for triggering updates */
 @Service
@@ -31,12 +32,16 @@ public class ConsentTaskDispatcher {
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private ParticipantTaskService participantTaskService;
     private EnrolleeService enrolleeService;
+    private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     public ConsentTaskDispatcher(StudyEnvironmentConsentService studyEnvironmentConsentService,
-                                 ParticipantTaskService participantTaskService, EnrolleeService enrolleeService) {
+                                 ParticipantTaskService participantTaskService,
+                                 EnrolleeService enrolleeService,
+                                 EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
     /**
@@ -98,12 +103,16 @@ public class ConsentTaskDispatcher {
 
     /** builds the consent tasks, does not add them to the event or persist them */
     public List<ParticipantTask> buildTasks(Enrollee enrollee,
-                                                   EnrolleeRuleData enrolleeRuleData,
+                                            EnrolleeRuleData enrolleeRuleData,
                                                    UUID portalParticipantUserId,
                                                    List<StudyEnvironmentConsent> studyEnvConsents) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
-            if (EnrolleeRuleEvaluator.evaluateRule(studyConsent.getEligibilityRule(), enrolleeRuleData)) {
+            System.out.println(enrollee.isSubject());
+            // TODO JN-977: this logic will need to change because we might need to support consents for proxies
+            if (enrollee.isSubject() && enrolleeSearchExpressionParser
+                    .parseRule(studyConsent.getEligibilityRule())
+                    .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()))) {
                 ParticipantTask consentTask = buildTask(studyConsent, enrollee, portalParticipantUserId);
                 if (!isDuplicateTask(consentTask, enrollee.getParticipantTasks())) {
                     tasks.add(consentTask);

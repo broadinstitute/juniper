@@ -4,6 +4,7 @@ import { MailingAddress } from '../types/address'
 import { ModalProps } from 'react-bootstrap'
 import FormattedAddress from '../components/FormattedAddress'
 import { isNil } from 'lodash'
+import { useI18n } from '../participant/I18nProvider'
 
 
 /**
@@ -32,19 +33,21 @@ export function SuggestBetterAddressModal(
 ) {
   const [acceptedSuggestedAddress, setAcceptedSuggestedAddress] = useState<boolean>(true)
 
+  const { i18n } = useI18n()
+
   return <ModalComponent show={true} animation={animated} onHide={onDismiss}>
     <Modal.Header>
       <Modal.Title>
-        Is this the correct address?
+        {i18n('suggestBetterAddressHeader')}
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <p>
-        We were able to verify a similar address. Please select which you would like to use.
+        {i18n('suggestBetterAddressBody')}
       </p>
       <div className="ps-4">
         <div>
-          <p className="fw-bold mb-0 mt-1">New Address</p>
+          <p className="fw-bold mb-0 mt-1">{i18n('newAddress')}</p>
           <div className="form-check d-inline-block p-1">
             <input
               className="form-check-input"
@@ -64,7 +67,7 @@ export function SuggestBetterAddressModal(
         </div>
 
         <div>
-          <p className="fw-bold mb-0 mt-1">Old Address</p>
+          <p className="fw-bold mb-0 mt-1">{i18n('oldAddress')}</p>
           <div className="form-check d-inline-block p-1">
             <input
               className="form-check-input"
@@ -85,8 +88,8 @@ export function SuggestBetterAddressModal(
     <Modal.Footer>
       <div className="d-flex flex-row justify-content-start w-100">
         {isNil(goBack)
-          ? <button className="btn btn-outline-secondary" onClick={onDismiss}>Cancel</button>
-          : <button className="btn btn-outline-secondary" onClick={goBack}>Go Back</button>
+          ? <button className="btn btn-outline-secondary" onClick={onDismiss}>{i18n('cancel')}</button>
+          : <button className="btn btn-outline-secondary" onClick={goBack}>{i18n('goBack')}</button>
         }
 
         <div className="flex-grow-1">
@@ -96,7 +99,7 @@ export function SuggestBetterAddressModal(
             } else {
               reject()
             }
-          }}>Continue
+          }}>{i18n('continue')}
           </button>
         </div>
       </div>

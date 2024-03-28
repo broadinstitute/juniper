@@ -12,10 +12,10 @@ import lombok.experimental.SuperBuilder;
  * Context for evaluating a search expression on an enrollee.
  */
 @Getter
+@SuperBuilder
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class EnrolleeSearchContext {
     private Enrollee enrollee;
     private Profile profile;
