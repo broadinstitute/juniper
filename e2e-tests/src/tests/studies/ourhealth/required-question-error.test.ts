@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
-import { Study } from 'src/data/constants-en'
 import Question from 'src/page-components/question'
 import { goToStudyEligibility } from 'tests/e2e-utils'
+import data from 'src/data/ourhealth-en.json'
 
 test.describe('Question validation', () => {
   test('UI @ourhealth', {
@@ -16,8 +16,12 @@ test.describe('Question validation', () => {
       const prequal = await goToStudyEligibility(page)
       await prequal.submit()
 
-      const q = new Question(page, { qText: Study.OurHealth.QLabel.SouthAsianAncestry })
-      const err = await q.error()
+      let question = new Question(page, { qText: data.QLabel.SouthAsianAncestry })
+      let err = await question.error()
+      expect(err).toMatch(expErr)
+
+      question = new Question(page, { qText: data.QLabel.IsAdult })
+      err = await question.error()
       expect(err).toMatch(expErr)
     })
   })

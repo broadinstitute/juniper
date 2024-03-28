@@ -1,21 +1,30 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/models/component-base'
+import WebElementBase from 'src/page-components/web-element-base'
 
-export default class Textbox extends ComponentBase {
+/**
+ * A web element.
+ */
+export default class Textbox extends WebElementBase {
   root: Locator
 
-  constructor(page: Page, opts: { label?: string, parent?: Locator }) {
+  constructor(page: Page, opts: { name?: string, parent?: Locator }) {
     super(page)
-    const { parent, label } = opts
+    const { parent, name } = opts
+
     this.root = parent
-      ? label ? parent.locator(`input[aria-label="${label}"]`) :  parent.locator('input[aria-label]').first()
-      : label ? this.page.locator(`input[aria-label="${label}"]`)  :  this.page.locator('input[aria-label]').first()
+      ? name
+        ? parent.locator(`xpath=//input[@aria-label="${name}" or @placeholder="${name}"]`)
+        : parent.locator('input[aria-label], input[placeholder]').first()
+      : name
+        ? this.page.locator(`xpath=//input[@aria-label="${name}" or @placeholder="${name}"]`)
+        : this.page.locator('input[aria-label], input[placeholder]').first()
   }
 
   async fill(value: string | number): Promise<void> {
     const currentValue = await this.currentValue()
     if (!(new RegExp(`^${value.toString()}$`, 'i').test(currentValue))) {
       await this.locator.fill(value.toString())
+      await this.locator.blur()
     }
   }
 

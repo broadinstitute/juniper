@@ -26,7 +26,7 @@ export const randomChars = (length: 6): string => {
  * @param {"local" | "dev"} env
  * @returns {string} Participant URL of a specific study
  */
-export function getParticipantUrl(study: Study, env: Environment): string {
+export function getParticipantUrl(study: Study, env: Environment = 'local'): string {
   let url: string
   switch (study) {
     case 'OurHealth':

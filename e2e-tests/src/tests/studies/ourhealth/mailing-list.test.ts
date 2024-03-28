@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { adminLogin, randomChars } from 'tests/e2e-utils'
+import { adminLogin, getParticipantUrl, randomChars } from 'tests/e2e-utils'
 
 test('shows mailing list dialog on direct link', async ({ page }) => {
-  await page.goto(`${process.env.PARTICIPANT_URL}/?showJoinMailingList=true `)
+  const participantUrl = getParticipantUrl('OurHealth', 'local')
+  await page.goto(`${participantUrl}/?showJoinMailingList=true `)
 
   await expect(page).toHaveTitle('Juniper Heart Demo')
-  const mailingListDialog = await page.locator('div.modal-dialog')
+  const mailingListDialog = page.locator('div.modal-dialog')
   await expect(mailingListDialog).toBeVisible()
   await expect(mailingListDialog.locator('h2'))
     .toHaveText('Join Mailing List')

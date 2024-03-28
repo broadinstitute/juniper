@@ -1,8 +1,8 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/models/component-base'
+import WebComponentBase from 'src/page-components/web-component-base'
 
 /* navbar is located at the top of OurHealth page */
-export default class Navbar extends ComponentBase {
+export default class Navbar extends WebComponentBase {
   root: Locator
 
   linkOurHealthLogo: Locator
@@ -18,7 +18,6 @@ export default class Navbar extends ComponentBase {
   linkRegister: Locator
 
   linkLogIn: Locator
-
 
   constructor(page: Page) {
     super(page)

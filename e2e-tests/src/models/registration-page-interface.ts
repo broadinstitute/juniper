@@ -1,8 +1,6 @@
-import { PageInterface } from 'src/models/page-interface'
+import { JuniperPageInterface } from 'src/models/juniper-page-interface'
+import Question from 'src/page-components/question'
 
-export interface RegistrationPageInterface extends PageInterface {
-  fillIn(question: string, value: string): Promise<this>
-  select(question: string, value: string): Promise<this>
-  check(question: string, value: string): Promise<this>
-  click(role: string, name: string): Promise<this>
+export interface RegistrationPageInterface extends JuniperPageInterface {
+  getQuestion(qText: string): Question
 }
