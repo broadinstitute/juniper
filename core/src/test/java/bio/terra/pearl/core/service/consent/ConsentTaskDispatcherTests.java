@@ -1,7 +1,10 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -12,9 +15,11 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -30,6 +35,10 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
     private ConsentTaskDispatcher consentTaskDispatcher;
     @Autowired
     private ConsentFormFactory consentFormFactory;
+    @Autowired
+    private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private StudyEnvironmentFactory studyEnvironmentFactory;
 
     @Test
     public void testBuildConsentTasks(TestInfo info) {
@@ -143,5 +152,23 @@ public class ConsentTaskDispatcherTests extends BaseSpringBootTest {
                         .status(TaskStatus.NEW)
                         .build(), "createdAt", "lastUpdatedAt"
         ));
+    }
+
+    @Test
+    @Transactional
+    public void testDoesNotAssignToProxyByDefault(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        ConsentForm consentForm = consentFormFactory.buildPersisted(getTestName(testInfo));
+        StudyEnvironmentConsent studyEnvironmentConsent = consentFormFactory.addConsentToStudyEnv(sandboxBundle.getStudyEnv().getId(), consentForm.getId());
+        studyEnvironmentConsent.setConsentForm(consentForm);
+
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+
+        Assertions.assertEquals(1, enrolleeAndProxy.governedEnrollee().getParticipantTasks().size());
+        Assertions.assertEquals(
+                consentForm.getStableId(),
+                enrolleeAndProxy.governedEnrollee().getParticipantTasks().get(0).getTargetStableId());
+
+        Assertions.assertEquals(0, enrolleeAndProxy.proxy().getParticipantTasks().size());
     }
 }

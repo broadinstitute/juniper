@@ -1,19 +1,23 @@
 package bio.terra.pearl.core.service.notification;
 
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryType;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.service.notification.email.EnrolleeEmailService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
 import bio.terra.pearl.core.service.workflow.DispatcherOrder;
 import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -72,7 +76,7 @@ public class NotificationDispatcher {
         Notification notification = initializeNotification(config, enrolleeRuleData,
             notificationContextInfo.portalEnv().getId(), customMessages);
         senderMap.get(config.getDeliveryType())
-            .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
+                .processNotification(notification, config, enrolleeRuleData, notificationContextInfo);
     }
 
     public void dispatchTestNotification(Trigger config, EnrolleeRuleData enrolleeRuleData) {

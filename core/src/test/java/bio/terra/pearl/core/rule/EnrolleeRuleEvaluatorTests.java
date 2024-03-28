@@ -49,7 +49,7 @@ public class EnrolleeRuleEvaluatorTests {
     public void testStringVariableInsertion() throws Exception {
         String rule = "{profile.sexAtBirth} = 'M'";
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
-                new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build(), null)),
+                        new EnrolleeRuleData(null, Profile.builder().sexAtBirth("M").build(), null)),
                 equalTo(true));
         assertThat(EnrolleeRuleEvaluator.evaluateRuleChecked(rule,
                         new EnrolleeRuleData(null, Profile.builder().sexAtBirth("F").build(), null)),

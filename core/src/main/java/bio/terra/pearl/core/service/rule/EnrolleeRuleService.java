@@ -6,12 +6,12 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
-
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRuleService {
@@ -42,7 +42,7 @@ public class EnrolleeRuleService {
         List<Profile> profiles = profileService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
         List<EnrolleeRuleData> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->
-            new EnrolleeRuleData(enrollees.get(i), profiles.get(i), users.get(i))
+                new EnrolleeRuleData(enrollees.get(i), profiles.get(i), users.get(i))
         ).toList();
         return ruleData;
     }
