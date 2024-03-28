@@ -8,6 +8,7 @@ import com.smartystreets.api.international_street.Components;
 import com.smartystreets.api.international_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -58,7 +59,8 @@ public class SmartyInternationalAddressValidationService implements AddressValid
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
 
         if (SUPPORTED_COUNTRIES.stream().noneMatch(val -> val.equalsIgnoreCase(address.getCountry()))) {
-            throw new IllegalArgumentException("Cannot validate country " + address.getCountry());
+            throw new AddressValidationException("Cannot validate country " + address.getCountry(),
+                    HttpStatus.valueOf(400));
         }
 
         Lookup lookup = mailingAddressToLookup(address);

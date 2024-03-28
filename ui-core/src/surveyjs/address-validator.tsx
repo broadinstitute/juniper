@@ -64,6 +64,10 @@ export const validateSurveyJsAddress = async (
     return Promise.resolve()
   }
 
+  if (mailingAddress.country !== 'US') {
+    return Promise.resolve() // only US addresses are supported
+  }
+
   const existingValidationState: AddressValidationQuestionValue = addressValidationQuestion.value
 
   // if user has already validated this address, and it had a suggestion which they denied.
