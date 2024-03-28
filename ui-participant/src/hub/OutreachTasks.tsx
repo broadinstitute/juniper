@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import Api, { Enrollee, ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api/api'
 import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { useTaskIdParam } from './survey/SurveyView'
 import { useI18n } from '@juniper/ui-core'
+import { getLocalizedSurveyTitle } from '../util/surveyJsUtils'
 
 type OutreachParams = {
     enrolleeShortcode?: string,
@@ -27,11 +28,12 @@ const useOutreachParams = () => {
 /** renders all outreach tasks for the set of enrollees. This operates on a list of enrollees, since
  * all of the tasks from the portal the user has signed into are shown, and that may include
  * multiple studies and therefore enrollees */
-export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
-  const { i18n } = useI18n()
+export default function OutreachTasks({ enrollees, studies, outreachTasks }: {
+  enrollees: Enrollee[], studies: Study[], outreachTasks: TaskWithSurvey[]
+}) {
+  const { i18n, selectedLanguage } = useI18n()
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
-  const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
 
   const sortedOutreachTasks = outreachTasks.sort((a, b) => {
     return a.task.createdAt - b.task.createdAt
@@ -56,15 +58,6 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     })
   }
 
-  const loadOutreachActivities = async () => {
-    const outreachActivities = await Api.listOutreachActivities()
-    setOutreachActivities(outreachActivities)
-  }
-
-  useEffect(() => {
-    loadOutreachActivities()
-  }, [enrollees])
-
   useEffect(() => {
     const matchedTask = outreachTasks.find(({ task }) => task.id === outreachParams.taskId)?.task
     if (outreachParams.stableId && matchedTask && matchedTask.status === 'NEW') {
@@ -76,7 +69,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
 
   return <div className="">
     <div className="row g-3 pb-3">
-      {sortedOutreachTasks.map(({ task, survey }) => {
+      {sortedOutreachTasks.map(({ task, form }) => {
         const taskStudy = studyForTask(task, studies)
         const taskEnrollee = enrolleeForTask(task, enrollees)
         const taskUrl = getTaskPath(task, taskEnrollee.shortcode, taskStudy.shortcode)
@@ -84,9 +77,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         return <div className="col-md-6 col-sm-12" key={task.id}>
           <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
-            <h3 className="h5">{task.targetName}</h3>
+            <h3 className="h5">{getLocalizedSurveyTitle(form, selectedLanguage)}</h3>
             <p className="text-muted">
-              {survey.blurb}
+              {form.blurb}
             </p>
             <div className="py-3 text-center" style={{ background: 'var(--brand-color-shift-90)' }}>
               <Link to={taskUrl} className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary">

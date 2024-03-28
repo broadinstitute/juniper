@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import Api, { Enrollee, Portal, Study } from '../api/api'
+import Api, { Enrollee, Portal, Study, TasksWithSurveys, TaskWithSurvey } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -18,10 +18,20 @@ export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useUser()
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
+  const [tasks, setTasks] = useState<TasksWithSurveys>()
 
   useEffect(() => {
     loadDashboardAlerts()
   }, [])
+
+  const loadTasks = async () => {
+    const tasks = await Api.listTasksWithSurveys()
+    setTasks(tasks)
+  }
+
+  useEffect(() => {
+    loadTasks()
+  }, [enrollees])
 
   const loadDashboardAlerts = async () => {
     if (!portalEnv) { return }
@@ -69,12 +79,23 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
+          {enrollees.map(enrollee =>
+            <StudySection
+              key={enrollee.id}
+              enrollee={enrollee}
+              portal={portal}
+              consentTasks={tasks?.consentTasks || []}
+              surveyTasks={tasks?.surveyTasks || []} />
+          )}
         </main>
-        <div className="hub-dashboard mx-auto"
+        { tasks?.outreachTasks && <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
-          <OutreachTasks enrollees={enrollees} studies={portal.portalStudies.map(pStudy => pStudy.study)}/>
-        </div>
+          <OutreachTasks
+            enrollees={enrollees}
+            outreachTasks={tasks.outreachTasks}
+            studies={portal.portalStudies.map(pStudy => pStudy.study)}
+          />
+        </div> }
       </div>
     </>
   )
@@ -82,11 +103,13 @@ export default function HubPage() {
 
 type StudySectionProps = {
   enrollee: Enrollee
-  portal: Portal
+  portal: Portal,
+  surveyTasks: TaskWithSurvey[],
+  consentTasks: TaskWithSurvey[]
 }
 
 const StudySection = (props: StudySectionProps) => {
-  const { enrollee, portal } = props
+  const { enrollee, portal, consentTasks, surveyTasks } = props
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
@@ -96,7 +119,7 @@ const StudySection = (props: StudySectionProps) => {
       <h1 className="mb-4">{matchedStudy.name}</h1>
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
-        participantTasks={enrollee.participantTasks} />
+        participantTasks={enrollee.participantTasks} consentTasks={consentTasks} surveyTasks={surveyTasks}/>
     </>
   )
 }

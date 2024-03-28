@@ -3,7 +3,11 @@
   "version": 1,
   "name": "Medications",
   "jsonContent": {
-    "title": "Medications",
+    "title": {
+      "default": "Medications",
+      "es": "Medicamentos",
+      "dev": "DEV_Medications"
+    },
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
     "pages": [

@@ -11,7 +11,11 @@
     }
   ],
   "jsonContent": {
-    "title": "OurHealth pre-enroll",
+    "title": {
+      "default": "OurHealth pre-enroll",
+      "es": "Preinscripción de OurHealth",
+      "dev": "DEV_OurHealth pre-enroll"
+    },
     "logoPosition": "right",
     "showProgressBar": "bottom",
     "showQuestionNumbers": "off",
@@ -20,70 +24,126 @@
     "pages": [
       {
         "name": "page1",
-        "title": "Study Eligibility",
-        "description": "Thank you for your interest in participating in OurHealth. To get started, please answer these questions to make sure you’re eligible to participate. ",
+        "title": {
+          "default": "Study Eligibility",
+          "es": "Elegibilidad para el estudio",
+          "dev": "DEV_Study Eligibility"
+        },
+        "description": {
+          "default": "Thank you for your interest in participating in OurHealth. To get started, please answer these questions to make sure you’re eligible to participate.",
+          "es": "Gracias por su interés en participar en OurHealth. Para comenzar, responda estas preguntas para asegurarse de que es elegible para participar.",
+          "dev": "DEV_Thank you for your interest in participating in OurHealth. To get started, please answer these questions to make sure you’re eligible to participate."
+        },
         "elements": [
           {
             "type": "radiogroup",
             "name": "hd_hd_preenroll_southAsianAncestry",
-            "title": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
+            "title": {
+              "default": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka.",
+              "es": "Me identifico con ascendencia del sur de Asia de uno o más de estos países: Bangladesh, Bután, India, Maldivas, Nepal, Pakistán o Sri Lanka.",
+              "dev": "DEV_I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka."
+            },
             "isRequired": true,
             "choices": [
               {
                 "value": "yes",
-                "text": "Yes"
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                }
               },
               {
                 "value": "no",
-                "text": "No"
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                }
               }
             ]
           },
           {
             "type": "radiogroup",
             "name": "hd_hd_preenroll_understandsEnglish",
-            "title": "I am comfortable reading or speaking English.",
+            "title": {
+              "default": "I am comfortable reading or speaking English.",
+              "es": "Me siento cómodo leyendo o hablando inglés.",
+              "dev": "DEV_I am comfortable reading or speaking English."
+            },
             "isRequired": true,
             "choices": [
               {
                 "value": "yes",
-                "text": "Yes"
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                }
               },
               {
                 "value": "no",
-                "text": "No"
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                }
               }
             ]
           },
           {
             "type": "radiogroup",
             "name": "hd_hd_preenroll_isAdult",
-            "title": "I am 18 years old or older.",
+            "title": {
+              "default": "I am 18 years old or older.",
+              "es": "Tengo 18 años o más.",
+              "dev": "DEV_I am 18 years old or older."
+            },
             "isRequired": true,
             "choices": [
               {
                 "value": "yes",
-                "text": "Yes"
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                }
               },
               {
                 "value": "no",
-                "text": "No"
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                }
               }
             ]
           },
           {
             "type": "radiogroup",
             "name": "hd_hd_preenroll_livesInUS",
-            "title": "I live in the United States.",
+            "title": {
+              "default": "I live in the United States.",
+              "es": "Vivo en Estados Unidos.",
+              "dev": "DEV_I live in the United States."
+            },
             "isRequired": true,
             "choices": [
               {
                 "value": "yes",
-                "text": "Yes"
+                "text": {
+                  "default": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                }
               },
               {
                 "value": "no",
-                "text": "No"
+                "text": {
+                  "default": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                }
               }
             ]
           }
@@ -94,17 +154,33 @@
           {
             "type": "radiogroup",
             "name": "proxy_enrollment",
-            "title": "Who are you enrolling in the study?",
-            "description": "Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent",
+            "title": {
+              "default": "Who are you enrolling in the study?",
+              "es": "¿A quién inscribirá en el estudio?",
+              "dev": "DEV_Who are you enrolling in the study?"
+            },
+            "description": {
+              "default": "Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent",
+              "es": "Por favor elija la respuesta correcta. Si se está inscribiendo usted y su hijo/dependiente, primero complete la inscripción usted mismo y luego podrá agregar a su dependiente.",
+              "dev": "DEV_Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent"
+            },
             "isRequired": true,
             "choices": [
               {
-                "text": "I am enrolling myself.",
-                "value": "false"
+                "value": "false",
+                "text": {
+                  "default": "I am enrolling myself.",
+                  "es": "Me estoy inscribiendo.",
+                  "dev": "DEV_I am enrolling myself."
+                }
               },
               {
-                "text": "I am enrolling on behalf of my child / my legal dependent.",
-                "value": "true"
+                "value": "true",
+                "text": {
+                  "default": "I am enrolling on behalf of my child / my legal dependent.",
+                  "es": "Me inscribo en nombre de mi hijo/mi dependiente legal.",
+                  "dev": "DEV_I am enrolling on behalf of my child / my legal dependent."
+                }
               }
             ]
           }

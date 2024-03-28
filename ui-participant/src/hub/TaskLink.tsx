@@ -1,11 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Enrollee, ParticipantTask, ParticipantTaskStatus } from 'api/api'
+import { Enrollee, ParticipantTask, ParticipantTaskStatus, TaskWithSurvey } from 'api/api'
 import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
 import { useI18n } from '@juniper/ui-core'
+import { getLocalizedSurveyTitle } from '../util/surveyJsUtils'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -42,8 +43,8 @@ const statusDisplayMap: Record<ParticipantTaskStatus, StatusDisplayInfo> = {
  *  which do support i18n, and then loading from there.
  * */
 export default function TaskLink({ task, studyShortcode, enrollee }:
-                                   { task: ParticipantTask, studyShortcode: string, enrollee: Enrollee }) {
-  const isAccessible = isTaskAccessible(task, enrollee)
+                                   { task: TaskWithSurvey, studyShortcode: string, enrollee: Enrollee }) {
+  const isAccessible = isTaskAccessible(task.task, enrollee)
   const styleProps = {
     padding: '1em 0em',
     borderBottom: '1px solid #e4e4e4',
@@ -51,31 +52,33 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
     color: isAccessible ? undefined : '#595959'
   }
 
-  const { i18n } = useI18n()
+  const { i18n, selectedLanguage } = useI18n()
 
   return (
     <div className="d-flex flex-row" style={styleProps}>
       <div className="detail">
         {isAccessible
-          ? statusDisplayMap[task.status].icon
+          ? statusDisplayMap[task.task.status].icon
           : <FontAwesomeIcon icon={faLock} style={{ color: 'rgb(203, 203, 203)' }}/>}
       </div>
       <div className="flex-grow-1 ms-3">
         {isAccessible
-          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
-          : task.targetName}
+          ? <Link to={getTaskPath(task.task, enrollee.shortcode, studyShortcode)}>
+            {getLocalizedSurveyTitle(task.form, selectedLanguage)}
+          </Link>
+          : getLocalizedSurveyTitle(task.form, selectedLanguage)}
       </div>
-      {task.taskType === 'CONSENT' && task.status === 'COMPLETE' && (
+      {task.task.taskType === 'CONSENT' && task.task.status === 'COMPLETE' && (
         <div className="ms-3">
-          <Link to={`${getTaskPath(task, enrollee.shortcode, studyShortcode)}/print`}>
+          <Link to={`${getTaskPath(task.task, enrollee.shortcode, studyShortcode)}/print`}>
             <FontAwesomeIcon icon={faPrint} />
-            <span style={hideVisually()}>Print {task.targetName}</span>
+            <span style={hideVisually()}>Print {task.task.targetName}</span>
           </Link>
         </div>
       )}
       <div className="ms-3">
         {isAccessible
-          ? i18n(statusDisplayMap[task.status].statusDisplayKey)
+          ? i18n(statusDisplayMap[task.task.status].statusDisplayKey)
           : i18n('taskLocked')}
       </div>
     </div>
@@ -111,7 +114,8 @@ export function isTaskAccessible(task: ParticipantTask, enrollee: Enrollee) {
   if (openConsents.length) {
     return false
   }
-  const openRequiredTasks = enrollee.participantTasks.filter(task => task.blocksHub && task.status !== 'COMPLETE')
+  const openRequiredTasks = enrollee.participantTasks.filter(task =>
+    task.blocksHub && task.taskType != 'OUTREACH' && task.status !== 'COMPLETE')
     .sort((a, b) => a.taskOrder - b.taskOrder)
   if (openRequiredTasks.length) {
     return task.id === openRequiredTasks[0].id

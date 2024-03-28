@@ -134,7 +134,13 @@ export type HubResponse = {
 
 export type TaskWithSurvey = {
   task: ParticipantTask,
-  survey: Survey
+  form: Survey
+}
+
+export type TasksWithSurveys = {
+  consentTasks: TaskWithSurvey[],
+  surveyTasks: TaskWithSurvey[],
+  outreachTasks: TaskWithSurvey[]
 }
 
 export type PortalParticipantUser = {
@@ -223,9 +229,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async listOutreachActivities(
-  ): Promise<TaskWithSurvey[]> {
-    const url = `${baseEnvUrl(false)}/tasks?taskType=outreach`
+  async listTasksWithSurveys(): Promise<TasksWithSurveys> {
+    const url = `${baseEnvUrl(false)}/tasks`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
