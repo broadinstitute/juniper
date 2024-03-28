@@ -108,6 +108,8 @@ public class ConsentTaskDispatcher {
                                                    List<StudyEnvironmentConsent> studyEnvConsents) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
+            System.out.println(enrollee.isSubject());
+            // TODO JN-977: this logic will need to change because we might need to support consents for proxies
             if (enrollee.isSubject() && enrolleeSearchExpressionParser
                     .parseRule(studyConsent.getEligibilityRule())
                     .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()))) {

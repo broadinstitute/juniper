@@ -195,7 +195,8 @@ public class SurveyTaskDispatcher {
     }
 
     public boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return enrolleeSearchExpressionParser
+        // TODO JN-977: this logic will need to change because we will need to support surveys for proxies
+        return enrolleeRuleData.getEnrollee().isSubject() && enrolleeSearchExpressionParser
                 .parseRule(eligibilityRule)
                 .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()));
     }

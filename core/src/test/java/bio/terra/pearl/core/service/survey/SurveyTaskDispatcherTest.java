@@ -163,6 +163,27 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(participantTasks, hasSize(2));
         assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(e1.enrollee().getId())));
         assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(e2.enrollee().getId())));
+    }
 
+    @Test
+    @Transactional
+    public void testDoesNotAssignToProxyByDefault(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeFactory.EnrolleeBundle normalEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+
+        surveyTaskDispatcher.assign(
+                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false),
+                sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+
+        List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
+        assertThat(participantTasks, hasSize(2));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(enrolleeAndProxy.governedEnrollee().getId())));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(normalEnrollee.enrollee().getId())));
+        assertTrue(participantTasks.stream().noneMatch(t -> t.getEnrolleeId().equals(enrolleeAndProxy.proxy().getId())));
     }
 }
