@@ -46,7 +46,7 @@ public class TriggerDao extends BaseMutableJdbiDao<Trigger> {
     public void attachTemplates(List<Trigger> actions) {
         List<UUID> templateIds = actions.stream().map(Trigger::getEmailTemplateId)
                 .filter(uuid -> uuid != null).toList();
-        List<EmailTemplate> templates = emailTemplateDao.findAll(templateIds);
+        List<EmailTemplate> templates = emailTemplateDao.findAllWithLocalizedTemplates(templateIds);
         for (Trigger action : actions) {
             action.setEmailTemplate(templates.stream()
                     .filter(template -> template.getId().equals(action.getEmailTemplateId()))

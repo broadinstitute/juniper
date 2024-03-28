@@ -40,6 +40,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
                         "profile.last_updated_at as profile_last_updated_at, " +
                         "profile.mailing_address_id as profile_mailing_address_id, " +
                         "profile.phone_number as profile_phone_number, " +
+                        "profile.preferred_language as profile_preferred_language, " +
                         "profile.sex_at_birth as profile_sex_at_birth, " +
                         "answer_oh_oh_givenName.answer_type as answer_oh_oh_givenName_answer_type, " +
                         "answer_oh_oh_givenName.boolean_value as answer_oh_oh_givenName_boolean_value, " +

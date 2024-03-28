@@ -26,11 +26,10 @@ const getDefaultConfig = (): Trigger => {
     reminderIntervalMinutes: 72 * 60,
     maxNumReminders: 3,
     emailTemplate: {
-      name: '',
-      subject: 'Insert subject',
-      body: EMAIL_TEMPLATE,
       stableId: 'placeholderStableId',
-      version: 1
+      name: '',
+      version: 1,
+      localizedEmailTemplates: [{ language: 'en', subject: 'Insert subject', body: EMAIL_TEMPLATE }]
     },
     emailTemplateId: ''
   }
@@ -41,6 +40,7 @@ export default function CreateTriggerModal({ studyEnvParams, onDismiss, onCreate
 {studyEnvParams: StudyEnvParams, onDismiss: () => void, onCreate: (config: Trigger) => void}) {
   const [config, setConfig] = React.useState<Trigger>(getDefaultConfig())
   const [isLoading, setIsLoading] = useState(false)
+  const localizedEmailTemplate = config.emailTemplate.localizedEmailTemplates[0]
 
   const createConfig = async () => {
     doApiLoad(async () => {
@@ -71,7 +71,8 @@ export default function CreateTriggerModal({ studyEnvParams, onDismiss, onCreate
             emailTemplate: {
               ...config.emailTemplate,
               name: e.target.value,
-              stableId: generateTemplateStableId(e.target.value)
+              stableId: generateTemplateStableId(e.target.value),
+              localizedEmailTemplates: [{ ...localizedEmailTemplate }]
             }
           })}/>
         <TriggerBaseForm config={config} setConfig={setConfig}/>

@@ -19,11 +19,9 @@ public class EmailTemplateFactory {
 
     public EmailTemplate buildPersisted(String testname, UUID portalId) {
         EmailTemplate template = EmailTemplate.builder()
-                .body("Hello")
                 .stableId(testname + RandomStringUtils.randomAlphabetic(4))
                 .name("Template name")
                 .version(1)
-                .subject("Hi")
                 .portalId(portalId).build();
         return emailTemplateService.create(template);
     }

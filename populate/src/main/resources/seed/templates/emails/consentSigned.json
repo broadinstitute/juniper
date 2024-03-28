@@ -1,9 +1,12 @@
 {
   "createdAt" : 1707343635.411393000,
   "lastUpdatedAt" : 1707343635.411393000,
-  "subject" : "Thank you for your ${study.name} consent!",
   "name" : "Consent Signed",
   "stableId" : "consentSigned",
   "version" : 2,
-  "bodyPopulateFile" : "consentSigned.html"
+  "localizedEmailTemplateDtos": [{
+    "language" : "en",
+    "subject" : "Thank you for your ${study.name} consent!",
+    "bodyPopulateFile" : "en/consentSigned.html"
+  }]
 }

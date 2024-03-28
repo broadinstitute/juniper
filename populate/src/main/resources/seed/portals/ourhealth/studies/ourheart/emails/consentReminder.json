@@ -1,7 +1,10 @@
 {
-  "name": "Consent reminder",
-  "bodyPopulateFile": "consentReminder.html",
-  "subject": "Reminder: Please complete the ${study.name} Consent form",
   "stableId": "oh_oh_reminderConsent",
-  "version": 1
+  "name": "Consent reminder",
+  "version": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Reminder: Please complete the ${study.name} Consent form",
+    "bodyPopulateFile": "en/consentReminder.html"
+  }]
 }

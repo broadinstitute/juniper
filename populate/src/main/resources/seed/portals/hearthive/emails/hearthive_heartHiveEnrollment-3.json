@@ -1,9 +1,12 @@
 {
   "createdAt" : 1699984972.329692000,
   "lastUpdatedAt" : 1699984972.329693000,
-  "subject" : "Welcome  to The Heart Hive Community!",
   "name" : "Heart Hive Enrollment",
   "stableId" : "hearthive_heartHiveEnrollment",
   "version" : 3,
-  "bodyPopulateFile" : "hearthive_heartHiveEnrollment-3.html"
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject" : "Welcome  to The Heart Hive Community!",
+    "bodyPopulateFile" : "en/hearthive_heartHiveEnrollment-3.html"
+  }]
 }

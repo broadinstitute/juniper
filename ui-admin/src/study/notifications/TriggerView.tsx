@@ -103,7 +103,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
       }
       <div>
         <label className="form-label">Delivery
-          <Select options={deliveryTypeOptions}  isDisabled={true}
+          <Select options={deliveryTypeOptions} isDisabled={true}
             value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
         </label>
       </div>

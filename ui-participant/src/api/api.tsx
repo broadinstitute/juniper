@@ -85,7 +85,8 @@ export type Profile = {
   mailingAddress?: MailingAddress,
   phoneNumber?: string,
   birthDate?: number[],
-  sexAtBirth?: string
+  sexAtBirth?: string,
+  preferredLanguage?: string,
 }
 
 export type KitRequest = {

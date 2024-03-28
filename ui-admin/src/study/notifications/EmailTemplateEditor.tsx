@@ -18,6 +18,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const emailTemplateRef = useRef(emailTemplate)
   emailTemplateRef.current = emailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
+  const localizedEmailTemplate = emailTemplate.localizedEmailTemplates[0]
 
   const replacePlaceholders = (html: string) => {
     return html.replaceAll('${siteMediaBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
@@ -32,7 +33,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const onEditorLoaded: EmailEditorProps['onReady'] = unlayer => {
     unlayer.loadDesign({
       // @ts-ignore
-      html: replacePlaceholders(emailTemplate.body),
+      html: replacePlaceholders(localizedEmailTemplate.body),
       classic: true
     })
     unlayer.addEventListener('design:updated', () => {
@@ -40,7 +41,11 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
       emailEditorRef.current.editor.exportHtml(data => {
         updateEmailTemplate({
           ...emailTemplateRef.current,
-          body: insertPlaceholders(data.html)
+          localizedEmailTemplates: [{
+            ...localizedEmailTemplate,
+            id: undefined,
+            body: insertPlaceholders(data.html)
+          }]
         })
       })
     })
@@ -56,10 +61,14 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
     </div>
     <div>
       <label className="form-label">Subject
-        <input className="form-control" type="text" size={100} value={emailTemplate.subject}
+        <input className="form-control" type="text" size={100} value={localizedEmailTemplate.subject}
           onChange={e => updateEmailTemplate({
             ...emailTemplate,
-            subject: e.target.value
+            localizedEmailTemplates: [{
+              ...localizedEmailTemplate,
+              id: undefined,
+              subject: e.target.value
+            }]
           })}/>
       </label>
     </div>
@@ -80,10 +89,14 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
           />
         </Tab>
         <Tab eventKey="html" title="Html">
-          <textarea rows={20} cols={100} value={emailTemplate.body}
+          <textarea rows={20} cols={100} value={localizedEmailTemplate.body}
             onChange={e => updateEmailTemplate({
               ...emailTemplate,
-              body: e.target.value
+              localizedEmailTemplates: [{
+                ...localizedEmailTemplate,
+                id: undefined,
+                body: e.target.value
+              }]
             })}/>
 
         </Tab>

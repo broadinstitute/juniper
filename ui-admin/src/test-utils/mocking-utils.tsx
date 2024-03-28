@@ -19,7 +19,14 @@ import {
   SurveyResponse,
   Trigger
 } from 'api/api'
-import { defaultSurvey, ParticipantTask, ParticipantTaskStatus, ParticipantTaskType, Survey } from '@juniper/ui-core'
+import {
+  defaultSurvey,
+  LocalizedEmailTemplate,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
+  Survey
+} from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -299,6 +306,7 @@ export const mockEnrollee: () => Enrollee = () => {
       birthDate: [1994, 11, 20],
       doNotEmail: false,
       doNotEmailSolicit: false,
+      preferredLanguage: 'en',
       phoneNumber: '555.1212',
       mailingAddress: {
         street1: '123 fake street',
@@ -422,9 +430,19 @@ export const mockEmailTemplate = (): EmailTemplate => {
   return {
     id: 'emailTemplate1',
     name: 'Mock template',
-    subject: 'Mock subject',
     stableId: 'mock1',
     version: 1,
+    localizedEmailTemplates: [mockLocalizedEmailTemplate()]
+  }
+}
+
+/**
+ *
+ */
+export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
+  return {
+    language: 'en',
+    subject: 'Mock subject',
     body: 'Mock email message'
   }
 }
