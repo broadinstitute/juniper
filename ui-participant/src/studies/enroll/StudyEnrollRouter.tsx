@@ -13,6 +13,7 @@ import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPers
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import { AlertLevel, alertDefaults } from '@juniper/ui-core'
+import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -81,8 +82,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     }
   }, [])
 
-  // when either preEnrollment or login status changes, navigate accordingly
-  useEffect(() => {
+  /** route to a page depending on where in the pre-enroll/registration process the user is */
+  const determineNextRoute = async () => {
     const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
@@ -102,23 +103,21 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         navigate('register', { replace: true })
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
-        Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
-          updateEnrollee(response.enrollee)
-          const hubUpdate: HubUpdate = {
-            message: {
-              title: `Welcome to ${studyName}`,
-              detail: alertDefaults['WELCOME'].detail,
-              type: alertDefaults['WELCOME'].type as AlertLevel
-            }
-          }
+        try {
+          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, updateEnrollee)
           navigate('/hub', { replace: true, state: hubUpdate })
-        }).catch(() => {
+        } catch (e) {
           navigate('/hub', { replace: true })
-        })
+        }
       }
     } else {
       navigate('preEnroll', { replace: true })
     }
+  }
+
+  // when either preEnrollment or login status changes, navigate accordingly
+  useEffect(() => {
+    determineNextRoute()
   }, [mustProvidePassword, preEnrollSatisfied, user.username])
 
   const enrollContext: StudyEnrollContext = {

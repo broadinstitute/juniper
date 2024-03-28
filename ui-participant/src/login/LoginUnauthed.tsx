@@ -1,22 +1,36 @@
 import React, { SyntheticEvent, useState } from 'react'
-import Api, { LoginResult } from 'api/api'
+import Api from 'api/api'
 import { useUser } from 'providers/UserProvider'
+import { useDefaultEnrollmentStudy } from './RedirectFromOAuth'
+import { enrollCurrentUserInStudy, userHasJoinedStudy } from '../util/enrolleeUtils'
+import { useNavigate } from 'react-router-dom'
 
 /** component for showing a login dialog that hides other content on the page */
 export default function LoginUnauthed() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
+  const { loginUser, updateEnrollee } = useUser()
+  const navigate = useNavigate()
+
+  const defaultEnrollStudy = useDefaultEnrollmentStudy()
 
   /** log in with just an email, ignoring auth */
-  function unauthedLogin(event: SyntheticEvent) {
+  const unauthedLogin = async (event: SyntheticEvent) => {
     event.preventDefault()
     setIsError(false)
-    Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
-      loginUser(result, result.user.token)
-    }).catch(() => {
+    try {
+      const loginResult = await Api.unauthedLogin(emailAddress)
+      loginUser(loginResult, loginResult.user.token)
+
+      // Enroll in the default study if not already enrolled
+      if (defaultEnrollStudy && !userHasJoinedStudy(defaultEnrollStudy, loginResult.enrollees)) {
+        const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
+          defaultEnrollStudy.name, null, updateEnrollee)
+        navigate('/hub', { replace: true, state: hubUpdate })
+      }
+    } catch (e) {
       setIsError(true)
-    })
+    }
   }
 
   return <div className="Login">
