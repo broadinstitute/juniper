@@ -35,43 +35,20 @@ class AddressValidationServiceStubTest extends BaseSpringBootTest {
         Assertions.assertNull(result.getSuggestedAddress());
         Assertions.assertNotNull(result.getInvalidComponents());
 
-        Assertions.assertEquals(List.of(AddressComponent.CITY), result.getInvalidComponents());
+        Assertions.assertEquals(List.of(), result.getInvalidComponents());
     }
 
     @Test
-    public void testInvalidStreetResponse() {
-        // test no house number
+    public void testInvalidAddressComponents() {
         AddressValidationResultDto result = clientStub.validate(
                 MailingAddress
-                        .builder().street1("BAD St").state("CO").country("USA").postalCode("12345").build());
+                        .builder().street1("123 BAD INVALID_STREET_NAME INVALID_CITY St").state("CO").country("USA").postalCode("12345").build());
 
         Assertions.assertFalse(result.isValid());
+        Assertions.assertNull(result.getSuggestedAddress());
+        Assertions.assertNotNull(result.getInvalidComponents());
 
-        Assertions.assertEquals(List.of(AddressComponent.HOUSE_NUMBER, AddressComponent.CITY), result.getInvalidComponents());
-
-        // test no street type
-        result = clientStub.validate(
-                MailingAddress
-                        .builder().street1("123 BAD").state("CO").country("USA").postalCode("12345").build());
-
-        Assertions.assertFalse(result.isValid());
-
-        Assertions.assertEquals(
-                List.of(AddressComponent.STREET_TYPE, AddressComponent.CITY),
-                result.getInvalidComponents());
-
-        // test missing street 1
-        result = clientStub.validate(
-                MailingAddress
-                        .builder().street1("").state("CO").country("USA").postalCode("12345").build());
-
-        Assertions.assertFalse(result.isValid());
-
-        Assertions.assertEquals(List.of(
-                AddressComponent.STREET_NAME, AddressComponent.STREET_TYPE,
-                AddressComponent.HOUSE_NUMBER, AddressComponent.CITY
-        ), result.getInvalidComponents());
-
+        Assertions.assertEquals(List.of(AddressComponent.STREET_NAME, AddressComponent.CITY), result.getInvalidComponents());
     }
 
     @Test

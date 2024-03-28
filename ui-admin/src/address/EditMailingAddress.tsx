@@ -1,7 +1,6 @@
 import {
   AddressValidationResult,
   EditAddress,
-  explainAddressValidationResults,
   findDifferencesBetweenObjects,
   MailingAddress,
   SuggestBetterAddressModal
@@ -84,13 +83,6 @@ export default function EditMailingAddress(
       showLabels={false}
       validationResult={addressValidationResults}
     />
-    {<div className={'mt-2 mb-0'}>
-      {explainAddressValidationResults(addressValidationResults).map(
-        (explanation, idx) => {
-          return <p key={idx} className='text-danger'>{explanation}</p>
-        }
-      )}
-    </div>}
     {(user.user.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
           <div
