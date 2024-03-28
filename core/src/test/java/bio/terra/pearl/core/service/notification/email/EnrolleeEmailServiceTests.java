@@ -91,7 +91,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -128,7 +128,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
