@@ -228,10 +228,10 @@ export type Config = {
 }
 
 export type MailingListContact = {
-  id: string,
+  id?: string,
   name: string,
   email: string,
-  createdAt: number
+  createdAt?: number
 }
 
 
@@ -1116,6 +1116,16 @@ Promise<Trigger> {
     return await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
+    })
+  },
+
+  async addMailingListContacts(portalShortcode: string, envName: string, contact: MailingListContact[]):
+    Promise<Response> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    return await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(contact)
     })
   },
 

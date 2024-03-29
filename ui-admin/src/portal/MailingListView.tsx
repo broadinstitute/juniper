@@ -18,7 +18,7 @@ import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
 
 
@@ -29,6 +29,7 @@ export default function MailingListView({ portalContext, portalEnv }:
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showAddUsersModal, setShowAddUsersModal] = useState(false)
   const columns: ColumnDef<MailingListContact>[] = [{
     id: 'select',
     header: ({ table }) => <IndeterminateCheckbox
@@ -99,7 +100,7 @@ export default function MailingListView({ portalContext, portalEnv }:
       // a heavy-use feature.
       await Promise.all(
         contactsSelected.map(contact =>
-          Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id)
+          Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id!)
         )
       )
       Store.addNotification(successNotification(`${contactsSelected.length} entries removed`))
@@ -118,6 +119,10 @@ export default function MailingListView({ portalContext, portalEnv }:
           <RowVisibilityCount table={table}/>
         </div>
         <div className="d-flex">
+          <Button onClick={() => setShowAddUsersModal(!showAddUsersModal)}
+            variant="light" className="border m-1">
+            <FontAwesomeIcon icon={faAdd} className="fa-lg"/> Add Users
+          </Button>
           <Button onClick={download}
             variant="light" className="border m-1" disabled={!numSelected}
             tooltip={numSelected ? 'Download selected contacts' : 'You must select contacts to download'}>
@@ -148,6 +153,53 @@ export default function MailingListView({ portalContext, portalEnv }:
           </button>
         </Modal.Footer>
       </Modal> }
+      <AddUsersModal
+        portalContext={portalContext}
+        portalEnv={portalEnv}
+        show={showAddUsersModal}
+        onClose={() => setShowAddUsersModal(false)}
+      />
     </LoadingSpinner>
   </div>
+}
+
+/**
+ *
+ */
+export function AddUsersModal({ portalContext, portalEnv, show, onClose }:
+{portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment, show: boolean, onClose: () => void}) {
+  const [emails, setEmails] = useState<MailingListContact[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+
+  const addUsers = async () => {
+    setIsLoading(true)
+    try {
+      await Api.addMailingListContacts(portalContext.portal.shortcode, portalEnv.environmentName, emails)
+      Store.addNotification(successNotification('Users added'))
+      onClose()
+    } catch {
+      Store.addNotification(failureNotification('Error: could not add users'))
+    }
+    setIsLoading(false)
+  }
+
+  return <Modal show={show} onHide={onClose}>
+    <Modal.Header closeButton>
+      <Modal.Title>Add Users</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <input type="text" className="form-control" placeholder="Name"
+        onChange={e => setEmails([{ name: e.target.value, email: '' }])}/>
+      <input type="text" className="form-control" placeholder="Email"
+        onChange={e => setEmails([{ name: '', email: e.target.value }])}/>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button onClick={addUsers} variant="primary" disabled={isLoading}>
+        { isLoading ? <LoadingSpinner/> : 'Add' }
+      </Button>
+      <Button onClick={onClose} variant="secondary">
+        Cancel
+      </Button>
+    </Modal.Footer>
+  </Modal>
 }

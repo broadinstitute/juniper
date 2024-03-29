@@ -48,6 +48,24 @@ public class MailingListExtService {
   }
 
   @Transactional
+  public void create(
+      String portalShortcode,
+      EnvironmentName envName,
+      List<MailingListContact> contacts,
+      AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    PortalEnvironment portalEnv =
+        portalEnvironmentService.findOne(portal.getShortcode(), envName).get();
+
+    contacts.forEach(
+        contact -> {
+          contact.setPortalEnvironmentId(portalEnv.getId());
+        });
+
+    mailingListContactService.bulkCreate(contacts);
+  }
+
+  @Transactional
   public void delete(
       String portalShortcode, EnvironmentName envName, UUID contactId, AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
