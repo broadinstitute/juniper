@@ -7,6 +7,7 @@
     "navLogoCleanFileName": "juniper-demo-logo.png",
     "navLogoVersion": 1,
     "primaryBrandColor": "rgb(40, 90, 133)",
+    "dashboardBackgroundColor": "linear-gradient(270deg, rgb(133, 135, 227) 0%, rgb(149, 173, 204) 100%)",
     "footerSectionFile": "en/footerSection.json",
     "landingPageFileName": "en/landingPage.json",
     "navbarItemDtos": [{
@@ -23,6 +24,7 @@
     "navLogoCleanFileName": "juniper-demo-logo.png",
     "navLogoVersion": 1,
     "primaryBrandColor": "rgb(40, 90, 133)",
+    "dashboardBackgroundColor": "linear-gradient(270deg, rgb(133, 135, 227) 0%, rgb(149, 173, 204) 100%)",
     "footerSectionFile": "es/footerSection.json",
     "landingPageFileName": "es/landingPage.json",
     "navbarItemDtos": [{
@@ -39,6 +41,7 @@
     "navLogoCleanFileName": "juniper-demo-logo.png",
     "navLogoVersion": 1,
     "primaryBrandColor": "rgb(40, 90, 133)",
+    "dashboardBackgroundColor": "linear-gradient(270deg, rgb(133, 135, 227) 0%, rgb(149, 173, 204) 100%)",
     "footerSectionFile": "dev/footerSection.json",
     "landingPageFileName": "dev/landingPage.json",
     "navbarItemDtos": [{

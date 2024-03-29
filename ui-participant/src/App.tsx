@@ -52,6 +52,10 @@ function App() {
     brandConfig.brandColor = localContent.primaryBrandColor
   }
 
+  if (localContent.dashboardBackgroundColor) {
+    brandConfig.backgroundColor = localContent.dashboardBackgroundColor
+  }
+
   useEffect(() => {
     const isCompatible = isBrowserCompatible()
     if (!isCompatible) {

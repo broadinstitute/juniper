@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_dashboard_color"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: localized_site_content
+            columns:
+              - column:
+                  name: dashboard_background_color
+                  type: text
+                  defaultValue: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)'
