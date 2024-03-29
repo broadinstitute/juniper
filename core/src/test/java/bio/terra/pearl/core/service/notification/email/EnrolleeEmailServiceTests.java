@@ -14,7 +14,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
@@ -58,7 +58,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .contactEmail("test@test.com")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -91,7 +91,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -128,7 +128,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .preferredLanguage("es")
                 .build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile, null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
         PortalEnvironmentConfig portalEnvConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@portal.org").build();
         PortalEnvironment portalEnv = PortalEnvironment.builder()
@@ -168,7 +168,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();
@@ -178,7 +178,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
 
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();

@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -78,14 +78,14 @@ public class TriggerController implements TriggerApi {
   public ResponseEntity<Object> test(
       String portalShortcode, String studyShortcode, String envName, UUID configId, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    EnrolleeRuleData enrolleeRuleData = objectMapper.convertValue(body, EnrolleeRuleData.class);
+    EnrolleeContext enrolleeContext = objectMapper.convertValue(body, EnrolleeContext.class);
     triggerExtService.test(
         operator,
         portalShortcode,
         studyShortcode,
         EnvironmentName.valueOfCaseInsensitive(envName),
         configId,
-        enrolleeRuleData);
+            enrolleeContext);
     return ResponseEntity.ok().build();
   }
 

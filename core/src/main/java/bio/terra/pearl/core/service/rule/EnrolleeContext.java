@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class EnrolleeRuleData {
+public class EnrolleeContext {
     private final Enrollee enrollee;
     private final Profile profile;
     private final ParticipantUser participantUser;
