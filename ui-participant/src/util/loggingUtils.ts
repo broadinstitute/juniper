@@ -39,7 +39,7 @@ export type ErrorEventDetail = {
 }
 
 /** specific helper function for logging an error */
-export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
+export const logError = (detail: ErrorEventDetail, stackTrace: string | undefined) => {
   if (!isBrowserCompatible()) {
     alert('Your browser does not support this page. ' +
       'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')

@@ -14,6 +14,7 @@ import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPers
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
+import { logError } from '../../util/loggingUtils'
 
 export type StudyEnrollContext = {
   user: ParticipantUser,
@@ -107,6 +108,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
           const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, updateEnrollee)
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
+          logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)
           navigate('/hub', { replace: true })
         }
       }

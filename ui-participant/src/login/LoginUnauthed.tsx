@@ -1,9 +1,10 @@
 import React, { SyntheticEvent, useState } from 'react'
 import Api from 'api/api'
 import { useUser } from 'providers/UserProvider'
-import { useDefaultEnrollmentStudy } from './RedirectFromOAuth'
+import { findDefaultEnrollmentStudy } from './RedirectFromOAuth'
 import { enrollCurrentUserInStudy, userHasJoinedStudy } from '../util/enrolleeUtils'
 import { useNavigate } from 'react-router-dom'
+import { usePortalEnv } from '../providers/PortalProvider'
 
 /** component for showing a login dialog that hides other content on the page */
 export default function LoginUnauthed() {
@@ -11,8 +12,9 @@ export default function LoginUnauthed() {
   const [isError, setIsError] = useState(false)
   const { loginUser, updateEnrollee } = useUser()
   const navigate = useNavigate()
+  const {portal} = usePortalEnv()
 
-  const defaultEnrollStudy = useDefaultEnrollmentStudy()
+  const defaultEnrollStudy = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
   /** log in with just an email, ignoring auth */
   const unauthedLogin = async (event: SyntheticEvent) => {

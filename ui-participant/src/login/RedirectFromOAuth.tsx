@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import Api from 'api/api'
-import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
+import Api, { PortalStudy } from 'api/api'
+import {
+  useInvitationType,
+  usePreEnrollResponseId,
+  usePreRegResponseId,
+  useReturnToStudy
+} from 'browserPersistentState'
 import { userHasJoinedStudy, enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { filterUnjoinableStudies } from '../Navbar'
+import { logError } from '../util/loggingUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -17,11 +23,11 @@ export const RedirectFromOAuth = () => {
   const navigate = useNavigate()
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
-  const [, setReturnToStudy] = useReturnToStudy()
+  const [returnToStudy, setReturnToStudy] = useReturnToStudy()
+  const [invitationType, setInvitationType] = useInvitationType()
+  const { portal } = usePortalEnv()
 
-
-  const defaultEnrollStudy = useDefaultEnrollmentStudy()
-
+  const defaultEnrollStudy = findDefaultEnrollmentStudy(returnToStudy, portal.portalStudies)
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
@@ -50,7 +56,8 @@ export const RedirectFromOAuth = () => {
           const accessToken = auth.user.access_token
           // Register or login
           try {
-            const loginResult = auth.user.profile.newUser
+            const isNewRegistration = auth.user.profile.newUser && !invitationType
+            const loginResult = isNewRegistration
               ? await Api.register({ preRegResponseId, email, accessToken })
               : await Api.tokenLogin(accessToken)
 
@@ -64,13 +71,15 @@ export const RedirectFromOAuth = () => {
             } else {
               navigate('/hub', { replace: true })
             }
-          } catch {
+          } catch (e) {
+            logError({ message: 'Error on OAuth redirect' }, (e as ErrorEvent)?.error?.stack)
             navigate('/hub', { replace: true })
           }
 
           setPreRegResponseId(null)
           setPreEnrollResponseId(null)
           setReturnToStudy(null)
+          setInvitationType(null)
         }
       }
     }
@@ -90,15 +99,12 @@ export const RedirectFromOAuth = () => {
  * hook for return a default study to enroll in, if one exists -- looks for either a study shortcode
  * in local storage or whether the portal only has a single joinable study
  */
-export function useDefaultEnrollmentStudy() {
-  const [returnToStudy] = useReturnToStudy()
-  const { portal } = usePortalEnv()
+export function findDefaultEnrollmentStudy(returnToStudy: string | null, portalStudies: PortalStudy[]) {
+  const joinableStudies = filterUnjoinableStudies(portalStudies)
   // Select a study to enroll in based on a previously saved session storage property
-  const findReturnToStudy = () =>
-    filterUnjoinableStudies(portal.portalStudies)
-      .find(portalStudy => portalStudy.study.shortcode === returnToStudy)
+  const findReturnToStudy = () => joinableStudies.find(portalStudy => portalStudy.study.shortcode === returnToStudy)
 
   // Select the portal's single study if there is only one; otherwise return null
-  const getSingleStudy = () => portal.portalStudies.length === 1 ? portal.portalStudies[0] : null
+  const getSingleStudy = () => joinableStudies.length === 1 ? joinableStudies[0] : null
   return findReturnToStudy()?.study || getSingleStudy()?.study || null
 }

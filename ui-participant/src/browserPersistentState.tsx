@@ -14,6 +14,10 @@ export const usePreEnrollResponseId = () => useSessionStorage('preEnrollResponse
 /** store the study being enrolled in so that we remember it when coming back from B2C sign-up. */
 export const useReturnToStudy = () => useSessionStorage('returnToStudy')
 
+/** store whether we are processing an invitation, and what type it is.
+ * For now, 'link' is the only type contemplated. */
+export const useInvitationType = () => useSessionStorage('invitationType')
+
 /** store whether the user has successfully provided a password for a password protected study */
 export const useHasProvidedStudyPassword = (studyShortcode: string): [boolean, () => void] => {
   const [value, setValue] = useSessionStorage(`provided-study-password/${studyShortcode}`)
