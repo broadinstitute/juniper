@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,29 @@ public class MailingListExtService {
             .findOne(portal.getShortcode(), envName)
             .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
-    return mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
+    List<MailingListContact> newContacts =
+        mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
+
+    List<DataChangeRecord> changeRecords =
+        newContacts.stream()
+            .map(
+                contact -> {
+                  try {
+                    return DataChangeRecord.builder()
+                        .modelName(MailingListContact.class.getSimpleName())
+                        .responsibleAdminUserId(user.getId())
+                        .portalEnvironmentId(portalEnv.getId())
+                        .newValue(objectMapper.writeValueAsString(contact))
+                        .oldValue(null)
+                        .build();
+                  } catch (JsonProcessingException e) {
+                    throw new RuntimeException("could not create audit trail", e);
+                  }
+                })
+            .collect(Collectors.toList());
+    dataChangeRecordService.bulkCreate(changeRecords);
+
+    return newContacts;
   }
 
   @Transactional
