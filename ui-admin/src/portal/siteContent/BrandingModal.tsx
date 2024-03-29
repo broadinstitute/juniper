@@ -66,19 +66,19 @@ export default function BrandingModal({ onDismiss, localContent, updateLocalCont
           <span className="px-4 ms-2" style={{ background: color }} title="color preview"/>
         </div>
 
-        <label htmlFor="colorInput" className="mt-3">Dashboard Background Color</label>
+        <label htmlFor="backgroundColorInput" className="mt-3">Dashboard Background Color</label>
         <InfoPopup content={<span>
           Background color for the participant&lsquo;s dashboard. This should be
           specified as a CSS color string, either hex (<code>#33aabb</code>), RGB (<code>rgb(25,180,100)</code>),
           or any other valid CSS color string (e.g., <code>linear-gradient</code>)
         </span>}/>
         <div className="d-flex">
-          <input type="text" className="form-control" id="colorInput"
+          <input type="text" className="form-control" id="backgroundColorInput"
             value={backgroundColor}
             onChange={event => {
               setBackgroundColor(event.target.value)
             }}/>
-          <span className="px-4 ms-2" style={{ background: backgroundColor }} title="color preview"/>
+          <span className="px-4 ms-2" style={{ background: backgroundColor }} title="dashboard background preview"/>
         </div>
 
 
