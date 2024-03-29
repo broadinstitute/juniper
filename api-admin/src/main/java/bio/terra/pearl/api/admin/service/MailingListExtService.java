@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -55,14 +56,11 @@ public class MailingListExtService {
       AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
     PortalEnvironment portalEnv =
-        portalEnvironmentService.findOne(portal.getShortcode(), envName).get();
+        portalEnvironmentService
+            .findOne(portal.getShortcode(), envName)
+            .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
-    contacts.forEach(
-        contact -> {
-          contact.setPortalEnvironmentId(portalEnv.getId());
-        });
-
-    mailingListContactService.bulkCreate(contacts);
+    mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
   }
 
   @Transactional

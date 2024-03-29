@@ -23,6 +23,15 @@ public class MailingListContactService extends ImmutableEntityService<MailingLis
     }
 
     @Transactional
+    public void bulkCreate(UUID portalEnvId, List<MailingListContact> contacts) {
+        findByPortalEnv(portalEnvId).forEach(existing ->
+                contacts.removeIf(contact -> contact.getEmail().equals(existing.getEmail())));
+
+        contacts.forEach(contact -> contact.setPortalEnvironmentId(portalEnvId));
+        dao.bulkCreate(contacts);
+    }
+
+    @Transactional
     public void deleteByPortalEnvId(UUID portalEnvId) {
         dao.deleteByPortalEnvId(portalEnvId);
     }
