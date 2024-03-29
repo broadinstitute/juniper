@@ -50,8 +50,9 @@ public class MailingListController implements MailingListApi {
     List<MailingListContact> contacts =
         objectMapper.convertValue(body, new TypeReference<List<MailingListContact>>() {});
 
-    mailingListExtService.create(portalShortcode, environmentName, contacts, user);
-    return ResponseEntity.noContent().build();
+    List<MailingListContact> createdContacts =
+        mailingListExtService.create(portalShortcode, environmentName, contacts, user);
+    return ResponseEntity.ok(createdContacts);
   }
 
   @Override

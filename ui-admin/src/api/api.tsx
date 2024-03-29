@@ -1120,13 +1120,14 @@ Promise<Trigger> {
   },
 
   async addMailingListContacts(portalShortcode: string, envName: string, contact: MailingListContact[]):
-    Promise<Response> {
+    Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
-    return await fetch(url, {
+    const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(contact)
     })
+    return await this.processJsonResponse(response)
   },
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {

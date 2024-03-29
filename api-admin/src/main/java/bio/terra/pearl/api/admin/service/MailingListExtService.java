@@ -49,7 +49,7 @@ public class MailingListExtService {
   }
 
   @Transactional
-  public void create(
+  public List<MailingListContact> create(
       String portalShortcode,
       EnvironmentName envName,
       List<MailingListContact> contacts,
@@ -60,7 +60,7 @@ public class MailingListExtService {
             .findOne(portal.getShortcode(), envName)
             .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
-    mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
+    return mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
   }
 
   @Transactional

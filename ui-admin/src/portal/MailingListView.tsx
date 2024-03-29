@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAdd, faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
 import { useFileUploadButton } from '../util/uploadUtils'
+import pluralize from 'pluralize'
 
 
 /** show the mailing list in table */
@@ -191,8 +192,10 @@ export function AddUsersModal({ portalContext, portalEnv, show, onClose, reload 
     setIsLoading(true)
     const validContacts = emails.filter(contact => contact.email && contact.name)
     try {
-      await Api.addMailingListContacts(portalContext.portal.shortcode, portalEnv.environmentName, validContacts)
-      Store.addNotification(successNotification('Users added'))
+      const response = await Api.addMailingListContacts(
+        portalContext.portal.shortcode, portalEnv.environmentName, validContacts
+      )
+      Store.addNotification(successNotification(`${response.length} new ${pluralize('user', response.length)} added`))
       onClose()
     } catch {
       Store.addNotification(failureNotification('Error: could not add users'))
@@ -241,8 +244,9 @@ export function AddUsersModal({ portalContext, portalEnv, show, onClose, reload 
           )}
         </tbody>
       </table>
-      <button className="btn btn-primary" onClick={() => setEmails([...emails, { name: '', email: '' }])}>
-            Add
+      <button className="btn btn-primary"
+        onClick={() => setEmails([...emails, { name: '', email: '' }])}>
+        Add
       </button>
     </Modal.Body>
     <Modal.Footer>

@@ -1044,7 +1044,7 @@ paths:
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: mailing list contact
+          description: list of created contacts
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
