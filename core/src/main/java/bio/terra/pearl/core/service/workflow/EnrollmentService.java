@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
@@ -107,7 +108,8 @@ public class EnrollmentService {
             String surveyStableId,
             Integer surveyVersion,
             ParsedPreEnrollResponse parsedResponse) throws JsonProcessingException {
-        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+        Portal portal = portalService.findByStudyEnvironmentId(studyEnvironmentId).get();
+        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion, portal.getId()).get();
 
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())

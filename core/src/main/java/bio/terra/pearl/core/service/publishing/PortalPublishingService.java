@@ -10,25 +10,33 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.publishing.ConfigChange;
+import bio.terra.pearl.core.model.publishing.ListChange;
+import bio.terra.pearl.core.model.publishing.ParticipantDashboardAlertChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
+import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
+import bio.terra.pearl.core.model.publishing.VersionedConfigChange;
+import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /** dedicated service for applying deltas to portal environments */
 @Service
@@ -114,7 +122,7 @@ public class PortalPublishingService {
             }
             UUID newSurveyId = null;
             if (change.newStableId() != null) {
-                newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+                newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
             }
             destEnv.setPreRegSurveyId(newSurveyId);
             PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, surveyService);
@@ -127,7 +135,7 @@ public class PortalPublishingService {
         }
         UUID newDocumentId = null;
         if (change.newStableId() != null) {
-            newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+            newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
         }
         destEnv.setSiteContentId(newDocumentId);
         PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, siteContentService);

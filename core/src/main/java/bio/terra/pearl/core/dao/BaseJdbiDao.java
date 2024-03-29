@@ -1,16 +1,6 @@
 package bio.terra.pearl.core.dao;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
@@ -21,6 +11,22 @@ import org.jdbi.v3.core.statement.PreparedBatch;
 import org.jdbi.v3.core.statement.Query;
 import org.springframework.beans.PropertyAccessor;
 import org.springframework.beans.PropertyAccessorFactory;
+
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected Jdbi jdbi;
@@ -273,6 +279,20 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    protected Optional<T> findByThreeProperties(String column1Name, Object column1Value,
+                                                String column2Name, Object column2Value,
+                                                String column3Name, Object column3Value) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where " + column1Name + " = :column1Value"
+                                + " and " + column2Name + " = :column2Value and " + column3Name + " = :column3Value;")
+                        .bind("column1Value", column1Value)
+                        .bind("column2Value", column2Value)
+                        .bind("column3Value", column3Value)
+                        .mapTo(clazz)
+                        .findOne()
+        );
+    }
+
     protected List<T> findAllByTwoProperties(String column1Name, Object column1Value,
                                               String column2Name, Object column2Value) {
         return jdbi.withHandle(handle ->
@@ -333,6 +353,39 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
             for (int i = 0; i < column1Values.size(); i++) {
                 query = query.bind("column1Value" + i, column1Values.get(i))
                         .bind("column2Value" + i, column2Values.get(i));
+            }
+            return query.mapTo(clazz).list();
+        });
+    }
+
+    protected List<T> findAllByThreeProperties(String column1Name, List<?> column1Values,
+                                               String column2Name, List<?> column2Values,
+                                               String column3Name, List<?> column3Values) {
+        if (column1Values.size() != column2Values.size()) {
+            throw new IllegalArgumentException("column1Values and column2Values must be the same size");
+        }
+        if (column1Values.isEmpty()) {
+            // short circuit this case because bindList errors if list is empty
+            return new ArrayList<>();
+        }
+        String whereClause = IntStream.range(0, column1Values.size())
+                .mapToObj(i -> "(%s = :column1Value%s and %s = :column2Value%s and %s = :column3Value%s and ordering = %s)".formatted(
+                        column1Name, i, column2Name, i, column3Name, i, i))
+                .collect(Collectors.joining(" or "));
+        String sortValues = IntStream.range(0, column1Values.size())
+                .mapToObj(i -> "(:column1Value%s, :column2Value%s, %s)".formatted(i, i, i))
+                .collect(Collectors.joining(", "));
+        String joinClause = """
+                 join (values %s) as sortJoin (column1, column2, ordering)
+                on (%s = sortJoin.column1  and %s = sortJoin.column2) 
+                """.formatted(sortValues, column1Name, column2Name);
+        return jdbi.withHandle(handle -> {
+            Query query = handle.createQuery("select * from %s %s where %s order by sortJoin.ordering"
+                    .formatted(tableName, joinClause, whereClause));
+            for (int i = 0; i < column1Values.size(); i++) {
+                query = query.bind("column1Value" + i, column1Values.get(i))
+                        .bind("column2Value" + i, column2Values.get(i))
+                        .bind("column3Value" + i, column3Values.get(i));
             }
             return query.mapTo(clazz).list();
         });

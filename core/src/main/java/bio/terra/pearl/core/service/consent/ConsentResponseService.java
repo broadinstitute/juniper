@@ -1,37 +1,46 @@
 package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
-import bio.terra.pearl.core.model.consent.*;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.consent.ConsentResponse;
+import bio.terra.pearl.core.model.consent.ConsentResponseDto;
+import bio.terra.pearl.core.model.consent.ConsentWithResponses;
+import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.workflow.EventService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ConsentResponseService extends ImmutableEntityService<ConsentResponse, ConsentResponseDao> {
     private ConsentFormService consentFormService;
     private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private ParticipantTaskService participantTaskService;
+    private PortalService portalService;
     private EventService eventService;
     private ObjectMapper objectMapper;
 
     public ConsentResponseService(ConsentResponseDao dao, ConsentFormService consentFormService,
                                   StudyEnvironmentConsentService studyEnvironmentConsentService,
                                   ParticipantTaskService participantTaskService,
-                                  EventService eventService, ObjectMapper objectMapper) {
+                                  EventService eventService, ObjectMapper objectMapper, PortalService portalService) {
         super(dao);
+        this.portalService = portalService;
         this.consentFormService = consentFormService;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.participantTaskService = participantTaskService;
@@ -46,7 +55,8 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
 
     public ConsentWithResponses findWithResponses(UUID studyEnvId, String stableId, Integer version,
                                                   Enrollee enrollee, UUID participantUserId) {
-        ConsentForm form = consentFormService.findByStableId(stableId, version).get();
+        Portal portal = portalService.findByStudyEnvironmentId(studyEnvId).orElseThrow();
+        ConsentForm form = consentFormService.findByStableId(stableId, version, portal.getId()).get();
         // this searches by form id -- we don't carry forward responses from one version of a consent to the next
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
 

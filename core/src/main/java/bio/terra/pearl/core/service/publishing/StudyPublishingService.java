@@ -4,27 +4,33 @@ import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
-import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.publishing.ConfigChange;
+import bio.terra.pearl.core.model.publishing.ListChange;
+import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
+import bio.terra.pearl.core.model.publishing.VersionedConfigChange;
+import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.service.workflow.EventService;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class StudyPublishingService {
@@ -37,13 +43,14 @@ public class StudyPublishingService {
     private TriggerService triggerService;
     private EmailTemplateService emailTemplateService;
     private EventService eventService;
+    private PortalService portalService;
 
     public StudyPublishingService(StudyEnvironmentConfigService studyEnvironmentConfigService,
                                   StudyEnvironmentService studyEnvironmentService, SurveyService surveyService,
                                   ConsentFormService consentFormService, StudyEnvironmentConsentService studyEnvironmentConsentService,
                                   StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                   TriggerService triggerService,
-                                  EmailTemplateService emailTemplateService, EventService eventService) {
+                                  EmailTemplateService emailTemplateService, EventService eventService, PortalService portalService) {
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.surveyService = surveyService;
@@ -53,6 +60,7 @@ public class StudyPublishingService {
         this.triggerService = triggerService;
         this.emailTemplateService = emailTemplateService;
         this.eventService = eventService;
+        this.portalService = portalService;
     }
 
     /** the study environment must be fully hydrated by a call to loadStudyEnvForProcessing prior to passing in */
@@ -81,9 +89,10 @@ public class StudyPublishingService {
         if (!change.isChanged()) {
             return destEnv;
         }
+        Portal portal = portalService.findByStudyEnvironmentId(destEnv.getId()).orElseThrow();
         UUID newSurveyId = null;
         if (change.newStableId() != null) {
-            newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+            newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion(), portal.getId()).get().getId();
         }
         destEnv.setPreEnrollSurveyId(newSurveyId);
         PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, surveyService);
@@ -123,11 +132,15 @@ public class StudyPublishingService {
             studyEnvironmentSurveyService.deactivate(config.getId());
             destEnv.getConfiguredSurveys().remove(config);
         }
+        Portal portal = portalService.findByStudyEnvironmentId(destEnv.getId()).orElseThrow();
         for(VersionedConfigChange change : listChange.changedItems()) {
             PublishingUtils.applyChangesToVersionedConfig(change, studyEnvironmentSurveyService, surveyService, destEnv.getEnvironmentName());
             if (change.documentChange().isChanged()) {
                 // if this is a change of version (as opposed to a reordering), then publish an event
-                Survey survey = surveyService.findByStableId(change.documentChange().newStableId(), change.documentChange().newVersion()).orElseThrow();
+                Survey survey = surveyService.findByStableId(
+                        change.documentChange().newStableId(), change.documentChange().newVersion(), portal.getId()
+                ).orElseThrow();
+
                 eventService.publishSurveyPublishedEvent(destPortalEnvId, destEnv.getId(), survey);
             }
         }

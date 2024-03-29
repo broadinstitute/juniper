@@ -10,8 +10,9 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.UUID;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class SurveyResponseExtService {
@@ -60,7 +61,7 @@ public class SurveyResponseExtService {
         authUtilService.authParticipantUserToEnrollee(user.getId(), enrolleeShortcode);
     HubResponse result =
         surveyResponseService.updateResponse(
-            responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId);
+                responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId, portalShortcode);
     return result;
   }
 }

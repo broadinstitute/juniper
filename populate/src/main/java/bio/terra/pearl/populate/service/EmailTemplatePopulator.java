@@ -48,8 +48,8 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         if (configPopDto.getPopulateFileName() != null) {
             template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
         } else {
-            template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
-                    configPopDto.getEmailTemplateVersion()).get();
+            template = emailTemplateService.findByStableIdAndPortalShortcode(configPopDto.getEmailTemplateStableId(),
+                    configPopDto.getEmailTemplateVersion(), context.getPortalShortcode()).get();
         }
         config.setEmailTemplateId(template.getId());
         config.setEmailTemplate(template);
@@ -88,7 +88,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         if (existingOpt.isPresent()) {
             return existingOpt;
         }
-        return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
+        return emailTemplateService.findByStableIdAndPortalShortcode(popDto.getStableId(), popDto.getVersion(), context.getPortalShortcode());
     }
 
     @Override
@@ -105,7 +105,7 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
             // the things are the same, don't bother creating a new version
             return existingObj;
         }
-        int newVersion = emailTemplateService.getNextVersion(popDto.getStableId());
+        int newVersion = emailTemplateService.getNextVersionByPortalShortcode(popDto.getStableId(), context.getPortalShortcode());
         popDto.setVersion(newVersion);
         return emailTemplateService.create(popDto);
     }

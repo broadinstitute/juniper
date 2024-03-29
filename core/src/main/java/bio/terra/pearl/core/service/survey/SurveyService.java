@@ -44,8 +44,12 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         return dao.findByStableIdNoContent(stableId);
     }
 
-    public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
-        return dao.findByStableIdWithMappings(stableId, version);
+    public Optional<Survey> findByStableIdWithMappings(String stableId, int version, UUID portalId) {
+        return dao.findByStableIdWithMappings(stableId, version, portalId);
+    }
+
+    public Optional<Survey> findByStableIdAndPortalShortcodeWithMappings(String stableId, int version, String shortcode) {
+        return dao.findByStableIdAndPortalShortcodeWithMappings(stableId, version, shortcode);
     }
 
     @Transactional
@@ -180,7 +184,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         Survey newSurvey = new Survey();
         BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
         newSurvey.setPortalId(portalId);
-        int nextVersion = dao.getNextVersion(survey.getStableId());
+        int nextVersion = dao.getNextVersion(survey.getStableId(), portalId);
         newSurvey.setVersion(nextVersion);
         newSurvey.getAnswerMappings().clear();
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {

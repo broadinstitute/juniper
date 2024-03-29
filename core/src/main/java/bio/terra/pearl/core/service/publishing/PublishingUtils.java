@@ -29,7 +29,7 @@ public class PublishingUtils {
             VersionedEntityChange<T> docChange = versionedConfigChange.documentChange();
             UUID newDocumentId = null;
             if (docChange.newStableId() != null) {
-                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion()).get().getId();
+                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion(), docChange.portalId()).get().getId();
             }
             assignPublishedVersionIfNeeded(destEnvName, docChange, documentService);
             destConfig.updateVersionedEntityId(newDocumentId);
@@ -43,7 +43,7 @@ public class PublishingUtils {
             VersionedEntityChange<T> change,
             VersionedEntityService<T, D> service) {
         if (destEnvName.isLive() && change.newStableId() != null) {
-            T entity = service.findByStableId(change.newStableId(), change.newVersion()).get();
+            T entity = service.findByStableId(change.newStableId(), change.newVersion(), change.portalId()).orElseThrow();
             service.assignPublishedVersion(entity.getId());
         }
     }
