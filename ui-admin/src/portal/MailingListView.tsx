@@ -92,9 +92,11 @@ export default function MailingListView({ portalContext, portalEnv }:
       // this might get gnarly with more than a few entries, but that's okay for now -- this is not expected to be
       // a heavy-use feature.
       await Promise.all(
-        contactsSelected.map(contact =>
-          Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id!)
-        )
+        contactsSelected.map(contact => {
+          if (contact.id) {
+            return Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id)
+          }
+        })
       )
       Store.addNotification(successNotification(`${contactsSelected.length} entries removed`))
     } catch {
