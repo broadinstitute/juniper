@@ -73,7 +73,7 @@ public class NotificationExtService {
 
     // bulk load the enrollees
     List<EnrolleeContext> enrolleeRuleData =
-            enrolleeContextService.fetchData(
+        enrolleeContextService.fetchData(
             enrollees.stream().map(enrollee -> enrollee.getId()).toList());
     NotificationContextInfo context = notificationDispatcher.loadContextInfo(config);
     for (EnrolleeContext enrolleeRuleDatum : enrolleeRuleData) {

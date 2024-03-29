@@ -85,7 +85,7 @@ public class TriggerController implements TriggerApi {
         studyShortcode,
         EnvironmentName.valueOfCaseInsensitive(envName),
         configId,
-            enrolleeContext);
+        enrolleeContext);
     return ResponseEntity.ok().build();
   }
 
