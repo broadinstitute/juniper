@@ -9,19 +9,23 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
-import { currentIsoDate, instantToDateString, instantToDefaultString } from '@juniper/ui-core'
+import {
+  basicTableLayout,
+  DownloadControl,
+  IndeterminateCheckbox,
+  renderEmptyMessage,
+  RowVisibilityCount
+} from 'util/tableUtils'
+import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
-import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAdd, faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
-import { useFileUploadButton } from '../util/uploadUtils'
-import pluralize from 'pluralize'
+import { AddMailingListUsersModal } from './AddMailingListUsersModal'
 
 
 /** show the mailing list in table */
@@ -53,9 +57,11 @@ export default function MailingListView({ portalContext, portalEnv }:
   }, {
     header: 'Joined',
     accessorKey: 'createdAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as number)
   }]
-
 
   const table = useReactTable({
     data: contacts,
@@ -71,21 +77,6 @@ export default function MailingListView({ portalContext, portalEnv }:
     onRowSelectionChange: setRowSelection
   })
 
-  /** download selected contacts as a csv */
-  const download = () => {
-    const contactsSelected = Object.keys(rowSelection)
-      .filter(key => rowSelection[key])
-      .map(key => contacts[parseInt(key)])
-    const csvDataString = contactsSelected.map(contact => {
-      return `${escapeCsvValue(contact.email)}, ${escapeCsvValue(contact.name)}, 
-      ${instantToDateString(contact.createdAt)}`
-    }).join('\n')
-    const csvString = `email, name, date joined\n${  csvDataString}`
-    const blob = new Blob([csvString], {
-      type: 'text/plain'
-    })
-    saveBlobAsDownload(blob, `${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`)
-  }
   const numSelected = Object.keys(rowSelection).length
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -125,11 +116,10 @@ export default function MailingListView({ portalContext, portalEnv }:
             variant="light" className="border m-1">
             <FontAwesomeIcon icon={faAdd} className="fa-lg"/> Add Users
           </Button>
-          <Button onClick={download}
-            variant="light" className="border m-1" disabled={!numSelected}
-            tooltip={numSelected ? 'Download selected contacts' : 'You must select contacts to download'}>
-            <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
-          </Button>
+          <DownloadControl
+            table={table}
+            fileName={`${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`}
+          />
           <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
             variant="light" className="border m-1" disabled={!numSelected}
             tooltip={numSelected ? 'Remove selected contacts' : 'You must select contacts to remove'}>
@@ -155,7 +145,7 @@ export default function MailingListView({ portalContext, portalEnv }:
           </button>
         </Modal.Footer>
       </Modal> }
-      <AddUsersModal
+      <AddMailingListUsersModal
         portalContext={portalContext}
         portalEnv={portalEnv}
         show={showAddUsersModal}
@@ -164,145 +154,4 @@ export default function MailingListView({ portalContext, portalEnv }:
       />
     </LoadingSpinner>
   </div>
-}
-
-/**
- * Modal for adding users to the mailing list.
- */
-export function AddUsersModal({ portalContext, portalEnv, show, onClose, reload }: {
-  portalContext: LoadedPortalContextT,
-  portalEnv: PortalEnvironment,
-  show: boolean,
-  onClose: () => void,
-  reload: () => void
-}) {
-  const [emails, setEmails] = useState<MailingListContact[]>([{ name: '', email: '' }])
-  const [isLoading, setIsLoading] = useState(false)
-  const { FileChooser, file } = useFileUploadButton(file => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      setEmails(parseCsv(reader.result as string))
-    }
-    reader.readAsText(file)
-  }, 'Import CSV')
-
-  const hasInvalidContacts = emails.some(contact => !contact.email && contact.name)
-
-  const addUsers = async () => {
-    setIsLoading(true)
-    const validContacts = emails.filter(contact => contact.email && contact.name)
-    try {
-      const response = await Api.addMailingListContacts(
-        portalContext.portal.shortcode, portalEnv.environmentName, validContacts
-      )
-      Store.addNotification(successNotification(`${response.length} new ${pluralize('user', response.length)} added`))
-      onClose()
-    } catch {
-      Store.addNotification(failureNotification('Error: could not add users'))
-    }
-    reload()
-    setIsLoading(false)
-  }
-
-  return <Modal show={show} className="modal-lg" onHide={onClose}>
-    <Modal.Header closeButton>
-      <Modal.Title>Add Users</Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <div className="pb-3">
-        Add users to your mailing list by entering their name and email address. You
-        can also import a <code>.csv</code> file with multiple contacts. The file should
-        be formatted as <code>name,emailAddress</code>.
-      </div>
-      <table className="ms-2 table">
-        <thead>
-          <tr>
-            <td className="fw-semibold">Name</td>
-            <td className="fw-semibold">Email Address*</td>
-            <td></td>
-          </tr>
-        </thead>
-        <tbody>
-          {emails.map((contact, i) =>
-            <ContactEntry
-              key={i}
-              contact={contact}
-              onChange={newContact => {
-                setEmails(emails => [
-                  ...emails.slice(0, i),
-                  { ...emails[i], ...newContact },
-                  ...emails.slice(i + 1)
-                ])
-              }}
-              onRemove={() =>
-                setEmails(emails => [
-                  ...emails.slice(0, i),
-                  ...emails.slice(i + 1)
-                ])
-              }
-            />
-          )}
-        </tbody>
-      </table>
-      <button className="btn btn-primary"
-        onClick={() => setEmails([...emails, { name: '', email: '' }])}>
-        Add
-      </button>
-    </Modal.Body>
-    <Modal.Footer>
-      <LoadingSpinner isLoading={isLoading}>
-        {FileChooser}
-        <Button
-          disabled={hasInvalidContacts}
-          tooltip={hasInvalidContacts ? 'All contacts must have an email address' : undefined}
-          onClick={addUsers} variant="primary">
-        Save
-        </Button>
-        <Button onClick={onClose} variant="secondary">
-        Cancel
-        </Button>
-      </LoadingSpinner>
-    </Modal.Footer>
-  </Modal>
-}
-
-function ContactEntry({ contact, onRemove, onChange }: {
-  contact: MailingListContact,
-  onRemove: () => void,
-  onChange: (contact: MailingListContact) => void
-}) {
-  return (
-    <tr>
-      <td>
-        <input
-          type="text"
-          className="form-control mb-1"
-          placeholder={'Name'}
-          value={contact.name ?? ''}
-          onChange={e => onChange({ ...contact, name: e.target.value })}
-        />
-      </td>
-      <td>
-        <input
-          type="text"
-          className="form-control mb-1"
-          placeholder={'Email Address'}
-          value={contact.email ?? ''}
-          onChange={e => onChange({ ...contact, email: e.target.value })}
-        />
-      </td>
-      <td>
-        <Button variant="secondary">
-          <FontAwesomeIcon icon={faTrash} className="fa-lg" onClick={onRemove}/>
-        </Button>
-      </td>
-    </tr>
-  )
-}
-
-function parseCsv(csv: string): MailingListContact[] {
-  return csv.split('\n').map(line => {
-    const [name, email] = line.split(',')
-    return { name, email }
-  })
 }
