@@ -115,7 +115,7 @@ export default function MailingListView({ portalContext, portalEnv }:
         </div>
         <div className="d-flex">
           <Button onClick={() => setShowAddUsersModal(!showAddUsersModal)}
-            variant="light" className="border m-1">
+            variant="light" className="border m-1" tooltip="Add users to the mailing list">
             <FontAwesomeIcon icon={faAdd} className="fa-lg"/> Add Users
           </Button>
           <DownloadControl
