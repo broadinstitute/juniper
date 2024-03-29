@@ -31,7 +31,10 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
     reader.readAsText(file)
   }, 'Import CSV')
 
-  const hasInvalidContacts = contacts.some(contact => !contact.email && contact.name)
+  //A contact is invalid if it has a name but no email, or an email that doesn't match the email regex.
+  //Contacts without names are allowed.
+  const hasInvalidContacts = contacts.some(contact =>
+    (!contact.email && contact.name) || (contact.email && !contact.email.match(/.+@.+\..+/)))
 
   const addUsers = async () => {
     setIsLoading(true)
@@ -101,7 +104,7 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
         {FileChooser}
         <Button
           disabled={hasInvalidContacts}
-          tooltip={hasInvalidContacts ? 'All contacts must have an email address' : undefined}
+          tooltip={hasInvalidContacts ? 'All contacts must have a valid email address' : undefined}
           onClick={addUsers} variant="primary">
             Save
         </Button>
