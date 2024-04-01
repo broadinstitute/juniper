@@ -107,7 +107,10 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
   </div>
 }
 
-function renderEmailActivityIcon(row: Notification) {
+/**
+ * Renders an icon to indicate whether an email has been opened
+ */
+export function renderEmailActivityIcon(row: Notification) {
   const notificationEventDetails = row.eventDetails
   if (notificationEventDetails && notificationEventDetails.opensCount > 0) {
     return <FontAwesomeIcon icon={faEnvelopeOpen}/>
