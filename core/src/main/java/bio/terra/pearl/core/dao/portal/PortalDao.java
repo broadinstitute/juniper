@@ -110,18 +110,6 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
         return findAll(portalAdmins.stream().map(PortalAdminUser::getPortalId).toList());
     }
 
-    public Optional<Portal> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery("select p.* from " + tableName + " p " +
-                                " inner join portal_study ps on ps.portal_id = p.id " +
-                                " inner join study_environment se on ps.study_id = se.study_id " +
-                                " where se.id = :studyEnvironmentId " +
-                                " limit 1")
-                        .bind("studyEnvironmentId", studyEnvironmentId)
-                        .mapTo(Portal.class)
-                        .findOne());
-    }
-
     public Optional<Portal> findByPortalEnvironmentId(UUID portalEnvironmentId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " p " +

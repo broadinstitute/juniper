@@ -102,10 +102,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findOneByShortcodeOrHostname(shortcodeOrHostname);
     }
 
-    public Optional<Portal> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return dao.findByStudyEnvironmentId(studyEnvironmentId);
-    }
-
     public Portal fullLoad(Portal portal, String language) {
         return dao.fullLoad(portal, language);
     }

@@ -53,7 +53,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
                 .answers(answers)
                 .qualified(true).build();
 
-        PreEnrollmentResponse savedResponse = enrollmentService.createAnonymousPreEnroll(studyEnv.getId(), survey.getStableId(), survey.getVersion(), response);
+        PreEnrollmentResponse savedResponse = enrollmentService.createAnonymousPreEnroll(survey.getPortalId(), studyEnv.getId(), survey.getStableId(), survey.getVersion(), response);
         DaoTestUtils.assertGeneratedProperties(savedResponse);
         // confirm it copies over the full data property
         assertThat(savedResponse.getFullData(), containsString("areOver18"));
