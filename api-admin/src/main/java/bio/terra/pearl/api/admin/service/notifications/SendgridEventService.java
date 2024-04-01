@@ -59,7 +59,7 @@ public class SendgridEventService {
    * because the API request ID will be the same for all messages in a batch. The Sendgrid Event
    * Webhook may be useful in this case. In the meantime, this is fine for MVP.
    */
-  private List<SendgridEvent> correlateNotificationsAndEvents(List<SendgridEvent> events) {
+  public List<SendgridEvent> correlateNotificationsAndEvents(List<SendgridEvent> events) {
     List<String> sendGridApiRequestIds =
         events.stream().map(SendgridEvent::getApiRequestId).toList();
     List<Notification> notifications =

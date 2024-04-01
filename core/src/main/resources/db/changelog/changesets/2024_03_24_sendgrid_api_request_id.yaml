@@ -7,10 +7,9 @@ databaseChangeLog:
             tableName: sendgrid_event
             columns:
               - column: { name: api_request_id, type: text }
-        - addColumn:
-            tableName: sendgrid_event
-            columns:
-              - column: { name: notification_id, type: uuid }
+              - column: { name: notification_id, type: uuid, constraints:
+                  { foreignKeyName: fk_sendgrid_event_notification_id, references: notification(id) }
+                }
         - createIndex:
             tableName: sendgrid_event
             indexName: idx_sendgrid_event_api_request_id
