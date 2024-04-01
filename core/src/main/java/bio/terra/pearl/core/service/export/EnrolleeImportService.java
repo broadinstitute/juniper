@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserForm
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class EnrolleeImportService {
@@ -48,16 +50,18 @@ public class EnrolleeImportService {
     private final EnrolleeExportService enrolleeExportService;
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
+    private final PortalService portalService;
 
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
-                                 SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService) {
+                                 SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
         this.enrolleeExportService = enrolleeExportService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
+        this.portalService = portalService;
     }
 
     @Transactional
@@ -146,18 +150,19 @@ public class EnrolleeImportService {
                                                          DataAuditInfo auditInfo) {
         List<SurveyFormatter> surveyModules = enrolleeExportService.generateSurveyModules(exportOptions, studyEnv.getId());
         List<SurveyResponse> responses = new ArrayList<>();
+        UUID portalId = portalService.findOneByShortcode(portalShortcode).orElseThrow().getId();
         for (SurveyFormatter formatter : surveyModules) {
-            responses.add(importSurveyResponse(portalShortcode, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo));
+            responses.add(importSurveyResponse(portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo));
         }
         return null;
     }
 
-    protected SurveyResponse importSurveyResponse(String portalShortcode, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
+    protected SurveyResponse importSurveyResponse(UUID portalId, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
                                                   StudyEnvironment studyEnv, PortalParticipantUser ppUser, Enrollee enrollee, DataAuditInfo auditInfo) {
         SurveyResponse response = formatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         ParticipantTask relatedTask = participantTaskService.findTaskForActivity(ppUser.getId(), studyEnv.getId(), formatter.getModuleName())
                 .orElseThrow(() -> new IllegalStateException("Task not found to enable import of response for " + formatter.getModuleName()));
         // we're not worrying about dating the response yet
-        return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId(), portalShortcode).getResponse();
+        return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }

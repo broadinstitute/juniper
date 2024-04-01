@@ -20,7 +20,7 @@ public class PublishingUtils {
     C applyChangesToVersionedConfig(VersionedConfigChange<T> versionedConfigChange,
                                     CrudService<C, ?> configService,
                                     VersionedEntityService<T, ?> documentService,
-                                    EnvironmentName destEnvName) throws Exception {
+                                    EnvironmentName destEnvName, UUID portalId) throws Exception {
         C destConfig = configService.find(versionedConfigChange.destId()).get();
         for (ConfigChange change : versionedConfigChange.configChanges()) {
             setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
@@ -29,9 +29,9 @@ public class PublishingUtils {
             VersionedEntityChange<T> docChange = versionedConfigChange.documentChange();
             UUID newDocumentId = null;
             if (docChange.newStableId() != null) {
-                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion(), docChange.portalId()).get().getId();
+                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion(), portalId).get().getId();
             }
-            assignPublishedVersionIfNeeded(destEnvName, docChange, documentService);
+            assignPublishedVersionIfNeeded(destEnvName, portalId, docChange, documentService);
             destConfig.updateVersionedEntityId(newDocumentId);
         }
         return configService.update(destConfig);
@@ -40,10 +40,11 @@ public class PublishingUtils {
 
     public static <T extends BaseEntity & Versioned, D extends BaseVersionedJdbiDao<T>> void assignPublishedVersionIfNeeded(
             EnvironmentName destEnvName,
+            UUID portalId,
             VersionedEntityChange<T> change,
             VersionedEntityService<T, D> service) {
         if (destEnvName.isLive() && change.newStableId() != null) {
-            T entity = service.findByStableId(change.newStableId(), change.newVersion(), change.portalId()).orElseThrow();
+            T entity = service.findByStableId(change.newStableId(), change.newVersion(), portalId).orElseThrow();
             service.assignPublishedVersion(entity.getId());
         }
     }

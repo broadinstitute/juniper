@@ -18,16 +18,21 @@ import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
@@ -63,9 +68,9 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
     }
 
-    private void checkOurhealthSurveys(List<Enrollee> enrollees) {
+    private void checkOurhealthSurveys(List<Enrollee> enrollees, UUID portalId) {
         Enrollee jonas = getJonasSalk(enrollees);
-        Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1).get();
+        Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1, portalId).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
         Assertions.assertEquals(3, jonasResponses.size());

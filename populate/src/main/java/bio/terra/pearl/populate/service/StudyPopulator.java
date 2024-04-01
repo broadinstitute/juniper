@@ -186,7 +186,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             try {
                 StudyEnvironmentChange studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
-                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
+                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId(), destPortalEnv.getPortalId());
             } catch (Exception e) {
                 // we probably want to move this to some sort of "PopulateException"
                 throw new IOException(e);

@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -99,11 +98,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * will load the survey and the surveyResponse associated with the task,
      * or the most recent survey response, with answers attached
      */
-    public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, String stableId, Integer version,
+    public SurveyWithResponse findWithActiveResponse(UUID studyEnvId, UUID portalId, String stableId, Integer version,
                                                      Enrollee enrollee, UUID taskId) {
 
-        Portal portal = this.portalService.findByStudyEnvironmentId(studyEnvId).orElseThrow();
-        Survey form = surveyService.findByStableId(stableId, version, portal.getId()).get();
+        Survey form = surveyService.findByStableId(stableId, version, portalId).get();
         SurveyResponse lastResponse = null;
         if (taskId != null) {
             ParticipantTask task = participantTaskService.find(taskId).get();
@@ -132,14 +130,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     @Transactional
     public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
                                                       PortalParticipantUser ppUser,
-                                                      Enrollee enrollee, UUID taskId, String portalShortcode) {
+                                                      Enrollee enrollee, UUID taskId, UUID portalId) {
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
-        Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(task.getTargetStableId(),
-                task.getTargetAssignedVersion(), portalShortcode).get();
+        Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
+                task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());
 
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto, portalShortcode);
+        SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto, portalId);
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
@@ -169,9 +167,9 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      */
     protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
                                                   UUID participantUserId, SurveyResponse responseDto,
-                                                  String portalShortcode) {
+                                                  UUID portalId) {
         UUID taskResponseId = task.getSurveyResponseId();
-        Survey survey = surveyService.findByStableIdAndPortalShortcode(task.getTargetStableId(), task.getTargetAssignedVersion(), portalShortcode).get();
+        Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion(), portalId).get();
         SurveyResponse response;
         if (taskResponseId != null) {
             response = dao.find(taskResponseId).get();

@@ -93,7 +93,7 @@ public class PortalPublishingService {
         applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
         for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
+            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId(), destEnv.getPortalId());
         }
 
         PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
@@ -116,7 +116,7 @@ public class PortalPublishingService {
         return portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
     }
 
-        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) throws Exception {
+    protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) throws Exception {
             if (!change.isChanged()) {
                 return destEnv;
             }
@@ -125,7 +125,7 @@ public class PortalPublishingService {
                 newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
             }
             destEnv.setPreRegSurveyId(newSurveyId);
-            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, surveyService);
+        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), destEnv.getPortalId(), change, surveyService);
             return portalEnvironmentService.update(destEnv);
         }
 
@@ -138,7 +138,7 @@ public class PortalPublishingService {
             newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
         }
         destEnv.setSiteContentId(newDocumentId);
-        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, siteContentService);
+        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), destEnv.getPortalId(), change, siteContentService);
         return portalEnvironmentService.update(destEnv);
     }
 
@@ -155,7 +155,7 @@ public class PortalPublishingService {
             destEnv.getTriggers().remove(config);
         }
         for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName());
+            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName(), destEnv.getPortalId());
         }
     }
 

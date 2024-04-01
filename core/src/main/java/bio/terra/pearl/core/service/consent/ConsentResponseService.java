@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -53,10 +52,9 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
     }
 
 
-    public ConsentWithResponses findWithResponses(UUID studyEnvId, String stableId, Integer version,
+    public ConsentWithResponses findWithResponses(UUID portalId, UUID studyEnvId, String stableId, Integer version,
                                                   Enrollee enrollee, UUID participantUserId) {
-        Portal portal = portalService.findByStudyEnvironmentId(studyEnvId).orElseThrow();
-        ConsentForm form = consentFormService.findByStableId(stableId, version, portal.getId()).get();
+        ConsentForm form = consentFormService.findByStableId(stableId, version, portalId).get();
         // this searches by form id -- we don't carry forward responses from one version of a consent to the next
         List<ConsentResponse> responses = dao.findByEnrolleeId(enrollee.getId(), form.getId());
 

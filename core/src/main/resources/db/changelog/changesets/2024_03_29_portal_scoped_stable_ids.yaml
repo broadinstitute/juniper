@@ -58,3 +58,19 @@ databaseChangeLog:
             columnNames: stable_id, version, portal_id
             constraintName: uc_survey_stable_id_version
             tableName: survey
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: consent_form
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: email_template
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: site_content
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: survey

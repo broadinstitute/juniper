@@ -192,7 +192,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId(), context.getPortalShortcode());
+                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());

@@ -146,7 +146,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     public void testAssignWithSearchExpression(TestInfo testInfo) {
         StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
         AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
-        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo))
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
                 .eligibilityRule("{profile.givenName} = 'John'"));
         surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
 
