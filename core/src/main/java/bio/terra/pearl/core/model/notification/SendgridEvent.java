@@ -1,14 +1,13 @@
 package bio.terra.pearl.core.model.notification;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @Getter
@@ -16,25 +15,25 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 public class SendgridEvent extends BaseEntity {
-    @JsonProperty("msg_id")
+    @JsonAlias("msg_id")
     private String msgId;
-    @JsonProperty("subject")
+    @JsonAlias("subject")
     private String subject;
-    @JsonProperty("to_email")
+    @JsonAlias("to_email")
     private String toEmail;
-    @JsonProperty("from_email")
+    @JsonAlias("from_email")
     private String fromEmail;
-    @JsonProperty("status")
+    @JsonAlias("status")
     private String status;
-    @JsonProperty("opens_count")
+    @JsonAlias("opens_count")
     private Integer opensCount;
-    @JsonProperty("clicks_count")
+    @JsonAlias("clicks_count")
     private Integer clicksCount;
-    @JsonProperty("last_event_time")
+    @JsonAlias("last_event_time")
     private Instant lastEventTime;
     private String apiRequestId;
 
-    @JsonProperty("msg_id")
+    @JsonAlias("msg_id")
     public void setMsgId(String msgId) {
         this.msgId = msgId;
         this.apiRequestId = msgId.split("\\.")[0];

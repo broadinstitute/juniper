@@ -123,7 +123,7 @@ export type NotificationEventDetails = {
   toEmail: string,
   fromEmail: string,
   status: string,
-  opens_count: number,
+  opensCount: number,
   clicksCount: number,
   lastEventTime: number
 }

@@ -109,7 +109,7 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
 
 function renderEmailActivityIcon(row: Notification) {
   const notificationEventDetails = row.eventDetails
-  if (notificationEventDetails && notificationEventDetails.opens_count > 0) {
+  if (notificationEventDetails && notificationEventDetails.opensCount > 0) {
     return <FontAwesomeIcon icon={faEnvelopeOpen}/>
   }
 
