@@ -159,7 +159,8 @@ public class SurveyExtServiceAuthTests {
 
   private Survey configureMockSurvey(String stableId, int version, UUID portalId) {
     Survey survey = Survey.builder().stableId(stableId).version(1).portalId(portalId).build();
-    when(mockSurveyService.findByStableId(stableId, version)).thenReturn(Optional.of(survey));
+    when(mockSurveyService.findByStableId(stableId, version, portalId))
+        .thenReturn(Optional.of(survey));
     return survey;
   }
 }

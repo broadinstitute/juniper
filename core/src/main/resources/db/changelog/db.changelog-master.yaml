@@ -232,6 +232,7 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changesets/2024_03_29_add_dashboard_color.yaml
+      relativeToChangelogFile: true
   - include:
       file: changesets/2024_03_29_portal_scoped_stable_ids.yaml
       relativeToChangelogFile: true
