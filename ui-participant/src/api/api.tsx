@@ -13,6 +13,7 @@ import {
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
+import queryString from 'querystring'
 
 export type {
   Answer,
@@ -293,19 +294,8 @@ export default {
     preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
   }): Promise<LoginResult> {
     bearerToken = accessToken
-    let url = `${baseEnvUrl(false)}/register`
-    const queryParams = []
-    if (preRegResponseId) {
-      queryParams.push(`preRegResponseId=${preRegResponseId}`)
-    }
-    if (preferredLanguage) {
-      queryParams.push(`preferredLanguage=${preferredLanguage}`)
-    }
-    // Joining all parameters with '&' and appending to the url
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`
-    }
-
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(false)}/register?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -317,10 +307,8 @@ export default {
   /** submits registration data for a particular portal, from an anonymous user */
   async internalRegister({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
     Promise<RegistrationResponse> {
-    let url = `${baseEnvUrl(true)}/internalRegister`
-    if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
-    }
+    const params = queryString.stringify({ preRegResponseId })
+    const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -337,16 +325,8 @@ export default {
   async createEnrollee({ studyShortcode, preEnrollResponseId }:
                          { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
-    const queryParams = []
-
-    if (preEnrollResponseId) {
-      queryParams.push(`preEnrollResponseId=${preEnrollResponseId}`)
-    }
-    // Joining all parameters with '&' and appending to the url
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`
-    }
+    const params = queryString.stringify({ preEnrollResponseId })
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
