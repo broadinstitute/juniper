@@ -20,10 +20,10 @@ public class ScheduledSendgridEventFetcher {
     this.sendgridEventService = sendgridEventService;
   }
 
-  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30, initialDelay = 0)
+  @Scheduled(timeUnit = TimeUnit.MINUTES, fixedDelay = 30, initialDelay = 1)
   @SchedulerLock(
       name = "SendgridEventService.saveSendgridActivity",
-      lockAtLeastFor = "0m",
+      lockAtLeastFor = "1m",
       lockAtMostFor = "15m")
   public void saveSendgridActivity() {
     sendgridEventService.saveSendgridActivity();
