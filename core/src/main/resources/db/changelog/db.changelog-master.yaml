@@ -231,6 +231,8 @@ databaseChangeLog:
       file: changesets/2024_03_18_localized_email_templates.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_03_29_add_dashboard_color.yaml
+  - include:
       file: changesets/2024_03_29_portal_scoped_stable_ids.yaml
       relativeToChangelogFile: true
 

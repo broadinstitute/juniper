@@ -14,20 +14,20 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 @Service
-public class EnrolleeRuleService {
+public class EnrolleeContextService {
     private final ProfileService profileService;
     private final EnrolleeService enrolleeService;
     private final ParticipantUserService participantUserService;
 
 
-    public EnrolleeRuleService(ProfileService profileService, @Lazy EnrolleeService enrolleeService, ParticipantUserService participantUserService) {
+    public EnrolleeContextService(ProfileService profileService, @Lazy EnrolleeService enrolleeService, ParticipantUserService participantUserService) {
         this.profileService = profileService;
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
     }
 
-    public EnrolleeRuleData fetchData(Enrollee enrollee) {
-        return new EnrolleeRuleData(enrollee,
+    public EnrolleeContext fetchData(Enrollee enrollee) {
+        return new EnrolleeContext(enrollee,
                 profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null),
                 participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(() -> new IllegalStateException("no participant user for enrollee")));
     }
@@ -37,12 +37,12 @@ public class EnrolleeRuleService {
      * this isn't terribly optimized -- we could do the join in the DB.  But this is assuming that the number of enrollees
      *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 3 total DB roundtrips
      */
-    public List<EnrolleeRuleData> fetchData(List<UUID> enrolleeIds) {
+    public List<EnrolleeContext> fetchData(List<UUID> enrolleeIds) {
         List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
         List<Profile> profiles = profileService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
-        List<EnrolleeRuleData> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->
-                new EnrolleeRuleData(enrollees.get(i), profiles.get(i), users.get(i))
+        List<EnrolleeContext> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->
+                new EnrolleeContext(enrollees.get(i), profiles.get(i), users.get(i))
         ).toList();
         return ruleData;
     }

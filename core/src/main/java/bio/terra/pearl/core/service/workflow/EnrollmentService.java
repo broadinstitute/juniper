@@ -25,7 +25,7 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
@@ -63,7 +63,7 @@ public class EnrollmentService {
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
-                             EnrolleeRuleService enrolleeRuleService,
+                             EnrolleeContextService enrolleeContextService,
                              StudyEnvironmentConfigService studyEnvironmentConfigService,
                              EnrolleeService enrolleeService,
                              EventService eventService, ObjectMapper objectMapper,
