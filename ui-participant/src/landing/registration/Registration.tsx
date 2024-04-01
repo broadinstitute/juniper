@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuth } from 'react-oidc-context'
-import { useReturnToStudy } from 'browserPersistentState'
+import { useReturnToLanguage, useReturnToStudy } from 'browserPersistentState'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useI18n } from '@juniper/ui-core'
 
@@ -11,11 +11,13 @@ export default function Registration() {
   const { selectedLanguage } = useI18n()
   const studyShortcode = useParams().studyShortcode || null
   const [, setReturnToStudy] = useReturnToStudy()
+  const [, setReturnToLanguage] = useReturnToLanguage()
 
   const register = () => {
     // Remember study for when we come back from B2C,
     // at which point RedirectFromOAuth will complete the registration
     setReturnToStudy(studyShortcode)
+    setReturnToLanguage(selectedLanguage)
     auth.signinRedirect({
       redirectMethod: 'replace',
       extraQueryParams: {

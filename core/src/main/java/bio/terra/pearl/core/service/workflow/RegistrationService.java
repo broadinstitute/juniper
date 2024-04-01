@@ -96,13 +96,13 @@ public class RegistrationService {
 
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
-                                       String email, UUID preRegResponseId) {
+                                       String email, UUID preRegResponseId, String preferredLanguage) {
         RequiredRegistrationInfo info = RequiredRegistrationInfo.builder().email(email).build();
-        return register(portalShortcode, environmentName, preRegResponseId, info);
+        return register(portalShortcode, environmentName, preRegResponseId, preferredLanguage, info);
     }
 
     private RegistrationResult register(String portalShortcode, EnvironmentName environmentName, UUID preRegResponseId,
-                                        RequiredRegistrationInfo info) {
+                                        String preferredLanguage, RequiredRegistrationInfo info) {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, environmentName).get();
         PreregistrationResponse preRegResponse = null;
         if (portalEnv.getPreRegSurveyId() != null) {
@@ -126,6 +126,9 @@ public class RegistrationService {
                 .givenName(info.getFirstName())
                 .familyName(info.getLastName())
                 .build();
+        if(preferredLanguage != null){
+            profile.setPreferredLanguage(preferredLanguage);
+        }
         ppUser.setProfile(profile);
 
         ppUser = portalParticipantUserService.create(ppUser);

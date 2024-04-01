@@ -5,7 +5,12 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
+import {
+  usePreEnrollResponseId,
+  usePreRegResponseId,
+  useReturnToLanguage,
+  useReturnToStudy
+} from 'browserPersistentState'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { AlertLevel, alertDefaults } from '@juniper/ui-core'
@@ -14,11 +19,12 @@ import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
-  const { loginUser, updateEnrollee, user } = useUser()
+  const { loginUser, updateEnrollee, user, ppUser, profile } = useUser()
   const navigate = useNavigate()
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
+  const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
 
   // Select a study to enroll in based on a previously saved session storage property
@@ -28,6 +34,15 @@ export const RedirectFromOAuth = () => {
   // Select the portal's single study if there is only one; otherwise return null
   const getSingleStudy = () => portal.portalStudies.length === 1 ? portal.portalStudies[0] : null
 
+  async function updatePreferredLanguage(selectedLanguage: string) {
+    console.log('updatePreferredLanguage', selectedLanguage, profile, ppUser)
+    if (profile && ppUser) {
+      await Api.updateProfile({
+        profile: { ...profile, preferredLanguage: selectedLanguage },
+        ppUserId: ppUser.id
+      })
+    }
+  }
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
@@ -57,7 +72,7 @@ export const RedirectFromOAuth = () => {
           // Register or login
           try {
             const loginResult = auth.user.profile.newUser
-              ? await Api.register({ preRegResponseId, email, accessToken })
+              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage ||'en' })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)
@@ -92,6 +107,7 @@ export const RedirectFromOAuth = () => {
           setPreRegResponseId(null)
           setPreEnrollResponseId(null)
           setReturnToStudy(null)
+          setReturnToLanguage(null)
         }
       }
     }

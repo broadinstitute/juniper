@@ -40,7 +40,7 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
         String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
         RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
-                portalEnv.getEnvironmentName(), username, null);
+                portalEnv.getEnvironmentName(), username, null, null);
         Assertions.assertEquals(username, result.participantUser().getUsername());
         Assertions.assertTrue(participantUserService.findOne(username, portalEnv.getEnvironmentName()).isPresent());
     }

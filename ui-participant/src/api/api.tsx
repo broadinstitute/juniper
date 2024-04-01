@@ -289,13 +289,23 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email, accessToken }: {
-    preRegResponseId: string | null, email: string, accessToken: string }): Promise<LoginResult> {
+  async register({ preRegResponseId, email, accessToken, preferredLanguage }: {
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage?: string
+  }): Promise<LoginResult> {
     bearerToken = accessToken
     let url = `${baseEnvUrl(false)}/register`
+    const queryParams = []
     if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
+      queryParams.push(`preRegResponseId=${preRegResponseId}`)
     }
+    if (preferredLanguage) {
+      queryParams.push(`preferredLanguage=${preferredLanguage}`)
+    }
+    // Joining all parameters with '&' and appending to the url
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`
+    }
+
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
