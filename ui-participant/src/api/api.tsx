@@ -13,7 +13,7 @@ import {
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
-import queryString from 'querystring'
+import queryString from 'query-string'
 
 export type {
   Answer,
@@ -305,9 +305,11 @@ export default {
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async internalRegister({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
+  async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
+    preRegResponseId: string, fullData: object, preferredLanguage: string
+  }):
     Promise<RegistrationResponse> {
-    const params = queryString.stringify({ preRegResponseId })
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
     const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
       method: 'POST',
