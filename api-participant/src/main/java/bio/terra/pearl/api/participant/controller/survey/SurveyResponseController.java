@@ -10,10 +10,9 @@ import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.UUID;
 
 @Controller
 public class SurveyResponseController implements SurveyResponseApi {
@@ -45,7 +44,14 @@ public class SurveyResponseController implements SurveyResponseApi {
     ParticipantUser user = requestUtilService.requireUser(request);
     SurveyWithResponse result =
         surveyResponseExtService.findOrCreateWithActiveResponse(
-                portalShortcode, studyShortcode, envName, stableId, version, enrolleeShortcode, user.getId(), taskId);
+            portalShortcode,
+            studyShortcode,
+            envName,
+            stableId,
+            version,
+            enrolleeShortcode,
+            user.getId(),
+            taskId);
     return ResponseEntity.ok(result);
   }
 

@@ -42,7 +42,13 @@ public class ConsentResponseController implements ConsentResponseApi {
     ParticipantUser user = requestUtilService.requireUser(request);
     ConsentWithResponses consentWithResponses =
         consentResponseExtService.findWithResponses(
-                portalShortcode, studyShortcode, envName, stableId, version, enrolleeShortcode, user.getId());
+            portalShortcode,
+            studyShortcode,
+            envName,
+            stableId,
+            version,
+            enrolleeShortcode,
+            user.getId());
     return ResponseEntity.ok(consentWithResponses);
   }
 

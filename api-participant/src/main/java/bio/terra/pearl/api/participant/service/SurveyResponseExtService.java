@@ -11,9 +11,8 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.stereotype.Service;
-
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SurveyResponseExtService {
@@ -34,21 +33,25 @@ public class SurveyResponseExtService {
   }
 
   public SurveyWithResponse findOrCreateWithActiveResponse(
-          String portalShortcode,
-          String studyShortcode,
-          String envName,
-          String stableId,
-          Integer version,
-          String enrolleeShortcode,
-          UUID participantUserId,
-          UUID taskId) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String stableId,
+      Integer version,
+      String enrolleeShortcode,
+      UUID participantUserId,
+      UUID taskId) {
 
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
-    Portal portal = authUtilService.authParticipantToPortal(participantUserId, portalShortcode, EnvironmentName.valueOf(envName)).portal();
+    Portal portal =
+        authUtilService
+            .authParticipantToPortal(
+                participantUserId, portalShortcode, EnvironmentName.valueOf(envName))
+            .portal();
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
     return surveyResponseService.findWithActiveResponse(
-            studyEnv.getId(), portal.getId(), stableId, version, enrollee, taskId);
+        studyEnv.getId(), portal.getId(), stableId, version, enrollee, taskId);
   }
 
   public HubResponse updateResponse(
@@ -64,7 +67,12 @@ public class SurveyResponseExtService {
         authUtilService.authParticipantUserToEnrollee(user.getId(), enrolleeShortcode);
     HubResponse result =
         surveyResponseService.updateResponse(
-                responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId, portalWithPortalUser.portal().getId());
+            responseDto,
+            user.getId(),
+            portalWithPortalUser.ppUser(),
+            enrollee,
+            taskId,
+            portalWithPortalUser.portal().getId());
     return result;
   }
 }

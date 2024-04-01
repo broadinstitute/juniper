@@ -9,16 +9,14 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
-import org.springframework.stereotype.Service;
-
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ConsentResponseExtService {
   private AuthUtilService authUtilService;
   private ConsentResponseService consentResponseService;
   private RequestUtilService requestUtilService;
-
 
   public ConsentResponseExtService(
       AuthUtilService authUtilService,
@@ -30,19 +28,23 @@ public class ConsentResponseExtService {
   }
 
   public ConsentWithResponses findWithResponses(
-          String portalShortcode,
-          String studyShortcode,
-          String envName,
-          String stableId,
-          Integer version,
-          String enrolleeShortcode,
-          UUID participantUserId) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String stableId,
+      Integer version,
+      String enrolleeShortcode,
+      UUID participantUserId) {
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
-    Portal portal = authUtilService.authParticipantToPortal(participantUserId, portalShortcode, EnvironmentName.valueOf(envName)).portal();
+    Portal portal =
+        authUtilService
+            .authParticipantToPortal(
+                participantUserId, portalShortcode, EnvironmentName.valueOf(envName))
+            .portal();
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
     return consentResponseService.findWithResponses(
-            portal.getId(), studyEnv.getId(), stableId, version, enrollee, participantUserId);
+        portal.getId(), studyEnv.getId(), stableId, version, enrollee, participantUserId);
   }
 
   public HubResponse submitResponse(
