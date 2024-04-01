@@ -55,12 +55,12 @@ public class RegistrationController implements RegistrationApi {
 
   @Override
   public ResponseEntity<Object> internalRegister(
-      String portalShortcode, String envName, UUID preRegResponseId, RegistrationInfo body) {
+      String portalShortcode, String envName, String preferredLanguage, UUID preRegResponseId, RegistrationInfo body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     RegistrationService.RegistrationResult registrationResult =
         registrationService.register(
-            portalShortcode, environmentName, body.getEmail(), preRegResponseId, null);
+            portalShortcode, environmentName, body.getEmail(), preRegResponseId, preferredLanguage);
     // log in the user if not already
     if (registrationResult.participantUser().getToken() == null) {
       CurrentUserService.UserLoginDto loggedInUser =

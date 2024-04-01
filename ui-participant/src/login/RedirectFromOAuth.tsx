@@ -19,7 +19,7 @@ import { AlertLevel, alertDefaults } from '@juniper/ui-core'
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
-  const { loginUser, updateEnrollee, user, ppUser, profile } = useUser()
+  const { loginUser, updateEnrollee, user } = useUser()
   const navigate = useNavigate()
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
@@ -33,16 +33,6 @@ export const RedirectFromOAuth = () => {
 
   // Select the portal's single study if there is only one; otherwise return null
   const getSingleStudy = () => portal.portalStudies.length === 1 ? portal.portalStudies[0] : null
-
-  async function updatePreferredLanguage(selectedLanguage: string) {
-    console.log('updatePreferredLanguage', selectedLanguage, profile, ppUser)
-    if (profile && ppUser) {
-      await Api.updateProfile({
-        profile: { ...profile, preferredLanguage: selectedLanguage },
-        ppUserId: ppUser.id
-      })
-    }
-  }
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
@@ -72,7 +62,7 @@ export const RedirectFromOAuth = () => {
           // Register or login
           try {
             const loginResult = auth.user.profile.newUser
-              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage ||'en' })
+              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)

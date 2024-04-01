@@ -290,7 +290,7 @@ export default {
   },
 
   async register({ preRegResponseId, email, accessToken, preferredLanguage }: {
-    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage?: string
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
   }): Promise<LoginResult> {
     bearerToken = accessToken
     let url = `${baseEnvUrl(false)}/register`
