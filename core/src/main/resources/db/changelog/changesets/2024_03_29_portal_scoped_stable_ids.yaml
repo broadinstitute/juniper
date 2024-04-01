@@ -62,10 +62,10 @@ databaseChangeLog:
         - addNotNullConstraint:
             columnName: portal_id
             tableName: consent_form
-
-        - addNotNullConstraint:
-            columnName: portal_id
-            tableName: email_template
+        #
+        #        - addNotNullConstraint:
+        #            columnName: portal_id
+        #            tableName: email_template
 
         - addNotNullConstraint:
             columnName: portal_id

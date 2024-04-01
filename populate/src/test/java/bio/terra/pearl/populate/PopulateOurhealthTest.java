@@ -56,7 +56,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(6, enrollees.size());
-        checkOurhealthSurveys(enrollees);
+        checkOurhealthSurveys(enrollees, portal.getId());
         checkParticipantNotes(enrollees);
         checkAdminTasks(sandboxEnvironmentId);
         checkOurhealthSiteContent(portal.getId());
