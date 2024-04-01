@@ -24,6 +24,7 @@ public class MailingListContactService extends ImmutableEntityService<MailingLis
 
     @Transactional
     public List<MailingListContact> bulkCreate(UUID portalEnvId, List<MailingListContact> contacts) {
+        // remove contacts from the submitted list if they already exist in this environment
         findByPortalEnv(portalEnvId).forEach(existing ->
                 contacts.removeIf(contact -> contact.getEmail().equals(existing.getEmail())));
 

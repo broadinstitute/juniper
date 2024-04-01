@@ -21,7 +21,8 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
     onClose: () => void,
     reload: () => void
 }) {
-  const [contacts, setContacts] = useState<MailingListContact[]>([{ name: '', email: '' }])
+  const initialContact = [{ name: '', email: '' }]
+  const [contacts, setContacts] = useState<MailingListContact[]>(initialContact)
   const [isLoading, setIsLoading] = useState(false)
   const { FileChooser } = useFileUploadButton(file => {
     const reader = new FileReader()
@@ -58,9 +59,9 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
     </Modal.Header>
     <Modal.Body>
       <div className="pb-3">
-                Add users to your mailing list by entering their name and email address. You
-                can also import a <code>.csv</code> file with multiple contacts. The file should
-                be formatted as <code>name,emailAddress</code>.
+              Add users to your mailing list by entering their name and email address. You
+              can also import a <code>.csv</code> file with multiple contacts. The file should
+              be formatted as <code>name,emailAddress</code>.
       </div>
       <table className="ms-2 table">
         <thead>
@@ -92,25 +93,35 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
           )}
         </tbody>
       </table>
-      <button className="btn btn-primary"
-        onClick={() =>
-          setContacts([...contacts, { name: '', email: '' }])
-        }>
-        Add
-      </button>
+      <div className={'d-flex flex-column align-items-start'}>
+        <button className="btn btn-primary mb-2"
+          onClick={() =>
+            setContacts([...contacts, ...initialContact])
+          }>
+            Add
+        </button>
+      </div>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
-        {FileChooser}
-        <Button
-          disabled={hasInvalidContacts}
-          tooltip={hasInvalidContacts ? 'All contacts must have a valid email address' : undefined}
-          onClick={addUsers} variant="primary">
+        <div className={'d-flex justify-content-between w-100'}>
+          {FileChooser}
+          <div>
+            <Button
+              disabled={hasInvalidContacts}
+              tooltip={hasInvalidContacts ? 'All contacts must have a valid email address' : undefined}
+              onClick={addUsers} variant="primary">
             Save
-        </Button>
-        <Button onClick={onClose} variant="secondary">
-            Cancel
-        </Button>
+            </Button>
+            <Button onClick={() => {
+              onClose()
+              setContacts(initialContact)
+            }}
+            variant="secondary">
+                Cancel
+            </Button>
+          </div>
+        </div>
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
