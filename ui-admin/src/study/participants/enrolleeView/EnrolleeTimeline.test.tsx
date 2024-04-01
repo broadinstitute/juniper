@@ -15,7 +15,7 @@ describe('EnrolleeTimeline', () => {
       }
     }
     const result = renderEmailActivityIcon(notification)
-    expect(result).toEqual(<FontAwesomeIcon icon={faEnvelopeOpen}/>)
+    expect(result).toEqual(<FontAwesomeIcon icon={faEnvelopeOpen} aria-label={'Email opened'}/>)
   })
 
   it('should render the email opened icon with 0 opens', () => {
@@ -28,7 +28,7 @@ describe('EnrolleeTimeline', () => {
     }
 
     const result = renderEmailActivityIcon(notification)
-    expect(result).toEqual(<FontAwesomeIcon icon={faEnvelope}/>)
+    expect(result).toEqual(<FontAwesomeIcon icon={faEnvelope} aria-label={'Email not yet opened'}/>)
   })
 
   it('should render an N/A notice if there are no event details', () => {

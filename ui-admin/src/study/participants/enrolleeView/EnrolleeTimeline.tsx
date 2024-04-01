@@ -51,7 +51,18 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     },
     {
       id: 'opened',
-      header: 'opened',
+      header: () =>
+        <div className={'d-flex align-items-center'}>
+          <span>opened</span>
+          <div onClick={e => e.stopPropagation()}><InfoPopup
+            content={
+            `Email activity may be unavailable due to a participant's email privacy
+             settings. Additionally, emails sent more than 30 days ago may not have
+             email activity associated with them.
+             Note: please allow up to an hour for new activity to be reflected here.`
+            }
+          /></div>
+        </div>,
       accessorKey: 'opened',
       cell: ({ row }) => {
         return isNotification(row.original) && renderEmailActivityIcon(row.original)
@@ -113,24 +124,12 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
 export function renderEmailActivityIcon(row: Notification) {
   const notificationEventDetails = row.eventDetails
   if (notificationEventDetails && notificationEventDetails.opensCount > 0) {
-    return <FontAwesomeIcon icon={faEnvelopeOpen}/>
+    return <FontAwesomeIcon icon={faEnvelopeOpen} aria-label={'Email opened'}/>
   }
 
   if (notificationEventDetails) {
-    return <FontAwesomeIcon icon={faEnvelope}/>
+    return <FontAwesomeIcon icon={faEnvelope} aria-label={'Email not yet opened'}/>
   }
 
-  return (
-    <>
-      N/A
-      <InfoPopup
-        content={
-          `Email activity may be unavailable due to a participant's email privacy settings.
-          Additionally, emails sent more than 30 days ago may not have email 
-          activity associated with them.
-          Note: please allow up to an hour for new activity to be reflected here.`
-        }
-      />
-    </>
-  )
+  return <>N/A</>
 }
