@@ -8,6 +8,8 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -30,4 +32,15 @@ public class SendgridEvent extends BaseEntity {
     private Integer clicksCount;
     @JsonProperty("last_event_time")
     private Instant lastEventTime;
+    private String apiRequestId;
+
+    @JsonProperty("msg_id")
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+        this.apiRequestId = msgId.split("\\.")[0];
+    }
+
+    //Nullable because we may not have a notification associated with each Sendgrid event.
+    //This is particularly common on local and dev environments, where the SendGrid account is shared.
+    private UUID notificationId;
 }
