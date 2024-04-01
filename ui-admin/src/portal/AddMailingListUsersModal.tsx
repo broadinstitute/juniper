@@ -94,7 +94,7 @@ export function AddMailingListUsersModal({ portalContext, portalEnv, show, onClo
         </tbody>
       </table>
       <div className={'d-flex flex-column align-items-start'}>
-        <button className="btn btn-primary mb-2"
+        <button className="btn btn-primary"
           onClick={() =>
             setContacts([...contacts, ...initialContact])
           }>
