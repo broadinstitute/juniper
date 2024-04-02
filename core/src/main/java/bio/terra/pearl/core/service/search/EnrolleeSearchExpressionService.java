@@ -24,7 +24,7 @@ public class EnrolleeSearchExpressionService {
         this.portalService = portalService;
     }
 
-    public Map<String, SearchValue.SearchValueType> getAllFields(String portalShortcode, String studyShortcode, EnvironmentName envName) {
+    public Map<String, SearchValue.SearchValueType> getSearchFacetsForPortal(String portalShortcode, EnvironmentName envName) {
         Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow();
 
         Map<String, SearchValue.SearchValueType> fields = new HashMap<>();

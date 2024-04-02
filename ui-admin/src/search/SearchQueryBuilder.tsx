@@ -64,7 +64,7 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
 
 
 /**
- *
+ * Frontend for building an enrollee search expression.
  */
 export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }: {
   studyEnvContext: StudyEnvContextT, onSearchExpressionChange: (searchExpression: string) => void
