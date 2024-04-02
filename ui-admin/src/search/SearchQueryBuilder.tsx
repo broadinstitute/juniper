@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
-import { FieldSelectorProps, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder'
+import { Field, FieldSelectorProps, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder'
 import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
 import { useLoadingEffect } from '../api/api-utils'
-import Api, { ExportData } from '../api/api'
+import Api, { SearchValueType } from '../api/api'
 import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 import Select from 'react-select'
+import LoadingSpinner from '../util/LoadingSpinner'
+import { keys } from 'lodash'
 
 const operators = [
   { name: '=', label: '=' },
@@ -15,21 +17,48 @@ const operators = [
   { name: '>=', label: '>=' }
 ]
 
+
+const facetToReactQueryField = (facet: string, searchValueType: SearchValueType): Field => {
+  const field: Field = {
+    name: facet,
+    label: facet
+  }
+  switch (searchValueType) {
+    case 'STRING':
+      field.valueEditorType = 'text'
+      break
+    case 'INTEGER':
+      field.inputType = 'number'
+      break
+    case 'DOUBLE':
+      field.inputType = 'number'
+      break
+    case 'DATE':
+      field.inputType = 'date'
+      break
+    case 'INSTANT':
+      field.inputType = 'datetime-local'
+      break
+  }
+  return field
+}
+
 const CustomFieldSelector = (props: FieldSelectorProps) => {
   const options = props.options.map(option => {
     return { label: option.label, value: option.label }
   })
   console.log('reload')
-  return <div className="w-100">
+  return <div className="d w-100" key='test' id={'test'}>
     <Select
-      // options={options}
-      options={[{ label: 'profile.givenName', value: 'profile.givenName' }]}
+      key={'test2'} id={'test2'}
+      options={options}
       value={{ label: props.value || '', value: props.value || '' }}
       onChange={newVal => {
         if (newVal?.label != props.value) {
           props.handleOnChange(newVal?.label || '')
         }
-      }}/>
+      }}
+    />
   </div>
 }
 
@@ -45,26 +74,22 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
     rules: []
   })
 
-  const fields = [
-    { name: 'profile.givenName', label: 'profile.givenName' },
-    { name: 'age', label: 'age' }
-  ]
 
-  const [participantFields, setParticipantFields] = React.useState<ExportData>()
+  const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
-  const surveyAnswerFields = (
-    participantFields
-      ?.columnKeys
-      .filter(
-        field => !field.startsWith('profile') && !field.startsWith('enrollee') && !field.startsWith('sample_kit')))
-
-  useLoadingEffect(async () => {
-    const response = await Api.exportEnrollees(
+  const { isLoading } = useLoadingEffect(async () => {
+    const facets = await Api.getSearchFacetsV2(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
-      'sandbox', { fileFormat: 'JSON', limit: 0 })
-    const result = await response.json()
-    setParticipantFields(result)
+      studyEnvContext.currentEnv.environmentName)
+    const facetArr = keys(facets).map(facet => {
+      return {
+        facet,
+        type: facets[facet]
+      }
+    })
+
+    setFacets(facetArr.sort((a, b) => a.facet.localeCompare(b.facet)))
   }, [], 'Failed to load cohort criteria options')
 
 
@@ -78,24 +103,26 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
   }, [query])
 
 
-  return <QueryBuilder
-    controlClassnames={{
-      fields: 'form-select',
-      value: 'form-control',
-      operators: 'form-select',
-      removeRule: 'btn btn-outline-dark',
-      removeGroup: 'btn btn-outline-dark',
-      addRule: 'btn btn-outline-dark',
-      addGroup: 'btn btn-outline-dark d-none',
-      combinators: 'form-select w-25'
-    }}
-    fields={fields.concat(surveyAnswerFields?.map(field => ({ name: field, label: field })) || [])}
-    controlElements={{
-      fieldSelector: CustomFieldSelector
-    }}
-    operators={operators}
-    query={query}
-    onQueryChange={q => setQuery(q)}/>
+  return <LoadingSpinner isLoading={isLoading}>
+    <QueryBuilder
+      controlClassnames={{
+        fields: 'form-select',
+        value: 'form-control',
+        operators: 'form-select',
+        removeRule: 'btn btn-outline-dark',
+        removeGroup: 'btn btn-outline-dark',
+        addRule: 'btn btn-outline-dark',
+        addGroup: 'btn btn-outline-dark d-none',
+        combinators: 'form-select w-25'
+      }}
+      fields={facets.map(facet => facetToReactQueryField(facet.facet, facet.type))}
+      controlElements={{
+        fieldSelector: CustomFieldSelector
+      }}
+      operators={operators}
+      query={query}
+      onQueryChange={q => setQuery(q)}/>
+  </LoadingSpinner>
 }
 
 

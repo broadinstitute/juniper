@@ -383,6 +383,8 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
+export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -785,6 +787,13 @@ export default {
   async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<EnrolleeSearchFacet[]> {
     const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getSearchFacetsV2(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<{ [index: string]: SearchValueType }> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

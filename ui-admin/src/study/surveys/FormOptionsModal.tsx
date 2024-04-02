@@ -103,20 +103,18 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            <label className="form-label d-block">
                     Eligibility Rule
-              {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
+            {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
                     && <div className="my-2"><SearchQueryBuilder
                       studyEnvContext={studyEnvContext}
                       onSearchExpressionChange={exp => updateWorkingForm({
                         ...workingForm, eligibilityRule: exp
                       })}/></div>}
 
-              <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
-                onChange={e => updateWorkingForm({
-                  ...workingForm, eligibilityRule: e.target.value
-                })}/>
-            </label>
+            <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
+              onChange={e => updateWorkingForm({
+                ...workingForm, eligibilityRule: e.target.value
+              })}/>
           </div>
         </div>
     }
