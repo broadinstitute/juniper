@@ -54,11 +54,6 @@ public class NotificationDao extends BaseMutableJdbiDao<Notification> {
     }
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
-        List<Notification> notifications = findByEnrolleeId(enrolleeId);
-        for(Notification notification : notifications) {
-            sendgridEventDao.deleteByNotificationId(notification.getId());
-        }
-
         deleteByProperty("enrollee_id", enrolleeId);
     }
 }
