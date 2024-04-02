@@ -9,6 +9,8 @@ import {
   EnrolleeSearchResult,
   KitRequest,
   KitType,
+  Notification,
+  NotificationEventDetails,
   ParticipantNote,
   PepperKit,
   Portal,
@@ -422,6 +424,37 @@ export const mockTrigger = (): Trigger => {
     emailTemplateId: 'emailTemplateId',
     emailTemplate: mockEmailTemplate(),
     rule: ''
+  }
+}
+
+/**
+ * Returns a mock Notification
+ */
+export const mockNotification = (): Notification => {
+  return {
+    id: 'notificationId1',
+    triggerId: 'triggerId',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    deliveryStatus: 'SENT',
+    deliveryType: 'EMAIL',
+    sentTo: 'jsalk@test.com',
+    retries: 0
+  }
+}
+
+/**
+ * Returns a mock NotificationEventDetails
+ */
+export const mockEventDetails = (): NotificationEventDetails => {
+  return {
+    subject: 'This is a test email',
+    toEmail: 'jsalk@test.com',
+    fromEmail: 'info@juniper.terra.bio',
+    status: 'DELIVERED',
+    opensCount: 0,
+    clicksCount: 0,
+    lastEventTime: 0
   }
 }
 

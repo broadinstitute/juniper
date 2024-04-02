@@ -35,7 +35,7 @@ public class SendgridClient {
   }
 
 
-  public void sendEmail(Mail mail) {
+  public String sendEmail(Mail mail) {
     if (StringUtils.isEmpty(sendGridApiKey)) {
       // if there's no API key, (likely because we're in a CI environment), don't even attempt to send an email
       log.info("Email send skipped: no sendgrid api provided");
@@ -48,7 +48,15 @@ public class SendgridClient {
     request.setEndpoint("mail/send");
     try {
       request.setBody(mail.build());
-      sg.api(request);
+      Response response = sg.api(request);
+      // X-Message-Id identifies an individual SendGrid API request
+      // We need to track this so we can correlate SendGrid events with notifications
+      // Note that X-Message-Id is not guaranteed to be 1:1 with an individual message.
+      // Messages can be sent as a batch, and the X-Message-Id will be the same for all of them.
+      // Currently, Juniper only sends messages one at a time, so this is a 1:1 mapping for now.
+      // If we ever start batching emails, we'll need to update this to be a bit more sophisticated
+      // and use the Sendgrid Event Webhook. But in either case, we still need to track this ID.
+      return response.getHeaders().get("X-Message-Id");
     } catch (IOException ex) {
       // this likely means the network failed, not that the email failed to send
       throw new IOInternalException("Error sending email", ex);
