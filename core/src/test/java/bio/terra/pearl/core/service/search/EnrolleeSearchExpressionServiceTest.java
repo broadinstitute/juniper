@@ -146,11 +146,7 @@ class EnrolleeSearchExpressionServiceTest extends BaseSpringBootTest {
 
 
         Map<String, SearchValue.SearchValueType> results = enrolleeSearchExpressionService.getSearchFacetsForPortal(portal.getShortcode(), EnvironmentName.sandbox);
-
-        /**
-         * Expected
-         *         {answer.another_survey.question_1=STRING, answer.another_survey.question_2=STRING, answer.another_survey.question_3=STRING, answer.test_survey_1.oh_oh_basic_middleInitial=STRING, profile.mailingAddress.state=STRING, profile.contactEmail=STRING, profile.mailingAddress.street2=STRING, profile.mailingAddress.street1=STRING, profile.phoneNumber=STRING, profile.birthDate=DATE, answer.test_survey_1.oh_oh_basic_lastName=STRING, answer.test_survey_1.oh_oh_basic_firstName=STRING, profile.mailingAddress.city=STRING, profile.givenName=STRING, profile.mailingAddress.postalCode=STRING, profile.familyName=STRING, age=INTEGER, profile.mailingAddress.country=STRING}
-         */
+        
         Assertions.assertEquals(18, results.size());
         Assertions.assertEquals(Map.ofEntries(
                 Map.entry("profile.givenName", SearchValue.SearchValueType.STRING),

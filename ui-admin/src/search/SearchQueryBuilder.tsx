@@ -47,7 +47,7 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
   const options = props.options.map(option => {
     return { label: option.label, value: option.label }
   })
-  console.log('reload')
+
   return <div className="d w-100" key='test' id={'test'}>
     <Select
       key={'test2'} id={'test2'}
