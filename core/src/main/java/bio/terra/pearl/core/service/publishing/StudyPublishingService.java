@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
@@ -58,7 +59,7 @@ public class StudyPublishingService {
     /** the study environment must be fully hydrated by a call to loadStudyEnvForProcessing prior to passing in */
     @Transactional
     public StudyEnvironment applyChanges(StudyEnvironment destEnv, StudyEnvironmentChange envChange,
-                                         UUID destPortalEnvId) throws Exception {
+                                         UUID destPortalEnvId) {
         applyChangesToStudyEnvConfig(destEnv, envChange.configChanges());
         applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges());
         applyChangesToConsents(destEnv, envChange.consentChanges());
@@ -67,17 +68,21 @@ public class StudyPublishingService {
         return destEnv;
     }
 
-    protected StudyEnvironmentConfig applyChangesToStudyEnvConfig(StudyEnvironment destEnv, List<ConfigChange> configChanges) throws Exception {
+    protected StudyEnvironmentConfig applyChangesToStudyEnvConfig(StudyEnvironment destEnv, List<ConfigChange> configChanges) {
         if (configChanges.isEmpty()) {
             return destEnv.getStudyEnvironmentConfig();
         }
-        for (ConfigChange change : configChanges) {
-            PropertyUtils.setProperty(destEnv.getStudyEnvironmentConfig(), change.propertyName(), change.newValue());
+        try {
+            for (ConfigChange change : configChanges) {
+                PropertyUtils.setProperty(destEnv.getStudyEnvironmentConfig(), change.propertyName(), change.newValue());
+            }
+        } catch (Exception e) {
+            throw new InternalServerException("Error setting property during publish", e);
         }
         return studyEnvironmentConfigService.update(destEnv.getStudyEnvironmentConfig());
     }
 
-    protected StudyEnvironment applyChangesToPreEnrollSurvey(StudyEnvironment destEnv, VersionedEntityChange<Survey> change) throws Exception {
+    protected StudyEnvironment applyChangesToPreEnrollSurvey(StudyEnvironment destEnv, VersionedEntityChange<Survey> change) {
         if (!change.isChanged()) {
             return destEnv;
         }
@@ -91,7 +96,7 @@ public class StudyPublishingService {
     }
 
     private List<StudyEnvironmentConsent> applyChangesToConsents(StudyEnvironment destEnv,
-                                                                 ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> listChange) throws Exception {
+                                                                 ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> listChange) {
         for(StudyEnvironmentConsent config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
             studyEnvironmentConsentService.create(config.cleanForCopying());
@@ -110,7 +115,7 @@ public class StudyPublishingService {
 
     private List<StudyEnvironmentSurvey> applyChangesToSurveys(StudyEnvironment destEnv,
                                                                  ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> listChange,
-                                                               UUID destPortalEnvId) throws Exception {
+                                                               UUID destPortalEnvId) {
         for(StudyEnvironmentSurvey config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
             StudyEnvironmentSurvey newConfig = studyEnvironmentSurveyService.create(config.cleanForCopying());
@@ -135,7 +140,7 @@ public class StudyPublishingService {
     }
 
     protected void applyChangesToTriggers(StudyEnvironment destEnv, ListChange<Trigger,
-            VersionedConfigChange<EmailTemplate>> listChange, UUID destPortalEnvId) throws Exception {
+            VersionedConfigChange<EmailTemplate>> listChange, UUID destPortalEnvId) {
         for(Trigger config : listChange.addedItems()) {
             config.setStudyEnvironmentId(destEnv.getId());
             config.setPortalEnvironmentId(destPortalEnvId);

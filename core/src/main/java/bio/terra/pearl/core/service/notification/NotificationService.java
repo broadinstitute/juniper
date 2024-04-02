@@ -18,8 +18,13 @@ public class NotificationService extends CrudService<Notification, NotificationD
     }
 
     public List<Notification> findByEnrolleeId(UUID enrolleeId) {
-        return dao.findByEnrolleeId(enrolleeId);
+        List<Notification> notifications = dao.findByEnrolleeId(enrolleeId);
+        for (Notification notification : notifications) {
+            dao.attachSendgridEvent(notification);
+        }
+        return notifications;
     }
+
     public void deleteByEnrolleeId(UUID enrolleeId) {
         dao.deleteByEnrolleeId(enrolleeId);
     }

@@ -39,7 +39,12 @@ test('enables updating of email templates', async () => {
         id: undefined,  // confirm id and publishedVersion are cleared
         publishedVersion: undefined,
         version: 2, // confirm version is incremented
-        subject: 'Mock subjectblah'
+        localizedEmailTemplates: [{
+          subject: 'Mock subjectblah',
+          body: 'Mock email message',
+          id: undefined,
+          language: 'en'
+        }]
       }
     })
 })

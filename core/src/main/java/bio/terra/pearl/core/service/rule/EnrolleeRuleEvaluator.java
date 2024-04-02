@@ -14,20 +14,20 @@ import java.util.Objects;
 
 @Slf4j
 public class EnrolleeRuleEvaluator {
-    private final EnrolleeRuleData ruleData;
+    private final EnrolleeContext ruleData;
 
-    public EnrolleeRuleEvaluator(EnrolleeRuleData ruleData) {
+    public EnrolleeRuleEvaluator(EnrolleeContext ruleData) {
         this.ruleData = ruleData;
     }
 
     // for evaluations where we need to indicate whether the rule itself is valid
-    public static boolean evaluateRuleChecked(String rule, EnrolleeRuleData ruleData) throws RuleEvaluationException, RuleParsingException {
+    public static boolean evaluateRuleChecked(String rule, EnrolleeContext ruleData) throws RuleEvaluationException, RuleParsingException {
         EnrolleeRuleEvaluator evaluator = new EnrolleeRuleEvaluator(ruleData);
         return evaluator.evaluateRuleChecked(rule);
     }
 
     // Evaluates the rule. Returns false if the rule cannot be parsed, or if an error occurred accessing the ruleData
-    public static boolean evaluateRule(String rule, EnrolleeRuleData ruleData) {
+    public static boolean evaluateRule(String rule, EnrolleeContext ruleData) {
         try {
             return evaluateRuleChecked(rule, ruleData);
         } catch (RuleEvaluationException | RuleParsingException e) {

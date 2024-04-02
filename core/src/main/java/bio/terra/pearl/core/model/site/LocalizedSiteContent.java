@@ -28,4 +28,5 @@ public class LocalizedSiteContent extends BaseEntity {
     private UUID footerSectionId;
     private HtmlSection footerSection;
     private String primaryBrandColor;
+    private String dashboardBackgroundColor;
 }
