@@ -25,7 +25,7 @@
     "react-notifications-component": "^4.0.1",
     "react-oidc-context": "^2.2.0",
     "react-plotly.js": "^2.6.0",
-    "react-querybuilder": "^7.1.0",
+    "react-querybuilder": "^6.5.4",
     "react-router-dom": "^6.4.0",
     "survey-react-ui": "^1.9.75",
     "surveyjs-widgets": "1.9.75",
