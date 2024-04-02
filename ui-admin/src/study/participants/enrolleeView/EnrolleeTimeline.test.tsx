@@ -34,6 +34,6 @@ describe('EnrolleeTimeline', () => {
   it('should render an N/A notice if there are no event details', () => {
     const notification = mockNotification()
     render(renderEmailActivityIcon(notification))
-    expect(screen.getByText('N/A')).toBeInTheDocument()
+    expect(screen.getByText('n/a')).toBeInTheDocument()
   })
 })
