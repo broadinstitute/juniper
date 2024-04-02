@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -17,6 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 public class RegistrationServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -29,6 +32,8 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
     private ParticipantUserService participantUserService;
     @Autowired
     private PortalService portalService;
+    @Autowired
+    private ProfileService profileService;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
 
@@ -57,5 +62,28 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
         Assertions.assertTrue(participantUserService.findOne(proxyUser.getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
         Assertions.assertNotEquals(proxyUser.getUsername(), registerGovernedUser.participantUser().getUsername());
         Assertions.assertTrue(participantUserService.findOne(registerGovernedUser.participantUser().getUsername(), bundle.getPortalEnv().getEnvironmentName()).isPresent());
+    }
+
+    @Test
+    @Transactional
+    public void testRegisterWithPreferredLanguage(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+        String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
+        RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
+                portalEnv.getEnvironmentName(), username, null, "es");
+        Assertions.assertEquals("es", result.profile().getPreferredLanguage());
+    }
+
+    @Test
+    @Transactional
+    public void testRegisterWithDefaultLanguage(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+        String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
+        RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
+                portalEnv.getEnvironmentName(), username, null, null);
+        //TODO (JN-863) - check instead that this matches the default portal language
+        Assertions.assertEquals("en", result.profile().getPreferredLanguage());
     }
 }
