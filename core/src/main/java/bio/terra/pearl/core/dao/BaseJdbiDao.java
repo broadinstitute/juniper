@@ -361,8 +361,8 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
     protected List<T> findAllByThreeProperties(String column1Name, List<?> column1Values,
                                                String column2Name, List<?> column2Values,
                                                String column3Name, List<?> column3Values) {
-        if (column1Values.size() != column2Values.size()) {
-            throw new IllegalArgumentException("column1Values and column2Values must be the same size");
+        if (column1Values.size() != column2Values.size() || column1Values.size() != column3Values.size()) {
+            throw new IllegalArgumentException("column1Values, column2Values and column3Values must be the same size");
         }
         if (column1Values.isEmpty()) {
             // short circuit this case because bindList errors if list is empty
