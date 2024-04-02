@@ -30,7 +30,7 @@ public class EnrolleeSearchExpressionController implements EnrolleeSearchExpress
     AdminUser user = authUtilService.requireAdminUser(request);
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
     return ResponseEntity.ok(
-            enrolleeSearchExpressionService.getSearchFacetsForPortal(
-                    portalShortcode, EnvironmentName.valueOf(envName)));
+        enrolleeSearchExpressionService.getSearchFacetsForPortal(
+            portalShortcode, EnvironmentName.valueOf(envName)));
   }
 }
