@@ -8,61 +8,6 @@ import Select from 'react-select'
 import LoadingSpinner from '../util/LoadingSpinner'
 import { keys } from 'lodash'
 
-const operators = [
-  { name: '=', label: '=' },
-  { name: '!=', label: '!=' },
-  { name: '<', label: '<' },
-  { name: '<=', label: '<=' },
-  { name: '>', label: '>' },
-  { name: '>=', label: '>=' }
-]
-
-
-const facetToReactQueryField = (facet: string, searchValueType: SearchValueType): Field => {
-  const field: Field = {
-    name: facet,
-    label: facet
-  }
-  switch (searchValueType) {
-    case 'STRING':
-      field.valueEditorType = 'text'
-      break
-    case 'INTEGER':
-      field.inputType = 'number'
-      break
-    case 'DOUBLE':
-      field.inputType = 'number'
-      break
-    case 'DATE':
-      field.inputType = 'date'
-      break
-    case 'INSTANT':
-      field.inputType = 'datetime-local'
-      break
-  }
-  return field
-}
-
-const CustomFieldSelector = (props: FieldSelectorProps) => {
-  const options = props.options.map(option => {
-    return { label: option.label, value: option.label }
-  })
-
-  return <div className="d w-100" key='test' id={'test'}>
-    <Select
-      key={'test2'} id={'test2'}
-      options={options}
-      value={{ label: props.value || '', value: props.value || '' }}
-      onChange={newVal => {
-        if (newVal?.label != props.value) {
-          props.handleOnChange(newVal?.label || '')
-        }
-      }}
-    />
-  </div>
-}
-
-
 /**
  * Frontend for building an enrollee search expression.
  */
@@ -123,6 +68,60 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
       query={query}
       onQueryChange={q => setQuery(q)}/>
   </LoadingSpinner>
+}
+
+const operators = [
+  { name: '=', label: '=' },
+  { name: '!=', label: '!=' },
+  { name: '<', label: '<' },
+  { name: '<=', label: '<=' },
+  { name: '>', label: '>' },
+  { name: '>=', label: '>=' }
+]
+
+
+const facetToReactQueryField = (facet: string, searchValueType: SearchValueType): Field => {
+  const field: Field = {
+    name: facet,
+    label: facet
+  }
+  switch (searchValueType) {
+    case 'STRING':
+      field.valueEditorType = 'text'
+      break
+    case 'INTEGER':
+      field.inputType = 'number'
+      break
+    case 'DOUBLE':
+      field.inputType = 'number'
+      break
+    case 'DATE':
+      field.inputType = 'date'
+      break
+    case 'INSTANT':
+      field.inputType = 'datetime-local'
+      break
+  }
+  return field
+}
+
+const CustomFieldSelector = (props: FieldSelectorProps) => {
+  const options = props.options.map(option => {
+    return { label: option.label, value: option.label }
+  })
+
+  return <div className="d w-100" key='test' id={'test'}>
+    <Select
+      key={'test2'} id={'test2'}
+      options={options}
+      value={{ label: props.value || '', value: props.value || '' }}
+      onChange={newVal => {
+        if (newVal?.label != props.value) {
+          props.handleOnChange(newVal?.label || '')
+        }
+      }}
+    />
+  </div>
 }
 
 

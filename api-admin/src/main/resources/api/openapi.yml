@@ -637,7 +637,7 @@ paths:
 
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
-      summary: Gets all of the
+      summary: Gets all of the possible fields which can be searched on within the provided portal.
       tags: [ enrolleeSearchExpression ]
       operationId: getSearchFacets
       parameters:

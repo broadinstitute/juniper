@@ -53,16 +53,6 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                               }) => {
   const isSurvey = !!(workingForm as Survey).surveyType
 
-
-  // useEffect(() => {
-  //   if (enrolleeSearchExpression) {
-  //     updateWorkingForm({
-  //       ...workingForm,
-  //       eligibilityRule: enrolleeSearchExpression
-  //     })
-  //   }
-  // }, [enrolleeSearchExpression])
-
   const { user } = useUser()
 
   return <>
