@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.VersionedEntityService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.util.UUID;
@@ -20,11 +21,16 @@ public class PublishingUtils {
     C applyChangesToVersionedConfig(VersionedConfigChange<T> versionedConfigChange,
                                     CrudService<C, ?> configService,
                                     VersionedEntityService<T, ?> documentService,
-                                    EnvironmentName destEnvName) throws Exception {
+                                    EnvironmentName destEnvName) {
         C destConfig = configService.find(versionedConfigChange.destId()).get();
-        for (ConfigChange change : versionedConfigChange.configChanges()) {
-            setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
+        try {
+            for (ConfigChange change : versionedConfigChange.configChanges()) {
+                setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
+            }
+        } catch (Exception e) {
+            throw new InternalServerException("Error setting property during publish", e);
         }
+
         if (versionedConfigChange.documentChange().isChanged()) {
             VersionedEntityChange<T> docChange = versionedConfigChange.documentChange();
             UUID newDocumentId = null;

@@ -15,6 +15,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
@@ -69,14 +70,14 @@ public class PortalPublishingService {
 
     /** updates the dest environment with the given changes */
     @Transactional
-    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) throws Exception {
+    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) {
         PortalEnvironment destEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, dest);
         return applyUpdate(destEnv, change, user);
     }
 
     /** applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
      * returns the updated environment */
-    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) throws Exception {
+    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) {
         applyChangesToEnvConfig(destEnv, envChanges.configChanges());
 
         applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
@@ -87,28 +88,35 @@ public class PortalPublishingService {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
             studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
         }
-
-        PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
-                .adminUserId(user.getId())
-                .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
-                .build();
-        portalEnvironmentChangeRecordDao.create(changeRecord);
+        try {
+            PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
+                    .adminUserId(user.getId())
+                    .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
+                    .build();
+            portalEnvironmentChangeRecordDao.create(changeRecord);
+        } catch (Exception e) {
+            throw new InternalServerException("error writing publish audit log", e);
+        }
         return destEnv;
     }
 
     /** updates the passed-in config with the given changes.  Returns the updated config */
     protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironment destEnv,
-                                                              List<ConfigChange> configChanges) throws Exception {
+                                                              List<ConfigChange> configChanges) {
         if (configChanges.isEmpty()) {
             return destEnv.getPortalEnvironmentConfig();
         }
-        for (ConfigChange change : configChanges) {
-            PropertyUtils.setProperty(destEnv.getPortalEnvironmentConfig(), change.propertyName(), change.newValue());
+        try {
+            for (ConfigChange change : configChanges) {
+                PropertyUtils.setProperty(destEnv.getPortalEnvironmentConfig(), change.propertyName(), change.newValue());
+            }
+        } catch (Exception e) {
+            throw new InternalServerException("Error copying properties during publish", e);
         }
         return portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
     }
 
-        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) throws Exception {
+        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) {
             if (!change.isChanged()) {
                 return destEnv;
             }
@@ -121,7 +129,7 @@ public class PortalPublishingService {
             return portalEnvironmentService.update(destEnv);
         }
 
-    protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange<SiteContent> change) throws Exception {
+    protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange<SiteContent> change) {
         if (!change.isChanged()) {
             return destEnv;
         }
@@ -135,7 +143,7 @@ public class PortalPublishingService {
     }
 
     protected void applyChangesToTriggers(PortalEnvironment destEnv, ListChange<Trigger,
-            VersionedConfigChange<EmailTemplate>> listChange) throws Exception {
+            VersionedConfigChange<EmailTemplate>> listChange) {
         for(Trigger config : listChange.addedItems()) {
             config.setPortalEnvironmentId(destEnv.getId());
             triggerService.create(config.cleanForCopying());
