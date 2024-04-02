@@ -131,5 +131,5 @@ export function renderEmailActivityIcon(row: Notification) {
     return <FontAwesomeIcon icon={faEnvelope} aria-label={'Email not yet opened'}/>
   }
 
-  return <>N/A</>
+  return <span className="fw-light fst-italic">n/a</span>
 }

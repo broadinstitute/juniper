@@ -15,6 +15,9 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 public class SendgridEvent extends BaseEntity {
+    //The aliases are necessary because the SendGrid API uses snake_case. This allows
+    //us to re-use the same model for serialization and deserialization, without having
+    //to introduce snake_case into other parts of our codebase.
     @JsonAlias("msg_id")
     private String msgId;
     @JsonAlias("subject")
