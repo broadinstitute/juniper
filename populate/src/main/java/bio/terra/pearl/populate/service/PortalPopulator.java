@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -142,7 +143,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             contact.setPortalEnvironmentId(savedEnv.getId());
             contact.setEmail(contact.getEmail());
             contact.setName(contact.getName());
-            mailingListContactService.create(contact);
+            mailingListContactService.create(contact, null);
         }
     }
 

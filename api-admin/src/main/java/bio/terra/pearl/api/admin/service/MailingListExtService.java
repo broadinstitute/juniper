@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -12,11 +12,9 @@ import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,27 +59,11 @@ public class MailingListExtService {
             .findOne(portal.getShortcode(), envName)
             .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
-    List<MailingListContact> newContacts =
-        mailingListContactService.bulkCreate(portalEnv.getId(), contacts);
+    contacts.forEach(contact -> contact.setPortalEnvironmentId(portalEnv.getId()));
 
-    List<DataChangeRecord> changeRecords =
-        newContacts.stream()
-            .map(
-                contact -> {
-                  try {
-                    return DataChangeRecord.builder()
-                        .modelName(MailingListContact.class.getSimpleName())
-                        .responsibleAdminUserId(user.getId())
-                        .portalEnvironmentId(portalEnv.getId())
-                        .newValue(objectMapper.writeValueAsString(contact))
-                        .oldValue(null)
-                        .build();
-                  } catch (JsonProcessingException e) {
-                    throw new RuntimeException("could not create audit trail", e);
-                  }
-                })
-            .collect(Collectors.toList());
-    dataChangeRecordService.bulkCreate(changeRecords);
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    List<MailingListContact> newContacts =
+        mailingListContactService.bulkCreate(portalEnv.getId(), contacts, auditInfo);
 
     return newContacts;
   }
@@ -96,19 +78,7 @@ public class MailingListExtService {
     if (!contact.getPortalEnvironmentId().equals(portalEnv.getId())) {
       throw new PermissionDeniedException("Contact does not belong to the given portal");
     }
-    try {
-      DataChangeRecord changeRecord =
-          DataChangeRecord.builder()
-              .modelName(MailingListContact.class.getSimpleName())
-              .responsibleAdminUserId(user.getId())
-              .portalEnvironmentId(portalEnv.getId())
-              .newValue(null)
-              .oldValue(objectMapper.writeValueAsString(contact))
-              .build();
-      dataChangeRecordService.create(changeRecord);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("could not create audit trail", e);
-    }
-    mailingListContactService.delete(contactId, CascadeProperty.EMPTY_SET);
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    mailingListContactService.delete(contactId, auditInfo, CascadeProperty.EMPTY_SET);
   }
 }
