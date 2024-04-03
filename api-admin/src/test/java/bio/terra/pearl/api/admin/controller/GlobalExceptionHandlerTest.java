@@ -12,6 +12,7 @@ import bio.terra.pearl.api.admin.controller.study.StudyController;
 import bio.terra.pearl.api.admin.model.ErrorReport;
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
@@ -57,6 +58,7 @@ public class GlobalExceptionHandlerTest {
   @MockBean private PortalService portalService;
   @MockBean private StudyPopulator studyPopulator;
   @MockBean private FilePopulateService filePopulateService;
+  @Autowired private SurveyExtService surveyExtService;
 
   @Test
   void testBuildErrorReport() {
