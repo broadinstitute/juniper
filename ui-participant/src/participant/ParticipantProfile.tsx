@@ -19,9 +19,7 @@ import {
  * with an edit button. This edit button opens a modal which allows editing and
  * saving changes to profile data.
  */
-export function ParticipantProfile(
-  { enableAddressValidation = true }: { enableAddressValidation?: boolean }
-) {
+export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
   const { ppUser, profile, updateProfile } = useUser()
@@ -59,7 +57,6 @@ export function ParticipantProfile(
     const modalProps = {
       profile,
       dismissModal: () => setShowEditFieldModal(undefined),
-      enableAddressValidation,
       save
     }
 
