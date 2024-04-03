@@ -3,6 +3,7 @@ package bio.terra.pearl.api.participant.service;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
@@ -32,6 +33,7 @@ public class SurveyResponseExtService {
   }
 
   public SurveyWithResponse findOrCreateWithActiveResponse(
+      String portalShortcode,
       String studyShortcode,
       String envName,
       String stableId,
@@ -42,9 +44,14 @@ public class SurveyResponseExtService {
 
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
+    Portal portal =
+        authUtilService
+            .authParticipantToPortal(
+                participantUserId, portalShortcode, EnvironmentName.valueOf(envName))
+            .portal();
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
     return surveyResponseService.findWithActiveResponse(
-        studyEnv.getId(), stableId, version, enrollee, taskId);
+        studyEnv.getId(), portal.getId(), stableId, version, enrollee, taskId);
   }
 
   public HubResponse updateResponse(
@@ -61,7 +68,12 @@ public class SurveyResponseExtService {
             enrollee.getParticipantUserId(), portalShortcode, envName);
     HubResponse result =
         surveyResponseService.updateResponse(
-            responseDto, user.getId(), portalWithPortalUser.ppUser(), enrollee, taskId);
+            responseDto,
+            user.getId(),
+            portalWithPortalUser.ppUser(),
+            enrollee,
+            taskId,
+            portalWithPortalUser.portal().getId());
     return result;
   }
 }

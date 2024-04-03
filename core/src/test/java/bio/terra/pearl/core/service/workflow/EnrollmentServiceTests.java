@@ -1,12 +1,5 @@
 package bio.terra.pearl.core.service.workflow;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.notNullValue;
-
-import java.util.List;
-import java.util.Map;
-
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -33,13 +26,20 @@ import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.notNullValue;
+
 public class EnrollmentServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAnonymousPreEnroll(TestInfo testInfo) throws JsonProcessingException {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
-        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo), portalEnv.getPortalId());
         studyEnv.setPreEnrollSurveyId(survey.getId());
         studyEnvironmentService.update(studyEnv);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
@@ -53,7 +53,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
                 .answers(answers)
                 .qualified(true).build();
 
-        PreEnrollmentResponse savedResponse = enrollmentService.createAnonymousPreEnroll(studyEnv.getId(), survey.getStableId(), survey.getVersion(), response);
+        PreEnrollmentResponse savedResponse = enrollmentService.createAnonymousPreEnroll(survey.getPortalId(), studyEnv.getId(), survey.getStableId(), survey.getVersion(), response);
         DaoTestUtils.assertGeneratedProperties(savedResponse);
         // confirm it copies over the full data property
         assertThat(savedResponse.getFullData(), containsString("areOver18"));

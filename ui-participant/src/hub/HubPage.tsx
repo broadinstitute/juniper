@@ -7,7 +7,7 @@ import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, ParticipantDashboardAlert } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
@@ -84,7 +84,7 @@ export default function HubPage() {
       <DocumentTitle title="Dashboard" />
       <div
         className="hub-dashboard-background flex-grow-1"
-        style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
+        style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{

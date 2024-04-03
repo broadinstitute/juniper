@@ -10,7 +10,6 @@ import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
@@ -36,16 +35,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testApplyStudyConfigChanges(TestInfo info) throws Exception {
         String testName = getTestName(info);
-        Study study = studyFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
 
@@ -54,7 +57,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         irbConfig.setPasswordProtected(true);
         studyEnvironmentConfigService.update(irbConfig);
 
-        diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
 
         StudyEnvironmentConfig liveConfig = studyEnvironmentConfigService.find(liveEnv.getStudyEnvironmentConfigId()).get();
         assertThat(liveConfig.getPassword(), equalTo("foobar"));
@@ -65,15 +68,16 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testApplyChangesPublishSurvey(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        Study study = studyFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
-        Survey survey = surveyFactory.buildPersisted(testName);
+        Survey survey = surveyFactory.buildPersisted(testName, portal.getId());
 
         irbEnv.setPreEnrollSurveyId(survey.getId());
         studyEnvironmentService.update(irbEnv);
 
-        diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
 
         liveEnv = studyEnvironmentService.find(liveEnv.getId()).get();
         assertThat(liveEnv.getPreEnrollSurveyId(), equalTo(survey.getId()));
@@ -85,12 +89,15 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testApplyChangesPublishSurveyConfig(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        Study study = studyFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
-        Survey survey = surveyFactory.buildPersisted(testName);
+
+        Survey survey = surveyFactory.buildPersisted(testName, portal.getId());
         StudyEnvironmentSurvey surveyConfig = surveyFactory.attachToEnv(survey, irbEnv.getId(), true);
-        diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+
+        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
 
         List<StudyEnvironmentSurvey> liveSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(liveEnv.getId());
         assertThat(liveSurveys, hasSize(1));
@@ -106,7 +113,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
 
         // now test that we can publish a removal
         studyEnvironmentSurveyService.deactivate(surveyConfig.getId());
-        diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
 
         liveSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(liveEnv.getId());
         assertThat(liveSurveys, hasSize(0));
@@ -122,11 +129,12 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
                 sandboxBundle.getPortal(), sandboxBundle.getStudy());
 
+        UUID portalId = sandboxBundle.getPortal().getId();
         // attach v1 to irb, and v2 in sandbox, then try copying sandbox to irb.
-        Survey survey = surveyFactory.buildPersisted(testName);
+        Survey survey = surveyFactory.buildPersisted(testName, portalId);
         surveyFactory.attachToEnv(survey, irbBundle.getStudyEnv().getId(), true);
         survey.setAutoUpdateTaskAssignments(true);
-        Survey surveyV2 = surveyService.createNewVersion(sandboxBundle.getPortal().getId(), survey);
+        Survey surveyV2 = surveyService.createNewVersion(portalId, survey);
         surveyFactory.attachToEnv(surveyV2, sandboxBundle.getStudyEnv().getId(), true);
 
         // assign v1 of the survey to an enrollee in the irb environment
@@ -136,7 +144,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
                 .targetAssignedVersion(survey.getVersion()));
 
         // after publishing, the irb should have the new version, and the task should be updated too
-        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox, EnvironmentName.irb);
+        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), portalId, EnvironmentName.sandbox, EnvironmentName.irb);
 
         List<StudyEnvironmentSurvey> irbSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(irbBundle.getStudyEnv().getId());
         assertThat(irbSurveys, hasSize(1));
@@ -155,8 +163,11 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
         StudyEnvironmentFactory.StudyEnvironmentBundle irbBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.irb,
                 sandboxBundle.getPortal(), sandboxBundle.getStudy());
-        Survey survey = surveyFactory.buildPersisted(testName);
-        Survey autoAssignSurvey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(testInfo)).assignToExistingEnrollees(true));
+        UUID portalId = sandboxBundle.getPortal().getId();
+
+        Survey survey = surveyFactory.buildPersisted(testName, portalId);
+        Survey autoAssignSurvey = surveyFactory.buildPersisted(
+                surveyFactory.builder(getTestName(testInfo)).portalId(portalId).assignToExistingEnrollees(true));
 
         // create an enrollee in the irb environment with no survey tasks
         EnrolleeFactory.EnrolleeBundle irbEnrollee = enrolleeFactory.buildWithPortalUser(testName, irbBundle.getPortalEnv(), irbBundle.getStudyEnv());
@@ -166,7 +177,7 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(autoAssignSurvey, sandboxBundle.getStudyEnv().getId(), true);
 
         // after publishing, the irb should have the surveys, and the enrollee should have a task for the auto-assigned survey
-        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), EnvironmentName.sandbox, EnvironmentName.irb);
+        diffAndApplyChanges(sandboxBundle.getStudy().getShortcode(), portalId, EnvironmentName.sandbox, EnvironmentName.irb);
 
         List<StudyEnvironmentSurvey> irbSurveys = studyEnvironmentSurveyService.findAllByStudyEnvIdWithSurvey(irbBundle.getStudyEnv().getId());
         assertThat(irbSurveys, hasSize(2));
@@ -181,13 +192,15 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testApplyChangesConsents(TestInfo info) throws Exception {
         String testName = getTestName(info);
-        Study study = studyFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        Study study = studyFactory.buildPersisted(portal.getId(), testName);
         StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
         StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
-        ConsentForm form = consentFormFactory.buildPersisted(testName);
+
+        ConsentForm form = consentFormFactory.buildPersisted(testName, portal.getId());
         consentFormFactory.addConsentToStudyEnv(irbEnv.getId(), form.getId());
 
-        diffAndApplyChanges(study.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
+        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
 
         assertThat(studyEnvironmentConsentService.findByConsentForm(liveEnv.getId(), form.getId()).isPresent(), equalTo(true));
 
@@ -195,10 +208,10 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         assertThat(form.getPublishedVersion(), equalTo(1));
     }
 
-    private void diffAndApplyChanges(String studyShortcode, EnvironmentName src, EnvironmentName dest) throws Exception {
+    private void diffAndApplyChanges(String studyShortcode, UUID portalId, EnvironmentName src, EnvironmentName dest) throws Exception {
         StudyEnvironmentChange changes = portalDiffService.diffStudyEnvs(studyShortcode, src, dest);
         StudyEnvironment loadedLiveEnv = portalDiffService.loadStudyEnvForProcessing(studyShortcode, dest);
-        studyPublishingService.applyChanges(loadedLiveEnv, changes, null);
+        studyPublishingService.applyChanges(loadedLiveEnv, changes, null, portalId);
     }
 
     @Autowired

@@ -1,19 +1,5 @@
 package bio.terra.pearl.core.service.workflow;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
-
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
@@ -52,6 +38,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
@@ -147,7 +148,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .resumeData("stuff")
                         .build();
         hubResponse = surveyResponseService.updateResponse(survResponseDto, userBundle.user().getId(), userBundle.ppUser(),
-                enrollee, surveyTasks.get(0).getId());
+                enrollee, surveyTasks.get(0).getId(), survey.getPortalId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
         List<ParticipantTask>  updateSurveyTasks = updatedTasks.stream().filter(task -> task.getTaskType().equals(TaskType.SURVEY)).toList();
@@ -289,6 +290,12 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     }
 
+    @Test
+    @Transactional
+    public void testDetectingProxyNoPreEnroll(TestInfo info) {
+        Assertions.assertFalse(enrollmentService.isProxyEnrollment(null));
+        Assertions.assertFalse(enrollmentService.isProxyEnrollment(UUID.randomUUID()));
+    }
 
 
     @Autowired

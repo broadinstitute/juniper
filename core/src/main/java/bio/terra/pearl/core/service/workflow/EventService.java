@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.Event;
@@ -18,8 +17,8 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -40,13 +39,13 @@ import java.util.UUID;
 @Slf4j
 public class EventService extends ImmutableEntityService<Event, EventDao> {
     private final ParticipantTaskService participantTaskService;
-    private final EnrolleeRuleService enrolleeRuleService;
+    private final EnrolleeContextService enrolleeContextService;
 
     public EventService(EventDao dao, ParticipantTaskService participantTaskService,
-                        EnrolleeRuleService enrolleeRuleService) {
+                        EnrolleeContextService enrolleeContextService) {
         super(dao);
         this.participantTaskService = participantTaskService;
-        this.enrolleeRuleService = enrolleeRuleService;
+        this.enrolleeContextService = enrolleeContextService;
     }
 
     /**
@@ -115,11 +114,11 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
     }
 
     public EnrolleeCreationEvent publishEnrolleeCreationEvent(Enrollee enrollee, PortalParticipantUser ppUser) {
-        EnrolleeRuleData enrolleeRuleData = enrolleeRuleService.fetchData(enrollee);
+        EnrolleeContext enrolleeContext = enrolleeContextService.fetchData(enrollee);
         EnrolleeCreationEvent enrolleeEvent = EnrolleeCreationEvent.builder()
                 .enrollee(enrollee)
                 .portalParticipantUser(ppUser)
-                .enrolleeRuleData(enrolleeRuleData)
+                .enrolleeContext(enrolleeContext)
                 .build();
         saveEvent(EventClass.ENROLLEE_CREATION_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(enrolleeEvent);
@@ -176,7 +175,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
      */
     protected void populateEvent(EnrolleeEvent event) {
         Enrollee enrollee = event.getEnrollee();
-        event.setEnrolleeRuleData(enrolleeRuleService.fetchData(enrollee));
+        event.setEnrolleeContext(enrolleeContextService.fetchData(enrollee));
         enrollee.getParticipantTasks().clear();
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
     }
@@ -190,7 +189,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
                 .response(response)
                 .tasks(event.getEnrollee().getParticipantTasks().stream().toList())
                 .enrollee(event.getEnrollee())
-                .profile(event.getEnrolleeRuleData().getProfile())
+                .profile(event.getEnrolleeContext().getProfile())
                 .build();
         return hubResponse;
     }

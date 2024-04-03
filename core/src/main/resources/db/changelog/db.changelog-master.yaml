@@ -225,6 +225,21 @@ databaseChangeLog:
       file: changesets/2024_03_18_remove_environment_constraints.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_03_18_add_preferred_language_profile.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_18_localized_email_templates.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_29_add_dashboard_color.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_24_sendgrid_api_request_id.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_29_portal_scoped_stable_ids.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_03_25_study_env_config_proxy.yaml
       relativeToChangelogFile: true
 

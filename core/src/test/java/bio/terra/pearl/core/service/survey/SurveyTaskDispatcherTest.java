@@ -1,13 +1,5 @@
 package bio.terra.pearl.core.service.survey;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-import java.util.Set;
-
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
@@ -17,10 +9,10 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -28,6 +20,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     @Autowired
@@ -142,4 +141,49 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(participantTasks, hasSize(2));
     }
 
+    @Test
+    @Transactional
+    public void testAssignWithSearchExpression(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
+                .eligibilityRule("{profile.givenName} = 'John'"));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeFactory.EnrolleeBundle e1 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Doe").build());
+        enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeFactory.EnrolleeBundle e2 = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv(), Profile.builder().givenName("John").familyName("Smith").build());
+
+        surveyTaskDispatcher.assign(
+                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false),
+                sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+
+        List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
+        assertThat(participantTasks, hasSize(2));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(e1.enrollee().getId())));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(e2.enrollee().getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testDoesNotAssignToProxyByDefault(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        Survey survey = surveyFactory.buildPersisted(getTestName(testInfo));
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+        EnrolleeFactory.EnrolleeBundle normalEnrollee = enrolleeFactory.buildWithPortalUser(getTestName(testInfo), sandboxBundle.getPortalEnv(), sandboxBundle.getStudyEnv());
+
+        surveyTaskDispatcher.assign(
+                new ParticipantTaskAssignDto(TaskType.SURVEY, survey.getStableId(), survey.getVersion(), null, true, false),
+                sandboxBundle.getStudyEnv().getId(), new ResponsibleEntity(operator));
+
+        List<ParticipantTask> participantTasks = participantTaskService.findTasksByStudyAndTarget(sandboxBundle.getStudyEnv().getId(), List.of(survey.getStableId()));
+        assertThat(participantTasks, hasSize(2));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(enrolleeAndProxy.governedEnrollee().getId())));
+        assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(normalEnrollee.enrollee().getId())));
+        assertTrue(participantTasks.stream().noneMatch(t -> t.getEnrolleeId().equals(enrolleeAndProxy.proxy().getId())));
+    }
 }

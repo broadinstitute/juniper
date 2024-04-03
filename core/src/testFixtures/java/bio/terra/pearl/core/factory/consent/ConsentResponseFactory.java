@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.factory.consent;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ public class ConsentResponseFactory {
     private ConsentFormFactory consentFormFactory;
     @Autowired
     private EnrolleeFactory enrolleeFactory;
+    @Autowired
+    private PortalFactory portalFactory;
 
     public ConsentResponse.ConsentResponseBuilder builder(String testName) {
         String randString = "{foo: " + RandomStringUtils.randomNumeric(3) + "}";
@@ -25,7 +29,8 @@ public class ConsentResponseFactory {
     }
 
     public ConsentResponse.ConsentResponseBuilder builderWithDependencies(String testName) {
-        ConsentForm form = consentFormFactory.buildPersisted(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        ConsentForm form = consentFormFactory.buildPersisted(testName, portal.getId());
         Enrollee enrollee = enrolleeFactory.buildPersisted(testName);
         return builder(testName)
                 .consentFormId(form.getId())

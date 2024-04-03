@@ -9,6 +9,7 @@ import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.populate.dao.EmailTemplatePopulateDao;
 import bio.terra.pearl.populate.dto.notifications.EmailTemplatePopDto;
+import bio.terra.pearl.populate.dto.notifications.LocalizedEmailTemplatePopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import org.springframework.beans.BeanUtils;
@@ -47,8 +48,8 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         if (configPopDto.getPopulateFileName() != null) {
             template = context.fetchFromPopDto(configPopDto, emailTemplateService).get();
         } else {
-            template = emailTemplateService.findByStableId(configPopDto.getEmailTemplateStableId(),
-                    configPopDto.getEmailTemplateVersion()).get();
+            template = emailTemplateService.findByStableIdAndPortalShortcode(configPopDto.getEmailTemplateStableId(),
+                    configPopDto.getEmailTemplateVersion(), context.getPortalShortcode()).get();
         }
         config.setEmailTemplateId(template.getId());
         config.setEmailTemplate(template);
@@ -57,8 +58,6 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
 
     @Override
     protected void preProcessDto(EmailTemplatePopDto popDto, PortalPopulateContext context) throws IOException  {
-        String bodyContent = filePopulateService.readFile(popDto.getBodyPopulateFile(), context);
-        popDto.setBody(bodyContent);
         popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         UUID portalId = portalService.findOneByShortcode(context.getPortalShortcode()).orElse(
                 /** if the context doesn't have a portal, it's because we're populating admin config
@@ -68,6 +67,14 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
                 new Portal()
         ).getId();
         popDto.setPortalId(portalId);
+
+        for(LocalizedEmailTemplatePopDto localizedEmailTemplatePopDto : popDto.getLocalizedEmailTemplateDtos()) {
+            String bodyContent = filePopulateService.readFile(localizedEmailTemplatePopDto.getBodyPopulateFile(), context);
+            localizedEmailTemplatePopDto.setBody(bodyContent);
+            localizedEmailTemplatePopDto.setEmailTemplateId(popDto.getId());
+        }
+
+        popDto.getLocalizedEmailTemplates().addAll(popDto.getLocalizedEmailTemplateDtos());
     }
 
     @Override
@@ -81,28 +88,24 @@ public class EmailTemplatePopulator extends BasePopulator<EmailTemplate, EmailTe
         if (existingOpt.isPresent()) {
             return existingOpt;
         }
-        return emailTemplateService.findByStableId(popDto.getStableId(), popDto.getVersion());
+        return emailTemplateService.findByStableIdAndPortalShortcode(popDto.getStableId(), popDto.getVersion(), context.getPortalShortcode());
     }
 
     @Override
     public EmailTemplate overwriteExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
         // don't delete the template, since it may have other entities attached to it. Just mod the content
-        existingObj.setBody(popDto.getBody());
-        existingObj.setSubject(popDto.getSubject());
-        existingObj.setName(popDto.getName());
+        existingObj.setLocalizedEmailTemplates(popDto.getLocalizedEmailTemplates());
         existingObj.setPortalId(popDto.getPortalId());
         return emailTemplatePopulateDao.update(existingObj);
     }
 
     @Override
     public EmailTemplate createPreserveExisting(EmailTemplate existingObj, EmailTemplatePopDto popDto, PortalPopulateContext context) {
-        if (Objects.equals(existingObj.getBody(), popDto.getBody()) &&
-                Objects.equals(existingObj.getSubject(), popDto.getSubject()) &&
-                Objects.equals(existingObj.getName(), popDto.getName())) {
+        if (Objects.equals(existingObj.getLocalizedEmailTemplates(), popDto.getLocalizedEmailTemplates())) {
             // the things are the same, don't bother creating a new version
             return existingObj;
         }
-        int newVersion = emailTemplateService.getNextVersion(popDto.getStableId());
+        int newVersion = emailTemplateService.getNextVersionByPortalShortcode(popDto.getStableId(), context.getPortalShortcode());
         popDto.setVersion(newVersion);
         return emailTemplateService.create(popDto);
     }

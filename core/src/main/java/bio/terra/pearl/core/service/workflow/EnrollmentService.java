@@ -1,14 +1,14 @@
 package bio.terra.pearl.core.service.workflow;
 
-import java.time.Instant;
-import java.util.Optional;
-import java.util.UUID;
-
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
@@ -24,19 +24,21 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -60,7 +62,7 @@ public class EnrollmentService {
     public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
-                             EnrolleeRuleService enrolleeRuleService,
+                             EnrolleeContextService enrolleeContextService,
                              StudyEnvironmentConfigService studyEnvironmentConfigService,
                              EnrolleeService enrolleeService,
                              EventService eventService, ObjectMapper objectMapper,
@@ -101,11 +103,12 @@ public class EnrollmentService {
      */
     @Transactional
     public PreEnrollmentResponse createAnonymousPreEnroll(
+            UUID portalId,
             UUID studyEnvironmentId,
             String surveyStableId,
             Integer surveyVersion,
             ParsedPreEnrollResponse parsedResponse) throws JsonProcessingException {
-        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion, portalId).get();
 
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())
@@ -157,8 +160,9 @@ public class EnrollmentService {
      * If there is one, it will check the user's response to the question in the PreEnrollment Response.
      * If the user's response is true, it will return true, otherwise it returns false;
      */
+
     protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
-        PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).get();
+        PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).orElse(null);
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
         }
@@ -255,7 +259,7 @@ public class EnrollmentService {
      */
     public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user,
                               PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
-        if (isProxyEnrollment(preEnrollResponseId)) {
+        if (preEnrollResponseId != null && isProxyEnrollment(preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
         Optional<Enrollee> proxyEnrolleeOpt =

@@ -13,11 +13,13 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EventService;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class SurveyExtService {
   private StudyEnvironmentService studyEnvironmentService;
   private PortalEnvironmentService portalEnvironmentService;
   private EventService eventService;
+  private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
   public SurveyExtService(
       AuthUtilService authUtilService,
@@ -37,13 +40,15 @@ public class SurveyExtService {
       StudyEnvironmentSurveyService studyEnvironmentSurveyService,
       StudyEnvironmentService studyEnvironmentService,
       PortalEnvironmentService portalEnvironmentService,
-      EventService eventService) {
+      EventService eventService,
+      EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
     this.authUtilService = authUtilService;
     this.surveyService = surveyService;
     this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.eventService = eventService;
+    this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
   }
 
   public Survey get(String portalShortcode, String stableId, int version, AdminUser operator) {
@@ -90,10 +95,12 @@ public class SurveyExtService {
 
   public Survey create(String portalShortcode, Survey survey, AdminUser operator) {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    List<Survey> existing = surveyService.findByStableId(survey.getStableId());
+    List<Survey> existing = surveyService.findByStableId(survey.getStableId(), portal.getId());
     if (existing.size() > 0) {
       throw new IllegalArgumentException("A survey with that stableId already exists");
     }
+    // ensure the rule can be parsed (if null/empty, this will be a no-op)
+    enrolleeSearchExpressionParser.parseRule(survey.getEligibilityRule());
     survey.setPortalId(portal.getId());
     survey.setVersion(1);
     return surveyService.create(survey);
@@ -104,7 +111,7 @@ public class SurveyExtService {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     // Find all of the versions of the specified survey that are in the specified portal
     List<Survey> existingVersions =
-        surveyService.findByStableId(surveyStableId).stream()
+        surveyService.findByStableId(surveyStableId, portal.getId()).stream()
             .filter(survey -> portal.getId().equals(survey.getPortalId()))
             .toList();
 
@@ -149,6 +156,8 @@ public class SurveyExtService {
 
   public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser operator) {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    // ensure the rule can be parsed (if null/empty, this will be a no-op)
+    enrolleeSearchExpressionParser.parseRule(survey.getEligibilityRule());
     return surveyService.createNewVersion(portal.getId(), survey);
   }
 

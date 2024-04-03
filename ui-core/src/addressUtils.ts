@@ -23,17 +23,16 @@ const ADDR_COMPONENTS_TO_FIELD: { [index: string]: keyof MailingAddress } = {
   'POSTAL_CODE': 'postalCode'
 }
 
-const ADDR_COMPONENT_TO_NAME = {
-  'CITY': 'City',
-  'HOUSE_NUMBER': 'House Number',
-  'STREET_NAME': 'Street Name',
-  'COUNTRY': 'Country',
-  'POSTAL_CODE': 'Postal Code',
-  'SUBPREMISE': 'Unit Number',
-  'STREET_TYPE': 'Street Type',
-  'STATE_PROVINCE': 'State/Province'
+const ADDR_COMPONENT_TO_I18N_ERROR_KEY = {
+  'CITY': 'addressInvalidCity',
+  'HOUSE_NUMBER': 'addressInvalidHouseNumber',
+  'STREET_NAME': 'addressInvalidStreetName',
+  'COUNTRY': 'addressInvalidCountry',
+  'POSTAL_CODE': 'addressInvalidPostalCode',
+  'SUBPREMISE': 'addressNeedsSubpremise',
+  'STREET_TYPE': 'addressInvalidStreetType',
+  'STATE_PROVINCE': 'addressInvalidState'
 }
-
 
 /**
  * Determines whether a field should be in an error state based on the address validation result.
@@ -62,88 +61,27 @@ export function isAddressFieldValid(
 
 
 /**
- * Creates a list of strings where each string is a simple explanation of the validation results, e.g.:
- * 'Address is missing the state field. Please fill it out and try again.'
+ * Returns a list of internationalized error messages for each field in the address.
  */
-export function explainAddressValidationResults(
-  validation: AddressValidationResult | undefined
-): string[] {
-  const out: string[] = []
-
-  if (!validation || validation.valid) {
-    return out
-  }
-
-  const invalidComponents = validation.invalidComponents || []
-
-  const missingComponentNames = invalidComponents
-    .map(comp => ADDR_COMPONENT_TO_NAME[comp])
-    .map(val => val.toLowerCase())
-    .filter(val => !isNil(val))
-
-  if (missingComponentNames.length > 0) {
-    if (missingComponentNames.length === 1) {
-      out.push(
-        `The ${
-            missingComponentNames[0]
-        } could not be verified.`
-      )
-    } else {
-      out.push(
-        `The ${
-            missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
-          } and ${
-            missingComponentNames[missingComponentNames.length - 1]
-        } could not be verified.`
-      )
-    }
-  } else {
-    out.push(
-      `The address could not be verified. Please verify that the information is correct and try again.`
-    )
-  }
-
-  return out
-}
-
-/**
- * Explains the address validation result errors similarly to above, but separates
- * errors by field.
- */
-export function explainAddressValidationResultsByField(
-  validation: AddressValidationResult | undefined
-): { [index: string]: string } {
-  const out: { [index: string]: string } = {}
+export function getErrorsByField(
+  validation: AddressValidationResult | undefined,
+  i18n: (key: string) => string
+): { [index: string]: string[] } {
+  const out: { [index: string]: string[] } = {}
 
   if (!validation) {
     return {}
   }
 
-  const fieldToMissingComponentNames: { [index: string]: string[] } = {}
-
   for (const missingComponent of validation.invalidComponents || []) {
+    const i18nKey = ADDR_COMPONENT_TO_I18N_ERROR_KEY[missingComponent]
     const field = ADDR_COMPONENTS_TO_FIELD[missingComponent]
-    if (fieldToMissingComponentNames[field]) {
-      fieldToMissingComponentNames[field].push(ADDR_COMPONENT_TO_NAME[missingComponent])
-    } else {
-      fieldToMissingComponentNames[field] = [ADDR_COMPONENT_TO_NAME[missingComponent]]
-    }
-  }
 
-  for (const field of Object.keys(fieldToMissingComponentNames)) {
-    const missingComponentNames = fieldToMissingComponentNames[field].map(val => val.toLowerCase())
-
-    if (missingComponentNames.length === 1) {
-      out[field] = `The ${
-        missingComponentNames[0]
-      } could not be verified.`
-    } else {
-      out[field] = `The ${
-        missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
-      } and ${
-        missingComponentNames[missingComponentNames.length - 1]
-      } could not be verified.`
+    if (!out[field]) {
+      out[field] = []
     }
+
+    out[field].push(i18n(i18nKey))
   }
 
   return out
@@ -158,7 +96,7 @@ export function isSameAddress(addr1: MailingAddress, addr2: MailingAddress): boo
 }
 
 /**
- * todo
+ * Converts an address to a series of strings suitable for display when joined with a newline.
  */
 export function toAddressLines(address: MailingAddress): string[] {
   return [
