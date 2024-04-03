@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { adminLogin, getParticipantUrl, randomChars } from 'tests/e2e-utils'
 
 test('shows mailing list dialog on direct link', async ({ page }) => {
-  const participantUrl = getParticipantUrl('OurHealth', 'local')
+  const participantUrl = getParticipantUrl('demo')
   await page.goto(`${participantUrl}/?showJoinMailingList=true `)
 
   await expect(page).toHaveTitle('Juniper Heart Demo')
