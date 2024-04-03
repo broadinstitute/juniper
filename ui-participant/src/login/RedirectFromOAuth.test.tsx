@@ -1,11 +1,11 @@
 import { findDefaultEnrollmentStudy, RedirectFromOAuth } from './RedirectFromOAuth'
 import { mockStudy, mockStudyEnv } from '../test-utils/test-portal-factory'
 import { PortalStudy } from '@juniper/ui-core'
-import { AuthContextProps } from 'react-oidc-context'
+import * as ReactOidc from 'react-oidc-context'
 import React from 'react'
-import { Logger, UserManagerEvents, UserManagerSettingsStore, WebStorageStateStore } from 'oidc-client-ts'
-import { render } from '@testing-library/react'
+import { renderWithRouter } from 'test-utils/router-testing-utils'
 import Api from '../api/api'
+import { WebStorageStateStore } from 'oidc-client-ts'
 
 describe('determines default study', () => {
   it('find the default study if just one study', () => {
@@ -73,20 +73,29 @@ describe('determines default study', () => {
   })
 })
 
+jest.mock('react-oidc-context', () => {
+  return {
+    ...jest.requireActual('react-oidc-context'),
+    useAuth: jest.fn().mockReturnValue({ })
+  }
+})
+
 describe('handles logins', () => {
   it('registers new users', () => {
+    //const authSpy = jest.spyOn(ReactOidc, 'useAuth').mockReturnValue(mockAuthProps)
+
+
     const registerSpy = jest.spyOn(Api, 'register')
-    render(<MockAuthContextProvider authState={mockAuthProps}>
-      <RedirectFromOAuth/>
-    </MockAuthContextProvider>)
+    renderWithRouter(<RedirectFromOAuth/>)
   })
 })
 
-
-class MockLogger extends Logger {}
-
-const mockAuthProps: AuthContextProps =  {
-  'isLoading': true,
+const mockAuthProps: ReactOidc.AuthContextProps =  {
+  querySessionStatus: jest.fn(),
+  revokeTokens: jest.fn(),
+  startSilentRenew: jest.fn(),
+  stopSilentRenew: jest.fn(),
+  isLoading: true,
   'isAuthenticated': false,
   'settings': {
     'authority': 'https://juniperdemodev.b2clogin.com/juniperdemodev.onmicrosoft.com/fake',
@@ -136,20 +145,13 @@ const mockAuthProps: AuthContextProps =  {
     'accessTokenExpiringNotificationTimeInSeconds': 300,
     'userStore': new WebStorageStateStore()
   },
-  'events': new UserManagerEvents(new UserManagerSettingsStore({
-    'authority': 'https://juniperdemodev.b2clogin.com/juniperdemodev.onmicrosoft.com/fake',
-    'metadataUrl': 'https://juniperdemodev.b2clogin.com/juniperdemodev.onmicrosoft.com/fake',
-    'client_id': '37d95cc4-7c71-465e-9fc2-66be9a54c202',
-    'redirect_uri': 'https://sandbox.demo.localhost:3001/redirect-from-oauth'
-  }))
+  'events': jest.fn()(),
+  clearStaleState: jest.fn(),
+  signinPopup: jest.fn(),
+  signinSilent: jest.fn(),
+  signinRedirect: jest.fn(),
+  removeUser: jest.fn(),
+  signoutPopup: jest.fn(),
+  signoutRedirect: jest.fn()
 }
 
-
-const MockAuthContext = React.createContext<AuthContextProps>(mockAuthProps)
-
-
-const MockAuthContextProvider = ({ authState, children }: {authState: AuthContextProps, children: React.ReactNode}) => {
-  return <MockAuthContext.Provider value={authState}>
-    { children }
-  </MockAuthContext.Provider>
-}
