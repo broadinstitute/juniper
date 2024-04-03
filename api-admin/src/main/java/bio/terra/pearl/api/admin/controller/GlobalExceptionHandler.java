@@ -27,7 +27,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class GlobalExceptionHandler {
 
   private final HttpServletRequest request;
-  
+
   public GlobalExceptionHandler(HttpServletRequest request) {
     this.request = request;
   }
