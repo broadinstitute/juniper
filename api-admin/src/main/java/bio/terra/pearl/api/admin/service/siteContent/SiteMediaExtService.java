@@ -32,6 +32,10 @@ public class SiteMediaExtService {
     return siteMediaService.findOne(portalShortcode, cleanFileName, version);
   }
 
+  public Optional<SiteMedia> findLatest(String portalShortcode, String cleanFileName) {
+    return siteMediaService.findOneLatestVersion(portalShortcode, cleanFileName);
+  }
+
   public List<SiteMediaMetadata> list(String portalShortcode, AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
     return siteMediaService.findMetadataByPortal(portalShortcode);

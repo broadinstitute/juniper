@@ -35,7 +35,7 @@ function HomePage() {
               className="list-group-item my-1 border border-secondary-subtle rounded">
               <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, 'live')}>
                 <img
-                  src={getMediaUrl(portal.shortcode, 'favicon.ico', 1)}
+                  src={getMediaUrl(portal.shortcode, 'favicon.ico', 'latest')}
                   className="me-3" style={{ maxHeight: '1.5em' }}/>
                 {study.name}
               </Link>

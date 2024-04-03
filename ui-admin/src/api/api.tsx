@@ -1355,7 +1355,7 @@ Promise<Trigger> {
 }
 
 /** gets an image url for SiteMedia */
-export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number) {
+export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number | 'latest') {
   return `${getMediaBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 
