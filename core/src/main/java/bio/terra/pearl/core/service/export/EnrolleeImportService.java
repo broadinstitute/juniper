@@ -110,7 +110,7 @@ public class EnrolleeImportService {
         if (participantUser.getUsername() == null) {
             throw new IllegalArgumentException("username must be provided for enrollee import");
         }
-        RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null);
+        RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
         /** temporarily update the profile to no emails since they'll receive a special welcome email */
         regResult.profile().setDoNotEmail(true);
         profileService.update(regResult.profile(), auditInfo);
