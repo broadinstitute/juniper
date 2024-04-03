@@ -1,21 +1,23 @@
 import React, { useState } from 'react'
 
-import { PortalEnvironment, VersionedForm } from 'api/api'
+import { PortalEnvironment, Survey, VersionedForm } from 'api/api'
 
-import { Button } from 'components/forms/Button'
+import { Button, EllipsisDropdownButton } from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
 import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
 import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
-import { faExclamationCircle, faGear } from '@fortawesome/free-solid-svg-icons'
+import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import FormOptions from './FormOptions'
+import FormOptionsModal from './FormOptionsModal'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
 import { ApiProvider } from '@juniper/ui-core'
 import { previewApi } from 'util/apiContextUtils'
+import { saveBlobAsDownload } from '../../util/downloadUtils'
+import FormHistoryModal from './FormHistoryModal'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -47,6 +49,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showLoadedDraftModal, setShowLoadedDraftModal] = useState(!!getDraft({ formDraftKey: FORM_DRAFT_KEY }))
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
+  const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
   const [showErrors, setShowErrors] = useState(false)
 
@@ -55,7 +58,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
-
+  const isSurvey = !!(currentForm as Survey).surveyType
   const portalEnv = portal.portalEnvironments.find((env: PortalEnvironment) =>
     env.environmentName === currentEnv.environmentName)
 
@@ -96,6 +99,17 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     } else {
       onCancel()
     }
+  }
+
+  const downloadJSON = () => {
+    const content = draft ? draft.content : currentForm.content
+    // To get this formatted nicely and not as one giant line, need to parse
+    // this as an object and then stringify the result.
+    const blob = new Blob(
+      [JSON.stringify(JSON.parse(content), null, 2)],
+      { type: 'application/json' })
+    const filename = `${currentForm.stableId}_v${currentForm.version}${ draft ? '_draft' : ''}.json`
+    saveBlobAsDownload(blob, filename)
   }
 
   return (
@@ -173,18 +187,41 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
                 })}
               onDismiss={() => setShowDiscardDraftModal(false)}
             />}
-        <Button variant="light" className="border" onClick={() => setShowAdvancedOptions(true)}>
-          Options <FontAwesomeIcon icon={faGear}/>
-        </Button>
-        { showAdvancedOptions && <FormOptions
-          studyEnvContext={studyEnvContext}
-          visibleVersionPreviews={visibleVersionPreviews}
+        <EllipsisDropdownButton aria-label="form options menu" className="ms-auto"/>
+        <div className="dropdown-menu">
+          <ul className="list-unstyled pt-3">
+            { isSurvey && <li>
+              <button className="dropdown-item"
+                onClick={() => setShowAdvancedOptions(true)}>
+                Configuration
+              </button>
+            </li> }
+            <li>
+              <button className="dropdown-item"
+                onClick={() => setShowVersionSelector(true)}>
+                Version History
+              </button>
+            </li>
+            <li>
+              <button className="dropdown-item"
+                onClick={downloadJSON}>
+                Download form JSON
+              </button>
+            </li>
+          </ul>
+        </div>
+        { showVersionSelector && <FormHistoryModal
+          studyEnvContext={studyEnvContext} visibleVersionPreviews={visibleVersionPreviews}
           setVisibleVersionPreviews={setVisibleVersionPreviews}
+          workingForm={{ ...currentForm, ...draft }}
+          isConsentForm={!isSurvey}
+          onDismiss={() => setShowVersionSelector(false)}
+        />}
+        { showAdvancedOptions && <FormOptionsModal
           workingForm={{ ...currentForm, ...draft }}
           updateWorkingForm={(props: SaveableFormProps) => {
             setDraft({ ...draft, ...props, date: Date.now() })
           }}
-          isDirty={!!draft}
           onDismiss={() => setShowAdvancedOptions(false)}/>
         }
       </div>

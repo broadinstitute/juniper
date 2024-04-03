@@ -5,14 +5,14 @@ import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import java.time.Duration;
-import java.util.List;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -20,18 +20,18 @@ public class EnrolleeReminderService {
     private ParticipantTaskQueryService participantTaskQueryService;
     private StudyEnvironmentService studyEnvironmentService;
     private TriggerService triggerService;
-    private EnrolleeRuleService enrolleeRuleService;
+    private EnrolleeContextService enrolleeContextService;
     private NotificationDispatcher notificationDispatcher;
 
     public EnrolleeReminderService(ParticipantTaskQueryService participantTaskQueryService,
                                    StudyEnvironmentService studyEnvironmentService,
                                    TriggerService triggerService,
-                                   EnrolleeRuleService enrolleeRuleService,
+                                   EnrolleeContextService enrolleeContextService,
                                    NotificationDispatcher notificationDispatcher) {
         this.participantTaskQueryService = participantTaskQueryService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.triggerService = triggerService;
-        this.enrolleeRuleService = enrolleeRuleService;
+        this.enrolleeContextService = enrolleeContextService;
         this.notificationDispatcher = notificationDispatcher;
     }
 
@@ -68,7 +68,7 @@ public class EnrolleeReminderService {
                 enrolleesWithTasks.size(), trigger.getId(), trigger.getTaskType());
 
         // bulk load the enrollees
-        List<EnrolleeRuleData> enrolleeData = enrolleeRuleService
+        List<EnrolleeContext> enrolleeData = enrolleeContextService
                 .fetchData(enrolleesWithTasks.stream().map(ewt -> ewt.getEnrolleeId()).toList());
 
         NotificationContextInfo envContext = notificationDispatcher.loadContextInfo(trigger);
@@ -76,7 +76,7 @@ public class EnrolleeReminderService {
         for (ParticipantTaskDao.EnrolleeWithTasks enrolleeWithTask : enrolleesWithTasks) {
             // this isn't an optimized match -- we're assuming the number of reminders we send on any given run for a single
             // config will likely be < 100
-            EnrolleeRuleData ruleData = enrolleeData.stream()
+            EnrolleeContext ruleData = enrolleeData.stream()
                     .filter(erd -> erd.getEnrollee().getId().equals(enrolleeWithTask.getEnrolleeId())).findFirst().get();
             // don't send non-consent task reminders to enrollees who haven't consented
             if (trigger.getTaskType().equals(TaskType.CONSENT) || ruleData.getEnrollee().isConsented()) {

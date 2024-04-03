@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Api from 'api/api'
+import Api, { Survey } from 'api/api'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import Modal from 'react-bootstrap/Modal'
@@ -76,16 +76,22 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
                                                        {portalEnvContext: PortalEnvContext, onDismiss: () => void}) {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const { formName, formStableId, clearFields, nameInput, stableIdInput } = useFormCreationNameFields()
+  const [form, setForm] = useState<Survey>({
+    ...defaultSurvey,
+    stableId: '',
+    name: '',
+    surveyType: 'RESEARCH',
+    version: 1,
+    content: EXAMPLE_PREREG_TEMPLATE,
+    id: '',
+    createdAt: new Date().getDate(),
+    lastUpdatedAt: new Date().getDate()
+  })
+  const { clearFields, NameInput, StableIdInput } = useFormCreationNameFields(form, setForm)
   const studyEnvParams = useStudyEnvParamsFromPath()
   const createSurvey =async () => {
     await doApiLoad(async () => {
-      const createdSurvey = await Api.createNewSurvey(portalEnvContext.portal.shortcode,
-        {
-          ...defaultSurvey,
-          createdAt: 0, id: '', lastUpdatedAt: 0, version: 1, surveyType: 'RESEARCH',
-          content: EXAMPLE_PREREG_TEMPLATE, name: formName, stableId: formStableId
-        })
+      const createdSurvey = await Api.createNewSurvey(portalEnvContext.portal.shortcode, form)
       Store.addNotification(successNotification('Survey created'))
       try {
         await Api.updatePortalEnv(portalEnvContext.portal.shortcode,
@@ -120,17 +126,17 @@ export default function CreatePreRegSurveyModal({ portalEnvContext, onDismiss }:
       </p>
       <form onSubmit={e => e.preventDefault()}>
         <label className="form-label" htmlFor="inputFormName">Survey Name</label>
-        { nameInput }
+        { NameInput }
         <label className="form-label mt-3" htmlFor="inputFormStableId">Survey Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the form. May be shown in exported datasets.'}/>
-        { stableIdInput }
+        { StableIdInput }
       </form>
     </Modal.Body>
     <Modal.Footer>
       <LoadingSpinner isLoading={isLoading}>
         <button
           className="btn btn-primary"
-          disabled={!formName || !formStableId}
+          disabled={!form.name || !form.stableId}
           onClick={createSurvey}
         >Create</button>
         <button className="btn btn-secondary" onClick={() => {

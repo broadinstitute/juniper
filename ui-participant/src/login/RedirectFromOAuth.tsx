@@ -8,7 +8,8 @@ import { HubUpdate } from 'hub/hubUpdates'
 import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { AlertLevel, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, AlertLevel } from '@juniper/ui-core'
+import { log } from '../util/loggingUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -37,7 +38,14 @@ export const RedirectFromOAuth = () => {
       // we only process the return from OAuth once (when the user is still "anonymous")
 
       if (auth.error) {
-        navigate('/')
+        log({
+          eventType: 'ERROR',
+          eventName: 'oauth-error',
+          eventDetail: auth.error.message || 'error',
+          stackTrace: auth.error.stack || 'stack'
+        })
+        navigate('/redirect-from-oauth/error')
+        return
       }
 
       if (auth.user) {
@@ -54,13 +62,10 @@ export const RedirectFromOAuth = () => {
 
           const email = auth.user.profile.email as string
           const accessToken = auth.user.access_token
-          //TODO this should change to true when a proxy is registering someone else
-          const isProxy = false
-
           // Register or login
           try {
             const loginResult = auth.user.profile.newUser
-              ? await Api.register({ preRegResponseId, email, accessToken, isProxy })
+              ? await Api.register({ preRegResponseId, email, accessToken })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)
@@ -73,7 +78,7 @@ export const RedirectFromOAuth = () => {
             if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
               const response = await Api.createEnrollee({
                 studyShortcode: portalStudy.study.shortcode,
-                preEnrollResponseId, isProxy
+                preEnrollResponseId
               })
               const hubUpdate: HubUpdate = {
                 message: {

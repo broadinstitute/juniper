@@ -8,7 +8,7 @@ import Api from '../api/api'
 
 test('renders surveys in-order', async () => {
   const studyEnvContext = mockStudyEnvContext()
-  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([
+  jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue([
     {
       ...mockConfiguredSurvey(), surveyOrder: 2, studyEnvironmentId: studyEnvContext.currentEnv.id,
       survey: {
@@ -21,7 +21,7 @@ test('renders surveys in-order', async () => {
         ...mockSurvey(), name: 'First survey'
       }
     }
-  ]))
+  ])
 
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
@@ -34,7 +34,7 @@ test('renders surveys in-order', async () => {
 
 test('renders a Create Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
-  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue([])
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
   await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
@@ -47,7 +47,7 @@ test('renders a Create Survey modal', async () => {
 
 test('renders a Create Outreach Survey modal', async () => {
   const studyEnvContext = mockStudyEnvContext()
-  jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue([])
   const { RoutedComponent } = setupRouterTest(<StudyContent studyEnvContext={studyEnvContext}/>)
   render(RoutedComponent)
   await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())

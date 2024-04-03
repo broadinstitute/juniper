@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.factory.participant;
 
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ParticipantUserFactory {
-    @Autowired
-    private EnvironmentFactory environmentFactory;
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
@@ -31,9 +28,7 @@ public class ParticipantUserFactory {
 
     public ParticipantUser.ParticipantUserBuilder builderWithDependencies(ParticipantUser.ParticipantUserBuilder builder,
                                                                   String testName) {
-        if (builder.getEnvironmentName() == null) {
-            builder.environment(environmentFactory.buildPersisted(testName));
-        }
+        builder.environmentName(EnvironmentName.sandbox);
         return builder;
     }
 

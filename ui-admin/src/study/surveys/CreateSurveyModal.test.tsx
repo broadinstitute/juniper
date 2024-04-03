@@ -76,8 +76,8 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'OUTREACH'}
       onDismiss={jest.fn()}/>)
@@ -101,9 +101,10 @@ describe('CreateSurveyModal', () => {
         assignToExistingEnrollees: true,
         blurb: 'Testing out the marketing blurb...',
         content: expect.stringContaining('{"pages":[{"elements":[{"type":"html","name":"outreach_content_'),
-        createdAt: 0,
+        createdAt: expect.anything(),
+        lastUpdatedAt: expect.anything(),
+        eligibilityRule: '',
         id: '',
-        lastUpdatedAt: 0,
         name: 'Test Marketing',
         stableId: 'testMarketing',
         surveyType: 'OUTREACH',
@@ -116,8 +117,8 @@ describe('CreateSurveyModal', () => {
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'OUTREACH'}
       onDismiss={jest.fn()}/>)
@@ -141,9 +142,10 @@ describe('CreateSurveyModal', () => {
         blurb: 'Testing out the screener blurb...',
         assignToExistingEnrollees: true,
         content: '{"pages":[]}',
-        createdAt: 0,
+        createdAt: expect.anything(),
+        lastUpdatedAt: expect.anything(),
         id: '',
-        lastUpdatedAt: 0,
+        eligibilityRule: '',
         name: 'Test Screener',
         stableId: 'testScreener',
         surveyType: 'OUTREACH',
@@ -154,8 +156,8 @@ describe('CreateSurveyModal', () => {
   test('create a required survey', async () => {
     jest.spyOn(window, 'alert').mockImplementation(jest.fn())
     const survey = mockSurvey()
-    jest.spyOn(Api, 'createConfiguredSurvey').mockImplementation(() => Promise.resolve(mockConfiguredSurvey()))
-    jest.spyOn(Api, 'createNewSurvey').mockImplementation(() => Promise.resolve(survey))
+    jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
+    jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal

@@ -12,14 +12,10 @@ import { useFileUploadButton } from 'util/uploadUtils'
 
 export const allowedImageTypes = ['gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp']
 export const allowedDocumentTypes = ['pdf', 'json']
-export const allowedTextTypes = ['csv', 'plain']
-const FILE_TYPE_REGEX = new RegExp(
-  [
-    `^(?:image\\/(${allowedImageTypes.join('|')}))`,
-    `(?:application\\/(${allowedDocumentTypes.join('|')}))`,
-    `(?:text\\/(${allowedTextTypes.join('|')}))$`
-  ].join('|')
-)
+export const allowedTextTypes = ['csv', 'txt']
+export const allowedFileTypes = [...allowedImageTypes, ...allowedDocumentTypes, ...allowedTextTypes]
+const FILE_TYPE_REGEX = new RegExp(`\\.(${allowedFileTypes.join('|')})$`)
+
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
   portalContext,
@@ -56,7 +52,7 @@ export default function SiteMediaUploadModal({
   }
 
   const validationMessages = []
-  if (file && !file.type.match(FILE_TYPE_REGEX)) {
+  if (file && !file.name.match(FILE_TYPE_REGEX)) {
     validationMessages.push('This file extension is not supported.')
   }
   if (file && file.size > 10 * 1024 * 1024) {
@@ -71,14 +67,14 @@ export default function SiteMediaUploadModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          <p>Supported extensions are {[...allowedImageTypes, ...allowedDocumentTypes].join(', ')}.
+          <p>Supported extensions are {allowedFileTypes.join(', ')}.
             Maximum size is 10MB</p>
           File:
           <div>
             {FileChooser}
             <span className="text-muted fst-italic ms-2">{file?.name}</span>
           </div>
-          {validationMessages.map(msg => <div className='text-danger'>{msg}</div>)}
+          {validationMessages.map((msg, index) => <div key={index} className='text-danger'>{msg}</div>)}
         </div>
         <label className="mt-3 mb-2 form-label">
           Name:

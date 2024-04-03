@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.publishing;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
+
 import java.util.Objects;
 
 /** use Integers since they might be null if the oldValue was uninitialized */

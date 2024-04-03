@@ -2,13 +2,13 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.survey.Survey;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
@@ -20,8 +20,16 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         columnsWithNoContentString = getQueryColumns.stream().filter(column -> !column.equals("content")).collect(Collectors.joining(","));
     }
 
-    public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
-        Optional<Survey> surveyOpt = findByTwoProperties("stable_id", stableId, "version", version);
+    public Optional<Survey> findByStableIdWithMappings(String stableId, int version, UUID portalId) {
+        Optional<Survey> surveyOpt = findByStableId(stableId, version, portalId);
+        surveyOpt.ifPresent(survey -> {
+            survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
+        });
+        return surveyOpt;
+    }
+
+    public Optional<Survey> findByStableIdAndPortalShortcodeWithMappings(String stableId, int version, String shortcode) {
+        Optional<Survey> surveyOpt = findByStableIdAndPortalShortcode(stableId, version, shortcode);
         surveyOpt.ifPresent(survey -> {
             survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
         });

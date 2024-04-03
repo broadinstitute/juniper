@@ -26,7 +26,7 @@ const mockSiteContents = [
 ]
 
 test('can select a site content version', async () => {
-  jest.spyOn(Api, 'getSiteContentVersions').mockImplementation(() => Promise.resolve(mockSiteContents))
+  jest.spyOn(Api, 'getSiteContentVersions').mockResolvedValue(mockSiteContents)
   const loadSiteContentFn = jest.fn()
 
   render(<SiteContentVersionSelector stableId="foo" loadSiteContent={loadSiteContentFn} portalShortcode="portal"
@@ -42,7 +42,7 @@ test('can select a site content version', async () => {
 })
 
 test('does not show switch option for non-sandbox environments', async () => {
-  jest.spyOn(Api, 'getSiteContentVersions').mockImplementation(() => Promise.resolve(mockSiteContents))
+  jest.spyOn(Api, 'getSiteContentVersions').mockResolvedValue(mockSiteContents)
   const loadSiteContentFn = jest.fn()
 
   render(<SiteContentVersionSelector stableId="foo" loadSiteContent={loadSiteContentFn} portalShortcode="portal"
@@ -53,7 +53,7 @@ test('does not show switch option for non-sandbox environments', async () => {
   expect(screen.queryByText('Switch sandbox to version 2')).not.toBeInTheDocument()
 })
 test('shows switch option for sandbox environments', async () => {
-  jest.spyOn(Api, 'getSiteContentVersions').mockImplementation(() => Promise.resolve(mockSiteContents))
+  jest.spyOn(Api, 'getSiteContentVersions').mockResolvedValue(mockSiteContents)
   const loadSiteContentFn = jest.fn()
 
   render(<SiteContentVersionSelector stableId="foo" loadSiteContent={loadSiteContentFn} portalShortcode="portal"

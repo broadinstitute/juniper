@@ -1,20 +1,5 @@
 package bio.terra.pearl.populate.service;
 
-import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.HOURS;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
@@ -32,6 +17,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
@@ -54,12 +40,14 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
 import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
 import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
@@ -79,34 +67,52 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
-public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
-    private EnrolleeService enrolleeService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private SurveyService surveyService;
-    private SurveyResponseService surveyResponseService;
-    private ConsentFormService consentFormService;
-    private ConsentResponseService consentResponseService;
-    private ParticipantTaskService participantTaskService;
-    private TriggerService triggerService;
-    private NotificationService notificationService;
-    private AnswerProcessingService answerProcessingService;
-    private EnrollmentService enrollmentService;
-    private ProfileService profileService;
-    private WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private TimeShiftPopulateDao timeShiftPopulateDao;
-    private KitRequestService kitRequestService;
-    private KitTypeDao kitTypeDao;
-    private AdminUserDao adminUserDao;
-    private ParticipantNotePopulator participantNotePopulator;
-    private ObjectMapper objectMapper;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
+
+@Service
+@Slf4j
+public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, StudyPopulateContext> {
+    private final EnrolleeService enrolleeService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final SurveyService surveyService;
+    private final SurveyResponseService surveyResponseService;
+    private final ConsentFormService consentFormService;
+    private final ConsentResponseService consentResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final TriggerService triggerService;
+    private final NotificationService notificationService;
+    private final AnswerProcessingService answerProcessingService;
+    private final EnrollmentService enrollmentService;
+    private final ProfileService profileService;
+    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
+    private final KitRequestService kitRequestService;
+    private final KitTypeDao kitTypeDao;
+    private final AdminUserDao adminUserDao;
+    private final ParticipantNotePopulator participantNotePopulator;
+    private final ParticipantUserPopulateDao participantUserPopulateDao;
+    private final ObjectMapper objectMapper;
+    private final PortalService portalService;
 
     public EnrolleePopulator(EnrolleeService enrolleeService,
                              StudyEnvironmentService studyEnvironmentService,
@@ -123,7 +129,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              TimeShiftPopulateDao timeShiftPopulateDao,
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
                              ParticipantNotePopulator participantNotePopulator,
-                             ObjectMapper objectMapper
+                             ParticipantUserPopulateDao participantUserPopulateDao, ObjectMapper objectMapper, PortalService portalService
     ) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
@@ -146,14 +152,16 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.kitRequestService = kitRequestService;
         this.kitTypeDao = kitTypeDao;
         this.adminUserDao = adminUserDao;
+        this.participantUserPopulateDao = participantUserPopulateDao;
         this.objectMapper = objectMapper;
+        this.portalService = portalService;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
                                   PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context)
             throws JsonProcessingException {
-        Survey survey = surveyService.findByStableIdWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
-                responsePopDto.getSurveyVersion()).get();
+        Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+                responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
 
         SurveyResponse response = SurveyResponse.builder()
                 .surveyId(survey.getId())
@@ -184,7 +192,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId());
+                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
@@ -220,8 +228,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         if (responsePopDto == null) {
             return null;
         }
-        Survey survey = surveyService.findByStableId(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
-                responsePopDto.getSurveyVersion()).get();
+        Survey survey = surveyService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+                responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
         String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())
@@ -236,8 +244,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
     private void populateConsent(Enrollee enrollee, PortalParticipantUser ppUser, ConsentResponsePopDto responsePopDto,
                                  List<ParticipantTask> tasks, boolean simulateSubmissions, StudyPopulateContext context) throws JsonProcessingException {
-        ConsentForm consentForm = consentFormService.findByStableId(context.applyShortcodeOverride(responsePopDto.getConsentStableId()),
-                responsePopDto.getConsentVersion()).get();
+        ConsentForm consentForm = consentFormService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getConsentStableId()),
+                responsePopDto.getConsentVersion(), context.getPortalShortcode()).get();
 
         ConsentResponse savedResponse;
 
@@ -265,12 +273,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         taskDto.setEnrolleeId(enrollee.getId());
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         taskDto.setPortalParticipantUserId(ppUser.getId());
+        Portal portal = portalService.findByPortalEnvironmentId(ppUser.getPortalEnvironmentId()).orElseThrow();
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId())
                 .systemProcess(DataAuditInfo.systemProcessName(getClass(),".populateTask")).build();
         if (taskDto.getTargetName() == null) {
-            taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(),
+            taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(), portal.getId(),
                     taskDto.getTargetAssignedVersion()));
         }
         participantTaskService.create(taskDto, auditInfo);
@@ -300,11 +309,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return kitRequest;
     }
 
-    private String getTargetName(TaskType taskType, String stableId, int version) {
+    private String getTargetName(TaskType taskType, String stableId, UUID portalId, int version) {
         if (taskType.equals(TaskType.SURVEY)) {
-            return surveyService.findByStableId(stableId, version).get().getName();
+            return surveyService.findByStableId(stableId, version, portalId).get().getName();
         } else if (taskType.equals(TaskType.CONSENT)) {
-            return consentFormService.findByStableId(stableId, version).get().getName();
+            return consentFormService.findByStableId(stableId, version, portalId).get().getName();
         }
         throw new IllegalArgumentException("cannot find target name for TaskType " + taskType);
     }
@@ -364,42 +373,32 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
         PreEnrollmentResponse preEnrollmentResponse = populatePreEnrollResponse(popDto, attachedEnv, context);
         popDto.setPreEnrollmentResponseId(preEnrollmentResponse != null ? preEnrollmentResponse.getId() : null);
-        EnrolleePopulationEntities enrolleePopulationEntities = null;
+        EnrolleePopulationData enrolleePopulationData = null;
         if (!popDto.getProxyPopDtos().isEmpty()) {
             // for now assuming only one proxy per user
             ProxyPopDto firstProxy = popDto.getProxyPopDtos().get(0);
             if (firstProxy.isEnrollAsProxy()){
-                enrolleePopulationEntities = this.createNewGovernedEnrollee(attachedEnv.getEnvironmentName(), popDto, context, firstProxy);
+                enrolleePopulationData = this.createNewGovernedEnrollee(attachedEnv.getEnvironmentName(), popDto, context, firstProxy);
             }
         } else {
-            enrolleePopulationEntities = this.createNewEnrollee(attachedEnv.getEnvironmentName(), popDto, context);
+            enrolleePopulationData = this.createNewEnrollee(attachedEnv.getEnvironmentName(), popDto, context);
         }
-        PortalParticipantUser ppUser = enrolleePopulationEntities.getPpUser();
+        PortalParticipantUser ppUser = enrolleePopulationData.getPpUser();
 
-        // temporarily set the enrollee to doNotEmail so that we don't spam emails during population
-        Profile profile = profileService.find(ppUser.getProfileId()).get();
-        profile.setDoNotEmail(true);
-        profileService.update(profile,
-                DataAuditInfo.builder()
-                        .portalParticipantUserId(ppUser.getId())
-                        .responsibleUserId(ppUser.getParticipantUserId())
-                        .build()
-        );
         popDto.setProfileId(ppUser.getProfileId());
-        populateEnrolleeData(enrolleePopulationEntities.getEnrollee(), popDto, ppUser, profile,
-                enrolleePopulationEntities.getTasks(), attachedEnv, context);
-
-        return enrolleePopulationEntities.getEnrollee();
+        populateEnrolleeData(enrolleePopulationData.getEnrollee(), popDto, ppUser,
+                enrolleePopulationData.getTasks(), attachedEnv, context);
+        updateDoNotEmail(ppUser, enrolleePopulationData.doNotEmailSetting, "createNew");
+        return enrolleePopulationData.getEnrollee();
     }
 
     //creates a new independent adult (non-governed) enrollee
-    private EnrolleePopulationEntities createNewEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context) {
-        ParticipantUser attachedUser = participantUserService
-                .findOne(popDto.getLinkedUsername(), context.getEnvironmentName()).get();
+    private EnrolleePopulationData createNewEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context) {
+        ParticipantUser attachedUser = findLinkedUser(popDto, environmentName);
         PortalParticipantUser ppUser = portalParticipantUserService
                 .findOne(attachedUser.getId(), context.getPortalShortcode()).get();
         popDto.setParticipantUserId(attachedUser.getId());
-
+        boolean prevEmailSetting = updateDoNotEmail(ppUser, true, "createNewEnrollee");
         Enrollee enrollee;
         List<ParticipantTask> tasks;
         if (popDto.isSimulateSubmissions()) {
@@ -410,18 +409,51 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             // we want the shortcode to not be random so that test enrollee urls are consistent, so set it manually
             enrollee.setShortcode(popDto.getShortcode());
             enrolleeService.update(enrollee);
-
         } else {
+            popDto.setProfileId(ppUser.getProfileId());
             enrollee = enrolleeService.create(popDto);
             tasks = new ArrayList<>();
         }
-        return new EnrolleePopulationEntities(popDto, enrollee, ppUser, tasks, null);
+        return new EnrolleePopulationData(popDto, enrollee, ppUser, tasks, null, prevEmailSetting);
+    }
+
+    private ParticipantUser findLinkedUser(EnrolleePopDto popDto, EnvironmentName environmentName) {
+        if (popDto.getLinkedUsernameKey() != null) {
+            List<ParticipantUser> users = participantUserPopulateDao.findUserByPrefix(popDto.getLinkedUsernameKey(), environmentName);
+            if (users.size() > 1) {
+                throw new IllegalStateException("Multiple usernames found for enrollee with prefix: " + popDto.getLinkedUsernameKey());
+            }
+            if (users.size() == 0) {
+                throw new IllegalStateException("No usernames found for enrollee with prefix: " + popDto.getLinkedUsernameKey());
+            }
+            return users.get(0);
+        }
+        return participantUserService
+                .findOne(popDto.getLinkedUsername(), environmentName).get();
+    }
+
+    /**
+     * updates the doNotEmail status so that we can avoid spamming emails during population.  Returns the *previous*
+     * doNotEmail value for convenience in resetting it later
+     */
+    private boolean updateDoNotEmail(PortalParticipantUser ppUser, boolean doNotEmail, String methodName) {
+        // temporarily set the enrollee to doNotEmail so that we don't spam emails during population
+        Profile profile = profileService.find(ppUser.getProfileId()).orElseThrow();
+        boolean previousValue = profile.isDoNotEmail();
+        profile.setDoNotEmail(doNotEmail);
+        profileService.update(profile,
+                DataAuditInfo.builder()
+                        .portalParticipantUserId(ppUser.getId())
+                        .systemProcess(DataAuditInfo.systemProcessName(getClass(), methodName))
+                        .build()
+        );
+        return previousValue;
     }
 
     private void populateEnrolleeData(Enrollee enrollee, EnrolleePopDto popDto, PortalParticipantUser ppUser,
-                                      Profile profile, List<ParticipantTask> tasks, StudyEnvironment attachedEnv, StudyPopulateContext context)
+                                      List<ParticipantTask> tasks, StudyEnvironment attachedEnv, StudyPopulateContext context)
             throws JsonProcessingException {
-        boolean isDoNotEmail = profile.isDoNotEmail();
+
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context);
         }
@@ -431,7 +463,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
         }
-        Profile profileWithAddress = profileService.loadWithMailingAddress(profile.getId()).get();
+        Profile profileWithAddress = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
         for (KitRequestPopDto kitRequestPopDto : popDto.getKitRequestDtos()) {
             populateKitRequest(enrollee, profileWithAddress, kitRequestPopDto);
         }
@@ -439,21 +471,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         for (ParticipantNotePopDto notePopDto : popDto.getParticipantNoteDtos()) {
             participantNotePopulator.populate(enrollee, notePopDto);
         }
-
-        /**
-         * restore the email status
-         * note that the email process is async, and so this may reset the email preference before the email
-         * process actually triggers.  That's ok, though, because the Enrollee information is loaded from the DB as
-         * part of the synchronous submission processes, and that's what's passed to the EmailService.
-         */
-        profile = profileService.find(ppUser.getProfileId()).get();
-        profile.setDoNotEmail(isDoNotEmail);
-        profileService.update(profile, DataAuditInfo
-                .builder()
-                .portalParticipantUserId(ppUser.getId())
-                .responsibleUserId(ppUser.getParticipantUserId())
-                .enrolleeId(enrollee.getId())
-                .build());
         if (popDto.isTimeShifted()) {
             timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
@@ -462,12 +479,12 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
     }
 
-    @Transactional
-    protected EnrolleePopulationEntities createNewGovernedEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context,
-                                                                   ProxyPopDto proxyPopDto) {
+    private EnrolleePopulationData createNewGovernedEnrollee(EnvironmentName environmentName, EnrolleePopDto popDto, StudyPopulateContext context,
+                                                             ProxyPopDto proxyPopDto) {
         String governedUsername = popDto.getLinkedUsername();
         ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), environmentName).get();
         PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(),  context.getPortalShortcode()).get();
+        boolean prevEmailSetting = updateDoNotEmail(portalParticipantUser, true, "createNewGovernedEnrollee");
         // for governed and proxy users we always simulate submissions
         HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( environmentName, context.getStudyShortcode(), proxyParticipantUser,
                 portalParticipantUser, popDto.getPreEnrollmentResponseId(), governedUsername);
@@ -484,10 +501,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         popDto.setParticipantUserId(governedEnrollee.getParticipantUserId());
 
         PortalParticipantUser governedPPUser = portalParticipantUserService.findForEnrollee(governedEnrollee);
+        // restore the proxy's email settings
+        updateDoNotEmail(portalParticipantUser, prevEmailSetting, "createNewGovernedEnrollee");
 
-        return new EnrolleePopulationEntities(popDto, governedEnrollee, governedPPUser, hubResponse.getTasks(), proxyEnrollee);
+        return new EnrolleePopulationData(popDto, governedEnrollee, governedPPUser, hubResponse.getTasks(), proxyEnrollee, prevEmailSetting);
     }
 
+    @Transactional
     public void bulkPopulateEnrollees(String portalShortcode, EnvironmentName envName, String studyShortcode, List<String> usernamesToLink) {
         StudyPopulateContext context = new StudyPopulateContext("portals/" + portalShortcode + "/studies/" + studyShortcode + "/enrollees/seed.json", portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
 
@@ -549,12 +569,13 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
     }
     @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-    protected class EnrolleePopulationEntities {
+    protected class EnrolleePopulationData {
         EnrolleePopDto enrolleePopDto;
         Enrollee enrollee;
         PortalParticipantUser ppUser;
         List<ParticipantTask> tasks;
         Enrollee proxyEnrollee;
+        boolean doNotEmailSetting; // the original doNotEmail setting, stored here so it can be restored post-populate
     }
 
 }

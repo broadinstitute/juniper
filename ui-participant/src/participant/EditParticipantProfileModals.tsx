@@ -1,33 +1,43 @@
-import React, { useEffect, useState } from 'react'
-import { Profile } from '../api/api'
-import { EditAddress, javaLocalDateToJsDate, jsDateToJavaLocalDate, MailingAddress } from '@juniper/ui-core'
+import React, { useState } from 'react'
+import Api, { Profile } from '../api/api'
+import {
+  AddressValidationResult,
+  EditAddress,
+  isSameAddress,
+  javaLocalDateToJsDate,
+  jsDateToJavaLocalDate,
+  MailingAddress,
+  SuggestBetterAddressModal,
+  useI18n
+} from '@juniper/ui-core'
 import ThemedModal from '../components/ThemedModal'
 import Modal from 'react-bootstrap/Modal'
+import { isNil } from 'lodash'
 
 
 // skeleton for all profile edit modals
 function ProfileRowEditModal(
   {
-    title, children, onSave, onDismiss
+    title, children, onSave, onDismiss, animated
   }: {
-    title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void
+    title: string, children: React.ReactNode, onSave: () => void, onDismiss: () => void, animated?: boolean
   }
 ) {
-  return <ThemedModal show={true} onHide={onDismiss} size={'lg'}>
-    <Modal.Header>
-      <Modal.Title>
-        <h2 className="fw-bold pb-0 mb-0">Edit {title}</h2>
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      {children}
-    </Modal.Body>
-    <Modal.Footer>
-      <div className={'d-flex w-100'}>
-        <button className={'btn btn-primary m-2'} onClick={onSave}>Save</button>
-        <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>Cancel</button>
-      </div>
-    </Modal.Footer>
+  const { i18n } = useI18n()
+  return <ThemedModal show={true} onHide={onDismiss} size={'lg'} animation={animated}> <Modal.Header>
+    <Modal.Title>
+      <h2 className="fw-bold pb-0 mb-0">{title}</h2>
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    {children}
+  </Modal.Body>
+  <Modal.Footer>
+    <div className={'d-flex w-100'}>
+      <button className={'btn btn-primary m-2'} onClick={onSave}>{i18n('save')}</button>
+      <button className={'btn btn-outline-secondary m-2'} onClick={onDismiss}>{i18n('cancel')}</button>
+    </div>
+  </Modal.Footer>
   </ThemedModal>
 }
 
@@ -77,8 +87,12 @@ const useProfileEditMethods = (props: EditModalProps) => {
     })
   }
 
-  const onSave = () => {
-    save(editedProfile)
+  const onSave = (profile?: Profile) => {
+    if (profile) {
+      save(profile)
+    } else {
+      save(editedProfile)
+    }
     dismissModal()
   }
 
@@ -102,33 +116,34 @@ export function EditNameModal(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Name'}
-    onSave={onSave}
+    title={i18n('editName')}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div className={'d-flex w-100'}>
       <div className={'w-50 p-1'}>
         <label htmlFor={'givenName'} className={'fs-6 fw-bold'}>
-          Given Name
+          {i18n('givenName')}
         </label>
         <input
           className={'form-control'}
           id={'givenName'}
           value={editedProfile.givenName}
           onChange={e => onFieldChange('givenName', e.target.value)}
-          placeholder={'Given Name'}/>
+          placeholder={i18n('givenName')}/>
       </div>
       <div className={'w-50 p-1'}>
         <label htmlFor={'familyName'} className={'fs-6 fw-bold'}>
-          Family Name
+          {i18n('familyName')}
         </label>
         <input
           className={'form-control'}
           id={'familyName'}
           value={editedProfile.familyName}
           onChange={e => onFieldChange('familyName', e.target.value)}
-          placeholder={'Family Name'}/>
+          placeholder={i18n('familyName')}/>
       </div>
     </div>
   </ProfileRowEditModal>
@@ -145,18 +160,19 @@ export function EditBirthDateModal(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Birthday'}
-    onSave={onSave}
+    title={i18n('editBirthDate')}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
 
     <label htmlFor={'birthDate'} className={'fs-6 fw-bold'}>
-      Birthday
+      {i18n('birthDate')}
     </label>
     <input className="form-control" type="date" id='birthDate'
       defaultValue={javaLocalDateToJsDate(editedProfile.birthDate)?.toISOString().split('T')[0] || ''}
-      placeholder={'Birth Date'} max={'9999-12-31'} aria-label={'Birth Date'}
+      placeholder={i18n('birthDate')} max={'9999-12-31'} aria-label={i18n('birthDate')}
       onChange={e => onDateFieldChange('birthDate', e.target.valueAsDate)}/>
 
   </ProfileRowEditModal>
@@ -173,14 +189,15 @@ export function EditPhoneNumber(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Phone Number'}
-    onSave={onSave}
+    title={i18n('editPhoneNumber')}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div>
       <label htmlFor={'phoneNumber'} className={'fs-6 fw-bold'}>
-        Phone Number
+        {i18n('phoneNumber')}
       </label>
       <input
         className={'form-control'}
@@ -188,7 +205,7 @@ export function EditPhoneNumber(props: EditModalProps) {
         id={'phoneNumber'}
         value={editedProfile.phoneNumber}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}
-        placeholder={'Phone Number'}/>
+        placeholder={i18n('phoneNumber')}/>
     </div>
   </ProfileRowEditModal>
 }
@@ -204,25 +221,25 @@ export function EditContactEmail(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Contact Email'}
-    onSave={onSave}
+    title={i18n('editContactEmail')}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div>
       <p className="fst-italic">
-        Press &quot;Save&quot; to update the email used for communication. Note that your login information will not
-        change.
+        {i18n('editProfileContactEmailWarning')}
       </p>
       <label htmlFor={'contactEmail'} className={'fs-6 fw-bold'}>
-        Email
+        {i18n('contactEmail')}
       </label>
       <input
         className={'form-control'}
         id={'contactEmail'}
         value={editedProfile.contactEmail}
         onChange={e => onFieldChange('contactEmail', e.target.value)}
-        placeholder={'Email'}/>
+        placeholder={i18n('contactEmail')}/>
     </div>
   </ProfileRowEditModal>
 }
@@ -238,20 +255,21 @@ export function EditCommunicationPreferences(props: EditModalProps) {
     editedProfile
   } = useProfileEditMethods(props)
 
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Communication Preferences'}
-    onSave={onSave}
+    title={i18n('editCommunicationPreferences')}
+    onSave={() => onSave()}
     onDismiss={onDismiss}>
     <div className='row mt-2'>
       <div className="col-auto">
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmail} id="doNotEmailCheckbox"
-            aria-label={'Do Not Email'}
+            aria-label={i18n('doNotContact')}
             onChange={e => onFieldChange('doNotEmail', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotEmailCheckbox">
-            Do Not Email
+            {i18n('doNotContact')}
           </label>
         </div>
       </div>
@@ -259,10 +277,10 @@ export function EditCommunicationPreferences(props: EditModalProps) {
         <div className="form-check">
           <input className="form-check-input" type="checkbox"
             checked={editedProfile.doNotEmailSolicit}
-            id="doNotSolicitCheckbox" aria-label={'Do Not Solicit'}
+            id="doNotSolicitCheckbox" aria-label={i18n('doNotSolicit')}
             onChange={e => onFieldChange('doNotEmailSolicit', e.target.checked)}/>
           <label className="form-check-label" htmlFor="doNotSolicitCheckbox">
-            Do Not Solicit
+            {i18n('doNotSolicit')}
           </label>
         </div>
       </div>
@@ -273,13 +291,13 @@ export function EditCommunicationPreferences(props: EditModalProps) {
 /**
  * Modal for editing the mailing address properties on a profile.
  */
-export function EditMailingAddressModal(props: EditModalProps) {
+export function EditMailingAddressModal(props: EditModalProps & { enableAddressValidation: boolean }) {
   const {
     onDismiss,
     onSave,
-    onFieldChange,
     editedProfile
   } = useProfileEditMethods(props)
+
 
   const [mailingAddress, setMailingAddress] = useState<MailingAddress>(
     editedProfile.mailingAddress || {
@@ -292,19 +310,98 @@ export function EditMailingAddressModal(props: EditModalProps) {
     }
   )
 
-  useEffect(() => {
-    onFieldChange('mailingAddress', mailingAddress)
-  }, [mailingAddress])
+  const [validationResults, setValidationResults] = useState<AddressValidationResult>()
+
+  const [animateModal, setAnimateModal] = useState<boolean>(true)
+
+  const shouldShowSuggestedAddress = (results: AddressValidationResult) => {
+    if (!results) {
+      return false
+    }
+
+    return results.valid &&
+      (!isNil(results.suggestedAddress) && !isSameAddress(results.suggestedAddress, mailingAddress))
+  }
+
+  const buildUpdatedProfile = (addr: MailingAddress) => {
+    return {
+      ...editedProfile,
+      mailingAddress: {
+        ...editedProfile.mailingAddress, // grab id, createdAt, etc.
+        ...{ // clear out any old values
+          street1: '',
+          street2: '',
+          city: '',
+          state: '',
+          postalCode: '',
+          country: ''
+        },
+        ...addr
+      }
+    }
+  }
+
+  const [isLoadingValidation, setIsLoadingValidation] = useState<boolean>(false)
+
+  const validateAndSave = async () => {
+    if (!props.enableAddressValidation) {
+      onSave(buildUpdatedProfile(mailingAddress))
+      return
+    }
+
+    setIsLoadingValidation(true)
+    try {
+      const newValidationResult = await Api.validateAddress(mailingAddress)
+
+      setValidationResults(newValidationResult)
+      setAnimateModal(false)
+
+      if (newValidationResult?.valid && !shouldShowSuggestedAddress(newValidationResult)) {
+        onSave(buildUpdatedProfile(mailingAddress))
+      }
+    } finally {
+      setIsLoadingValidation(false)
+    }
+  }
+
+  if (validationResults && shouldShowSuggestedAddress(validationResults) && validationResults?.suggestedAddress) {
+    return <SuggestBetterAddressModal
+      inputtedAddress={mailingAddress}
+      improvedAddress={validationResults?.suggestedAddress}
+      accept={() => {
+        if (!validationResults?.suggestedAddress) {
+          return
+        }
+        onSave(buildUpdatedProfile(validationResults.suggestedAddress))
+      }}
+      reject={() => {
+        onSave(buildUpdatedProfile(mailingAddress))
+      }}
+      goBack={() => {
+        setValidationResults(undefined)
+      }}
+      animated={false}
+      onDismiss={onDismiss}
+      ModalComponent={ThemedModal}
+    />
+  }
+
+  const { i18n } = useI18n()
 
   return <ProfileRowEditModal
-    title={'Mailing Address'}
-    onSave={onSave}
+    title={i18n('editMailingAddress')}
+    onSave={() => validateAndSave()}
+    animated={animateModal}
     onDismiss={onDismiss}>
-    <EditAddress
-      mailingAddress={mailingAddress}
-      setMailingAddress={setMailingAddress}
-      language={'en'}
-      showLabels={true}
-    />
+    {
+      isLoadingValidation
+        ? <p>Loading...</p>
+        : <EditAddress
+          mailingAddress={mailingAddress}
+          setMailingAddress={setMailingAddress}
+          showLabels={true}
+          validationResult={validationResults}
+        />
+    }
   </ProfileRowEditModal>
 }

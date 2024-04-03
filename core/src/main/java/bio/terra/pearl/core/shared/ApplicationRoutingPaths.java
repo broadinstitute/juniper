@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.shared;
 
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import lombok.Getter;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,8 @@ public class ApplicationRoutingPaths {
     private final String adminUiHostname;
     @Getter
     private final String participantDashboardPath = "/hub";
+    @Getter
+    private final String participantInvitationPath = "/join/invitation";
     @Getter
     private final String supportEmailAddress;  // the site-wide support email address (e.g. support@juniper...) NOT study-specific
     @Getter
@@ -40,8 +43,8 @@ public class ApplicationRoutingPaths {
         return "https://" + adminUiHostname + "/" + portalShortcode;
     }
 
-    public String getParticipantBaseUrl(PortalEnvironment portalEnv, String portalShortcode) {
-        String participantHostname = portalEnv.getPortalEnvironmentConfig().getParticipantHostname();
+    public String getParticipantBaseUrl(PortalEnvironment portalEnv, PortalEnvironmentConfig config, String portalShortcode) {
+        String participantHostname = config.getParticipantHostname();
         if (participantHostname == null) {
             participantHostname = portalShortcode + "." + getParticipantUiHostname();
         }

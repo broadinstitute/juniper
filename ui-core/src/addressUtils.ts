@@ -1,8 +1,9 @@
 import { AddressComponent, AddressValidationResult, MailingAddress } from 'src/types/address'
 import { isEmpty, isNil } from 'lodash'
+import { findDifferencesBetweenObjects } from './objectUtils'
 
 
-const FIELD_TO_ADDR_COMPONENTS : { [index: string]: AddressComponent[] } = {
+const FIELD_TO_ADDR_COMPONENTS: { [index: string]: AddressComponent[] } = {
   'city': ['CITY'],
   'street1': ['STREET_TYPE', 'HOUSE_NUMBER', 'STREET_NAME', 'SUBPREMISE'],
   'street2': [],
@@ -11,17 +12,27 @@ const FIELD_TO_ADDR_COMPONENTS : { [index: string]: AddressComponent[] } = {
   'postalCode': ['POSTAL_CODE']
 }
 
-const ADDR_COMPONENT_TO_NAME = {
-  'CITY': 'City',
-  'HOUSE_NUMBER': 'House Number',
-  'STREET_NAME': 'Street Name',
-  'COUNTRY': 'Country',
-  'POSTAL_CODE': 'Postal Code',
-  'SUBPREMISE': 'Unit Number',
-  'STREET_TYPE': 'Street Type',
-  'STATE_PROVINCE': 'State/Province'
+const ADDR_COMPONENTS_TO_FIELD: { [index: string]: keyof MailingAddress } = {
+  'CITY': 'city',
+  'STREET_TYPE': 'street1',
+  'HOUSE_NUMBER': 'street1',
+  'STREET_NAME': 'street1',
+  'SUBPREMISE': 'street1',
+  'COUNTRY': 'country',
+  'STATE_PROVINCE': 'state',
+  'POSTAL_CODE': 'postalCode'
 }
 
+const ADDR_COMPONENT_TO_I18N_ERROR_KEY = {
+  'CITY': 'addressInvalidCity',
+  'HOUSE_NUMBER': 'addressInvalidHouseNumber',
+  'STREET_NAME': 'addressInvalidStreetName',
+  'COUNTRY': 'addressInvalidCountry',
+  'POSTAL_CODE': 'addressInvalidPostalCode',
+  'SUBPREMISE': 'addressNeedsSubpremise',
+  'STREET_TYPE': 'addressInvalidStreetType',
+  'STATE_PROVINCE': 'addressInvalidState'
+}
 
 /**
  * Determines whether a field should be in an error state based on the address validation result.
@@ -50,46 +61,48 @@ export function isAddressFieldValid(
 
 
 /**
- * Creates a list of strings where each string is a simple explanation of the validation results, e.g.:
- * 'Address is missing the state field. Please fill it out and try again.'
+ * Returns a list of internationalized error messages for each field in the address.
  */
-export function explainAddressValidationResults(
-  validation: AddressValidationResult | undefined
-): string[] {
-  const out: string[] = []
+export function getErrorsByField(
+  validation: AddressValidationResult | undefined,
+  i18n: (key: string) => string
+): { [index: string]: string[] } {
+  const out: { [index: string]: string[] } = {}
 
   if (!validation) {
-    return out
+    return {}
   }
 
-  const invalidComponents = validation.invalidComponents || []
+  for (const missingComponent of validation.invalidComponents || []) {
+    const i18nKey = ADDR_COMPONENT_TO_I18N_ERROR_KEY[missingComponent]
+    const field = ADDR_COMPONENTS_TO_FIELD[missingComponent]
 
-  const missingComponentNames = invalidComponents
-    .map(comp => ADDR_COMPONENT_TO_NAME[comp])
-    .map(val => val.toLowerCase())
-    .filter(val => !isNil(val))
-
-  if (missingComponentNames.length > 0) {
-    if (missingComponentNames.length === 1) {
-      out.push(
-        `The ${
-            missingComponentNames[0]
-        } field could not be verified. Please check and try again.`
-      )
-    } else {
-      out.push(
-        `The ${
-            missingComponentNames.slice(0, missingComponentNames.length - 1).join(', ')
-          } and ${
-            missingComponentNames[missingComponentNames.length - 1]
-        } fields could not be verified. Please check them and try again.`
-      )
+    if (!out[field]) {
+      out[field] = []
     }
-  } else {
-    out.push(
-      `The address could not be verified. Please verify that the information is correct and try again.`
-    )
+
+    out[field].push(i18n(i18nKey))
   }
 
   return out
+}
+/**
+ * Compares two addresses deeply. Ignores metadata (id, createdAt, etc.)
+ */
+export function isSameAddress(addr1: MailingAddress, addr2: MailingAddress): boolean {
+  return findDifferencesBetweenObjects(addr1, addr2)
+    .filter(val => !['id', 'createdAt', 'lastUpdatedAt'].includes(val.fieldName))
+    .length === 0
+}
+
+/**
+ * Converts an address to a series of strings suitable for display when joined with a newline.
+ */
+export function toAddressLines(address: MailingAddress): string[] {
+  return [
+    address.street1,
+    address.street2,
+    `${address.city || ''} ${address.state || ''} ${address.postalCode || ''}`,
+    address.country
+  ].map(line => line?.trim()).filter(line => !isNil(line) && !isEmpty(line.trim()))
 }

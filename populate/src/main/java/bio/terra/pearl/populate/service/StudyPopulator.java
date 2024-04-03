@@ -79,7 +79,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, PortalPopulateContext context) {
         for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
             StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
-            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i, context);
+            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i, context, context.getPortalShortcode());
             studyEnv.getConfiguredSurveys().add(configSurvey);
         }
         if (studyEnv.getPreEnrollSurveyDto() != null) {
@@ -89,7 +89,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         }
         for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
             StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
-            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context);
+            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context, context.getPortalShortcode());
             studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (TriggerPopDto configPopDto : studyEnv.getTriggerDtos()) {
@@ -105,8 +105,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
 
         // save any of the pre-enrollment responses that aren't associated with an enrollee
         for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
-            Survey survey = surveyService.findByStableId(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
-                    responsePopDto.getSurveyVersion()).get();
+            Survey survey = surveyService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+                    responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
             String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
             PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                     .surveyId(survey.getId())
@@ -186,7 +186,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             try {
                 StudyEnvironmentChange studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
-                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
+                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId(), destPortalEnv.getPortalId());
             } catch (Exception e) {
                 // we probably want to move this to some sort of "PopulateException"
                 throw new IOException(e);

@@ -75,7 +75,7 @@
       },{
         "type": "join",
         "text": "Join OurHealth",
-        "studyShortcode": "ourheart"
+        "studyShortcode": "heartdemo"
       }]
     }]
   }

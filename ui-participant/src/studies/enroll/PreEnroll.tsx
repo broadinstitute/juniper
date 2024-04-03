@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
+import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import { useI18n } from '@juniper/ui-core'

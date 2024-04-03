@@ -32,4 +32,10 @@ public abstract class ItemFormatter<T> {
     public String getEmptyValue() {
         return "";
     }
+
+    /**
+     * sets the appropriate property or otherwise modifies the given bean with the value from the export String
+     * This is used for importing values from strings back to bean properties.
+     * */
+    public abstract void importValueToBean(T bean, String exportString);
 }

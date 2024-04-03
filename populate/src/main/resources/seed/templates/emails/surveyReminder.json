@@ -1,9 +1,12 @@
 {
   "createdAt" : 1707344980.512164000,
   "lastUpdatedAt" : 1707344980.512164000,
-  "subject" : "Reminder: please complete your ${study.name} survey",
   "name" : "Survey Reminder",
   "stableId" : "surveyReminder",
   "version" : 3,
-  "bodyPopulateFile" : "surveyReminder.html"
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Reminder: please complete your ${study.name} survey",
+    "bodyPopulateFile": "en/surveyReminder.html"
+  }]
 }

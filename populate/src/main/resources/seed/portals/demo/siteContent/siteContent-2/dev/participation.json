@@ -64,7 +64,7 @@
         "buttons": [{
           "type": "join",
           "text": "DEV_Join OurHealth",
-          "studyShortcode": "ourheart"
+          "studyShortcode": "heartdemo"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
       }

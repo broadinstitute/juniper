@@ -1,5 +1,8 @@
 import _camelCase from 'lodash/camelCase'
 import { QuestionChoice } from '@juniper/ui-core/src/types/forms'
+import { ReactQuestionFactory } from 'survey-react-ui'
+import React from 'react'
+import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with
@@ -133,3 +136,8 @@ export function questionFromRawText(rawText: string): QuestionObj {
   }
   return newQuestionObj
 }
+
+// register address validation type
+ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
+  return React.createElement(SurveyQuestionAddressValidation, props)
+})
