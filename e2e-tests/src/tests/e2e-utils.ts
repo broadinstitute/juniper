@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker'
 import { errors, expect, Page, test, Response } from '@playwright/test'
 import StudyEligibility from 'pages/ourhealth/study-eligibility'
 import Navbar from 'src/page-components/navbar'
+import { EnvironmentName } from '@juniper/ui-core'
 
 export type Study = 'OurHealth';
 
@@ -23,19 +24,19 @@ export const randomChars = (length: 6): string => {
 /**
  *
  * @param {"OurHealth"} study
- * @param {"local" | "dev"} env
+ * @param {"local" | "dev"} deploymentZone
  * @returns {string} Participant URL of a specific study
  */
-export function getParticipantUrl(study: Study, env: Environment): string {
+export function getParticipantUrl(portalShortcode: string, deploymentZone: Environment = 'local',
+  envName: EnvironmentName = 'sandbox'): string {
   let url: string
-  switch (study) {
-    case 'OurHealth':
-      url = env === 'local'
-        ? 'https://sandbox.ourhealth.localhost:3001'
-        : 'https://ourhealth.ddp-dev.envs.broadinstitute.org'
+  switch (deploymentZone) {
+    case 'local':
+      url = `https://${envName}.${portalShortcode}.localhost:3001`
       break
-    default:
-      throw new Error(`undefined study name: ${study}`)
+    case 'dev':
+      url = `https://${envName}.${portalShortcode}.ddp-dev.envs.broadinstitute.org`
+      break
   }
   return url
 }

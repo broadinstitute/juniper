@@ -1,27 +1,15 @@
 import { expect, Locator, Page, Response } from '@playwright/test'
+import JuniperPageBase from 'src/models/juniper-page-base'
 import { RegistrationPageInterface } from 'src/models/registration-page-interface'
-import Footer from 'src/page-components/footer'
 import Question from 'src/page-components/question'
 
-export default abstract class PageBase implements RegistrationPageInterface {
-  page: Page
-
-  footer: Footer
-
-  abstract title: string
-
-  protected constructor(page: Page) {
-    this.page = page
-    this.footer = new Footer(page)
+export default abstract class RegistrationPageBase extends JuniperPageBase implements RegistrationPageInterface {
+  protected constructor(protected readonly page: Page) {
+    super(page)
   }
 
-  async waitReady(): Promise<this> {
-    await expect(this.page).toHaveTitle(this.title)
-    return this
-  }
-
-  async goTo(path: string): Promise<Response | null> {
-    return await this.page.goto(path)
+  getQuestion(qText: string): Question {
+    return new Question(this.page, { qText })
   }
 
   /** Click +/- icon to expand or collapse hidden texts */
@@ -46,31 +34,7 @@ export default abstract class PageBase implements RegistrationPageInterface {
     return ariaControlId
   }
 
-  // TODO
-  // eslint-disable-next-line @typescript-eslint/require-await,@typescript-eslint/no-unused-vars
-  async check(question: string, value: string): Promise<this> {
-    throw new Error('undefined')
-  }
-
-  /** Need more roles? See all roles on https://playwright.dev/docs/api/class-locator#locator-get-by-role  **/
-  async click(role: 'button' | 'checkbox' | 'link' | 'radiogroup', name: string | RegExp): Promise<this> {
-    await this.page.getByRole(role, { name }).click()
-    return this
-  }
-
-  async fillIn(question: string, value: string): Promise<this> {
-    const q = new Question(this.page, { qText: question })
-    await q.fillIn(value)
-    return this
-  }
-
-  async select(question: string, value: string): Promise<this> {
-    const q = new Question(this.page, { qText: question })
-    await q.select(value)
-    return this
-  }
-
-  async drawLine(question: string): Promise<this> {
+  async drawSignature(question: string): Promise<this> {
     const q = new Question(this.page, { qText: question })
     const canvas = q.locator.locator('canvas')
     await canvas.scrollIntoViewIfNeeded()
@@ -94,7 +58,7 @@ export default abstract class PageBase implements RegistrationPageInterface {
     const callbackPromise = callback ? callback() : Promise.resolve()
     const [resp] = await Promise.all([
       callbackPromise,
-      this.click('button', 'Submit')
+      this.clickByRole('button', 'Submit')
     ])
     return typeof resp === 'object' ? resp : null
   }

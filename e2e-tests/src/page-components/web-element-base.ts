@@ -1,7 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test'
-import { PageComponentInterface } from 'src/models/page-component-interface'
+import { WebElementInterface } from 'src/models/web-element-interface'
 
-export default abstract class ComponentBase implements PageComponentInterface {
+export default abstract class WebElementBase implements WebElementInterface {
   abstract root: Locator
 
   protected constructor(protected readonly page: Page) {
