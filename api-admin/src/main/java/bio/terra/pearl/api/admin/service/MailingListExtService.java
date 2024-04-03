@@ -59,8 +59,6 @@ public class MailingListExtService {
             .findOne(portal.getShortcode(), envName)
             .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
-    contacts.forEach(contact -> contact.setPortalEnvironmentId(portalEnv.getId()));
-
     DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
     List<MailingListContact> newContacts =
         mailingListContactService.bulkCreate(portalEnv.getId(), contacts, auditInfo);
