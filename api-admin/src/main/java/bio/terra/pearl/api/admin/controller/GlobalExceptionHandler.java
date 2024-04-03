@@ -11,9 +11,6 @@ import bio.terra.pearl.core.service.exception.ExceptionUtils;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,8 +27,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 public class GlobalExceptionHandler {
 
   private final HttpServletRequest request;
-
-
+  
   public GlobalExceptionHandler(HttpServletRequest request) {
     this.request = request;
   }

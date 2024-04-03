@@ -58,7 +58,6 @@ public class GlobalExceptionHandlerTest {
   @MockBean private PortalService portalService;
   @MockBean private StudyPopulator studyPopulator;
   @MockBean private FilePopulateService filePopulateService;
-  @Autowired private SurveyExtService surveyExtService;
 
   @Test
   void testBuildErrorReport() {
