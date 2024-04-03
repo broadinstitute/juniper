@@ -2,15 +2,14 @@ package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentFormDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ConsentFormService extends VersionedEntityService<ConsentForm, ConsentFormDao> {
@@ -30,8 +29,8 @@ public class ConsentFormService extends VersionedEntityService<ConsentForm, Cons
         return dao.findByPortalId(portalId);
     }
 
-    public List<ConsentForm> findByStableIdNoContent(String stableId) {
-        return dao.findByStableIdNoContent(stableId);
+    public List<ConsentForm> findByStableIdNoContent(String stableId, UUID portalId) {
+        return dao.findByStableIdNoContent(stableId, portalId);
     }
 
     @Transactional
@@ -39,14 +38,14 @@ public class ConsentFormService extends VersionedEntityService<ConsentForm, Cons
         ConsentForm newConsent = new ConsentForm();
         BeanUtils.copyProperties(consentForm, newConsent, "id", "version", "createdAt", "lastUpdatedAt", "publishedVersion");
         newConsent.setPortalId(portalId);
-        int nextVersion = dao.getNextVersion(consentForm.getStableId());
+        int nextVersion = dao.getNextFormVersion(consentForm.getStableId(), portalId);
         newConsent.setVersion(nextVersion);
         ConsentForm newForm =  create(newConsent);
         logger.info("Created new ConsentForm version:  stableId: {}, version: {}");
         return newForm;
     }
 
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
+    public int getNextVersion(String stableId, UUID portalId) {
+        return dao.getNextFormVersion(stableId, portalId);
     }
 }

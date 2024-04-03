@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,10 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -44,6 +44,7 @@ public class RegistrationService {
     private PortalParticipantUserService portalParticipantUserService;
     private ProfileService profileService;
     private EventService eventService;
+    private PortalService portalService;
     private ObjectMapper objectMapper;
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -57,7 +58,7 @@ public class RegistrationService {
                                PortalParticipantUserService portalParticipantUserService,
                                EventService eventService, ObjectMapper objectMapper,
                                RandomUtilService randomUtilService,
-                               ProfileService profileService) {
+                               ProfileService profileService, PortalService portalService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -68,6 +69,7 @@ public class RegistrationService {
         this.objectMapper = objectMapper;
         this.randomUtilService = randomUtilService;
         this.profileService = profileService;
+        this.portalService = portalService;
     }
 
     /**
@@ -81,7 +83,8 @@ public class RegistrationService {
             Integer surveyVersion,
             ParsedPreRegResponse parsedResponse) throws JsonProcessingException {
         PreregistrationResponse response = new PreregistrationResponse();
-        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+        Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow();
+        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion, portal.getId()).get();
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, envName).get();
 
         response.setSurveyId(survey.getId());
