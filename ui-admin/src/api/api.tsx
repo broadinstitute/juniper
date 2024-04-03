@@ -118,6 +118,16 @@ export type ProfileUpdateDto = {
   profile: Profile
 }
 
+export type NotificationEventDetails = {
+  subject: string,
+  toEmail: string,
+  fromEmail: string,
+  status: string,
+  opensCount: number,
+  clicksCount: number,
+  lastEventTime: number
+}
+
 export type Notification = {
   id: string,
   triggerId: string,
@@ -127,7 +137,8 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
-  trigger?: Trigger
+  trigger?: Trigger,
+  eventDetails?: NotificationEventDetails
 }
 
 export type Event = {
@@ -236,28 +247,28 @@ export type MailingListContact = {
 
 
 export type PortalEnvironmentChange = {
-  siteContentChange: VersionedEntityChange,
-  configChanges: ConfigChange[],
-  preRegSurveyChanges: VersionedEntityChange,
+  siteContentChange: VersionedEntityChange
+  configChanges: ConfigChange[]
+  preRegSurveyChanges: VersionedEntityChange
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
-  participantDashboardAlertChanges: ParticipantDashboardAlertChange[],
+  participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
 }
 
 export type StudyEnvironmentChange = {
-  studyShortcode: string,
-  configChanges: ConfigChange[],
-  preEnrollSurveyChanges: VersionedEntityChange,
-  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>,
-  surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>,
+  studyShortcode: string
+  configChanges: ConfigChange[]
+  preEnrollSurveyChanges: VersionedEntityChange
+  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>
+  surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
 }
 
 export type VersionedEntityChange = {
-  changed: true,
-  oldStableId: string,
-  newStableId: string,
-  oldVersion: number,
+  changed: true
+  oldStableId: string
+  newStableId: string
+  oldVersion: number
   newVersion: number
 } | {
   changed: false
@@ -265,25 +276,26 @@ export type VersionedEntityChange = {
 
 type ConfigChangeValue = object | string | boolean
 export type ConfigChange = {
-  propertyName: string,
-  oldValue: ConfigChangeValue,
+  propertyName: string
+  oldValue: ConfigChangeValue
   newValue: ConfigChangeValue
 }
 
 export type ListChange<T, CT> = {
-  addedItems: T[],
-  removedItems: T[],
+  addedItems: T[]
+  removedItems: T[]
   changedItems: CT[]
 }
 
 export type VersionedConfigChange = {
-  sourceId: string,
-  configChanges: ConfigChange[],
+  sourceId: string
+  destId: string
+  configChanges: ConfigChange[]
   documentChange: VersionedEntityChange
 }
 
 export type ParticipantDashboardAlertChange = {
-  trigger: AlertTrigger,
+  trigger: AlertTrigger
   changes: ConfigChange[]
 }
 
@@ -1354,7 +1366,7 @@ Promise<Trigger> {
 }
 
 /** gets an image url for SiteMedia */
-export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number) {
+export function getMediaUrl(portalShortcode: string, cleanFileName: string, version: number | 'latest') {
   return `${getMediaBaseUrl(portalShortcode)}/${version}/${cleanFileName}`
 }
 

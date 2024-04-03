@@ -2,7 +2,10 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
@@ -10,13 +13,14 @@ import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Service;
 
 /** populator for surveys and consent forms */
 @Service
@@ -49,15 +53,15 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
     }
 
     public StudyEnvironmentSurvey convertConfiguredSurvey(StudyEnvironmentSurveyPopDto configuredSurveyDto,
-                                                          int index, FilePopulateContext context) {
+                                                          int index, FilePopulateContext context, String portalShortcode) {
         StudyEnvironmentSurvey configuredSurvey = new StudyEnvironmentSurvey();
         BeanUtils.copyProperties(configuredSurveyDto, configuredSurvey);
         Survey survey;
         if (configuredSurveyDto.getPopulateFileName() != null) {
             survey = context.fetchFromPopDto(configuredSurveyDto, surveyService).get();
         } else {
-            survey = surveyService.findByStableId(configuredSurveyDto.getSurveyStableId(),
-                    configuredSurveyDto.getSurveyVersion()).get();
+            survey = surveyService.findByStableIdAndPortalShortcode(configuredSurveyDto.getSurveyStableId(),
+                    configuredSurveyDto.getSurveyVersion(), portalShortcode).get();
         }
         configuredSurvey.setSurveyId(survey.getId());
         configuredSurvey.setSurvey(survey);
@@ -77,7 +81,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
             return existingOpt;
         }
         // load with mappings since we'll check those for equality
-        return surveyService.findByStableIdWithMappings(popDto.getStableId(), popDto.getVersion());
+        return surveyService.findByStableIdAndPortalShortcodeWithMappings(popDto.getStableId(), popDto.getVersion(), context.getPortalShortcode());
     }
 
     @Override
@@ -110,7 +114,7 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
             // the things are the same, don't bother creating a new version
             return existingObj;
         }
-        int newVersion = surveyService.getNextVersion(popDto.getStableId());
+        int newVersion = surveyService.getNextVersionByPortalShortcode(popDto.getStableId(), context.getPortalShortcode());
         popDto.setVersion(newVersion);
         return createNew(popDto, context, false);
     }

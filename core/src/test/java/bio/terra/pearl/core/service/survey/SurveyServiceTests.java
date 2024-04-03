@@ -3,9 +3,16 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.survey.AnswerMapping;
+import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
+import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,9 +25,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.springframework.test.util.AssertionErrors.fail;
@@ -32,6 +43,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
     @Autowired
     private AdminUserFactory adminUserFactory;
+    @Autowired
+    private PortalFactory portalFactory;
 
     @Mock
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -39,26 +52,29 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateSurvey(TestInfo info) {
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+
         Survey survey = surveyFactory.builder(getTestName(info)).build();
+        survey.setPortalId(portal.getId());
         survey.setCreatedAt(null);
         survey.setLastUpdatedAt(null);
         Survey savedSurvey = surveyService.create(survey);
         DaoTestUtils.assertGeneratedProperties(savedSurvey);
         Assertions.assertEquals(savedSurvey.getName(), survey.getName());
 
-        Survey fetchedSurvey = surveyService.findByStableId(savedSurvey.getStableId(), savedSurvey.getVersion()).get();
+        Survey fetchedSurvey = surveyService.findByStableId(savedSurvey.getStableId(), savedSurvey.getVersion(), savedSurvey.getPortalId()).get();
         Assertions.assertEquals(fetchedSurvey.getId(), savedSurvey.getId());
     }
 
     @Test
     @Transactional
     public void testFindNoContent(TestInfo info) {
-        Survey survey = surveyFactory.builder(getTestName(info)).build();
+        Survey survey = surveyFactory.builderWithDependencies(getTestName(info)).build();
         survey.setSurveyType(SurveyType.OUTREACH);
         survey.setAssignToAllNewEnrollees(true);
-        surveyService.create(survey);
+        UUID portalId = surveyService.create(survey).getPortalId();
 
-        Survey fetchedSurvey = surveyService.findByStableId(survey.getStableId()).get(0);
+        Survey fetchedSurvey = surveyService.findByStableId(survey.getStableId(), portalId).get(0);
         Survey fetchedNoContentSurvey = surveyService.findByStableIdNoContent(survey.getStableId()).get(0);
         assertThat(fetchedSurvey, samePropertyValuesAs(fetchedNoContentSurvey, "content"));
         assertThat(fetchedNoContentSurvey.getContent(), nullValue());
@@ -67,7 +83,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testCreateSurveyWithMappings(TestInfo info) {
-        Survey survey = surveyFactory.builder(getTestName(info)).build();
+        Survey survey = surveyFactory.builderWithDependencies(getTestName(info)).build();
         AnswerMapping answerMapping = AnswerMapping.builder()
                 .questionStableId("qStableId")
                 .targetField("givenName")
@@ -79,7 +95,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         assertThat(savedSurvey.getAnswerMappings(), hasSize(1));
         DaoTestUtils.assertGeneratedProperties(savedSurvey.getAnswerMappings().get(0));
 
-        Survey fetchedSurvey = surveyService.findByStableIdWithMappings(savedSurvey.getStableId(), savedSurvey.getVersion()).get();
+        Survey fetchedSurvey = surveyService.findByStableIdWithMappings(savedSurvey.getStableId(), savedSurvey.getVersion(), savedSurvey.getPortalId()).get();
         assertThat(fetchedSurvey.getAnswerMappings(), hasSize(1));
     }
 

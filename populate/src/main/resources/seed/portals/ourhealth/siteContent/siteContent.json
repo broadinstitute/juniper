@@ -7,6 +7,7 @@
     "navLogoCleanFileName": "ourhealth-logo.png",
     "navLogoVersion": 1,
     "primaryBrandColor": "rgb(155, 36, 133)",
+    "dashboardBackgroundColor": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)",
     "footerSectionFile": "en/footerSection.json",
     "landingPageFileName": "en/landingPage.json",
     "navbarItemDtos": [{

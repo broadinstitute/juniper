@@ -57,7 +57,7 @@ public class ConsentFormExtService {
     // This is used to populate the version selector in the admin UI. It's not necessary
     // to return the surveys with any content or answer mappings, the response will
     // be too large. Instead, just get the individual versions as content is needed.
-    List<ConsentForm> forms = consentFormService.findByStableIdNoContent(stableId);
+    List<ConsentForm> forms = consentFormService.findByStableIdNoContent(stableId, portal.getId());
     List<ConsentForm> formsInPortal =
         forms.stream().filter(form -> portal.getId().equals(form.getPortalId())).toList();
     return formsInPortal;

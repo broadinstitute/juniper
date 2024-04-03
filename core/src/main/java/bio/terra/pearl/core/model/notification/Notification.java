@@ -22,6 +22,8 @@ public class Notification extends BaseEntity {
     private NotificationDeliveryType deliveryType;
     private String sentTo;
     private String customMessages;
+    private String sendgridApiRequestId;
+    private SendgridEvent eventDetails;
     @Builder.Default
     private Map<String, String> customMessagesMap = new HashMap<>();
     @Builder.Default

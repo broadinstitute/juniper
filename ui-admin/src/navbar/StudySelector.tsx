@@ -22,7 +22,7 @@ export default function StudySelector({ portalList, selectedShortcode, setSelect
     }}
     formatOptionLabel={opt => (<div>
       <img
-        src={getMediaUrl(opt.portalCode, 'favicon.ico', 1)}
+        src={getMediaUrl(opt.portalCode, 'favicon.ico', 'latest')}
         className="me-2" style={{ maxHeight: '1.5em' }}/>
       {opt.label}
     </div>)}

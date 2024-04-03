@@ -22,7 +22,7 @@ export interface PreEnrollQuestionData {
   booleanValue?: boolean;
 }
 
-export interface PreEnrollResponse {
+export interface ApiPreenrollResponse {
   id: string;
   createdAt: number;
   lastUpdatedAt: number;

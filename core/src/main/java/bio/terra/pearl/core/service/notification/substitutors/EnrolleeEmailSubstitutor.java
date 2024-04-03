@@ -7,7 +7,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
@@ -26,16 +26,16 @@ import java.util.Map;
 @Slf4j
 public class EnrolleeEmailSubstitutor implements StringLookup {
     private final Map<String, Object> valueMap = new HashMap<>();
-    private EnrolleeRuleData enrolleeRuleData;
+    private EnrolleeContext enrolleeContext;
     private NotificationContextInfo contextInfo;
     private final ApplicationRoutingPaths routingPaths;
 
-    protected EnrolleeEmailSubstitutor(EnrolleeRuleData ruleData, NotificationContextInfo contextInfo,
+    protected EnrolleeEmailSubstitutor(EnrolleeContext ruleData, NotificationContextInfo contextInfo,
                                        ApplicationRoutingPaths routingPaths, Map<String, String> messages) {
-        this.enrolleeRuleData = ruleData;
+        this.enrolleeContext = ruleData;
         this.contextInfo = contextInfo;
         this.routingPaths = routingPaths;
-        valueMap.put("profile", enrolleeRuleData.getProfile());
+        valueMap.put("profile", enrolleeContext.getProfile());
         valueMap.put("portalEnv", contextInfo.portalEnv());
         valueMap.put("envConfig", contextInfo.portalEnvConfig());
         valueMap.put("dashboardLink", getDashboardLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal(), contextInfo.study()));
@@ -44,7 +44,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
         valueMap.put("participantSupportEmailLink", getParticipantSupportEmailLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig()));
         valueMap.put("siteMediaBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
         valueMap.put("siteImageBaseUrl", getImageBaseUrl(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode()));
-        valueMap.put("profile", enrolleeRuleData.getProfile());
+        valueMap.put("profile", enrolleeContext.getProfile());
         valueMap.put("study", contextInfo.study());
         valueMap.put("participantUser", ruleData.getParticipantUser());
         valueMap.put("invitationLink", getInvitationLink(contextInfo.portalEnv(), contextInfo.portalEnvConfig(), contextInfo.portal().getShortcode(), ruleData.getParticipantUser()));
@@ -54,13 +54,13 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
     }
 
     /** create a new substitutor.  the portalEnv must have the envConfig attached */
-    public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
+    public static StringSubstitutor newSubstitutor(EnrolleeContext ruleData,
                                                    NotificationContextInfo contextInfo,
                                                    ApplicationRoutingPaths routingPaths) {
         return new StringSubstitutor(new EnrolleeEmailSubstitutor(ruleData, contextInfo, routingPaths, null));
     }
 
-    public static StringSubstitutor newSubstitutor(EnrolleeRuleData ruleData,
+    public static StringSubstitutor newSubstitutor(EnrolleeContext ruleData,
                                                    NotificationContextInfo contextInfo,
                                                    ApplicationRoutingPaths routingPaths,
                                                    Map<String, String> customMessages) {
@@ -75,7 +75,7 @@ public class EnrolleeEmailSubstitutor implements StringLookup {
             return PropertyUtils.getNestedProperty(valueMap, key).toString();
         } catch (Exception e) {
             log.error("Could not resolve template value {}, environment: {}, enrollee: {}",
-                    key, contextInfo.portal().getShortcode(), enrolleeRuleData.getEnrollee().getShortcode());
+                    key, contextInfo.portal().getShortcode(), enrolleeContext.getEnrollee().getShortcode());
         }
         return "";
     }

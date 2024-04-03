@@ -25,6 +25,7 @@ import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import InvitationPage from './landing/registration/InvitationPage'
+import AuthError from './login/AuthError'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -50,6 +51,10 @@ function App() {
   const brandConfig: BrandConfiguration = {}
   if (localContent.primaryBrandColor) {
     brandConfig.brandColor = localContent.primaryBrandColor
+  }
+
+  if (localContent.dashboardBackgroundColor) {
+    brandConfig.backgroundColor = localContent.dashboardBackgroundColor
   }
 
   useEffect(() => {
@@ -115,7 +120,10 @@ function App() {
                             <Route path="/" element={<LandingPage localContent={localContent}/>}>
                               {landingRoutes}
                             </Route>
-                            <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
+                            <Route path="/redirect-from-oauth">
+                              <Route index element={<RedirectFromOAuth/>}/>
+                              <Route path="error" element={<AuthError/>}/>
+                            </Route>
                             <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
                             <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
                             <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>

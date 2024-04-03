@@ -19,9 +19,7 @@ import {
  * with an edit button. This edit button opens a modal which allows editing and
  * saving changes to profile data.
  */
-export function ParticipantProfile(
-  { enableAddressValidation = true }: { enableAddressValidation?: boolean }
-) {
+export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
   const { ppUser, profile, updateProfile } = useUser()
@@ -59,7 +57,6 @@ export function ParticipantProfile(
     const modalProps = {
       profile,
       dismissModal: () => setShowEditFieldModal(undefined),
-      enableAddressValidation,
       save
     }
 
@@ -85,7 +82,7 @@ export function ParticipantProfile(
 
   return <div
     className="hub-dashboard-background flex-grow-1"
-    style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }} // todo: don't hardcode, see jn-902
+    style={{ background: 'var(--dashboard-background-color)' }} // todo: don't hardcode, see jn-902
   >
     <div className="row mx-0 justify-content-center py-5">
       <div className="col-12 col-sm-10 col-lg-6">

@@ -119,7 +119,7 @@ public class AuthUtilService {
 
   /** confirms that the Survey is accessible from the given portal */
   public Survey authSurveyToPortal(Portal portal, String stableId, int version) {
-    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version);
+    Optional<Survey> surveyOpt = surveyService.findByStableId(stableId, version, portal.getId());
     return verifyObjInPortal(portal, surveyOpt);
   }
 
@@ -130,7 +130,8 @@ public class AuthUtilService {
   }
 
   public ConsentForm authConsentFormToPortal(Portal portal, String stableId, int version) {
-    Optional<ConsentForm> consentOpt = consentFormService.findByStableId(stableId, version);
+    Optional<ConsentForm> consentOpt =
+        consentFormService.findByStableId(stableId, version, portal.getId());
     return verifyObjInPortal(portal, consentOpt);
   }
 

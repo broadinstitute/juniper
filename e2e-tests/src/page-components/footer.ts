@@ -1,8 +1,8 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/models/component-base'
+import WebComponentBase from 'src/page-components/web-component-base'
 
 /* footer is located at the bottom of OurHealth page */
-export default class Footer extends ComponentBase {
+export default class Footer extends WebComponentBase {
   root: Locator
 
   constructor(page: Page) {

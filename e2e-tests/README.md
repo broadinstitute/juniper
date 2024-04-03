@@ -1,13 +1,17 @@
 ## UI automation tests with Playwright
 
 ### Set up
-* Install dependencies and web browsers in **/e2e-tests** dir.
-  >
-  >  * cd e2e-tests/
-  >  * npm install
-  >  * npx playwright install --with-deps
-  >
+* Install dependencies and Playwright web browsers in **/e2e-tests** dir.
+```shell
+npm installn && npx playwright install --with-deps
+```
 
+
+### Build and Lint
+* From **/e2e-tests** dir
+```shell
+npm run build && npm run lint
+```
 
 ### Run tests
 * Show all tests in all projects:
@@ -22,7 +26,7 @@
 
 * Run tests in the one specific project
 
-  Example: OurHealth-Chrome
+  Example: only `OurHealth-Chrome`
   ```shell
   npx playwright test --project="OurHealth-Chrome"
   ```
@@ -56,3 +60,4 @@ Reading a file named `.env.local` and run a specific test (pass the TEST_ENV and
 
 ### placeholder
 
+### Test [wiki](https://github.com/broadinstitute/juniper/wiki/E2E-Tests)

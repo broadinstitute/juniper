@@ -1,5 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test'
 import OurHealthPageBase from 'pages/ourhealth/ourhealth-page-base'
+import data from 'src/data/ourhealth-en.json'
 
 export  default  class HomeAboutUs extends OurHealthPageBase {
   title = 'About Us | OurHealth'
@@ -11,8 +12,8 @@ export  default  class HomeAboutUs extends OurHealthPageBase {
 
   constructor(page: Page) {
     super(page)
-    this.linkLearnAboutParticipation = this.page.locator('a.nav-link', { hasText: /^Learn More About Participation$/ })
-    this.linkScientificBackground = this.page.locator('a.btn', { hasText: new RegExp(/^Scientific Background$/) })
+    this.linkLearnAboutParticipation = this.page.locator('a.nav-link', { hasText: data.Link.LearnMore })
+    this.linkScientificBackground = this.page.locator('a.btn', { hasText: data.Link.ScientificBackground })
   }
 
   /* Minimum checks to ensure the page is loaded */

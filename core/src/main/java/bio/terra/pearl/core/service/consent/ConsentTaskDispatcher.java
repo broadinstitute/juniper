@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
@@ -64,7 +64,7 @@ public class ConsentTaskDispatcher {
     public void updateConsentTasks(EnrolleeEvent enrolleeEvent) {
         List<StudyEnvironmentConsent> studyEnvConsents = studyEnvironmentConsentService
                 .findAllByStudyEnvIdWithConsent(enrolleeEvent.getEnrollee().getStudyEnvironmentId());
-        List<ParticipantTask> tasks = buildTasks(enrolleeEvent.getEnrollee(), enrolleeEvent.getEnrolleeRuleData(),
+        List<ParticipantTask> tasks = buildTasks(enrolleeEvent.getEnrollee(), enrolleeEvent.getEnrolleeContext(),
                 enrolleeEvent.getPortalParticipantUser().getId(),
                 studyEnvConsents);
         DataAuditInfo auditInfo = DataAuditInfo.builder()
@@ -103,16 +103,15 @@ public class ConsentTaskDispatcher {
 
     /** builds the consent tasks, does not add them to the event or persist them */
     public List<ParticipantTask> buildTasks(Enrollee enrollee,
-                                            EnrolleeRuleData enrolleeRuleData,
+                                            EnrolleeContext enrolleeContext,
                                                    UUID portalParticipantUserId,
                                                    List<StudyEnvironmentConsent> studyEnvConsents) {
         List<ParticipantTask> tasks = new ArrayList<>();
         for (StudyEnvironmentConsent studyConsent : studyEnvConsents) {
-            System.out.println(enrollee.isSubject());
             // TODO JN-977: this logic will need to change because we might need to support consents for proxies
             if (enrollee.isSubject() && enrolleeSearchExpressionParser
                     .parseRule(studyConsent.getEligibilityRule())
-                    .evaluate(new EnrolleeSearchContext(enrolleeRuleData.getEnrollee(), enrolleeRuleData.getProfile()))) {
+                    .evaluate(new EnrolleeSearchContext(enrolleeContext.getEnrollee(), enrolleeContext.getProfile()))) {
                 ParticipantTask consentTask = buildTask(studyConsent, enrollee, portalParticipantUserId);
                 if (!isDuplicateTask(consentTask, enrollee.getParticipantTasks())) {
                     tasks.add(consentTask);

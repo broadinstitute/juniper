@@ -54,7 +54,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         Survey freshSurvey = surveyPopulator.populate(context, false);
         checkSurvey(freshSurvey, "oh_oh_basicInfo", 1);
 
-        Survey fetchedSurvey = surveyService.findByStableIdWithMappings("oh_oh_basicInfo", 1).get();
+        Survey fetchedSurvey = surveyService.findByStableIdWithMappings("oh_oh_basicInfo", 1, portal.getId()).get();
         // check that answer mappings populate too
         assertThat(fetchedSurvey.getAnswerMappings().size(), greaterThan(0));
 
@@ -87,7 +87,7 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
         Survey overrideSurvey = surveyPopulator.populateFromDto(popDto2, context, true);
         // should override the previous survey, and so still be version 1
         checkSurvey(overrideSurvey, stableId, 1);
-        Survey loadedSurvey = surveyService.findByStableId(stableId, 1).get();
+        Survey loadedSurvey = surveyService.findByStableId(stableId, 1, portal.getId()).get();
         assertThat(loadedSurvey.getContent(), equalTo("{\"foo\":17}"));
     }
 
@@ -117,11 +117,11 @@ public class SurveyPopulatorTests extends BaseSpringBootTest {
 
         // should NOT override the previous survey, and so still be saved as version 2
         checkSurvey(overrideSurvey, stableId, 2);
-        Survey loadedSurvey = surveyService.findByStableId(stableId, 2).get();
+        Survey loadedSurvey = surveyService.findByStableId(stableId, 2, portal.getId()).get();
         assertThat(loadedSurvey.getContent(), equalTo("{\"foo\":17}"));
 
         // prior survey should have no updates
-        Survey loadedPrevSurvey = surveyService.findByStableId(stableId, 1).get();
+        Survey loadedPrevSurvey = surveyService.findByStableId(stableId, 1, portal.getId()).get();
         assertThat(loadedPrevSurvey.getContent(), equalTo("{\"foo\":12}"));
     }
 
