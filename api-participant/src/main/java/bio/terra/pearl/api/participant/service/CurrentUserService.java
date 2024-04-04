@@ -5,7 +5,6 @@ import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.EnrolleeRelationDto;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -93,42 +92,40 @@ public class CurrentUserService {
       throw new UnauthorizedException("User not found for portal " + portalShortcode);
     }
     PortalParticipantUser ppUser = portalParticipantUser.get();
-
-    Profile profile =
-        profileService
-            .loadWithMailingAddress(ppUser.getProfileId())
-            .orElseThrow(IllegalStateException::new);
     user.getPortalParticipantUsers().add(ppUser);
+
+    List<Enrollee> enrollees = loadEnrollees(ppUser);
+    return new UserLoginDto(
+        user, ppUser, loadProfile(ppUser), enrollees, loadEnrolleeRelations(enrollees));
+  }
+
+  private List<Enrollee> loadEnrollees(PortalParticipantUser ppUser) {
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(ppUser);
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
+    return enrollees;
+  }
 
-    List<EnrolleeRelationDto> relations = new ArrayList<>();
+  private List<EnrolleeRelation> loadEnrolleeRelations(List<Enrollee> enrollees) {
+    List<EnrolleeRelation> relations = new ArrayList<>();
     if (!enrollees.isEmpty()) {
-      List<EnrolleeRelation> proxyRelations = List.of();
-      proxyRelations =
+      relations =
           enrolleeRelationService.findByEnrolleeIdsAndRelationType(
               enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
-      enrolleeRelationService.attachTargetEnrollees(proxyRelations);
-      for (EnrolleeRelation relation : proxyRelations) {
+      enrolleeRelationService.attachTargetEnrollees(relations);
+      for (EnrolleeRelation relation : relations) {
         enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
       }
-
-      proxyRelations.forEach(
-          proxyRelation -> {
-            Profile relationProfile =
-                profileService
-                    .find(proxyRelation.getTargetEnrollee().getProfileId())
-                    .orElseThrow(IllegalStateException::new);
-            relations.add(
-                EnrolleeRelationDto.builder()
-                    .relation(proxyRelation)
-                    .profile(relationProfile)
-                    .build());
-          });
     }
-    return new UserLoginDto(user, ppUser, profile, enrollees, relations);
+
+    return relations;
+  }
+
+  private Profile loadProfile(PortalParticipantUser ppUser) {
+    return profileService
+        .loadWithMailingAddress(ppUser.getProfileId())
+        .orElseThrow(IllegalStateException::new);
   }
 
   @Transactional
@@ -147,5 +144,5 @@ public class CurrentUserService {
       PortalParticipantUser ppUser,
       Profile profile,
       List<Enrollee> enrollees,
-      List<EnrolleeRelationDto> relations) {}
+      List<EnrolleeRelation> relations) {}
 }

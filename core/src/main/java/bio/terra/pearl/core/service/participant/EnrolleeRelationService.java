@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,14 +47,14 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                 .stream().filter(enrolleeRelation -> isRelationshipValid(enrolleeRelation)).collect(Collectors.toList()).isEmpty();
     }
 
-    public Enrollee isUserProxyForEnrollee(UUID participantUserId, String enrolleeShortcode) {
+    public Optional<Enrollee> isUserProxyForEnrollee(UUID participantUserId, String enrolleeShortcode) {
         Enrollee targetEnrollee = enrolleeService.findOneByShortcode(enrolleeShortcode)
                 .orElseThrow(() -> new NotFoundException("Enrollee with shortcode %s was not found ".formatted(enrolleeShortcode)));
         if(!dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, List.of(targetEnrollee.getId()))
                 .stream().filter(enrolleeRelation -> isRelationshipValid(enrolleeRelation)).collect(Collectors.toList()).isEmpty()){
-            return targetEnrollee;
+            return Optional.of(targetEnrollee);
         }
-        return null;
+        return Optional.empty();
     }
 
     public void attachTargetEnrollees(List<EnrolleeRelation> relations) {

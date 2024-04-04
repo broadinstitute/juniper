@@ -1,11 +1,4 @@
-import Api, {
-  Enrollee,
-  EnrolleeRelationDto,
-  ParticipantUser,
-  Portal,
-  PortalParticipantUser,
-  Profile
-} from '../api/api'
+import Api, { Enrollee, EnrolleeRelation, ParticipantUser, Portal, PortalParticipantUser, Profile } from '../api/api'
 import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
@@ -18,7 +11,7 @@ type ProvideTestUserProps = {
   user?: ParticipantUser,
   portal?: Portal,
   enrollees?: Enrollee[],
-  relations?: EnrolleeRelationDto[]
+  relations?: EnrolleeRelation[]
   children: React.ReactNode
 }
 /**

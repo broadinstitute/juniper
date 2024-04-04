@@ -56,7 +56,7 @@ export type LoginResult = {
   user: ParticipantUser,
   ppUser: PortalParticipantUser,
   enrollees: Enrollee[],
-  relations: EnrolleeRelationDto[],
+  relations: EnrolleeRelation[],
   profile: Profile
 }
 
@@ -75,10 +75,6 @@ export type Enrollee = {
   shortcode: string
   studyEnvironmentId: string
   surveyResponses: []
-}
-export type EnrolleeRelationDto = {
-  relation: EnrolleeRelation,
-  profile: Profile
 }
 export type EnrolleeRelation = {
   id: string

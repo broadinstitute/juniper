@@ -1,14 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, {
-  Enrollee,
-  EnrolleeRelationDto,
-  LoginResult,
-  ParticipantUser,
-  PortalParticipantUser,
-  Profile
-} from 'api/api'
+import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 export type User = ParticipantUser & {
@@ -24,7 +17,7 @@ const anonymousUser: User = {
 export type UserContextT = {
   user: User,
   enrollees: Enrollee[],
-  relations: EnrolleeRelationDto[], // this data is included to speed initial hub rendering.  it is NOT kept current
+  relations: EnrolleeRelation[], // this data is included to speed initial hub rendering.  it is NOT kept current
   activeEnrollee?: Enrollee,
   activeEnrolleeProfile?: Profile,
   ppUser?: PortalParticipantUser,
@@ -121,9 +114,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
       const index = loginState.relations.findIndex(relation =>
-        relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
+        relation.targetEnrollee.shortcode == enrollee.shortcode)
       if (index != -1) {
-        loginState.relations[index].relation.targetEnrollee = enrollee
+        loginState.relations[index].targetEnrollee = enrollee
         setActiveEnrollee(enrollee)
         setActiveEnrolleeProfile(loginState.relations[index].profile)
       } else {
@@ -146,9 +139,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           setActiveEnrolleeProfile(enrollee.profile)
         } else {
           const index = oldState.relations.findIndex(relation =>
-            relation.relation.targetEnrollee.shortcode == enrollee.shortcode)
+            relation.targetEnrollee.shortcode == enrollee.shortcode)
           if (index != -1) {
-            updatedRelations[index].relation.targetEnrollee = enrollee
+            updatedRelations[index].targetEnrollee = enrollee
             setActiveEnrollee(enrollee)
             setActiveEnrolleeProfile(updatedRelations[index].profile)
           }

@@ -157,6 +157,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     public Enrollee loadForParticipantDashboard(Enrollee enrollee) {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
+        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElse(null));
         return enrollee;
     }
 

@@ -7,7 +7,7 @@ import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, ParticipantDashboardAlert } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
@@ -24,8 +24,7 @@ export default function HubPage() {
     enrollees,
     activeEnrollee,
     activeEnrolleeProfile,
-    relations,
-    profile
+    relations
   } = useUser()
 
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
@@ -47,31 +46,11 @@ export default function HubPage() {
   const [showMessage, setShowMessage] = useState(true)
   const hasActiveTasks = activeEnrollee?.participantTasks.some(isTaskActive)
 
-  function getTotalTasks() {
-    let totalTasks = 0
-    enrollees.forEach(enrollee => {
-      enrollee.participantTasks.forEach(participantTask => {
-        if (participantTask.status != 'COMPLETE') {
-          totalTasks++
-        }
-      })
-    })
-
-    relations?.forEach(enrolleeRelation => {
-      enrolleeRelation.relation.targetEnrollee.participantTasks.forEach(participantTask => {
-        if (participantTask.status != 'COMPLETE') {
-          totalTasks++
-        }
-      })
-    })
-    return totalTasks
-  }
-
   return (
     <>
       <DocumentTitle title="Dashboard" />
       <div
-        className="hub-dashboard-background flex-grow-1"
+        className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
       >
         {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
@@ -100,34 +79,7 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          <div className="dropdown hub-dashboard-background flex-grow-1">
-            <button
-              className="btn btn-outline-primary dropdown-toggle w-100 position-relative d-flex justify-content-center
-              align-items-center" type="button"
-              data-bs-toggle="dropdown" aria-expanded="false" id="dropdownMenuButton">
-              Participants and Tasks
-              <span className={` alert-circle position-absolute rounded-circle
-                    ${getTotalTasks() == 0 ? 'bg-secondary-subtle' : 'bg-danger text-white'}`}
-              style={{ right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
-                {getTotalTasks()}
-              </span>
-            </button>
-
-
-            <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
-
-              <HubPageParticipantSelector enrollee={enrollees[0]} profile={profile}
-                relationshipType={undefined}/>
-
-              {relations?.map(enrolleeRelation => (
-                <HubPageParticipantSelector enrollee={enrolleeRelation.relation.targetEnrollee}
-                  profile={enrolleeRelation.profile}
-                  relationshipType={enrolleeRelation.relation.relationshipType}/>
-              ))}
-            </ul>
-          </div>
-          <br/>
-
+          {relations.length > 0 && <HubPageParticipantSelector/>}
           {activeEnrollee && activeEnrolleeProfile && <StudySection key={activeEnrollee.id}
             enrollee={activeEnrollee} portal={portal} profile={activeEnrolleeProfile}/>}
         </main>
