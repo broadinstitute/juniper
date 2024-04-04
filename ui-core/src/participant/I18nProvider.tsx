@@ -5,7 +5,7 @@ export const I18nContext = createContext<I18nContextT | null>(null)
 
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string) => string,
+  i18n: (key: string, defaultValue?: string) => string,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
 }
@@ -60,8 +60,8 @@ export function I18nProvider({ portalShortcode, children }: { portalShortcode?: 
     })
   }
 
-  const i18n = (key: string) => {
-    return languageTexts[key] || `{${key}}`
+  const i18n = (key: string, defaultValue?: string) => {
+    return languageTexts[key] || defaultValue || `{${key}}`
   }
 
   return <>

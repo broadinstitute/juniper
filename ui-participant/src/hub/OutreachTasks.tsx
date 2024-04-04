@@ -84,7 +84,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         return <div className="col-md-6 col-sm-12" key={task.id}>
           <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
-            <h3 className="h5">{i18n(`${task.targetStableId}:${task.targetAssignedVersion}`)}</h3>
+            <h3 className="h5">{i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, task.targetName)}</h3>
             <p className="text-muted">
               {survey.blurb}
             </p>
