@@ -13,7 +13,7 @@ import {
 import { userHasJoinedStudy, enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { filterUnjoinableStudies } from '../Navbar'
-import { log, logError } from '../util/loggingUtils'
+import { logError } from '../util/loggingUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -37,7 +37,7 @@ export const RedirectFromOAuth = () => {
       // we only process the return from OAuth once (when the user is still "anonymous")
 
       if (auth.error) {
-        logError({message: auth.error.message || 'error'}, auth.error.stack || 'stack', 'oauth-error')
+        logError({ message: auth.error.message || 'error' }, auth.error.stack || 'stack', 'oauth-error')
         navigate('/redirect-from-oauth/error')
         return
       }
