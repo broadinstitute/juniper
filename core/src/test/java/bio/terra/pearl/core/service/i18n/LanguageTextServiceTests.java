@@ -2,7 +2,9 @@ package bio.terra.pearl.core.service.i18n;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.i18n.LanguageTextFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.i18n.LanguageText;
+import bio.terra.pearl.core.model.portal.Portal;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
 
     @Autowired
     private LanguageTextFactory languageTextFactory;
+
+    @Autowired
+    private PortalFactory portalFactory;
 
     @Test
     @Transactional
@@ -51,6 +56,29 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
         assertThat(langTexts.size(), equalTo(2));
         assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
         assertThat(langTexts.get(testName + "logout"), equalTo(testName + " text"));
+    }
+
+    @Test
+    @Transactional
+    public void testGetLanguageTextMapForPortal(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+
+        Portal portalA = portalFactory.buildPersisted(testName);
+        Portal portalB = portalFactory.buildPersisted(testName);
+
+        languageTextFactory.buildPersisted(testName, "globalKey", "testLang");
+        languageTextFactory.buildPersisted(testName, "login", "testLang", portalA.getId());
+        languageTextFactory.buildPersisted(testName, "login", "testLang", portalB.getId());
+        languageTextFactory.buildPersisted(testName, "logout", "testLang", portalA.getId());
+        languageTextFactory.buildPersisted(testName, "logout", "testLang", portalB.getId());
+
+        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage(portalA.getId(), "testLang");
+
+        //This should only return the texts for portalA, as well as the global texts
+        assertThat(langTexts.size(), equalTo(3));
+        assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
+        assertThat(langTexts.get(testName + "logout"), equalTo(testName + " text"));
+        assertThat(langTexts.get(testName + "globalKey"), equalTo(testName + " text"));
     }
 
 }
