@@ -14,7 +14,7 @@ export default function InvitationPage() {
   const accountName = searchParams.get('accountName') || ''
   const navigate = useNavigate()
   const { loginUser } = useUser()
-  const [,setInvitationType] = useInvitationType()
+  const [, setInvitationType] = useInvitationType()
 
   const createAccount = async () => {
     if (process.env.REACT_APP_UNAUTHED_LOGIN) {

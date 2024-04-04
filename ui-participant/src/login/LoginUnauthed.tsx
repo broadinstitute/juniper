@@ -12,7 +12,7 @@ export default function LoginUnauthed() {
   const [isError, setIsError] = useState(false)
   const { loginUser, updateEnrollee } = useUser()
   const navigate = useNavigate()
-  const {portal} = usePortalEnv()
+  const { portal } = usePortalEnv()
 
   const defaultEnrollStudy = findDefaultEnrollmentStudy(null, portal.portalStudies)
 

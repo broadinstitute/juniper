@@ -76,12 +76,17 @@ describe('determines default study', () => {
 })
 
 const defaultAuthUser: User = {
+  // eslint-disable-next-line camelcase
   session_state: 'nothing',
+  // eslint-disable-next-line camelcase
   access_token: 'bleh',
+  // eslint-disable-next-line camelcase
   token_type: 'fake',
+  // eslint-disable-next-line camelcase
   expires_at: 3000,
   state: '',
   expired: false,
+  // eslint-disable-next-line camelcase
   expires_in: 4000,
   scopes: [],
   toStorageString: jest.fn(),
