@@ -18,6 +18,9 @@ export const useReturnToStudy = () => useSessionStorage('returnToStudy')
  * For now, 'link' is the only type contemplated. */
 export const useInvitationType = () => useSessionStorage('invitationType')
 
+/** store the participants preferred language so that we remember it when coming back from B2C sign-up. */
+export const useReturnToLanguage = () => useSessionStorage('returnToLanguage')
+
 /** store whether the user has successfully provided a password for a password protected study */
 export const useHasProvidedStudyPassword = (studyShortcode: string): [boolean, () => void] => {
   const [value, setValue] = useSessionStorage(`provided-study-password/${studyShortcode}`)

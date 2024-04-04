@@ -95,7 +95,7 @@ public class SurveyExtService {
 
   public Survey create(String portalShortcode, Survey survey, AdminUser operator) {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    List<Survey> existing = surveyService.findByStableId(survey.getStableId());
+    List<Survey> existing = surveyService.findByStableId(survey.getStableId(), portal.getId());
     if (existing.size() > 0) {
       throw new IllegalArgumentException("A survey with that stableId already exists");
     }
@@ -111,7 +111,7 @@ public class SurveyExtService {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     // Find all of the versions of the specified survey that are in the specified portal
     List<Survey> existingVersions =
-        surveyService.findByStableId(surveyStableId).stream()
+        surveyService.findByStableId(surveyStableId, portal.getId()).stream()
             .filter(survey -> portal.getId().equals(survey.getPortalId()))
             .toList();
 

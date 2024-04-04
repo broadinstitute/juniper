@@ -103,11 +103,12 @@ public class EnrollmentService {
      */
     @Transactional
     public PreEnrollmentResponse createAnonymousPreEnroll(
+            UUID portalId,
             UUID studyEnvironmentId,
             String surveyStableId,
             Integer surveyVersion,
             ParsedPreEnrollResponse parsedResponse) throws JsonProcessingException {
-        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion, portalId).get();
 
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                 .surveyId(survey.getId())

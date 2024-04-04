@@ -8,12 +8,13 @@ import {
   useInvitationType,
   usePreEnrollResponseId,
   usePreRegResponseId,
+  useReturnToLanguage,
   useReturnToStudy
 } from 'browserPersistentState'
 import { userHasJoinedStudy, enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { filterUnjoinableStudies } from '../Navbar'
-import { logError } from '../util/loggingUtils'
+import { filterUnjoinableStudies } from 'Navbar'
+import { logError } from 'util/loggingUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -25,9 +26,11 @@ export const RedirectFromOAuth = () => {
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
   const [invitationType, setInvitationType] = useInvitationType()
+  const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
 
   const defaultEnrollStudy = findDefaultEnrollmentStudy(returnToStudy, portal.portalStudies)
+
 
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
@@ -60,7 +63,7 @@ export const RedirectFromOAuth = () => {
           try {
             const isNewRegistration = auth.user.profile.newUser && !invitationType
             const loginResult = isNewRegistration
-              ? await Api.register({ preRegResponseId, email, accessToken })
+              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage  })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)
@@ -82,6 +85,7 @@ export const RedirectFromOAuth = () => {
           setPreEnrollResponseId(null)
           setReturnToStudy(null)
           setInvitationType(null)
+          setReturnToLanguage(null)
         }
       }
     }

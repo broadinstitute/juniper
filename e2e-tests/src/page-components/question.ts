@@ -1,13 +1,12 @@
 import { Page, expect, Locator } from '@playwright/test'
-import ComponentBase from 'src/models/component-base'
+import WebComponentBase from 'src/page-components/web-component-base'
 import Radiogroup from 'src/page-components/radiogroup'
 import Textbox from 'src/page-components/textbox'
 
-export default class Question extends ComponentBase {
+export default class Question extends WebComponentBase {
   root: Locator
 
   /**
-   *
    * @param {Page} page
    * @param {{parent?: string, qText?: string | RegExp, dataName?: string}} opts
    */
@@ -49,9 +48,10 @@ export default class Question extends ComponentBase {
     return null
   }
 
-  /** Question texts */
-  async title(): Promise<string> {
-    return await (this.locator.locator('.sd-question__title .sv-string-viewer')).innerText()
+  /** Get question texts or title */
+  async texts(): Promise<string> {
+    this.title = await (this.locator.locator('.sd-question__title .sv-string-viewer')).innerText()
+    return this.title
   }
 
   async isRequired(): Promise<boolean> {

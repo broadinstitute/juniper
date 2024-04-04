@@ -1,11 +1,13 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
 import * as process from 'process'
-import { Study } from 'src/data/constants-en'
 import StudyConsent from 'pages/ourhealth/study-consent'
 import StudyCreateAcct from 'pages/ourhealth/study-create-acct'
 import StudyDashboard, { Activities } from 'pages/ourhealth/study-dashboard'
 import { emailAlias, goToStudyEligibility } from 'tests/e2e-utils'
+import data from 'src/data/ourhealth-en.json'
+
+const { PARTICIPANT_EMAIL_1 } = process.env
 
 test.describe('Home page', () => {
   test('UI @ourhealth @registration', {
@@ -13,21 +15,21 @@ test.describe('Home page', () => {
       { type: 'New registration workflow unfinished example', description: 'Participant is older than 18 years' }
     ]
   }, async ({ page }) => {
-    const testEmail = emailAlias(process.env.PARTICIPANT_EMAIL_1!) // not real
+    const testEmail = emailAlias(PARTICIPANT_EMAIL_1 ? PARTICIPANT_EMAIL_1 : 'dbush@broadinstitute.org')
 
     await test.step('Answer "Yes" to all eligibility questions', async () => {
       const prequal = await goToStudyEligibility(page)
 
-      await prequal.select(Study.OurHealth.QLabel.SouthAsianAncestry, 'Yes')
+      await prequal.getQuestion(data.QLabel.SouthAsianAncestry).select('Yes')
       expect(await prequal.progress()).toMatch('Answered 1/4 questions')
 
-      await prequal.select(Study.Common.QLabel.UnderstandEnglish, 'Yes')
+      await prequal.getQuestion(data.QLabel.UnderstandEnglish).select('Yes')
       expect(await prequal.progress()).toMatch('Answered 2/4 questions')
 
-      await prequal.select(Study.Common.QLabel.IsAdult, 'Yes')
+      await prequal.getQuestion(data.QLabel.IsAdult).select('Yes')
       expect(await prequal.progress()).toMatch('Answered 3/4 questions')
 
-      await prequal.select(Study.Common.QLabel.LiveInUS, 'Yes')
+      await prequal.getQuestion(data.QLabel.LiveInUS).select('Yes')
       expect(await prequal.progress()).toMatch('Answered 4/4 questions')
 
       await prequal.submit()
@@ -36,7 +38,7 @@ test.describe('Home page', () => {
     await test.step('Create new account with test email', async () => {
       const createAcct = new StudyCreateAcct(page)
       await createAcct.fillEmail(testEmail)
-      await createAcct.click('button', 'Complete')
+      await createAcct.clickByRole('button', 'Complete')
     })
 
     const dashboard = await test.step('Landing on Dashboard for the first time', async (): Promise<StudyDashboard> => {
@@ -55,7 +57,7 @@ test.describe('Home page', () => {
         }
       }
 
-      await dashboard.click('link', 'Start Consent')
+      await dashboard.clickByRole('link', 'Start Consent')
       return dashboard
     })
 
@@ -65,27 +67,27 @@ test.describe('Home page', () => {
 
       let progress = await consent.progress()
       expect(progress).toStrictEqual('Page 1 of 3')
-      await consent.click('button', 'Next')
+      await consent.clickByRole('button', 'Next')
 
       progress = await consent.progress()
       expect(progress).toStrictEqual('Page 2 of 3')
       await consent.agree()
-      await consent.click('button', 'Next')
+      await consent.clickByRole('button', 'Next')
 
 
       progress = await consent.progress()
       expect(progress).toStrictEqual('Page 3 of 3')
-      await consent.fillIn(Study.Common.QLabel.FullName, 'Tony Junior Stark') // TODO randomize
-      await consent.drawLine(Study.Common.QLabel.Signature)
+      await consent.fillIn(data.QLabel.FullName, 'Tony Junior Stark', page.locator('body')) // TODO randomize
+      await consent.drawSignature(data.QLabel.Signature)
 
-      await consent.click('button', 'Complete')
+      await consent.clickByRole('button', 'Complete')
     })
 
     await test.step('Step 2: Start Surveys', async () => {
       // back on Dashboard automatically
       await dashboard.waitReady()
 
-      await dashboard.click('link', 'Start Surveys')
+      await dashboard.clickByRole('link', 'Start Surveys')
     })
 
     // await page.pause()

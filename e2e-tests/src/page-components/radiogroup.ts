@@ -1,8 +1,11 @@
 import { Locator, Page } from '@playwright/test'
-import ComponentBase from 'src/models/component-base'
+import WebElementBase from 'src/page-components/web-element-base'
 import Question from 'src/page-components/question'
 
-export default class Radiogroup extends  ComponentBase {
+/**
+ * A web element.
+ */
+export default class Radiogroup extends  WebElementBase {
   root: Locator
 
   constructor(page: Page, private readonly question: Question) {

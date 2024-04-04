@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
@@ -30,5 +31,9 @@ public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
                         .mapTo(clazz)
                         .findOne()
         );
+    }
+
+    public void deleteByNotificationId(UUID notificationId) {
+        deleteByProperty("notification_id", notificationId);
     }
 }

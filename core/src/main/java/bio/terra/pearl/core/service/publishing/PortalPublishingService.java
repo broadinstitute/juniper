@@ -10,28 +10,38 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
-import bio.terra.pearl.core.model.publishing.*;
+import bio.terra.pearl.core.model.publishing.ConfigChange;
+import bio.terra.pearl.core.model.publishing.ListChange;
+import bio.terra.pearl.core.model.publishing.ParticipantDashboardAlertChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
+import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
+import bio.terra.pearl.core.model.publishing.VersionedConfigChange;
+import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** dedicated service for applying deltas to portal environments */
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+/**
+ * dedicated service for applying deltas to portal environments
+ */
 @Service
 public class PortalPublishingService {
     private PortalDiffService portalDiffService;
@@ -68,15 +78,19 @@ public class PortalPublishingService {
         this.objectMapper = objectMapper;
     }
 
-    /** updates the dest environment with the given changes */
+    /**
+     * updates the dest environment with the given changes
+     */
     @Transactional
     public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) {
         PortalEnvironment destEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, dest);
         return applyUpdate(destEnv, change, user);
     }
 
-    /** applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
-     * returns the updated environment */
+    /**
+     * applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
+     * returns the updated environment
+     */
     protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) {
         applyChangesToEnvConfig(destEnv, envChanges.configChanges());
 
@@ -84,9 +98,9 @@ public class PortalPublishingService {
         applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
         applyChangesToTriggers(destEnv, envChanges.triggerChanges());
         applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
-        for(StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
+        for (StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
             StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId());
+            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId(), destEnv.getPortalId());
         }
         try {
             PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
@@ -100,7 +114,9 @@ public class PortalPublishingService {
         return destEnv;
     }
 
-    /** updates the passed-in config with the given changes.  Returns the updated config */
+    /**
+     * updates the passed-in config with the given changes.  Returns the updated config
+     */
     protected PortalEnvironmentConfig applyChangesToEnvConfig(PortalEnvironment destEnv,
                                                               List<ConfigChange> configChanges) {
         if (configChanges.isEmpty()) {
@@ -116,18 +132,19 @@ public class PortalPublishingService {
         return portalEnvironmentConfigService.update(destEnv.getPortalEnvironmentConfig());
     }
 
-        protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) {
-            if (!change.isChanged()) {
-                return destEnv;
-            }
-            UUID newSurveyId = null;
-            if (change.newStableId() != null) {
-                newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
-            }
-            destEnv.setPreRegSurveyId(newSurveyId);
-            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, surveyService);
-            return portalEnvironmentService.update(destEnv);
+
+    protected PortalEnvironment applyChangesToPreRegSurvey(PortalEnvironment destEnv, VersionedEntityChange<Survey> change) {
+        if (!change.isChanged()) {
+            return destEnv;
         }
+        UUID newSurveyId = null;
+        if (change.newStableId() != null) {
+            newSurveyId = surveyService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
+        }
+        destEnv.setPreRegSurveyId(newSurveyId);
+        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), destEnv.getPortalId(), change, surveyService);
+        return portalEnvironmentService.update(destEnv);
+    }
 
     protected PortalEnvironment applyChangesToSiteContent(PortalEnvironment destEnv, VersionedEntityChange<SiteContent> change) {
         if (!change.isChanged()) {
@@ -135,34 +152,34 @@ public class PortalPublishingService {
         }
         UUID newDocumentId = null;
         if (change.newStableId() != null) {
-            newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion()).get().getId();
+            newDocumentId = siteContentService.findByStableId(change.newStableId(), change.newVersion(), destEnv.getPortalId()).get().getId();
         }
         destEnv.setSiteContentId(newDocumentId);
-        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), change, siteContentService);
+        PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), destEnv.getPortalId(), change, siteContentService);
         return portalEnvironmentService.update(destEnv);
     }
 
     protected void applyChangesToTriggers(PortalEnvironment destEnv, ListChange<Trigger,
             VersionedConfigChange<EmailTemplate>> listChange) {
-        for(Trigger config : listChange.addedItems()) {
+        for (Trigger config : listChange.addedItems()) {
             config.setPortalEnvironmentId(destEnv.getId());
             triggerService.create(config.cleanForCopying());
             destEnv.getTriggers().add(config);
             PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, emailTemplateService);
         }
-        for(Trigger config : listChange.removedItems()) {
+        for (Trigger config : listChange.removedItems()) {
             triggerService.delete(config.getId(), CascadeProperty.EMPTY_SET);
             destEnv.getTriggers().remove(config);
         }
-        for(VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName());
+        for (VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
+            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName(), destEnv.getPortalId());
         }
     }
 
     protected void applyChangesToParticipantDashboardAlerts(PortalEnvironment destEnv, List<ParticipantDashboardAlertChange> changes) {
-        for(ParticipantDashboardAlertChange change : changes) {
+        for (ParticipantDashboardAlertChange change : changes) {
             Optional<ParticipantDashboardAlert> destAlert = portalDashboardConfigService.findByPortalEnvIdAndTrigger(destEnv.getId(), change.trigger());
-            if(destAlert.isEmpty()) {
+            if (destAlert.isEmpty()) {
                 // The alert doesn't exist in the dest env yet, so default all the required fields before
                 // applying the changes from the change list
                 ParticipantDashboardAlert newAlert = getDefaultDashboardAlert(destEnv, change.trigger());

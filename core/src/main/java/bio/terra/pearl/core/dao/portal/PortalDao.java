@@ -8,11 +8,12 @@ import bio.terra.pearl.core.model.admin.PortalAdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.PortalStudy;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class PortalDao extends BaseMutableJdbiDao<Portal> {
@@ -107,5 +108,16 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     public List<Portal> findByAdminUserId(UUID userId) {
         List<PortalAdminUser> portalAdmins = portalAdminUserDao.findByUserId(userId);
         return findAll(portalAdmins.stream().map(PortalAdminUser::getPortalId).toList());
+    }
+
+    public Optional<Portal> findByPortalEnvironmentId(UUID portalEnvironmentId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " p " +
+                                " inner join portal_environment pe on pe.portal_id = p.id " +
+                                " where pe.id = :portalEnvironmentId " +
+                                " limit 1")
+                        .bind("portalEnvironmentId", portalEnvironmentId)
+                        .mapTo(Portal.class)
+                        .findOne());
     }
 }

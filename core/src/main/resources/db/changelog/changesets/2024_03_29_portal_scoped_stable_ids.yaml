@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: "portal_scoped_stable_ids"
+      author: connorlbark
+      changes:
+        - dropUniqueConstraint:
+            tableName: consent_form
+            constraintName: consent_form_id_published_version
+        - addUniqueConstraint:
+            columnNames: stable_id, portal_id, published_version
+            constraintName: consent_form_id_published_version
+            tableName: consent_form
+
+        - dropUniqueConstraint:
+            tableName: consent_form
+            constraintName: uc_consent_form_stable_id_version
+        - addUniqueConstraint:
+            columnNames: stable_id, version, portal_id
+            constraintName: uc_consent_form_stable_id_version
+            tableName: consent_form
+
+        - dropUniqueConstraint:
+            tableName: email_template
+            constraintName: email_template_id_published_version
+        - addUniqueConstraint:
+            columnNames: stable_id, published_version, portal_id
+            constraintName: email_template_id_published_version
+            tableName: email_template
+
+        - dropUniqueConstraint:
+            tableName: email_template
+            constraintName: uc_email_template_stable_id_version
+        - addUniqueConstraint:
+            columnNames: stable_id, version, portal_id
+            constraintName: uc_email_template_stable_id_version
+            tableName: email_template
+
+        - dropUniqueConstraint:
+            tableName: site_content
+            constraintName: site_content_id_published_version
+        - addUniqueConstraint:
+            columnNames: stable_id, published_version, portal_id
+            constraintName: site_content_id_published_version
+            tableName: site_content
+
+        - dropUniqueConstraint:
+            tableName: survey
+            constraintName: survey_stable_id_published_version
+        - addUniqueConstraint:
+            columnNames: stable_id, published_version, portal_id
+            constraintName: survey_stable_id_published_version
+            tableName: survey
+
+        - dropUniqueConstraint:
+            tableName: survey
+            constraintName: uc_survey_stable_id_version
+        - addUniqueConstraint:
+            columnNames: stable_id, version, portal_id
+            constraintName: uc_survey_stable_id_version
+            tableName: survey
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: consent_form
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: site_content
+
+        - addNotNullConstraint:
+            columnName: portal_id
+            tableName: survey

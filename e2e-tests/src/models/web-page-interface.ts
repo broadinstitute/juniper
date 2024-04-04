@@ -2,12 +2,9 @@ import { Page } from '@playwright/test'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface InterfaceConstructor {
-  new(page: Page): PageInterface;
+  new(page: Page): WebPageInterface;
 }
 
-
-export interface PageInterface {
-  page: Page
-  title: string
+export interface WebPageInterface {
   waitReady(): Promise<this>
 }

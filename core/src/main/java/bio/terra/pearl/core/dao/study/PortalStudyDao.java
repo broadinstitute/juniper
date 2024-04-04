@@ -2,13 +2,13 @@ package bio.terra.pearl.core.dao.study;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.study.PortalStudy;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.study.Study;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
@@ -75,4 +75,5 @@ public class PortalStudyDao extends BaseJdbiDao<PortalStudy> {
     public void deleteByStudyId(UUID studyId) {
         deleteByProperty("study_id", studyId);
     }
+    
 }

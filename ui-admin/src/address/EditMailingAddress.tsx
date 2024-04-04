@@ -14,21 +14,24 @@ import { useUser } from '../user/UserProvider'
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
-  'US',
-  'CA',
-  'GB',
-  'MX',
-  'AU',
-  'TR',
-  'ES',
-  'PL',
-  'DE',
-  'FR',
-  'IT',
-  'CZ',
-  'BR',
-  'SE',
-  'CH'
+  'US'
+  // The backend supports the following countries, but we currently only pay for
+  // US address validation. If we want to support these countries, we'll need to
+  // pay for international address validation.
+  // 'CA',
+  // 'GB',
+  // 'MX',
+  // 'AU',
+  // 'TR',
+  // 'ES',
+  // 'PL',
+  // 'DE',
+  // 'FR',
+  // 'IT',
+  // 'CZ',
+  // 'BR',
+  // 'SE',
+  // 'CH'
 ]
 
 /**

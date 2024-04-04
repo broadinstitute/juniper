@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.ConsentWithResponses;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.consent.ConsentResponseService;
@@ -27,6 +28,7 @@ public class ConsentResponseExtService {
   }
 
   public ConsentWithResponses findWithResponses(
+      String portalShortcode,
       String studyShortcode,
       String envName,
       String stableId,
@@ -34,10 +36,15 @@ public class ConsentResponseExtService {
       String enrolleeShortcode,
       UUID participantUserId) {
     StudyEnvironment studyEnv = requestUtilService.getStudyEnv(studyShortcode, envName);
+    Portal portal =
+        authUtilService
+            .authParticipantToPortal(
+                participantUserId, portalShortcode, EnvironmentName.valueOf(envName))
+            .portal();
     Enrollee enrollee =
         authUtilService.authParticipantUserToEnrollee(participantUserId, enrolleeShortcode);
     return consentResponseService.findWithResponses(
-        studyEnv.getId(), stableId, version, enrollee, participantUserId);
+        portal.getId(), studyEnv.getId(), stableId, version, enrollee, participantUserId);
   }
 
   public HubResponse submitResponse(
