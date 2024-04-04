@@ -1,7 +1,6 @@
 import {
   AddressValidationResult,
   EditAddress,
-  explainAddressValidationResults,
   findDifferencesBetweenObjects,
   MailingAddress,
   SuggestBetterAddressModal
@@ -15,21 +14,24 @@ import { useUser } from '../user/UserProvider'
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
-  'US',
-  'CA',
-  'GB',
-  'MX',
-  'AU',
-  'TR',
-  'ES',
-  'PL',
-  'DE',
-  'FR',
-  'IT',
-  'CZ',
-  'BR',
-  'SE',
-  'CH'
+  'US'
+  // The backend supports the following countries, but we currently only pay for
+  // US address validation. If we want to support these countries, we'll need to
+  // pay for international address validation.
+  // 'CA',
+  // 'GB',
+  // 'MX',
+  // 'AU',
+  // 'TR',
+  // 'ES',
+  // 'PL',
+  // 'DE',
+  // 'FR',
+  // 'IT',
+  // 'CZ',
+  // 'BR',
+  // 'SE',
+  // 'CH'
 ]
 
 /**
@@ -84,13 +86,6 @@ export default function EditMailingAddress(
       showLabels={false}
       validationResult={addressValidationResults}
     />
-    {<div className={'mt-2 mb-0'}>
-      {explainAddressValidationResults(addressValidationResults).map(
-        (explanation, idx) => {
-          return <p key={idx} className='text-danger'>{explanation}</p>
-        }
-      )}
-    </div>}
     {(user.user.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
           <div

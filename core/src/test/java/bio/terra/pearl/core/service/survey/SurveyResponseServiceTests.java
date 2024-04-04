@@ -104,7 +104,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build());
 
         SurveyWithResponse survWithResponse = surveyResponseService.findWithActiveResponse(enrollee.getStudyEnvironmentId(),
-                survey.getStableId(), survey.getVersion(), enrollee, null);
+                survey.getPortalId(), survey.getStableId(), survey.getVersion(), enrollee, null);
         assertThat(survWithResponse, notNullValue());
         assertThat(survWithResponse.surveyResponse(), notNullValue());
         assertThat(survWithResponse.surveyResponse().getAnswers(), hasSize(2));
@@ -180,7 +180,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build();
 
         surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
-                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the response was created and task status updated to viewed
         task = participantTaskService.find(task.getId()).orElseThrow();
@@ -197,7 +197,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build();
 
         surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
-                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the response was created and task status updated to viewed
         task = participantTaskService.find(task.getId()).orElseThrow();
@@ -230,7 +230,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build();
 
         surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
-                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the task response was created and task status updated to complete
         task = participantTaskService.find(task.getId()).orElseThrow();
@@ -250,7 +250,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .build();
 
         surveyResponseService.updateResponse(response, enrolleeBundle.enrollee().getParticipantUserId(),
-                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId());
+                enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the task status remains complete
         task = participantTaskService.find(task.getId()).orElseThrow();

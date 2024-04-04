@@ -1580,7 +1580,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: cleanFileName, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: version, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: image data

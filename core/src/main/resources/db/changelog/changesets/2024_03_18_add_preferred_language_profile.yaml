@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_preferred_language_profile"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: profile
+            columns:
+              - column: { name: preferred_language, type: text }

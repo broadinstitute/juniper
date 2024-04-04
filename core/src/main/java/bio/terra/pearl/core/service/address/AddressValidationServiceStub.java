@@ -17,6 +17,7 @@ import java.util.Objects;
 public class AddressValidationServiceStub implements AddressValidationService {
 
     private static final String BAD_ADDRESS_INDICATOR = "BAD";
+    private static final String INVALID_INDICATOR = "INVALID";
     private static final String IMPROVABLE_ADDRESS_INDICATOR = "IMPROVABLE";
     private static final String INFERENCE_ADDRESS_INDICATOR = "INFERENCE";
     private static final String ERROR_INDICATOR = "ERROR";
@@ -126,51 +127,26 @@ public class AddressValidationServiceStub implements AddressValidationService {
     }
 
     private List<AddressComponent> findMissingComponents(MailingAddress addr) {
-        List<AddressComponent> missingComponents = new ArrayList<>(findMissingComponentsInStreet1(addr.getStreet1()));
-
-        if (StringUtils.isEmpty(addr.getPostalCode())) {
-            missingComponents.add(AddressComponent.POSTAL_CODE);
-        }
-
-        if (StringUtils.isEmpty(addr.getCity())) {
-            missingComponents.add(AddressComponent.CITY);
-        }
-
-        if (StringUtils.isEmpty(addr.getCountry())) {
-            missingComponents.add(AddressComponent.COUNTRY);
-        }
-
-        if (StringUtils.isEmpty(addr.getState())) {
-            missingComponents.add(AddressComponent.STATE_PROVINCE);
-        }
-
-        return missingComponents;
-    }
-
-    private static final List<String> possibleStreetTypes = List.of(
-            "st", "street", "ln", "lane", "rd", "road", "way", "avenue", "ave", "drive", "dr"
-    );
-
-    private List<AddressComponent> findMissingComponentsInStreet1(String street1) {
         List<AddressComponent> missingComponents = new ArrayList<>();
 
-        if (StringUtils.isEmpty(street1)) {
-            missingComponents.add(AddressComponent.STREET_NAME);
-            missingComponents.add(AddressComponent.STREET_TYPE);
-            missingComponents.add(AddressComponent.HOUSE_NUMBER);
+        if (Objects.isNull(addr.getStreet1())) {
             return missingComponents;
         }
 
-        String[] splitStreet1 = StringUtils.split(street1);
+        if (addr.getStreet1().contains(INVALID_INDICATOR)) {
+            String[] split = StringUtils.split(addr.getStreet1());
 
-        try {
-            Integer.parseInt(splitStreet1[0]);
-        } catch (NumberFormatException e) {
-            missingComponents.add(AddressComponent.HOUSE_NUMBER);
-        }
+            for (String token : split) {
+                if (token.contains(INVALID_INDICATOR)) {
+                    String invalidComponent = token.substring(INVALID_INDICATOR.length() + 1);
 
-        if (!possibleStreetTypes.contains(splitStreet1[splitStreet1.length - 1].toLowerCase())) {
-            missingComponents.add(AddressComponent.STREET_TYPE);
+                    try {
+                        missingComponents.add(AddressComponent.valueOf(invalidComponent.toUpperCase()));
+                    } catch (IllegalArgumentException e) {
+                        // ignore
+                    }
+                }
+            }
         }
 
         return missingComponents;

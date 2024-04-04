@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { isNil, sortBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { getAllCountries } from '../i18nUtils'
-import { isAddressFieldValid } from '../addressUtils'
+import { getErrorsByField, isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
 import { useI18n } from '../participant/I18nProvider'
 
@@ -16,12 +16,14 @@ export function EditAddress(
     mailingAddress,
     setMailingAddress,
     validationResult,
-    showLabels = true
+    showLabels = true,
+    showErrors = true
   }: {
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,
     validationResult?: AddressValidationResult,
-    showLabels?: boolean
+    showLabels?: boolean,
+    showErrors?: boolean
   }
 ) {
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
@@ -220,6 +222,12 @@ export function EditAddress(
           onChange={val => onFieldChange('country', val ? val.value : '')}
         />
       </div>
+
+      {
+        showErrors && Object.values(getErrorsByField(validationResult, i18n)).map(
+          errors => errors.map(error => <div key={error} className={'text-danger'}>{error}</div>)
+        )
+      }
     </div>
   </>
 }

@@ -51,7 +51,7 @@ export default function HubPage() {
       <DocumentTitle title="Dashboard" />
       <div
         className="hub-dashboard-background flex-grow-1 mb-2"
-        style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
+        style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{

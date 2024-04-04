@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.portal;
 
-import bio.terra.pearl.core.dao.admin.PortalAdminUserDao;
 import bio.terra.pearl.core.dao.portal.PortalDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -151,6 +150,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             }
         }
         return false;
+    }
+
+    public Optional<Portal> findByPortalEnvironmentId(UUID portalEnvironmentId) {
+        return dao.findByPortalEnvironmentId(portalEnvironmentId);
     }
 
     public enum AllowedCascades implements CascadeProperty {

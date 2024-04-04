@@ -3,6 +3,7 @@ import { cssVar, parseToRgb, tint } from 'polished'
 
 export type BrandConfiguration = {
   brandColor?: string;
+  backgroundColor?: string;
 }
 
 /**
@@ -10,11 +11,13 @@ export type BrandConfiguration = {
  */
 export const brandStyles = (config: BrandConfiguration): CSSProperties => {
   const brandColor = config.brandColor || cssVar('--bs-blue') as string
+  const backgroundColor = config.backgroundColor || '#fff'
   const brandColorRgb = parseToRgb(brandColor)
 
   return {
     // Custom properties used in index.css.
     '--brand-color': brandColor,
+    '--dashboard-background-color': backgroundColor,
     '--brand-color-rgb': `${brandColorRgb.red}, ${brandColorRgb.green}, ${brandColorRgb.blue}`,
     '--brand-color-contrast': '#fff',
     '--brand-color-shift-10': tint(0.10, brandColor),

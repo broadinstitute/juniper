@@ -26,6 +26,7 @@ export type Survey = VersionedForm & {
   allowParticipantStart: boolean
   allowParticipantReedit: boolean
   prepopulate: boolean
+  eligibilityRule?: string
 }
 
 export const defaultSurvey = {

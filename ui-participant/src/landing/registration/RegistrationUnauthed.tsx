@@ -5,7 +5,7 @@ import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
-import { defaultSurvey } from '@juniper/ui-core'
+import { defaultSurvey, useI18n } from '@juniper/ui-core'
 
 /** This registration survey is a hardcoded survey--will be deprecated soon */
 const registrationSurvey = {
@@ -59,6 +59,7 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
   const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
   const { loginUser } = useUser()
+  const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
 
   /** submit the response */
@@ -73,6 +74,7 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
     const resumeData = surveyModel?.data
     Api.internalRegister({
       preRegResponseId: preRegResponseId as string,
+      preferredLanguage: selectedLanguage,
       fullData: registrationInfo
     }).then(response => {
       loginUser({

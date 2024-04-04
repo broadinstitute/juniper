@@ -5,7 +5,10 @@ import { diffWords } from 'diff'
 import classNames from 'classnames'
 
 /**
- * TODO
+ * Formats the address for display. If showDiff is provided, it will highlight the
+ * differences between the two addresses.
+ * <br/>
+ * Future work may include internationalizing address formatting.
  */
 export default function FormattedAddress({
   address,

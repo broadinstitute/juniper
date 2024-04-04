@@ -34,6 +34,7 @@ describe('configChangeList', () => {
       addedItems: [],
       changedItems: [{
         sourceId: 'someGuid',
+        destId: 'aotherGuid',
         configChanges: [],
         documentChange: { oldVersion: 1, newVersion: 2, oldStableId: 'foo', newStableId: 'bar', changed: true }
       }],
