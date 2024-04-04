@@ -3,7 +3,7 @@ import { useUser } from '../providers/UserProvider'
 import HubPageParticipantSelectorItem from './HubPageParticipantSelectorItem'
 
 /**
- * Item in a dropdown list which allows the user to switch between different participants.
+ * Selector for changing participant on the hub page. Works by changing the active user in local storage.
  */
 export default function HubPageParticipantSelector() {
   const {
