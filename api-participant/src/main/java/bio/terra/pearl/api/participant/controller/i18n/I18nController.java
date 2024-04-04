@@ -33,7 +33,6 @@ public class I18nController implements I18nApi {
       // default to English
       languageTexts = languageTextService.getLanguageTextMapForLanguage(portal.getId(), "en");
     }
-
     return ResponseEntity.ok(languageTexts);
   }
 }

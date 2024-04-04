@@ -272,7 +272,7 @@ public class SurveyParseUtils {
     }
 
     public static String formToLanguageTextKey(String stableId, Integer version) {
-        return stableId + ":" + version;
+        return String.format("%s:%s", stableId, version);
     }
 
 }

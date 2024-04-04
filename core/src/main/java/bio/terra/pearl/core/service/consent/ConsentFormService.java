@@ -49,7 +49,8 @@ public class ConsentFormService extends VersionedEntityService<ConsentForm, Cons
 
         // parse the consent content to get the titles and create the language texts
         Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(newForm.getContent(), newForm.getName());
-        List<LanguageText> texts = SurveyParseUtils.titlesToLanguageTexts(newForm.getStableId() + ":" + newForm.getVersion(), newForm.getPortalId(), parsedTitles);
+        String formLanguageTextKey = SurveyParseUtils.formToLanguageTextKey(newForm.getStableId(), newForm.getVersion());
+        List<LanguageText> texts = SurveyParseUtils.titlesToLanguageTexts(formLanguageTextKey, newForm.getPortalId(), parsedTitles);
         languageTextDao.bulkCreate(texts);
 
         return newForm;
