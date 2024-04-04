@@ -4,6 +4,11 @@
   "name": "Family History",
   "footer": "Unless otherwise mentioned, all questions are sourced from the All of Us research study.",
   "jsonContent": {
+    "title": {
+      "default": "Family History",
+      "es": "Historial Familiar",
+      "dev": "DEV_Family History"
+    },
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
     "questionTemplates": [

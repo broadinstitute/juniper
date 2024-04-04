@@ -46,7 +46,7 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
         languageTextFactory.buildPersisted(testName, "logout", "testLang");
         languageTextFactory.buildPersisted(testName, "logout", "otherTestLang");
 
-        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage("testLang");
+        Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage(null, "testLang");
 
         assertThat(langTexts.size(), equalTo(2));
         assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
