@@ -53,9 +53,10 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
 
         Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage(null, "testLang");
 
-        assertThat(langTexts.size(), equalTo(2));
-        assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
-        assertThat(langTexts.get(testName + "logout"), equalTo(testName + " text"));
+        assertThat(langTexts, equalTo(Map.of(
+            testName + "login", testName + " text",
+            testName + "logout", testName + " text"
+        )));
     }
 
     @Test
@@ -75,10 +76,11 @@ public class LanguageTextServiceTests extends BaseSpringBootTest  {
         Map<String, String> langTexts = languageTextService.getLanguageTextMapForLanguage(portalA.getId(), "testLang");
 
         //This should only return the texts for portalA, as well as the global texts
-        assertThat(langTexts.size(), equalTo(3));
-        assertThat(langTexts.get(testName + "login"), equalTo(testName + " text"));
-        assertThat(langTexts.get(testName + "logout"), equalTo(testName + " text"));
-        assertThat(langTexts.get(testName + "globalKey"), equalTo(testName + " text"));
+        assertThat(langTexts, equalTo(Map.of(
+            testName + "login", testName + " text",
+            testName + "logout", testName + " text",
+            testName + "globalKey", testName + " text"
+        )));
     }
 
 }
