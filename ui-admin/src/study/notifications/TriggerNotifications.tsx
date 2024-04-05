@@ -7,6 +7,8 @@ import Api, { Notification } from '../../api/api'
 import { basicTableLayout } from '../../util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { NavLink, useParams } from 'react-router-dom'
+import InfoPopup from '../../components/forms/InfoPopup'
+import { renderEmailActivityIcon } from '../participants/enrolleeView/EnrolleeTimeline'
 
 /** loads the list of notifications for a given trigger config */
 export default function TriggerNotifications({ studyEnvContext }:
@@ -41,6 +43,25 @@ export default function TriggerNotifications({ studyEnvContext }:
     {
       header: 'delivery status',
       accessorKey: 'deliveryStatus'
+    },
+    {
+      id: 'opened',
+      header: () =>
+        <div className={'d-flex align-items-center'}>
+          <span>opened</span>
+          <div onClick={e => e.stopPropagation()}><InfoPopup
+            content={
+              `Email activity may be unavailable due to a participant's email privacy
+             settings. Additionally, emails sent more than 30 days ago may not have
+             email activity associated with them.
+             Note: please allow up to an hour for new activity to be reflected here.`
+            }
+          /></div>
+        </div>,
+      accessorKey: 'opened',
+      cell: ({ row }) => {
+        return renderEmailActivityIcon(row.original)
+      }
     },
     {
       header: 'time',
