@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.controller.enrollee;
 import bio.terra.pearl.api.admin.api.EnrolleeSearchApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
+import bio.terra.pearl.api.admin.service.enrollee.EnrolleeSearchExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
@@ -23,6 +24,8 @@ import org.springframework.stereotype.Controller;
 public class EnrolleeSearchController implements EnrolleeSearchApi {
   private AuthUtilService authUtilService;
   private EnrolleeExtService enrolleeExtService;
+  private EnrolleeSearchExtService enrolleeSearchExtService;
+  ;
   private HttpServletRequest request;
   private ObjectMapper objectMapper;
   private FacetValueFactory facetValueFactory;
@@ -30,11 +33,13 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
   public EnrolleeSearchController(
       AuthUtilService authUtilService,
       EnrolleeExtService enrolleeExtService,
+      EnrolleeSearchExtService enrolleeSearchExtService,
       HttpServletRequest request,
       ObjectMapper objectMapper,
       FacetValueFactory facetValueFactory) {
     this.authUtilService = authUtilService;
     this.enrolleeExtService = enrolleeExtService;
+    this.enrolleeSearchExtService = enrolleeSearchExtService;
     this.request = request;
     this.objectMapper = objectMapper;
     this.facetValueFactory = facetValueFactory;
@@ -101,5 +106,14 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
               facetValues.add(facetValue);
             });
     return facetValues;
+  }
+
+  @Override
+  public ResponseEntity<Object> getExpressionSearchFacets(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        this.enrolleeSearchExtService.getExpressionSearchFacets(
+            user, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName)));
   }
 }

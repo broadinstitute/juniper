@@ -2,13 +2,13 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.survey.Survey;
+import org.jdbi.v3.core.Jdbi;
+import org.springframework.stereotype.Component;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.jdbi.v3.core.Jdbi;
-import org.springframework.stereotype.Component;
 
 @Component
 public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
@@ -53,6 +53,18 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
                         from survey 
                         where id IN (<ids>);""".formatted(columnsWithNoContentString))
                         .bindList("ids", ids)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    public List<Survey> findByStudyEnvironmentIdWithContent(UUID studyEnvironmentId) {
+        return jdbi.withHandle(
+                handle -> handle.createQuery("""
+                                SELECT s.* FROM survey s
+                                    INNER JOIN study_environment_survey ses ON ses.survey_id = s.id
+                                    WHERE ses.study_environment_id = :studyEnvironmentId""")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
                         .mapTo(clazz)
                         .list()
         );

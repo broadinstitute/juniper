@@ -6,27 +6,38 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.search.terms.ProfileTerm;
+import bio.terra.pearl.core.service.search.terms.SearchValue;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
+import bio.terra.pearl.core.service.survey.SurveyService;
+import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
-import org.springframework.stereotype.Service;
+import java.util.UUID;
 
 @Service
 public class EnrolleeSearchService {
     private final EnrolleeSearchDao enrolleeSearchDao;
     private final ParticipantTaskDao participantTaskDao;
     private final StudyEnvironmentService studyEnvironmentService;
+    private final PortalService portalService;
+    private final SurveyService surveyService;
 
-    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService) {
+    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService, PortalService portalService, SurveyService surveyService) {
         this.enrolleeSearchDao = enrolleeSearchDao;
         this.participantTaskDao = participantTaskDao;
         this.studyEnvironmentService = studyEnvironmentService;
+        this.portalService = portalService;
+        this.surveyService = surveyService;
     }
+
 
     public List<EnrolleeSearchResult> search(String studyShortcode, EnvironmentName envName,
                                             List<SqlSearchableFacet> facets) {
@@ -61,5 +72,25 @@ public class EnrolleeSearchService {
 
         tasksFacet.addOptions(status);
         return tasksFacet;
+    }
+
+    public Map<String, SearchValue.SearchValueType> getExpressionSearchFacetsForStudyEnv(UUID studyEnvId) {
+
+        Map<String, SearchValue.SearchValueType> fields = new HashMap<>();
+        // profile fields
+        ProfileTerm.FIELDS.forEach((term, type) -> fields.put("profile." + term, type));
+        // age
+        fields.put("age", SearchValue.SearchValueType.INTEGER);
+        // answers
+        List<Survey> surveys = surveyService.findByStudyEnvironmentIdWithContent(studyEnvId);
+        for (Survey survey : surveys) {
+            surveyService
+                    .getSurveyQuestionDefinitions(survey)
+                    .forEach(def -> {
+                        fields.put("answer." + def.getSurveyStableId() + "." + def.getQuestionStableId(), SearchValue.SearchValueType.STRING);
+                    });
+        }
+
+        return fields;
     }
 }
