@@ -23,6 +23,7 @@ type UsePrintableConsentArgs = {
   version: number
 }
 
+/** hook for loading a survey in printable format */
 const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
 
@@ -70,8 +71,7 @@ const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   return { loading, surveyModel }
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** renders a completed survey and automatically pops up a print dialog */
 const PrintSurveyView = () => {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()

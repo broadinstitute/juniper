@@ -6,7 +6,7 @@ import { doApiLoad } from 'api/api-utils'
 import { successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 
-/** control for downloading portal configs as a zip file */
+/** control for executing ad-hoc populate commands */
 export default function PopulateCommand() {
   const [isLoading, setIsLoading] = useState(false)
   const [command, setCommand] = useState('')

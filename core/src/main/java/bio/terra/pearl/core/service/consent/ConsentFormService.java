@@ -2,7 +2,6 @@ package bio.terra.pearl.core.service.consent;
 
 import bio.terra.pearl.core.dao.consent.ConsentFormDao;
 import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
