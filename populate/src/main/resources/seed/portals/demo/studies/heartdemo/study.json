@@ -13,8 +13,7 @@
     "surveys/socialHealth.json",
     "surveys/socialHealthV2.json",
     "surveys/socialHealthV3.json",
-    "surveys/sandboxSurvey.json",
-    "surveys/consentSurvey.json"
+    "surveys/sandboxSurvey.json"
   ],
   "consentFormFiles": [
     "surveys/ourHealthConsent.json"
@@ -51,8 +50,7 @@
         {"populateFileName": "surveys/socialHealth.json", "active": false},
         {"populateFileName": "surveys/socialHealthV2.json", "active": false},
         {"populateFileName": "surveys/socialHealthV3.json"},
-        {"populateFileName": "surveys/sandboxSurvey.json"},
-        {"populateFileName": "surveys/consentSurvey.json"}
+        {"populateFileName": "surveys/sandboxSurvey.json"}
       ],
       "configuredConsentDtos": [
         {
@@ -139,8 +137,7 @@
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"},
-        {"populateFileName": "surveys/consentSurvey.json"}
+        {"populateFileName": "surveys/socialHealthV2.json"}
       ],
       "configuredConsentDtos": [
         {
@@ -191,8 +188,7 @@
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"},
-        {"populateFileName": "surveys/consentSurvey.json"}
+        {"populateFileName": "surveys/socialHealthV2.json"}
       ],
       "configuredConsentDtos": [
         {
