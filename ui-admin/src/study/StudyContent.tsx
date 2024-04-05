@@ -123,18 +123,8 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                     </Link>
                   </li>
                 }) }
-                <li>
-                  { !isReadOnlyEnv && <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
-                    setShowCreateConsentModal(!showCreateConsentModal)
-                  }}>
-                    <FontAwesomeIcon icon={faPlus}/> Add
-                  </button> }
-                </li>
               </ul>
             </div>
-          </li>
-          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
-            <h6>Super cool consent forms</h6>
             <div className="flex-grow-1 pt-3">
               <SurveyEnvironmentTable stableIds={consentSurveyStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
@@ -147,7 +137,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                 showDeleteSurveyModal={showDeleteSurveyModal}
               />
               <div>
-                <Button variant="secondary" data-testid={'addResearchSurvey'} onClick={() => {
+                <Button variant="secondary" data-testid={'addConsentSurvey'} onClick={() => {
                   setCreateSurveyType('CONSENT')
                 }}>
                   <FontAwesomeIcon icon={faPlus}/> Add
