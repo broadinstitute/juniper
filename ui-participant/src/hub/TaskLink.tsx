@@ -86,7 +86,7 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
 export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, studyShortcode: string): string {
   if (task.taskType === 'CONSENT') {
     return `study/${studyShortcode}/enrollee/${enrolleeShortcode}/consent/${task.targetStableId}`
-      + `/${task.targetAssignedVersion}`
+      + `/${task.targetAssignedVersion}?taskId=${task.id}`
   } else if (task.taskType === 'SURVEY') {
     return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/survey/${task.targetStableId}`
       + `/${task.targetAssignedVersion}?taskId=${task.id}`

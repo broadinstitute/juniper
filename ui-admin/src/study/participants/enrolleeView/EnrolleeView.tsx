@@ -74,6 +74,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     .filter(survey => survey.survey.surveyType === 'RESEARCH')
   const outreachSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'OUTREACH')
+  const consentSurveys = surveys
+    .filter(survey => survey.survey.surveyType === 'CONSENT')
 
   const consents = currentEnv.configuredConsents
   const consentMap: ConsentResponseMapT = {}
@@ -129,6 +131,16 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                         {isConsented(consentMap[stableId].responses) &&
                           statusDisplayMap['COMPLETE']
                         }
+                      </li>
+                    })}
+                    {consentSurveys.map(survey => {
+                      const stableId = survey.survey.stableId
+                      return <li className="mb-2 d-flex justify-content-between
+                        align-items-center" key={stableId}>
+                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                          {survey.survey.name}
+                        </NavLink>
+                        {badgeForResponses(responseMap[stableId].responses)}
                       </li>
                     })}
                   </ul>}/>

@@ -11,9 +11,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.workflow.Event;
-import bio.terra.pearl.core.model.workflow.EventClass;
-import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.*;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.kit.KitStatusEvent;
@@ -79,6 +77,23 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
                 response.getConsentFormId(), response.isConsented());
+        saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
+        applicationEventPublisher.publishEvent(event);
+        return event;
+    }
+
+    public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee,
+                                                            PortalParticipantUser ppUser, SurveyResponse response,
+                                                            ParticipantTask task) {
+        EnrolleeConsentEvent event = EnrolleeConsentEvent.builder()
+                .surveyResponse(response)
+                .enrollee(enrollee)
+                .portalParticipantUser(ppUser)
+                .build();
+        populateEvent(event);
+        log.info("consent event for enrollee {}, studyEnv {} - form {}, consented - {}",
+                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
+                response.getSurveyId(), task.getStatus().equals(TaskStatus.COMPLETE));
         saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;

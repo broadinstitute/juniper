@@ -36,6 +36,8 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     ...defaultSurvey,
     autoUpdateTaskAssignments: type === 'OUTREACH',
     assignToExistingEnrollees: type === 'OUTREACH',
+    allowParticipantReedit: type !== 'CONSENT',
+    allowAdminEdit: type !== 'CONSENT',
     stableId: '',
     name: '',
     surveyType: type,
