@@ -791,7 +791,7 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSearchFacetsV2(portalShortcode: string, studyShortcode: string, envName: string):
+  async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<{ [index: string]: SearchValueType }> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())

@@ -23,7 +23,7 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
   const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
   const { isLoading } = useLoadingEffect(async () => {
-    const facets = await Api.getSearchFacetsV2(
+    const facets = await Api.getExpressionSearchFacets(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName)
