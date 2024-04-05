@@ -29,12 +29,19 @@ public class TimeShiftPopulateDao {
     );
   }
 
+  /** updat ethe survey and answers to be created at the given time */
   public void changeSurveyResponseTime(UUID surveyResponseId, Instant responseTime) {
     jdbi.withHandle(handle ->
         handle.createUpdate("update survey_response set created_at = :responseTime where id = :surveyResponseId;")
             .bind("surveyResponseId", surveyResponseId)
             .bind("responseTime", responseTime)
             .execute()
+    );
+    jdbi.withHandle(handle ->
+            handle.createUpdate("update answer set created_at = :responseTime where survey_response_id = :surveyResponseId;")
+                    .bind("surveyResponseId", surveyResponseId)
+                    .bind("responseTime", responseTime)
+                    .execute()
     );
   }
 

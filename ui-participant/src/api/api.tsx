@@ -343,7 +343,8 @@ export default {
     const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/consents/${stableId}/${version}`
     const response = await fetch(url, { headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
+    // don't alert errors since we'll fall back to looking for a survey
+    return await this.processJsonResponse(response, { alertErrors: false })
   },
 
   async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response }: {

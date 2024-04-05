@@ -130,7 +130,7 @@ public class EnrolleeExportService {
                 groupingBy(cfgSurvey -> cfgSurvey.getSurvey().getStableId())
         );
 
-        // sort by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
+        // sort by surveyType, then by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
         List<Map.Entry<String, List<StudyEnvironmentSurvey>>> sortedCfgSurveysByStableId = configuredSurveysByStableId.entrySet()
                 .stream().sorted(Comparator.comparing(entry ->
                         SURVEY_TYPE_EXPORT_ORDER.indexOf(((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurvey().getSurveyType()))
