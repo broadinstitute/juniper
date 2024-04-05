@@ -148,8 +148,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .build();
 
         // process any answers that need to be propagated elsewhere to the data model
-        answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
-                survey.getAnswerMappings(), ppUser, auditInfo);
+        answerProcessingService.processAllAnswerMappings(
+                enrollee,
+                responseDto.getAnswers(),
+                survey.getAnswerMappings(),
+                ppUser,
+                auditInfo);
 
         // now update the task status and response id
         updateTaskToResponse(task, response, updatedAnswers, auditInfo);

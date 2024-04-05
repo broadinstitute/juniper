@@ -1,14 +1,15 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,12 +48,17 @@ public class AnswerProcessingService {
      * also logs the changes as persisted DataChangeRecords
      * */
     @Transactional
-    public void processAllAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
-                                         PortalParticipantUser ppUser, DataAuditInfo auditInfo) {
+    public void processAllAnswerMappings(
+            Enrollee enrollee,
+            List<Answer> answers,
+            List<AnswerMapping> mappings,
+            PortalParticipantUser operator,
+            DataAuditInfo auditInfo) {
         if (mappings.isEmpty()) {
             return;
         }
-        processProfileAnswerMappings(answers, mappings, ppUser, auditInfo);
+        processProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
+        processProxyProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
     }
 
     /**
@@ -60,16 +66,47 @@ public class AnswerProcessingService {
      * this does not load the participant's profile, and instead returns an object with a null 'obj' and an empty changelist
      */
     @Transactional
-    public void processProfileAnswerMappings(List<Answer> answers, List<AnswerMapping> mappings,
-                                             PortalParticipantUser ppUser, DataAuditInfo auditInfo) {
+    public void processProfileAnswerMappings(
+            Enrollee enrollee,
+            List<Answer> answers,
+            List<AnswerMapping> mappings,
+            PortalParticipantUser operator,
+            DataAuditInfo auditInfo) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
         if (profileMappings.isEmpty() || !hasTargetedChanges(profileMappings, answers, AnswerMappingTargetType.PROFILE)) {
             return;
         }
-        Profile profile = profileService.loadWithMailingAddress(ppUser.getProfileId()).get();
-        mapValuesToType(answers, profileMappings,
-                profile, AnswerMappingTargetType.PROFILE);
+        Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
+
+        mapValuesToType(
+                answers,
+                profileMappings,
+                profile,
+                AnswerMappingTargetType.PROFILE);
+
+        profileService.updateWithMailingAddress(profile, auditInfo);
+    }
+
+    @Transactional
+    public void processProxyProfileAnswerMappings(
+            Enrollee enrollee,
+            List<Answer> answers,
+            List<AnswerMapping> mappings,
+            PortalParticipantUser operator,
+            DataAuditInfo auditInfo) {
+        List<AnswerMapping> proxyProfileMappings = mappings.stream().filter(mapping ->
+                mapping.getTargetType().equals(AnswerMappingTargetType.PROXY_PROFILE)).toList();
+        if (proxyProfileMappings.isEmpty() || !hasTargetedChanges(proxyProfileMappings, answers, AnswerMappingTargetType.PROXY_PROFILE)) {
+            return;
+        }
+        // grab the operator (or the proxy's) profile to update it
+        Profile profile = profileService.loadWithMailingAddress(operator.getProfileId()).get();
+        mapValuesToType(
+                answers,
+                proxyProfileMappings,
+                profile,
+                AnswerMappingTargetType.PROXY_PROFILE);
 
         profileService.updateWithMailingAddress(profile, auditInfo);
     }
