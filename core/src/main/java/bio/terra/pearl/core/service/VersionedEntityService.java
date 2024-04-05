@@ -1,10 +1,8 @@
 package bio.terra.pearl.core.service;
 
 import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
-import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
-import bio.terra.pearl.core.model.survey.Survey;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -17,20 +15,33 @@ public abstract class VersionedEntityService<T extends BaseEntity & Versioned, D
     public VersionedEntityService(D dao) {
         super(dao);
     }
-    public Optional<T> findByStableId(String stableId, int version) {
-        return dao.findByStableId(stableId, version);
+
+    public Optional<T> findByStableId(String stableId, int version, UUID portalId) {
+        return dao.findByStableId(stableId, version, portalId);
     }
 
-    public List<T> findByStableId(String stableId) {
-        return dao.findByStableId(stableId);
+    public Optional<T> findByStableIdAndPortalShortcode(String stableId, int version, String portalShortcode) {
+        return dao.findByStableIdAndPortalShortcode(stableId, version, portalShortcode);
     }
 
-    public List<T> findByStableIds(List<String> stableIds, List<Integer> versions) {
-        return dao.findByStableIds(stableIds, versions);
+    public List<T> findByStableId(String stableId, UUID portalId) {
+        return dao.findByStableId(stableId, portalId);
     }
 
-    public int getNextVersion(String stableId) {
-        return dao.getNextVersion(stableId);
+    public List<T> findByStableIdAndPortalShortcode(String stableId, String portalShortcode) {
+        return dao.findByStableIdAndPortalShortcode(stableId, portalShortcode);
+    }
+
+    public List<T> findByStableIds(List<String> stableIds, List<Integer> versions, List<UUID> portalIds) {
+        return dao.findByStableIds(stableIds, versions, portalIds);
+    }
+
+    public int getNextVersion(String stableId, UUID portalId) {
+        return dao.getNextVersion(stableId, portalId);
+    }
+
+    public int getNextVersionByPortalShortcode(String stableId, String portalShortcode) {
+        return dao.getNextVersionByPortalShortcode(stableId, portalShortcode);
     }
 
     @Transactional
@@ -40,7 +51,7 @@ public abstract class VersionedEntityService<T extends BaseEntity & Versioned, D
             // this survey already has a published version, do not reassign
             return;
         }
-        int nextVersion = dao.getNextPublishedVersion(entity.getStableId());
+        int nextVersion = dao.getNextPublishedVersion(entity.getStableId(), entity.getPortalId());
         entity.setPublishedVersion(nextVersion);
         dao.setPublishedVersion(id, nextVersion);
     }

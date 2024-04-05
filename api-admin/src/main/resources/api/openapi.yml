@@ -101,6 +101,19 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/i18n/v1:
+    get:
+      summary: Lists the language texts for a given language
+      tags: [ i18n ]
+      operationId: listLanguageTexts
+      parameters:
+        - { name: language, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/adminUsers:
     get:
       summary: Gets the admin users specific to this portal
@@ -528,10 +541,9 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
-        description: JSON array of enrollee shortcodes
+        description: kit request list creation dto
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
@@ -849,7 +861,10 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-        - { name: kitType, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: kit request creation dto
+        content: { application/json: { schema: { type: object } } }
       responses:
         '200':
           description: Kit request
@@ -1159,41 +1174,20 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/adminUser/v1/{id}:
+  /api/adminUsers/v1/{id}:
     get:
       summary: Gets an admin user
       tags: [ admin_user ]
       operationId: get
       parameters:
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: portalShortcode, in: query, required: false, schema: { type: string } }
       responses:
         '200':
-          description: admin user object
-          content: { application/json: { schema: { $ref: '#/components/schemas/AdminUserDto' } } }
+          description: admin user object with associated roles
+          content: { application/json: { schema:  { type: object } } }
         '404':
           description: admin user not found
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/adminUser/v1/{id}/roles:
-    post:
-      summary: Sets/updates the roles for an admin user
-      tags: [ admin_user ]
-      operationId: setRoles
-      parameters:
-        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RoleList'
-      responses:
-        '200':
-          description: roles updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoleList'
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}:
@@ -1364,6 +1358,7 @@ paths:
       parameters:
         - { name: filePathName, in: query, required: true, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       responses:
         '201':
           description: portal object
@@ -1380,6 +1375,7 @@ paths:
       operationId: uploadPortal
       parameters:
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+        - { name: shortcodeOverride, in: query, required: false, schema: { type: string } }
       requestBody:
         content:
           multipart/form-data:
@@ -1600,7 +1596,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: cleanFileName, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: version, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: image data
@@ -1701,13 +1697,6 @@ components:
       properties:
         id: { type: string, format: uuid }
         preEnrollSurveyId: { type: string, format: uuid }
-    AdminUserDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        username: { type: string }
-        lastLogin: { type: integer }
-        superuser: { type: boolean }
     ErrorReport:
       type: object
       required: [ message, statusCode ]
@@ -1725,13 +1714,6 @@ components:
         shortcode: { type: string }
         name: { type: string }
         portalStudies: { type: array }
-    RoleList:
-      type: object
-      properties:
-        roles:
-          type: array
-          items: { type: string }
-      required: [ roles ]
     PortalDto:
       type: object
     CreateDataset:

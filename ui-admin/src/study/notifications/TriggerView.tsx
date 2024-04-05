@@ -101,10 +101,12 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </div>
       </div>
       }
-      <div className={'mt-3'}>
-        <label className="form-label" htmlFor="deliveryType">Delivery</label>
-        <Select id="deliveryType" options={deliveryTypeOptions} isDisabled={true}
-          value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
+
+      <div>
+        <label className="form-label">Delivery
+          <Select options={deliveryTypeOptions} isDisabled={true}
+            value={deliveryTypeOptions.find(opt => opt.value === workingConfig.deliveryType)}/>
+        </label>
       </div>
 
       {hasTemplate &&

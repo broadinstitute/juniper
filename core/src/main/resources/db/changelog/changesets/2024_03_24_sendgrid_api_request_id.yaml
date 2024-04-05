@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: add_sendgrid_api_request_id
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: sendgrid_event
+            columns:
+              - column: { name: api_request_id, type: text }
+              - column: { name: notification_id, type: uuid, constraints:
+                  { foreignKeyName: fk_sendgrid_event_notification_id, references: notification(id) }
+                }
+        - createIndex:
+            tableName: sendgrid_event
+            indexName: idx_sendgrid_event_api_request_id
+            columns:
+              - column:
+                  name: api_request_id
+        - addColumn:
+            tableName: notification
+            columns:
+              - column: { name: sendgrid_api_request_id, type: text }

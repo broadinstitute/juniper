@@ -7,14 +7,13 @@ import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
-import { MailingListModal, PortalEnvironmentLanguage } from '@juniper/ui-core'
+import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { useI18n } from 'providers/I18nProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
-import { getOidcConfig } from 'authConfig'
-import { UserManager } from 'oidc-client-ts'
 import { uniqueId } from 'lodash'
+import { UserManager } from 'oidc-client-ts'
+import { getOidcConfig } from './authConfig'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -23,30 +22,31 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 /** renders the navbar for participants */
 export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
-  const { i18n } = useI18n()
-  const config = useConfig()
-  const { user, logoutUser, selectedLanguage, changeLanguage } = useUser()
-  const envSpec = getEnvSpec()
+  const { i18n, selectedLanguage, changeLanguage } = useI18n()
+  const { user, profile, ppUser } = useUser()
   const navLinks = localContent.navbarItems
 
   const languageOptions = portalEnv.supportedLanguages
 
-  /** invoke B2C change password flow */
-  function doChangePassword() {
-    const oidcConfig = getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cChangePasswordPolicyName)
-    const userManager = new UserManager(oidcConfig)
-    userManager.signinRedirect({
-      redirectMethod: 'replace',
-      extraQueryParams: { portalShortcode: envSpec.shortcode as string }
-    })
+  async function updatePreferredLanguage(selectedLanguage: string) {
+    if (profile && ppUser) {
+      await Api.updateProfile({
+        profile: { ...profile, preferredLanguage: selectedLanguage },
+        ppUserId: ppUser.id
+      })
+    }
   }
 
-  /** send a logout to the api then logout */
-  function doLogout() {
-    Api.logout().then(() => {
-      logoutUser()
-      window.location.href = '/'
-    })
+  //If the logged-in participant has chosen a preferred language, set the language to that
+  useEffect(() => {
+    if (profile?.preferredLanguage) {
+      changeLanguage(profile.preferredLanguage)
+    }
+  }, [])
+
+  const changeLanguageAndUpdate = (languageCode: string) => {
+    changeLanguage(languageCode)
+    updatePreferredLanguage(languageCode)
   }
 
   const dropdownRef = useRef<HTMLDivElement | null>(null)
@@ -83,7 +83,7 @@ export default function Navbar(props: NavbarProps) {
           <LanguageDropdown
             languageOptions={languageOptions}
             selectedLanguage={selectedLanguage}
-            changeLanguage={changeLanguage}
+            changeLanguage={changeLanguageAndUpdate}
             reloadPortal={reloadPortal}
           />
           {user.isAnonymous && (
@@ -114,62 +114,22 @@ export default function Navbar(props: NavbarProps) {
               </li>
             </>
           )}
-          {!user.isAnonymous && (
-            <>
-              <li className="nav-item">
-                <Link
-                  className={classNames(
-                    'btn btn-lg btn-outline-primary',
-                    'd-flex justify-content-center',
-                    'ms-lg-3'
-                  )}
-                  to="/hub"
-                >
-                  {i18n('navbarDashboard')}
-                </Link>
-              </li>
-              <li className="nav-item dropdown d-flex flex-column">
-                <button
-                  aria-expanded="false"
-                  aria-label={user.username}
-                  className={classNames(
-                    navLinkClasses,
-                    'btn btn-text dropdown-toggle text-start'
-                  )}
-                  data-bs-toggle="dropdown"
-                >
-                  <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser}/>
-                  <span className="d-lg-none">{user.username}</span>
-                </button>
-                <div className="dropdown-menu dropdown-menu-end">
-                  <p
-                    className="d-none d-lg-block"
-                    style={{
-                      padding: 'var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x)',
-                      margin: 0,
-                      fontWeight: 400,
-                      color: 'var(--bs-dropdown-link-color)',
-                      whiteSpace: 'nowrap'
-                    }}
-                  >
-                    {user.username}
-                  </p>
-                  <hr className="dropdown-divider d-none d-lg-block"/>
-                  <NavLink to="/hub/profile">
-                    <button className="dropdown-item">
-                      {i18n('navbarProfile')}
-                    </button>
-                  </NavLink>
-                  <button className="dropdown-item" onClick={doChangePassword}>
-                    {i18n('navbarChangePassword')}
-                  </button>
-                  <button className="dropdown-item" onClick={doLogout}>
-                    {i18n('navbarLogout')}
-                  </button>
-                </div>
-              </li>
-            </>
-          )}
+          {!user.isAnonymous && <>
+            <li className="nav-item">
+              <Link
+                className={classNames(
+                  'btn btn-lg btn-outline-primary',
+                  'd-flex justify-content-center',
+                  'ms-lg-3'
+                )}
+                to="/hub"
+              >
+                {i18n('navbarDashboard')}
+              </Link>
+            </li>
+            <AccountOptionsDropdown/>
+          </>
+          }
         </ul>
       </div>
     </div>
@@ -282,5 +242,83 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
           })}
         </div>
       </li>) : null
+  )
+}
+
+/**
+ * User account dropdown menu, with options to edit profile, change password, and log out
+ */
+export const AccountOptionsDropdown = () => {
+  const { user, logoutUser } = useUser()
+  const { i18n, selectedLanguage } = useI18n()
+  const config = useConfig()
+  const envSpec = getEnvSpec()
+
+
+  /** invoke B2C change password flow */
+  function doChangePassword() {
+    const oidcConfig = getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cChangePasswordPolicyName)
+    const userManager = new UserManager(oidcConfig)
+    userManager.signinRedirect({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        portalShortcode: envSpec.shortcode as string,
+        // eslint-disable-next-line camelcase
+        ui_locales: selectedLanguage
+      }
+    })
+  }
+
+  /** send a logout to the api then logout */
+  function doLogout() {
+    Api.logout().then(() => {
+      logoutUser()
+      window.location.href = '/'
+    })
+  }
+
+  return (
+    <>
+      <li className="nav-item dropdown d-flex flex-column">
+        <button
+          aria-expanded="false"
+          aria-label={`account options for ${user.username}`}
+          className={classNames(
+            navLinkClasses,
+            'btn btn-text dropdown-toggle text-start'
+          )}
+          data-bs-toggle="dropdown"
+        >
+          <FontAwesomeIcon className="d-none d-lg-inline" icon={faUser}/>
+          <span className="d-lg-none">{user.username}</span>
+        </button>
+        <div className="dropdown-menu dropdown-menu-end">
+          <p
+            className="d-none d-lg-block"
+            style={{
+              padding: 'var(--bs-dropdown-item-padding-y) var(--bs-dropdown-item-padding-x)',
+              margin: 0,
+              fontWeight: 400,
+              color: 'var(--bs-dropdown-link-color)',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {user.username}
+          </p>
+          <hr className="dropdown-divider d-none d-lg-block"/>
+          <NavLink to="/hub/profile">
+            <button className="dropdown-item" aria-label="edit profile">
+              {i18n('profile')}
+            </button>
+          </NavLink>
+          <button className="dropdown-item" aria-label="change password" onClick={doChangePassword}>
+            {i18n('navbarChangePassword')}
+          </button>
+          <button className="dropdown-item" aria-label="log out" onClick={doLogout}>
+            {i18n('navbarLogout')}
+          </button>
+        </div>
+      </li>
+    </>
   )
 }

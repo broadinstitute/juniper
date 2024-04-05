@@ -200,7 +200,6 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
-        - { name: isProxy, in: query, required: false, schema: { type: boolean } }
       responses:
         '200':
           description: preenrollment response
@@ -237,6 +236,21 @@ paths:
       responses:
         '200':
           description: Updated profile
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/address/validate:
+    put:
+      summary: Validate a given address
+      tags: [ addressValidation ]
+      operationId: validate
+      requestBody:
+        description: mailing address
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: validation results
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -343,6 +357,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: preferredLanguage, in: query, required: false, schema: { type: string } }
         - { name: preRegResponseId, in: query, required: false, schema: { type: string, format: uuid } }
       requestBody:
         content:
@@ -363,6 +378,7 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: preferredLanguage, in: query, required: false, schema: { type: string } }
         - { name: preRegResponseId, in: query, required: false, schema: { type: string, format: uuid } }
       requestBody:
         content:
@@ -575,8 +591,6 @@ components:
       properties:
         email:
           type: string
-        isProxy:
-          type: boolean
 
     MailingListContactDto:
       type: object

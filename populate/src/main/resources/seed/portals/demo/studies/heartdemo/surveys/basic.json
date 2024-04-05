@@ -1656,12 +1656,11 @@
             "name": "hd_hd_basic_zip",
             "type": "text",
             "title": {
-              "default": "ZIP Code (5 digits)",
-              "es": "Código postal (5 dígitos)",
-              "dev": "DEV_ZIP Code (5 digits)"
+              "default": "ZIP Code",
+              "es": "Código postal",
+              "dev": "DEV_ZIP Code"
             },
             "maxLength": 5,
-            "size": "5",
             "inputType": "text",
             "isRequired": true
           }, {
@@ -1675,6 +1674,20 @@
             "inputMask": "phone",
             "inputFormat": "999-999-9999",
             "isRequired": true
+          },
+          {
+            "name": "hd_hd_basic_address_validation",
+            "title": {
+              "default": "We think there might be a better address.",
+              "es": "Creemos que podría haber una dirección mejor.",
+              "dev": "DEV_We think there might be a better address."
+            },
+            "visibleIf": "{hd_hd_basic_address_validation.addressValidationResult.suggestedAddress} notempty and !{hd_hd_basic_address_validation.modalDismissed}",
+            "type": "addressvalidation",
+            "street1": "hd_hd_basic_streetAddress",
+            "city": "hd_hd_basic_city",
+            "stateProvince": "hd_hd_basic_state",
+            "postalCode": "hd_hd_basic_zip"
           }
         ]
       },{

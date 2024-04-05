@@ -21,10 +21,11 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
 import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
-import { ApiProvider } from '@juniper/ui-core'
+import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
-import I18nProvider from './providers/I18nProvider'
+import InvitationPage from './landing/registration/InvitationPage'
+import AuthError from './login/AuthError'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -52,6 +53,10 @@ function App() {
     brandConfig.brandColor = localContent.primaryBrandColor
   }
 
+  if (localContent.dashboardBackgroundColor) {
+    brandConfig.backgroundColor = localContent.dashboardBackgroundColor
+  }
+
   useEffect(() => {
     const isCompatible = isBrowserCompatible()
     if (!isCompatible) {
@@ -75,8 +80,11 @@ function App() {
       <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
     )
   }
-  // add routes for portal registration not tied to a specific study (e.g. 'join HeartHive')
-  landingRoutes.push(<Route key="portalReg" path="/join/*"
+  // add routes for portal registration and invitations not tied to a specific study (e.g. 'join HeartHive')
+  landingRoutes.push(<Route key="portalReg" path="/join/invitation"
+    element={<InvitationPage/>}>
+  </Route>)
+  landingRoutes.push(<Route key="portalRegInvite" path="/join/*"
     element={<PortalRegistrationRouter portal={portal} returnTo="/hub"/>}>
   </Route>)
 
@@ -112,7 +120,10 @@ function App() {
                             <Route path="/" element={<LandingPage localContent={localContent}/>}>
                               {landingRoutes}
                             </Route>
-                            <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
+                            <Route path="/redirect-from-oauth">
+                              <Route index element={<RedirectFromOAuth/>}/>
+                              <Route path="error" element={<AuthError/>}/>
+                            </Route>
                             <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
                             <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
                             <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>

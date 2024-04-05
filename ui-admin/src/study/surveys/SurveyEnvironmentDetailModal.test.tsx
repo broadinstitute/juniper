@@ -13,7 +13,7 @@ import { Store } from 'react-notifications-component'
 
 describe('SurveyEnvironmentDetailModal', () => {
   test('enables updating of participant versions', async () => {
-    jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve(
+    jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue(
       [{
         ...mockConfiguredSurvey(),
         survey: {
@@ -27,8 +27,8 @@ describe('SurveyEnvironmentDetailModal', () => {
           version: 2
         }
       }]
-    ))
-    jest.spyOn(Api, 'findTasksForStableId').mockImplementation(() => Promise.resolve(
+    )
+    jest.spyOn(Api, 'findTasksForStableId').mockResolvedValue(
       [{
         ...mockParticipantTask('SURVEY', 'COMPLETE'),
         targetAssignedVersion: 1
@@ -39,7 +39,7 @@ describe('SurveyEnvironmentDetailModal', () => {
         ...mockParticipantTask('SURVEY', 'COMPLETE'),
         targetAssignedVersion: 2
       }]
-    ))
+    )
 
     render(<SurveyEnvironmentDetailModal studyEnvParams={mockStudyEnvParams()}
       stableId="survey1" onDismiss={jest.fn()} />)
@@ -50,7 +50,7 @@ describe('SurveyEnvironmentDetailModal', () => {
   })
 
   test('assigns all unassigned enrollees on button', async () => {
-    jest.spyOn(Api, 'findConfiguredSurveys').mockImplementation(() => Promise.resolve(
+    jest.spyOn(Api, 'findConfiguredSurveys').mockResolvedValue(
       [{
         ...mockConfiguredSurvey(),
         survey: {
@@ -59,10 +59,10 @@ describe('SurveyEnvironmentDetailModal', () => {
           version: 2
         }
       }]
-    ))
+    )
     jest.spyOn(Store, 'addNotification').mockImplementation(jest.fn())
-    jest.spyOn(Api, 'findTasksForStableId').mockImplementation(() => Promise.resolve([]))
-    const assignSpy = jest.spyOn(Api, 'assignParticipantTasksToEnrollees').mockImplementation(() => Promise.resolve([]))
+    jest.spyOn(Api, 'findTasksForStableId').mockResolvedValue([])
+    const assignSpy = jest.spyOn(Api, 'assignParticipantTasksToEnrollees').mockResolvedValue([])
 
     render(<SurveyEnvironmentDetailModal studyEnvParams={mockStudyEnvParams()}
       stableId="test1234" onDismiss={jest.fn()} />)

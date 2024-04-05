@@ -33,36 +33,18 @@ public class EnrollmentController implements EnrollmentApi {
 
   @Override
   public ResponseEntity<Object> createEnrollee(
-      String portalShortcode,
-      String envName,
-      String studyShortcode,
-      UUID preEnrollResponseId,
-      Boolean isProxy) {
+      String portalShortcode, String envName, String studyShortcode, UUID preEnrollResponseId) {
     ParticipantUser user = requestUtilService.requireUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     PortalWithPortalUser portalWithPortalUser =
         authUtilService.authParticipantToPortal(user.getId(), portalShortcode, environmentName);
-    HubResponse hubResponse;
-    if (isProxy) {
-      hubResponse =
-          enrollmentService.enrollAsProxy(
-              portalShortcode,
-              environmentName,
-              studyShortcode,
-              user,
-              portalWithPortalUser.ppUser(),
-              preEnrollResponseId);
-    } else {
-      hubResponse =
-          enrollmentService.enroll(
-              portalShortcode,
-              environmentName,
-              studyShortcode,
-              user,
-              portalWithPortalUser.ppUser(),
-              preEnrollResponseId,
-              true);
-    }
+    HubResponse hubResponse =
+        enrollmentService.enroll(
+            environmentName,
+            studyShortcode,
+            user,
+            portalWithPortalUser.ppUser(),
+            preEnrollResponseId);
 
     return ResponseEntity.ok(hubResponse);
   }

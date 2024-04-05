@@ -1,5 +1,7 @@
 import {
+  AddressValidationResult,
   ConsentResponse,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
@@ -11,6 +13,7 @@ import {
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
+import queryString from 'query-string'
 
 export type {
   Answer,
@@ -74,15 +77,6 @@ export type Enrollee = {
   surveyResponses: []
 }
 
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
-}
-
 export type Profile = {
   givenName?: string,
   familyName?: string,
@@ -92,7 +86,8 @@ export type Profile = {
   mailingAddress?: MailingAddress,
   phoneNumber?: string,
   birthDate?: number[],
-  sexAtBirth?: string
+  sexAtBirth?: string,
+  preferredLanguage?: string,
 }
 
 export type KitRequest = {
@@ -295,29 +290,27 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email, accessToken, isProxy }: {
-    preRegResponseId: string | null, email: string, accessToken: string, isProxy : boolean
+  async register({ preRegResponseId, email, accessToken, preferredLanguage }: {
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
   }): Promise<LoginResult> {
     bearerToken = accessToken
-    let url = `${baseEnvUrl(false)}/register`
-    if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
-    }
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(false)}/register?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ email, isProxy })
+      body: JSON.stringify({ email })
     })
     return await this.processJsonResponse(response)
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async internalRegister({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
+  async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
+    preRegResponseId: string, fullData: object, preferredLanguage: string
+  }):
     Promise<RegistrationResponse> {
-    let url = `${baseEnvUrl(true)}/internalRegister`
-    if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
-    }
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -331,23 +324,11 @@ export default {
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId, isProxy }:
-                         { studyShortcode: string, preEnrollResponseId: string | null, isProxy : boolean | false }):
+  async createEnrollee({ studyShortcode, preEnrollResponseId }:
+                         { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
-    const queryParams = []
-
-    if (preEnrollResponseId) {
-      queryParams.push(`preEnrollResponseId=${preEnrollResponseId}`)
-    }
-
-    // Adding isProxy to the query parameters
-    queryParams.push(`isProxy=${isProxy}`)
-
-    // Joining all parameters with '&' and appending to the url
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`
-    }
+    const params = queryString.stringify({ preEnrollResponseId })
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -439,6 +420,16 @@ export default {
       body: JSON.stringify(profile)
     })
     return await this.processJsonResponse(result, { alertErrors })
+  },
+
+  async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
+    const url = `${baseEnvUrl(false)}/address/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
   },
 
   async submitMailingListContact(name: string, email: string) {

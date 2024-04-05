@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { Store } from 'react-notifications-component'
 import { Modal } from 'react-bootstrap'
-import Api, { AdminUser, Portal } from 'api/api'
+import Api, { Portal } from 'api/api'
+import { AdminUser } from 'api/adminUser'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from '../api/api-utils'
 

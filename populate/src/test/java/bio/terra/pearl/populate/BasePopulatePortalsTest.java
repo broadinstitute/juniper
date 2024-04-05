@@ -6,9 +6,7 @@ import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantNoteService;
-import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
@@ -18,11 +16,8 @@ import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
-import bio.terra.pearl.populate.service.BaseSeedPopulator;
-import bio.terra.pearl.populate.service.EnvironmentPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
-import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -33,8 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected PortalPopulator portalPopulator;
-    @Autowired
-    protected EnvironmentPopulator environmentPopulator;
     @Autowired
     protected StudyEnvironmentService studyEnvironmentService;
     @Autowired
@@ -73,10 +66,12 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected ConsentFormService consentFormService;
     @Autowired
     protected SiteContentService siteContentService;
-
-    protected void setUpEnvironments() {
-        for (String fileName : BaseSeedPopulator.ENVIRONMENTS_TO_POPULATE) {
-            environmentPopulator.populate(new FilePopulateContext(fileName), true);
-        }
-    }
+    @Autowired
+    protected EnrolleeRelationService enrolleeRelationService;
+    @Autowired
+    protected PortalParticipantUserService portalParticipantUserService;
+    @Autowired
+    protected ParticipantUserService participantUserService;
+    @Autowired
+    protected ProfileService profileService;
 }

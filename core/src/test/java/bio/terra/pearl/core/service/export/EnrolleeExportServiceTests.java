@@ -3,8 +3,8 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
-
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -25,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 
 
 /**
@@ -96,16 +99,18 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     public void testGenerateSurveyModules(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
-        Survey survey = surveyService.create(Survey.builder()
-                .content(SOCIAL_HEALTH_EXCERPT)
-                .name("Social Health")
-                .stableId("socialHealth")
-                .surveyType(SurveyType.RESEARCH)
-                .version(1)
-                .build());
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builderWithDependencies(getTestName(testInfo))
+                        .content(SOCIAL_HEALTH_EXCERPT)
+                        .name("Social Health")
+                        .stableId("socialHealth")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<SurveyFormatter> moduleFormatters = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(moduleFormatters, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = moduleFormatters.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));
@@ -154,26 +159,34 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testGenerateSurveyModulesAcrossVersions(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
-        Survey survey = surveyService.create(Survey.builder()
-                .content(SOCIAL_HEALTH_EXCERPT)
-                .name("Social Health")
-                .stableId("socialHealth")
-                .surveyType(SurveyType.RESEARCH)
-                .version(1)
-                .build());
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+
+        Survey survey = surveyService.create(
+                surveyFactory
+                        .builder(getTestName(testInfo))
+                        .portalId(bundle.getPortal().getId())
+                        .content(SOCIAL_HEALTH_EXCERPT)
+                        .name("Social Health")
+                        .stableId("socialHealth")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(1)
+                        .build());
         surveyFactory.attachToEnv(survey, studyEnv.getId(), false);
 
-        Survey survey2 = surveyService.create(Survey.builder()
-                .content(SOCIAL_HEALTH_V2_EXCERPT)
-                .name("Social Health")
-                .stableId("socialHealth")
-                .surveyType(SurveyType.RESEARCH)
-                .version(2)
-                .build());
+        Survey survey2 = surveyService.create(
+                surveyFactory
+                        .builder(getTestName(testInfo))
+                        .portalId(bundle.getPortal().getId())
+                        .content(SOCIAL_HEALTH_V2_EXCERPT)
+                        .name("Social Health")
+                        .stableId("socialHealth")
+                        .surveyType(SurveyType.RESEARCH)
+                        .version(2)
+                        .build());
         surveyFactory.attachToEnv(survey2, studyEnv.getId(), true);
 
-        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
+        List<SurveyFormatter> exportModuleInfo = enrolleeExportService.generateSurveyModules(new ExportOptions(), studyEnv.getId());
         assertThat(exportModuleInfo, hasSize(1));
         ModuleFormatter<SurveyResponse, ItemFormatter<SurveyResponse>> socialHealthModule = exportModuleInfo.get(0);
         assertThat(socialHealthModule.getModuleName(), equalTo(survey.getStableId()));

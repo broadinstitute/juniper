@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
+import Api, { Enrollee, MailingAddress, PortalEnvironment, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '@juniper/ui-core'
+import {
+  dateToDefaultString,
+  findDifferencesBetweenObjects,
+  javaLocalDateToJsDate,
+  jsDateToJavaLocalDate,
+  PortalEnvironmentLanguage
+} from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
-import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
@@ -27,6 +32,9 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   const [isDirty, setIsDirty] = useState<boolean>(false)
   const [editedProfile, setEditedProfile] = useState<Profile>(cloneDeep(enrollee.profile))
   const [showJustifyAndSaveModal, setShowJustifyAndSaveModal] = useState<boolean>(false)
+  const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
+    env.environmentName === studyEnvContext.currentEnv.environmentName)
+  const supportedLanguages = portalEnv?.supportedLanguages || []
 
   const saveProfile = async (justification: string) => {
     await doApiLoad(async () => {
@@ -69,7 +77,7 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
       <div className="card-body d-flex flex-row flex-wrap">
         {editMode
           ? <EditableProfile profile={editedProfile} setProfile={onProfileUpdate}/>
-          : <ReadOnlyProfile profile={enrollee.profile}/>}
+          : <ReadOnlyProfile profile={enrollee.profile} supportedLanguages={supportedLanguages}/>}
       </div>
     </div>
 
@@ -92,8 +100,8 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
  * Read only view of the profile.
  */
 function ReadOnlyProfile(
-  { profile }: {
-    profile: Profile
+  { profile, supportedLanguages }: {
+    profile: Profile, supportedLanguages: PortalEnvironmentLanguage[]
   }
 ) {
   const mailingAddress = profile.mailingAddress
@@ -109,6 +117,10 @@ function ReadOnlyProfile(
     <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
     <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
     <ReadOnlyRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
+    { supportedLanguages.length > 0 &&
+        <ReadOnlyRow title={'Preferred Language'} values={[supportedLanguages.find(lang =>
+          lang.languageCode === profile.preferredLanguage)?.languageName || '']}/>
+    }
   </>
 }
 

@@ -36,7 +36,11 @@
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
-        "participants/oldVersion.json"
+        "participants/oldVersion.json",
+        "participants/proxy.json",
+        "participants/proxyFamily2.json",
+        "participants/invited.json"
+
       ],
       "mailingListContacts": [
         {
@@ -83,7 +87,8 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@heartdemo.org"}
+    {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
+    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
   ],
   "siteMediaDtos": [
     {

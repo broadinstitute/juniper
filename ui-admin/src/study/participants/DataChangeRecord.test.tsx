@@ -48,7 +48,7 @@ test('renders basic data change records', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -79,7 +79,7 @@ test('basic object changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -111,7 +111,7 @@ test('object deletion changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -142,7 +142,7 @@ test('object creation changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -177,7 +177,7 @@ test('nested object changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -210,7 +210,7 @@ test('nested object creation', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -244,7 +244,7 @@ test('nested object deletion', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)

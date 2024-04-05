@@ -57,4 +57,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         }
     }
 
+    public List<EnrolleeRelation> findAllByEnrolleeId(UUID enrolleeId) {
+        return findAllByProperty("enrollee_id", enrolleeId);
+    }
 }

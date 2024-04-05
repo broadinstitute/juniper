@@ -1,31 +1,37 @@
-import { AddressValidationResult, explainAddressValidationResults, MailingAddress } from '@juniper/ui-core'
+import {
+  AddressValidationResult,
+  EditAddress,
+  findDifferencesBetweenObjects,
+  MailingAddress,
+  SuggestBetterAddressModal
+} from '@juniper/ui-core'
 import React, { useState } from 'react'
 import { doApiLoad } from '../api/api-utils'
 import Api from '../api/api'
 import LoadingSpinner from '../util/LoadingSpinner'
-import SuggestBetterAddressModal from './SuggestBetterAddressModal'
 import { useUser } from '../user/UserProvider'
-import { findDifferencesBetweenObjects } from '../util/objectUtils'
-import EditAddress from '@juniper/ui-core/build/components/EditAddress'
 
 // Supported country alpha-2 codes; see
 // SmartyInternationalAddressValidationService in core
 const SUPPORTED_COUNTRIES = [
-  'US',
-  'CA',
-  'GB',
-  'MX',
-  'AU',
-  'TR',
-  'ES',
-  'PL',
-  'DE',
-  'FR',
-  'IT',
-  'CZ',
-  'BR',
-  'SE',
-  'CH'
+  'US'
+  // The backend supports the following countries, but we currently only pay for
+  // US address validation. If we want to support these countries, we'll need to
+  // pay for international address validation.
+  // 'CA',
+  // 'GB',
+  // 'MX',
+  // 'AU',
+  // 'TR',
+  // 'ES',
+  // 'PL',
+  // 'DE',
+  // 'FR',
+  // 'IT',
+  // 'CZ',
+  // 'BR',
+  // 'SE',
+  // 'CH'
 ]
 
 /**
@@ -79,7 +85,6 @@ export default function EditMailingAddress(
       setMailingAddress={setMailingAddress}
       showLabels={false}
       validationResult={addressValidationResults}
-      language={'en'}
     />
     {(user.user.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
@@ -101,7 +106,6 @@ export default function EditMailingAddress(
         <SuggestBetterAddressModal
           inputtedAddress={mailingAddress}
           improvedAddress={addressValidationResults.suggestedAddress}
-          hasInferredComponents={addressValidationResults.hasInferredComponents || false}
           accept={() => {
             if (addressValidationResults && addressValidationResults.suggestedAddress) {
               const suggested = addressValidationResults.suggestedAddress
@@ -120,16 +124,12 @@ export default function EditMailingAddress(
             // clear the results since we saved the new address
             setAddressValidationResults(undefined)
           }}
-          deny={() => {
+          reject={() => {
             clearSuggestedAddress()
           }}
           onDismiss={() => {
             clearSuggestedAddress()
           }}
         />}
-    {!addressValidationResults?.valid && explainAddressValidationResults(addressValidationResults)
-      .map((explanation, idx) =>
-        <p key={idx} className="text-danger-emphasis">{explanation}</p>
-      )}
   </div>
 }

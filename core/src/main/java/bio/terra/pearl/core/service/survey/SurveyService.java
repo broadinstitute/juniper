@@ -3,42 +3,53 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.dao.workflow.EventDao;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.stream.IntStream;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.IntStream;
 
 @Service
 public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     private AnswerMappingDao answerMappingDao;
     private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private EventDao eventDao;
 
-    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao) {
+    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, EventDao eventDao) {
         super(surveyDao);
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.eventDao = eventDao;
     }
 
     public List<Survey> findByStableIdNoContent(String stableId) {
         return dao.findByStableIdNoContent(stableId);
     }
 
-    public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
-        return dao.findByStableIdWithMappings(stableId, version);
+    public Optional<Survey> findByStableIdWithMappings(String stableId, int version, UUID portalId) {
+        return dao.findByStableIdWithMappings(stableId, version, portalId);
+    }
+
+    public Optional<Survey> findByStableIdAndPortalShortcodeWithMappings(String stableId, int version, String shortcode) {
+        return dao.findByStableIdAndPortalShortcodeWithMappings(stableId, version, shortcode);
     }
 
     @Transactional
@@ -46,6 +57,8 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     public void delete(UUID surveyId, Set<CascadeProperty> cascades) {
         answerMappingDao.deleteBySurveyId(surveyId);
         surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
+        eventDao.deleteBySurveyId(surveyId);
+
         dao.delete(surveyId);
     }
 
@@ -171,7 +184,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         Survey newSurvey = new Survey();
         BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
         newSurvey.setPortalId(portalId);
-        int nextVersion = dao.getNextVersion(survey.getStableId());
+        int nextVersion = dao.getNextVersion(survey.getStableId(), portalId);
         newSurvey.setVersion(nextVersion);
         newSurvey.getAnswerMappings().clear();
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {

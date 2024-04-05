@@ -11,7 +11,7 @@ env:
   sam:
     basePath: ${SAM_ADDRESS:https://sam.dsde-dev.broadinstitute.org}
   addrValidation:
-    addrValidationServiceClass: ${ADDR_VALIDATION_CLIENT_CLASS:AddressValidationServiceStub}
+    addrValidationServiceClass: ${ADDRESS_VALIDATION_SERVICE_CLASS:AddressValidationServiceStub}
     smartyAuthId: ${SMARTY_AUTH_ID:}
     smartyAuthToken: ${SMARTY_AUTH_TOKEN:}
   tdr:

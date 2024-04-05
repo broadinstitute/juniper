@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.ParsedPreRegResponse;
 import bio.terra.pearl.core.model.survey.PreregistrationResponse;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,10 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.SecureRandom;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.UUID;
 
 @Service
@@ -44,13 +44,12 @@ public class RegistrationService {
     private PortalParticipantUserService portalParticipantUserService;
     private ProfileService profileService;
     private EventService eventService;
+    private PortalService portalService;
     private ObjectMapper objectMapper;
 
     private static final String GOVERNED_USERNAME_SUFFIX_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final String GOVERNED_USERNAME_INDICATOR = "%s-prox-%s";
     private static final int GOVERNED_EMAIL_SUFFIX_LENGTH = 4;
-    private final Random random = new SecureRandom();
-
     public RegistrationService(SurveyService surveyService,
                                PortalEnvironmentService portalEnvService,
                                PreregistrationResponseDao preregistrationResponseDao,
@@ -59,7 +58,7 @@ public class RegistrationService {
                                PortalParticipantUserService portalParticipantUserService,
                                EventService eventService, ObjectMapper objectMapper,
                                RandomUtilService randomUtilService,
-                               ProfileService profileService) {
+                               ProfileService profileService, PortalService portalService) {
         this.surveyService = surveyService;
         this.portalEnvService = portalEnvService;
         this.preregistrationResponseDao = preregistrationResponseDao;
@@ -70,6 +69,7 @@ public class RegistrationService {
         this.objectMapper = objectMapper;
         this.randomUtilService = randomUtilService;
         this.profileService = profileService;
+        this.portalService = portalService;
     }
 
     /**
@@ -83,7 +83,8 @@ public class RegistrationService {
             Integer surveyVersion,
             ParsedPreRegResponse parsedResponse) throws JsonProcessingException {
         PreregistrationResponse response = new PreregistrationResponse();
-        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion).get();
+        Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow();
+        Survey survey = surveyService.findByStableId(surveyStableId, surveyVersion, portal.getId()).get();
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, envName).get();
 
         response.setSurveyId(survey.getId());
@@ -98,13 +99,13 @@ public class RegistrationService {
 
     @Transactional
     public RegistrationResult register(String portalShortcode, EnvironmentName environmentName,
-                                       String email, UUID preRegResponseId) {
+                                       String email, UUID preRegResponseId, String preferredLanguage) {
         RequiredRegistrationInfo info = RequiredRegistrationInfo.builder().email(email).build();
-        return register(portalShortcode, environmentName, preRegResponseId, info);
+        return register(portalShortcode, environmentName, preRegResponseId, preferredLanguage, info);
     }
 
     private RegistrationResult register(String portalShortcode, EnvironmentName environmentName, UUID preRegResponseId,
-                                        RequiredRegistrationInfo info) {
+                                        String preferredLanguage, RequiredRegistrationInfo info) {
         PortalEnvironment portalEnv = portalEnvService.findOne(portalShortcode, environmentName).get();
         PreregistrationResponse preRegResponse = null;
         if (portalEnv.getPreRegSurveyId() != null) {
@@ -128,29 +129,33 @@ public class RegistrationService {
                 .givenName(info.getFirstName())
                 .familyName(info.getLastName())
                 .build();
+        if(preferredLanguage != null){
+            profile.setPreferredLanguage(preferredLanguage);
+        }
         ppUser.setProfile(profile);
 
         ppUser = portalParticipantUserService.create(ppUser);
+
         if (preRegResponse != null) {
             preRegResponse.setPortalParticipantUserId(ppUser.getId());
             preregistrationResponseDao.update(preRegResponse);
         }
         eventService.publishPortalRegistrationEvent(user, ppUser, portalEnv);
         log.info("Portal registration: userId: {}, portal: {}", user.getId(), portalShortcode);
-        return new RegistrationResult(user, ppUser, profile);
+        return new RegistrationResult(user, ppUser, ppUser.getProfile());
     }
 
     @Transactional
-    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser) {
+    public RegistrationResult registerGovernedUser(ParticipantUser proxyUser, PortalParticipantUser proxyPpUser, String governedUsername, ParticipantUser governedUser) {
         if (!proxyPpUser.getParticipantUserId().equals(proxyUser.getId())) {
             throw new IllegalArgumentException("user and portal participant user do not match");
         }
-        ParticipantUser governedUser = new ParticipantUser();
-        governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
-        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxyUser.getUsername(), proxyUser.getEnvironmentName());
-        String governedUserName = GOVERNED_USERNAME_INDICATOR.formatted(proxyUser.getUsername(), governedUsernameSuffix);//a@b.com-prox-guid
-        governedUser.setUsername(governedUserName);
-        governedUser = participantUserService.create(governedUser);
+        if (governedUser == null) {
+            governedUser = new ParticipantUser();
+            governedUser.setEnvironmentName(proxyUser.getEnvironmentName());
+            governedUser.setUsername(governedUsername);
+            governedUser = participantUserService.create(governedUser);
+        }
 
         PortalParticipantUser governedPpUser = new PortalParticipantUser();
         governedPpUser.setPortalEnvironmentId(proxyPpUser.getPortalEnvironmentId());
@@ -159,6 +164,7 @@ public class RegistrationService {
         Profile proxyProfile = profileService.find(proxyPpUser.getProfileId()).orElseThrow();
         Profile governedProfile =  Profile.builder()
                 .contactEmail(proxyProfile.getContactEmail())
+                .doNotEmail(proxyProfile.isDoNotEmail())
                 .givenName(null)
                 .familyName(null)
                 .build();
@@ -195,6 +201,11 @@ public class RegistrationService {
         return guid;
     }
 
+    public String getGovernedUsername(String proxyUserName, EnvironmentName environmentName) {
+        String governedUsernameSuffix = generateGovernedUsernameSuffix(proxyUserName, environmentName);
+        return GOVERNED_USERNAME_INDICATOR.formatted(proxyUserName, governedUsernameSuffix);//a@b.com-prox-guid
+
+    }
     public record RegistrationResult(ParticipantUser participantUser,
                                      PortalParticipantUser portalParticipantUser,
                                      Profile profile) {

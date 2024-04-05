@@ -5,10 +5,16 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import Api from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { usePreEnrollResponseId, usePreRegResponseId, useReturnToStudy } from 'browserPersistentState'
+import {
+  usePreEnrollResponseId,
+  usePreRegResponseId,
+  useReturnToLanguage,
+  useReturnToStudy
+} from 'browserPersistentState'
 import { userHasJoinedPortalStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { AlertLevel, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, AlertLevel } from '@juniper/ui-core'
+import { log } from '../util/loggingUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -19,6 +25,7 @@ export const RedirectFromOAuth = () => {
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
+  const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
 
   // Select a study to enroll in based on a previously saved session storage property
@@ -28,7 +35,6 @@ export const RedirectFromOAuth = () => {
   // Select the portal's single study if there is only one; otherwise return null
   const getSingleStudy = () => portal.portalStudies.length === 1 ? portal.portalStudies[0] : null
 
-
   useEffect(() => {
     const handleRedirectFromOauth = async () => {
       // RedirectFromOAuth may be rendered before react-oidc-context's AuthProvider has finished doing its thing. If so,
@@ -37,7 +43,14 @@ export const RedirectFromOAuth = () => {
       // we only process the return from OAuth once (when the user is still "anonymous")
 
       if (auth.error) {
-        navigate('/')
+        log({
+          eventType: 'ERROR',
+          eventName: 'oauth-error',
+          eventDetail: auth.error.message || 'error',
+          stackTrace: auth.error.stack || 'stack'
+        })
+        navigate('/redirect-from-oauth/error')
+        return
       }
 
       if (auth.user) {
@@ -54,13 +67,10 @@ export const RedirectFromOAuth = () => {
 
           const email = auth.user.profile.email as string
           const accessToken = auth.user.access_token
-          //TODO this should change to true when a proxy is registering someone else
-          const isProxy = false
-
           // Register or login
           try {
             const loginResult = auth.user.profile.newUser
-              ? await Api.register({ preRegResponseId, email, accessToken, isProxy })
+              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage })
               : await Api.tokenLogin(accessToken)
 
             loginUser(loginResult, accessToken)
@@ -73,7 +83,7 @@ export const RedirectFromOAuth = () => {
             if (portalStudy && !userHasJoinedPortalStudy(portalStudy, loginResult.enrollees)) {
               const response = await Api.createEnrollee({
                 studyShortcode: portalStudy.study.shortcode,
-                preEnrollResponseId, isProxy
+                preEnrollResponseId
               })
               const hubUpdate: HubUpdate = {
                 message: {
@@ -95,6 +105,7 @@ export const RedirectFromOAuth = () => {
           setPreRegResponseId(null)
           setPreEnrollResponseId(null)
           setReturnToStudy(null)
+          setReturnToLanguage(null)
         }
       }
     }

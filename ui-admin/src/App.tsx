@@ -20,7 +20,6 @@ import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { getOidcConfig } from 'authConfig'
 import { AuthProvider } from 'react-oidc-context'
 import PortalRouter from './portal/PortalRouter'
-import UserList from './user/UserList'
 import InvestigatorTermsOfUsePage from './terms/InvestigatorTermsOfUsePage'
 import PrivacyPolicyPage from 'terms/PrivacyPolicyPage'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
@@ -28,6 +27,8 @@ import AdminSidebar from './navbar/AdminSidebar'
 import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
+import AdminUserRouter from './user/AdminUserRouter'
+import { I18nProvider } from '@juniper/ui-core'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -47,32 +48,34 @@ function App() {
       <ConfigConsumer>
         { config =>
           <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
-            <UserProvider>
-              <div className="App d-flex flex-column min-vh-100">
-                <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
-                <ReactNotifications />
-                <BrowserRouter>
-                  <ScrollToTop/>
-                  <Routes>
-                    <Route path="/">
-                      <Route element={<ProtectedRoute>
-                        <NavContextProvider><PageFrame config={config}/></NavContextProvider>
-                      </ProtectedRoute>}>
-                        <Route path="populate/*" element={<PopulateRouteSelect/>}/>
-                        <Route path="users" element={<UserList/>}/>
-                        <Route path="integrations/*" element={<IntegrationDashboard/>}/>
-                        <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
-                        <Route index element={<HomePage/>}/>
+            <I18nProvider>
+              <UserProvider>
+                <div className="App d-flex flex-column min-vh-100">
+                  <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
+                  <ReactNotifications />
+                  <BrowserRouter>
+                    <ScrollToTop/>
+                    <Routes>
+                      <Route path="/">
+                        <Route element={<ProtectedRoute>
+                          <NavContextProvider><PageFrame config={config}/></NavContextProvider>
+                        </ProtectedRoute>}>
+                          <Route path="populate/*" element={<PopulateRouteSelect/>}/>
+                          <Route path="users/*" element={<AdminUserRouter/>}/>
+                          <Route path="integrations/*" element={<IntegrationDashboard/>}/>
+                          <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>
+                          <Route index element={<HomePage/>}/>
+                        </Route>
+                        <Route path="privacy" element={<PrivacyPolicyPage />} />
+                        <Route path="terms" element={<InvestigatorTermsOfUsePage />} />
+                        <Route path="*" element={<div>Unknown page</div>}/>
                       </Route>
-                      <Route path="privacy" element={<PrivacyPolicyPage />} />
-                      <Route path="terms" element={<InvestigatorTermsOfUsePage />} />
-                      <Route path="*" element={<div>Unknown page</div>}/>
-                    </Route>
-                    <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
-                  </Routes>
-                </BrowserRouter>
-              </div>
-            </UserProvider>
+                      <Route path='redirect-from-oauth' element={<RedirectFromOAuth/>}/>
+                    </Routes>
+                  </BrowserRouter>
+                </div>
+              </UserProvider>
+            </I18nProvider>
           </AuthProvider>
         }
       </ConfigConsumer>

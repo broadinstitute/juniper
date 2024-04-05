@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.model;
 
+import java.util.UUID;
+
 /**
  * Versioned is used for customer-editable documents.  All documents must have a stableId and version, and the stableID-version
  * pair must be unique.  stableId-publishedVersion pairs must also be unique, but not every document is required to have a publishedVersion
@@ -9,6 +11,8 @@ package bio.terra.pearl.core.model;
  */
 public interface Versioned {
     public String getStableId();
+
+    public UUID getPortalId();
     public int getVersion();
     public void setVersion(int version);
     public Integer getPublishedVersion();

@@ -20,7 +20,7 @@ public class EnrolleeFormatterTests {
                 .createdAt(Instant.parse("2023-08-21T05:17:25.00Z"))
                 .build();
         EnrolleeFormatter moduleFormatter = new EnrolleeFormatter(new ExportOptions());
-        EnrolleeExportData exportData = new EnrolleeExportData(enrollee, null, null, null, null, null);
+        EnrolleeExportData exportData = new EnrolleeExportData(enrollee, null, null, null, null, null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(exportData);
 
         assertThat(valueMap.get("enrollee.shortcode"), equalTo("TESTER"));

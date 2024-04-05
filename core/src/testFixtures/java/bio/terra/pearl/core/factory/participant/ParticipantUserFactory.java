@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.factory.participant;
 
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ParticipantUserFactory {
-    @Autowired
-    private EnvironmentFactory environmentFactory;
     @Autowired
     private ParticipantUserService participantUserService;
     @Autowired
@@ -31,9 +28,7 @@ public class ParticipantUserFactory {
 
     public ParticipantUser.ParticipantUserBuilder builderWithDependencies(ParticipantUser.ParticipantUserBuilder builder,
                                                                   String testName) {
-        if (builder.getEnvironmentName() == null) {
-            builder.environment(environmentFactory.buildPersisted(testName));
-        }
+        builder.environmentName(EnvironmentName.sandbox);
         return builder;
     }
 
@@ -51,6 +46,13 @@ public class ParticipantUserFactory {
         return buildPersisted(userBuilder, testName);
     }
 
+    public ParticipantUser buildPersisted(EnvironmentName envName, String testName, String contactEmail) {
+        ParticipantUser.ParticipantUserBuilder userBuilder = builder(testName)
+                .username(contactEmail)
+                .environmentName(envName);
+        return buildPersisted(userBuilder, testName);
+    }
+
     public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName) {
         ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
         PortalParticipantUser ppUser = PortalParticipantUser.builder()
@@ -63,10 +65,10 @@ public class ParticipantUserFactory {
     }
 
     /**
-     * This method creates a participant with the given in their Profile
+     * This method creates a participant with the given contactEmail in their Profile and as their username
      * */
     public ParticipantUserAndPortalUser buildPersisted(PortalEnvironment portalEnv, String testName, String contactEmail) {
-        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName);
+        ParticipantUser user = buildPersisted(portalEnv.getEnvironmentName(), testName, contactEmail);
         Profile.ProfileBuilder builder = profileFactory.builder(testName);
         builder.contactEmail(contactEmail);
         Profile proxyProfile = builder.build();

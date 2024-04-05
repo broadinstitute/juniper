@@ -1,16 +1,17 @@
 package bio.terra.pearl.core.service.site;
 
 import bio.terra.pearl.core.dao.site.SiteContentDao;
-import bio.terra.pearl.core.model.site.*;
-
+import bio.terra.pearl.core.model.site.HtmlPage;
+import bio.terra.pearl.core.model.site.HtmlSection;
+import bio.terra.pearl.core.model.site.LocalizedSiteContent;
+import bio.terra.pearl.core.model.site.NavbarItem;
+import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.VersionedEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class SiteContentService extends VersionedEntityService<SiteContent, Site
     @Transactional
     public SiteContent createNewVersion(SiteContent siteContent) {
         cleanForCopying(siteContent);
-        int nextVersion = dao.getNextVersion(siteContent.getStableId());
+        int nextVersion = dao.getNextVersion(siteContent.getStableId(), siteContent.getPortalId());
         siteContent.setVersion(nextVersion);
         return create(siteContent);
     }

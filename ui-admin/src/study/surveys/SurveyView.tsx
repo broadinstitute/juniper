@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyRouter'
+import { StudyParams } from 'study/StudyRouter'
 import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
 import Api, { StudyEnvironmentSurvey, Survey } from 'api/api'
 
 import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { doApiLoad, useLoadingEffect } from '../../api/api-utils'
+import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -23,6 +23,7 @@ export type SaveableFormProps = {
   assignToExistingEnrollees?: boolean
   rule?: string
   autoUpdateTaskAssignments?: boolean
+  eligibilityRule?: string
 }
 
 /** Handles logic for updating study environment surveys */

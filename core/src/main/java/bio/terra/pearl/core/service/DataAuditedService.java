@@ -86,6 +86,8 @@ public abstract class DataAuditedService<M extends BaseEntity, D extends BaseMut
     public List<M> findAll() { return dao.findAll(); }
     public List<M> findAll(List<UUID> uuids) { return dao.findAll(uuids); }
 
+    public List<M> findAllPreserveOrder(List<UUID> uuids) { return dao.findAllPreserveOrder(uuids); }
+
     @Transactional
     public void delete(UUID id, DataAuditInfo auditInfo, Set<CascadeProperty> cascade) {
         if (auditInfo != null) {

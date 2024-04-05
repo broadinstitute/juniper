@@ -3,14 +3,15 @@ import React from 'react'
 import {
   generateThreePageSurvey,
   mockConfiguredSurvey,
-  mockSurveyWithHiddenQuestion, mockSurveyWithHiddenQuestionClearOnHidden
+  mockSurveyWithHiddenQuestion,
+  mockSurveyWithHiddenQuestionClearOnHidden
 } from 'test-utils/test-survey-factory'
 import { PageNumberControl, useSurveyJSModel } from 'util/surveyJsUtils'
 import { render, screen } from '@testing-library/react'
 import { PagedSurveyView, SurveyFooter } from './SurveyView'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import { Survey, useAutosaveEffect } from '@juniper/ui-core'
+import { MockI18nProvider, Survey, useAutosaveEffect } from '@juniper/ui-core'
 import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
@@ -53,13 +54,18 @@ const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Surv
 describe('SurveyFooter', () => {
   it('does not render if not on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={1}/>)
+    render(<MockI18nProvider>
+      <FooterTestComponent survey={survey} pageNum={1}/>
+    </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeNull()
   })
 
   it('renders if on the last page', () => {
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={3}/>)
+    render(
+      <MockI18nProvider>
+        <FooterTestComponent survey={survey} pageNum={3}/>
+      </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeTruthy()
   })
 })
@@ -78,9 +84,9 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'text1', stringValue: 'my Text' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }],
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
         complete: true,
         resumeData: '{"user1":{"currentPageNo":1}}'
       })
@@ -101,9 +107,9 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' },
-          { questionStableId: 'text1', stringValue: 'my Text' }]),
+        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' },
+          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]),
         complete: false,
         resumeData: '{"user1":{"currentPageNo":3}}'
       })
@@ -124,13 +130,13 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'text1', stringValue: 'my Text' }]
+        answers: [{ questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -147,14 +153,14 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' },
-          { questionStableId: 'colorCode', stringValue: '#00F' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#00F', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -171,18 +177,18 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(3)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'greenFollow' }]
+        answers: [{ questionStableId: 'greenFollow', viewedLanguage: 'en' }]
       })
     }))
   })
@@ -198,13 +204,14 @@ describe('Renders a survey', () => {
 
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' }, { questionStableId: 'greenFollow' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { questionStableId: 'greenFollow', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
@@ -227,8 +234,8 @@ describe('Renders a survey', () => {
     triggerAutosave()
     const expectedDiffResponse = expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }],
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
         complete: false,
         resumeData: '{"user1":{"currentPageNo":2}}'
       })
@@ -242,8 +249,7 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse')
-    .mockImplementation(() => Promise.resolve(mockHubResponse()))
+  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };
@@ -258,8 +264,10 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
-      studyShortcode={'study'} taskId={'guid34'}/>)
+    <MockI18nProvider>
+      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
+        studyShortcode={'study'} taskId={'guid34'}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   return { submitSpy, RoutedComponent, triggerAutosave }

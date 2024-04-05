@@ -14,6 +14,9 @@ export const usePreEnrollResponseId = () => useSessionStorage('preEnrollResponse
 /** store the study being enrolled in so that we remember it when coming back from B2C sign-up. */
 export const useReturnToStudy = () => useSessionStorage('returnToStudy')
 
+/** store the participants preferred language so that we remember it when coming back from B2C sign-up. */
+export const useReturnToLanguage = () => useSessionStorage('returnToLanguage')
+
 /** store whether the user has successfully provided a password for a password protected study */
 export const useHasProvidedStudyPassword = (studyShortcode: string): [boolean, () => void] => {
   const [value, setValue] = useSessionStorage(`provided-study-password/${studyShortcode}`)

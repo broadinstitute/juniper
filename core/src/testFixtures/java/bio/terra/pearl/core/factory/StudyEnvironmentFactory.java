@@ -3,7 +3,6 @@ package bio.terra.pearl.core.factory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
-import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -24,8 +23,6 @@ import java.util.UUID;
 
 @Component
 public class StudyEnvironmentFactory {
-    @Autowired
-    private EnvironmentFactory environmentFactory;
     @Autowired
     private StudyFactory studyFactory;
     @Autowired
@@ -52,7 +49,7 @@ public class StudyEnvironmentFactory {
         return builder(testName)
                 .studyId(study.getId())
                 .studyEnvironmentConfig(new StudyEnvironmentConfig())
-                .environmentName(environmentFactory.buildPersisted(testName).getName());
+                .environmentName(EnvironmentName.sandbox);
     }
 
 
@@ -66,10 +63,9 @@ public class StudyEnvironmentFactory {
     }
 
     public StudyEnvironment buildPersisted(EnvironmentName envName, UUID studyId, String testName) {
-        Environment environment = environmentFactory.buildPersisted(testName, envName);
         StudyEnvironment studyEnv = StudyEnvironment.builder()
                 .studyId(studyId)
-                .environmentName(environment.getName())
+                .environmentName(envName)
                 .studyEnvironmentConfig(new StudyEnvironmentConfig()).build();
         return studyEnvironmentService.create(studyEnv);
     }

@@ -1,25 +1,33 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleService;
-import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
-import bio.terra.pearl.core.service.workflow.*;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
+import bio.terra.pearl.core.service.workflow.DispatcherOrder;
+import bio.terra.pearl.core.service.workflow.EnrolleeCreationEvent;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -29,11 +37,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.event.EventListener;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
-
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
 @Slf4j
@@ -42,19 +45,21 @@ public class SurveyTaskDispatcher {
     private ParticipantTaskService participantTaskService;
     private EnrolleeService enrolleeService;
     private PortalParticipantUserService portalParticipantUserService;
-    private EnrolleeRuleService enrolleeRuleService;
+    private EnrolleeContextService enrolleeContextService;
+    private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
 
     public SurveyTaskDispatcher(StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                 ParticipantTaskService participantTaskService,
                                 EnrolleeService enrolleeService,
                                 PortalParticipantUserService portalParticipantUserService,
-                                EnrolleeRuleService enrolleeRuleService) {
+                                EnrolleeContextService enrolleeContextService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.participantTaskService = participantTaskService;
         this.enrolleeService = enrolleeService;
         this.portalParticipantUserService = portalParticipantUserService;
-        this.enrolleeRuleService = enrolleeRuleService;
+        this.enrolleeContextService = enrolleeContextService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
 
@@ -70,7 +75,7 @@ public class SurveyTaskDispatcher {
         if (ppUsers.size() != enrollees.size()) {
             throw new IllegalStateException("Task dispatch failed: Portal participant user not matched to enrollee");
         }
-        List<EnrolleeRuleData> enrolleeRuleDatas = enrolleeRuleService.fetchData(enrollees.stream().map(Enrollee::getId).toList());
+        List<EnrolleeContext> enrolleeRuleData = enrolleeContextService.fetchData(enrollees.stream().map(Enrollee::getId).toList());
 
         UUID auditOperationId = UUID.randomUUID();
         List<ParticipantTask> createdTasks = new ArrayList<>();
@@ -81,7 +86,7 @@ public class SurveyTaskDispatcher {
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey()));
             } else {
                 List<ParticipantTask> existingTasks = participantTaskService.findByEnrolleeId(enrollees.get(i).getId());
-                taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleDatas.get(i),
+                taskOpt = buildTaskIfApplicable(enrollees.get(i), existingTasks, ppUsers.get(i), enrolleeRuleData.get(i),
                         studyEnvironmentSurvey, studyEnvironmentSurvey.getSurvey());
             }
             if (taskOpt.isPresent()) {
@@ -124,7 +129,7 @@ public class SurveyTaskDispatcher {
             if (studyEnvSurvey.getSurvey().isAssignToAllNewEnrollees()) {
                 Optional<ParticipantTask> taskOpt = buildTaskIfApplicable(enrolleeEvent.getEnrollee(),
                         enrolleeEvent.getEnrollee().getParticipantTasks(),
-                        enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeRuleData(),
+                        enrolleeEvent.getPortalParticipantUser(), enrolleeEvent.getEnrolleeContext(),
                         studyEnvSurvey, studyEnvSurvey.getSurvey());
                 if (taskOpt.isPresent()) {
                     ParticipantTask task = taskOpt.get();
@@ -178,9 +183,9 @@ public class SurveyTaskDispatcher {
     public Optional<ParticipantTask> buildTaskIfApplicable(Enrollee enrollee,
                                                       List<ParticipantTask> existingEnrolleeTasks,
                                                       PortalParticipantUser portalParticipantUser,
-                                                      EnrolleeRuleData enrolleeRuleData,
+                                                           EnrolleeContext enrolleeContext,
                                                       StudyEnvironmentSurvey studyEnvSurvey, Survey survey) {
-        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeRuleData)) {
+        if (isEligibleForSurvey(survey.getEligibilityRule(), enrolleeContext)) {
             ParticipantTask task = buildTask(enrollee, portalParticipantUser, studyEnvSurvey, studyEnvSurvey.getSurvey());
             if (!isDuplicateTask(studyEnvSurvey, task, existingEnrolleeTasks)) {
                 return Optional.of(task);
@@ -189,8 +194,11 @@ public class SurveyTaskDispatcher {
         return Optional.empty();
     }
 
-    public static boolean isEligibleForSurvey(String eligibilityRule, EnrolleeRuleData enrolleeRuleData) {
-        return EnrolleeRuleEvaluator.evaluateRule(eligibilityRule, enrolleeRuleData);
+    public boolean isEligibleForSurvey(String eligibilityRule, EnrolleeContext enrolleeContext) {
+        // TODO JN-977: this logic will need to change because we will need to support surveys for proxies
+        return enrolleeContext.getEnrollee().isSubject() && enrolleeSearchExpressionParser
+                .parseRule(eligibilityRule)
+                .evaluate(new EnrolleeSearchContext(enrolleeContext.getEnrollee(), enrolleeContext.getProfile()));
     }
 
     /** builds a task for the given survey -- does NOT evaluate the rule or check duplicates */

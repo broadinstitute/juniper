@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
@@ -13,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 public abstract class EnrolleeEvent implements BaseEvent {
     private Enrollee enrollee;
     private PortalParticipantUser portalParticipantUser;
-    private EnrolleeRuleData enrolleeRuleData;
+    private EnrolleeContext enrolleeContext;
 }

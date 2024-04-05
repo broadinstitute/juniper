@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Stores the path and current filename to populate from.
@@ -27,6 +28,7 @@ public class FilePopulateContext {
     protected Map<String, UUID> populatedFileEntities = new HashMap<>();
     /** whether this context maps to the populate seed directory, or the temp directory */
     protected boolean isFromTempDir = false;
+    protected String shortcodeOverride = null;
 
     public FilePopulateContext(String filePathName) {
         setPaths(filePathName);
@@ -36,6 +38,12 @@ public class FilePopulateContext {
         this(filePathName);
         this.isFromTempDir = isFromTempDir;
     }
+
+    public FilePopulateContext(String filePathName, boolean isFromTempDir, String shortcodeOverride) {
+        this(filePathName, isFromTempDir);
+        this.shortcodeOverride = shortcodeOverride;
+    }
+
 
     protected void setPaths(String filePathName) {
         Path filePath = Paths.get(filePathName);
@@ -47,6 +55,7 @@ public class FilePopulateContext {
         FilePopulateContext popContext = new FilePopulateContext(applyRelativePath(relativeFilePath));
         popContext.populatedFileEntities = this.populatedFileEntities;
         popContext.isFromTempDir = this.isFromTempDir;
+        popContext.shortcodeOverride = this.shortcodeOverride;
         return popContext;
     }
 
@@ -85,6 +94,18 @@ public class FilePopulateContext {
             }
         }
         return Optional.empty();
+    }
+
+    public String applyShortcodeOverride(String stableId) {
+        if (!StringUtils.isBlank(shortcodeOverride)) {
+            String newStableId = stableId;
+            // if the stableId is already prefixed, strip it
+            if (stableId.lastIndexOf("_") != -1) {
+                newStableId = stableId.substring(stableId.lastIndexOf("_") + 1);
+            }
+            return shortcodeOverride + "_" + newStableId;
+        }
+        return stableId;
     }
 
 }

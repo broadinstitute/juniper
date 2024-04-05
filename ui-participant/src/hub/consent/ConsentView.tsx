@@ -18,7 +18,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { makeSurveyJsData, SurveyJsResumeData } from '@juniper/ui-core'
+import { makeSurveyJsData, SurveyJsResumeData, useI18n } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -36,7 +36,8 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
                           }) {
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
-  const { updateEnrollee, selectedLanguage } = useUser()
+  const { selectedLanguage } = useI18n()
+  const { updateEnrollee } = useUser()
 
   surveyModel.locale = selectedLanguage
 

@@ -24,4 +24,9 @@ public class EnrolleeFormatter extends BeanModuleFormatter<Enrollee> {
     public Enrollee getBean(EnrolleeExportData enrolleeExportData) {
         return enrolleeExportData.getEnrollee();
     }
+
+    @Override
+    public Enrollee newBean() {
+        return new Enrollee();
+    }
 }

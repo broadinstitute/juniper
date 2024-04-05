@@ -3,8 +3,10 @@ package bio.terra.pearl.core.service.consent;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.consent.ConsentForm;
+import bio.terra.pearl.core.model.portal.Portal;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -22,23 +24,27 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
     private AdminUserFactory adminUserFactory;
     @Autowired
     private ConsentFormService consentFormService;
+    @Autowired
+    private PortalFactory portalFactory;
+
     @Test
     @Transactional
     public void testConsentCreate(TestInfo info) {
-        ConsentForm consentForm = consentFormFactory.builder(getTestName(info)).build();
+        ConsentForm consentForm = consentFormFactory.builderWithDependencies(getTestName(info)).build();
         ConsentForm savedForm = consentFormService.create(consentForm);
         Assertions.assertNotNull(savedForm.getId());
         Assertions.assertEquals(savedForm.getName(), consentForm.getName());
         Assertions.assertNotNull(savedForm.getCreatedAt());
 
-        ConsentForm fetchedForm = consentFormService.findByStableId(savedForm.getStableId(), savedForm.getVersion()).get();
+        ConsentForm fetchedForm = consentFormService.find(savedForm.getId()).get();
         Assertions.assertEquals(fetchedForm.getId(), savedForm.getId());
     }
 
     @Test
     @Transactional
     public void testCreateNewVersion(TestInfo info) {
-        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info));
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info), portal.getId());
         AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
         String oldContent = form.getContent();
         String newContent = "totally different " + RandomStringUtils.randomAlphabetic(6);
@@ -58,7 +64,8 @@ public class ConsentFormServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAssignPublishedVersion(TestInfo info) {
-        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info));
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        ConsentForm form = consentFormFactory.buildPersisted(getTestName(info), portal.getId());
         consentFormService.assignPublishedVersion(form.getId());
         form = consentFormService.find(form.getId()).get();
         assertThat(form.getPublishedVersion(), equalTo(1));

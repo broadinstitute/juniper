@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
+import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
@@ -13,7 +14,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
-import bio.terra.pearl.core.service.consent.ConsentResponseService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
@@ -47,17 +48,19 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private SurveyResponseService surveyResponseService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentService studyEnvironmentService;
-    private ConsentResponseService consentResponseService;
+    private ConsentResponseDao consentResponseDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private NotificationService notificationService;
     private DataChangeRecordService dataChangeRecordService;
     private WithdrawnEnrolleeService withdrawnEnrolleeService;
     private ParticipantUserService participantUserService;
+    private PortalParticipantUserService portalParticipantUserService;
     private ParticipantNoteService participantNoteService;
     private KitRequestService kitRequestService;
     private AdminTaskService adminTaskService;
     private SecureRandom secureRandom;
     private RandomUtilService randomUtilService;
+    private EnrolleeRelationService enrolleeRelationService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -66,7 +69,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
-                           ConsentResponseService consentResponseService,
+                           ConsentResponseDao consentResponseDao,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
                            NotificationService notificationService,
                            @Lazy DataChangeRecordService dataChangeRecordService,
@@ -75,7 +78,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
-                           RandomUtilService randomUtilService) {
+                           RandomUtilService randomUtilService,
+                           EnrolleeRelationService enrolleeRelationService,
+                           PortalParticipantUserService portalParticipantUserService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -83,7 +88,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentService = studyEnvironmentService;
-        this.consentResponseService = consentResponseService;
+        this.consentResponseDao = consentResponseDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationService = notificationService;
         this.dataChangeRecordService = dataChangeRecordService;
@@ -94,13 +99,15 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
+        this.enrolleeRelationService = enrolleeRelationService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
         return dao.findOneByShortcode(shortcode);
     }
-    public Optional<Enrollee> findByEnrolleeId(UUID participantUserId, String enrolleeShortcode) {
-        return dao.findByEnrolleeId(participantUserId, enrolleeShortcode);
+    public Optional<Enrollee> findByParticipantUserIdAndShortcode(UUID participantUserId, String enrolleeShortcode) {
+        return dao.findByParticipantUserIdAndShortcode(participantUserId, enrolleeShortcode);
     }
     public List<Enrollee> findByPortalParticipantUser(PortalParticipantUser ppUser) {
         return dao.findByProfileId(ppUser.getProfileId());
@@ -132,14 +139,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      * */
     public Enrollee loadForAdminView(Enrollee enrollee) {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
-        enrollee.getConsentResponses().addAll(consentResponseService.findByEnrolleeId(enrollee.getId()));
+        enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
         if (enrollee.getPreEnrollmentResponseId() != null) {
             enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).orElseThrow());
         }
         enrollee.getParticipantNotes().addAll(participantNoteService.findByEnrollee(enrollee.getId()));
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
-        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow());
+        enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
         return enrollee;
     }
 
@@ -211,8 +218,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
         }
-        for (ConsentResponse consentResponse : consentResponseService.findByEnrolleeId(enrolleeId)) {
-            consentResponseService.delete(consentResponse.getId(), cascades);
+        for (ConsentResponse consentResponse : consentResponseDao.findByEnrolleeId(enrolleeId)) {
+            consentResponseDao.delete(consentResponse.getId());
         }
         adminTaskService.deleteByEnrolleId(enrolleeId, null);
         participantNoteService.deleteByEnrollee(enrolleeId);
@@ -220,11 +227,14 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
         notificationService.deleteByEnrolleeId(enrolleeId);
         dataChangeRecordService.deleteByEnrolleeId(enrolleeId);
+
+        enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrolleeId);
         dao.delete(enrolleeId);
         if (enrollee.getPreEnrollmentResponseId() != null) {
             preEnrollmentResponseDao.delete(enrollee.getPreEnrollmentResponseId());
         }
         if (cascades.contains(AllowedCascades.PARTICIPANT_USER)) {
+            portalParticipantUserService.deleteByParticipantUserId(enrollee.getParticipantUserId());
             participantUserService.delete(enrollee.getParticipantUserId(), CascadeProperty.EMPTY_SET);
         }
     }
@@ -278,6 +288,16 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
             throw new InternalServerException("Unable to generate unique shortcode");
         }
         return shortcode;
+    }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
+        return dao.findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnvId);
+    }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnv(UUID participantUserId, String studyShortcode, EnvironmentName envName) {
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
+        return findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnv.getId());
     }
 
     public enum AllowedCascades implements CascadeProperty {

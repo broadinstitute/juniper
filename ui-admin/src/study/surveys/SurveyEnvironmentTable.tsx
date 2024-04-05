@@ -11,6 +11,7 @@ import { Button, EllipsisDropdownButton } from '../../components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
+import SurveyPublishModal from './SurveyPublishModal'
 
 export type SurveyTableProps = {
   stableIds: string[], // the stableIds of surveys to show in the table
@@ -25,8 +26,10 @@ export type SurveyTableProps = {
 }
 
 type SurveyEnvTableRow = {
-  stableId: string,
-  liveVersion?: number,
+  stableId: string
+  sandbox?: StudyEnvironmentSurvey
+  irb?: StudyEnvironmentSurvey
+  live?: StudyEnvironmentSurvey
   name: string
 }
 /**
@@ -39,12 +42,17 @@ export default function SurveyEnvironmentTable(props: SurveyTableProps) {
   }
   const dependencyString = stableIds.join('-')
 
-  const rowInfo: SurveyEnvTableRow[] = useMemo(() => stableIds.map(stableId => ({
-    stableId,
-    name: configuredSurveys.find(config => config.survey.stableId === stableId)?.survey?.name ?? '',
-    liveVersion: configuredSurveys.find(config =>
-      config.survey.stableId === stableId && config.envName === 'live')?.survey?.version
-  })), [dependencyString])
+  const rowInfo: SurveyEnvTableRow[] = useMemo(() => stableIds.map(stableId => {
+    const info: SurveyEnvTableRow = {
+      stableId,
+      name: configuredSurveys.find(config => config.survey.stableId === stableId)?.survey?.name ?? ''
+    }
+    ENVIRONMENT_NAMES.forEach(envName => {
+      info[envName] = configuredSurveys.find(config =>
+        config.survey.stableId === stableId && config.envName === envName)
+    })
+    return info
+  }), [dependencyString])
 
   const columns: ColumnDef<SurveyEnvTableRow>[] = useMemo(() => [{
     header: '',
@@ -73,9 +81,15 @@ export default function SurveyEnvironmentTable(props: SurveyTableProps) {
   </div>
 }
 
+type PublishCommand = {
+  surveyConfig: StudyEnvironmentSurvey
+  destinationEnv: EnvironmentName
+}
+
 /** show a survey and the version in each environment */
 const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTableRow, envName: EnvironmentName}) => {
   const [showEnvDetail, setShowEnvDetail] = useState(false)
+  const [publishCommand, setPublishCommand] = useState<PublishCommand>()
   const {
     configuredSurveys, studyEnvParams,
     setShowArchiveSurveyModal, showArchiveSurveyModal, setSelectedSurveyConfig, setShowDeleteSurveyModal,
@@ -92,10 +106,10 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
       <Button variant="secondary" onClick={() => setShowEnvDetail(true)}>
             v{envConfig.survey.version}
       </Button>
-      { (envConfig.survey.version !== rowInfo.liveVersion) &&
+      { (envConfig.survey.version !== rowInfo.live?.survey?.version) &&
           <span className="badge bg-dark-subtle text-black rounded-5 fw-normal"
             title="this version is not in the live environment">not live</span>}
-      { (envName === 'sandbox') &&  <div className="nav-item dropdown ms-auto">
+      <div className="nav-item dropdown ms-3">
         <EllipsisDropdownButton aria-label="configure survey menu" className="ms-auto"/>
         <div className="dropdown-menu">
           <ul className="list-unstyled">
@@ -105,27 +119,45 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
                   See participant assignment
               </button>
             </li>
-            <li className="pt-2">
-              <button className="dropdown-item"
-                onClick={() => {
-                  setShowArchiveSurveyModal(!showArchiveSurveyModal)
-                  setSelectedSurveyConfig(envConfig)
-                }}>
-                    Archive
-              </button>
-            </li>
-            <li className="pt-2">
-              <button className="dropdown-item"
-                onClick={() => {
-                  setShowDeleteSurveyModal(!showDeleteSurveyModal)
-                  setSelectedSurveyConfig(envConfig)
-                }}>
-                    Delete
-              </button>
-            </li>
+            { ENVIRONMENT_NAMES.map(destinationEnv => {
+              if (!(destinationEnv == 'live' && envName == 'sandbox') &&
+                rowInfo[envName]?.survey?.version != rowInfo[destinationEnv]?.survey?.version) {
+                return <li className="pt-2" key={destinationEnv}><button className="dropdown-item"
+                  onClick={() => {
+                    setPublishCommand({
+                      surveyConfig: rowInfo[envName]!,
+                      destinationEnv
+                    })
+                  }}>
+                  Publish to {destinationEnv}
+                </button></li>
+              }
+              return null
+            }) }
+            { envName == 'sandbox' && <>
+              <li className="pt-2">
+                <button className="dropdown-item"
+                  onClick={() => {
+                    setShowArchiveSurveyModal(!showArchiveSurveyModal)
+                    setSelectedSurveyConfig(envConfig)
+                  }}>
+                      Archive
+                </button>
+              </li>
+              <li className="pt-2">
+                <button className="dropdown-item"
+                  onClick={() => {
+                    setShowDeleteSurveyModal(!showDeleteSurveyModal)
+                    setSelectedSurveyConfig(envConfig)
+                  }}>
+                      Delete
+                </button>
+              </li> </>
+            }
+
           </ul>
         </div>
-      </div> }
+      </div>
     </div>
     }
     {!envConfig && <span className="m-2 fst-italic fw-light">n/a</span>}
@@ -133,6 +165,14 @@ const SurveyTableEnvColumn = (props: SurveyTableProps & {rowInfo: SurveyEnvTable
       stableId={rowInfo.stableId}
       studyEnvParams={{ ...studyEnvParams, envName }}
       onDismiss={() => setShowEnvDetail(false)}
+    />}
+    { publishCommand && <SurveyPublishModal
+      surveyName={rowInfo.name}
+      destinationEnv={publishCommand.destinationEnv}
+      sourceConfig={publishCommand.surveyConfig}
+      destConfig={rowInfo[publishCommand.destinationEnv]}
+      studyEnvParams={{ ...studyEnvParams, envName }}
+      onDismiss={() => setPublishCommand(undefined)}
     />}
   </div>
 }

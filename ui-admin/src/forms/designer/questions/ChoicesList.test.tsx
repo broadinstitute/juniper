@@ -2,7 +2,7 @@ import { act, fireEvent, getByLabelText, render, screen } from '@testing-library
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-import { CheckboxQuestion } from '@juniper/ui-core'
+import { CheckboxQuestion, QuestionChoice } from '@juniper/ui-core'
 
 import { ChoicesList } from './ChoicesList'
 
@@ -154,5 +154,14 @@ describe('ChoicesList', () => {
         { value: 'baz', text: 'Baz' }
       ]
     })
+  })
+
+  it('renders nothing for questions with no choices', async () => {
+    render(<ChoicesList question={{
+      ...question,
+      choices: undefined as unknown as QuestionChoice[]
+    }} isNewQuestion={false} readOnly={false} onChange={jest.fn} />)
+
+    expect(screen.queryByText('Choices')).not.toBeInTheDocument()
   })
 })

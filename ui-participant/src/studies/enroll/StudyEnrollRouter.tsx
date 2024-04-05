@@ -101,9 +101,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       if (user.isAnonymous) {
         navigate('register', { replace: true })
       } else {
-        const isProxy = false
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
-        Api.createEnrollee({ studyShortcode, preEnrollResponseId, isProxy }).then(response => {
+        Api.createEnrollee({ studyShortcode, preEnrollResponseId }).then(response => {
           updateEnrollee(response.enrollee)
           const hubUpdate: HubUpdate = {
             message: {

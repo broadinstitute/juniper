@@ -1,8 +1,14 @@
 import React, { useState } from 'react'
-import { Question, SurveyModel, CalculatedValue } from 'survey-core'
+import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
-import { surveyJSModelFromForm, makeSurveyJsData, PortalEnvironment, PortalEnvironmentLanguage } from '@juniper/ui-core'
-import { Answer, ConsentForm, Survey } from 'api/api'
+import {
+  createAddressValidator,
+  makeSurveyJsData,
+  PortalEnvironment,
+  PortalEnvironmentLanguage,
+  surveyJSModelFromForm
+} from '@juniper/ui-core'
+import Api, { Answer, ConsentForm, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
@@ -10,6 +16,7 @@ import PrintFormModal from './PrintFormModal'
 import { Link, Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+
 type SurveyFullDataViewProps = {
   answers: Answer[],
   survey: Survey | ConsentForm,
@@ -25,6 +32,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   const [showFullQuestions, setShowFullQuestions] = useState(false)
   const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
   const surveyJsModel = surveyJSModelFromForm(survey)
+  surveyJsModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
   surveyJsModel.data = surveyJsData!.data
   const answerMap: Record<string, Answer> = {}
   answers.forEach(answer => {

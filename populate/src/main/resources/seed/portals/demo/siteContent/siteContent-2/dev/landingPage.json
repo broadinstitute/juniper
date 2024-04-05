@@ -13,7 +13,7 @@
         {
           "text": "DEV_Become a Participant",
           "type": "join",
-          "studyShortcode": "ourheart"
+          "studyShortcode": "heartdemo"
         }
       ],
       "logos": [
@@ -59,7 +59,7 @@
       "buttons": [
         {"text": "DEV_Get Started",
           "type": "join",
-          "studyShortcode": "ourheart"
+          "studyShortcode": "heartdemo"
         }
       ],
       "image": {"cleanFileName": "people_laughing.jpg", "alt": "", "version": 1},
@@ -113,7 +113,7 @@
         },
         {
           "question": "DEV_How can I participate?",
-          "answer": "DEV_If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/ourheart/join)."
+          "answer": "DEV_If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/heartdemo/join)."
         },
         {
           "question": "DEV_What does OurHealth do with the data?",
@@ -167,7 +167,7 @@
       "buttons": [{
         "type": "join",
         "text": "Join OurHealth",
-        "studyShortcode": "ourheart"
+        "studyShortcode": "heartdemo"
       }],
       "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
     }
