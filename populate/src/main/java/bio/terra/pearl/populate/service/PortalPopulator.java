@@ -139,11 +139,13 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             // we don't support updating mailing lists in-place yet
             return;
         }
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+                DataAuditInfo.systemProcessName(getClass(), "populateMailingList")).build();
         for (MailingListContact contact : portalEnvPopDto.getMailingListContacts()) {
             contact.setPortalEnvironmentId(savedEnv.getId());
             contact.setEmail(contact.getEmail());
             contact.setName(contact.getName());
-            mailingListContactService.create(contact, null);
+            mailingListContactService.create(contact, auditInfo);
         }
     }
 
