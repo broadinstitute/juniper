@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { useUser } from '../providers/UserProvider'
 
-import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
+import Api, { Enrollee, EnrolleeRelation, Portal, Profile, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -80,8 +80,12 @@ export default function HubPage() {
           style={{ background: '#fff', maxWidth: 768 }}
         >
           {relations.length > 0 && <HubPageParticipantSelector/>}
-          {activeEnrollee && activeEnrolleeProfile && <StudySection key={activeEnrollee.id}
-            enrollee={activeEnrollee} portal={portal} profile={activeEnrolleeProfile}/>}
+          {activeEnrollee && activeEnrolleeProfile && <StudySection
+            key={activeEnrollee.id}
+            enrollee={activeEnrollee}
+            portal={portal}
+            relations={relations}
+            profile={activeEnrolleeProfile}/>}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -93,7 +97,8 @@ export default function HubPage() {
 }
 
 type StudySectionProps = {
-  enrollee: Enrollee
+  enrollee: Enrollee,
+  relations: EnrolleeRelation[]
   portal: Portal,
   profile: Profile
 }
@@ -102,7 +107,8 @@ const StudySection = (props: StudySectionProps) => {
   const {
     enrollee,
     portal,
-    profile
+    profile,
+    relations
   } = props
 
   const matchedStudy = portal.portalStudies
@@ -118,7 +124,7 @@ const StudySection = (props: StudySectionProps) => {
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
-      <h4 className="mb-4">{getName(profile)}</h4>
+      {relations.length > 0 && <h4 className="mb-4">{getName(profile)}</h4>}
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
