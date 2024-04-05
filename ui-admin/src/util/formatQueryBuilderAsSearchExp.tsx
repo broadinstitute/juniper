@@ -9,7 +9,6 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
   { field, operator, value, valueSource },
   { escapeQuotes, parseNumbers } = {}
 ) => {
-  console.log('called')
   const valueIsField = valueSource === 'field'
   const operatorTL = operator.replace(/^=$/, '==')
   const useBareValue =

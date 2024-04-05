@@ -19,7 +19,6 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
     rules: []
   })
 
-
   const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
   const { isLoading } = useLoadingEffect(async () => {
@@ -110,9 +109,8 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
     return { label: option.label, value: option.label }
   })
 
-  return <div className="d w-100" key='test' id={'test'}>
+  return <div className="d w-100">
     <Select
-      key={'test2'} id={'test2'}
       options={options}
       value={{ label: props.value || '', value: props.value || '' }}
       onChange={newVal => {
