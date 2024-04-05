@@ -34,10 +34,7 @@ public class ResponsibleEntity {
         }
         this.systemProcess = systemProcess;
     }
-    public ResponsibleEntity(Boolean anonymousUser) {
-        if (anonymousUser == null) {
-            throw new IllegalArgumentException("anonymousUser cannot be null");
-        }
-        this.anonymousUser = anonymousUser;
+    public ResponsibleEntity() {
+        this.anonymousUser = true;
     }
 }

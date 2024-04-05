@@ -47,7 +47,7 @@ public class MailingListContactExtService {
     DataAuditInfo auditInfo = DataAuditInfo.builder().build();
     userOpt.ifPresentOrElse(
         user -> auditInfo.setResponsibleEntity(new ResponsibleEntity(user)),
-        () -> auditInfo.setResponsibleEntity(new ResponsibleEntity(true)));
+        () -> auditInfo.setResponsibleEntity(new ResponsibleEntity()));
 
     return mailingListContactService.create(contact, auditInfo);
   }
