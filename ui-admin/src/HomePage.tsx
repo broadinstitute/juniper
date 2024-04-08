@@ -28,8 +28,10 @@ function HomePage() {
     <div className="ms-5 mt-4">
       <h2 className="h4">My Studies</h2>
       <ul className="list-group list-group-flush fs-5">
-        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal =>
-          portal.portalStudies.sort((a, b) => a.study.name.localeCompare(b.study.name)).map(portalStudy => {
+        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal => [
+          <span key={portal.shortcode} className={'mt-2'}>{portal.name}</span>,
+          ...portal.portalStudies.sort((a, b) =>
+            a.study.name.localeCompare(b.study.name)).map(portalStudy => {
             const study = portalStudy.study
             return <li key={`${portal.shortcode}-${study.shortcode}`}
               className="list-group-item my-1 border border-secondary-subtle rounded">
@@ -66,7 +68,7 @@ function HomePage() {
               </span>
             </li>
           })
-        )}
+        ])}
       </ul>
       { user.superuser && <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Add a study
