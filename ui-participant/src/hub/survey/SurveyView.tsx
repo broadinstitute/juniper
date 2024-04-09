@@ -29,6 +29,7 @@ import { withErrorBoundary } from 'util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
+import SurveyAutoCompleteButton from './SurveyAutoCompleteButton'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -154,6 +155,7 @@ export function RawSurveyView({
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         { showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/> }
+        { showHeaders && <SurveyAutoCompleteButton surveyModel={surveyModel}/> }
         { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
           {i18n(`${form.stableId}:${form.version}`, form.name)}
         </h1> }

@@ -4,6 +4,8 @@ import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/sur
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import { useI18n } from '@juniper/ui-core'
+import SurveyReviewModeButton from '../../hub/survey/ReviewModeButton'
+import SurveyAutoCompleteButton from '../../hub/survey/SurveyAutoCompleteButton'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -69,5 +71,11 @@ export default function PreEnrollView({ enrollContext, survey }:
     updatePreEnrollResponseId(null)
   }, [])
 
-  return <div className="d-flex flex-grow-1">{SurveyComponent}</div>
+  return (
+    <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
+      <SurveyReviewModeButton surveyModel={surveyModel}/>
+      <SurveyAutoCompleteButton surveyModel={surveyModel}/>
+      {SurveyComponent}
+    </div>
+  )
 }
