@@ -98,11 +98,9 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
 }
 
 /** handles paging the form */
-function PagedConsentView({ form, responses, enrollee, studyShortcode }:
-                              {
-                                form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee,
-                              studyShortcode: string
-                            }) {
+function PagedConsentView({ form, responses, enrollee, studyShortcode }: {
+  form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee, studyShortcode: string
+}) {
   const response = responses[0]
   let answers: Answer[] = []
   if (response?.fullData) {

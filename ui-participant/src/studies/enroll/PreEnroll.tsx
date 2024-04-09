@@ -4,8 +4,8 @@ import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/sur
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
 import { useI18n } from '@juniper/ui-core'
-import SurveyReviewModeButton from '../../hub/survey/ReviewModeButton'
-import SurveyAutoCompleteButton from '../../hub/survey/SurveyAutoCompleteButton'
+import SurveyReviewModeButton from 'hub/survey/ReviewModeButton'
+import SurveyAutoCompleteButton from 'hub/survey/SurveyAutoCompleteButton'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
