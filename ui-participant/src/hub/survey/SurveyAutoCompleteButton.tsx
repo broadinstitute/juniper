@@ -19,6 +19,9 @@ export default function SurveyAutoCompleteButton({ surveyModel }: { surveyModel:
           if (question.getType() === 'text') {
             surveyModel.setValue(question.name, Math.random().toString(36).substring(5))
           }
+          if (question.getType() === 'signaturepad') {
+            surveyModel.setValue(question.name, 'data:image/png;base64,')
+          }
         })
       })
       surveyModel.currentPageNo = surveyModel.pageCount - 1
