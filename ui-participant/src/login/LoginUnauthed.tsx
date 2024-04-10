@@ -2,7 +2,7 @@ import React, { SyntheticEvent, useState } from 'react'
 import Api from 'api/api'
 import { useUser } from 'providers/UserProvider'
 import { findDefaultEnrollmentStudy } from './RedirectFromOAuth'
-import { enrollCurrentUserInStudy, userHasJoinedStudy } from '../util/enrolleeUtils'
+import { enrollCurrentUserInStudy } from '../util/enrolleeUtils'
 import { useNavigate } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
 
@@ -24,8 +24,8 @@ export default function LoginUnauthed() {
       const loginResult = await Api.unauthedLogin(emailAddress)
       loginUser(loginResult, loginResult.user.token)
 
-      // Enroll in the default study if not already enrolled
-      if (defaultEnrollStudy && !userHasJoinedStudy(defaultEnrollStudy, loginResult.enrollees)) {
+      // Enroll in the default study if not already enrolled in any study
+      if (defaultEnrollStudy && !loginResult.enrollees.length) {
         const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
           defaultEnrollStudy.name, null, updateEnrollee)
         navigate('/hub', { replace: true, state: hubUpdate })

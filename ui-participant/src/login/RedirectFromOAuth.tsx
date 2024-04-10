@@ -11,7 +11,7 @@ import {
   useReturnToLanguage,
   useReturnToStudy
 } from 'browserPersistentState'
-import { userHasJoinedStudy, enrollCurrentUserInStudy } from 'util/enrolleeUtils'
+import { enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { filterUnjoinableStudies } from 'Navbar'
 import { logError } from 'util/loggingUtils'
@@ -68,8 +68,8 @@ export const RedirectFromOAuth = () => {
 
             loginUser(loginResult, accessToken)
 
-            // Enroll in the study if not already enrolled
-            if (defaultEnrollStudy && !userHasJoinedStudy(defaultEnrollStudy, loginResult.enrollees)) {
+            // Enroll in the study if not already enrolled in any other study
+            if (defaultEnrollStudy && !loginResult.enrollees.length) {
               const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
                 defaultEnrollStudy.name, preEnrollResponseId, updateEnrollee)
               navigate('/hub', { replace: true, state: hubUpdate })
