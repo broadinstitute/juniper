@@ -21,7 +21,7 @@ describe('CreateNewCohortModal', () => {
     const portalList = [
       makeMockPortal('Test portal', [
         makeMockPortalStudy('Test study', 'testStudy')
-      ])
+      ], 'testStudy')
     ]
 
     const mockContextValue = {
