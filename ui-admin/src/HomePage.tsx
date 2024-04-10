@@ -32,7 +32,7 @@ function HomePage() {
           <li key = {portal.shortcode} className="mt-3">
             <span className={'mt-2'}>{portal.name}</span>
             <ul className="list-group list-group-flush ">
-              { portal.portalStudies.map(portalStudy => {
+              { portal.portalStudies.sort((a, b) => a.study.name.localeCompare(b.study.name)).map(portalStudy => {
                 const study = portalStudy.study
                 return <li key={`${portal.shortcode}-${study.shortcode}`}
                   className="list-group-item my-1 border border-secondary-subtle rounded">
