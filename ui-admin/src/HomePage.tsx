@@ -27,52 +27,51 @@ function HomePage() {
     <h1 className="h2">Juniper Home</h1>
     <div className="ms-5 mt-4">
       <h2 className="h4">My Studies</h2>
-      <ul className="list-group list-group-flush fs-5">
-        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal => 
-          <li key = {portal.shortcode}>
-          <span className={'mt-2'}>{portal.name}</span>
-            <ul className="list-group list-group-flush">
-              ...portal.portalStudies.sort((a, b) =>
-          <span key={portal.shortcode} className={'mt-2'}>{portal.name}</span>,
-          ...portal.portalStudies.sort((a, b) =>
-            a.study.name.localeCompare(b.study.name)).map(portalStudy => {
-            const study = portalStudy.study
-            return <li key={`${portal.shortcode}-${study.shortcode}`}
-              className="list-group-item my-1 border border-secondary-subtle rounded">
-              <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, 'live')}>
-                <img
-                  src={getMediaUrl(portal.shortcode, 'favicon.ico', 'latest')}
-                  className="me-3" style={{ maxHeight: '1.5em' }}/>
-                {study.name}
-              </Link>
-              <span className="dropdown">
-                <span className="nav-item dropdown ms-1">
-                  <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
-                    aria-expanded="false" aria-label="configure study"/>
-                  <div className="dropdown-menu">
-                    <ul className="list-unstyled">
-                      <li>
-                        <button className="dropdown-item"
-                          onClick={
-                            () => {
-                              setShowDeleteStudyModal(!showDeleteStudyModal)
-                              setSelectedStudy(study)
-                              setSelectedPortal(portal)
-                            }}>Delete
-                        </button>
-                        { selectedStudy && showDeleteStudyModal && selectedPortal &&
-                          <DeleteStudyModal study={selectedStudy}
-                            portal={selectedPortal}
-                            onDismiss={() => setShowDeleteStudyModal(false)}
-                            reload={reload}/> }
-                      </li>
-                    </ul>
-                  </div>
-                </span>
-              </span>
-            </li>
-          })
-        ])}
+      <ul className="list-group list-group-flush fs-5 list-unstyled">
+        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal =>
+          <li key = {portal.shortcode} className="mt-3">
+            <span className={'mt-2'}>{portal.name}</span>
+            <ul className="list-group list-group-flush ">
+              { portal.portalStudies.map(portalStudy => {
+                const study = portalStudy.study
+                return <li key={`${portal.shortcode}-${study.shortcode}`}
+                  className="list-group-item my-1 border border-secondary-subtle rounded">
+                  <Link to={studyParticipantsPath(portal.shortcode, study.shortcode, 'live')}>
+                    <img
+                      src={getMediaUrl(portal.shortcode, 'favicon.ico', 'latest')}
+                      className="me-3" style={{ maxHeight: '1.5em' }}/>
+                    {study.name}
+                  </Link>
+                  <span className="dropdown">
+                    <span className="nav-item dropdown ms-1">
+                      <IconButton icon={faEllipsisH} data-bs-toggle="dropdown"
+                        aria-expanded="false" aria-label="configure study"/>
+                      <div className="dropdown-menu">
+                        <ul className="list-unstyled">
+                          <li>
+                            <button className="dropdown-item"
+                              onClick={
+                                () => {
+                                  setShowDeleteStudyModal(!showDeleteStudyModal)
+                                  setSelectedStudy(study)
+                                  setSelectedPortal(portal)
+                                }}>Delete
+                            </button>
+                            {selectedStudy && showDeleteStudyModal && selectedPortal &&
+                              <DeleteStudyModal study={selectedStudy}
+                                portal={selectedPortal}
+                                onDismiss={() => setShowDeleteStudyModal(false)}
+                                reload={reload}/>}
+                          </li>
+                        </ul>
+                      </div>
+                    </span>
+                  </span>
+                </li>
+              })}
+            </ul>
+          </li>
+        )}
       </ul>
       { user.superuser && <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Add a study
