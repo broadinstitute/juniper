@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { generateStableId } from 'util/pearlSurveyUtils'
+import { generateStableId } from 'util/juniperSurveyUtils'
 import { VersionedForm } from '@juniper/ui-core'
 
 /** hook for a form that sets a name and stableId */

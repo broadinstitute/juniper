@@ -98,7 +98,7 @@ export type PreEnrollmentResponse = FormResponse & {
 
 /** Configuration passed to SurveyModel constructor. */
 export type FormContent = {
-  title: string
+  title: I18nSurveyElement
   pages: FormContentPage[]
   questionTemplates?: Question[]
 }
@@ -111,6 +111,17 @@ export type FormContentPage = BaseElement & {
   elements: FormElement[]
 }
 
+/**
+ * This will probably actually end up just being a Record<string, string>,
+ * but for now the designer tool only needs to support displaying the default
+ * language, so this makes the code a bit cleaner in the meantime.
+ */
+export type I18nMapElement = {
+  default: string
+}
+
+export type I18nSurveyElement = string | I18nMapElement
+
 export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
@@ -121,37 +132,37 @@ export type FormPanel = BaseElement & {
 export type HtmlElement = {
   name: string
   type: 'html'
-  html: string
+  html: I18nSurveyElement
 }
 
 type BaseQuestion = BaseElement & {
   name: string
-  description?: string
+  description?: I18nSurveyElement
   isRequired?: boolean
 }
 
 export type TitledQuestion = BaseQuestion & {
-    title: string
+  title: I18nSurveyElement
 }
 
 export type QuestionChoice = {
-  text: string
+  text: I18nSurveyElement
   value: string
 }
 
 type WithOtherOption<T> = T & {
   showOtherItem?: boolean
-  otherText?: string
-  otherPlaceholder?: string
-  otherErrorText?: string
+  otherText?: I18nSurveyElement
+  otherPlaceholder?: I18nSurveyElement
+  otherErrorText?: I18nSurveyElement
 }
 
 export type CheckboxQuestion = WithOtherOption<TitledQuestion & {
   type: 'checkbox'
   choices: QuestionChoice[]
   showNoneItem?: boolean
-  noneText?: string
-  noneValue?: string
+  noneText?: I18nSurveyElement
+  noneValue?: I18nSurveyElement
 }>
 
 export type DropdownQuestion = WithOtherOption<TitledQuestion & {
@@ -188,7 +199,7 @@ export type MedicationsQuestion = TitledQuestion & {
 
 export type HtmlQuestion = BaseQuestion & {
   type: 'html',
-  html: string
+  html: I18nSurveyElement
 }
 
 export type Question =

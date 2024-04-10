@@ -3,6 +3,7 @@ import { QuestionChoice } from '@juniper/ui-core/src/types/forms'
 import { ReactQuestionFactory } from 'survey-react-ui'
 import React from 'react'
 import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
+import { I18nSurveyElement } from '@juniper/ui-core/build/types/forms'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with
@@ -141,3 +142,14 @@ export function questionFromRawText(rawText: string): QuestionObj {
 ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
   return React.createElement(SurveyQuestionAddressValidation, props)
 })
+
+/**
+ * Takes in an I18nElement and either returns the default value (if I18nElement is in the
+ * internationalized format), or the string itself (if I18nElement is a string).
+ */
+export const getI18nSurveyElement = (element?: I18nSurveyElement) => {
+  if (element === undefined) {
+    return ''
+  }
+  return typeof element === 'string' ? element : element.default
+}

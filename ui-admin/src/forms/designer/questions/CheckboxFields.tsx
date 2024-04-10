@@ -4,6 +4,7 @@ import { CheckboxQuestion } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { TextInput } from 'components/forms/TextInput'
+import { getI18nSurveyElement } from 'util/juniperSurveyUtils'
 
 type CheckboxFieldsProps = {
   disabled: boolean
@@ -51,7 +52,7 @@ export const CheckboxFields = (props: CheckboxFieldsProps) => {
               description={'Label for the "None" option.'}
               disabled={disabled}
               label="Label"
-              value={question.noneText || ''}
+              value={getI18nSurveyElement(question.noneText)}
               onChange={value => {
                 onChange({
                   ...question,
@@ -66,7 +67,7 @@ export const CheckboxFields = (props: CheckboxFieldsProps) => {
               description={'Value for the "None" option.'}
               disabled={disabled}
               label="Value"
-              value={question.noneValue || ''}
+              value={getI18nSurveyElement(question.noneValue)}
               onChange={value => {
                 onChange({
                   ...question,

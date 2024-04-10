@@ -4,6 +4,7 @@ import { CheckboxQuestion, DropdownQuestion, RadiogroupQuestion } from '@juniper
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { TextInput } from 'components/forms/TextInput'
+import { getI18nSurveyElement } from 'util/juniperSurveyUtils'
 
 type QuestionWithOtherOption = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
@@ -52,7 +53,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
               description={'Label for the "Other" option.'}
               disabled={disabled}
               label="Label"
-              value={question.otherText || ''}
+              value={getI18nSurveyElement(question.otherText)}
               onChange={value => {
                 onChange({
                   ...question,
@@ -67,7 +68,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
               description={'Placeholder text for the text response input.'}
               disabled={disabled}
               label="Placeholder"
-              value={question.otherPlaceholder || ''}
+              value={getI18nSurveyElement(question.otherPlaceholder)}
               onChange={value => {
                 onChange({
                   ...question,
@@ -83,7 +84,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
               description={'Error message shown if the participant selects the "Other" option but does not provide a text response'}
               disabled={disabled}
               label="Error message"
-              value={question.otherErrorText || ''}
+              value={getI18nSurveyElement(question.otherErrorText)}
               onChange={value => {
                 onChange({
                   ...question,
