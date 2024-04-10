@@ -112,15 +112,17 @@ export type FormContentPage = BaseElement & {
 }
 
 /**
- * This will probably actually end up just being a Record<string, string>,
- * but for now the designer tool only needs to support displaying the default
- * language, so this makes the code a bit cleaner in the meantime.
+ *  Certain SurveyJS elements can take on multiple forms. For example, the "title" field
+ *  for a question could either be a string, or an object mapping language codes to strings.
+ *  "default" is always present; the other languages are arbitrary.
  */
 export type I18nMapElement = {
-  default: string
+  default: string,
+  [language: string]: string
 }
 
 export type I18nSurveyElement = string | I18nMapElement
+
 
 export type FormElement = FormPanel | HtmlElement | Question
 

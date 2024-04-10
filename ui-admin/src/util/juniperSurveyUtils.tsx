@@ -144,12 +144,13 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
 })
 
 /**
- * Takes in an I18nElement and either returns the default value (if I18nElement is in the
- * internationalized format), or the string itself (if I18nElement is a string).
+ * Takes in an I18nSurveyElement and either returns the default value (if I18nSurveyElement is in the
+ * internationalized format), or the string itself (if I18nSurveyElement is a simple string).'
+ * Once the survey designer is fully
  */
-export const getI18nSurveyElement = (element?: I18nSurveyElement) => {
+export const getI18nSurveyElement = (element?: I18nSurveyElement, language?: string) => {
   if (element === undefined) {
     return ''
   }
-  return typeof element === 'string' ? element : element.default
+  return typeof element === 'string' ? element : element[language || 'default']
 }
