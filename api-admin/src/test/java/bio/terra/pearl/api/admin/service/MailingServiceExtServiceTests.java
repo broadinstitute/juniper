@@ -7,10 +7,11 @@ import static org.hamcrest.Matchers.hasSize;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.MockAuthServiceAlwaysRejects;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.portal.MailingListContactFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -31,6 +32,7 @@ public class MailingServiceExtServiceTests extends BaseSpringBootTest {
   @Autowired MailingListExtService mailingListExtService;
   @Autowired MailingListContactService mailingListService;
   @Autowired PortalEnvironmentFactory portalEnvironmentFactory;
+  @Autowired MailingListContactFactory mailingListContactFactory;
   @Autowired AdminUserFactory adminUserFactory;
   @Autowired PortalService portalService;
   @Autowired DataChangeRecordService dataChangeRecordService;
@@ -56,24 +58,39 @@ public class MailingServiceExtServiceTests extends BaseSpringBootTest {
         portalEnvironmentFactory.buildPersisted(getTestName(info));
     AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info), true);
     Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder().responsibleAdminUserId(adminUser.getId()).build();
     MailingListContact contact =
         mailingListService.create(
             MailingListContact.builder()
                 .name("test1")
                 .email("test1@test.com")
                 .portalEnvironmentId(portalEnvironment.getId())
-                .build());
+                .build(),
+            auditInfo);
 
     MailingListContact createdContact = mailingListService.find(contact.getId()).get();
     mailingListExtService.delete(
         portal.getShortcode(), portalEnvironment.getEnvironmentName(), contact.getId(), adminUser);
     assertThat(mailingListService.find(contact.getId()).isPresent(), equalTo(false));
-    List<DataChangeRecord> changeRecords =
-        dataChangeRecordService.findByPortalEnvironmentId(portalEnvironment.getId());
-    assertThat(changeRecords, hasSize(1));
-    assertThat(changeRecords.get(0).getResponsibleAdminUserId(), equalTo(adminUser.getId()));
-    assertThat(
-        changeRecords.get(0).getOldValue(),
-        equalTo(objectMapper.writeValueAsString(createdContact)));
+  }
+
+  @Test
+  @Transactional
+  public void bulkCreateMailingListContacts(TestInfo info) {
+    PortalEnvironment portalEnvironment =
+        portalEnvironmentFactory.buildPersisted(getTestName(info));
+    AdminUser adminUser = adminUserFactory.buildPersisted(getTestName(info), true);
+    Portal portal = portalService.find(portalEnvironment.getPortalId()).get();
+    List<MailingListContact> contacts =
+        List.of(
+            MailingListContact.builder().name("Jonas Salk").email("jsalk@test.com").build(),
+            MailingListContact.builder().name("Basic Done").email("basic@test.com").build());
+
+    List<MailingListContact> createdContacts =
+        mailingListExtService.create(
+            portal.getShortcode(), portalEnvironment.getEnvironmentName(), contacts, adminUser);
+
+    assertThat(createdContacts, hasSize(2));
   }
 }

@@ -1031,6 +1031,23 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
+    post:
+      summary: Adds a list of contacts to the mailing list for the environment
+      tags: [ mailingList ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        description: list of contacts
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: list of created contacts
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
     get:
       summary: Gets the mailing list for the environment
       tags: [ mailingList ]
