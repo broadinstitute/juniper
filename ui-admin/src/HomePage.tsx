@@ -28,7 +28,11 @@ function HomePage() {
     <div className="ms-5 mt-4">
       <h2 className="h4">My Studies</h2>
       <ul className="list-group list-group-flush fs-5">
-        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal => [
+        { portalList.sort((a, b) => a.name.localeCompare(b.name)).flatMap(portal => 
+          <li key = "portal.shortcode">
+          <span className={'mt-2'}>{portal.name}</span>
+            <ul className="list-group list-group-flush">
+              ...portal.portalStudies.sort((a, b) =>
           <span key={portal.shortcode} className={'mt-2'}>{portal.name}</span>,
           ...portal.portalStudies.sort((a, b) =>
             a.study.name.localeCompare(b.study.name)).map(portalStudy => {
