@@ -31,8 +31,8 @@ export default function SurveyAutoCompleteButton({ surveyModel }: { surveyModel:
     return null
   }
   return <button className="float-end btn" aria-label="automatically complete the survey"
-    title="automatically complete the current survey. (Available only in sandbox & irb environments)"
+    title="Automatically complete the current survey. (Available only in sandbox & irb environments)"
     onClick={autoCompleteSurvey}>
-    Auto-complete: <FontAwesomeIcon icon={faWandSparkles}/>
+    Autocomplete: <FontAwesomeIcon icon={faWandSparkles}/>
   </button>
 }
