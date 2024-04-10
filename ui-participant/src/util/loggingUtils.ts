@@ -39,7 +39,7 @@ export type ErrorEventDetail = {
 }
 
 /** specific helper function for logging an error */
-export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
+export const logError = (detail: ErrorEventDetail, stackTrace: string | undefined, eventName= 'jserror') => {
   if (!isBrowserCompatible()) {
     alert('Your browser does not support this page. ' +
       'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
@@ -50,7 +50,7 @@ export const logError = (detail: ErrorEventDetail, stackTrace: string) => {
   } else {
     log({
       eventType: 'ERROR',
-      eventName: 'jserror',
+      eventName,
       eventDetail: `${stringify(detail)}\n${window.location.href}`,
       stackTrace
     })

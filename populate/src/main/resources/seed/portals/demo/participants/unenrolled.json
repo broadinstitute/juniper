@@ -1,0 +1,19 @@
+{
+  "participantUser": {
+    "username": "unenrolled@test.com",
+    "lastLoginHoursAgo": 1
+  },
+  "profile": {
+    "givenName": "Una",
+    "familyName": "Enrolled",
+    "contactEmail": "unenrolled@test.com",
+    "sexAtBirth": "female",
+    "mailingAddress": {
+      "street1": "111 Pine Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10006"
+    }
+  }
+}
