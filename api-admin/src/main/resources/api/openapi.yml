@@ -635,6 +635,21 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
+    get:
+      summary: Gets all of the possible fields which can be searched on within the provided portal.
+      tags: [ enrolleeSearch ]
+      operationId: getExpressionSearchFacets
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of valid search fields
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
     get:
       summary: Loads the specified metric for the given study env

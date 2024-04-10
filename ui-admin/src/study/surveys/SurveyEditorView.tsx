@@ -218,6 +218,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           onDismiss={() => setShowVersionSelector(false)}
         />}
         { showAdvancedOptions && <FormOptionsModal
+          studyEnvContext={studyEnvContext}
           workingForm={{ ...currentForm, ...draft }}
           updateWorkingForm={(props: SaveableFormProps) => {
             setDraft({ ...draft, ...props, date: Date.now() })

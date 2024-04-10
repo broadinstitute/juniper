@@ -66,6 +66,18 @@ public class SurveyDao extends BaseVersionedJdbiDao<Survey> {
         );
     }
 
+    public List<Survey> findByStudyEnvironmentIdWithContent(UUID studyEnvironmentId) {
+        return jdbi.withHandle(
+                handle -> handle.createQuery("""
+                                SELECT s.* FROM survey s
+                                    INNER JOIN study_environment_survey ses ON ses.survey_id = s.id
+                                    WHERE ses.study_environment_id = :studyEnvironmentId""")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
     @Override
     protected Class<Survey> getClazz() {
         return Survey.class;
