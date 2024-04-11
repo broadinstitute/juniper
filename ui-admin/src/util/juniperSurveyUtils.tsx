@@ -148,9 +148,9 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
  * internationalized format), or the string itself (if I18nSurveyElement is a simple string).'
  * Once the survey designer is fully
  */
-export const getI18nSurveyElement = (element?: I18nSurveyElement, language?: string) => {
+export const i18nSurveyText = (element?: I18nSurveyElement, language = 'default') => {
   if (element === undefined) {
     return ''
   }
-  return typeof element === 'string' ? element : element[language || 'default']
+  return typeof element === 'string' ? element : element[language]
 }

@@ -116,12 +116,12 @@ export type FormContentPage = BaseElement & {
  *  for a question could either be a string, or an object mapping language codes to strings.
  *  "default" is always present; the other languages are arbitrary.
  */
-export type I18nMapElement = {
+export type I18nMap = {
   default: string,
   [language: string]: string
 }
 
-export type I18nSurveyElement = string | I18nMapElement
+export type I18nSurveyElement = string | I18nMap
 
 
 export type FormElement = FormPanel | HtmlElement | Question

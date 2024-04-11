@@ -4,7 +4,7 @@ import { HtmlQuestion, InteractiveQuestion, Question } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
-import { getI18nSurveyElement } from 'util/juniperSurveyUtils'
+import { i18nSurveyText } from 'util/juniperSurveyUtils'
 
 type BaseFieldsProps = {
   disabled: boolean
@@ -27,7 +27,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
           label="Question text"
           required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
           rows={2}
-          value={getI18nSurveyElement(regularQuestion.title)}
+          value={i18nSurveyText(regularQuestion.title)}
           onChange={value => {
             onChange({
               ...regularQuestion,
@@ -44,7 +44,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
           disabled={disabled}
           label="Description"
           rows={2}
-          value={getI18nSurveyElement(regularQuestion.description)}
+          value={i18nSurveyText(regularQuestion.description)}
           onChange={value => {
             onChange({
               ...regularQuestion,

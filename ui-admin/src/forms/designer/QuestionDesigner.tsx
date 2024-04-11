@@ -14,7 +14,7 @@ import { Button } from 'components/forms/Button'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import InfoPopup from '../../components/forms/InfoPopup'
-import { getI18nSurveyElement } from 'util/juniperSurveyUtils'
+import { i18nSurveyText } from 'util/juniperSurveyUtils'
 
 export type QuestionDesignerProps = {
   question: Question
@@ -107,7 +107,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
               disabled={readOnly}
               label="HTML"
               rows={5}
-              value={getI18nSurveyElement((question as HtmlQuestion)?.html)}
+              value={i18nSurveyText((question as HtmlQuestion)?.html)}
               onChange={value => {
                 onChange({
                   ...question,

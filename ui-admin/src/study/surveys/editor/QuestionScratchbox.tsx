@@ -6,7 +6,7 @@ import {
   panelObjsToJson,
   questionToJson,
   PanelObj,
-  getI18nSurveyElement
+  i18nSurveyText
 } from 'util/juniperSurveyUtils'
 
 /** Component for helping transform plaintext survey questions (such as from a word doc) to survey definition
@@ -109,7 +109,7 @@ export default function QuestionScratchbox() {
           <div className="ms-3">
             { questionObj.choices && questionObj.choices.map((choice, index) => {
               return <div key={index} className="mt-1">
-                <label>{getI18nSurveyElement(choice.text)}:
+                <label>{i18nSurveyText(choice.text)}:
                   <input type="text" size={30} value={choice.value}
                     onChange={e => updateChoiceValue(index, e.target.value)}/>
                 </label>
@@ -142,7 +142,7 @@ function subPanelsForQuestion(questionObj: QuestionObj): PanelObj[] {
   return (questionObj.choices || []).map(choice => {
     return {
       type: 'panel',
-      title: getI18nSurveyElement(choice.text),
+      title: i18nSurveyText(choice.text),
       visibleIf: `{${questionObj.namePrefix}${questionObj.nameSuffix}} contains '${choice.value}'`,
       elements: [
         {
