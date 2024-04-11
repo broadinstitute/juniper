@@ -20,6 +20,18 @@
       "targetType": "PROXY_PROFILE",
       "targetField": "familyName",
       "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "governed_given_name",
+      "targetType": "PROFILE",
+      "targetField": "givenName",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "governed_family_name",
+      "targetType": "PROFILE",
+      "targetField": "familyName",
+      "mapType": "STRING_TO_STRING"
     }
   ],
   "jsonContent": {
@@ -122,24 +134,29 @@
           },
           {
             "type": "text",
+            "isRequired": true,
             "name": "proxy_given_name",
             "title": "Proxy Given Name",
-            "description": "Proxy given name",
             "visibleIf": "{proxy_enrollment} = true"
           },
           {
             "type": "text",
+            "isRequired": true,
             "name": "proxy_family_name",
             "title": "Proxy Family Name",
-            "description": "Proxy family name",
             "visibleIf": "{proxy_enrollment} = true"
           },
           {
             "type": "text",
-            "name": "proxy_email",
-            "title": "Proxy Email",
-            "description": "Proxy email",
-            "visibleIf": "{proxy_enrollment} = true"
+            "isRequired": true,
+            "name": "governed_given_name",
+            "title": "Governed User Given Name"
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "governed_family_name",
+            "title": "Governed User Family Name"
           }
         ]
       }
