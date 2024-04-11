@@ -49,6 +49,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         return dao.findByStableIdAndPortalShortcodeWithMappings(stableId, version, shortcode);
     }
 
+    public List<Survey> findByStudyEnvironmentIdWithContent(UUID studyId) {
+        return dao.findByStudyEnvironmentIdWithContent(studyId);
+    }
+
     @Transactional
     @Override
     public void delete(UUID surveyId, Set<CascadeProperty> cascades) {

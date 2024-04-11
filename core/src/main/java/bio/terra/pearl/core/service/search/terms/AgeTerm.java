@@ -8,6 +8,7 @@ import org.jooq.Condition;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -25,9 +26,13 @@ public class AgeTerm implements EnrolleeTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        Period period = Period.between(LocalDate.now(), context.getProfile().getBirthDate());
+        if (Objects.isNull(context.getProfile()) || Objects.isNull(context.getProfile().getBirthDate())) {
+            return new SearchValue();
+        }
+
+        Period period = Period.between(context.getProfile().getBirthDate(), LocalDate.now());
         return new SearchValue(
-                period.getYears()
+                Math.abs(period.getYears())
         );
     }
 

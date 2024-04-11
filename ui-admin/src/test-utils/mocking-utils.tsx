@@ -120,11 +120,12 @@ export const makeMockPortalStudy = (name: string, shortcode: string): PortalStud
 }
 
 /** returns a mock portal with the specified studies */
-export const makeMockPortal = (name: string, portalStudies: PortalStudy[]) => {
+export const makeMockPortal = (name: string, portalStudies: PortalStudy[], shortcode: string) => {
   return {
     ...mockPortal(),
     name,
-    portalStudies
+    portalStudies,
+    shortcode
   }
 }
 

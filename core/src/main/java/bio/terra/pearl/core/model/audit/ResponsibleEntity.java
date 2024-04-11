@@ -15,6 +15,7 @@ public class ResponsibleEntity {
     private AdminUser adminUser;
     private ParticipantUser participantUser;
     private String systemProcess;
+    private Boolean anonymousUser;
     public ResponsibleEntity(AdminUser user) {
         if (user == null) {
             throw new IllegalArgumentException("user cannot be null");
@@ -32,5 +33,8 @@ public class ResponsibleEntity {
             throw new IllegalArgumentException("system process cannot be null");
         }
         this.systemProcess = systemProcess;
+    }
+    public ResponsibleEntity() {
+        this.anonymousUser = true;
     }
 }

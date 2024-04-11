@@ -242,6 +242,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_04_02_language_text_portal.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_03_anonymous_user_responsible_entity.yaml
+      relativeToChangelogFile: true        
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

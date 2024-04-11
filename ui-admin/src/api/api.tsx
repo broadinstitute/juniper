@@ -239,10 +239,10 @@ export type Config = {
 }
 
 export type MailingListContact = {
-  id: string,
+  id?: string,
   name: string,
   email: string,
-  createdAt: number
+  createdAt?: number
 }
 
 
@@ -395,6 +395,8 @@ export type StudyCreationDto = {
   name: string,
   template: StudyTemplate
 }
+
+export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 
 
 let bearerToken: string | null = null
@@ -803,6 +805,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<{ [index: string]: SearchValueType }> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
     Promise<EnrolleeSearchResult[]> {
     const facetString = encodeURIComponent(facetValuesToString(facetValues))
@@ -1130,6 +1139,17 @@ Promise<Trigger> {
       method: 'DELETE',
       headers: this.getInitHeaders()
     })
+  },
+
+  async addMailingListContacts(portalShortcode: string, envName: string, contact: MailingListContact[]):
+    Promise<MailingListContact[]> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(contact)
+    })
+    return await this.processJsonResponse(response)
   },
 
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
