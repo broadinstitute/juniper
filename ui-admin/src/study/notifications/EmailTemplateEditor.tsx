@@ -85,7 +85,8 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
             ref={emailEditorRef}
             onLoad={onEditorLoaded}
             onReady={() => 1}
-            options={{ tools: { image: { enabled: false } } }}
+            options={{ tools: { image: { enabled: false } }, className: 'w-100' }}
+            style={{ maxWidth: '0px', width: '0px' }}
           />
         </Tab>
         <Tab eventKey="html" title="Html">

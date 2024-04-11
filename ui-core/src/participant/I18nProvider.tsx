@@ -5,7 +5,7 @@ export const I18nContext = createContext<I18nContextT | null>(null)
 
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string) => string,
+  i18n: (key: string, defaultValue?: string) => string,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
 }
@@ -32,7 +32,7 @@ const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
 /**
  * Provider for the current users i18n context.
  */
-export function I18nProvider({ children }: { children: React.ReactNode }) {
+export function I18nProvider({ portalShortcode, children }: { portalShortcode?: string, children: React.ReactNode }) {
   const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
@@ -50,7 +50,7 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
 
   const reloadLanguageTexts = (selectedLanguage: string) => {
     setIsLoading(true)
-    Api.getLanguageTexts(selectedLanguage).then(result => {
+    Api.getLanguageTexts(selectedLanguage, portalShortcode).then(result => {
       setLanguageTexts(result)
       setIsError(false)
       setIsLoading(false)
@@ -60,8 +60,8 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     })
   }
 
-  const i18n = (key: string) => {
-    return languageTexts[key] || `{${key}}`
+  const i18n = (key: string, defaultValue?: string) => {
+    return languageTexts[key] || defaultValue || `{${key}}`
   }
 
   return <>

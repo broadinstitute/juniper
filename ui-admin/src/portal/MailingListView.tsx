@@ -9,17 +9,23 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout, IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
-import { currentIsoDate, instantToDateString, instantToDefaultString } from '@juniper/ui-core'
+import {
+  basicTableLayout,
+  DownloadControl,
+  IndeterminateCheckbox,
+  renderEmptyMessage,
+  RowVisibilityCount
+} from 'util/tableUtils'
+import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
-import { escapeCsvValue, saveBlobAsDownload } from 'util/downloadUtils'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
 import Modal from 'react-bootstrap/Modal'
 import { useLoadingEffect } from '../api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faAdd, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { renderPageHeader } from 'util/pageUtils'
+import { AddMailingListUsersModal } from './AddMailingListUsersModal'
 
 
 /** show the mailing list in table */
@@ -29,6 +35,7 @@ export default function MailingListView({ portalContext, portalEnv }:
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showAddUsersModal, setShowAddUsersModal] = useState(false)
   const columns: ColumnDef<MailingListContact>[] = [{
     id: 'select',
     header: ({ table }) => <IndeterminateCheckbox
@@ -50,9 +57,11 @@ export default function MailingListView({ portalContext, portalEnv }:
   }, {
     header: 'Joined',
     accessorKey: 'createdAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: info => instantToDefaultString(info.getValue() as number)
   }]
-
 
   const table = useReactTable({
     data: contacts,
@@ -68,21 +77,6 @@ export default function MailingListView({ portalContext, portalEnv }:
     onRowSelectionChange: setRowSelection
   })
 
-  /** download selected contacts as a csv */
-  const download = () => {
-    const contactsSelected = Object.keys(rowSelection)
-      .filter(key => rowSelection[key])
-      .map(key => contacts[parseInt(key)])
-    const csvDataString = contactsSelected.map(contact => {
-      return `${escapeCsvValue(contact.email)}, ${escapeCsvValue(contact.name)}, 
-      ${instantToDateString(contact.createdAt)}`
-    }).join('\n')
-    const csvString = `email, name, date joined\n${  csvDataString}`
-    const blob = new Blob([csvString], {
-      type: 'text/plain'
-    })
-    saveBlobAsDownload(blob, `${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`)
-  }
   const numSelected = Object.keys(rowSelection).length
 
   const { isLoading, reload } = useLoadingEffect(async () => {
@@ -98,9 +92,11 @@ export default function MailingListView({ portalContext, portalEnv }:
       // this might get gnarly with more than a few entries, but that's okay for now -- this is not expected to be
       // a heavy-use feature.
       await Promise.all(
-        contactsSelected.map(contact =>
-          Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id)
-        )
+        contactsSelected.map(contact => {
+          if (contact.id) {
+            return Api.deleteMailingListContact(portalContext.portal.shortcode, portalEnv.environmentName, contact.id)
+          }
+        })
       )
       Store.addNotification(successNotification(`${contactsSelected.length} entries removed`))
     } catch {
@@ -118,11 +114,14 @@ export default function MailingListView({ portalContext, portalEnv }:
           <RowVisibilityCount table={table}/>
         </div>
         <div className="d-flex">
-          <Button onClick={download}
-            variant="light" className="border m-1" disabled={!numSelected}
-            tooltip={numSelected ? 'Download selected contacts' : 'You must select contacts to download'}>
-            <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
+          <Button onClick={() => setShowAddUsersModal(!showAddUsersModal)}
+            variant="light" className="border m-1" tooltip="Add users to the mailing list">
+            <FontAwesomeIcon icon={faAdd} className="fa-lg"/> Add Users
           </Button>
+          <DownloadControl
+            table={table}
+            fileName={`${portalContext.portal.shortcode}-MailingList-${currentIsoDate()}.csv`}
+          />
           <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
             variant="light" className="border m-1" disabled={!numSelected}
             tooltip={numSelected ? 'Remove selected contacts' : 'You must select contacts to remove'}>
@@ -148,6 +147,13 @@ export default function MailingListView({ portalContext, portalEnv }:
           </button>
         </Modal.Footer>
       </Modal> }
+      <AddMailingListUsersModal
+        portalContext={portalContext}
+        portalEnv={portalEnv}
+        show={showAddUsersModal}
+        reload={reload}
+        onClose={() => setShowAddUsersModal(false)}
+      />
     </LoadingSpinner>
   </div>
 }

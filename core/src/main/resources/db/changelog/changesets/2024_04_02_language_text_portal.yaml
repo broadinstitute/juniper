@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: "language_text_portal_id"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: language_text
+            columns:
+              - column: { name: portal_id, type: uuid, constraints: {
+                foreignKeyName: fk_language_text_portal_id, references: portal(id)
+              } }
+        - dropUniqueConstraint:
+            constraintName: key_name_language
+            tableName: language_text
+        - addUniqueConstraint:
+            tableName: language_text
+            columnNames: portal_id, key_name, language
+            constraintName: uc_portal_id_key_name_language

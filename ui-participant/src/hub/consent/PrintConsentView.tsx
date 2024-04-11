@@ -5,7 +5,7 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 
 import {
   surveyJSModelFromForm, makeSurveyJsData,
-  waitForImages, configureModelForPrint
+  waitForImages, configureModelForPrint, useI18n
 } from '@juniper/ui-core'
 
 import Api, { Answer, Enrollee } from 'api/api'
@@ -25,6 +25,7 @@ type UsePrintableConsentArgs = {
 
 const usePrintableConsent = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
+  const { selectedLanguage } = useI18n()
 
   const { portalEnv } = usePortalEnv()
 
@@ -55,6 +56,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
       surveyModel.data = resumableData?.data
       configureModelForPrint(surveyModel)
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
+      surveyModel.locale = selectedLanguage
 
       return surveyModel
     }

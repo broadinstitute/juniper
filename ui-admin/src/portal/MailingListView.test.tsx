@@ -35,7 +35,7 @@ test('renders a mailing list', async () => {
   expect(screen.getByText('person2')).toBeInTheDocument()
 })
 
-test('download is toggled depending on contacts selected', async () => {
+test('renders a download mailing list button', async () => {
   jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
@@ -45,15 +45,14 @@ test('download is toggled depending on contacts selected', async () => {
   await waitFor(() => {
     expect(screen.getByText('person1')).toBeInTheDocument()
   })
-  const downloadLink = screen.getByText('Download')
-  expect(downloadLink).toHaveAttribute('aria-disabled', 'true')
+  const downloadButton = screen.getByText('Download')
+  expect(downloadButton).toBeInTheDocument()
 
-  // click on the 'select all' checkbox
-  await userEvent.click(screen.getAllByRole('checkbox')[0])
-  expect(screen.getByText('2 of 2 selected')).toBeInTheDocument()
-  expect(downloadLink).toHaveAttribute('aria-disabled', 'false')
+  await userEvent.click(downloadButton)
+  await waitFor(() => {
+    expect(screen.getByText('person1')).toBeInTheDocument()
+  })
 })
-
 
 test('delete button shows confirmation', async () => {
   jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)

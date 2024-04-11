@@ -78,7 +78,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     }, { setIsLoading })
   }
 
-  return <Modal show={true} onHide={onDismiss} className={type === 'OUTREACH' ? 'modal-lg' : 'modal'}>
+  return <Modal show={true} size={'xl'} onHide={onDismiss} className={type === 'OUTREACH' ? 'modal-lg' : 'modal'}>
     <Modal.Header closeButton>
       <Modal.Title>Create new {type.toLowerCase()} form</Modal.Title>
       <div className="ms-4">
@@ -92,7 +92,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
         <label className="form-label mt-3" htmlFor="inputFormStableId">Stable ID</label>
         <InfoPopup content={'A stable and unique identifier for the survey. May be shown in exported datasets.'}/>
         {StableIdInput}
-        <FormOptions workingForm={form}
+        <FormOptions
+          studyEnvContext={studyEnvContext}
+          workingForm={form}
           updateWorkingForm={(updates => {
             setForm({ ...form, ...updates })
           })}

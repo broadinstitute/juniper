@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
@@ -37,6 +38,10 @@ public class ProfileTerm implements EnrolleeTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
+        if (Objects.isNull(context.getProfile())) {
+            return new SearchValue();
+        }
+
         SearchValue value;
         try {
             Object objValue = PropertyUtils.getNestedProperty(context.getProfile(), field);
