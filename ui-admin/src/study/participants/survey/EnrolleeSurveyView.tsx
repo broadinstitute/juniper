@@ -37,6 +37,10 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses, study
   responses: SurveyResponse[], studyEnvContext: StudyEnvContextT
 }) {
   const [isEditing, setIsEditing] = useState(false)
+  if (configSurvey.survey.allowParticipantStart) {
+    return <SurveyEditView survey={configSurvey.survey}/>
+  }
+
   if (responses.length === 0) {
     return <div>No responses for enrollee {enrollee.shortcode}</div>
   }

@@ -1,10 +1,30 @@
 import React from 'react'
-import { Survey, SurveyResponse } from 'api/api'
+import { Enrollee, Survey, SurveyResponse } from 'api/api'
+import DocumentTitle from '../../../util/DocumentTitle'
+import { instantToDefaultString } from '@juniper/ui-core'
+import SurveyFullDataView from './SurveyFullDataView'
+import SurveyView from '../../surveys/SurveyView'
 
 /** allows editing of a survey response */
-export default function SurveyEditView({ response, survey }: {response: SurveyResponse, survey: Survey}) {
-  console.log(`not implemented ${response.surveyId} ${survey.stableId}`)
+export default function SurveyEditView({ response, survey, enrollee }:
+{response?: SurveyResponse, survey: Survey, enrollee: Enrollee}) {
   return <div>
-    Not yet implemented
+    <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
+  <h6>{survey.name}</h6>
+  <div>
+      <SurveyView studyEnvContext={}
   </div>
+</div>
+}
+
+
+const makeEmptyResponse = (enrollee: Enrollee, survey: Survey, adminUserId: string): SurveyResponse => {
+  return {
+    enrolleeId: enrollee.id,
+    creatingAdminUserId: adminUserId,
+    surveyId: survey.id,
+    resumeData: '{}',
+    answers: [],
+    complete: false
+  }
 }

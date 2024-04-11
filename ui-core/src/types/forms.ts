@@ -59,6 +59,7 @@ export type Answer = {
 export type FormResponse = {
   id?: string
   creatingParticipantUserId?: string
+  creatingAdminUserId?: string
   resumeData: string
   createdAt?: number
   lastUpdatedAt?: number
