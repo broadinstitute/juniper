@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Fetch the latest Juniper tags, this doesn't happen automatically
+git fetch --tags
+
 # Check what versions demo and production are currently running
 demoResponse=$(curl -s 'https://admin-d2p.ddp-dev.envs.broadinstitute.org/version')
 demoGitTag=$(echo $demoResponse | jq -r '.gitTag')
