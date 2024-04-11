@@ -6,7 +6,7 @@ import {
   ParticipantTask,
   Portal,
   PreEnrollmentResponse,
-  PreregistrationResponse,
+  PreregistrationResponse, Profile,
   StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
@@ -77,19 +77,6 @@ export type Enrollee = {
   surveyResponses: []
 }
 
-export type Profile = {
-  givenName?: string,
-  familyName?: string,
-  contactEmail?: string,
-  doNotEmail?: boolean,
-  doNotEmailSolicit?: boolean,
-  mailingAddress?: MailingAddress,
-  phoneNumber?: string,
-  birthDate?: number[],
-  sexAtBirth?: string,
-  preferredLanguage?: string,
-}
-
 export type KitRequest = {
   id: string,
   createdAt: number,
@@ -121,10 +108,6 @@ export type ConsentWithResponses = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
-}
-
-export type UserResumeData = {
-  currentPageNo: number
 }
 
 export type HubResponse = {

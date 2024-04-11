@@ -9,17 +9,15 @@ import {
   getDataWithCalculatedValues,
   getResumeData,
   getUpdatedAnswers,
-  PageNumberControl,
-  useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
 import {
   ApiProvider,
   makeSurveyJsData,
-  Markdown,
+  PageNumberControl, SurveyFooter,
   SurveyJsResumeData,
   useAutosaveEffect,
-  useI18n
+  useI18n, useRoutablePageNumber
 } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -27,7 +25,6 @@ import { useUser } from 'providers/UserProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from 'util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
-import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 const TASK_ID_PARAM = 'taskId'
@@ -161,18 +158,7 @@ export function RawSurveyView({
   )
 }
 
-/** renders the foot for the survey, if it exists and we are on the last page */
-export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyModel: SurveyModel }) {
-  if (!survey.footer || !surveyModel.isLastPage) {
-    return null
-  }
-  return <div className="p-3 mb-0 w-100 d-flex justify-content-center"
-    style={{ background: '#d6d6d6' }}>
-    <div style={{ maxWidth: '600px' }}>
-      <Markdown>{survey.footer}</Markdown>
-    </div>
-  </div>
-}
+
 
 
 /** handles paging the form */

@@ -5,53 +5,22 @@ import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
 import { micromark } from 'micromark'
 import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
 import {
-  createAddressValidator,
+  createAddressValidator, PageNumberControl,
   SURVEY_JS_OTHER_SUFFIX,
   surveyJSModelFromForm,
   SurveyJsResumeData,
-  useI18n
+  useI18n, UserResumeData, Profile
 } from '@juniper/ui-core'
 
-import Api, { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
+import Api, { Answer, ConsentForm, Survey } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 import '../components/ThemedSurveyAddressValidation'
 
-const PAGE_NUMBER_PARAM_NAME = 'page'
-
-/** used for paging surveys */
-export type PageNumberControl = {
-  pageNumber: number | null,
-  updatePageNumber: (page: number) => void
-}
-
-/**
- * hook for reading/writing pageNumbers to url search params as 'page'
- * */
-export function useRoutablePageNumber(): PageNumberControl {
-  const [searchParams, setSearchParams] = useSearchParams()
-  const pageParam = searchParams.get(PAGE_NUMBER_PARAM_NAME)
-  let urlPageNumber = null
-  if (pageParam) {
-    urlPageNumber = parseInt(pageParam)
-  }
-
-  /** update the url with the new page number */
-  function updatePageNumber(newPageNumber: number) {
-    searchParams.set('page', (newPageNumber).toString())
-    setSearchParams(searchParams)
-  }
-
-  return {
-    pageNumber: urlPageNumber,
-    updatePageNumber
-  }
-}
 
 type UseSurveyJsModelOpts = {
   extraCssClasses?: Record<string, string>
@@ -248,3 +217,4 @@ export function getDataWithCalculatedValues(model: SurveyModel) {
     ...calculatedHash
   }
 }
+

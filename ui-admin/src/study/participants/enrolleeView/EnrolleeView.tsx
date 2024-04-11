@@ -1,5 +1,12 @@
 import React from 'react'
-import { ConsentResponse, Enrollee, StudyEnvironmentConsent, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
+import {
+  ConsentResponse,
+  Enrollee,
+  ParticipantTask,
+  StudyEnvironmentConsent,
+  StudyEnvironmentSurvey,
+  SurveyResponse
+} from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -25,8 +32,9 @@ import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 
 
 export type SurveyWithResponsesT = {
-  survey: StudyEnvironmentSurvey,
-  responses: SurveyResponse[]
+  survey: StudyEnvironmentSurvey
+  response?: SurveyResponse
+  task: ParticipantTask
 }
 export type ResponseMapT = { [stableId: string]: SurveyWithResponsesT }
 
@@ -62,12 +70,15 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
   surveys.forEach(configSurvey => {
     // to match responses to surveys, filter using the tasks, since those have the stableIds
     // this is valid since it's currently enforced that all survey responses are done as part of a task,
-    const matchedResponseIds = enrollee.participantTasks
-      .filter(task => task.targetStableId === configSurvey.survey.stableId)
-      .map(task => task.surveyResponseId)
-    const matchedResponses = enrollee.surveyResponses
-      .filter(response => matchedResponseIds.includes(response.id))
-    responseMap[configSurvey.survey.stableId] = { survey: configSurvey, responses: matchedResponses }
+    const matchedTask = enrollee.participantTasks
+      .find(task => task.targetStableId === configSurvey.survey.stableId)!
+    const matchedResponse = enrollee.surveyResponses
+      .find(response => matchedTask.surveyResponseId === response.id)
+    responseMap[configSurvey.survey.stableId] = {
+      survey: configSurvey,
+      response: matchedResponse,
+      task: matchedTask
+    }
   })
 
   const researchSurveys = surveys
@@ -140,10 +151,11 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId].task.id}`}
+                          className={getLinkCssClasses}>
                           {survey.survey.name}
                         </NavLink>
-                        {badgeForResponses(responseMap[stableId].responses)}
+                        {badgeForResponses(responseMap[stableId].response)}
                       </li>
                     })}
                   </ul>}
@@ -156,10 +168,11 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId].task.id}`}
+                          className={getLinkCssClasses}>
                           {survey.survey.name}
                         </NavLink>
-                        {badgeForResponses(responseMap[stableId].responses)}
+                        {badgeForResponses(responseMap[stableId].response)}
                       </li>
                     })}
                   </ul>}
@@ -242,13 +255,13 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
 }
 
 /** returns an icon based on the enrollee's responses.  Note this does not handle multi-responses yet */
-const badgeForResponses = (responses: SurveyResponse[]) => {
-  if (responses.length === 0) {
+const badgeForResponses = (response?: SurveyResponse) => {
+  if (!response) {
     return statusDisplayMap['NEW']
   } else {
-    if (responses[0].complete) {
+    if (response.complete) {
       return statusDisplayMap['COMPLETE']
-    } else if (responses[0].answers.length === 0) {
+    } else if (response.answers.length === 0) {
       return statusDisplayMap['VIEWED']
     } else {
       return statusDisplayMap['IN_PROGRESS']

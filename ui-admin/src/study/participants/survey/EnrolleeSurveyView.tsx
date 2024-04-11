@@ -11,6 +11,7 @@ import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { useUser } from '../../../user/UserProvider'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext }:
@@ -28,29 +29,30 @@ export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvCont
   }
 
   return <RawEnrolleeSurveyView enrollee={enrollee} studyEnvContext={studyEnvContext}
-    configSurvey={surveyAndResponses.survey} responses={surveyAndResponses.responses}/>
+    configSurvey={surveyAndResponses.survey} response={surveyAndResponses.response}/>
 }
 
 /** show responses for a survey */
-export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses, studyEnvContext }: {
+export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyEnvContext }: {
     enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey,
-  responses: SurveyResponse[], studyEnvContext: StudyEnvContextT
+  response?: SurveyResponse, studyEnvContext: StudyEnvContextT
 }) {
   const [isEditing, setIsEditing] = useState(false)
+  const { user } = useUser()
   if (configSurvey.survey.allowParticipantStart) {
-    return <SurveyEditView survey={configSurvey.survey}/>
+    return <SurveyEditView survey={configSurvey.survey} adminUserId={user.id}
+      enrollee={enrollee}/>
   }
 
-  if (responses.length === 0) {
+  if (!response) {
     return <div>No responses for enrollee {enrollee.shortcode}</div>
   }
-  // just show the last response for now
-  const lastResponse = responses[responses.length - 1]
-  if (!lastResponse.answers?.length) {
+
+  if (!response.answers?.length) {
     return <div>Most recent response has no data yet </div>
   }
 
-  const answerVersions = _uniq(lastResponse.answers.map(ans => ans.surveyVersion))
+  const answerVersions = _uniq(response.answers.map(ans => ans.surveyVersion))
   const versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
 
   return <div>
@@ -58,8 +60,8 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses, study
     <h6>{configSurvey.survey.name}</h6>
     <div>
       <span className="fst-italic">
-        <span>{lastResponse.complete ? 'Completed' : 'Last updated'}
-          &nbsp; {instantToDefaultString(lastResponse.createdAt)}
+        <span>{response.complete ? 'Completed' : 'Last updated'}
+          &nbsp; {instantToDefaultString(response.createdAt)}
         </span>
         &nbsp;
         <span>({versionString})</span>
@@ -69,9 +71,10 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, responses, study
         {isEditing ? 'cancel' : 'update / edit'}
       </button>
       <hr/>
-      {!isEditing && <SurveyFullDataView answers={lastResponse.answers} survey={configSurvey.survey}
+      {!isEditing && <SurveyFullDataView answers={response.answers} survey={configSurvey.survey}
         userId={enrollee.participantUserId} studyEnvContext={studyEnvContext}/> }
-      {isEditing && <SurveyEditView survey={configSurvey.survey} response={lastResponse}/>}
+      {isEditing && <SurveyEditView survey={configSurvey.survey} response={response} adminUserId={user.id}
+        enrollee={enrollee}/>}
     </div>
   </div>
 }

@@ -22,7 +22,7 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
-        responses={[response]}/>)
+        response={response}/>)
     render(RoutedComponent)
     expect(screen.getByText('(version 2)')).toBeInTheDocument()
   })
@@ -39,7 +39,7 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
-        responses={[response]}/>)
+        response={response}/>)
     render(RoutedComponent)
     expect(screen.getByText('(versions 2, 3)')).toBeInTheDocument()
   })
