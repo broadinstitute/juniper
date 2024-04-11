@@ -24,6 +24,8 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import SurveyReviewModeButton from '../survey/ReviewModeButton'
+import SurveyAutoCompleteButton from '../survey/SurveyAutoCompleteButton'
 
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
@@ -82,21 +84,23 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
     })
   }
 
-
   return (
     <>
-      <DocumentTitle title={form.name} />
-      {surveyModel ? <SurveyComponent model={surveyModel} /> : null}
+      <DocumentTitle title={form.name}/>
+      <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
+        <SurveyReviewModeButton surveyModel={surveyModel}/>
+        <SurveyAutoCompleteButton surveyModel={surveyModel}/>
+        {surveyModel ? <SurveyComponent model={surveyModel} /> : null}
+      </div>
     </>
+
   )
 }
 
 /** handles paging the form */
-function PagedConsentView({ form, responses, enrollee, studyShortcode }:
-                            {
-                              form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee,
-                              studyShortcode: string
-                            }) {
+function PagedConsentView({ form, responses, enrollee, studyShortcode }: {
+  form: StudyEnvironmentConsent, responses: ConsentResponse[], enrollee: Enrollee, studyShortcode: string
+}) {
   const response = responses[0]
   let answers: Answer[] = []
   if (response?.fullData) {

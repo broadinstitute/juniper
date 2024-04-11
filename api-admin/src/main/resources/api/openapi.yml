@@ -108,6 +108,7 @@ paths:
       operationId: listLanguageTexts
       parameters:
         - { name: language, in: query, required: true, schema: { type: string } }
+        - { name: portalShortcode, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: OK
@@ -635,6 +636,21 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
+    get:
+      summary: Gets all of the possible fields which can be searched on within the provided portal.
+      tags: [ enrolleeSearch ]
+      operationId: getExpressionSearchFacets
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of valid search fields
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
     get:
       summary: Loads the specified metric for the given study env
@@ -735,7 +751,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/notifications:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byEnrollee/{enrolleeShortcode}:
     get:
       summary: List the notifications sent/pending for an enrollee
       tags: [ notifications ]
@@ -745,6 +761,22 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of notifications
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byTrigger/{triggerId}:
+    get:
+      summary: List the notifications sent/pending by trigger configuration
+      tags: [ notifications ]
+      operationId: findAllByConfigId
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: triggerId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: List of notifications
@@ -1031,6 +1063,23 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList:
+    post:
+      summary: Adds a list of contacts to the mailing list for the environment
+      tags: [ mailingList ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        description: list of contacts
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: list of created contacts
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
     get:
       summary: Gets the mailing list for the environment
       tags: [ mailingList ]

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -8,9 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -202,6 +201,78 @@ public class SurveyParseUtils {
     protected static String getQuestionStableId(JsonNode node) {
         JsonNode questionStableIdNode = node.get("questionStableId");
         return questionStableIdNode != null ? questionStableIdNode.asText() : null;
+    }
+
+    //Returns a Map of languageCode -> title for the survey
+    public static Map<String, String> parseSurveyTitle(String formContent, String formName) {
+        if(formContent == null) {
+            //If the form content is empty, there won't be any titles to parse, so fall back to the formName
+            return Map.of("en", formName);
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode surveyContent;
+
+        try {
+            surveyContent = objectMapper.readTree(formContent);
+        } catch (JsonProcessingException e) {
+            //If we can't parse the actual form content, we'll fall back to the formName
+            return Map.of("en", formName);
+        }
+
+        // A survey title can take 3 forms:
+        // 1. null (default to the formName in this case)
+        // 2. String value (survey has not been i18n'd)
+        // 3. Map value (survey has been i18n'd)
+        JsonNode title = surveyContent.get("title");
+        if (title == null) {
+            return Map.of("en", formName);
+        }
+
+        if(title.isTextual()) {
+            return Map.of("en", title.asText());
+        }
+
+        if(title.isObject()) {
+            Map<String, String> titleMap = new HashMap<>();
+            Iterator<Map.Entry<String, JsonNode>> fields = title.fields();
+            while (fields.hasNext()) {
+                Map.Entry<String, JsonNode> field = fields.next();
+                if (field.getValue().isTextual()) {
+                    String languageKey = field.getKey();
+                    if(languageKey.equalsIgnoreCase("default")) {
+                        //TODO (JN-863): this should set the key to the default portal language code
+                        languageKey = "en";
+                    }
+                    titleMap.put(languageKey, field.getValue().asText());
+                } else {
+                    throw new IllegalArgumentException("Expected String value for field: " + field.getKey());
+                }
+            }
+            return titleMap;
+        }
+
+        else {
+            //The title was of an unexpected type, so fall back to the formName
+            return Map.of("en", formName);
+        }
+    }
+
+    public static List<LanguageText> titlesToLanguageTexts(String keyName, UUID portalId, Map<String, String> titles) {
+        List<LanguageText> texts = new ArrayList<>();
+        for (Map.Entry<String, String> entry : titles.entrySet()) {
+            LanguageText text = new LanguageText();
+            text.setKeyName(keyName);
+            text.setLanguage(entry.getKey());
+            text.setText(entry.getValue());
+            text.setPortalId(portalId);
+            texts.add(text);
+        }
+        return texts;
+    }
+
+    public static String formToLanguageTextKey(String stableId, Integer version) {
+        return String.format("%s:%s", stableId, version);
     }
 
 }

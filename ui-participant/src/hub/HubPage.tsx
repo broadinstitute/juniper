@@ -7,7 +7,7 @@ import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { alertDefaults, ParticipantDashboardAlert } from '@juniper/ui-core'
+import { alertDefaults, ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
@@ -16,16 +16,16 @@ import HubPageParticipantSelector from './HubPageParticipantSelector'
 
 /** renders the logged-in hub page */
 export default function HubPage() {
-  const {
-    portal,
-    portalEnv
-  } = usePortalEnv()
+  const { portal, portalEnv } = usePortalEnv()
+
   const {
     enrollees,
     activeEnrollee,
     activeEnrolleeProfile,
     relations
   } = useUser()
+
+  const { i18n } = useI18n()
 
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
@@ -48,7 +48,7 @@ export default function HubPage() {
 
   return (
     <>
-      <DocumentTitle title="Dashboard" />
+      <DocumentTitle title={i18n('navbarDashboard')} />
       <div
         className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'var(--dashboard-background-color)' }}

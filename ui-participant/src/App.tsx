@@ -106,7 +106,7 @@ function App() {
                     ...getAuthProviderProps(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)
                   }>
                     <UserProvider>
-                      <I18nProvider>
+                      <I18nProvider portalShortcode={portal.shortcode}>
                         <Suspense fallback={<PageLoadingIndicator/>}>
                           <IdleStatusMonitor
                             maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>

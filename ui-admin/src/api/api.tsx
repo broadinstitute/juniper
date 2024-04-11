@@ -137,7 +137,8 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
-  trigger?: Trigger,
+  enrollee?: Enrollee,
+  trigger?: Trigger
   eventDetails?: NotificationEventDetails
 }
 
@@ -239,10 +240,10 @@ export type Config = {
 }
 
 export type MailingListContact = {
-  id: string,
+  id?: string,
   name: string,
   email: string,
-  createdAt: number
+  createdAt?: number
 }
 
 
@@ -396,6 +397,8 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
+export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -510,8 +513,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
-    const url = `${API_ROOT}/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+  async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/i18n${selectedLanguage ?
+        `?language=${selectedLanguage}` : ''}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -802,6 +806,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
+    Promise<{ [index: string]: SearchValueType }> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
     Promise<EnrolleeSearchResult[]> {
     const facetString = encodeURIComponent(facetValuesToString(facetValues))
@@ -820,7 +831,15 @@ export default {
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<Notification[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/notifications`
+    }/notifications/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchTriggerNotifications(portalShortcode: string, studyShortcode: string, envName: string,
+    triggerId: string): Promise<Notification[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/notifications/byTrigger/${triggerId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -921,7 +940,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, skipAddressValidation: boolean}
+    kitOptions: { kitType: string, skipAddressValidation: boolean }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
@@ -1131,6 +1150,17 @@ Promise<Trigger> {
     })
   },
 
+  async addMailingListContacts(portalShortcode: string, envName: string, contact: MailingListContact[]):
+    Promise<MailingListContact[]> {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(contact)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchMailingList(portalShortcode: string, envName: string): Promise<MailingListContact[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList`
     const response = await fetch(url, this.getGetInit())
@@ -1282,7 +1312,7 @@ Promise<Trigger> {
   },
 
   async populatePortal(fileName: string, overwrite: boolean, shortcodeOverride: string | undefined) {
-    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride  })
+    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride })
     const url = `${basePopulateUrl()}/portal?${params}`
     const response = await fetch(url, {
       method: 'POST',

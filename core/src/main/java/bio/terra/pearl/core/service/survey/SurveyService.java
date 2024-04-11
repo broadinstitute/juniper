@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.dao.workflow.EventDao;
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -17,26 +19,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
 public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
-    private AnswerMappingDao answerMappingDao;
-    private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
-    private EventDao eventDao;
+    private final AnswerMappingDao answerMappingDao;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final LanguageTextDao languageTextDao;
+    private final EventDao eventDao;
 
-    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, EventDao eventDao) {
+    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao) {
         super(surveyDao);
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.languageTextDao = languageTextDao;
         this.eventDao = eventDao;
     }
 
@@ -50,6 +47,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
 
     public Optional<Survey> findByStableIdAndPortalShortcodeWithMappings(String stableId, int version, String shortcode) {
         return dao.findByStableIdAndPortalShortcodeWithMappings(stableId, version, shortcode);
+    }
+
+    public List<Survey> findByStudyEnvironmentIdWithContent(UUID studyId) {
+        return dao.findByStudyEnvironmentIdWithContent(studyId);
     }
 
     @Transactional
@@ -74,6 +75,16 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
+
+        // parse the survey content to get the titles and create the language texts
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(savedSurvey.getContent(), savedSurvey.getName());
+        List<LanguageText> texts = SurveyParseUtils.titlesToLanguageTexts(
+                SurveyParseUtils.formToLanguageTextKey(savedSurvey.getStableId(),savedSurvey.getVersion()),
+                savedSurvey.getPortalId(),
+                parsedTitles);
+        languageTextDao.bulkCreate(texts);
+
+        // parse the survey content to get the questions and create the question definitions
         List<SurveyQuestionDefinition> questionDefs = getSurveyQuestionDefinitions(savedSurvey);
         surveyQuestionDefinitionDao.bulkCreate(questionDefs);
 

@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
+import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.site.SiteMediaService;
@@ -28,23 +29,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class PortalService extends CrudService<Portal, PortalDao> {
-    private PortalStudyService portalStudyService;
-    private PortalEnvironmentService portalEnvironmentService;
-    private PortalAdminUserService portalAdminUserService;
-    private StudyService studyService;
-    private SurveyService surveyService;
-    private ConsentFormService consentFormService;
-    private SiteContentService siteContentService;
-    private EmailTemplateService emailTemplateService;
-    private SiteMediaService siteMediaService;
+    private final PortalStudyService portalStudyService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final PortalAdminUserService portalAdminUserService;
+    private final StudyService studyService;
+    private final SurveyService surveyService;
+    private final ConsentFormService consentFormService;
+    private final SiteContentService siteContentService;
+    private final EmailTemplateService emailTemplateService;
+    private final SiteMediaService siteMediaService;
+    private final LanguageTextService languageTextService;
 
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          PortalAdminUserService portalAdminUserService, StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
-                          SurveyService surveyService,
+                         SurveyService surveyService,
                          ConsentFormService consentFormService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
-                         SiteMediaService siteMediaService) {
+                         SiteMediaService siteMediaService, LanguageTextService languageTextService) {
         super(portalDao);
         this.portalStudyService = portalStudyService;
         this.portalAdminUserService = portalAdminUserService;
@@ -55,6 +57,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
         this.siteMediaService = siteMediaService;
+        this.languageTextService = languageTextService;
     }
 
     @Transactional
@@ -90,6 +93,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         consentFormService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
+        languageTextService.deleteByPortalId(portalId);
         siteMediaService.deleteByPortalShortcode(portal.getShortcode());
         portalAdminUserService.deleteByPortalId(portalId);
         dao.delete(portalId);

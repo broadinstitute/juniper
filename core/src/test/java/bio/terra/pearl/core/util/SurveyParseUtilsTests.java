@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -199,4 +200,63 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
         assertThat(upstreamStableId, equalTo(null));
     }
+
+    @Test
+    public void testParseNullTitle() {
+        String nullTitleForm = """
+                {
+                  "showQuestionNumbers": "off",
+                  "showProgressBar": "bottom",
+                  "pages": []
+                }""";
+
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(nullTitleForm, "FallbackName");
+        assertThat(parsedTitles, equalTo(Map.of("en", "FallbackName")));
+    }
+
+    @Test
+    public void testParseTextTitle() {
+        String textTitleForm = """
+                {
+                  "title": "The Basics",
+                  "showQuestionNumbers": "off",
+                  "showProgressBar": "bottom",
+                  "pages": []
+                }""";
+
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(textTitleForm, "FallBackName");
+        assertThat(parsedTitles, equalTo(Map.of("en", "The Basics")));
+    }
+
+    @Test
+    public void testParseObjectTitle() {
+        String objectTitleForm = """
+                {
+                  "title": {
+                    "default": "The Basics",
+                    "es": "Los Basicos",
+                    "dev": "DEV_The Basics"
+                  },
+                  "showQuestionNumbers": "off",
+                  "showProgressBar": "bottom",
+                  "pages": []
+                }""";
+
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(objectTitleForm, "FallBackName");
+        assertThat(parsedTitles, equalTo(Map.of("en", "The Basics", "es", "Los Basicos", "dev", "DEV_The Basics")));
+    }
+
+    @Test
+    public void testParseTitlesUnparseableForm() {
+        String unparseableForm = """
+                {
+                  "title": {
+                    "default": "The Basics",
+                    "es"[]]]]]]
+                    """;
+
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(unparseableForm, "FallbackName");
+        assertThat(parsedTitles, equalTo(Map.of("en", "FallbackName")));
+    }
+
 }

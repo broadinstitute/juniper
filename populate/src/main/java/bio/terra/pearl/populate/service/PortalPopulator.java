@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -138,11 +139,13 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             // we don't support updating mailing lists in-place yet
             return;
         }
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+                DataAuditInfo.systemProcessName(getClass(), "populateMailingList")).build();
         for (MailingListContact contact : portalEnvPopDto.getMailingListContacts()) {
             contact.setPortalEnvironmentId(savedEnv.getId());
             contact.setEmail(contact.getEmail());
             contact.setName(contact.getName());
-            mailingListContactService.create(contact);
+            mailingListContactService.create(contact, auditInfo);
         }
     }
 
