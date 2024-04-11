@@ -240,6 +240,9 @@ databaseChangeLog:
       file: changesets/2024_03_29_portal_scoped_stable_ids.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_04_02_language_text_portal.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_04_03_anonymous_user_responsible_entity.yaml
       relativeToChangelogFile: true        
 

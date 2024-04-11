@@ -4,6 +4,11 @@
   "name": "Sandbox survey",
   "assignToAllNewEnrollees": false,
   "jsonContent": {
+    "title": {
+      "default": "Sandbox survey",
+      "es": "Encuesta de zona de pruebas",
+      "dev": "DEV_Sandbox survey"
+    },
     "showQuestionNumbers": "off",
     "showProgressBar": "bottom",
     "pages": [

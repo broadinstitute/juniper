@@ -62,8 +62,10 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       </div>
       <div className="flex-grow-1 ms-3">
         {isAccessible
-          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
-          : task.targetName}
+          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>
+            {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, task.targetName)}
+          </Link>
+          : i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, task.targetName)}
       </div>
       {task.taskType === 'CONSENT' && task.status === 'COMPLETE' && (
         <div className="ms-3">

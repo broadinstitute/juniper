@@ -55,6 +55,7 @@ export function RawSurveyView({
   const { updateEnrollee, profile, updateProfile } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
+  const { i18n } = useI18n()
 
   /** Submit the response to the server */
   const onComplete = async () => {
@@ -149,11 +150,13 @@ export function RawSurveyView({
 
   return (
     <>
-      <DocumentTitle title={form.name} />
+      <DocumentTitle title={i18n(`${form.stableId}:${form.version}`, form.name)} />
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         { showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/> }
-        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1> }
+        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
+          {i18n(`${form.stableId}:${form.version}`, form.name)}
+        </h1> }
         <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>
       </div>

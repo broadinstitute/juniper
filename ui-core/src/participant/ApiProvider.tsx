@@ -2,7 +2,8 @@ import React, { useContext } from 'react'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
-export type GetLanguageTextsFunc = (selectedLanguage: string) => Promise<Record<string, string>>
+export type GetLanguageTextsFunc = (selectedLanguage: string, portalShortcode?: string) =>
+    Promise<Record<string, string>>
 
 /**
  * represents a minimal set of api functions needed to make the participant ui functional outside of the

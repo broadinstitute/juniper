@@ -12,26 +12,36 @@ describe('HubPage', () => {
       {
         ...mockParticipantTask('SURVEY', 'NEW'),
         targetName: 'Optional Survey',
+        targetStableId: 'optionalSurvey',
         blocksHub: false,
         taskOrder: 5
       },
       {
         ...mockParticipantTask('CONSENT', 'NEW'),
+        targetStableId: 'consentForm',
         targetName: 'Our consent form'
       },
       {
         ...mockParticipantTask('SURVEY', 'NEW'),
+        targetStableId: 'requiredSurvey',
         targetName: 'Required Survey',
         taskOrder: 1
       },
       {
         ...mockParticipantTask('OUTREACH', 'COMPLETE'),
-        targetName: 'Outreach Survey'
+        targetName: 'Outreach Survey',
+        targetStableId: 'outreachSurvey'
       }
     ]
 
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider mockTexts={mockTextsDefault}>
+      <MockI18nProvider mockTexts={{
+        ...mockTextsDefault,
+        'requiredSurvey:1': 'Required Survey',
+        'optionalSurvey:1': 'Optional Survey',
+        'outreachSurvey:1': 'Outreach Survey',
+        'consentForm:1': 'Our consent form'
+      }}>
         <StudyResearchTasks enrollee={enrollee} participantTasks={participantTasks} studyShortcode={'study1'}/>
       </MockI18nProvider>
     )
