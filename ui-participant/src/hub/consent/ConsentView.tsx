@@ -26,6 +26,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import SurveyReviewModeButton from '../survey/ReviewModeButton'
 import SurveyAutoCompleteButton from '../survey/SurveyAutoCompleteButton'
+import { useTaskIdParam } from '../survey/SurveyView'
 
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
@@ -124,9 +125,7 @@ export default function ConsentView() {
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
   const studyShortcode = params.studyShortcode
-  const taskId = 
-        
-        ()
+  const taskId = useTaskIdParam()
   const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
