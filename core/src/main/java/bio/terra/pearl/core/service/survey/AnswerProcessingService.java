@@ -107,8 +107,6 @@ public class AnswerProcessingService {
                 proxyProfileMappings,
                 profile,
                 AnswerMappingTargetType.PROXY_PROFILE);
-
-        profileService.updateWithMailingAddress(profile, auditInfo);
     }
 
     /**

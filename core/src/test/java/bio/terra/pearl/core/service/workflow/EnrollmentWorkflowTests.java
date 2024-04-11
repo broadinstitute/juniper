@@ -73,7 +73,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(enrollee.getShortcode(), notNullValue());
@@ -113,7 +113,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
         assertThat(hubResponse.getProfile(), notNullValue());

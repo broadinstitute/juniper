@@ -62,7 +62,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,
                 getTestName(testInfo));
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), savedResponse.getId(), false);
         assertThat(hubResponse.getEnrollee(), notNullValue());
     }
@@ -86,7 +86,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,
+        HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, false);
         assertThat(hubResponse.getEnrollee(), notNullValue());
     }
@@ -106,7 +106,7 @@ public class EnrollmentServiceTests extends BaseSpringBootTest {
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode,  userBundle.user(), userBundle.ppUser(),
+            enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                    null, false);
         });
     }

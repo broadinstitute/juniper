@@ -8,6 +8,18 @@
       "targetType": "PROXY",
       "targetField": "isProxy",
       "mapType": "STRING_TO_BOOLEAN"
+    },
+    {
+      "questionStableId": "proxy_given_name",
+      "targetType": "PROXY_PROFILE",
+      "targetField": "givenName",
+      "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "proxy_family_name",
+      "targetType": "PROXY_PROFILE",
+      "targetField": "familyName",
+      "mapType": "STRING_TO_STRING"
     }
   ],
   "jsonContent": {
@@ -107,6 +119,27 @@
                 "value": "true"
               }
             ]
+          },
+          {
+            "type": "text",
+            "name": "proxy_given_name",
+            "title": "Proxy Given Name",
+            "description": "Proxy given name",
+            "visibleIf": "{proxy_enrollment} = true"
+          },
+          {
+            "type": "text",
+            "name": "proxy_family_name",
+            "title": "Proxy Family Name",
+            "description": "Proxy family name",
+            "visibleIf": "{proxy_enrollment} = true"
+          },
+          {
+            "type": "text",
+            "name": "proxy_email",
+            "title": "Proxy Email",
+            "description": "Proxy email",
+            "visibleIf": "{proxy_enrollment} = true"
           }
         ]
       }
