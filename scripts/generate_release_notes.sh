@@ -28,6 +28,6 @@ while IFS= read -r message; do
     ticket=$(echo "$message" | grep -o -E 'JN-\d+')
     pr=$(echo "$message" | grep -o -E '#\d+' | tr -d '#')
     message=$(echo "$message" | tr -d '[]')
-    echo "[${message}](https://broadworkbench.atlassian.net/browse/$ticket) [(View GitHub PR)](https://github.com/broadinstitute/juniper/pull/$pr)"
+    echo "[${message}](https://broadworkbench.atlassian.net/browse/$ticket) [(GitHub PR)](https://github.com/broadinstitute/juniper/pull/$pr)"
   fi
 done <<< "$messages"
