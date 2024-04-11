@@ -98,7 +98,7 @@ export type PreEnrollmentResponse = FormResponse & {
 
 /** Configuration passed to SurveyModel constructor. */
 export type FormContent = {
-  title: string
+  title: I18nSurveyElement
   pages: FormContentPage[]
   questionTemplates?: Question[]
 }
@@ -111,6 +111,19 @@ export type FormContentPage = BaseElement & {
   elements: FormElement[]
 }
 
+/**
+ *  Certain SurveyJS elements can take on multiple forms. For example, the "title" field
+ *  for a question could either be a string, or an object mapping language codes to strings.
+ *  "default" is always present; the other languages are arbitrary.
+ */
+export type I18nMap = {
+  default: string,
+  [language: string]: string
+}
+
+export type I18nSurveyElement = string | I18nMap
+
+
 export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
@@ -121,37 +134,37 @@ export type FormPanel = BaseElement & {
 export type HtmlElement = {
   name: string
   type: 'html'
-  html: string
+  html: I18nSurveyElement
 }
 
 type BaseQuestion = BaseElement & {
   name: string
-  description?: string
+  description?: I18nSurveyElement
   isRequired?: boolean
 }
 
 export type TitledQuestion = BaseQuestion & {
-    title: string
+  title: I18nSurveyElement
 }
 
 export type QuestionChoice = {
-  text: string
+  text: I18nSurveyElement
   value: string
 }
 
 type WithOtherOption<T> = T & {
   showOtherItem?: boolean
-  otherText?: string
-  otherPlaceholder?: string
-  otherErrorText?: string
+  otherText?: I18nSurveyElement
+  otherPlaceholder?: I18nSurveyElement
+  otherErrorText?: I18nSurveyElement
 }
 
 export type CheckboxQuestion = WithOtherOption<TitledQuestion & {
   type: 'checkbox'
   choices: QuestionChoice[]
   showNoneItem?: boolean
-  noneText?: string
-  noneValue?: string
+  noneText?: I18nSurveyElement
+  noneValue?: I18nSurveyElement
 }>
 
 export type DropdownQuestion = WithOtherOption<TitledQuestion & {
@@ -188,7 +201,7 @@ export type MedicationsQuestion = TitledQuestion & {
 
 export type HtmlQuestion = BaseQuestion & {
   type: 'html',
-  html: string
+  html: I18nSurveyElement
 }
 
 export type Question =

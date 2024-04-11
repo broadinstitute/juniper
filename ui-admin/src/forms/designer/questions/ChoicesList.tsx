@@ -6,7 +6,7 @@ import { CheckboxQuestion, DropdownQuestion, RadiogroupQuestion } from '@juniper
 
 import { Button, IconButton } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'
-import { getValueForChoice } from 'util/pearlSurveyUtils'
+import { getValueForChoice, i18nSurveyText } from 'util/juniperSurveyUtils'
 
 type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
@@ -38,7 +38,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
         </thead>
         <tbody>
           {question.choices.map((choice, i) => {
-            const enableAutoFillValue: boolean = isNewQuestion && choice.value == getValueForChoice(choice.text)
+            const enableAutoFillValue: boolean =
+                isNewQuestion && choice.value == getValueForChoice(i18nSurveyText(choice.text))
 
             return (
               <tr key={i}>
@@ -48,7 +49,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
                     disabled={readOnly}
                     required={true}
                     aria-label="text"
-                    value={choice.text}
+                    value={i18nSurveyText(choice.text)}
                     onChange={value => {
                       onChange({
                         ...question,

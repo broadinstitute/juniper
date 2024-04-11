@@ -8,7 +8,7 @@ import { TextInput } from 'components/forms/TextInput'
 import { baseQuestions } from './questions/questionTypes'
 import { isEmpty, omit, pick } from 'lodash'
 import { Textarea } from 'components/forms/Textarea'
-import { questionFromRawText } from 'util/pearlSurveyUtils'
+import { questionFromRawText } from 'util/juniperSurveyUtils'
 import { Checkbox } from '../../components/forms/Checkbox'
 import Select from 'react-select'
 

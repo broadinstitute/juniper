@@ -6,6 +6,7 @@ import { Textarea } from 'components/forms/Textarea'
 import { Button } from '../../components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import { i18nSurveyText } from 'util/juniperSurveyUtils'
 
 export type HtmlDesignerProps = {
   element: HtmlElement
@@ -39,7 +40,7 @@ export const HtmlDesigner = (props: HtmlDesignerProps) => {
           // @ts-ignore TS thinks this isn't a valid style property
           textWrap: 'nowrap'
         }}
-        value={element.html}
+        value={i18nSurveyText(element.html)}
         onChange={newHtml => {
           onChange({
             ...element,
