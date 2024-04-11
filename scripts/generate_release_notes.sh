@@ -13,7 +13,7 @@ echo "Generating release notes...\n"
 
 # Pull the differing commits between the demo and production tags
 # git log JSON formatter adapted from https://gist.github.com/textarcana/1306223
-commits=$(git log $demoGitTag..$prodGitTag \
+commits=$(git log $demoGitTag...$prodGitTag \
     --pretty=format:'{%n "message": "%s"%n},' \
     $@ | \
     perl -pe 'BEGIN{print "["}; END{print "]\n"}' | \
