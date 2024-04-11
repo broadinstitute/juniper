@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { useNavigate, useParams } from 'react-router-dom'
+import { NavLink, useNavigate, useParams } from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
 import Api, { Trigger } from 'api/api'
@@ -65,8 +65,8 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
     }
   }
 
-  return <div>
-    {!isLoading && !!workingConfig && <form className="bg-white p-3 my-2">
+  return <div className={'w-100'}>
+    {!isLoading && !!workingConfig && <form className="bg-white my-2">
       <TriggerBaseForm config={workingConfig} setConfig={setWorkingConfig}/>
       { isTaskReminder(workingConfig) && <div>
         <div>
@@ -101,6 +101,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </div>
       </div>
       }
+
       <div>
         <label className="form-label">Delivery
           <Select options={deliveryTypeOptions} isDisabled={true}
@@ -108,21 +109,22 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </label>
       </div>
 
-      { hasTemplate && <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
-        portalShortcode={portal.shortcode}
-        updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
-          // we have to use currentConfig since the template editor might call a stale version of this handler
-          // due to the unlayer event listener setup
-          return {
-            ...currentConfig!,
-            emailTemplate: {
-              ...updatedTemplate,
-              id: undefined,
-              publishedVersion: undefined,
-              version: config ? config.emailTemplate.version + 1 : 1
-            }
-          }
-        })}/>}
+      {hasTemplate &&
+          <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
+            portalShortcode={portal.shortcode}
+            updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
+              // we have to use currentConfig since the template editor might call a stale version of this handler
+              // due to the unlayer event listener setup
+              return {
+                ...currentConfig!,
+                emailTemplate: {
+                  ...updatedTemplate,
+                  id: undefined,
+                  publishedVersion: undefined,
+                  version: config ? config.emailTemplate.version + 1 : 1
+                }
+              }
+            })}/>}
 
       <div className="d-flex justify-content-center">
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
@@ -164,6 +166,9 @@ export const TriggerBaseForm = ({ config, setConfig }:
                      {config: Trigger, setConfig: (config: Trigger) => void}) => {
   return <>
     <div>
+      <div className='float-end'>
+        <NavLink to='notifications'>View sent emails</NavLink>
+      </div>
       <label className="form-label" htmlFor="notificationType">Trigger</label>
       <Select options={configTypeOptions} inputId="notificationType"
         value={configTypeOptions.find(opt => opt.value === config.triggerType)}

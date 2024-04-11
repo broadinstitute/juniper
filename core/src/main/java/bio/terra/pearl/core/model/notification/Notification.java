@@ -1,19 +1,22 @@
 package bio.terra.pearl.core.model.notification;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 /** record of a notification sending attempt. */
 @Getter @Setter @SuperBuilder @NoArgsConstructor
 public class Notification extends BaseEntity {
     private UUID enrolleeId;
+    private Enrollee enrollee;
     private UUID participantUserId;
     private UUID portalEnvironmentId;
     private UUID studyEnvironmentId;

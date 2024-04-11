@@ -137,7 +137,8 @@ export type Notification = {
   createdAt: number,
   lastUpdatedAt: number,
   retries: number,
-  trigger?: Trigger,
+  enrollee?: Enrollee,
+  trigger?: Trigger
   eventDetails?: NotificationEventDetails
 }
 
@@ -830,7 +831,15 @@ export default {
   async fetchEnrolleeNotifications(portalShortcode: string, studyShortcode: string, envName: string,
     enrolleeShortcode: string): Promise<Notification[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
-    }/enrollees/${enrolleeShortcode}/notifications`
+    }/notifications/byEnrollee/${enrolleeShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchTriggerNotifications(portalShortcode: string, studyShortcode: string, envName: string,
+    triggerId: string): Promise<Notification[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/notifications/byTrigger/${triggerId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -931,7 +940,7 @@ export default {
     studyShortcode: string,
     envName: string,
     enrolleeShortcode: string,
-    kitOptions: { kitType: string, skipAddressValidation: boolean}
+    kitOptions: { kitType: string, skipAddressValidation: boolean }
   ): Promise<string> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/requestKit`
@@ -1303,7 +1312,7 @@ Promise<Trigger> {
   },
 
   async populatePortal(fileName: string, overwrite: boolean, shortcodeOverride: string | undefined) {
-    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride  })
+    const params = queryString.stringify({ filePathName: fileName, overwrite, shortcodeOverride })
     const url = `${basePopulateUrl()}/portal?${params}`
     const response = await fetch(url, {
       method: 'POST',

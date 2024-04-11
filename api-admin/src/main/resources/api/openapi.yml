@@ -751,7 +751,7 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/notifications:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byEnrollee/{enrolleeShortcode}:
     get:
       summary: List the notifications sent/pending for an enrollee
       tags: [ notifications ]
@@ -761,6 +761,22 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of notifications
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byTrigger/{triggerId}:
+    get:
+      summary: List the notifications sent/pending by trigger configuration
+      tags: [ notifications ]
+      operationId: findAllByConfigId
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: triggerId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: List of notifications
