@@ -1,17 +1,13 @@
 package bio.terra.pearl.populate;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -28,6 +24,19 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 
 /** confirm demo portal populates as expected */
 public class PopulateDemoTest extends BasePopulatePortalsTest {
@@ -145,9 +154,9 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     }
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
+        ExportOptions options = new ExportOptions(false, false, true, false, ExportFileFormat.TSV, null);
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.limit());
 
         assertThat(exportData, hasSize(9));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))

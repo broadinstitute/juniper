@@ -46,6 +46,7 @@ public class ExportController implements ExportApi {
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
       Boolean includeOnlyMostRecent,
+      Boolean includeProxiesAsRows,
       String fileFormat,
       Integer limit) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
@@ -56,6 +57,7 @@ public class ExportController implements ExportApi {
             splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
             stableIdsForOptions != null ? stableIdsForOptions : false,
             includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
+            includeProxiesAsRows != null ? includeProxiesAsRows : false,
             fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
             limit);
 
@@ -74,6 +76,7 @@ public class ExportController implements ExportApi {
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
       Boolean includeOnlyMostRecent,
+      Boolean includeProxiesAsRows,
       String fileFormat) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
@@ -82,6 +85,7 @@ public class ExportController implements ExportApi {
             splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
             stableIdsForOptions != null ? stableIdsForOptions : false,
             includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
+            includeProxiesAsRows != null ? includeProxiesAsRows : false,
             fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
             null);
 

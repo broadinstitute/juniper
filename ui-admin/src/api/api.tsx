@@ -305,6 +305,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
+  includeProxiesAsRows?: boolean,
   limit?: number
 }
 

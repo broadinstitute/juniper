@@ -11,7 +11,12 @@ import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.datarepo.*;
+import bio.terra.pearl.core.model.datarepo.DataRepoJob;
+import bio.terra.pearl.core.model.datarepo.Dataset;
+import bio.terra.pearl.core.model.datarepo.DatasetStatus;
+import bio.terra.pearl.core.model.datarepo.JobType;
+import bio.terra.pearl.core.model.datarepo.TdrColumn;
+import bio.terra.pearl.core.model.datarepo.TdrTable;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
@@ -19,10 +24,10 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetCreationException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetDeletionException;
 import bio.terra.pearl.core.service.exception.datarepo.DatasetNotFoundException;
-import bio.terra.pearl.core.service.export.*;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.export.TsvExporter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
@@ -31,7 +36,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -157,7 +168,7 @@ public class DataRepoExportService {
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
+        ExportOptions exportOptions = new ExportOptions(false, false, false, false, ExportFileFormat.TSV, null);
 
         //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
         //In the DataRepoClient call, we specify that the CSV delimiter is "\t", which will make it all work fine.
@@ -205,7 +216,7 @@ public class DataRepoExportService {
     }
 
     public Set<TdrColumn> generateDatasetSchema(UUID studyEnvironmentId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, false, ExportFileFormat.TSV, null);
+        ExportOptions exportOptions = new ExportOptions(false, false, false, false, ExportFileFormat.TSV, null);
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
@@ -215,8 +226,11 @@ public class DataRepoExportService {
 
         try {
             List<ModuleFormatter> moduleFormatters = enrolleeExportService.generateModuleInfos(exportOptions, studyEnvironmentId);
-            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(studyEnvironmentId,
-                    moduleFormatters, exportOptions.limit());
+            List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(
+                    studyEnvironmentId,
+                    moduleFormatters,
+                    false,
+                    exportOptions.limit());
 
             TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);
 

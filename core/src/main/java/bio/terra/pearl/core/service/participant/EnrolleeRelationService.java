@@ -40,6 +40,17 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return filterValid(dao.findByTargetEnrolleeId(enrolleeId));
     }
 
+    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
+        Enrollee target = this.enrolleeService.find(enrolleeId).orElse(null);
+        List<EnrolleeRelation> relations = findByTargetEnrolleeId(enrolleeId);
+
+        return relations.stream().map(relation -> {
+            relation.setTargetEnrollee(target);
+            relation.setEnrollee(this.enrolleeService.find(relation.getEnrolleeId()).orElse(null));
+            return relation;
+        }).toList();
+    }
+
     public boolean isUserProxyForAnyOf(UUID participantUserId, List<UUID> enrolleeIds) {
         return !dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, enrolleeIds)
                 .stream().filter(enrolleeRelation -> isRelationshipValid(enrolleeRelation)).collect(Collectors.toList()).isEmpty();

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
-import Api from 'api/api'
+import Api, { ExportOptions } from 'api/api'
 import { currentIsoDate } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import { saveBlobAsDownload } from 'util/downloadUtils'
@@ -24,14 +24,16 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const [humanReadable, setHumanReadable] = useState(true)
   const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
   const [fileFormat, setFileFormat] = useState(FILE_FORMATS[0])
+  const [includeProxiesAsRows, setIncludeProxiesAsRows] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
 
-  const optionsFromState = () => {
+  const optionsFromState = (): ExportOptions => {
     return {
       onlyIncludeMostRecent,
       splitOptionsIntoColumns: !humanReadable,
       stableIdsForOptions: !humanReadable,
+      includeProxiesAsRows,
       fileFormat: fileFormat.value
     }
   }
@@ -72,7 +74,9 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div className="py-2">
-          <span className="fw-bold">Data format</span><br/>
+          <p className="fw-bold mb-1">
+            Data format
+          </p>
           <label className="me-3">
             <input type="radio" name="humanReadable" value="true" checked={humanReadable}
               onChange={humanReadableChanged} className="me-1"/> Human-readable
@@ -83,7 +87,9 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
           </label>
         </div>
         <div className="py-2">
-          <span className="fw-bold">Completions included of a survey (for recurring surveys)</span><br/>
+          <p className="fw-bold mb-1">
+            Completions included of a survey (for recurring surveys)
+          </p>
           <label className="me-3">
             <input type="radio" name="onlyIncludeMostRecent" value="true" checked={onlyIncludeMostRecent}
               onChange={includeRecentChanged} className="me-1" disabled={true}/>
@@ -93,6 +99,16 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
             <input type="radio" name="onlyIncludeMostRecent" value="false" checked={!onlyIncludeMostRecent}
               onChange={includeRecentChanged} className="me-1" disabled={true}/>
             Include all completions
+          </label>
+        </div>
+        <div className="py-2">
+          <p className="fw-bold mb-1">
+            Proxy Options
+          </p>
+          <label>
+            <input type="checkbox" name="includeProxiesAsRows" checked={includeProxiesAsRows}
+              onChange={() => setIncludeProxiesAsRows(!includeProxiesAsRows)} className="me-1"/>
+            Include proxies as rows
           </label>
         </div>
         <div className="py-2">

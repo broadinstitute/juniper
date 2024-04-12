@@ -115,9 +115,9 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) {
         // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
-        ExportOptions options = new ExportOptions(true, true, true, ExportFileFormat.TSV, null);
+        ExportOptions options = new ExportOptions(true, true, true, false, ExportFileFormat.TSV, null);
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.limit());
 
         assertThat(exportData, hasSize(6));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
@@ -131,7 +131,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     }
 
     private void checkDataDictionary(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
+        ExportOptions options = new ExportOptions(false, false, true, false, ExportFileFormat.TSV, null);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         dictionaryExportService.exportDictionary(options, portalId, sandboxEnvironmentId, baos);
         baos.flush();
