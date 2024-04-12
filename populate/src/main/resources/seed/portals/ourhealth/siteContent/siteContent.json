@@ -1,7 +1,6 @@
 {
   "stableId": "oh_portalContent",
   "version": 1,
-  "defaultLanguage": "en",
   "localizedSiteContentDtos": [{
     "language": "en",
     "navLogoCleanFileName": "ourhealth-logo.png",

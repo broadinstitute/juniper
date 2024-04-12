@@ -26,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -85,7 +86,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkOurhealthSiteContent(UUID portalId) {
         PortalEnvironment portalEnv = portalEnvironmentService
-                .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, "en").get();
+                .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, null).get();
         Assertions.assertEquals(portalId, portalEnv.getPortalId());
         LocalizedSiteContent lsc = portalEnv.getSiteContent().getLocalizedSiteContents()
                 .stream().findFirst().get();
