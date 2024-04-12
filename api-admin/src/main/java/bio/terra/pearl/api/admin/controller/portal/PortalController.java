@@ -33,9 +33,9 @@ public class PortalController implements PortalApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String portalShortcode) {
+  public ResponseEntity<Object> get(String portalShortcode, String language) {
     AdminUser adminUser = requestService.requireAdminUser(request);
-    Portal portal = portalExtService.fullLoad(adminUser, portalShortcode);
+    Portal portal = portalExtService.fullLoad(adminUser, portalShortcode, language);
     return ResponseEntity.ok(portal);
   }
 
