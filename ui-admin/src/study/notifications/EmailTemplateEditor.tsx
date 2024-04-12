@@ -3,7 +3,7 @@ import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
 import { EmailTemplate } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
-import { useDefaultLanguage } from '../../portal/useDefaultPortalLanguage'
+import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
