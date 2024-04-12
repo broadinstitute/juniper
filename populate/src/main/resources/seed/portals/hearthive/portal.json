@@ -14,6 +14,10 @@
       "initialized" : true,
       "emailSourceAddress" : "info@thehearthive.org"
     },
+    "supportedLanguages": [{
+      "languageName": "English",
+      "languageCode": "en"
+    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
     "participantUserFiles" : [
@@ -34,6 +38,10 @@
       "initialized" : true,
       "emailSourceAddress" : "info@thehearthive.org"
     },
+    "supportedLanguages": [{
+      "languageName": "English",
+      "languageCode": "en"
+    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
     "participantUserFiles" : [ ],
@@ -51,6 +59,10 @@
       "participantHostname" : "thehearthive.org",
       "emailSourceAddress" : "info@thehearthive.org"
     },
+    "supportedLanguages": [{
+      "languageName": "English",
+      "languageCode": "en"
+    }],
     "triggers" : [ ],
     "participantDashboardAlerts" : [ ],
     "participantUserFiles" : [ ],

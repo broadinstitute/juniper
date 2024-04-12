@@ -17,8 +17,7 @@ public class SiteContentFactory {
     public SiteContent.SiteContentBuilder builder(String testName) {
         return SiteContent.builder()
                 .stableId(testName)
-                .version(1)
-                .defaultLanguage("en");
+                .version(1);
     }
 
     public SiteContent.SiteContentBuilder builderWithDependencies(String testName) {

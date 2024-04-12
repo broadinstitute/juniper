@@ -13,16 +13,19 @@ import {
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from '../api/api'
+import { useDefaultLanguage } from '../portal/useDefaultPortalLanguage'
 
 type FormPreviewProps = {
   formContent: FormContent
   supportedLanguages: PortalEnvironmentLanguage[]
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Renders a preview of a form/survey.
+ */
 export const FormPreview = (props: FormPreviewProps) => {
   const { formContent, supportedLanguages } = props
+  const defaultLanguage = useDefaultLanguage()
 
   const { i18n } = useI18n()
 
@@ -30,7 +33,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
-    model.locale = 'default'
+    model.locale = defaultLanguage.languageCode
     model.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return model
   })

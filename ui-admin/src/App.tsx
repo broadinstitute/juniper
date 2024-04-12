@@ -48,7 +48,7 @@ function App() {
       <ConfigConsumer>
         { config =>
           <AuthProvider {...getOidcConfig(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)}>
-            <I18nProvider>
+            <I18nProvider defaultLanguage={'en'}>
               <UserProvider>
                 <div className="App d-flex flex-column min-vh-100">
                   <IdleStatusMonitor maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>

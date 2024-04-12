@@ -147,7 +147,7 @@ export function RawSurveyView({
 
   useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   return (
     <>
