@@ -11,7 +11,7 @@ import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { useUser } from '../../../user/UserProvider'
+import { useUser } from 'user/UserProvider'
 
 /** Show responses for a survey based on url param */
 export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext }:
@@ -25,10 +25,10 @@ export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvCont
   }
   const surveyAndResponses = responseMap[surveyStableId]
   if (!surveyAndResponses) {
-    return <div>Unknown survey stableId</div>
+    return <div>This survey has not been assigned to this participant</div>
   }
-
-  return <RawEnrolleeSurveyView enrollee={enrollee} studyEnvContext={studyEnvContext}
+  // key forces the component to be destroyed/remounted when different survey selectect
+  return <RawEnrolleeSurveyView key={surveyStableId} enrollee={enrollee} studyEnvContext={studyEnvContext}
     configSurvey={surveyAndResponses.survey} response={surveyAndResponses.response}/>
 }
 
@@ -39,39 +39,44 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const { user } = useUser()
-  if (configSurvey.survey.allowParticipantStart) {
+  // if this is a dedicated admin form, default to edit mode
+  if (!configSurvey.survey.allowParticipantStart && configSurvey.survey.allowAdminEdit) {
     return <SurveyEditView survey={configSurvey.survey} adminUserId={user.id}
       enrollee={enrollee}/>
   }
 
-  if (!response) {
-    return <div>No responses for enrollee {enrollee.shortcode}</div>
+  if (!response && !configSurvey.survey.allowAdminEdit) {
+    return <div>No response for enrollee {enrollee.shortcode}</div>
   }
 
-  if (!response.answers?.length) {
-    return <div>Most recent response has no data yet </div>
+  let versionString = ''
+  if (response && response.answers.length) {
+    const answerVersions = _uniq(response.answers.map(ans => ans.surveyVersion))
+    versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
   }
-
-  const answerVersions = _uniq(response.answers.map(ans => ans.surveyVersion))
-  const versionString = `${pluralize('version', answerVersions.length)} ${answerVersions.join(', ')}`
 
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
     <h6>{configSurvey.survey.name}</h6>
     <div>
       <span className="fst-italic">
-        <span>{response.complete ? 'Completed' : 'Last updated'}
+        {response && <><span>{response.complete ? 'Completed' : 'Last updated'}
           &nbsp; {instantToDefaultString(response.createdAt)}
         </span>
         &nbsp;
-        <span>({versionString})</span>
+        <span>({versionString})</span></> }
       </span>
 
-      <button className="ms-5 btn btn-secondary" onClick={() => setIsEditing(!isEditing)}>
+      { configSurvey.survey.allowAdminEdit && <button className="ms-5 btn btn-secondary"
+        onClick={() => setIsEditing(!isEditing)}>
         {isEditing ? 'cancel' : 'update / edit'}
-      </button>
+      </button> }
       <hr/>
-      {!isEditing && <SurveyFullDataView answers={response.answers} survey={configSurvey.survey}
+      {(!isEditing && !response?.answers.length) && <div>
+        No response yet
+      </div> }
+      {(!isEditing && response?.answers.length) && <SurveyFullDataView answers={response?.answers || []}
+        survey={configSurvey.survey}
         userId={enrollee.participantUserId} studyEnvContext={studyEnvContext}/> }
       {isEditing && <SurveyEditView survey={configSurvey.survey} response={response} adminUserId={user.id}
         enrollee={enrollee}/>}

@@ -396,6 +396,14 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
+export type HubResponse = {
+  enrollee: Enrollee,
+  tasks: ParticipantTask[],
+  response: object,
+  profile: Profile
+}
+
+
 export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 
 
@@ -614,6 +622,24 @@ export default {
     })
     return await this.processJsonResponse(response)
   },
+
+  async updateSurveyResponse({ studyEnvParams, stableId, version, enrolleeShortcode, response, taskId }: {
+    studyEnvParams: StudyEnvParams, stableId: string, version: number,
+    response: SurveyResponse, enrolleeShortcode: string, taskId: string
+  }): Promise<HubResponse> {
+    let url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/${enrolleeShortcode}`
+      + `/surveys/${stableId}/${version}`
+    if (taskId) {
+      url = `${url}?taskId=${taskId}`
+    }
+    const result = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(response)
+    })
+    return await this.processJsonResponse(result)
+  },
+
 
   async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`

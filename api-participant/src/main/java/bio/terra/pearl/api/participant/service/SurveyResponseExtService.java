@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.participant.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -68,7 +69,7 @@ public class SurveyResponseExtService {
     HubResponse result =
         surveyResponseService.updateResponse(
             responseDto,
-            user.getId(),
+            new ResponsibleEntity(user),
             portalWithPortalUser.ppUser(),
             enrollee,
             taskId,

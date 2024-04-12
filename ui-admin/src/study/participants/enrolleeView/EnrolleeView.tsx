@@ -71,7 +71,10 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     // to match responses to surveys, filter using the tasks, since those have the stableIds
     // this is valid since it's currently enforced that all survey responses are done as part of a task,
     const matchedTask = enrollee.participantTasks
-      .find(task => task.targetStableId === configSurvey.survey.stableId)!
+      .find(task => task.targetStableId === configSurvey.survey.stableId)
+    if (!matchedTask) {
+      return
+    }
     const matchedResponse = enrollee.surveyResponses
       .find(response => matchedTask.surveyResponseId === response.id)
     responseMap[configSurvey.survey.stableId] = {
@@ -151,11 +154,11 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId].task.id}`}
+                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId]?.task?.id}`}
                           className={getLinkCssClasses}>
                           {survey.survey.name}
                         </NavLink>
-                        {badgeForResponses(responseMap[stableId].response)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}

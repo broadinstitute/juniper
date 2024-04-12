@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -22,6 +23,7 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,7 +130,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates a survey response and fires appropriate downstream events.
      */
     @Transactional
-    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
+    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, ResponsibleEntity operator,
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
         ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
@@ -137,15 +139,15 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         validateResponse(survey, task, responseDto.getAnswers());
 
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto, portalId);
+        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId);
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
-                .responsibleUserId(participantUserId)
                 .enrolleeId(enrollee.getId())
                 .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
                 .build();
+        auditInfo.setResponsibleEntity(operator);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),

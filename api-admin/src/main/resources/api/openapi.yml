@@ -341,7 +341,29 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/{enrolleeShortcode}/surveys/{stableId}/{version}:
+    patch:
+      summary: creates or updates a response with answers
+      tags: [ surveyResponse ]
+      operationId: update
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: false, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        '200':
+          description: hub response object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/consentForms/{stableId}/metadata:
     get:
       summary: gets metadata for all versions of the requested form

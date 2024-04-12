@@ -8,6 +8,7 @@ import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
@@ -147,7 +148,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                         .complete(true)
                         .resumeData("stuff")
                         .build();
-        hubResponse = surveyResponseService.updateResponse(survResponseDto, userBundle.user().getId(), userBundle.ppUser(),
+        hubResponse = surveyResponseService.updateResponse(survResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
                 enrollee, surveyTasks.get(0).getId(), survey.getPortalId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));

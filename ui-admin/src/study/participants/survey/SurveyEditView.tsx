@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Enrollee, Survey, SurveyResponse } from 'api/api'
+import Api, { Enrollee, Survey, SurveyResponse } from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 import {
   getDataWithCalculatedValues, getResumeData, getUpdatedAnswers,
@@ -11,6 +11,9 @@ import {
 import _cloneDeep from 'lodash/cloneDeep'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Survey as SurveyComponent } from 'survey-react-ui'
+import { StudyEnvParams, useStudyEnvParamsFromPath } from '../../StudyEnvironmentRouter'
+import { failureNotification, successNotification } from '../../../util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** allows editing of a survey response */
 export default function SurveyEditView({ response, survey, enrollee, adminUserId }:
@@ -23,7 +26,6 @@ export default function SurveyEditView({ response, survey, enrollee, adminUserId
     makeEmptyResponse(enrollee, survey, adminUserId))
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
-    <h6>{survey.name}</h6>
     <div>
       <PagedSurveyView form={survey} enrollee={enrollee} adminUserId={adminUserId} response={workingResponse}
         taskId={taskId} setWorkingResponse={setWorkingResponse}/>
@@ -80,6 +82,7 @@ export function RawSurveyView({
     enrollee: Enrollee
   }) {
   const navigate = useNavigate()
+  const studyEnvParams = useStudyEnvParamsFromPath() as StudyEnvParams
 
   /** Submit the response to the server */
   const onComplete = async () => {
@@ -91,14 +94,20 @@ export function RawSurveyView({
       resumeData: getResumeData(surveyModel, adminUserId, true),
       enrolleeId: enrollee.id,
       answers: getUpdatedAnswers(resumableData || {}, currentModelValues, 'en'),
-      creatingParticipantId: enrollee.participantUserId,
+      creatingAdminUserId: adminUserId,
       surveyId: form.id,
       complete: true
     } as SurveyResponse
 
     try {
-      alert('saving!!')
+      const response = await Api.updateSurveyResponse({
+        studyEnvParams, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
+        version: form.version, response: responseDto, taskId
+      })
+      Store.addNotification(successNotification('Response saved'))
+      refreshSurvey(surveyModel, null)
     } catch {
+      Store.addNotification(failureNotification('Error saving response'))
       refreshSurvey(surveyModel, null)
     }
   }
@@ -110,7 +119,6 @@ export function RawSurveyView({
 
   return (
     <>
-      <DocumentTitle title={form.name} />
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         <SurveyComponent model={surveyModel}/>
