@@ -1,10 +1,10 @@
 import { useContext } from 'react'
 import { PortalContext } from './PortalProvider'
 import { useParams } from 'react-router-dom'
-import { StudyParams } from '../study/StudyRouter'
+import { StudyParams } from 'study/StudyRouter'
 
 /**
- *
+ * Returns the default language for the current portal environment.
  */
 export function useDefaultLanguage() {
   const { portal } = useContext(PortalContext)

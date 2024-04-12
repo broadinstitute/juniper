@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
-import { useDefaultLanguage } from '../portal/useDefaultPortalLanguage'
+import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
