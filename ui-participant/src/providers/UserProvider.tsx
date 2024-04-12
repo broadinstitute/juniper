@@ -113,17 +113,19 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      const index = loginState.relations.findIndex(relation =>
-        relation.targetEnrollee.shortcode == enrollee.shortcode)
-      if (index != -1) {
-        loginState.relations[index].targetEnrollee = enrollee
-        setActiveEnrollee(enrollee)
-        setActiveEnrolleeProfile(loginState.relations[index].profile)
-      } else {
-        const matchIndex = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-        loginState.enrollees[matchIndex] = enrollee
+
+      const foundEnrollee = loginState.enrollees.find(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
+      const foundRelation = loginState.relations.find(
+        relation => relation.targetEnrollee.shortcode === enrollee.shortcode
+      )
+
+      if (foundEnrollee || foundRelation) {
         setActiveEnrollee(enrollee)
         setActiveEnrolleeProfile(enrollee.profile)
+
+        if (foundRelation) {
+          foundRelation.targetEnrollee = enrollee
+        }
       }
     } else {
       setLoginState(oldState => {
@@ -132,7 +134,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         }
         let updatedEnrollees = oldState.enrollees
         const updatedRelations = oldState.relations
-        if (oldState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode) != -1) {
+        if (oldState.enrollees.some(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)) {
           updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
           updatedEnrollees.push(enrollee)
           setActiveEnrollee(enrollee)

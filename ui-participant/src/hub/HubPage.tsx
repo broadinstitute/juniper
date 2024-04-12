@@ -30,6 +30,8 @@ export default function HubPage() {
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
+    console.log(enrollees)
+    console.log(activeEnrollee)
     loadDashboardAlerts()
   }, [])
 
@@ -80,12 +82,12 @@ export default function HubPage() {
           style={{ background: '#fff', maxWidth: 768 }}
         >
           {relations.length > 0 && <HubPageParticipantSelector/>}
-          {activeEnrollee && activeEnrolleeProfile && <StudySection
+          {activeEnrollee && <StudySection
             key={activeEnrollee.id}
             enrollee={activeEnrollee}
             portal={portal}
             relations={relations}
-            profile={activeEnrolleeProfile}/>}
+            profile={activeEnrolleeProfile || {}}/>}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
