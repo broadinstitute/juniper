@@ -6,6 +6,7 @@
   "shortcode": "HDGVBA",
   "linkedUsername": "proxyFamily2@test.com-prox-GVBA",
   "submittedHoursAgo": 10,
+  "simulateSubmissions": true,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "hd_hd_preenroll",

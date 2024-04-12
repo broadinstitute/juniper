@@ -25,6 +25,7 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.internal.concurrent.Task;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -32,10 +33,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /** listens for events and updates enrollee survey tasks accordingly */
 @Service
@@ -207,8 +205,7 @@ public class SurveyTaskDispatcher {
         if (!studyEnvSurvey.getSurveyId().equals(survey.getId())) {
             throw new IllegalArgumentException("Survey does not match StudyEnvironmentSurvey");
         }
-        TaskType taskType = SurveyType.OUTREACH.equals(survey.getSurveyType()) ?
-                TaskType.OUTREACH : TaskType.SURVEY;
+        TaskType taskType = taskTypeForSurveyType.get(survey.getSurveyType());
         ParticipantTask task = ParticipantTask.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(portalParticipantUser.getId())
@@ -224,6 +221,12 @@ public class SurveyTaskDispatcher {
         return task;
     }
 
+    private final Map<SurveyType, TaskType> taskTypeForSurveyType = Map.of(
+            SurveyType.CONSENT, TaskType.CONSENT,
+            SurveyType.RESEARCH, TaskType.SURVEY,
+            SurveyType.OUTREACH, TaskType.OUTREACH
+    );
+
     /**
      * To avoid accidentally assigning the same survey or outreach activity to a participant multiple times,
      * confirm that if the stableId matches an existing task, the existing task must be complete and the
@@ -233,7 +236,7 @@ public class SurveyTaskDispatcher {
                                    List<ParticipantTask> allTasks) {
         return !allTasks.stream()
                 .filter(existingTask ->
-                        (existingTask.getTaskType() == TaskType.SURVEY || existingTask.getTaskType() == TaskType.OUTREACH) &&
+                        List.of(TaskType.SURVEY, TaskType.CONSENT, TaskType.OUTREACH).contains(existingTask.getTaskType()) &&
                         existingTask.getTargetStableId().equals(task.getTargetStableId()) &&
                         !isRecurrenceWindowOpen(studySurvey, existingTask))
                 .toList().isEmpty();

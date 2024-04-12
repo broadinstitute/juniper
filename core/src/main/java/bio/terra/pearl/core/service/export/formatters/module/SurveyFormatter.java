@@ -42,7 +42,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
                 SurveyQuestionDefinition::getQuestionStableId
         )).values().stream().sorted(Comparator.comparingInt(a -> a.get(0).getExportOrder())).toList();
         for (List<SurveyQuestionDefinition> questionVersions : questionDefsByStableId) {
-            if ("html".equals(questionVersions.get(0).getQuestionType())) {
+            if (List.of("signaturepad", "html").contains(questionVersions.get(0).getQuestionType())) {
                 continue;
             }
             itemFormatters.add(new AnswerItemFormatter(exportOptions, moduleName, questionVersions, objectMapper));

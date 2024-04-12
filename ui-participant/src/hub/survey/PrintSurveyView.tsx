@@ -5,16 +5,16 @@ import { Survey as SurveyComponent } from 'survey-react-ui'
 
 import {
   surveyJSModelFromForm, makeSurveyJsData,
-  waitForImages, configureModelForPrint, useI18n
+  waitForImages, configureModelForPrint
 } from '@juniper/ui-core'
 
-import Api, { Answer, Enrollee } from 'api/api'
+import Api, { Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { enrolleeForStudy } from './ConsentView'
-import { useTaskIdParam } from '../survey/SurveyView'
+import { enrolleeForStudy, useTaskIdParam } from './SurveyView'
+
 
 type UsePrintableConsentArgs = {
   studyShortcode: string
@@ -23,9 +23,9 @@ type UsePrintableConsentArgs = {
   version: number
 }
 
-const usePrintableConsent = (args: UsePrintableConsentArgs) => {
+/** hook for loading a survey in printable format */
+const usePrintableSurvey = (args: UsePrintableConsentArgs) => {
   const { studyShortcode, enrollee, stableId, version } = args
-  const { selectedLanguage } = useI18n()
 
   const { portalEnv } = usePortalEnv()
 
@@ -35,40 +35,33 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
   const taskId = useTaskIdParam()
 
   useEffect(() => {
-    const loadConsent = async () => {
-      const consentAndResponses = await Api.fetchConsentAndResponses({
+    const loadForm = async () => {
+      const surveyWithResponse = await Api.fetchSurveyAndResponse({
         studyShortcode,
         enrolleeShortcode: enrollee.shortcode,
         stableId,
-        version
+        version,
+        taskId
       })
 
-      const form = consentAndResponses.studyEnvironmentConsent.consentForm
-      const response = consentAndResponses.consentResponses[0]
-      let answers: Answer[] = []
-      if (response?.fullData) {
-        answers = JSON.parse(response.fullData)
-      }
-      const resumableData = makeSurveyJsData(response?.resumeData, answers, enrollee.participantUserId)
+      const form = surveyWithResponse.studyEnvironmentSurvey.survey
+      const response = surveyWithResponse.surveyResponse
+      const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
 
       const surveyModel = surveyJSModelFromForm(form)
       surveyModel.title = form.name
       surveyModel.data = resumableData?.data
       configureModelForPrint(surveyModel)
       surveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
-      surveyModel.locale = selectedLanguage
 
       return surveyModel
     }
 
     setLoading(true)
-    loadConsent()
+    loadForm()
       .then(setSurveyModel)
       .catch(() => {
-        // try loading it as a survey
-        // it's a survey -- view it there
-        navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
-          + `/${version}/print?taskId=${taskId}`)
+        navigate(`/hub`)
       })
       .finally(() => {
         setLoading(false)
@@ -78,9 +71,8 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
   return { loading, surveyModel }
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-const PrintConsentView = () => {
+/** renders a completed survey and automatically pops up a print dialog */
+const PrintSurveyView = () => {
   const { portal } = usePortalEnv()
   const { enrollees } = useUser()
   const params = useParams()
@@ -92,7 +84,7 @@ const PrintConsentView = () => {
   }
   const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
 
-  const { loading, surveyModel } = usePrintableConsent({ studyShortcode, enrollee, stableId, version })
+  const { loading, surveyModel } = usePrintableSurvey({ studyShortcode, enrollee, stableId, version })
 
   useEffect(() => {
     if (surveyModel) {
@@ -114,4 +106,4 @@ const PrintConsentView = () => {
   }
 }
 
-export default PrintConsentView
+export default PrintSurveyView

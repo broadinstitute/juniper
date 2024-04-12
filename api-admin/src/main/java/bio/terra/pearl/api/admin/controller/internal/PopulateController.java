@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.populate.service.AdminConfigPopulator;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,17 +30,20 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Controller
 public class PopulateController implements PopulateApi {
-  private PopulateExtService populateExtService;
-  private HttpServletRequest request;
-  private AuthUtilService authUtilService;
+  private final PopulateExtService populateExtService;
+  private final HttpServletRequest request;
+  private final AuthUtilService authUtilService;
+  private final ObjectMapper objectMapper;
 
   public PopulateController(
       PopulateExtService populateExtService,
       HttpServletRequest request,
-      AuthUtilService authUtilService) {
+      AuthUtilService authUtilService,
+      ObjectMapper objectMapper) {
     this.populateExtService = populateExtService;
     this.request = request;
     this.authUtilService = authUtilService;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -121,6 +125,13 @@ public class PopulateController implements PopulateApi {
             user,
             Boolean.TRUE.equals(overwrite));
     return ResponseEntity.ok(populatedObj);
+  }
+
+  @Override
+  public ResponseEntity<Object> populateCommand(String command, Object body) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    Object result = populateExtService.populateCommand(command, body, user);
+    return ResponseEntity.ok(result);
   }
 
   @Override

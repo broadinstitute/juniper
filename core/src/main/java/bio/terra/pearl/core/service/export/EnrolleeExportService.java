@@ -7,6 +7,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeRelationFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
@@ -131,6 +132,8 @@ public class EnrolleeExportService {
         return moduleFormatters;
     }
 
+    List<SurveyType> SURVEY_TYPE_EXPORT_ORDER = List.of(SurveyType.CONSENT, SurveyType.RESEARCH, SurveyType.OUTREACH);
+
     /**
      * returns a ModuleExportInfo for each unique survey stableId that has ever been attached to the studyEnvironment
      * If multiple versions of a survey have been attached, those will be consolidated into a single ModuleExportInfo
@@ -142,9 +145,12 @@ public class EnrolleeExportService {
                 groupingBy(cfgSurvey -> cfgSurvey.getSurvey().getStableId())
         );
 
-        // sort by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
+        // sort by surveyType, then by surveyOrder so the resulting moduleExportInfo list is in the same order that participants take them
         List<Map.Entry<String, List<StudyEnvironmentSurvey>>> sortedCfgSurveysByStableId = configuredSurveysByStableId.entrySet()
-                .stream().sorted(Comparator.comparingInt(entry -> entry.getValue().get(0).getSurveyOrder())).toList();
+                .stream().sorted(Comparator.comparing(entry ->
+                                SURVEY_TYPE_EXPORT_ORDER.indexOf(((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurvey().getSurveyType()))
+                        .thenComparing(entry -> ((Map.Entry<String, List<StudyEnvironmentSurvey>>) entry).getValue().get(0).getSurveyOrder()))
+                .toList();
 
         // create one moduleExportInfo for each survey stableId.
         List<SurveyFormatter> moduleFormatters = new ArrayList<>();
