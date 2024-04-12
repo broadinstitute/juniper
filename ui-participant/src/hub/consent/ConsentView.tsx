@@ -26,6 +26,7 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import SurveyReviewModeButton from '../survey/ReviewModeButton'
 import SurveyAutoCompleteButton from '../survey/SurveyAutoCompleteButton'
+import { useTaskIdParam } from '../survey/SurveyView'
 
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
@@ -124,6 +125,7 @@ export default function ConsentView() {
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
   const studyShortcode = params.studyShortcode
+  const taskId = useTaskIdParam()
   const navigate = useNavigate()
 
   if (!stableId || !version || !studyShortcode) {
@@ -131,15 +133,31 @@ export default function ConsentView() {
   }
   const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
 
-  useEffect(() => {
-    Api.fetchConsentAndResponses({
-      studyShortcode,
-      enrolleeShortcode: enrollee.shortcode, stableId, version
-    }).then(response => {
+  const loadForm = async () => {
+    try {
+      const response = await Api.fetchConsentAndResponses({
+        studyShortcode,
+        enrolleeShortcode: enrollee.shortcode, stableId, version
+      })
       setFormAndResponses(response)
-    }).catch(() => {
-      navigate('/hub')
-    })
+    } catch (e) {
+      // if we can't load it as a consent form, try loading it as a survey
+      try {
+        await Api.fetchSurveyAndResponse({
+          studyShortcode, enrolleeShortcode: enrollee.shortcode, stableId, version, taskId
+        })
+        // it's a survey -- view it there
+        navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
+          + `/${version}?taskId=${taskId}`)
+      } catch (e) {
+        // if everything fails, go back to the hub
+        navigate('/hub')
+      }
+    }
+  }
+
+  useEffect(() => {
+    loadForm()
   }, [])
 
   if (!formAndResponses) {

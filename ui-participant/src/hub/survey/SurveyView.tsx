@@ -13,14 +13,7 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import {
-  ApiProvider,
-  makeSurveyJsData,
-  Markdown,
-  SurveyJsResumeData,
-  useAutosaveEffect,
-  useI18n
-} from '@juniper/ui-core'
+import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect, useI18n } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -248,8 +241,11 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
 export default withErrorBoundary(SurveyView)
 
 /** Gets the enrollee object matching the given study */
-function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal,
-  activeEnrollee: Enrollee|undefined): Enrollee {
+export function enrolleeForStudy(
+  enrollees: Enrollee[],
+  studyShortcode: string,
+  portal: Portal,
+  activeEnrollee: Enrollee | undefined): Enrollee {
   const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
     .studyEnvironments[0].id
 

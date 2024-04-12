@@ -58,6 +58,10 @@ public class StudyEnvironmentConsentDao extends BaseMutableJdbiDao<StudyEnvironm
                 "consent_form_id", consentFormId);
     }
 
+    public List<StudyEnvironmentConsent> findAllByConsentForm(UUID consentFormId) {
+        return findAllByProperty("consent_form_id", consentFormId);
+    }
+
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         deleteByProperty("study_environment_id", studyEnvId);
     }

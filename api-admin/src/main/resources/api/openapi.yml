@@ -1508,6 +1508,25 @@ paths:
           description: No Content
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/internal/v1/populate/command/{command}:
+    post:
+      summary: Runs a specified populate command
+      tags: [ populate ]
+      operationId: populateCommand
+      parameters:
+        - { name: command, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: false
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '201':
+          description: command result object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/datarepo/datasets:
     get:
       summary: Gets the list of datasets for the study environment
