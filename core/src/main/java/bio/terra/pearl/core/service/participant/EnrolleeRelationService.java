@@ -50,11 +50,15 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     public Optional<Enrollee> isUserProxyForEnrollee(UUID participantUserId, String enrolleeShortcode) {
         Enrollee targetEnrollee = enrolleeService.findOneByShortcode(enrolleeShortcode)
                 .orElseThrow(() -> new NotFoundException("Enrollee with shortcode %s was not found ".formatted(enrolleeShortcode)));
-        if(!dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, List.of(targetEnrollee.getId()))
-                .stream().filter(enrolleeRelation -> isRelationshipValid(enrolleeRelation)).collect(Collectors.toList()).isEmpty()){
+        List<EnrolleeRelation> relations = dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, List.of(targetEnrollee.getId()));
+        if (!validRelations(relations).isEmpty()) {
             return Optional.of(targetEnrollee);
         }
         return Optional.empty();
+    }
+
+    private List<EnrolleeRelation> validRelations(List<EnrolleeRelation> in) {
+        return in.stream().filter(this::isRelationshipValid).toList();
     }
 
     public void attachTargetEnrollees(List<EnrolleeRelation> relations) {
