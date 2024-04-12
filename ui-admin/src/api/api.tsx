@@ -1370,6 +1370,16 @@ Promise<Trigger> {
     return await this.processJsonResponse(response)
   },
 
+  async populateCommand(command: string, params: object) {
+    const url = `${basePopulateUrl()}/command/${command}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(params)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {

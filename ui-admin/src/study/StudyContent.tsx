@@ -66,6 +66,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
     .sort((a, b) => a.surveyOrder - b.surveyOrder)
     .map(configSurvey => configSurvey.survey.stableId))
+  const consentSurveyStableIds =  _uniq(configuredSurveys
+    .filter(configSurvey => configSurvey.survey.surveyType === 'CONSENT')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
+    .map(configSurvey => configSurvey.survey.stableId))
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Forms & Surveys') }
@@ -119,14 +123,26 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
                     </Link>
                   </li>
                 }) }
-                <li>
-                  { !isReadOnlyEnv && <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
-                    setShowCreateConsentModal(!showCreateConsentModal)
-                  }}>
-                    <FontAwesomeIcon icon={faPlus}/> Add
-                  </button> }
-                </li>
               </ul>
+            </div>
+            <div className="flex-grow-1 pt-3">
+              <SurveyEnvironmentTable stableIds={consentSurveyStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                configuredSurveys={configuredSurveys}
+                setSelectedSurveyConfig={setSelectedSurveyConfig}
+                updateConfiguredSurvey={updateConfiguredSurvey}
+                setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                showArchiveSurveyModal={showArchiveSurveyModal}
+                showDeleteSurveyModal={showDeleteSurveyModal}
+              />
+              <div>
+                <Button variant="secondary" data-testid={'addConsentSurvey'} onClick={() => {
+                  setCreateSurveyType('CONSENT')
+                }}>
+                  <FontAwesomeIcon icon={faPlus}/> Add
+                </Button>
+              </div>
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>

@@ -32,4 +32,8 @@ public class StudyEnvironmentConsentService extends CrudService<StudyEnvironment
         // environment.  For now, just pick one
         return configs.stream().findFirst();
     }
+
+    public List<StudyEnvironmentConsent> findAllByConsentForm(UUID consentFormId) {
+        return dao.findAllByConsentForm(consentFormId);
+    }
 }

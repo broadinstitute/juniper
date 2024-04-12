@@ -10,7 +10,7 @@ export type VersionedForm = {
   footer?: string
 }
 
-export type SurveyType = 'RESEARCH' | 'OUTREACH'
+export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT'
 
 export type Survey = VersionedForm & {
   surveyType: SurveyType
