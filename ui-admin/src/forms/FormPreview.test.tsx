@@ -170,7 +170,7 @@ describe('FormPreview', () => {
             />
           </MockI18nProvider>)
 
-        const languageSelector = screen.getByLabelText('Language')
+        const languageSelector = screen.getByLabelText('Language Preview')
         await act(() => user.click(languageSelector))
         await act(() => user.click(screen.getByText('Spanish')))
 
