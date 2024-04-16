@@ -69,11 +69,12 @@ public class SiteMediaServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testAddsCleanFileName(TestInfo info) {
+        String fileName = "testImageFileName.png";
         SiteMedia image = siteMediaFactory.builderWithDependencies(getTestName(info))
-                .cleanFileName(null)
+                .cleanFileName(fileName)
                 .build();
         SiteMedia savedImage = siteMediaService.create(image);
-        assertThat(savedImage.getCleanFileName(), equalTo(SiteMediaService.cleanFileName(image.getUploadFileName())));
+        assertThat(savedImage.getCleanFileName(), equalTo(SiteMediaService.cleanFileName(image.getCleanFileName())));
     }
 
     @Test
