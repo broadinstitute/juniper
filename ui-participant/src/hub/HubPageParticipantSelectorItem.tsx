@@ -1,38 +1,48 @@
-import { Enrollee, Profile } from '../api/api'
+import { Enrollee } from '../api/api'
 import RemainingTasksAlert from './RemainingTasksAlert'
 import React from 'react'
-import { useUser } from '../providers/UserProvider'
+import { useI18n } from '@juniper/ui-core'
 
 /**
  * Item in a dropdown list which allows the user to switch between different participants.
  */
-export default function HubPageParticipantSelectorItem({ enrollee, profile, relationshipType }:
-{enrollee: Enrollee, profile: Profile |undefined, relationshipType: string | undefined}) {
+export default function HubPageParticipantSelectorItem(
+  {
+    enrollee,
+    relationshipType,
+    setActiveEnrollee
+  }: {
+    enrollee: Enrollee,
+    relationshipType: string | undefined,
+    setActiveEnrollee: React.Dispatch<React.SetStateAction<Enrollee | undefined>>
+  }) {
+  const { i18n } = useI18n()
+
+  // TODO: add yourDependent and you keys
   const mappingRelationships: Map<string, string> = new Map([
-    ['PROXY', 'Your Dependent'],
-    ['PARENT', 'Your Child']
+    ['PROXY', i18n('yourDependent')]
+    // in the future, there will be more relationship types, such as parent
   ])
 
-  const { setActiveEnrollee, setActiveEnrolleeProfile } = useUser()
-  const changeActiveUser = (enrollee: Enrollee, profile: Profile | undefined) => {
-    setActiveEnrollee(enrollee)
-    profile? setActiveEnrolleeProfile(profile) : setActiveEnrolleeProfile(undefined)
-  }
 
-  function getRightTitle() {
-    if (!enrollee && !profile && !relationshipType) {
-      return 'Your Participant\'s'
+  function getTitle() {
+    if (!relationshipType) {
+      return i18n('you')
     }
-    const title = (profile &&  (`${profile.givenName || ''}`)) ||
-      (relationshipType && mappingRelationships.get(relationshipType)) || ''
-    return title !== '' ? `${title}'s` : 'Your Participant\'s'
+
+    const name = `${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`
+    if (name.trim() !== '') {
+      return name
+    } else {
+      return mappingRelationships.get(relationshipType)
+    }
   }
 
 
   return (
     <li>
-      <button onClick={() => changeActiveUser(enrollee, profile)} className="dropdown-item">
-        <span className="me-1"> {getRightTitle()} Dashboard </span>
+      <button onClick={() => setActiveEnrollee(enrollee)} className="dropdown-item">
+        <span className="me-1">{getTitle()}</span>
         <RemainingTasksAlert enrollee={enrollee}/>
       </button>
     </li>)

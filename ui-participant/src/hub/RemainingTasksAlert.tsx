@@ -10,7 +10,7 @@ export default function RemainingTasksAlert({ enrollee }: { enrollee: Enrollee }
   return (<span>
     <span
       className={`rounded-circle alert-circle
-    ${numTasks == 0 ? 'bg-secondary-subtle' : 'bg-danger text-white'}`}>
+    ${numTasks == 0 ? 'bg-secondary-subtle' : 'bg-primary text-white'}`}>
       {numTasks}
     </span>
   </span>)

@@ -4,12 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
-/**
- * The user provide contains the _raw_ user context, which is more or less directly derived
- * from the login state. If you are trying to access the currently active user, accounting
- * for proxy, you should use the ActiveUserProvider.
- */
-
 export type User = ParticipantUser & {
   isAnonymous: boolean
 }
@@ -20,32 +14,16 @@ const anonymousUser: User = {
   username: 'anonymous'
 }
 
-/**
- * TODO: Add ppUsers to the login dto returned by backend
- * TODO: Add active ppUser (with matched enrollees) to a new active user context
- * TODO: Use this new active user context in all places that use the current user context
- */
-
-export type UserContextT = {
-  user: User,
-  // these are the portal participant users and enrollees that you have access to,
-  // including proxied users. The user object is the person that is actually currently
-  // logged in.
-  ppUsers: PortalParticipantUser[]
-  enrollees: Enrollee[]
-  profile?: Profile,
-  loginUser: (result: LoginResult, accessToken: string) => void,
-  loginUserInternal: (result: LoginResult) => void,
-  logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
-  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
+export type ActiveUserContextT = {
+  ppUser: PortalParticipantUser,
+  enrollees: Enrollee[],
 }
 
 /** current user object context */
-const UserContext = React.createContext<UserContextT>({
-  user: anonymousUser,
-  ppUsers: [],
+const UserContext = React.createContext<ActiveUserContextT>({
+  ppUser,
   enrollees: [],
+  relations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },

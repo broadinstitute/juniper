@@ -16,13 +16,14 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -141,8 +142,8 @@ public class CurrentUserService {
 
   public record UserLoginDto(
       ParticipantUser user,
-      PortalParticipantUser ppUser,
       Profile profile,
+      List<PortalParticipantUser> ppUsers, // includes proxied ppusers
       List<Enrollee> enrollees,
       List<EnrolleeRelation> relations) {}
 }

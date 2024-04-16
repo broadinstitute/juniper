@@ -1,15 +1,21 @@
 import React from 'react'
 import { useUser } from '../providers/UserProvider'
 import HubPageParticipantSelectorItem from './HubPageParticipantSelectorItem'
+import { Enrollee } from '../api/api'
 
 /**
  * Selector for changing participant on the hub page. Works by changing the active user in local storage.
  */
-export default function HubPageParticipantSelector() {
+export default function HubPageParticipantSelector(
+  {
+    setActiveEnrollee
+  }: {
+    setActiveEnrollee: React.Dispatch<React.SetStateAction<Enrollee | undefined>>
+  }
+) {
   const {
     enrollees,
-    relations,
-    profile
+    relations
   } = useUser()
 
   function getTotalTasks() {
@@ -44,14 +50,16 @@ export default function HubPageParticipantSelector() {
 
       <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
 
-        <HubPageParticipantSelectorItem enrollee={enrollees[0]} profile={profile}
+        <HubPageParticipantSelectorItem
+          enrollee={enrollees[0]}
+          setActiveEnrollee={setActiveEnrollee}
           relationshipType={undefined}/>
 
         {relations?.map((enrolleeRelation, idx) => (
           <HubPageParticipantSelectorItem
             key={idx}
             enrollee={enrolleeRelation.targetEnrollee}
-            profile={enrolleeRelation.targetEnrollee.profile}
+            setActiveEnrollee={setActiveEnrollee}
             relationshipType={enrolleeRelation.relationshipType}/>
         ))}
       </ul>

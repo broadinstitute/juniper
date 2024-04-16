@@ -20,18 +20,17 @@ export default function HubPage() {
 
   const {
     enrollees,
-    activeEnrollee,
-    activeEnrolleeProfile,
     relations
   } = useUser()
+
+
+  const [activeEnrollee, setActiveEnrollee] = useState<Enrollee | undefined>(findDefaultEnrollee(enrollees, relations))
 
   const { i18n } = useI18n()
 
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
-    console.log(enrollees)
-    console.log(activeEnrollee)
     loadDashboardAlerts()
   }, [])
 
@@ -81,13 +80,13 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {relations.length > 0 && <HubPageParticipantSelector/>}
+          {relations.length > 0 && <HubPageParticipantSelector setActiveEnrollee={setActiveEnrollee}/>}
           {activeEnrollee && <StudySection
             key={activeEnrollee.id}
             enrollee={activeEnrollee}
             portal={portal}
             relations={relations}
-            profile={activeEnrolleeProfile || {}}/>}
+            profile={activeEnrollee?.profile}/>}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -134,3 +133,15 @@ const StudySection = (props: StudySectionProps) => {
   )
 }
 
+
+const findDefaultEnrollee = (enrollees: Enrollee[], relations: EnrolleeRelation[]): Enrollee | undefined => {
+  const foundEnrollee = enrollees.find(e => e.subject)
+  if (foundEnrollee) {
+    return foundEnrollee
+  }
+
+  const foundRelationEnrollee = relations.find(r => r.targetEnrollee.subject)
+  if (foundRelationEnrollee) {
+    return foundRelationEnrollee.targetEnrollee
+  }
+}

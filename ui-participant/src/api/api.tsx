@@ -64,6 +64,7 @@ export type LoginResult = {
 export type Enrollee = {
   id: string
   consented: boolean
+  subject: boolean
   consentResponses: []
   createdAt: number
   kitRequests: []
