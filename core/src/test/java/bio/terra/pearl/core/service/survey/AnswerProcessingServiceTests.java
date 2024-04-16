@@ -8,6 +8,7 @@ import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -16,7 +17,6 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -100,7 +100,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         ));
 
         List<Profile> before = profileService.findAll();
-        answerProcessingService.processAllAnswerMappings(answers,
+        answerProcessingService.processAllAnswerMappings(null, answers,
                 new ArrayList<>(), null, DataAuditInfo.builder().build());
         List<Profile> after = profileService.findAll();
 
@@ -179,6 +179,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         );
 
         answerProcessingService.processAllAnswerMappings(
+                enrolleeBundle.enrollee(),
                 answers,
                 mappings,
                 enrolleeBundle.portalParticipantUser(),
@@ -193,7 +194,88 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(LocalDate.of(1987, 11, 12), after.getBirthDate());
         Assertions.assertEquals("myFirstName", after.getGivenName());
         Assertions.assertEquals("addressPart1", after.getMailingAddress().getStreet1());
+    }
 
+    @Test
+    @Transactional
+    public void testProxyProfileUpdate(TestInfo info) {
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), portalEnv, studyEnv);
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+
+        List<Answer> answers = AnswerFactory.fromMap(Map.of(
+                "testSurvey_q1", "myFirstName",
+                "testSurvey_q2", "addressPart1",
+                "testSurvey_q3", "11/12/1987",
+                "testSurvey_q4", "governedUserName",
+                "testSurvey_q5", "another address",
+                "testSurvey_q6", "01/01/2018"
+        ));
+        List<AnswerMapping> mappings = List.of(
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROXY_PROFILE)
+                        .questionStableId("testSurvey_q1")
+                        .targetField("givenName")
+                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                        .build(),
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROXY_PROFILE)
+                        .questionStableId("testSurvey_q2")
+                        .targetField("mailingAddress.street1")
+                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                        .build(),
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROXY_PROFILE)
+                        .questionStableId("testSurvey_q3")
+                        .targetField("birthDate")
+                        .mapType(AnswerMappingMapType.STRING_TO_LOCAL_DATE)
+                        .formatString("MM/dd/yyyy")
+                        .build(),
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROFILE)
+                        .questionStableId("testSurvey_q4")
+                        .targetField("givenName")
+                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                        .build(),
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROFILE)
+                        .questionStableId("testSurvey_q5")
+                        .targetField("mailingAddress.street1")
+                        .mapType(AnswerMappingMapType.STRING_TO_STRING)
+                        .build(),
+                AnswerMapping.builder()
+                        .targetType(AnswerMappingTargetType.PROFILE)
+                        .questionStableId("testSurvey_q6")
+                        .targetField("birthDate")
+                        .mapType(AnswerMappingMapType.STRING_TO_LOCAL_DATE)
+                        .formatString("MM/dd/yyyy")
+                        .build()
+        );
+
+        answerProcessingService.processAllAnswerMappings(
+                enrolleeAndProxy.governedEnrollee(),
+                answers,
+                mappings,
+                enrolleeAndProxy.proxyPpUser(),
+                DataAuditInfo.builder()
+                        .responsibleUserId(enrolleeAndProxy.proxyPpUser().getParticipantUserId())
+                        .enrolleeId(enrolleeAndProxy.governedEnrollee().getId())
+                        .surveyId(survey.getId())
+                        .build());
+
+
+        Profile governedUserProfile = profileService.loadWithMailingAddress(enrolleeAndProxy.governedEnrollee().getProfileId()).orElseThrow();
+
+        Assertions.assertEquals(LocalDate.of(2018, 1, 1), governedUserProfile.getBirthDate());
+        Assertions.assertEquals("governedUserName", governedUserProfile.getGivenName());
+        Assertions.assertEquals("another address", governedUserProfile.getMailingAddress().getStreet1());
+
+        Profile proxyProfile = profileService.loadWithMailingAddress(enrolleeAndProxy.proxyPpUser().getProfileId()).orElseThrow();
+
+        Assertions.assertEquals(LocalDate.of(1987, 11, 12), proxyProfile.getBirthDate());
+        Assertions.assertEquals("myFirstName", proxyProfile.getGivenName());
+        Assertions.assertEquals("addressPart1", proxyProfile.getMailingAddress().getStreet1());
 
     }
 }
