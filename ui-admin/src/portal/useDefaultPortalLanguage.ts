@@ -6,7 +6,7 @@ import { StudyParams } from 'study/StudyRouter'
 /**
  * Returns the default language for the current portal environment.
  */
-export function useDefaultLanguage() {
+export function usePortalLanguage() {
   const { portal } = useContext(PortalContext)
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
@@ -14,15 +14,20 @@ export function useDefaultLanguage() {
   const defaultLanguage = portal?.portalEnvironments.find(env =>
     env.environmentName === envName)?.portalEnvironmentConfig.defaultLanguage
 
-  const language = portal?.portalEnvironments.find(env =>
-    env.environmentName === envName)?.supportedLanguages.find(lang => lang.languageCode === defaultLanguage)
+  const supportedLanguages = portal?.portalEnvironments.find(env =>
+    env.environmentName === envName)?.supportedLanguages || []
+
+  const language = supportedLanguages.find(lang => lang.languageCode === defaultLanguage)
 
   if (!language) {
     return {
-      languageCode: 'en',
-      languageName: 'English'
+      defaultLanguage: {
+        languageCode: 'en',
+        languageName: 'English'
+      },
+      supportedLanguages
     }
   }
 
-  return language
+  return { defaultLanguage: language, supportedLanguages }
 }

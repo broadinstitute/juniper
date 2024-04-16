@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
-import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from 'portal/useDefaultPortalLanguage'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
@@ -19,7 +19,7 @@ type FormPreviewOptionsProps = {
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
   const { value, supportedLanguages, onChange } = props
-  const defaultLanguage = useDefaultLanguage()
+  const { defaultLanguage } = usePortalLanguage()
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
 
   const {

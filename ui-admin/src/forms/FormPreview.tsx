@@ -13,7 +13,7 @@ import {
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from '../api/api'
-import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from 'portal/useDefaultPortalLanguage'
 
 type FormPreviewProps = {
   formContent: FormContent
@@ -25,7 +25,7 @@ type FormPreviewProps = {
  */
 export const FormPreview = (props: FormPreviewProps) => {
   const { formContent, supportedLanguages } = props
-  const defaultLanguage = useDefaultLanguage()
+  const { defaultLanguage } = usePortalLanguage()
 
   const { i18n } = useI18n()
 

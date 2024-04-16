@@ -12,7 +12,7 @@ import useUpdateEffect from '../util/useUpdateEffect'
 import useReactSingleSelect from '../util/react-select-utils'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
-import { useDefaultLanguage } from './useDefaultPortalLanguage'
+import { usePortalLanguage } from './useDefaultPortalLanguage'
 
 
 type PortalEnvConfigViewProps = {
@@ -28,7 +28,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
   const { user } = useUser()
   const { portal, reloadPortal } = portalContext
   const [isLoading, setIsLoading] = useState(false)
-  const defaultLanguage = useDefaultLanguage()
+  const { defaultLanguage } = usePortalLanguage()
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
   /** update a given field in the config */
   const updateConfig = (propName: string, value: string | boolean) => {

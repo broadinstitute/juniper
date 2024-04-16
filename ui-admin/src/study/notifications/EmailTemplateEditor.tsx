@@ -1,30 +1,40 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
-import { EmailTemplate } from '@juniper/ui-core'
+import { EmailTemplate, LocalizedEmailTemplate, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
-import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
   portalShortcode: string,
+  selectedLanguage?: PortalEnvironmentLanguage,
   updateEmailTemplate: (emailTemplate: EmailTemplate) => void
 }
 
 /** Enables editing an email with design/preview modes */
-export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate, portalShortcode }:
+export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate, portalShortcode, selectedLanguage }:
   EmailTemplateEditorProps) {
   const emailEditorRef = useRef<EditorRef>(null)
   // wrapper so that the unlayer event handler always accesses the latest state when updating
   const emailTemplateRef = useRef(emailTemplate)
   emailTemplateRef.current = emailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
-  const defaultLanguage = useDefaultLanguage()
-  const localizedEmailTemplate = emailTemplate.localizedEmailTemplates.find(template =>
-    template.language === defaultLanguage.languageCode)
+  const [localizedEmailTemplate, setLocalizedEmailTemplate] = useState<LocalizedEmailTemplate | undefined>()
+
+  useEffect(() => {
+    setLocalizedEmailTemplate(emailTemplate.localizedEmailTemplates.find(localizedTemplate =>
+      localizedTemplate.language === selectedLanguage?.languageCode))
+    if (emailEditorRef.current?.editor && localizedEmailTemplate) {
+      emailEditorRef.current.editor.loadDesign({
+        // @ts-ignore
+        html: replacePlaceholders(localizedEmailTemplate.body),
+        classic: true
+      })
+    }
+  }, [localizedEmailTemplate, selectedLanguage])
 
   if (!localizedEmailTemplate) {
-    return <div>no localized template found for {defaultLanguage.languageCode}</div>
+    return <div>no localized template found for {selectedLanguage?.languageCode}</div>
   }
 
   const replacePlaceholders = (html: string) => {

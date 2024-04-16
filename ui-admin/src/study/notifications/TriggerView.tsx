@@ -11,6 +11,9 @@ import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import EmailTemplateEditor from './EmailTemplateEditor'
 import { Modal } from 'react-bootstrap'
+import useReactSingleSelect from '../../util/react-select-utils'
+import { PortalEnvironmentLanguage } from '@juniper/ui-core'
+import { usePortalLanguage } from '../../portal/useDefaultPortalLanguage'
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
   { label: 'Ad hoc', value: 'AD_HOC' }]
@@ -30,9 +33,23 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
                                                    onDelete: () => void
                                                  }) {
   const { currentEnv, portal, study, currentEnvPath } = studyEnvContext
+  const { defaultLanguage, supportedLanguages } = usePortalLanguage()
   const [showSendModal, setShowSendModal] = useState(false)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
+
   const navigate = useNavigate()
+  const {
+    onChange: languageOnChange, options: languageOptions,
+    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
+  } =
+      useReactSingleSelect(
+        supportedLanguages,
+        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
+        setSelectedLanguage,
+        selectedLanguage
+      )
+
 
   const configId = useParams().configId
   const [config, setConfig] = useState<Trigger>()
@@ -109,8 +126,20 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </label>
       </div>
 
+      { supportedLanguages.length > 1 && <div style={{ width: 200 }}>
+        <label className="form-label">Language
+          <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+            aria-label={'Select a language'}
+            onChange={e => {
+              languageOnChange(e)
+              // loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
+            }}/>
+        </label>
+      </div> }
+
       {hasTemplate &&
           <EmailTemplateEditor emailTemplate={workingConfig.emailTemplate}
+            selectedLanguage={selectedLanguage}
             portalShortcode={portal.shortcode}
             updateEmailTemplate={updatedTemplate => setWorkingConfig(currentConfig => {
               // we have to use currentConfig since the template editor might call a stale version of this handler
