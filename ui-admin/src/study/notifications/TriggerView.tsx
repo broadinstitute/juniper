@@ -11,9 +11,9 @@ import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import EmailTemplateEditor from './EmailTemplateEditor'
 import { Modal } from 'react-bootstrap'
-import useReactSingleSelect from '../../util/react-select-utils'
+import useReactSingleSelect from 'util/react-select-utils'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
-import { usePortalLanguage } from '../../portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from 'portal/useDefaultPortalLanguage'
 
 const configTypeOptions = [{ label: 'Event', value: 'EVENT' }, { label: 'Task reminder', value: 'TASK_REMINDER' },
   { label: 'Ad hoc', value: 'AD_HOC' }]
@@ -132,7 +132,6 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
             aria-label={'Select a language'}
             onChange={e => {
               languageOnChange(e)
-              // loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
             }}/>
         </label>
       </div> }
