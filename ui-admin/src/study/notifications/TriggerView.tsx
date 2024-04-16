@@ -50,7 +50,6 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         selectedLanguage
       )
 
-
   const configId = useParams().configId
   const [config, setConfig] = useState<Trigger>()
   const [workingConfig, setWorkingConfig] = useState<Trigger>()

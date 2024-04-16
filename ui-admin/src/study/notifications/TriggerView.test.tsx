@@ -6,9 +6,27 @@ import TriggerView from './TriggerView'
 import { waitFor, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactNotifications } from 'react-notifications-component'
+import { usePortalLanguage } from '../../portal/useDefaultPortalLanguage'
+import { asMockedFn } from '@juniper/ui-core'
 
+
+jest.mock('portal/useDefaultPortalLanguage', () => ({
+  usePortalLanguage: jest.fn()
+}))
 
 test('enables updating of email templates', async () => {
+  const portalContext = mockPortalContext()
+  asMockedFn(usePortalLanguage).mockReturnValue({
+    defaultLanguage: {
+      languageCode: 'en',
+      languageName: 'English'
+    },
+    supportedLanguages: [{
+      languageCode: 'en',
+      languageName: 'English'
+    }]
+  })
+
   const studyEnvContext = mockStudyEnvContext()
   const trigger = {
     ...mockTrigger()
@@ -20,7 +38,7 @@ test('enables updating of email templates', async () => {
 
   renderWithRouter(<div>
     <ReactNotifications />
-    <TriggerView studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}
+    <TriggerView studyEnvContext={studyEnvContext} portalContext={portalContext}
       onDelete={jest.fn()}/>
   </div>, [`/${trigger.id}`], ':configId')
 
@@ -28,6 +46,7 @@ test('enables updating of email templates', async () => {
   expect(findSpy).toHaveBeenCalledWith(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
     studyEnvContext.currentEnv.environmentName, trigger.id)
 
+  await waitFor(() => expect(screen.queryByText('Subject')).toBeInTheDocument())
   await userEvent.type(screen.getByLabelText('Subject'), 'blah')
   await userEvent.click(screen.getByText('Save'))
   expect(saveSpy).toHaveBeenCalledTimes(1)
