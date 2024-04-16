@@ -100,7 +100,7 @@ public class AnswerProcessingService {
         if (proxyProfileMappings.isEmpty() || !hasTargetedChanges(proxyProfileMappings, answers, AnswerMappingTargetType.PROXY_PROFILE)) {
             return;
         }
-        // grab the operator (or the proxy's) profile to update it
+        // grab the operator (which is the proxy) profile to update it
         Profile profile = profileService.loadWithMailingAddress(operator.getProfileId()).get();
         mapValuesToType(
                 answers,
