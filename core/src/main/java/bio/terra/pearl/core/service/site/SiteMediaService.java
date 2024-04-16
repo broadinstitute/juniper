@@ -50,12 +50,9 @@ public class SiteMediaService extends ImmutableEntityService<SiteMedia, SiteMedi
             throw new IllegalArgumentException("Allowed extensions are: " +
                     ALLOWED_EXTENSIONS.stream().collect(Collectors.joining(", ")));
         }
-        if (image.getCleanFileName() == null) {
-            image.setCleanFileName(cleanFileName(image.getCleanFileName()));
-        } else {
-            // confirm the clean file name is actually clean
-            image.setCleanFileName(cleanFileName(image.getCleanFileName()));
-        }
+
+        // confirm the clean file name is actually clean
+        image.setCleanFileName(cleanFileName(image.getCleanFileName()));
         return dao.create(image);
     }
 
