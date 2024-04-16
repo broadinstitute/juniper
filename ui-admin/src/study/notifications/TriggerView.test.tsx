@@ -15,7 +15,6 @@ jest.mock('portal/useDefaultPortalLanguage', () => ({
 }))
 
 test('enables updating of email templates', async () => {
-  const portalContext = mockPortalContext()
   asMockedFn(usePortalLanguage).mockReturnValue({
     defaultLanguage: {
       languageCode: 'en',
@@ -38,7 +37,7 @@ test('enables updating of email templates', async () => {
 
   renderWithRouter(<div>
     <ReactNotifications />
-    <TriggerView studyEnvContext={studyEnvContext} portalContext={portalContext}
+    <TriggerView studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}
       onDelete={jest.fn()}/>
   </div>, [`/${trigger.id}`], ':configId')
 
