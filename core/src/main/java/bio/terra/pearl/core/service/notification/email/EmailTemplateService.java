@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
 import bio.terra.pearl.core.service.VersionedEntityService;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 
@@ -44,5 +45,9 @@ public class EmailTemplateService extends VersionedEntityService<EmailTemplate, 
 
     public void deleteByPortalId(UUID portalId) {
         dao.deleteByPortalId(portalId);
+    }
+
+    public Optional<EmailTemplate> findAdminTemplateByStableId(String stableId, int version) {
+        return dao.findAdminTemplateByStableId(stableId, version);
     }
 }
