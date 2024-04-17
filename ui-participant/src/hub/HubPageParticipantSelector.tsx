@@ -38,16 +38,16 @@ export default function HubPageParticipantSelector() {
 
       <ul className="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
 
-        <HubPageParticipantSelectorItem
-          enrollee={enrollees[0]}
-          relationshipType={undefined}/>
-
-        {relations?.map((enrolleeRelation, idx) => (
-          <HubPageParticipantSelectorItem
-            key={idx}
-            enrollee={enrolleeRelation.targetEnrollee}
-            relationshipType={enrolleeRelation.relationshipType}/>
-        ))}
+        {
+          enrollees.map((enrollee, idx) => (
+            <HubPageParticipantSelectorItem
+              key={idx}
+              enrollee={enrollee}
+              relationshipType={
+                relations.find(relation => relation.targetEnrolleeId === enrollee.id)?.relationshipType
+              }/>
+          ))
+        }
       </ul>
     </div>
   )

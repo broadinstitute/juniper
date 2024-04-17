@@ -34,12 +34,8 @@ export const useActiveUser = () => useContext(ActiveUserContext)
 
 /** Provider for the current logged-in user. */
 export default function ActiveUserProvider({ children }: { children: React.ReactNode }) {
-  const {
-    ppUsers,
-    enrollees,
-    relations,
-    updateEnrollee
-  } = useUser()
+  const userContext = useUser()
+  const { ppUsers, enrollees, relations, updateEnrollee } = userContext
 
   const [activePpUser, setActivePpUser] = React.useState<PortalParticipantUser | null>(null)
 
@@ -59,7 +55,7 @@ export default function ActiveUserProvider({ children }: { children: React.React
         setActivePpUser(ppUsers[0])
       }
     }
-  }, [ppUsers])
+  }, [userContext])
 
   const context: ActiveUserContextT = {
     ppUser: activePpUser,
@@ -85,6 +81,11 @@ export default function ActiveUserProvider({ children }: { children: React.React
       })
     }
   }
+
+  useEffect(() => {
+    console.log('ActiveUserContext changed')
+    console.log(context)
+  }, [context])
 
   return (
     <ActiveUserContext.Provider value={context}>

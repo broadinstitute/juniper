@@ -21,11 +21,6 @@ const anonymousUser: User = {
   username: 'anonymous'
 }
 
-/**
- * TODO: Add ppUsers to the login dto returned by backend
- * TODO: Use this new active user context in all places that use the current user context
- */
-
 export type UserContextT = {
   user: User,
   // these are the portal participant users and enrollees that you have access to,
@@ -39,7 +34,8 @@ export type UserContextT = {
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
-  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
+  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>,
+  refreshLogin: () => void
 }
 
 /** current user object context */
@@ -61,6 +57,9 @@ const UserContext = React.createContext<UserContextT>({
     throw new Error('context not yet initialized')
   },
   updateProfile: () => {
+    throw new Error('context not yet initialized')
+  },
+  refreshLogin: () => {
     throw new Error('context not yet initialized')
   }
 })
@@ -110,41 +109,24 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     }
   }
 
-  // TODO: helper for find enrollee by shortcode, helper for update enrollee by shortcode
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
   function updateEnrollee(enrollee: Enrollee, updateWithoutRerender = false): Promise<void> {
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      const foundEnrolleeIdx = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-      const foundRelationIdx = loginState.relations.findIndex(
-        relation => relation.targetEnrollee.shortcode === enrollee.shortcode
-      )
-      if (foundEnrolleeIdx != -1) {
-        loginState.enrollees[foundEnrolleeIdx] = enrollee
-      }
-      if (foundRelationIdx != -1) {
-        loginState.relations[foundRelationIdx].targetEnrollee = enrollee
-      }
+      updateByShortcode(loginState.enrollees, enrollee)
+      updateTargetByShortcode(loginState.relations, enrollee)
     } else {
       setLoginState(oldState => {
         if (oldState == null) {
           return oldState
         }
-        const foundEnrolleeIdx = oldState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-        const foundRelationIdx = oldState.relations.findIndex(
-          relation => relation.targetEnrollee.shortcode === enrollee.shortcode
-        )
-        let updatedEnrollees = oldState.enrollees
-        const updatedRelations = oldState.relations
 
-        if (foundEnrolleeIdx != -1) {
-          updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
-          updatedEnrollees.push(enrollee)
-        }
-        if (foundRelationIdx != -1) {
-          updatedRelations[foundRelationIdx].targetEnrollee = enrollee
-        }
+        const updatedEnrollees = oldState.enrollees
+        const updatedRelations = oldState.relations
+        updateByShortcode(updatedEnrollees, enrollee)
+        updateTargetByShortcode(updatedRelations, enrollee)
+
         return {
           ...oldState,
           enrollees: updatedEnrollees,
@@ -178,26 +160,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     })
   }
 
-  const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
-    enrollees: loginState ? loginState.enrollees : [],
-    relations: loginState ? loginState.relations : [],
-    ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
-    profile: loginState?.profile,
-    loginUser,
-    loginUserInternal,
-    logoutUser,
-    updateEnrollee,
-    updateProfile
-  }
-
-  useEffect(() => {
-    auth.events.addUserLoaded(user => {
-      Api.setBearerToken(user.access_token)
-      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
-    })
-
-    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
+  const refreshLogin = () => {
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
@@ -219,6 +182,35 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     } else {
       setIsLoading(false)
     }
+  }
+
+  const userContext: UserContextT = {
+    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    enrollees: loginState ? loginState.enrollees : [],
+    relations: loginState ? loginState.relations : [],
+    ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
+    profile: loginState?.profile,
+    loginUser,
+    loginUserInternal,
+    logoutUser,
+    updateEnrollee,
+    updateProfile,
+    refreshLogin
+  }
+
+  useEffect(() => {
+    console.log('user context changed')
+    console.log(userContext)
+  }, [userContext])
+
+  useEffect(() => {
+    auth.events.addUserLoaded(user => {
+      Api.setBearerToken(user.access_token)
+      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
+    })
+
+    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
+    refreshLogin()
   }, [])
 
   return (
@@ -228,4 +220,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         : children}
     </UserContext.Provider>
   )
+}
+
+
+function updateByShortcode(enrollees: Enrollee[], update: Enrollee) {
+  return enrollees.map(e => e.shortcode === update.shortcode ? update : e)
+}
+
+function updateTargetByShortcode(relations: EnrolleeRelation[], update: Enrollee) {
+  return relations.map(relation => relation.targetEnrollee.shortcode === update.shortcode
+    ? { ...relation, targetEnrollee: update }
+    : relation)
 }

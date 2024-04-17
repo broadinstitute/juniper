@@ -11,6 +11,7 @@ export const mockUseUser = (isAnonymous: boolean): UserContextT => {
     updateEnrollee: jest.fn(),
     loginUserInternal: jest.fn(),
     loginUser: jest.fn(),
+    refreshLogin: jest.fn(),
     ppUsers: [],
     enrollees: [],
     relations: []

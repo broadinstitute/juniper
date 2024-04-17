@@ -53,7 +53,7 @@ type StudyEnrollOutletMatchedProps = {
 /** handles the rendering and useEffect logic */
 function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
-  const { user, enrollees, updateEnrollee } = useUser()
+  const { user, enrollees, refreshLogin } = useUser()
   const enrolleesForUser = enrollees.filter(enrollee => enrollee.participantUserId === user.id)
 
   const navigate = useNavigate()
@@ -107,7 +107,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
-          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, updateEnrollee)
+          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, refreshLogin)
+          // todo: refresh user state
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)

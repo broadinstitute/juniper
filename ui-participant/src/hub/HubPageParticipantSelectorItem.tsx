@@ -30,14 +30,14 @@ export default function HubPageParticipantSelectorItem(
 
 
   function getTitle() {
-    if (!relationshipType) {
-      return i18n('you')
-    }
-
     const name = `${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`
     if (name.trim() !== '') {
       return name
     } else {
+      if (!relationshipType) {
+        return i18n('you')
+      }
+
       return mappingRelationships.get(relationshipType)
     }
   }

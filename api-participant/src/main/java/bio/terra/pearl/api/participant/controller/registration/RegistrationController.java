@@ -9,9 +9,10 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.UUID;
 
 @Controller
 public class RegistrationController implements RegistrationApi {
@@ -70,11 +71,7 @@ public class RegistrationController implements RegistrationApi {
       CurrentUserService.UserLoginDto loggedInUser =
           currentUnauthedUserService.unauthedLogin(
               registrationResult.participantUser().getUsername(), portalShortcode, environmentName);
-      registrationResult =
-          new RegistrationService.RegistrationResult(
-              loggedInUser.user(),
-              registrationResult.portalParticipantUser(),
-              registrationResult.profile());
+      return ResponseEntity.ok(loggedInUser);
     }
     return ResponseEntity.ok(registrationResult);
   }
