@@ -168,7 +168,12 @@ public class DataRepoExportService {
     }
 
     public String uploadCsvToAzureStorage(UUID studyEnvironmentId, UUID datasetId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, false, false, ExportFileFormat.TSV, null);
+        ExportOptions exportOptions = ExportOptions
+                .builder()
+                .onlyIncludeMostRecent(false)
+                .fileFormat(ExportFileFormat.TSV)
+                .limit(null)
+                .build();
 
         //Even though this is actually formatted as a TSV, TDR only accepts files ending in .csv or .json.
         //In the DataRepoClient call, we specify that the CSV delimiter is "\t", which will make it all work fine.
@@ -216,7 +221,12 @@ public class DataRepoExportService {
     }
 
     public Set<TdrColumn> generateDatasetSchema(UUID studyEnvironmentId) {
-        ExportOptions exportOptions = new ExportOptions(false, false, false, false, ExportFileFormat.TSV, null);
+        ExportOptions exportOptions = ExportOptions
+                .builder()
+                .onlyIncludeMostRecent(false)
+                .fileFormat(ExportFileFormat.TSV)
+                .limit(null)
+                .build();
 
         //Backtrack from studyEnvironmentId to get the portalId, so we can export the study environment data
         StudyEnvironment studyEnv = studyEnvironmentDao.find(studyEnvironmentId).orElseThrow(() -> new NotFoundException("Study environment not found."));
@@ -230,7 +240,7 @@ public class DataRepoExportService {
                     studyEnvironmentId,
                     moduleFormatters,
                     false,
-                    exportOptions.limit());
+                    exportOptions.getLimit());
 
             TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);
 

@@ -83,8 +83,8 @@ public class EnrolleeExportService {
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
-        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.includeProxiesAsRows(), exportOptions.limit());
-        BaseExporter exporter = getExporter(exportOptions.fileFormat(), moduleFormatters, enrolleeMaps);
+        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.isIncludeProxiesAsRows(), exportOptions.getLimit());
+        BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
         exporter.export(os);
     }
 

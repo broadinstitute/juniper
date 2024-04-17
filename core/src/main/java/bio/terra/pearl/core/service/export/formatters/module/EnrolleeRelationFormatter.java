@@ -24,10 +24,11 @@ public class EnrolleeRelationFormatter extends ModuleFormatter<EnrolleeRelation,
         displayName = "Proxy Relations";
     }
 
+    // near-duplicate of toStringMap in KitRequestFormatter, potentially could
+    // extract helper methods if more similar formatters arise
     @Override
     public Map<String, String> toStringMap(EnrolleeExportData enrolleeData) {
         List<EnrolleeRelation> relations = enrolleeData.getEnrolleeRelations();
-        // sort the kits oldest first
         relations = relations.stream()
                 .sorted(Comparator.comparing(EnrolleeRelation::getCreatedAt)).toList();
         Map<String, String> outputMap = new HashMap<>();

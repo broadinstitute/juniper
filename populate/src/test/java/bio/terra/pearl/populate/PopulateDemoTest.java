@@ -154,9 +154,14 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     }
 
     private void checkExportContent(UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = new ExportOptions(false, false, true, false, ExportFileFormat.TSV, null);
+        ExportOptions options = ExportOptions
+                .builder()
+                .onlyIncludeMostRecent(true)
+                .fileFormat(ExportFileFormat.TSV)
+                .limit(null)
+                .build();
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.limit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
 
         assertThat(exportData, hasSize(9));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))

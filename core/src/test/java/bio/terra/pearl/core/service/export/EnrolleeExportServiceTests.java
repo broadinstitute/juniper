@@ -72,9 +72,14 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         EnrolleeFactory.EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
-        List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(
-                false, false, true, true, ExportFileFormat.TSV, null
-        ), studyEnv.getId());
+        List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
+                        .builder()
+                        .includeProxiesAsRows(true)
+                        .onlyIncludeMostRecent(true)
+                        .fileFormat(ExportFileFormat.TSV)
+                        .limit(null)
+                        .build(),
+                studyEnv.getId());
 
         List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoWithProxies, true, null);
         assertThat(exportMapsWithProxies, hasSize(3));
@@ -88,18 +93,16 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         assertThat(exportMapsWithProxies.get(2).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.proxy().getShortcode()));
         assertThat(exportMapsWithProxies.get(2).get("enrollee.subject"), equalTo("false"));
 
-        List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(
-                false, false, true, false, ExportFileFormat.TSV, null
-        ), studyEnv.getId());
+        List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
 
         List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoNoProxies, false, null);
         assertThat(exportMapsNoProxies, hasSize(2));
 
         assertThat(exportMapsNoProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
-        assertThat(exportMapsNoProxies.get(0).containsKey("enrollee.subject"), equalTo(false));
+        assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
 
         assertThat(exportMapsNoProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
-        assertThat(exportMapsNoProxies.get(1).containsKey("enrollee.subject"), equalTo(false));
+        assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
 
     }
 

@@ -1,12 +1,16 @@
 package bio.terra.pearl.core.service.export.formatters.item;
 
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerType;
+import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.BaseExporter;
 import bio.terra.pearl.core.service.export.DataValueExportType;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,9 +18,11 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @SuperBuilder
 @Getter
@@ -68,10 +74,10 @@ public class AnswerItemFormatter extends ItemFormatter<SurveyResponse> {
                 throw new IllegalStateException("Error parsing choices for question " + questionDef.getQuestionStableId(), e);
             }
         }
-        boolean splitOptions = exportOptions.splitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
+        boolean splitOptions = exportOptions.isSplitOptionsIntoColumns() && choices.size() > 0 && questionDef.isAllowMultiple();
         baseColumnKey = questionDef.getQuestionStableId();
         questionStableId = questionDef.getQuestionStableId();
-        stableIdsForOptions = exportOptions.stableIdsForOptions();
+        stableIdsForOptions = exportOptions.isStableIdsForOptions();
         splitOptionsIntoColumns = splitOptions;
         allowMultiple = questionDef.isAllowMultiple();
         this.choices = choices;

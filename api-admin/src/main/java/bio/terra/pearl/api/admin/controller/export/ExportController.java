@@ -53,13 +53,16 @@ public class ExportController implements ExportApi {
     AdminUser user = authUtilService.requireAdminUser(request);
 
     ExportOptions exportOptions =
-        new ExportOptions(
-            splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
-            stableIdsForOptions != null ? stableIdsForOptions : false,
-            includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
-            includeProxiesAsRows != null ? includeProxiesAsRows : false,
-            fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
-            limit);
+        ExportOptions.builder()
+            .splitOptionsIntoColumns(
+                splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
+            .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
+            .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
+            .includeProxiesAsRows(includeProxiesAsRows != null ? includeProxiesAsRows : false)
+            .fileFormat(
+                fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
+            .limit(limit)
+            .build();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.export(
@@ -81,13 +84,16 @@ public class ExportController implements ExportApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
     ExportOptions exportOptions =
-        new ExportOptions(
-            splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false,
-            stableIdsForOptions != null ? stableIdsForOptions : false,
-            includeOnlyMostRecent != null ? includeOnlyMostRecent : false,
-            includeProxiesAsRows != null ? includeProxiesAsRows : false,
-            fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV,
-            null);
+        ExportOptions.builder()
+            .splitOptionsIntoColumns(
+                splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
+            .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
+            .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
+            .includeProxiesAsRows(includeProxiesAsRows != null ? includeProxiesAsRows : false)
+            .fileFormat(
+                fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
+            .limit(null)
+            .build();
 
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     enrolleeExportExtService.exportDictionary(
