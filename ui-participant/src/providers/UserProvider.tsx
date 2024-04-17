@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
 /**
@@ -15,6 +15,7 @@ export type User = ParticipantUser & {
 }
 
 const anonymousUser: User = {
+  id: '',
   token: '',
   isAnonymous: true,
   username: 'anonymous'
@@ -22,7 +23,6 @@ const anonymousUser: User = {
 
 /**
  * TODO: Add ppUsers to the login dto returned by backend
- * TODO: Add active ppUser (with matched enrollees) to a new active user context
  * TODO: Use this new active user context in all places that use the current user context
  */
 
@@ -32,7 +32,8 @@ export type UserContextT = {
   // including proxied users. The user object is the person that is actually currently
   // logged in.
   ppUsers: PortalParticipantUser[]
-  enrollees: Enrollee[]
+  enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
@@ -46,6 +47,7 @@ const UserContext = React.createContext<UserContextT>({
   user: anonymousUser,
   ppUsers: [],
   enrollees: [],
+  relations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -120,7 +122,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       )
       if (foundEnrolleeIdx != -1) {
         loginState.enrollees[foundEnrolleeIdx] = enrollee
-      } else if (foundRelationIdx) {
+      }
+      if (foundRelationIdx != -1) {
         loginState.relations[foundRelationIdx].targetEnrollee = enrollee
       }
     } else {
@@ -132,22 +135,22 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         const foundRelationIdx = oldState.relations.findIndex(
           relation => relation.targetEnrollee.shortcode === enrollee.shortcode
         )
+        const updatedEnrollees = oldState.enrollees
+        const updatedRelations = oldState.relations
+
         if (foundEnrolleeIdx != -1) {
           const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
           updatedEnrollees.push(enrollee)
-          return {
-            ...oldState,
-            enrollees: updatedEnrollees
-          }
-        } else if (foundRelationIdx != -1) {
+        }
+        if (foundRelationIdx != -1) {
           const updatedRelations = oldState.relations
           updatedRelations[foundRelationIdx].targetEnrollee = enrollee
-          return {
-            ...oldState,
-            relations: updatedRelations
-          }
         }
-        return oldState // no change if no enrollee found
+        return {
+          ...oldState,
+          enrollees: updatedEnrollees,
+          relations: updatedRelations
+        }
       })
     }
     return new Promise(resolve => {
@@ -180,7 +183,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
     enrollees: loginState ? loginState.enrollees : [],
     relations: loginState ? loginState.relations : [],
-    ppUser: loginState?.ppUser,
+    ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
     profile: loginState?.profile,
     loginUser,
     loginUserInternal,

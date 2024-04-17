@@ -1,207 +1,94 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { useAuth } from 'react-oidc-context'
-import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
-import { PageLoadingIndicator } from 'util/LoadingSpinner'
-
-export type User = ParticipantUser & {
-  isAnonymous: boolean
-}
-
-const anonymousUser: User = {
-  token: '',
-  isAnonymous: true,
-  username: 'anonymous'
-}
+import React, { useContext, useEffect } from 'react'
+import { Enrollee, EnrolleeRelation, PortalParticipantUser, Profile } from 'api/api'
+import { useUser } from './UserProvider'
 
 export type ActiveUserContextT = {
-  ppUser: PortalParticipantUser,
+  ppUser: PortalParticipantUser | null,
+  profile: Profile | null,
   enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
+  setActiveUser: (ppUserId: string) => void;
+  updateProfile: (profile: Profile) => void;
 }
 
 /** current user object context */
-const UserContext = React.createContext<ActiveUserContextT>({
-  ppUser,
+const ActiveUserContext = React.createContext<ActiveUserContextT>({
+  ppUser: null,
+  profile: null,
   enrollees: [],
   relations: [],
-  loginUser: () => {
-    throw new Error('context not yet initialized')
-  },
-  loginUserInternal: () => {
-    throw new Error('context not yet initialized')
-  },
-  logoutUser: () => {
-    throw new Error('context not yet initialized')
-  },
-  updateEnrollee: () => {
+  setActiveUser: () => {
     throw new Error('context not yet initialized')
   },
   updateProfile: () => {
     throw new Error('context not yet initialized')
   }
 })
-const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
-const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
-export const useUser = () => useContext(UserContext)
+/**
+ * Provides the currently active user - this could be the currently logged-in user,
+ * or the user that is being proxied. For the logged-in ParticipantUser, regardless
+ * of which user is being proxied, grab the `user` from the UserContext.
+ */
+export const useActiveUser = () => useContext(ActiveUserContext)
 
 /** Provider for the current logged-in user. */
-export default function UserProvider({ children }: { children: React.ReactNode }) {
-  const [loginState, setLoginState] = useState<LoginResult | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const auth = useAuth()
-  const navigate = useNavigate()
+export default function ActiveUserProvider({ children }: { children: React.ReactNode }) {
+  const {
+    ppUsers,
+    enrollees,
+    relations,
+    updateEnrollee
+  } = useUser()
 
-  /**
-   * Sign in to the UI based on the result of signing in to the API.
-   * Internal and OAuth sign-in are a little different. With OAuth sign-in, we get the token from B2C and use that for
-   * an API call, so the API token must already be set. However, with internal sign-in, we get the token back from the
-   * unauthedLogin API call. Therefore, unless unauthedLogin has a post-condition that the API token will be set, we
-   * need to set it now.
-   */
-  const loginUser = (loginResult: LoginResult, accessToken: string) => {
-    setLoginState(loginResult)
-    localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, accessToken)
-  }
+  const [activePpUser, setActivePpUser] = React.useState<PortalParticipantUser | null>(null)
 
-  const loginUserInternal = (loginResult: LoginResult) => {
-    setLoginState(loginResult)
-    localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
-  }
-
-  /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
-  const logoutUser = () => {
-    localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-    localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-    if (process.env.REACT_APP_UNAUTHED_LOGIN) {
-      Api.logout().then(() => {
-        setLoginState(null)
-        navigate('/')
-      })
-    } else {
-      // eslint-disable-next-line camelcase
-      auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
-    }
-  }
-
-  // TODO: helper for find enrollee by shortcode, helper for update enrollee by shortcode
-  /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
-  function updateEnrollee(enrollee: Enrollee, updateWithoutRerender = false): Promise<void> {
-    if (updateWithoutRerender && loginState) {
-      // update the underlying value, but don't call setLoginState, so no refresh
-      // this should obviously be used with great care
-      const foundEnrolleeIdx = loginState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-      const foundRelationIdx = loginState.relations.findIndex(
-        relation => relation.targetEnrollee.shortcode === enrollee.shortcode
-      )
-      if (foundEnrolleeIdx != -1) {
-        loginState.enrollees[foundEnrolleeIdx] = enrollee
-      } else if (foundRelationIdx) {
-        loginState.relations[foundRelationIdx].targetEnrollee = enrollee
-      }
-    } else {
-      setLoginState(oldState => {
-        if (oldState == null) {
-          return oldState
-        }
-        const foundEnrolleeIdx = oldState.enrollees.findIndex(exEnrollee => exEnrollee.shortcode === enrollee.shortcode)
-        const foundRelationIdx = oldState.relations.findIndex(
-          relation => relation.targetEnrollee.shortcode === enrollee.shortcode
-        )
-        if (foundEnrolleeIdx != -1) {
-          const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
-          updatedEnrollees.push(enrollee)
-          return {
-            ...oldState,
-            enrollees: updatedEnrollees
-          }
-        } else if (foundRelationIdx != -1) {
-          const updatedRelations = oldState.relations
-          updatedRelations[foundRelationIdx].targetEnrollee = enrollee
-          return {
-            ...oldState,
-            relations: updatedRelations
-          }
-        }
-        return oldState // no change if no enrollee found
-      })
-    }
-    return new Promise(resolve => {
-      window.setTimeout(resolve, 0)
-    })
-  }
-
-  function updateProfile(profile: Profile, updateWithoutRerender = false): Promise<void> {
-    if (updateWithoutRerender && loginState) {
-      // update the underlying value, but don't call setLoginState, so no refresh
-      // this should obviously be used with great care
-      loginState.profile = profile
-    } else {
-      setLoginState(oldState => {
-        if (oldState == null) {
-          return oldState
-        }
-        return {
-          ...oldState,
-          profile
-        }
-      })
-    }
-    return new Promise(resolve => {
-      window.setTimeout(resolve, 0)
-    })
-  }
-
-  const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
-    enrollees: loginState ? loginState.enrollees : [],
-    relations: loginState ? loginState.relations : [],
-    ppUser: loginState?.ppUser,
-    profile: loginState?.profile,
-    loginUser,
-    loginUserInternal,
-    logoutUser,
-    updateEnrollee,
-    updateProfile
-  }
-
+  // When there are changes to the ppUsers (e.g., when initially logged in), find
+  // an appropriate active user to set
   useEffect(() => {
-    auth.events.addUserLoaded(user => {
-      Api.setBearerToken(user.access_token)
-      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
-    })
+    // if there is no active user, or the active user is not in the list of ppUsers,
+    // then set the active user to the first user that has a enrollee that is a subject
+    if (!activePpUser || !ppUsers.some(ppUser => ppUser.id === activePpUser.id)) {
+      const ppUserWithSubject = ppUsers.find(
+        ppUser => enrollees.some(
+          enrollee => enrollee.profileId === ppUser.profileId && enrollee.subject))
 
-    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
-    const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
-    const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
-    if (oauthAccessToken) {
-      Api.refreshLogin(oauthAccessToken).then(loginResult => {
-        loginUser(loginResult, oauthAccessToken)
-        setIsLoading(false)
-      }).catch(() => {
-        setIsLoading(false)
-        localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-      })
-    } else if (internalLogintoken) {
-      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
-        loginUserInternal(loginResult)
-        setIsLoading(false)
-      }).catch(() => {
-        setIsLoading(false)
-        localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-      })
-    } else {
-      setIsLoading(false)
+      if (ppUserWithSubject) {
+        setActivePpUser(ppUserWithSubject)
+      } else if (ppUsers.length > 0) {
+        setActivePpUser(ppUsers[0])
+      }
     }
-  }, [])
+  }, [ppUsers])
+
+  const context: ActiveUserContextT = {
+    ppUser: activePpUser,
+    profile:
+      enrollees.find(enrollee => enrollee.profile && enrollee.profileId == activePpUser?.profileId)?.profile || null,
+    enrollees: activePpUser ? enrollees.filter(enrollee => enrollee.profileId === activePpUser.profileId) : [],
+    relations: activePpUser
+      ? relations.filter(
+        relation => enrollees.some(
+          enrollee => enrollee.id === relation.targetEnrolleeId
+            && enrollee.profileId === activePpUser.profileId))
+      : [],
+    setActiveUser: (ppUserId: string) => {
+      const ppUser = ppUsers.find(ppUser => ppUser.id === ppUserId)
+      if (ppUser) {
+        setActivePpUser(ppUser)
+      }
+    },
+    updateProfile: (profile: Profile) => {
+      context.enrollees.forEach(enrollee => {
+        enrollee.profile = profile
+        updateEnrollee(enrollee)
+      })
+    }
+  }
 
   return (
-    <UserContext.Provider value={userContext}>
-      {isLoading
-        ? <PageLoadingIndicator />
-        : children}
-    </UserContext.Provider>
+    <ActiveUserContext.Provider value={context}>
+      {children}
+    </ActiveUserContext.Provider>
   )
 }

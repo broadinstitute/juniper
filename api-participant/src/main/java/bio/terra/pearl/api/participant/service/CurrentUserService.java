@@ -96,8 +96,30 @@ public class CurrentUserService {
     user.getPortalParticipantUsers().add(ppUser);
 
     List<Enrollee> enrollees = loadEnrollees(ppUser);
-    return new UserLoginDto(
-        user, ppUser, loadProfile(ppUser), enrollees, loadEnrolleeRelations(enrollees));
+
+    List<EnrolleeRelation> relations = loadEnrolleeRelations(enrollees);
+    enrollees.addAll(relations.stream().map(EnrolleeRelation::getTargetEnrollee).toList());
+
+    List<PortalParticipantUser> ppUsers = new ArrayList<>();
+    ppUsers.add(ppUser);
+
+    // Load the main user's proxiable ppUsers
+    enrollees.forEach(
+            enrollee -> {
+              System.out.println("enrollee.getId() = " + enrollee.getId());
+              System.out.println("enrollee.getProfileId() = " + enrollee.getProfileId());
+              System.out.println("ppUser id = " + ppUser.getId());
+              if (ppUsers.stream()
+                      .anyMatch(ppu -> ppu.getProfileId().equals(enrollee.getProfileId()))) {
+                return;
+              }
+
+              Optional<PortalParticipantUser> proxyUser =
+                      portalParticipantUserService.findByProfileId(enrollee.getProfileId());
+              proxyUser.ifPresent(ppUsers::add);
+            });
+
+    return new UserLoginDto(user, loadProfile(ppUser), ppUsers, enrollees, relations);
   }
 
   private List<Enrollee> loadEnrollees(PortalParticipantUser ppUser) {

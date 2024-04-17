@@ -24,6 +24,7 @@ import SurveyReviewModeButton from './ReviewModeButton'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
 import SurveyAutoCompleteButton from './SurveyAutoCompleteButton'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -206,7 +207,7 @@ export function PagedSurveyView({
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal } = usePortalEnv()
-  const { enrollees, activeEnrollee } = useUser()
+  const { enrollees } = useActiveUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -219,7 +220,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
 
   useEffect(() => {
     Api.fetchSurveyAndResponse({
@@ -257,13 +258,11 @@ export default withErrorBoundary(SurveyView)
 export function enrolleeForStudy(
   enrollees: Enrollee[],
   studyShortcode: string,
-  portal: Portal,
-  activeEnrollee: Enrollee | undefined): Enrollee {
+  portal: Portal): Enrollee {
   const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
     .studyEnvironments[0].id
 
-  const enrollee = activeEnrollee?.studyEnvironmentId === studyEnvId ? activeEnrollee
-    : enrollees.find(e => e.studyEnvironmentId === studyEnvId)
+  const enrollee = enrollees.find(e => e.studyEnvironmentId === studyEnvId)
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
   }

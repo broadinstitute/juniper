@@ -27,6 +27,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import SurveyReviewModeButton from '../survey/ReviewModeButton'
 import SurveyAutoCompleteButton from '../survey/SurveyAutoCompleteButton'
 import { useTaskIdParam } from '../survey/SurveyView'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
@@ -119,7 +120,7 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }: {
 /** handles loading the consent form and responses from the server */
 export default function ConsentView() {
   const { portal } = usePortalEnv()
-  const { enrollees, activeEnrollee } = useUser()
+  const { enrollees } = useActiveUser()
   const [formAndResponses, setFormAndResponses] = useState<ConsentWithResponses | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -131,7 +132,7 @@ export default function ConsentView() {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
 
   const loadForm = async () => {
     try {
@@ -175,9 +176,11 @@ export default function ConsentView() {
 }
 
 /** Gets the enrollee object matching the given study */
-export function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal,
-  activeEnrollee: Enrollee|undefined): Enrollee {
-  const enrollee = activeEnrollee
+export function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal): Enrollee {
+  const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
+    .studyEnvironments[0].id
+
+  const enrollee = enrollees.find(enrollee => enrollee.studyEnvironmentId === studyEnvId)
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
   }

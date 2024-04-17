@@ -91,12 +91,13 @@ const _ProvideTestUser = ({
   useEffect(() => {
     loginUserInternal({
       profile: profile || {},
-      ppUser: ppUser || {
+      ppUsers: [ppUser || {
         id: '',
         profile: {},
         profileId: ''
-      },
+      }],
       user: user || {
+        id: '',
         username: '',
         token: ''
       },

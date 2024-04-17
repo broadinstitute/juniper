@@ -3,18 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
-import {
-  surveyJSModelFromForm, makeSurveyJsData,
-  waitForImages, configureModelForPrint, useI18n
-} from '@juniper/ui-core'
+// eslint-disable-next-line max-len
+import { configureModelForPrint, makeSurveyJsData, surveyJSModelFromForm, useI18n, waitForImages } from '@juniper/ui-core'
 
 import Api, { Answer, Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { enrolleeForStudy } from './ConsentView'
 import { useTaskIdParam } from '../survey/SurveyView'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 type UsePrintableConsentArgs = {
   studyShortcode: string
@@ -82,7 +80,7 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
 // eslint-disable-next-line jsdoc/require-jsdoc
 const PrintConsentView = () => {
   const { portal } = usePortalEnv()
-  const { enrollees, activeEnrollee } = useUser()
+  const { enrollees } = useActiveUser()
   const params = useParams()
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
@@ -90,7 +88,7 @@ const PrintConsentView = () => {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, activeEnrollee)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
 
   const { loading, surveyModel } = usePrintableConsent({ studyShortcode, enrollee, stableId, version })
 

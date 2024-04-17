@@ -79,7 +79,7 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
     }).then(response => {
       loginUser({
         user: response.participantUser,
-        ppUser: response.portalParticipantUser,
+        ppUsers: [response.portalParticipantUser],
         profile: response.profile,
         enrollees: [],
         relations: []

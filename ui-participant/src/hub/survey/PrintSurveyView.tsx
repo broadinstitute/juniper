@@ -79,13 +79,15 @@ const PrintSurveyView = () => {
   if (!stableId || !version || !studyShortcode) {
     return <div>You must specify study, form, and version</div>
   }
-  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal, undefined)
+  const enrollee = enrolleeForStudy(enrollees, studyShortcode, portal)
 
   const { loading, surveyModel } = usePrintableSurvey({ studyShortcode, enrollee, stableId, version })
 
   useEffect(() => {
     if (surveyModel) {
-      waitForImages().then(() => { window.print() })
+      waitForImages().then(() => {
+        window.print()
+      })
     }
   }, [surveyModel])
 
@@ -96,8 +98,8 @@ const PrintSurveyView = () => {
   } else {
     return (
       <>
-        <DocumentTitle title={surveyModel.title} />
-        <SurveyComponent model={surveyModel} />
+        <DocumentTitle title={surveyModel.title}/>
+        <SurveyComponent model={surveyModel}/>
       </>
     )
   }

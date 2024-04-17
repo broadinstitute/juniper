@@ -12,7 +12,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
-import { AlertLevel, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, AlertLevel } from '@juniper/ui-core'
 import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
 import { logError } from '../../util/loggingUtils'
 
@@ -54,6 +54,8 @@ type StudyEnrollOutletMatchedProps = {
 function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
   const { user, enrollees, updateEnrollee } = useUser()
+  const enrolleesForUser = enrollees.filter(enrollee => enrollee.participantUserId === user.id)
+
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
@@ -85,7 +87,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   /** route to a page depending on where in the pre-enroll/registration process the user is */
   const determineNextRoute = async () => {
-    const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+    const isAlreadyEnrolled = !!enrolleesForUser.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {

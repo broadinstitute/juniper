@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from '../providers/PortalProvider'
-import { useUser } from '../providers/UserProvider'
 
-import Api, { Enrollee, EnrolleeRelation, Portal, Profile, Study } from '../api/api'
+import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -12,6 +11,8 @@ import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
 import HubPageParticipantSelector from './HubPageParticipantSelector'
+import { useActiveUser } from '../providers/ActiveUserProvider'
+import { useUser } from '../providers/UserProvider'
 
 
 /** renders the logged-in hub page */
@@ -19,12 +20,12 @@ export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
 
   const {
-    enrollees,
+    enrollees
+  } = useActiveUser()
+
+  const {
     relations
   } = useUser()
-
-
-  const [activeEnrollee, setActiveEnrollee] = useState<Enrollee | undefined>(findDefaultEnrollee(enrollees, relations))
 
   const { i18n } = useI18n()
 
@@ -45,7 +46,7 @@ export default function HubPage() {
 
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
-  const hasActiveTasks = activeEnrollee?.participantTasks.some(isTaskActive)
+  const hasActiveTasks = enrollees.some(enrollee => enrollee.participantTasks.some(task => isTaskActive(task)))
 
   return (
     <>
@@ -80,13 +81,8 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {relations.length > 0 && <HubPageParticipantSelector setActiveEnrollee={setActiveEnrollee}/>}
-          {activeEnrollee && <StudySection
-            key={activeEnrollee.id}
-            enrollee={activeEnrollee}
-            portal={portal}
-            relations={relations}
-            profile={activeEnrollee?.profile}/>}
+          {relations.length > 0 && <HubPageParticipantSelector/>}
+          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -99,18 +95,16 @@ export default function HubPage() {
 
 type StudySectionProps = {
   enrollee: Enrollee,
-  relations: EnrolleeRelation[]
   portal: Portal,
-  profile: Profile
 }
 
 const StudySection = (props: StudySectionProps) => {
   const {
     enrollee,
-    portal,
-    profile,
-    relations
+    portal
   } = props
+
+  const { relations } = useUser()
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
@@ -125,23 +119,10 @@ const StudySection = (props: StudySectionProps) => {
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
-      {relations.length > 0 && <h4 className="mb-4">{getName(profile)}</h4>}
+      {relations.length > 0 && <h4 className="mb-4">{getName(enrollee.profile)}</h4>}
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
     </>
   )
-}
-
-
-const findDefaultEnrollee = (enrollees: Enrollee[], relations: EnrolleeRelation[]): Enrollee | undefined => {
-  const foundEnrollee = enrollees.find(e => e.subject)
-  if (foundEnrollee) {
-    return foundEnrollee
-  }
-
-  const foundRelationEnrollee = relations.find(r => r.targetEnrollee.subject)
-  if (foundRelationEnrollee) {
-    return foundRelationEnrollee.targetEnrollee
-  }
 }

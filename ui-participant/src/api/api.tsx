@@ -49,13 +49,14 @@ export type {
 } from '@juniper/ui-core'
 
 export type ParticipantUser = {
+  id: string,
   username: string,
   token: string
 };
 
 export type LoginResult = {
   user: ParticipantUser,
-  ppUser: PortalParticipantUser,
+  ppUsers: PortalParticipantUser[],
   enrollees: Enrollee[],
   relations: EnrolleeRelation[],
   profile: Profile
@@ -82,6 +83,7 @@ export type EnrolleeRelation = {
   id: string
   relationshipType: string,
   targetEnrollee: Enrollee,
+  targetEnrolleeId: string,
   consentResponses: []
   createdAt: number
   kitRequests: []
@@ -89,8 +91,6 @@ export type EnrolleeRelation = {
   participantTasks: ParticipantTask[]
   participantUserId: string
   preEnrollmentResponseId?: string
-  profile: Profile
-  profileId: string
   studyEnvironmentId: string
   surveyResponses: []
 }

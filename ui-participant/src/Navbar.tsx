@@ -14,6 +14,7 @@ import { useConfig } from 'providers/ConfigProvider'
 import { uniqueId } from 'lodash'
 import { UserManager } from 'oidc-client-ts'
 import { getOidcConfig } from './authConfig'
+import { useActiveUser } from './providers/ActiveUserProvider'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -23,7 +24,8 @@ type NavbarProps = JSX.IntrinsicElements['nav']
 export default function Navbar(props: NavbarProps) {
   const { portal, portalEnv, reloadPortal, localContent } = usePortalEnv()
   const { i18n, selectedLanguage, changeLanguage } = useI18n()
-  const { user, profile, ppUser } = useUser()
+  const { ppUser, profile } = useActiveUser()
+  const { user } = useUser()
   const navLinks = localContent.navbarItems
 
   const languageOptions = portalEnv.supportedLanguages

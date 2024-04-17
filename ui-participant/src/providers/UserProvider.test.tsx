@@ -13,7 +13,8 @@ const UpdateEnrolleeTestComponent = () => {
   useEffect(() => {
     loginUserInternal({
       user: mockParticipantUser(),
-      ppUser: { profile: {}, profileId: '', id: '' },
+      ppUsers: [],
+      relations: [],
       profile: {},
       enrollees: []
     })
