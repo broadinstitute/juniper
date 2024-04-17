@@ -4,19 +4,9 @@ import Api from 'api/api'
 import { AdminUser } from 'api/adminUser'
 import { useAuth } from 'react-oidc-context'
 
-const anonymousUser: AdminUser = {
-  id: '',
-  createdAt: 0,
-  lastLogin: 0,
-  token: '',
-  isAnonymous: true,
-  username: '',
-  superuser: false,
-  portalPermissions: {}
-}
 
 export type UserContextT = {
-  user: AdminUser,
+  user: AdminUser | null,
   loginUser: (adminUser: AdminUser) => void,
   loginUserUnauthed: (adminUser: AdminUser) => void,
   logoutUser: () => void
@@ -24,7 +14,7 @@ export type UserContextT = {
 
 /** current user object context */
 export const UserContext = React.createContext<UserContextT>({
-  user: anonymousUser,
+  user: null,
   loginUser: () => { throw new Error('context not yet initialized') },
   loginUserUnauthed: () => { throw new Error('context not yet initialized') },
   logoutUser: () =>  { throw new Error('context not yet initialized') }
@@ -38,7 +28,7 @@ export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
 export default function UserProvider({ children }: { children: React.ReactNode }) {
-  const [userState, setUserState] = useState<AdminUser>(anonymousUser)
+  const [userState, setUserState] = useState<AdminUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
 
@@ -62,7 +52,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   const logoutUser = () => {
-    setUserState(anonymousUser)
+    setUserState(null)
     Api.setBearerToken(null)
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)

@@ -12,7 +12,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
-import { AlertLevel, alertDefaults } from '@juniper/ui-core'
+import { alertDefaults, AlertLevel } from '@juniper/ui-core'
 import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
 import { logError } from '../../util/loggingUtils'
 
@@ -100,7 +100,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       return
     }
     if (preEnrollSatisfied) {
-      if (user.isAnonymous) {
+      if (!user) {
         navigate('register', { replace: true })
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee

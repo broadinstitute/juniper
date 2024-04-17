@@ -33,7 +33,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
     studyList = portalList.flatMap(portal => portal.portalStudies.map(ps => ps.study))
   }
 
-  if (user.isAnonymous) {
+  if (!user) {
     return <div></div>
   }
   const currentStudy = studyList.find(study => study.shortcode === studyShortcode)

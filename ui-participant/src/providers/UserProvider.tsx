@@ -4,18 +4,8 @@ import { useNavigate } from 'react-router-dom'
 import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
-export type User = ParticipantUser & {
-  isAnonymous: boolean
-}
-
-const anonymousUser: User = {
-  token: '',
-  isAnonymous: true,
-  username: 'anonymous'
-}
-
 export type UserContextT = {
-  user: User,
+  user: ParticipantUser | null,
   enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
   ppUser?: PortalParticipantUser,
   profile?: Profile,
@@ -28,7 +18,7 @@ export type UserContextT = {
 
 /** current user object context */
 const UserContext = React.createContext<UserContextT>({
-  user: anonymousUser,
+  user: null,
   enrollees: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
@@ -139,7 +129,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    user: loginState ? loginState.user : null,
     enrollees: loginState ? loginState.enrollees : [],
     ppUser: loginState?.ppUser,
     profile: loginState?.profile,
