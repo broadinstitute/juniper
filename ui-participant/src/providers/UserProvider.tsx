@@ -135,15 +135,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         const foundRelationIdx = oldState.relations.findIndex(
           relation => relation.targetEnrollee.shortcode === enrollee.shortcode
         )
-        const updatedEnrollees = oldState.enrollees
+        let updatedEnrollees = oldState.enrollees
         const updatedRelations = oldState.relations
 
         if (foundEnrolleeIdx != -1) {
-          const updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
+          updatedEnrollees = oldState.enrollees.filter(exEnrollee => exEnrollee.shortcode != enrollee.shortcode)
           updatedEnrollees.push(enrollee)
         }
         if (foundRelationIdx != -1) {
-          const updatedRelations = oldState.relations
           updatedRelations[foundRelationIdx].targetEnrollee = enrollee
         }
         return {

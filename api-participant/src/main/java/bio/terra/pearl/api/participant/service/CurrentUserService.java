@@ -16,14 +16,13 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -105,19 +104,19 @@ public class CurrentUserService {
 
     // Load the main user's proxiable ppUsers
     enrollees.forEach(
-            enrollee -> {
-              System.out.println("enrollee.getId() = " + enrollee.getId());
-              System.out.println("enrollee.getProfileId() = " + enrollee.getProfileId());
-              System.out.println("ppUser id = " + ppUser.getId());
-              if (ppUsers.stream()
-                      .anyMatch(ppu -> ppu.getProfileId().equals(enrollee.getProfileId()))) {
-                return;
-              }
+        enrollee -> {
+          System.out.println("enrollee.getId() = " + enrollee.getId());
+          System.out.println("enrollee.getProfileId() = " + enrollee.getProfileId());
+          System.out.println("ppUser id = " + ppUser.getId());
+          if (ppUsers.stream()
+              .anyMatch(ppu -> ppu.getProfileId().equals(enrollee.getProfileId()))) {
+            return;
+          }
 
-              Optional<PortalParticipantUser> proxyUser =
-                      portalParticipantUserService.findByProfileId(enrollee.getProfileId());
-              proxyUser.ifPresent(ppUsers::add);
-            });
+          Optional<PortalParticipantUser> proxyUser =
+              portalParticipantUserService.findByProfileId(enrollee.getProfileId());
+          proxyUser.ifPresent(ppUsers::add);
+        });
 
     return new UserLoginDto(user, loadProfile(ppUser), ppUsers, enrollees, relations);
   }
