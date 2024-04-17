@@ -31,7 +31,7 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
         classic: true
       })
     }
-  }, [emailTemplate, selectedLanguage])
+  }, [localizedEmailTemplate, selectedLanguage])
 
   if (!localizedEmailTemplate) {
     return <div>no localized template found for {selectedLanguage?.languageCode}</div>
