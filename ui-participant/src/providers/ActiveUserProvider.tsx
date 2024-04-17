@@ -82,11 +82,6 @@ export default function ActiveUserProvider({ children }: { children: React.React
     }
   }
 
-  useEffect(() => {
-    console.log('ActiveUserContext changed')
-    console.log(context)
-  }, [context])
-
   return (
     <ActiveUserContext.Provider value={context}>
       {children}

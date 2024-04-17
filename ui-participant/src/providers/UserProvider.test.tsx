@@ -16,20 +16,24 @@ const UpdateEnrolleeTestComponent = () => {
       ppUsers: [],
       relations: [],
       profile: {},
-      enrollees: []
+      enrollees: [mockEnrollee()]
     })
   }, [])
 
   const addEnrollee = () => {
-    updateEnrollee(mockEnrollee()).then(() => { setUpdated(true) })
+    const newEnrollee = mockEnrollee()
+    newEnrollee.profile.givenName = 'New'
+    updateEnrollee(newEnrollee).then(() => {
+      setUpdated(true)
+    })
   }
 
+  useEffect(() => {
+    console.log(enrollees)
+  }, [enrollees])
   return <div>
     <button onClick={addEnrollee}>Add Enrollee</button>
-    { (enrollees.length === 0 && !updated) && <span>No updates yet</span>}
-    { (enrollees.length > 0 && !updated) && <span>Updated enrollee but not state</span>}
-    { (enrollees.length === 0 && updated) && <span>Updated state but not enrollee</span>}
-    { (enrollees.length > 0 && updated) && <span>Updated enrollee and state</span>}
+    {(enrollees[0]?.profile.givenName === 'New' && updated) && <span>Updated enrollee and state</span>}
   </div>
 }
 
@@ -47,11 +51,10 @@ describe('UserProvider', () => {
       <UserProvider><UpdateEnrolleeTestComponent/></UserProvider>
     </AuthProvider>)
     render(RoutedComponent)
-    expect(screen.getByText('No updates yet')).toBeInTheDocument()
+    expect(screen.getByText('Updated enrollee and state')).not.toBeInTheDocument()
     act(() => {
       userEvent.click(screen.getByText('Add Enrollee'))
     })
-    expect(screen.queryByText('Updated state but not enrollee')).toBeNull()
     await waitFor(() => expect(screen.getByText('Updated enrollee and state')).toBeInTheDocument())
   })
 })

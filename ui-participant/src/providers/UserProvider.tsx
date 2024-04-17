@@ -118,6 +118,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       updateTargetByShortcode(loginState.relations, enrollee)
     } else {
       setLoginState(oldState => {
+        console.log('oldstate', oldState, enrollee)
         if (oldState == null) {
           return oldState
         }
@@ -199,11 +200,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   useEffect(() => {
-    console.log('user context changed')
-    console.log(userContext)
-  }, [userContext])
-
-  useEffect(() => {
     auth.events.addUserLoaded(user => {
       Api.setBearerToken(user.access_token)
       localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
@@ -224,6 +220,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
 
 function updateByShortcode(enrollees: Enrollee[], update: Enrollee) {
+  console.log('updating', enrollees, update)
   return enrollees.map(e => e.shortcode === update.shortcode ? update : e)
 }
 
