@@ -42,7 +42,13 @@ public class EnrolleeImportService {
     /**
      * for now, we only support importing from a specific style of export.
      */
-    ExportOptions IMPORT_OPTIONS = new ExportOptions(false, true, true, ExportFileFormat.TSV, null);
+    ExportOptions IMPORT_OPTIONS = ExportOptions
+            .builder()
+            .stableIdsForOptions(true)
+            .onlyIncludeMostRecent(true)
+            .fileFormat(ExportFileFormat.TSV)
+            .limit(null)
+            .build();
 
     private final RegistrationService registrationService;
     private final EnrollmentService enrollmentService;

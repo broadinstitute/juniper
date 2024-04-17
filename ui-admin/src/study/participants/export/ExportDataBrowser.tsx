@@ -74,7 +74,9 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
     const response = await Api.exportEnrollees(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName, { fileFormat: 'JSON', limit: 10 })
+      studyEnvContext.currentEnv.environmentName, {
+        fileFormat: 'JSON', limit: 10, includeProxiesAsRows: false
+      })
     const result = await response.json()
     if (!response.ok) {
       Store.addNotification(failureNotification('Failed to load export data', result.message))
