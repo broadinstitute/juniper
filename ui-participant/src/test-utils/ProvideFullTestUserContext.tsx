@@ -115,7 +115,16 @@ const _ProvideTestUser = ({
         profileId: ppUser.profileId,
         subject: true,
         consented: true,
-        profile
+        profile,
+        consentResponses: [],
+        kitRequests: [],
+        createdAt: 0,
+        lastUpdatedAt: 0,
+        participantTasks: [],
+        participantUserId: '',
+        shortcode: 'AABBCC',
+        studyEnvironmentId: '',
+        surveyResponses: []
       }]
     } else if (profile) {
       enrollees.forEach(enrollee => {
