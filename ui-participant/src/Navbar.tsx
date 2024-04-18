@@ -277,6 +277,10 @@ export const AccountOptionsDropdown = () => {
     })
   }
 
+  if (!user) {
+    return <></>
+  }
+
   return (
     <>
       <li className="nav-item dropdown d-flex flex-column">

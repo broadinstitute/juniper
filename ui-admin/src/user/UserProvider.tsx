@@ -128,6 +128,9 @@ export const isSuperuser = () => {
  * and the underlying endpoint to work with portal shortcodes rather than portalIds for ease of use.
  * We can tackle that when this gets updated to support study-level permissions
  */
-export const userHasPermission = (user: AdminUser, portalId: string, permission: string): boolean => {
+export const userHasPermission = (user: AdminUser | null, portalId: string, permission: string): boolean => {
+  if (!user) {
+    return false
+  }
   return user.superuser || (user.portalPermissions[portalId] && user.portalPermissions[portalId].includes(permission))
 }

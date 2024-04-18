@@ -120,7 +120,11 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   // when either preEnrollment or login status changes, navigate accordingly
   useEffect(() => {
     determineNextRoute()
-  }, [mustProvidePassword, preEnrollSatisfied, user.username])
+  }, [mustProvidePassword, preEnrollSatisfied, user?.username])
+
+  if (!user) {
+    return <></>
+  }
 
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
