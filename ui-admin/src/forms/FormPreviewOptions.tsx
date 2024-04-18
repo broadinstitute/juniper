@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faGlobe } from '@fortawesome/free-solid-svg-icons'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
@@ -72,7 +74,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
         would be hidden by survey branching logic.
       </p>
       { languageOptions.length > 1 && <><div className="form-group">
-        <label htmlFor={selectLanguageInputId}>Language</label>
+        <label htmlFor={selectLanguageInputId}><FontAwesomeIcon icon={faGlobe}/> Language Preview</label>
         <Select
           inputId={selectLanguageInputId}
           options={languageOptions}
