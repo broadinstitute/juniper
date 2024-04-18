@@ -5,7 +5,12 @@ import _groupBy from 'lodash/groupBy'
 import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import {
   ColumnDef,
-  getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState
 } from '@tanstack/react-table'
 
 import Api, { KitRequest } from 'api/api'
@@ -156,7 +161,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
           </NavLink>
         })}
         <div className="ms-auto">
-          {user.superuser && <Button variant="secondary" onClick={refreshStatuses}>
+          {user?.superuser && <Button variant="secondary" onClick={refreshStatuses}>
             {!isRefreshing && <span>Refresh <FontAwesomeIcon icon={faRefresh}/></span>}
             {isRefreshing && <LoadingSpinner/>}
           </Button> }

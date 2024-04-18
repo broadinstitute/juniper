@@ -53,7 +53,7 @@ export default function PortalRegistrationRouter({
   }, [])
 
   useEffect(() => {
-    if (!user.isAnonymous) {
+    if (user) {
       alert('You are already registered')
       if (returnTo != null) {
         navigate(returnTo)

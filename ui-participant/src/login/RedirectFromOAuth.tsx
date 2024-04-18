@@ -46,7 +46,7 @@ export const RedirectFromOAuth = () => {
       }
 
       if (auth.user) {
-        if (!user.isAnonymous) {
+        if (user) {
           // Consider: detect returning from change password and show a confirmation message
           navigate('/hub', { replace: true })
         } else {

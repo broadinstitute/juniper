@@ -9,7 +9,7 @@ import Login from 'login/Login'
 export const ProtectedRoute = ({ children }: { children?: ReactNode }) => {
   const { user } = useUser()
 
-  if (user.isAnonymous) {
+  if (!user) {
     return <Login/>
   }
 
