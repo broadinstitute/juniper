@@ -28,9 +28,6 @@ const UpdateEnrolleeTestComponent = () => {
     })
   }
 
-  useEffect(() => {
-    console.log(enrollees)
-  }, [enrollees])
   return <div>
     <button onClick={addEnrollee}>Add Enrollee</button>
     {(enrollees[0]?.profile.givenName === 'New' && updated) && <span>Updated enrollee and state</span>}
@@ -51,7 +48,7 @@ describe('UserProvider', () => {
       <UserProvider><UpdateEnrolleeTestComponent/></UserProvider>
     </AuthProvider>)
     render(RoutedComponent)
-    expect(screen.getByText('Updated enrollee and state')).not.toBeInTheDocument()
+    expect(screen.queryByText('Updated enrollee and state')).not.toBeInTheDocument()
     act(() => {
       userEvent.click(screen.getByText('Add Enrollee'))
     })

@@ -3,6 +3,7 @@ import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
 import PortalProvider from '../providers/PortalProvider'
+import ActiveUserProvider, { useActiveUser } from '../providers/ActiveUserProvider'
 
 
 type ProvideTestUserProps = {
@@ -67,11 +68,13 @@ export default function ProvideFullTestUserContext(
   return <AuthProvider>
     <PortalProvider>
       <UserProvider>
-        <_ProvideTestUser
-          {...props}
-        >
-          {props.children}
-        </_ProvideTestUser>
+        <ActiveUserProvider>
+          <_ProvideTestUser
+            {...props}
+          >
+            {props.children}
+          </_ProvideTestUser>
+        </ActiveUserProvider>
       </UserProvider>
     </PortalProvider>
   </AuthProvider>
@@ -88,11 +91,43 @@ const _ProvideTestUser = ({
   const {
     loginUserInternal
   } = useUser()
+  const {
+    setActiveUser
+  } = useActiveUser()
   useEffect(() => {
+    if (!ppUser) {
+      ppUser = {
+        id: 'testppuserid',
+        profile: {},
+        profileId: ''
+      }
+    }
+    if (!ppUser.id) {
+      ppUser.id = 'testppuserid'
+    }
+    if (!ppUser.profileId) {
+      ppUser.profileId = 'testppuserprofileid'
+    }
+
+    if (profile && (!enrollees || enrollees.length === 0)) {
+      enrollees = [{
+        id: 'testenrolleeid',
+        profileId: ppUser.profileId,
+        subject: true,
+        consented: true,
+        profile
+      }]
+    } else if (profile) {
+      enrollees.forEach(enrollee => {
+        enrollee.profileId = ppUser?.profileId || 'testppuserprofileid'
+        enrollee.profile = profile
+      })
+    }
+
     loginUserInternal({
       profile: profile || {},
       ppUsers: [ppUser || {
-        id: '',
+        id: 'testppuserid',
         profile: {},
         profileId: ''
       }],
@@ -104,6 +139,8 @@ const _ProvideTestUser = ({
       enrollees: enrollees || [],
       relations: relations || []
     })
+
+    setActiveUser(ppUser.id)
   }, [])
 
   return <>

@@ -114,19 +114,16 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      updateByShortcode(loginState.enrollees, enrollee)
-      updateTargetByShortcode(loginState.relations, enrollee)
+      loginState.enrollees = updateByShortcode(loginState.enrollees, enrollee)
+      loginState.relations = updateTargetByShortcode(loginState.relations, enrollee)
     } else {
       setLoginState(oldState => {
-        console.log('oldstate', oldState, enrollee)
         if (oldState == null) {
           return oldState
         }
 
-        const updatedEnrollees = oldState.enrollees
-        const updatedRelations = oldState.relations
-        updateByShortcode(updatedEnrollees, enrollee)
-        updateTargetByShortcode(updatedRelations, enrollee)
+        const updatedEnrollees = updateByShortcode(oldState.enrollees, enrollee)
+        const updatedRelations = updateTargetByShortcode(oldState.relations, enrollee)
 
         return {
           ...oldState,
@@ -220,8 +217,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
 
 function updateByShortcode(enrollees: Enrollee[], update: Enrollee) {
-  console.log('updating', enrollees, update)
-  return enrollees.map(e => e.shortcode === update.shortcode ? update : e)
+  return enrollees.map(e => {
+    return e.shortcode === update.shortcode ? update : e
+  })
 }
 
 function updateTargetByShortcode(relations: EnrolleeRelation[], update: Enrollee) {

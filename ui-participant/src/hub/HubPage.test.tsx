@@ -32,12 +32,29 @@ jest.mock('../providers/PortalProvider', () => {
 jest.mock('../providers/UserProvider', () => {
   return {
     useUser: () => ({
-      relations: [],
+      relations: []
+    })
+  }
+})
+
+jest.mock('../providers/ActiveUserProvider', () => {
+  return {
+    useActiveUser: () => ({
+      ppUser: {
+        id: 'portal-participant-user-id',
+        profileId: 'profile-id'
+      },
       enrollees: [{
         id: 'enrollee-id',
         shortcode: 'ENSHORTCODE',
         consented: false,
+        subject: true,
+        profileId: 'profile-id',
         studyEnvironmentId: 'test-study-env-id',
+        profile: {
+          givenName: 'Test',
+          givenFamily: 'User'
+        },
         participantTasks: [{
           id: 'task-id',
           blocksHub: true,
@@ -53,32 +70,7 @@ jest.mock('../providers/UserProvider', () => {
           taskOrder: 0
         }],
         kitRequests: []
-      }],
-      activeEnrollee: {
-        id: 'enrollee-id',
-        shortcode: 'ENSHORTCODE',
-        consented: false,
-        studyEnvironmentId: 'test-study-env-id',
-        participantTasks: [{
-          id: 'task-id',
-          blocksHub: true,
-          createdAt: 0,
-          enrolleeId: 'enrollee-id',
-          portalParticipantUserId: 'portal-participant-user-id',
-          status: 'NEW',
-          studyEnvironmentId: 'test-study-env-id',
-          taskType: 'CONSENT',
-          targetName: 'Test Survey',
-          targetStableId: 'test_survey_id',
-          targetAssignedVersion: 0,
-          taskOrder: 0
-        }],
-        kitRequests: []
-      },
-      activeEnrolleeProfile: {
-        givenName: 'Test',
-        givenFamily: 'User'
-      }
+      }]
     })
   }
 })
