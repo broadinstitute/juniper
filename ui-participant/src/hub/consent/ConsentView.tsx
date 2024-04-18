@@ -42,7 +42,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
   const { selectedLanguage } = useI18n()
   const { updateEnrollee } = useUser()
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   if (surveyModel && isEditingPrevious) {
     // consent responses are not editable -- they must be withdrawn via separate workflow

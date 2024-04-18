@@ -95,6 +95,7 @@ paths:
       operationId: get
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: language, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: portal object

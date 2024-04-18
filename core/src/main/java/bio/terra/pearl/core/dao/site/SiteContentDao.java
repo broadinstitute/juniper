@@ -51,9 +51,7 @@ public class SiteContentDao extends BaseVersionedJdbiDao<SiteContent> {
      * */
     public Optional<SiteContent> findOneFull(UUID siteContentId, String language) {
         Optional<SiteContent> siteContentOpt = find(siteContentId);
-        siteContentOpt.ifPresent(siteContent -> {
-            attachChildContent(siteContent, language);
-        });
+        siteContentOpt.ifPresent(siteContent -> attachChildContent(siteContent, language));
         return siteContentOpt;
     }
 

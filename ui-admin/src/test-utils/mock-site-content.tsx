@@ -5,7 +5,6 @@ import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
 export const mockSiteContent = (): SiteContent => {
   return {
     id: 'fakeId1',
-    defaultLanguage: 'en',
     stableId: 'fakeId1',
     version: 1,
     localizedSiteContents: [

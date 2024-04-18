@@ -15,7 +15,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "es"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -60,7 +61,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -76,7 +78,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",

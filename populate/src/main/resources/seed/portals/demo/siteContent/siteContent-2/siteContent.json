@@ -1,7 +1,6 @@
 {
   "stableId": "hd_portalContent",
   "version": 2,
-  "defaultLanguage": "en",
   "localizedSiteContentDtos": [{
     "language": "en",
     "navLogoCleanFileName": "juniper-demo-logo.png",

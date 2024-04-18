@@ -7,13 +7,16 @@ import { failureNotification, successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import SiteContentEditor from './SiteContentEditor'
 import { previewApi } from 'util/apiContextUtils'
+import { useDefaultLanguage } from '../useDefaultPortalLanguage'
 
 /** logic for loading, changing, and saving SiteContent objects */
 const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvContext}) => {
   const { portal, portalEnv } = portalEnvContext
   const portalShortcode = portal.shortcode
   const [isLoading, setIsLoading] = useState(true)
+  const defaultLanguage = useDefaultLanguage()
   const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
+
   if (!siteContent) {
     return <div>no site content configured</div>
   }
@@ -78,7 +81,7 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
     if (!portalEnv.siteContent) {
       return
     }
-    loadSiteContent(portalEnv.siteContent.stableId, portalEnv.siteContent.version)
+    loadSiteContent(portalEnv.siteContent.stableId, portalEnv.siteContent.version, defaultLanguage?.languageCode)
   }, [portalEnv.environmentName, portalShortcode])
 
   return <>

@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: backfill_portal_env_languages
+      author: mbemis
+      changes:
+        - sql:
+            sql: "INSERT INTO portal_environment_language
+                    (portal_environment_id, created_at, last_updated_at, language_code, language_name)
+                  SELECT pe.id, NOW(), NOW(), 'en', 'English'
+                  FROM portal_environment pe
+                  WHERE NOT EXISTS (
+                    SELECT 1
+                    FROM portal_environment_language pel
+                    WHERE pel.portal_environment_id = pe.id
+                  );"

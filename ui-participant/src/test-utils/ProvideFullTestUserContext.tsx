@@ -34,7 +34,8 @@ export default function ProvideFullTestUserContext(
             initialized: true,
             acceptingRegistration: false,
             passwordProtected: false,
-            password: ''
+            password: '',
+            defaultLanguage: ''
           },
           supportedLanguages: [],
           siteContent: {

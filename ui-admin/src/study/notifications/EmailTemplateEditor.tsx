@@ -3,6 +3,7 @@ import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
 import { EmailTemplate } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
+import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
@@ -18,7 +19,13 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const emailTemplateRef = useRef(emailTemplate)
   emailTemplateRef.current = emailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
-  const localizedEmailTemplate = emailTemplate.localizedEmailTemplates[0]
+  const defaultLanguage = useDefaultLanguage()
+  const localizedEmailTemplate = emailTemplate.localizedEmailTemplates.find(template =>
+    template.language === defaultLanguage.languageCode)
+
+  if (!localizedEmailTemplate) {
+    return <div>no localized template found for {defaultLanguage.languageCode}</div>
+  }
 
   const replacePlaceholders = (html: string) => {
     return html.replaceAll('${siteMediaBaseUrl}', location.origin + getMediaBaseUrl(portalShortcode))
