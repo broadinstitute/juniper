@@ -7,7 +7,7 @@ import { failureNotification, successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import SiteContentEditor from './SiteContentEditor'
 import { previewApi } from 'util/apiContextUtils'
-import { usePortalLanguage } from '../useDefaultPortalLanguage'
+import { usePortalLanguage } from '../usePortalLanguage'
 
 /** logic for loading, changing, and saving SiteContent objects */
 const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvContext}) => {

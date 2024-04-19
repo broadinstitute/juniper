@@ -1,15 +1,14 @@
-import { useContext } from 'react'
+import { useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
 import { PortalContext } from './PortalProvider'
-import { useParams } from 'react-router-dom'
-import { StudyParams } from 'study/StudyRouter'
+import { useContext } from 'react'
 
 /**
  * Returns the default language for the current portal environment.
  */
 export function usePortalLanguage() {
   const { portal } = useContext(PortalContext)
-  const params = useParams<StudyParams>()
-  const envName: string | undefined = params.studyEnv
+  const studyEnvParams = useStudyEnvParamsFromPath()
+  const envName: string | undefined = studyEnvParams.envName
 
   const defaultLanguage = portal?.portalEnvironments.find(env =>
     env.environmentName === envName)?.portalEnvironmentConfig.defaultLanguage

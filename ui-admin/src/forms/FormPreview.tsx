@@ -13,7 +13,7 @@ import {
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from '../api/api'
-import { usePortalLanguage } from '../portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from '../portal/usePortalLanguage'
 
 type FormPreviewProps = {
   formContent: FormContent

@@ -12,7 +12,7 @@ import useUpdateEffect from '../util/useUpdateEffect'
 import useReactSingleSelect from '../util/react-select-utils'
 import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 import Select from 'react-select'
-import { usePortalLanguage } from './useDefaultPortalLanguage'
+import { usePortalLanguage } from './usePortalLanguage'
 
 
 type PortalEnvConfigViewProps = {
