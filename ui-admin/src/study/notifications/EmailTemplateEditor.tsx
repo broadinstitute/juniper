@@ -4,7 +4,7 @@ import { EmailTemplate, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
 import { usePortalLanguage } from 'portal/usePortalLanguage'
-import useReactSingleSelect from '../../util/react-select-utils'
+import useReactSingleSelect from 'util/react-select-utils'
 import Select from 'react-select'
 
 export type EmailTemplateEditorProps = {
