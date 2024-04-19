@@ -358,7 +358,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         PreEnrollmentResponse preEnrollmentResponseProxy = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForProxy, userProxyBundle.ppUser().getId(), userProxyBundle.user().getId(), studyEnv.getId());
 
         // stops proxy enrollment even though question exists
-        Assertions.assertFalse(enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
+        Assertions.assertThrows(IllegalArgumentException.class,
+                () -> enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
 
     }
 

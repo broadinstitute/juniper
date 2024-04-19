@@ -214,10 +214,6 @@ public class EnrollmentService {
         StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
                 .orElseThrow(StudyEnvConfigMissing::new);
 
-        if (!studyEnvConfig.isAcceptingProxyEnrollment()) {
-            return false;
-        }
-
         PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).orElse(null);
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
@@ -230,7 +226,18 @@ public class EnrollmentService {
         }
         String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
         Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, "stringValue");
-        return proxyAnswer != null && proxyAnswer;
+        if (proxyAnswer == null) {
+            return false;
+        }
+
+        if (proxyAnswer) {
+            if (studyEnvConfig.isAcceptingProxyEnrollment()) {
+                return true;
+            } else {
+                throw new IllegalArgumentException("Proxy enrollment not allowed for study %s".formatted(studyShortcode));
+            }
+        }
+        return false;
     }
 
     /**
