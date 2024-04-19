@@ -7,14 +7,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 public class SurveyParseUtilsTests extends BaseSpringBootTest {
+    @Autowired ObjectMapper objectMapper;
 
     @Test
     public void testUnmarshalQuestionChoices() throws JsonProcessingException {
@@ -186,6 +189,31 @@ public class SurveyParseUtilsTests extends BaseSpringBootTest {
         JsonNode questionNode = mapper.readTree(simpleDerivedQString);
         String upstreamStableId = SurveyParseUtils.getUpstreamStableId(questionNode);
         assertThat(upstreamStableId, equalTo("otherQ"));
+    }
+
+    @Test
+    public void getCalculatedValues() throws Exception {
+        String form = """
+                {"calculatedValues": [
+                       {
+                         "name": "qualified",
+                         "expression": "{hd_hd_preenroll_southAsianAncestry} = 'yes'",
+                         "includeIntoResult": true
+                       },
+                       {
+                         "name": "transientThing",
+                         "expression": "1 + 2",
+                         "includeIntoResult": false
+                       },
+                       {
+                         "name": "transientThing2",
+                         "expression": "1 + 2"
+                       }
+                     ]}""";
+        JsonNode surveyDef = objectMapper.readTree(form);
+        List<JsonNode> calculatedValues = SurveyParseUtils.getCalculatedValues(surveyDef);
+        assertThat(calculatedValues, hasSize(1));
+        assertThat(calculatedValues.get(0).get("name").asText(), equalTo("qualified"));
     }
 
     @Test

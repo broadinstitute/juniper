@@ -128,7 +128,8 @@ public class SurveyParseUtils {
         List<JsonNode> calculatedValues = new ArrayList<>();
         if (surveyJsDef.has("calculatedValues")) {
             for (JsonNode val : surveyJsDef.get("calculatedValues")) {
-                if (Boolean.TRUE.equals(val.get("includeIntoResult").asBoolean())) {
+                JsonNode includeIntoResult = val.get("includeIntoResult");
+                if (includeIntoResult != null && Boolean.TRUE.equals(includeIntoResult.asBoolean())) {
                     calculatedValues.add(val);
                 }
             }
