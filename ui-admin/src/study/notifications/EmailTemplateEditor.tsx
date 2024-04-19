@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
 import { EmailTemplate, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
@@ -25,6 +25,16 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
   const localizedEmailTemplate = emailTemplate.localizedEmailTemplates.find(template =>
     template.language === selectedLanguage?.languageCode)
+
+  useEffect(() => {
+    if (emailEditorRef.current?.editor && localizedEmailTemplate) {
+      emailEditorRef.current.editor.loadDesign({
+        // @ts-ignore
+        html: replacePlaceholders(localizedEmailTemplate.body),
+        classic: true
+      })
+    }
+  }, [localizedEmailTemplate])
 
   const {
     onChange: languageOnChange, options: languageOptions,
@@ -80,11 +90,15 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
                 ({emailTemplate.stableId} {templateVersionString})
       </div>
     </div>
-    <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
-      aria-label={'Select a language'}
-      onChange={e => {
-        languageOnChange(e)
-      }}/>
+    { supportedLanguages.length > 1 && <div style={{ width: 200 }}>
+      <label className="form-label">Language
+        <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+          aria-label={'Select a language'}
+          onChange={e => {
+            languageOnChange(e)
+          }}/>
+      </label>
+    </div> }
     <div>
       <label className="form-label">Subject
         <input className="form-control" type="text" size={100} value={localizedEmailTemplate.subject}

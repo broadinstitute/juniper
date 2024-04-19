@@ -20,8 +20,8 @@ type FormPreviewOptionsProps = {
 
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
-  const { value, onChange } = props
-  const { defaultLanguage, supportedLanguages } = usePortalLanguage()
+  const { value, supportedLanguages, onChange } = props
+  const { defaultLanguage } = usePortalLanguage()
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
 
   const {
