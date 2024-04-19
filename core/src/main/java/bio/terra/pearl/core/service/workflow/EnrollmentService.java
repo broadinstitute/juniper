@@ -4,20 +4,10 @@ import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
-import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
@@ -216,7 +206,18 @@ public class EnrollmentService {
      * If there is one, it will check the user's response to the question in the PreEnrollment Response.
      * If the user's response is true, it will return true, otherwise it returns false;
      */
-   protected boolean isProxyEnrollment(UUID preEnrollResponseId) {
+    protected boolean isProxyEnrollment(EnvironmentName envName, String studyShortcode, UUID preEnrollResponseId) {
+        // in the future, we might want to consider consolidating our studyEnv/studyEnvConfig lookups
+        // as it happens more than once per enroll
+        StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
+                .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
+        StudyEnvironmentConfig studyEnvConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId())
+                .orElseThrow(StudyEnvConfigMissing::new);
+
+        if (!studyEnvConfig.isAcceptingProxyEnrollment()) {
+            return false;
+        }
+
         PreEnrollmentResponse preEnrollResponse = preEnrollmentResponseDao.find(preEnrollResponseId).orElse(null);
         if (preEnrollResponse == null || !preEnrollResponse.isQualified()) {
             return false;
@@ -327,7 +328,7 @@ public class EnrollmentService {
      */
     public HubResponse enroll(EnvironmentName environmentName, String studyShortcode, ParticipantUser user,
                               PortalParticipantUser portalParticipantUser, UUID preEnrollResponseId) {
-        if (preEnrollResponseId != null && isProxyEnrollment(preEnrollResponseId)) {
+        if (preEnrollResponseId != null && isProxyEnrollment(environmentName, studyShortcode, preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
         return enroll(portalParticipantUser, environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);

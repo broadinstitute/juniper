@@ -76,6 +76,16 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       </label>
     </div>
 
+    <div>
+      <label className="form-label">
+        accepting proxy enrollment <InfoPopup content={
+        `Enables enrolling as a proxy on behalf of a dependent. Note that you will need to make edits to 
+          your pre-enrollment survey to fully enable proxy enrollment.`}/>
+        <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
+          onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
+      </label>
+    </div>
+
     <Button onClick={save}
       variant="primary" disabled={isLoading}
       tooltip={'Save'}>

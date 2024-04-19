@@ -63,6 +63,7 @@ public class StudyEnvironmentExtService {
     // flows
     existing.setPasswordProtected(update.isPasswordProtected());
     existing.setAcceptingEnrollment(update.isAcceptingEnrollment());
+    existing.setAcceptingProxyEnrollment(update.isAcceptingProxyEnrollment());
     existing.setPassword(update.getPassword());
     return studyEnvConfigService.update(existing);
   }
