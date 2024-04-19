@@ -11,32 +11,37 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.RandomUtilService;
-import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
+import bio.terra.pearl.core.service.survey.AnswerProcessingService;
 import bio.terra.pearl.core.service.survey.SurveyParseUtils;
+import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import liquibase.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -44,34 +49,34 @@ import java.util.UUID;
 @Slf4j
 public class EnrollmentService {
     private static final String QUALIFIED_STABLE_ID = "qualified";
-    private SurveyService surveyService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private StudyEnvironmentService studyEnvironmentService;
-    private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private ParticipantUserService participantUserService;
-    private EnrolleeService enrolleeService;
-    private PortalService portalService;
-    private EnrolleeRelationService enrolleeRelationService;
-    private RegistrationService registrationService;
-    private EventService eventService;
-    private ObjectMapper objectMapper;
-    private RandomUtilService randomUtilService;
-    private AnswerMappingDao answerMappingDao;
+    private final SurveyService surveyService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final StudyEnvironmentConfigService studyEnvironmentConfigService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final ParticipantUserService participantUserService;
+    private final EnrolleeService enrolleeService;
+    private final EnrolleeRelationService enrolleeRelationService;
+    private final RegistrationService registrationService;
+    private final EventService eventService;
+    private final ObjectMapper objectMapper;
+    private final AnswerMappingDao answerMappingDao;
+    private final SurveyResponseService surveyResponseService;
+    private final AnswerProcessingService answerProcessingService;
 
-    public EnrollmentService(SurveyService surveyService, PreEnrollmentResponseDao preEnrollmentResponseDao,
+    public EnrollmentService(SurveyService surveyService,
+                             PreEnrollmentResponseDao preEnrollmentResponseDao,
                              StudyEnvironmentService studyEnvironmentService,
                              PortalParticipantUserService portalParticipantUserService,
-                             EnrolleeContextService enrolleeContextService,
                              StudyEnvironmentConfigService studyEnvironmentConfigService,
                              EnrolleeService enrolleeService,
                              EventService eventService, ObjectMapper objectMapper,
                              RegistrationService registrationService,
-                             PortalService portalService,
                              EnrolleeRelationService enrolleeRelationService,
-                             RandomUtilService randomUtilService,
                              ParticipantUserService participantUserService,
-                             AnswerMappingDao answerMappingDao) {
+                             AnswerMappingDao answerMappingDao,
+                             SurveyResponseService surveyResponseService,
+                             AnswerProcessingService answerProcessingService) {
         this.surveyService = surveyService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -81,11 +86,11 @@ public class EnrollmentService {
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
         this.registrationService = registrationService;
-        this.portalService = portalService;
         this.enrolleeRelationService = enrolleeRelationService;
-        this.randomUtilService = randomUtilService;
         this.participantUserService = participantUserService;
         this.answerMappingDao = answerMappingDao;
+        this.surveyResponseService = surveyResponseService;
+        this.answerProcessingService = answerProcessingService;
     }
 
     /**
@@ -119,8 +124,13 @@ public class EnrollmentService {
     }
 
     @Transactional
-    public HubResponse<Enrollee> enroll(EnvironmentName envName, String studyShortcode, ParticipantUser user, PortalParticipantUser ppUser,
-                                        UUID preEnrollResponseId, boolean isSubject) {
+    public HubResponse<Enrollee> enroll(PortalParticipantUser operator,
+                                        EnvironmentName envName,
+                                        String studyShortcode,
+                                        ParticipantUser user,
+                                        PortalParticipantUser ppUser,
+                                        UUID preEnrollResponseId,
+                                        boolean isSubject) {
         log.info("creating enrollee for user {}, study {}", user.getId(), studyShortcode);
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
@@ -129,7 +139,7 @@ public class EnrollmentService {
         if (!studyEnvConfig.isAcceptingEnrollment()) {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
-        PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(studyEnv, preEnrollResponseId, user.getId(), isSubject);
+        PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(operator, studyEnv, preEnrollResponseId, user.getId(), isSubject);
         Enrollee enrollee;
 
         enrollee = Enrollee.builder()
@@ -145,6 +155,9 @@ public class EnrollmentService {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
             preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(preEnrollResponse);
+
+            // backfill the enrollee with the pre-enrollment response data
+            this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
         }
 
         EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
@@ -152,6 +165,49 @@ public class EnrollmentService {
                 user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
         HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
         return hubResponse;
+    }
+
+    private void backfillPreEnrollResponse(PortalParticipantUser operator, Enrollee enrollee, PreEnrollmentResponse preEnrollResponse) {
+        if (Objects.isNull(preEnrollResponse) || StringUtil.isEmpty(preEnrollResponse.getFullData())) {
+            return;
+        }
+
+        List<Answer> answers;
+        try {
+            answers = objectMapper.readValue(preEnrollResponse.getFullData(), new TypeReference<List<Answer>>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Invalid pre-enrollment response data: " + e.getMessage());
+        }
+
+        PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+
+        SurveyResponse surveyResponse =
+                SurveyResponse
+                        .builder()
+                        .surveyId(preEnrollResponse.getSurveyId())
+                        .answers(answers)
+                        .enrolleeId(enrollee.getId())
+                        .complete(true)
+                        .creatingParticipantUserId(enrollee.getParticipantUserId())
+                        .build();
+
+        surveyResponseService.create(surveyResponse);
+
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
+                .responsibleUserId(enrollee.getParticipantUserId())
+                .enrolleeId(enrollee.getId())
+                .surveyId(preEnrollResponse.getSurveyId())
+                .portalParticipantUserId(ppUser.getId())
+                .build();
+        
+        // process any answers that need to be propagated elsewhere to the data model
+        answerProcessingService.processAllAnswerMappings(
+                enrollee,
+                answers,
+                answerMappingDao.findBySurveyId(preEnrollResponse.getSurveyId()),
+                operator,
+                auditInfo);
     }
 
     /**
@@ -192,25 +248,35 @@ public class EnrollmentService {
     public HubResponse<Enrollee> enrollAsProxy(EnvironmentName envName, String studyShortcode, ParticipantUser proxyUser,
                                                PortalParticipantUser ppUser, UUID preEnrollResponseId, String governedUsername) {
         Enrollee proxyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName)
-                .orElseGet(() -> this.enroll(envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
+                .orElseGet(() -> this.enroll(ppUser, envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
         HubResponse<Enrollee> governedResponse =
                 this.enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
         governedResponse.setEnrollee(proxyEnrollee);
+
         return governedResponse;
     }
 
     @Transactional
-    public HubResponse<Enrollee> enrollGovernedUser(EnvironmentName envName, String studyShortcode, Enrollee governingEnrollee,
-                                                    ParticipantUser proxyUser, PortalParticipantUser proxyPpUser,
-                                                    UUID preEnrollResponseId, String governedUserName) {
+    public HubResponse<Enrollee> enrollGovernedUser(EnvironmentName envName,
+                                                    String studyShortcode,
+                                                    Enrollee governingEnrollee,
+                                                    ParticipantUser proxyUser,
+                                                    PortalParticipantUser proxyPpUser,
+                                                    UUID preEnrollResponseId,
+                                                    String governedUserName) {
         ParticipantUser governedUserParticipantUserOpt = participantUserService.findOne(governedUserName, envName).orElse(null);
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult =
                 registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
 
         HubResponse<Enrollee> hubResponse =
-                this.enroll(envName, studyShortcode, registrationResult.participantUser(), registrationResult.portalParticipantUser(),
-                        preEnrollResponseId, true);
+                this.enroll(proxyPpUser,
+                        envName,
+                        studyShortcode,
+                        registrationResult.participantUser(),
+                        registrationResult.portalParticipantUser(),
+                        preEnrollResponseId,
+                        true);
 
         EnrolleeRelation relation = EnrolleeRelation.builder()
                 .enrolleeId(governingEnrollee.getId())
@@ -227,8 +293,11 @@ public class EnrollmentService {
         return hubResponse;
     }
 
-    private PreEnrollmentResponse validatePreEnrollResponse(StudyEnvironment studyEnv, UUID preEnrollResponseId,
-                                                            UUID participantUserId, boolean isSubject) {
+    private PreEnrollmentResponse validatePreEnrollResponse(PortalParticipantUser operator,
+                                                            StudyEnvironment studyEnv,
+                                                            UUID preEnrollResponseId,
+                                                            UUID participantUserId,
+                                                            boolean isSubject) {
         if (studyEnv.getPreEnrollSurveyId() == null) {
             // no pre-enroll required
             return null;
@@ -243,8 +312,10 @@ public class EnrollmentService {
         if (!response.isQualified()) {
             throw new IllegalArgumentException("pre-enrollment survey did not meet criteria");
         }
-        if (response.getCreatingParticipantUserId() != null &&
-                !response.getCreatingParticipantUserId().equals(participantUserId)) {
+
+        if (response.getCreatingParticipantUserId() != null
+                && !response.getCreatingParticipantUserId().equals(participantUserId)
+                && !response.getCreatingParticipantUserId().equals(operator.getParticipantUserId())) {
             throw new IllegalArgumentException("user does not match preEnrollment response user");
         }
         return response;
@@ -259,6 +330,6 @@ public class EnrollmentService {
         if (preEnrollResponseId != null && isProxyEnrollment(preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
-        return enroll(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
+        return enroll(portalParticipantUser, environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
     }
 }

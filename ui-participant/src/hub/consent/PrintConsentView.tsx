@@ -14,6 +14,7 @@ import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { enrolleeForStudy } from './ConsentView'
+import { useTaskIdParam } from '../survey/SurveyView'
 
 type UsePrintableConsentArgs = {
   studyShortcode: string
@@ -31,6 +32,8 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
   const [loading, setLoading] = useState(true)
   const [surveyModel, setSurveyModel] = useState<Model | null>(null)
   const navigate = useNavigate()
+  const taskId = useTaskIdParam()
+
   useEffect(() => {
     const loadConsent = async () => {
       const consentAndResponses = await Api.fetchConsentAndResponses({
@@ -62,7 +65,10 @@ const usePrintableConsent = (args: UsePrintableConsentArgs) => {
     loadConsent()
       .then(setSurveyModel)
       .catch(() => {
-        navigate('/hub')
+        // try loading it as a survey
+        // it's a survey -- view it there
+        navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
+          + `/${version}/print?taskId=${taskId}`)
       })
       .finally(() => {
         setLoading(false)

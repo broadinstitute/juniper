@@ -46,7 +46,7 @@ const ScrollToTop = () => {
  */
 function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
-  const { localContent, portal } = usePortalEnv()
+  const { localContent, portal, portalEnv } = usePortalEnv()
 
   const brandConfig: BrandConfiguration = {}
   if (localContent.primaryBrandColor) {
@@ -106,7 +106,8 @@ function App() {
                     ...getAuthProviderProps(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)
                   }>
                     <UserProvider>
-                      <I18nProvider portalShortcode={portal.shortcode}>
+                      <I18nProvider defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
+                        portalShortcode={portal.shortcode}>
                         <Suspense fallback={<PageLoadingIndicator/>}>
                           <IdleStatusMonitor
                             maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>

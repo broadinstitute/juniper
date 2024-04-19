@@ -52,6 +52,10 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         return dao.findByKitRequestId(kitRequestId);
     }
 
+    public Optional<ParticipantTask> findByConsentResponseId(UUID consentResponseId) {
+        return dao.findByConsentResponseId(consentResponseId);
+    }
+
     @Transactional
     @Override
     public ParticipantTask update(ParticipantTask task, DataAuditInfo dataAuditInfo) {

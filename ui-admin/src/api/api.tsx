@@ -305,6 +305,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
+  includeProxiesAsRows?: boolean,
   limit?: number
 }
 
@@ -1366,6 +1367,16 @@ Promise<Trigger> {
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async populateCommand(command: string, params: object) {
+    const url = `${basePopulateUrl()}/command/${command}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(params)
     })
     return await this.processJsonResponse(response)
   },

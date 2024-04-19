@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.BaseVersionedJdbiDao;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
@@ -31,6 +32,17 @@ public class EmailTemplateDao extends BaseVersionedJdbiDao<EmailTemplate> {
             attachAllLocalizedTemplates(emailTemplate);
         }
         return emailTemplates;
+    }
+
+    public Optional<EmailTemplate> findAdminTemplateByStableId(String stableId, int version) {
+        return jdbi.withHandle(
+                handle ->
+                        handle
+                                .createQuery("SELECT * FROM email_template WHERE stable_id = :stableId AND version = :version AND portal_id IS NULL")
+                                .bind("stableId", stableId)
+                                .bind("version", version)
+                                .mapToBean(EmailTemplate.class)
+                                .findOne());
     }
 
     public EmailTemplate attachLocalizedTemplate(EmailTemplate emailTemplate, String language) {

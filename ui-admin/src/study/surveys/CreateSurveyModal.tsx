@@ -36,6 +36,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
     ...defaultSurvey,
     autoUpdateTaskAssignments: type === 'OUTREACH',
     assignToExistingEnrollees: type === 'OUTREACH',
+    allowParticipantReedit: type !== 'CONSENT',
+    allowAdminEdit: type !== 'CONSENT',
+    required: type === 'CONSENT',
     stableId: '',
     name: '',
     surveyType: type,
@@ -77,7 +80,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
 
   return <Modal show={true} size={'xl'} onHide={onDismiss} className={type === 'OUTREACH' ? 'modal-lg' : 'modal'}>
     <Modal.Header closeButton>
-      <Modal.Title>Create New {type === 'RESEARCH' ? 'Research Survey' : 'Outreach'}</Modal.Title>
+      <Modal.Title>Create new {type.toLowerCase()} form</Modal.Title>
       <div className="ms-4">
         {studyEnvContext.study.name}: {studyEnvContext.currentEnv.environmentName}
       </div>

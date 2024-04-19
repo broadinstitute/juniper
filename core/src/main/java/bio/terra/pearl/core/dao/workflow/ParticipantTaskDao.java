@@ -56,6 +56,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findByTwoProperties("id", taskId, "portal_participant_user_id", ppUserId);
     }
 
+    public Optional<ParticipantTask> findByConsentResponseId(UUID consentResponseId) {
+        return findByProperty("consent_response_id", consentResponseId);
+    }
+
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByProperty("enrollee_id", enrolleeId);
     }

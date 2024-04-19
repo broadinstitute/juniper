@@ -42,7 +42,13 @@ public class EnrolleeImportService {
     /**
      * for now, we only support importing from a specific style of export.
      */
-    ExportOptions IMPORT_OPTIONS = new ExportOptions(false, true, true, ExportFileFormat.TSV, null);
+    ExportOptions IMPORT_OPTIONS = ExportOptions
+            .builder()
+            .stableIdsForOptions(true)
+            .onlyIncludeMostRecent(true)
+            .fileFormat(ExportFileFormat.TSV)
+            .limit(null)
+            .build();
 
     private final RegistrationService registrationService;
     private final EnrollmentService enrollmentService;
@@ -118,7 +124,7 @@ public class EnrolleeImportService {
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        HubResponse<Enrollee> response = enrollmentService.enroll(studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
+        HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);

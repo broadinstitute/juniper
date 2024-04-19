@@ -138,8 +138,6 @@ public class SiteContentExtractor {
         @JsonIgnore @Override
         public List<LocalizedSiteContentPopDto> getLocalizedSiteContentDtos() { return null; }
         @JsonIgnore @Override
-        public String getDefaultLanguage() { return null; }
-        @JsonIgnore @Override
         public int getVersion() { return 0; }
     }
 

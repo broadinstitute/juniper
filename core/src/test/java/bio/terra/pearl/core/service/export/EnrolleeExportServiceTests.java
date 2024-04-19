@@ -56,12 +56,54 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
-        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, 2);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, false, 2);
 
         assertThat(exportMaps, hasSize(2));
         // confirm enrollees are in reverse order of creation
         assertThat(exportMaps.get(0).get("enrollee.shortcode"), equalTo(enrollee3.getShortcode()));
         assertThat(exportMaps.get(1).get("enrollee.shortcode"), equalTo(enrollee2.getShortcode()));
+    }
+
+    @Test
+    @Transactional
+    public void testExportWithProxies(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.live);
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        EnrolleeFactory.EnrolleeAndProxy enrolleeWithProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+        List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
+                        .builder()
+                        .includeProxiesAsRows(true)
+                        .onlyIncludeMostRecent(true)
+                        .fileFormat(ExportFileFormat.TSV)
+                        .limit(null)
+                        .build(),
+                studyEnv.getId());
+
+        List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoWithProxies, true, null);
+        assertThat(exportMapsWithProxies, hasSize(3));
+
+        assertThat(exportMapsWithProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
+        assertThat(exportMapsWithProxies.get(0).get("enrollee.subject"), equalTo("true"));
+
+        assertThat(exportMapsWithProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
+        assertThat(exportMapsWithProxies.get(1).get("enrollee.subject"), equalTo("true"));
+
+        assertThat(exportMapsWithProxies.get(2).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.proxy().getShortcode()));
+        assertThat(exportMapsWithProxies.get(2).get("enrollee.subject"), equalTo("false"));
+
+        List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
+
+        List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoNoProxies, false, null);
+        assertThat(exportMapsNoProxies, hasSize(2));
+
+        assertThat(exportMapsNoProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
+        assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
+
+        assertThat(exportMapsNoProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
+        assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
+
     }
 
     private final String SOCIAL_HEALTH_EXCERPT = """

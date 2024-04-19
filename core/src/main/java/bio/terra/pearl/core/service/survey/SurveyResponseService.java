@@ -5,14 +5,11 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.survey.SurveyWithResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -44,6 +41,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     private DataChangeRecordService dataChangeRecordService;
     private EventService eventService;
     private PortalService portalService;
+    public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
                                  EnrolleeService enrolleeService, SurveyService surveyService,
@@ -148,13 +146,20 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .build();
 
         // process any answers that need to be propagated elsewhere to the data model
-        answerProcessingService.processAllAnswerMappings(responseDto.getAnswers(),
-                survey.getAnswerMappings(), ppUser, auditInfo);
+        answerProcessingService.processAllAnswerMappings(
+                enrollee,
+                responseDto.getAnswers(),
+                survey.getAnswerMappings(),
+                ppUser,
+                auditInfo);
 
         // now update the task status and response id
-        updateTaskToResponse(task, response, updatedAnswers, auditInfo);
+        task = updateTaskToResponse(task, response, updatedAnswers, auditInfo);
 
         EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
+        if (survey.getSurveyType().equals(SurveyType.CONSENT)) {
+            eventService.publishEnrolleeConsentEvent(enrollee, ppUser, response, task);
+        }
         logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
         HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(event, response);
         return hubResponse;
@@ -199,7 +204,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         task.setSurveyResponseId(response.getId());
         if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
             if (response.isComplete()) {
-                task.setStatus(TaskStatus.COMPLETE);
+
+                if (task.getTaskType().equals(TaskType.CONSENT)) {
+                    // consent tasks are only marked as complete if they consented
+                    boolean isConsented = isConsented(response, answerService.findByResponse(response.getId()));
+                    task.setStatus(isConsented ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
+                } else {
+                    task.setStatus(TaskStatus.COMPLETE);
+                }
             } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
                 // if the task is new and no answers we submitted, this is just indicating the survey was viewed
                 task.setStatus(TaskStatus.VIEWED);
@@ -291,5 +303,18 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             throw new IllegalArgumentException("submitted form does not match assigned task");
         }
         // This is where we'd want to check required fields if we want server-side validation of that
+    }
+
+
+    /**
+     * for surveys of type CONSENT, if the survey has an explicit computed property "consented", that determines
+     * consent.  Otherwise, the form is consented if it is complete
+     */
+    public boolean isConsented(SurveyResponse response, List<Answer> responseAnswers) {
+        return responseAnswers.stream().filter(answer -> answer.getQuestionStableId().equals(CONSENTED_ANSWER_STABLE_ID))
+                .findFirst()
+                .map(answer -> answer.getBooleanValue())
+                .orElse(response.isComplete());
+
     }
 }

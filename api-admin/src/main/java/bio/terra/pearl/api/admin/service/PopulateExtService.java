@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipInputStream;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -146,6 +148,19 @@ public class PopulateExtService {
       throws IOException {
     authorizeUser(user);
     portalExtractService.extract(portalShortcode, os);
+  }
+
+  @Transactional
+  public Object populateCommand(String command, Object commandParams, AdminUser user) {
+    authorizeUser(user);
+    if ("CONVERT_CONSENTS".equals(command)) {
+      Map<String, Object> formMap = surveyPopulator.convertAllConsentForms();
+      Map<String, Object> enrolleeMap = enrolleePopulator.convertAllConsentResponses();
+      Map<String, Object> resultMap = new HashMap<>(formMap);
+      resultMap.putAll(enrolleeMap);
+      return resultMap;
+    }
+    throw new IllegalArgumentException("unknown command");
   }
 
   protected void authorizeUser(AdminUser user) {

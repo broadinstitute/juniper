@@ -33,7 +33,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
     studyList = portalList.flatMap(portal => portal.portalStudies.map(ps => ps.study))
   }
 
-  if (user.isAnonymous) {
+  if (!user) {
     return <div></div>
   }
   const currentStudy = studyList.find(study => study.shortcode === studyShortcode)
@@ -56,7 +56,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
       { currentStudy && <StudySidebar study={currentStudy} portalList={portalList}
         portalShortcode={portalShortcode!}/> }
 
-      {user.superuser && <CollapsableMenu header={'Superuser functions'} content={
+      {user?.superuser && <CollapsableMenu header={'Superuser functions'} content={
         <ul className="list-unstyled">
           <li className="mb-2">
             <NavLink to="/users" className={sidebarNavLinkClasses}>All users</NavLink>

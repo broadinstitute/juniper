@@ -6,6 +6,7 @@
   "shortcode": "HDGOVR",
   "linkedUsername": "proxy@test.com-prox-GOVR",
   "submittedHoursAgo": 10,
+  "simulateSubmissions": true,
   "preEnrollmentResponseDto": {
     "qualified": true,
     "surveyStableId": "hd_hd_preenroll",
@@ -17,6 +18,5 @@
       {"questionStableId":"hd_hd_preenroll_livesInUS", "stringValue": "yes"},
       {"questionStableId":"qualified", "booleanValue": true}
     ]
-  },
-  "simulateSubmissions": true
+  }
 }

@@ -76,7 +76,6 @@ public class RegistrationServiceTests extends BaseSpringBootTest {
         String username = "test" + RandomStringUtils.randomAlphabetic(5) + "@test.com";
         RegistrationService.RegistrationResult result = registrationService.register(portalShortcode,
                 portalEnv.getEnvironmentName(), username, null, null);
-        //TODO (JN-863) - check instead that this matches the default portal language
-        Assertions.assertEquals("en", result.profile().getPreferredLanguage());
+        Assertions.assertEquals(portalEnv.getPortalEnvironmentConfig().getDefaultLanguage(), result.profile().getPreferredLanguage());
     }
 }

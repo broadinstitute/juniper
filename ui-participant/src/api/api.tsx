@@ -204,9 +204,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getPortal(selectedLanguage: string): Promise<Portal> {
+  async getPortal(language?: string): Promise<Portal> {
     const { shortcodeOrHostname, envName } = currentEnvSpec
-    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?language=${selectedLanguage}`
+    const params = queryString.stringify({ language })
+    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?${params}`
     const response = await fetch(url, this.getGetInit())
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
@@ -344,7 +345,8 @@ export default {
     const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/consents/${stableId}/${version}`
     const response = await fetch(url, { headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
+    // don't alert errors since we'll fall back to looking for a survey
+    return await this.processJsonResponse(response, { alertErrors: false })
   },
 
   async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response }: {
