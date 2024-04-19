@@ -73,10 +73,10 @@ function HomePage() {
           </li>
         )}
       </ul>
-      { user.superuser && <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
+      {user?.superuser && <Button variant='secondary' onClick={() => setShowNewStudyModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Add a study
       </Button> }
-      { user.superuser && <Button variant='secondary' onClick={() => setShowNewCohortModal(true)}>
+      {user?.superuser && <Button variant='secondary' onClick={() => setShowNewCohortModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Create a cohort
       </Button> }
     </div>

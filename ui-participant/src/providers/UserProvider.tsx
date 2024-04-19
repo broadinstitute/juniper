@@ -10,19 +10,8 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
  * for proxy, you should use the ActiveUserProvider.
  */
 
-export type User = ParticipantUser & {
-  isAnonymous: boolean
-}
-
-const anonymousUser: User = {
-  id: '',
-  token: '',
-  isAnonymous: true,
-  username: 'anonymous'
-}
-
 export type UserContextT = {
-  user: User,
+  user: ParticipantUser | null,
   // these are the portal participant users and enrollees that you have access to,
   // including proxied users. The user object is the person that is actually currently
   // logged in.
@@ -39,7 +28,7 @@ export type UserContextT = {
 
 /** current user object context */
 const UserContext = React.createContext<UserContextT>({
-  user: anonymousUser,
+  user: null,
   ppUsers: [],
   enrollees: [],
   relations: [],
@@ -152,7 +141,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    user: loginState ? loginState.user : null,
     enrollees: loginState ? loginState.enrollees : [],
     relations: loginState ? loginState.relations : [],
     ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],

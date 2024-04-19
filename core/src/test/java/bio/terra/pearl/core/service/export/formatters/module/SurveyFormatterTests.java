@@ -10,16 +10,16 @@ import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class SurveyFormatterTests extends BaseSpringBootTest {
     @Autowired
@@ -43,7 +43,7 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .stringValue("easyValue")
                 .build();
         EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null,
-                List.of(answer), null, List.of(testResponse), null);
+                List.of(answer), null, List.of(testResponse), null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("easyValue"));

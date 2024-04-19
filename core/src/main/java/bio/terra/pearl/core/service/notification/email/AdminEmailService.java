@@ -72,7 +72,7 @@ public class AdminEmailService {
    * for now, this is trivial, but later admin emails may contain other context
    */
   public NotificationContextInfo loadContextInfo(String templateStableId, int version, Portal portal) {
-    EmailTemplate emailTemplate = emailTemplateService.findByStableId(templateStableId, version, null).get();
+    EmailTemplate emailTemplate = emailTemplateService.findAdminTemplateByStableId(templateStableId, version).get();
     emailTemplateService.attachLocalizedTemplates(emailTemplate);
     return new NotificationContextInfo(
         portal,

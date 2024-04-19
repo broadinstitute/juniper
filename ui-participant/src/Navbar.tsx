@@ -88,7 +88,7 @@ export default function Navbar(props: NavbarProps) {
             changeLanguage={changeLanguageAndUpdate}
             reloadPortal={reloadPortal}
           />
-          {user.isAnonymous && (
+          {!user && (
             <>
               <li className="nav-item">
                 <NavLink
@@ -116,7 +116,7 @@ export default function Navbar(props: NavbarProps) {
               </li>
             </>
           )}
-          {!user.isAnonymous && <>
+          {user && <>
             <li className="nav-item">
               <Link
                 className={classNames(
@@ -277,6 +277,10 @@ export const AccountOptionsDropdown = () => {
       logoutUser()
       window.location.href = '/'
     })
+  }
+
+  if (!user) {
+    return <></>
   }
 
   return (

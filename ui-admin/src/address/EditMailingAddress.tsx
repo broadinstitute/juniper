@@ -86,7 +86,7 @@ export default function EditMailingAddress(
       showLabels={false}
       validationResult={addressValidationResults}
     />
-    {(user.user.superuser) &&
+    {(user.user?.superuser) &&
         <LoadingSpinner isLoading={isLoadingValidation}>
           <div
             className={'d-inline-block'}

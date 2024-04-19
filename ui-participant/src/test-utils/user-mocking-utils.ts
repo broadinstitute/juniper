@@ -5,7 +5,7 @@ import { UserContextT } from '../providers/UserProvider'
  */
 export const mockUseUser = (isAnonymous: boolean): UserContextT => {
   return {
-    user: { id: '', isAnonymous, token: '', username: isAnonymous ? 'anonymous' : 'testUser' },
+    user: isAnonymous ? null : { id: '', token: '', username: isAnonymous ? 'anonymous' : 'testUser' },
     logoutUser: jest.fn(),
     updateProfile: jest.fn(),
     updateEnrollee: jest.fn(),
