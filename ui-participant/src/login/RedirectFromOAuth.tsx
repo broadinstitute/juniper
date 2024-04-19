@@ -20,7 +20,7 @@ import { logError } from 'util/loggingUtils'
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
-  const { loginUser, refreshLogin, user } = useUser()
+  const { loginUser, user, updateEnrollee } = useUser()
   const navigate = useNavigate()
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
@@ -71,7 +71,7 @@ export const RedirectFromOAuth = () => {
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
               const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-                defaultEnrollStudy.name, preEnrollResponseId, refreshLogin)
+                defaultEnrollStudy.name, preEnrollResponseId, updateEnrollee)
               navigate('/hub', { replace: true, state: hubUpdate })
             } else {
               navigate('/hub', { replace: true })

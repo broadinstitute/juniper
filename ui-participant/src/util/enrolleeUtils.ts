@@ -9,8 +9,8 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 
 /** enrolls the user and displays a welcome banner on the dashboard */
 export async function enrollCurrentUserInStudy(studyShortcode: string, studyName: string,
-  preEnrollResponseId: string | null, refreshLogin: () => void) {
-  await Api.createEnrollee({
+  preEnrollResponseId: string | null, updateEnrollee: (enrollee: Enrollee) => void) {
+  const response = await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
   })
@@ -21,6 +21,11 @@ export async function enrollCurrentUserInStudy(studyShortcode: string, studyName
       type: alertDefaults['WELCOME'].type as AlertLevel
     }
   }
-  refreshLogin()
+  console.log(response)
+  await updateEnrollee(response.enrollee)
+  const proxyEnrollee = response.response as Enrollee
+  if (proxyEnrollee.shortcode && proxyEnrollee.shortcode !== response.enrollee.shortcode) {
+    await updateEnrollee(proxyEnrollee)
+  }
   return hubUpdate
 }

@@ -82,7 +82,6 @@ export type Enrollee = {
 export type EnrolleeRelation = {
   id: string
   relationshipType: string,
-  targetEnrollee: Enrollee,
   targetEnrolleeId: string,
   consentResponses: []
   createdAt: number
@@ -327,7 +326,7 @@ export default {
   async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
     preRegResponseId: string, fullData: object, preferredLanguage: string
   }):
-    Promise<RegistrationResponse> {
+      Promise<LoginResult> {
     const params = queryString.stringify({ preRegResponseId, preferredLanguage })
     const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
@@ -335,9 +334,9 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(fullData)
     })
-    const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
-    if (registrationResponse?.participantUser?.token) {
-      bearerToken = registrationResponse.participantUser.token
+    const registrationResponse = await this.processJsonResponse(response) as LoginResult
+    if (registrationResponse?.user?.token) {
+      bearerToken = registrationResponse.user.token
     }
     return registrationResponse
   },

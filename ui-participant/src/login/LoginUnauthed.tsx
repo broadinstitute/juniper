@@ -10,7 +10,7 @@ import { usePortalEnv } from '../providers/PortalProvider'
 export default function LoginUnauthed() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser, refreshLogin } = useUser()
+  const { loginUser, updateEnrollee } = useUser()
   const navigate = useNavigate()
   const { portal } = usePortalEnv()
 
@@ -27,7 +27,7 @@ export default function LoginUnauthed() {
       // Enroll in the default study if not already enrolled in any study
       if (defaultEnrollStudy && !loginResult.enrollees.length) {
         const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-          defaultEnrollStudy.name, null, refreshLogin)
+          defaultEnrollStudy.name, null, updateEnrollee)
         navigate('/hub', { replace: true, state: hubUpdate })
       }
     } catch (e) {

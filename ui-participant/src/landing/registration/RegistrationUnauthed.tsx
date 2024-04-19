@@ -78,16 +78,17 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
       fullData: registrationInfo
     }).then(response => {
       loginUser({
-        user: response.participantUser,
-        ppUsers: [response.portalParticipantUser],
+        user: response.user,
+        ppUsers: response.ppUsers,
         profile: response.profile,
-        enrollees: [],
-        relations: []
-      }, response.participantUser.token)
+        enrollees: response.enrollees,
+        relations: response.relations
+      }, response.user.token)
       if (returnTo) {
         navigate(returnTo)
       }
-    }).catch(() => {
+    }).catch(e => {
+      console.log(e)
       // if there's an error, reshow the survey (for now, assume registration is a single page)
       refreshSurvey(resumeData, 1)
     })
