@@ -17,7 +17,7 @@ import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
 import { logError } from '../../util/loggingUtils'
 
 export type StudyEnrollContext = {
-  user: ParticipantUser,
+  user: ParticipantUser | null,
   studyEnv: StudyEnvironment,
   studyShortcode: string,
   preEnrollResponseId: string | null,
@@ -121,10 +121,6 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   useEffect(() => {
     determineNextRoute()
   }, [mustProvidePassword, preEnrollSatisfied, user?.username])
-
-  if (!user) {
-    return <></>
-  }
 
   const enrollContext: StudyEnrollContext = {
     studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
