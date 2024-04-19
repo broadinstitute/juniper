@@ -41,7 +41,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
   const { user } = useUser()
   // if this is a dedicated admin form, default to edit mode
   if (!configSurvey.survey.allowParticipantStart && configSurvey.survey.allowAdminEdit) {
-    return <SurveyEditView survey={configSurvey.survey} adminUserId={user.id}
+    return <SurveyEditView survey={configSurvey.survey} adminUserId={user.id} response={response}
       enrollee={enrollee}/>
   }
 

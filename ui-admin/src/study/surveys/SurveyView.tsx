@@ -22,6 +22,8 @@ export type SaveableFormProps = {
   assignToAllNewEnrollees?: boolean
   assignToExistingEnrollees?: boolean
   rule?: string
+  allowAdminEdit?: boolean
+  allowParticipantStart?: boolean
   autoUpdateTaskAssignments?: boolean
   eligibilityRule?: string
 }

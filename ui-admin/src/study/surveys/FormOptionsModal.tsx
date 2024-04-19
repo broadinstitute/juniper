@@ -93,6 +93,20 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
+            <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).allowAdminEdit}
+                     onChange={e => updateWorkingForm({
+                       ...workingForm, allowAdminEdit: e.target.checked
+                     })}
+              /> Allow admin completion
+            </label>
+            <label className="form-label d-block">
+              <input type="checkbox" checked={(workingForm as Survey).allowParticipantStart}
+                     onChange={e => updateWorkingForm({
+                       ...workingForm, allowParticipantStart: e.target.checked
+                     })}
+              /> Allow participant completion
+            </label>
                     Eligibility Rule
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
                     && <div className="my-2"><SearchQueryBuilder
