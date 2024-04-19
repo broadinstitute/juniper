@@ -4,7 +4,7 @@ import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { usePortalLanguage } from '../portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
