@@ -32,6 +32,12 @@
       "targetType": "PROFILE",
       "targetField": "familyName",
       "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "country",
+      "targetType": "PROFILE",
+      "targetField": "mailingAddress.country",
+      "mapType": "STRING_TO_STRING"
     }
   ],
   "jsonContent": {
@@ -241,6 +247,11 @@
       {
         "name": "qualified",
         "expression": "{hd_hd_preenroll_southAsianAncestry} = 'yes' && {hd_hd_preenroll_understandsEnglish} = 'yes' && {hd_hd_preenroll_isAdult} = 'yes' && {hd_hd_preenroll_livesInUS} = 'yes'",
+        "includeIntoResult": true
+      },
+      {
+        "name": "country",
+        "expression": "iif({hd_hd_preenroll_livesInUS} = 'yes', 'US', '')",
         "includeIntoResult": true
       }
     ]
