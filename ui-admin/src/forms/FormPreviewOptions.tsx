@@ -4,7 +4,7 @@ import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from '../portal/useDefaultPortalLanguage'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
@@ -20,8 +20,8 @@ type FormPreviewOptionsProps = {
 
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
-  const { value, supportedLanguages, onChange } = props
-  const defaultLanguage = useDefaultLanguage()
+  const { value, onChange } = props
+  const { defaultLanguage, supportedLanguages } = usePortalLanguage()
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
 
   const {
