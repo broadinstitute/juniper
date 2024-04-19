@@ -19,7 +19,6 @@ public class SiteMediaFactory {
         String filename = testName + RandomStringUtils.randomAlphabetic(3) + ".png";
         return SiteMedia.builder().data("abc123".getBytes())
                 .version(1)
-                .uploadFileName(filename)
                 .cleanFileName(filename);
     }
 

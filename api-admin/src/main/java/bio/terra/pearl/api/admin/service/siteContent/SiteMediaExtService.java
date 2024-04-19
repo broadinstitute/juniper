@@ -51,7 +51,6 @@ public class SiteMediaExtService {
             .portalShortcode(portalShortcode)
             .version(version)
             .data(imageData)
-            .uploadFileName(uploadFileName)
             .cleanFileName(cleanFileName)
             .build();
     // the create method handles cleaning and converting the uploadFileName to a cleanFileName

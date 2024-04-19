@@ -28,13 +28,13 @@ public class SiteMediaPopulator extends BasePopulator<SiteMedia, SiteMediaPopDto
     protected void preProcessDto(SiteMediaPopDto popDto, PortalPopulateContext context) throws IOException {
         String popFileName = popDto.getPopulateFileName();
         byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
-        if (popDto.getUploadFileName() == null) {
-            popDto.setUploadFileName(popDto.getPopulateFileName().substring(popFileName.lastIndexOf("/") + 1));
+        if (popDto.getCleanFileName() == null) {
+            popDto.setCleanFileName(SiteMediaService.cleanFileName(popDto.getPopulateFileName().substring(
+                    popFileName.lastIndexOf("/") + 1)));
         }
         popDto.setData(imageContent);
         popDto.setPortalShortcode(context.getPortalShortcode());
         popDto.setVersion(popDto.getVersion() == 0 ? 1 : popDto.getVersion());
-        popDto.setCleanFileName(SiteMediaService.cleanFileName(popDto.getUploadFileName()));
     }
 
     @Override

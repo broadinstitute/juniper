@@ -46,16 +46,13 @@ public class SiteMediaService extends ImmutableEntityService<SiteMedia, SiteMedi
     @Override
     public SiteMedia create(SiteMedia image) {
 
-        if (!isAllowedFileName(image.getUploadFileName())) {
+        if (!isAllowedFileName(image.getCleanFileName())) {
             throw new IllegalArgumentException("Allowed extensions are: " +
                     ALLOWED_EXTENSIONS.stream().collect(Collectors.joining(", ")));
         }
-        if (image.getCleanFileName() == null) {
-            image.setCleanFileName(cleanFileName(image.getUploadFileName()));
-        } else {
-            // confirm the clean file name is actually clean
-            image.setCleanFileName(cleanFileName(image.getCleanFileName()));
-        }
+
+        // confirm the clean file name is actually clean
+        image.setCleanFileName(cleanFileName(image.getCleanFileName()));
         return dao.create(image);
     }
 
