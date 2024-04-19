@@ -32,12 +32,15 @@ const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
 /**
  * Provider for the current users i18n context.
  */
-export function I18nProvider({ portalShortcode, children }: { portalShortcode?: string, children: React.ReactNode }) {
+export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
+  defaultLanguage: string, portalShortcode?: string, children: React.ReactNode
+}) {
   const Api = useApiContext()
   const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [languageTexts, setLanguageTexts] = useState<Record<string, string>>({})
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem(SELECTED_LANGUAGE_KEY) || 'en')
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    localStorage.getItem(SELECTED_LANGUAGE_KEY) || defaultLanguage)
 
   const changeLanguage = (language: string) => {
     setSelectedLanguage(language)
@@ -46,7 +49,7 @@ export function I18nProvider({ portalShortcode, children }: { portalShortcode?: 
 
   useEffect(() => {
     reloadLanguageTexts(selectedLanguage)
-  }, [])
+  }, [selectedLanguage])
 
   const reloadLanguageTexts = (selectedLanguage: string) => {
     setIsLoading(true)

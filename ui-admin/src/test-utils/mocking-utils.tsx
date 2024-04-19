@@ -85,7 +85,8 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
     initialized: true,
     password: 'broad_institute',
     passwordProtected: false,
-    acceptingRegistration: true
+    acceptingRegistration: true,
+    defaultLanguage: 'en'
   },
   environmentName: envName,
   supportedLanguages: [

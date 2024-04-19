@@ -16,7 +16,7 @@ export default function PreRegistration({ registrationContext }: { registrationC
   const { surveyModel, refreshSurvey, SurveyComponent } =
     useSurveyJSModel(survey, null, handleComplete, pager)
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   /** submit the form */
   function handleComplete() {

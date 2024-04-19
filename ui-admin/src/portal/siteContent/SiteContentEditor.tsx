@@ -43,8 +43,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   } = props
   const { portalEnv } = portalEnvContext
   const initialContent = siteContent
-  // TODO (JN-863): Use the default language
-  const defaultLanguage = { languageCode: 'en', languageName: 'English' }
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
   const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
@@ -57,7 +55,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
     portalEnvContext.portalEnv.supportedLanguages.find(f =>
-      workingContent.localizedSiteContents[0]?.language === f.languageCode) || defaultLanguage)
+      workingContent.localizedSiteContents[0]?.language === f.languageCode))
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
   if (!localContent) {

@@ -18,6 +18,7 @@ import bio.terra.pearl.core.service.site.SiteMediaService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,9 +112,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     }
 
     /** loads a portal environment with everything needed to render the participant-facing site */
-    public Optional<Portal> loadWithParticipantSiteContent(String shortcodeOrHostname,
-                                                                       EnvironmentName environmentName,
-                                                                       String language) {
+    public Optional<Portal> loadWithParticipantSiteContent(
+            String shortcodeOrHostname,
+            EnvironmentName environmentName,
+            String language) {
         Optional<Portal> portalOpt = dao.findOneByShortcodeOrHostname(shortcodeOrHostname);
         portalOpt.ifPresent(portal -> {
             Optional<PortalEnvironment> portalEnv = portalEnvironmentService

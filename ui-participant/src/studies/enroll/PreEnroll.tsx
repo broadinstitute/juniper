@@ -30,7 +30,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     { extraCssClasses: { container: 'my-0' } }
   )
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   /** submit the form */
   function handleComplete() {

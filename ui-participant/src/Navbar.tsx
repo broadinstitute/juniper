@@ -28,8 +28,6 @@ export default function Navbar(props: NavbarProps) {
   const { user } = useUser()
   const navLinks = localContent.navbarItems
 
-  const languageOptions = portalEnv.supportedLanguages
-
   async function updatePreferredLanguage(selectedLanguage: string) {
     if (profile && ppUser) {
       await Api.updateProfile({
@@ -83,7 +81,7 @@ export default function Navbar(props: NavbarProps) {
         </ul>
         <ul className="navbar-nav ms-auto">
           <LanguageDropdown
-            languageOptions={languageOptions}
+            languageOptions={portalEnv.supportedLanguages}
             selectedLanguage={selectedLanguage}
             changeLanguage={changeLanguageAndUpdate}
             reloadPortal={reloadPortal}

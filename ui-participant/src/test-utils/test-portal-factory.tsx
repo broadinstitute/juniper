@@ -61,7 +61,8 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
     acceptingRegistration: true,
     initialized: true,
     password: 'password',
-    passwordProtected: false
+    passwordProtected: false,
+    defaultLanguage: 'en'
   }
 }
 
@@ -69,7 +70,6 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
 export const mockSiteContent = (): SiteContent => {
   return {
     id: 'fakeID1',
-    defaultLanguage: 'en',
     localizedSiteContents: [mockLocalSiteContent()],
     stableId: 'mockContent',
     version: 1,
