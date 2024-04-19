@@ -29,7 +29,8 @@ public class SiteMediaPopulator extends BasePopulator<SiteMedia, SiteMediaPopDto
         String popFileName = popDto.getPopulateFileName();
         byte[] imageContent = filePopulateService.readBinaryFile(popFileName, context);
         if (popDto.getCleanFileName() == null) {
-            popDto.setCleanFileName(popDto.getPopulateFileName().substring(popFileName.lastIndexOf("/") + 1));
+            popDto.setCleanFileName(SiteMediaService.cleanFileName(popDto.getPopulateFileName().substring(
+                    popFileName.lastIndexOf("/") + 1)));
         }
         popDto.setData(imageContent);
         popDto.setPortalShortcode(context.getPortalShortcode());
