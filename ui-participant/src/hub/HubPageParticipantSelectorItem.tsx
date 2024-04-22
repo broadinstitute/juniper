@@ -1,7 +1,6 @@
 import { Enrollee } from '../api/api'
 import RemainingTasksAlert from './RemainingTasksAlert'
 import React from 'react'
-import { useI18n } from '@juniper/ui-core'
 import { useActiveUser } from '../providers/ActiveUserProvider'
 import { useUser } from '../providers/UserProvider'
 
@@ -16,15 +15,13 @@ export default function HubPageParticipantSelectorItem(
     enrollee: Enrollee,
     relationshipType: string | undefined
   }) {
-  const { i18n } = useI18n()
-
   const { ppUsers } = useUser()
 
   const { setActiveUser } = useActiveUser()
 
   // TODO: add yourDependent and you keys
   const mappingRelationships: Map<string, string> = new Map([
-    ['PROXY', i18n('yourDependent')]
+    ['PROXY', 'Your Dependent']
     // in the future, there will be more relationship types, such as parent
   ])
 
@@ -35,7 +32,7 @@ export default function HubPageParticipantSelectorItem(
       return name
     } else {
       if (!relationshipType) {
-        return i18n('you')
+        return 'You'
       }
 
       return mappingRelationships.get(relationshipType)
