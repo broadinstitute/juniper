@@ -19,7 +19,6 @@ export default function HubPageParticipantSelectorItem(
 
   const { setActiveUser } = useActiveUser()
 
-  // TODO: add yourDependent and you keys
   const mappingRelationships: Map<string, string> = new Map([
     ['PROXY', 'Your Dependent']
     // in the future, there will be more relationship types, such as parent

@@ -108,7 +108,6 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
           const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, refreshLoginState)
-          // todo: refresh user state
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)
