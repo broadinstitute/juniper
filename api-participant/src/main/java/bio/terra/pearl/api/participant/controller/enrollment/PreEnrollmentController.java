@@ -11,10 +11,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.NotFoundException;
-import java.util.Optional;
-import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 public class PreEnrollmentController implements PreEnrollmentApi {
@@ -74,4 +75,17 @@ public class PreEnrollmentController implements PreEnrollmentApi {
         enrollmentService.confirmPreEnrollResponse(preRegResponseId);
     return ResponseEntity.of(responseOpt.map(response -> response));
   }
+
+
+  // TODO: endpoint for getting pre-enroll survey when adding new participant
+  //       Steps:
+  //        - get pre enroll
+  //        - get answer mappings
+  //        - use survey utils to disable proxy question
+  //        - get survey utils to set default value of true to proxy question
+  //       addGovernedUserPreEnrollSurvey()
+  // TODO: endpoint for creating new governed user
+  //       Steps:
+  //         - Call enrollAsProxy directly? Maybe with EXT method to grab proxy enrollee user
+  //       createGovernedUser()
 }
