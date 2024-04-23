@@ -3,10 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
-import {
-  surveyJSModelFromForm, makeSurveyJsData,
-  waitForImages, configureModelForPrint
-} from '@juniper/ui-core'
+import { configureModelForPrint, makeSurveyJsData, surveyJSModelFromForm, waitForImages } from '@juniper/ui-core'
 
 import Api, { Enrollee } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
@@ -88,7 +85,9 @@ const PrintSurveyView = () => {
 
   useEffect(() => {
     if (surveyModel) {
-      waitForImages().then(() => { window.print() })
+      waitForImages().then(() => {
+        window.print()
+      })
     }
   }, [surveyModel])
 
@@ -99,8 +98,8 @@ const PrintSurveyView = () => {
   } else {
     return (
       <>
-        <DocumentTitle title={surveyModel.title} />
-        <SurveyComponent model={surveyModel} />
+        <DocumentTitle title={surveyModel.title}/>
+        <SurveyComponent model={surveyModel}/>
       </>
     )
   }

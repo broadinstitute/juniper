@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -129,7 +130,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
-        ParticipantTask task = participantTaskService.authTaskToPortalParticipantUser(taskId, ppUser.getId()).get();
+
+        ParticipantTask task = participantTaskService.authTaskToEnrolleeId(taskId, enrollee.getId()).orElseThrow(() ->
+                new NotFoundException("Task not found or not authorized for enrollee %s and task %s".formatted(enrollee.getId(), taskId)));
+
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();
         validateResponse(survey, task, responseDto.getAnswers());

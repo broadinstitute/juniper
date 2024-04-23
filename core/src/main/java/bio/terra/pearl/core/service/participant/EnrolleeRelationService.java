@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -56,12 +58,26 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                 .stream().filter(enrolleeRelation -> isRelationshipValid(enrolleeRelation)).collect(Collectors.toList()).isEmpty();
     }
 
+    public Optional<Enrollee> isUserProxyForEnrollee(UUID participantUserId, String enrolleeShortcode) {
+        Enrollee targetEnrollee = enrolleeService.findOneByShortcode(enrolleeShortcode)
+                .orElseThrow(() -> new NotFoundException("Enrollee with shortcode %s was not found ".formatted(enrolleeShortcode)));
+        List<EnrolleeRelation> relations = dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, List.of(targetEnrollee.getId()));
+        if (!validRelations(relations).isEmpty()) {
+            return Optional.of(targetEnrollee);
+        }
+        return Optional.empty();
+    }
+
+    private List<EnrolleeRelation> validRelations(List<EnrolleeRelation> in) {
+        return in.stream().filter(this::isRelationshipValid).toList();
+    }
+
     public void attachTargetEnrollees(List<EnrolleeRelation> relations) {
         dao.attachTargetEnrollees(relations);
     }
 
 
-    public boolean isRelationshipValid(EnrolleeRelation enrolleeRelation){
+    public boolean isRelationshipValid(EnrolleeRelation enrolleeRelation) {
         return (enrolleeRelation.getEndDate() == null || enrolleeRelation.getEndDate().isAfter(Instant.now()));
     }
 

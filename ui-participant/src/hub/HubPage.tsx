@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { usePortalEnv } from '../providers/PortalProvider'
-import { useUser } from '../providers/UserProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
 
-import Api, { Enrollee, Portal, Study } from '../api/api'
+import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -11,13 +10,25 @@ import { alertDefaults, ParticipantDashboardAlert, useI18n } from '@juniper/ui-c
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
+import HubPageParticipantSelector from './HubPageParticipantSelector'
+import { useActiveUser } from 'providers/ActiveUserProvider'
+import { useUser } from 'providers/UserProvider'
 
 
 /** renders the logged-in hub page */
 export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
-  const { enrollees } = useUser()
+
+  const {
+    enrollees
+  } = useActiveUser()
+
+  const {
+    relations
+  } = useUser()
+
   const { i18n } = useI18n()
+
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
@@ -41,7 +52,7 @@ export default function HubPage() {
     <>
       <DocumentTitle title={i18n('navbarDashboard')} />
       <div
-        className="hub-dashboard-background flex-grow-1"
+        className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
@@ -70,7 +81,8 @@ export default function HubPage() {
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
+          {relations.length > 0 && <HubPageParticipantSelector/>}
+          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
         </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
@@ -82,23 +94,35 @@ export default function HubPage() {
 }
 
 type StudySectionProps = {
-  enrollee: Enrollee
-  portal: Portal
+  enrollee: Enrollee,
+  portal: Portal,
 }
 
 const StudySection = (props: StudySectionProps) => {
-  const { enrollee, portal } = props
+  const {
+    enrollee,
+    portal
+  } = props
+
+  const { relations } = useUser()
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
 
+  function getName(profile: Profile) {
+    if (!profile || !profile.givenName || !profile.familyName) {
+      return ''
+    }
+    return (profile && (`${profile.givenName} ${profile.familyName}`)) || ''
+  }
+
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
+      {relations.length > 0 && <h4 className="mb-4">{getName(enrollee.profile)}</h4>}
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />
     </>
   )
 }
-

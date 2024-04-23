@@ -71,7 +71,8 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
         Assertions.assertTrue(enrolleeRelationService.isUserProxyForAnyOf(proxyPpUser.getParticipantUserId(),
                 List.of(targetEnrollee1.getId(), targetEnrollee2.getId())));
-
+        Assertions.assertNotNull(enrolleeRelationService.isUserProxyForEnrollee(proxyPpUser.getParticipantUserId(),
+                targetEnrollee1.getShortcode()));
     }
 
     @Test

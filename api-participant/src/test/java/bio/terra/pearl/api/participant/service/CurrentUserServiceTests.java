@@ -1,9 +1,7 @@
 package bio.terra.pearl.api.participant.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
@@ -134,7 +132,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
             token, portalShortcode, enrolleeAndProxy.portalEnv().getEnvironmentName());
     assertThat(loadedUser.user().getUsername(), equalTo(email));
     assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
-    assertThat(loadedUser.enrollees(), hasSize(1));
+    assertThat(loadedUser.enrollees(), hasSize(2)); // includes proxy enrollees
     assertThat(loadedUser.relations(), hasSize(1));
   }
 

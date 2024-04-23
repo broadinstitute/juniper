@@ -32,11 +32,29 @@ jest.mock('../providers/PortalProvider', () => {
 jest.mock('../providers/UserProvider', () => {
   return {
     useUser: () => ({
+      relations: []
+    })
+  }
+})
+
+jest.mock('../providers/ActiveUserProvider', () => {
+  return {
+    useActiveUser: () => ({
+      ppUser: {
+        id: 'portal-participant-user-id',
+        profileId: 'profile-id'
+      },
       enrollees: [{
         id: 'enrollee-id',
         shortcode: 'ENSHORTCODE',
         consented: false,
+        subject: true,
+        profileId: 'profile-id',
         studyEnvironmentId: 'test-study-env-id',
+        profile: {
+          givenName: 'Test',
+          givenFamily: 'User'
+        },
         participantTasks: [{
           id: 'task-id',
           blocksHub: true,

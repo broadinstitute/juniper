@@ -53,7 +53,9 @@ type StudyEnrollOutletMatchedProps = {
 /** handles the rendering and useEffect logic */
 function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
-  const { user, enrollees, updateEnrollee } = useUser()
+  const { user, enrollees, refreshLoginState } = useUser()
+  const enrolleesForUser = enrollees.filter(enrollee => enrollee.participantUserId === user?.id)
+
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)
@@ -85,7 +87,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   /** route to a page depending on where in the pre-enroll/registration process the user is */
   const determineNextRoute = async () => {
-    const isAlreadyEnrolled = !!enrollees.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+    const isAlreadyEnrolled = !!enrolleesForUser.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {
@@ -105,7 +107,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
-          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, updateEnrollee)
+          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, refreshLoginState)
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)

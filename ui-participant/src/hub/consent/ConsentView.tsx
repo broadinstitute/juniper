@@ -27,6 +27,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import SurveyReviewModeButton from '../survey/ReviewModeButton'
 import SurveyAutoCompleteButton from '../survey/SurveyAutoCompleteButton'
 import { useTaskIdParam } from '../survey/SurveyView'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 /**
  * display a single consent form to a participant.  The pageNumber argument can be specified to start at the given
@@ -119,7 +120,7 @@ function PagedConsentView({ form, responses, enrollee, studyShortcode }: {
 /** handles loading the consent form and responses from the server */
 export default function ConsentView() {
   const { portal } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees } = useActiveUser()
   const [formAndResponses, setFormAndResponses] = useState<ConsentWithResponses | null>(null)
   const params = useParams()
   const stableId = params.stableId
