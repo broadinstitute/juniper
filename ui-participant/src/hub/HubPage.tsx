@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { usePortalEnv } from '../providers/PortalProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
@@ -11,8 +11,8 @@ import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
 import HubPageParticipantSelector from './HubPageParticipantSelector'
-import { useActiveUser } from '../providers/ActiveUserProvider'
-import { useUser } from '../providers/UserProvider'
+import { useActiveUser } from 'providers/ActiveUserProvider'
+import { useUser } from 'providers/UserProvider'
 
 
 /** renders the logged-in hub page */

@@ -3,12 +3,7 @@ package bio.terra.pearl.api.participant.service;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -16,13 +11,14 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -115,7 +111,7 @@ public class CurrentUserService {
           proxyUser.ifPresent(ppUsers::add);
         });
 
-    return new UserLoginDto(user, loadProfile(ppUser), ppUsers, enrollees, relations);
+    return new UserLoginDto(user, profileService.loadProfile(ppUser), ppUsers, enrollees, relations);
   }
 
   private List<Enrollee> loadEnrollees(PortalParticipantUser ppUser) {
@@ -139,12 +135,6 @@ public class CurrentUserService {
     }
 
     return relations;
-  }
-
-  private Profile loadProfile(PortalParticipantUser ppUser) {
-    return profileService
-        .loadWithMailingAddress(ppUser.getProfileId())
-        .orElseThrow(IllegalStateException::new);
   }
 
   @Transactional
