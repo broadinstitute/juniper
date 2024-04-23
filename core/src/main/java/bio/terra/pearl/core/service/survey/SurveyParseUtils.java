@@ -7,9 +7,12 @@ import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -147,6 +150,24 @@ public class SurveyParseUtils {
         Matcher matcher = EXPRESSION_DEPENDENCY.matcher(expression);
         matcher.find();
         return matcher.matches() ? matcher.group(1).trim() : null;
+    }
+
+    public static String editQuestion(ObjectMapper objectMapper, String surveyJsonData, String questionStableId, Consumer<ObjectNode> updateNote) {
+        JsonNode rootNode;
+        try {
+            rootNode = objectMapper.readTree(surveyJsonData);
+            if (rootNode.isArray()) {
+                for (JsonNode node : rootNode) {
+                    if (node.getNodeType().equals(JsonNodeType.OBJECT)
+                            && questionStableId.equals(getQuestionStableId(node))) {
+                        updateNote.accept((ObjectNode) node);
+                    }
+                }
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return rootNode.asText();
     }
 
     /**

@@ -156,6 +156,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/byStudy/{studyShortcode}/forGovernedUser:
+    get:
+      summary: Fetches the pre-enrollment survey a proxy should see when enrolling a governed user
+      tags: [ preEnrollment ]
+      operationId: fetchNewGovernedUserPreEnrollSurvey
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: pre-enroll survey
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a pre-enrollment survey
@@ -164,8 +179,6 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: surveyStableId, in: path, required: true, schema: { type: string } }
-        - { name: surveyVersion, in: path, required: true, schema: { type: integer } }
       requestBody:
         content:
           application/json:
@@ -203,7 +216,24 @@ paths:
         - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
       responses:
         '200':
-          description: preenrollment response
+          description: hub response with enrollee
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/governedUser:
+    post:
+      summary: Creates an enrollee object for the signed-in user and indicated study
+      tags: [ enrollment ]
+      operationId: createGovernedUser
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+        - { name: governedPpUserId, in: query, required: false, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: hub response with enrollee
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
