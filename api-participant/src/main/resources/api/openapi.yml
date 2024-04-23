@@ -156,21 +156,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/byStudy/{studyShortcode}/forGovernedUser:
-    get:
-      summary: Fetches the pre-enrollment survey a proxy should see when enrolling a governed user
-      tags: [ preEnrollment ]
-      operationId: fetchNewGovernedUserPreEnrollSurvey
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: pre-enroll survey
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/preEnroll/{surveyStableId}/{surveyVersion}:
     post:
       summary: Submits a pre-enrollment survey

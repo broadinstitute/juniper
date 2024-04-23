@@ -2,9 +2,6 @@ package bio.terra.pearl.api.participant.controller.enrollment;
 
 import bio.terra.pearl.api.participant.api.PreEnrollmentApi;
 import bio.terra.pearl.api.participant.service.RequestUtilService;
-import bio.terra.pearl.api.participant.service.SurveyExtService;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.ParsedPreEnrollResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
@@ -26,21 +23,18 @@ public class PreEnrollmentController implements PreEnrollmentApi {
   private final RequestUtilService requestUtilService;
   private final HttpServletRequest request;
   private final PortalService portalService;
-  private final SurveyExtService surveyExtService;
 
   public PreEnrollmentController(
       ObjectMapper objectMapper,
       EnrollmentService enrollmentService,
       RequestUtilService requestUtilService,
       PortalService portalService,
-      HttpServletRequest request,
-      SurveyExtService surveyExtService) {
+      HttpServletRequest request) {
     this.objectMapper = objectMapper;
     this.enrollmentService = enrollmentService;
     this.requestUtilService = requestUtilService;
     this.request = request;
     this.portalService = portalService;
-    this.surveyExtService = surveyExtService;
   }
 
   @Override
@@ -79,16 +73,5 @@ public class PreEnrollmentController implements PreEnrollmentApi {
     Optional<PreEnrollmentResponse> responseOpt =
         enrollmentService.confirmPreEnrollResponse(preRegResponseId);
     return ResponseEntity.of(responseOpt.map(response -> response));
-  }
-
-  @Override
-  public ResponseEntity<Object> fetchNewGovernedUserPreEnrollSurvey(
-      String portalShortcode, String envName, String studyShortcode) {
-
-    ParticipantUser user = requestUtilService.requireUser(request);
-
-    return ResponseEntity.ok(
-        surveyExtService.fetchNewGovernedUserPreEnrollmentSurvey(
-            user, portalShortcode, envName, EnvironmentName.valueOf(studyShortcode)));
   }
 }

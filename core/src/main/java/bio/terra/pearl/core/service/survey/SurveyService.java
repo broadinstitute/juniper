@@ -7,7 +7,6 @@ import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.dao.workflow.EventDao;
 import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -15,7 +14,6 @@ import bio.terra.pearl.core.service.VersionedEntityService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -215,33 +213,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
 
     public void attachAnswerMappings(Survey survey) {
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
-    }
-
-    public Survey fetchNewGovernedUserPreEnrollmentSurvey(UUID studyEnvId) {
-        Survey preEnroll = surveyDao.findPreEnrollForStudyEnv(studyEnvId);
-        List<AnswerMapping> mappings = answerMappingDao.findBySurveyId(preEnroll.getId());
-
-        // if there is a proxy question, disable it and set the default value to true
-        mappings
-                .stream()
-                .filter(mapping -> mapping.getTargetType().equals(AnswerMappingTargetType.PROXY))
-                .findAny()
-                .ifPresent(proxyAnswerMapping -> {
-                    preEnroll.setContent(
-                            SurveyParseUtils.editQuestion(
-                                    objectMapper,
-                                    preEnroll.getContent(),
-                                    proxyAnswerMapping.getQuestionStableId(),
-                                    (ObjectNode node) -> {
-                                        node.set("defaultValue",
-                                                objectMapper.valueToTree(true));
-                                        node.set("enableIf",
-                                                objectMapper.valueToTree(false));
-                                    })
-                    );
-                });
-
-        return preEnroll;
     }
 
 }
