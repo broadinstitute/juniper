@@ -32,6 +32,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -121,6 +122,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -172,6 +174,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
