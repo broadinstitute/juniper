@@ -1,25 +1,38 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+
+/**
+ * The user provide contains the _raw_ user context, which is more or less directly derived
+ * from the login state. If you are trying to access the currently active user, accounting
+ * for proxy, you should use the ActiveUserProvider.
+ */
 
 export type UserContextT = {
   user: ParticipantUser | null,
-  enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
-  ppUser?: PortalParticipantUser,
+  // these are the portal participant users and enrollees that you have access to,
+  // including proxied users. The user object is the person that is actually currently
+  // logged in.
+  ppUsers: PortalParticipantUser[]
+  enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
+  updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
+  refreshLoginState: () => void
 }
 
 /** current user object context */
 const UserContext = React.createContext<UserContextT>({
   user: null,
+  ppUsers: [],
   enrollees: [],
+  relations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -33,6 +46,9 @@ const UserContext = React.createContext<UserContextT>({
     throw new Error('context not yet initialized')
   },
   updateProfile: () => {
+    throw new Error('context not yet initialized')
+  },
+  refreshLoginState: () => {
     throw new Error('context not yet initialized')
   }
 })
@@ -128,25 +144,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     })
   }
 
-  const userContext: UserContextT = {
-    user: loginState ? loginState.user : null,
-    enrollees: loginState ? loginState.enrollees : [],
-    ppUser: loginState?.ppUser,
-    profile: loginState?.profile,
-    loginUser,
-    loginUserInternal,
-    logoutUser,
-    updateEnrollee,
-    updateProfile
-  }
-
-  useEffect(() => {
-    auth.events.addUserLoaded(user => {
-      Api.setBearerToken(user.access_token)
-      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
-    })
-
-    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
+  const refreshLoginState = async () => {
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
@@ -168,6 +166,30 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     } else {
       setIsLoading(false)
     }
+  }
+
+  const userContext: UserContextT = {
+    user: loginState ? loginState.user : null,
+    enrollees: loginState ? loginState.enrollees : [],
+    relations: loginState ? loginState.relations : [],
+    ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
+    profile: loginState?.profile,
+    loginUser,
+    loginUserInternal,
+    logoutUser,
+    updateEnrollee,
+    updateProfile,
+    refreshLoginState
+  }
+
+  useEffect(() => {
+    auth.events.addUserLoaded(user => {
+      Api.setBearerToken(user.access_token)
+      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
+    })
+
+    // Recover state for a signed-in user (internal) that we might have lost due to a full page load
+    refreshLoginState()
   }, [])
 
   return (

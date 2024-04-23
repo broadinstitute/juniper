@@ -78,11 +78,12 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
       fullData: registrationInfo
     }).then(response => {
       loginUser({
-        user: response.participantUser,
-        ppUser: response.portalParticipantUser,
+        user: response.user,
+        ppUsers: response.ppUsers,
         profile: response.profile,
-        enrollees: []
-      }, response.participantUser.token)
+        enrollees: response.enrollees,
+        relations: response.relations
+      }, response.user.token)
       if (returnTo) {
         navigate(returnTo)
       }

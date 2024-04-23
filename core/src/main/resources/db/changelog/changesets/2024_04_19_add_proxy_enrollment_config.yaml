@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_proxy_enrollment_config"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: { name: accepting_proxy_enrollment, type: boolean }

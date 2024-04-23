@@ -23,5 +23,8 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean acceptingEnrollment = true;
 
     @Builder.Default
+    private boolean acceptingProxyEnrollment = false;
+
+    @Builder.Default
     private boolean initialized = false;
 }

@@ -27,6 +27,7 @@ export const mockEnrollee: () => Enrollee = () => {
   return {
     shortcode: 'AAABBB',
     consented: true,
+    subject: true,
     id: 'enrollee1',
     participantUserId: 'user1',
     profile: {

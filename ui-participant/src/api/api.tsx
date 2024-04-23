@@ -49,20 +49,23 @@ export type {
 } from '@juniper/ui-core'
 
 export type ParticipantUser = {
+  id: string,
   username: string,
   token: string
 };
 
 export type LoginResult = {
   user: ParticipantUser,
-  ppUser: PortalParticipantUser,
+  ppUsers: PortalParticipantUser[],
   enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile: Profile
 }
 
 export type Enrollee = {
   id: string
   consented: boolean
+  subject: boolean
   consentResponses: []
   createdAt: number
   kitRequests: []
@@ -73,6 +76,20 @@ export type Enrollee = {
   profile: Profile
   profileId: string
   shortcode: string
+  studyEnvironmentId: string
+  surveyResponses: []
+}
+export type EnrolleeRelation = {
+  id: string
+  relationshipType: string,
+  targetEnrolleeId: string,
+  consentResponses: []
+  createdAt: number
+  kitRequests: []
+  lastUpdatedAt: number
+  participantTasks: ParticipantTask[]
+  participantUserId: string
+  preEnrollmentResponseId?: string
   studyEnvironmentId: string
   surveyResponses: []
 }
@@ -310,7 +327,7 @@ export default {
   async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
     preRegResponseId: string, fullData: object, preferredLanguage: string
   }):
-    Promise<RegistrationResponse> {
+      Promise<LoginResult> {
     const params = queryString.stringify({ preRegResponseId, preferredLanguage })
     const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
@@ -318,9 +335,9 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(fullData)
     })
-    const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
-    if (registrationResponse?.participantUser?.token) {
-      bearerToken = registrationResponse.participantUser.token
+    const registrationResponse = await this.processJsonResponse(response) as LoginResult
+    if (registrationResponse?.user?.token) {
+      bearerToken = registrationResponse.user.token
     }
     return registrationResponse
   },
