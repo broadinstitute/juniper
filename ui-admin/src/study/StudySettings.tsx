@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
-import { LoadedPortalContextT } from '../portal/PortalProvider'
-import PortalEnvConfigView from '../portal/PortalEnvConfigView'
+import { LoadedPortalContextT } from 'portal/PortalProvider'
+import PortalEnvConfigView from 'portal/PortalEnvConfigView'
 import { PortalEnvironment } from '@juniper/ui-core'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
@@ -11,8 +11,9 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
-import InfoPopup from '../components/forms/InfoPopup'
-import useUpdateEffect from '../util/useUpdateEffect'
+import InfoPopup from 'components/forms/InfoPopup'
+import useUpdateEffect from 'util/useUpdateEffect'
+import { userHasPermission, useUser } from 'user/UserProvider'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -33,6 +34,9 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
                                        {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const [config, setConfig] = useState(studyEnvContext.currentEnv.studyEnvironmentConfig)
   const [isLoading, setIsLoading] = useState(false)
+
+  const { user } = useUser()
+
   /** update a given field in the config */
   const updateConfig = (propName: string, value: string | boolean) => {
     setConfig(set(propName, value))
@@ -76,15 +80,20 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       </label>
     </div>
 
-    <div>
-      <label className="form-label">
-        accepting proxy enrollment <InfoPopup content={
-        `Enables enrolling as a proxy on behalf of a dependent. Note that you will need to make edits to 
+    {
+      // TODO: JN-1017 - Create zendesk article for proxy enrollment, link in info popup
+      userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
+        <div>
+          <label className="form-label">
+                accepting proxy enrollment <InfoPopup content={
+                `Enables enrolling as a proxy on behalf of a dependent. Note that you will need to make edits to 
           your pre-enrollment survey to fully enable proxy enrollment.`}/>
-        <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
-          onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
-      </label>
-    </div>
+            <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
+              onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
+          </label>
+        </div>
+      )
+    }
 
     <Button onClick={save}
       variant="primary" disabled={isLoading}
