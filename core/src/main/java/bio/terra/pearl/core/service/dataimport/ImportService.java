@@ -10,11 +10,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ImportService extends CrudService<Import, ImportDao> {
 
-    private final ImportDao importDao;
-
-    public ImportService(ImportDao dao, ImportDao importDao) {
+    public ImportService(ImportDao dao) {
         super(dao);
-        this.importDao = importDao;
     }
 
 }
