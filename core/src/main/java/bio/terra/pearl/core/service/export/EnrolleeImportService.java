@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class EnrolleeImportService {
             } catch (Exception e) {
                 success = false;
                 message = e.getMessage();
-                detail = e.getStackTrace().toString();
+                detail = Arrays.toString(e.getStackTrace());
             }
 
             ImportItem importItem;
