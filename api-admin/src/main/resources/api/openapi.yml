@@ -1692,7 +1692,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits/refreshKitStatuses:
     post:
       summary: Fetch kit statuses from Pepper and cache in the Juniper database
@@ -1724,6 +1723,22 @@ paths:
           '500':
             $ref: '#/components/responses/ServerError'
 
+    delete:
+      summary: delete imports for a study
+      tags: [ dataImport ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: importId, in: query, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: import list
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/import/{importFileName}:
     post:
       summary: imports participant data files
@@ -1740,22 +1755,6 @@ paths:
       responses:
         '200':
           description: saved import data
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-    delete:
-      summary: delete imports for a study
-      tags: [ dataImport ]
-      operationId: delete
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: importId, in: query, required: true, schema: { type: integer } }
-      responses:
-        '200':
-          description: import list
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
