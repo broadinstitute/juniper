@@ -78,6 +78,10 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
           type: 'SUCCESS'
         }
       }
+
+      if (!response.enrollee.profile) {
+        response.enrollee.profile = enrollee.profile
+      }
       updateEnrollee(response.enrollee).then(() => {
         navigate('/hub', { state: hubUpdate })
       })

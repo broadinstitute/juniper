@@ -150,7 +150,7 @@ test('updates name properly', async () => {
   const { RoutedComponent } = setupRouterTest(
     <ProvideFullTestUserContext
       profile={jsalkProfile}
-      ppUser={{ id: 'testppuserid', profile: jsalkProfile, profileId: '' }}
+      ppUser={{ id: 'testppuserid', profile: jsalkProfile, profileId: '', participantUserId: '' }}
     >
       <MockI18nProvider>
         <ParticipantProfile/>

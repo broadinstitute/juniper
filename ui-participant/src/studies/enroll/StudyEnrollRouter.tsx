@@ -57,17 +57,21 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
 
   const [searchParams] = useSearchParams()
-  const isProxyEnrollment = searchParams.get('proxy_enrollment') === 'true'
-  const governedPpUserId = searchParams.get('governed_pp_user_id')
+  const isProxyEnrollment = searchParams.get('isProxyEnrollment') === 'true'
+  const governedPpUserId = searchParams.get('governedPpUserId')
 
   const { user, ppUsers, enrollees, refreshLoginState } = useUser()
 
   // ppUser / enrollees for the user or the proxied user depending on the context
-  const ppUser = governedPpUserId
-    ? ppUsers.find(ppUser => ppUser.id === governedPpUserId)
+  const ppUser = isProxyEnrollment
+    ? ppUsers.find(ppUser => ppUser.id === governedPpUserId) // could be null if new user enrollment
     : ppUsers.find(ppUser => ppUser.participantUserId === user?.id)
+
   const enrolleesForUser = enrollees.filter(enrollee => enrollee.profileId === ppUser?.profileId)
 
+  console.log(isProxyEnrollment)
+  console.log(ppUser)
+  console.log(enrolleesForUser)
 
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
@@ -136,7 +140,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         }
       }
     } else {
-      navigate('preEnroll', { replace: true })
+      navigate(`preEnroll?${searchParams.toString()}`, { replace: true })
     }
   }
 

@@ -81,7 +81,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     }
 
     // set proxy question to true by default so any proxy-specific questions are shown
-    surveyModel.data[proxyQuestion] = true
+    surveyModel.setValue(proxyQuestion, 'true')
     // disable proxy question so the user can't change it
     surveyModel.getQuestionByName(proxyQuestion).readOnly = true
   }
