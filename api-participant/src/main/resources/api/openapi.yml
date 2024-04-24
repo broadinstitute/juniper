@@ -164,6 +164,8 @@ paths:
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: surveyStableId, in: path, required: true, schema: { type: string } }
+        - { name: surveyVersion, in: path, required: true, schema: { type: integer } }
       requestBody:
         content:
           application/json:
@@ -205,9 +207,11 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/governedUser:
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/governedUser:
     post:
-      summary: Creates an enrollee object for the signed-in user and indicated study
+      summary:
+        Creates a new proxy enrollee signed-in user and indicated study. If no governedPpUserId is provided,
+        then they will be registered as well.
       tags: [ enrollment ]
       operationId: createGovernedUser
       parameters:
@@ -306,6 +310,24 @@ paths:
       responses:
         '200':
           description: consent form and past responses
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/answerMapping/{stableId}/{version}/{targetType}/{targetField}:
+    get:
+      summary: Finds a specific answer mapping for a survey within a portal.
+      tags: [ answerMapping ]
+      operationId: findAnswerMapping
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: false, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: targetType, in: path, required: true, schema: { type: string } }
+        - { name: targetField, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: answer mapping object
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

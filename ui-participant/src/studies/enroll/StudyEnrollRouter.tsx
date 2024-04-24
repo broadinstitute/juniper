@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useUser } from 'providers/UserProvider'
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
 import Api, { ParticipantUser, Portal, StudyEnvironment, Survey } from 'api/api'
 import NavBar from '../../Navbar'
@@ -13,7 +13,7 @@ import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPers
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import { alertDefaults, AlertLevel } from '@juniper/ui-core'
-import { enrollCurrentUserInStudy } from '../../util/enrolleeUtils'
+import { enrollCurrentUserInStudy, enrollProxyUserInStudy } from '../../util/enrolleeUtils'
 import { logError } from '../../util/loggingUtils'
 
 export type StudyEnrollContext = {
@@ -21,12 +21,14 @@ export type StudyEnrollContext = {
   studyEnv: StudyEnvironment,
   studyShortcode: string,
   preEnrollResponseId: string | null,
-  updatePreEnrollResponseId: (newId: string | null) => void
+  updatePreEnrollResponseId: (newId: string | null) => void,
+  isProxyEnrollment: boolean
 }
 
 /** Handles routing and loading for enrollment in a study */
 export default function StudyEnrollRouter() {
   const studyShortcode = useParams().studyShortcode
+
   const { portal } = usePortalEnv()
   const matchedStudy = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
   const studyEnv = matchedStudy?.studyEnvironments[0]
@@ -53,8 +55,19 @@ type StudyEnrollOutletMatchedProps = {
 /** handles the rendering and useEffect logic */
 function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
-  const { user, enrollees, refreshLoginState } = useUser()
-  const enrolleesForUser = enrollees.filter(enrollee => enrollee.participantUserId === user?.id)
+
+  const [searchParams] = useSearchParams()
+  const isProxyEnrollment = searchParams.get('proxy_enrollment') === 'true'
+  const governedPpUserId = searchParams.get('governed_pp_user_id')
+
+  const { user, ppUsers, enrollees, refreshLoginState } = useUser()
+
+  // ppUser / enrollees for the user or the proxied user depending on the context
+  const ppUser = governedPpUserId
+    ? ppUsers.find(ppUser => ppUser.id === governedPpUserId)
+    : ppUsers.find(ppUser => ppUser.participantUserId === user?.id)
+  const enrolleesForUser = enrollees.filter(enrollee => enrollee.profileId === ppUser?.profileId)
+
 
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
@@ -91,7 +104,9 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {
-          title: `You are already enrolled in ${studyName}.`,
+          title: isProxyEnrollment
+            ? `This user is already enrolled in ${studyName}`
+            : `You are already enrolled in ${studyName}.`,
           type: alertDefaults['STUDY_ALREADY_ENROLLED'].type as AlertLevel
         }
       }
@@ -107,7 +122,13 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       } else {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
-          const hubUpdate = enrollCurrentUserInStudy(studyShortcode, studyName, preEnrollResponseId, refreshLoginState)
+          const hubUpdate = isProxyEnrollment
+            ? enrollProxyUserInStudy(
+              studyShortcode, studyName, preEnrollResponseId, governedPpUserId, refreshLoginState
+            )
+            : enrollCurrentUserInStudy(
+              studyShortcode, studyName, preEnrollResponseId, refreshLoginState
+            )
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {
           logError({ message: 'Error on StudyEnroll' }, (e as ErrorEvent)?.error?.stack)
@@ -125,7 +146,12 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   }, [mustProvidePassword, preEnrollSatisfied, user?.username])
 
   const enrollContext: StudyEnrollContext = {
-    studyShortcode, studyEnv, user, preEnrollResponseId, updatePreEnrollResponseId
+    studyShortcode,
+    studyEnv,
+    user,
+    preEnrollResponseId,
+    updatePreEnrollResponseId,
+    isProxyEnrollment
   }
   const hasPreEnroll = !!enrollContext.studyEnv.preEnrollSurvey
   return <>

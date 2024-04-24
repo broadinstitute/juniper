@@ -16,7 +16,7 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
-  const { studyEnv, updatePreEnrollResponseId } = enrollContext
+  const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment } = enrollContext
   const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
@@ -65,10 +65,37 @@ export default function PreEnrollView({ enrollContext, survey }:
     })
   }
 
+  const fetchProxyQuestion = async (): Promise<string | null> => {
+    try {
+      const proxyAnswerMapping = await Api.findAnswerMapping(survey.stableId, survey.version, 'PROXY', 'isProxy')
+      return proxyAnswerMapping?.questionStableId
+    } catch (e) {
+      return null
+    }
+  }
+
+  const disableProxyQuestion = async () => {
+    const proxyQuestion = await fetchProxyQuestion()
+    if (!proxyQuestion) {
+      return
+    }
+
+    // set proxy question to true by default so any proxy-specific questions are shown
+    surveyModel.data[proxyQuestion] = true
+    // disable proxy question so the user can't change it
+    surveyModel.getQuestionByName(proxyQuestion).readOnly = true
+  }
+
+
   useEffect(() => {
     // if we're on this page, make sure we clear out any saved response ids -- this handles cases where the user
     // uses the back button
     updatePreEnrollResponseId(null)
+
+    // also, if we're doing proxy enrollment, we need to pre-set the proxy question, if it exists
+    if (isProxyEnrollment) {
+      disableProxyQuestion()
+    }
   }, [])
 
   return (

@@ -24,3 +24,30 @@ export async function enrollCurrentUserInStudy(studyShortcode: string, studyName
   await refreshLogin()
   return hubUpdate
 }
+
+/**
+ * Enrolls a proxy user in a study; if the proxyPpUserId is provided, then it will be attached
+ * to an existing user, otherwise a new user will be created.
+ */
+export async function enrollProxyUserInStudy(
+  studyShortcode: string,
+  studyName: string,
+  preEnrollResponseId: string | null,
+  governedPpUserId: string | null,
+  refreshLogin: () => void
+) {
+  await Api.createGovernedEnrollee({
+    studyShortcode,
+    preEnrollResponseId,
+    governedPpUserId
+  })
+  const hubUpdate: HubUpdate = {
+    message: {
+      title: `Welcome to ${studyName}`,
+      detail: alertDefaults['WELCOME'].detail,
+      type: alertDefaults['WELCOME'].type as AlertLevel
+    }
+  }
+  await refreshLogin()
+  return hubUpdate
+}
