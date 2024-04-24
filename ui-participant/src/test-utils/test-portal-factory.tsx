@@ -4,7 +4,9 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
-  SiteContent, Study, StudyEnvironment
+  SiteContent,
+  Study,
+  StudyEnvironment
 } from '@juniper/ui-core'
 
 /** mock portal object with one environment */
@@ -34,6 +36,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
     environmentName: 'sandbox',
     studyEnvironmentConfig: {
       acceptingEnrollment: true,
+      acceptingProxyEnrollment: false,
       initialized: true,
       passwordProtected: false,
       password: 'password'

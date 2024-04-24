@@ -124,7 +124,7 @@ public class RegistrationService {
         ppUser.setPortalEnvironmentId(portalEnv.getId());
         ppUser.setParticipantUserId(user.getId());
 
-        Profile profile =  Profile.builder()
+        Profile profile = Profile.builder()
                 .contactEmail(info.getEmail())
                 .givenName(info.getFirstName())
                 .familyName(info.getLastName())

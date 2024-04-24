@@ -74,7 +74,8 @@ public class ConsentResponseService extends ImmutableEntityService<ConsentRespon
                                                        Enrollee enrollee, ConsentResponseDto responseDto) {
         ConsentForm responseForm = consentFormService.find(responseDto.getConsentFormId()).get();
         ParticipantTask task = participantTaskService
-                .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), responseForm.getStableId()).get();
+                .findTaskForActivity(enrollee, enrollee.getStudyEnvironmentId(),
+                        responseForm.getStableId()).get();
         validateResponse(responseDto, responseForm, task);
         processResponseDto(responseDto);
         ConsentResponse response = create(participantUserId, enrollee.getId(), task, responseDto);

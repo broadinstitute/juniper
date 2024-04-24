@@ -1,11 +1,9 @@
 package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 
 import java.time.Instant;
@@ -13,7 +11,6 @@ import java.util.*;
 
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,12 +37,16 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
 
     public void deleteByEnrolleeId(UUID enrolleeId) { dao.deleteByEnrolleeId(enrolleeId);}
 
-    public Optional<ParticipantTask> authTaskToPortalParticipantUser(UUID taskId, UUID ppUserId) {
-        return dao.findByPortalParticipantUserId(taskId, ppUserId);
+    public Optional<ParticipantTask> authTaskToEnrolleeId(UUID taskId, UUID enrolleeId) {
+        return dao.findByEnrolleeId(taskId, enrolleeId);
     }
 
     public Optional<ParticipantTask> findTaskForActivity(UUID ppUserId, UUID studyEnvironmentId, String activityStableId) {
         return dao.findTaskForActivity(ppUserId, studyEnvironmentId, activityStableId);
+    }
+
+    public Optional<ParticipantTask> findTaskForActivity(Enrollee enrollee, UUID studyEnvironmentId, String activityStableId) {
+        return dao.findTaskForActivity(enrollee, studyEnvironmentId, activityStableId);
     }
 
     public Optional<ParticipantTask> findByKitRequestId(UUID kitRequestId) {

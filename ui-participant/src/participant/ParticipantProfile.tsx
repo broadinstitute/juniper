@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useUser } from 'providers/UserProvider'
 import { dateToDefaultString, MailingAddress, useI18n } from '@juniper/ui-core'
 import Api, { Profile } from 'api/api'
 import { isEmpty } from 'lodash'
@@ -13,6 +12,7 @@ import {
   EditNameModal,
   EditPhoneNumber
 } from './EditParticipantProfileModals'
+import { useActiveUser } from '../providers/ActiveUserProvider'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -22,7 +22,7 @@ import {
 export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
-  const { ppUser, profile, updateProfile } = useUser()
+  const { ppUser, profile, updateProfile } = useActiveUser()
 
   const { i18n } = useI18n()
 

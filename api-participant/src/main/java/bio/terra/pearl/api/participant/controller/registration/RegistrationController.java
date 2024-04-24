@@ -65,17 +65,9 @@ public class RegistrationController implements RegistrationApi {
     RegistrationService.RegistrationResult registrationResult =
         registrationService.register(
             portalShortcode, environmentName, body.getEmail(), preRegResponseId, preferredLanguage);
-    // log in the user if not already
-    if (registrationResult.participantUser().getToken() == null) {
-      CurrentUserService.UserLoginDto loggedInUser =
-          currentUnauthedUserService.unauthedLogin(
-              registrationResult.participantUser().getUsername(), portalShortcode, environmentName);
-      registrationResult =
-          new RegistrationService.RegistrationResult(
-              loggedInUser.user(),
-              registrationResult.portalParticipantUser(),
-              registrationResult.profile());
-    }
-    return ResponseEntity.ok(registrationResult);
+    CurrentUserService.UserLoginDto loggedInUser =
+        currentUnauthedUserService.unauthedLogin(
+            registrationResult.participantUser().getUsername(), portalShortcode, environmentName);
+    return ResponseEntity.ok(loggedInUser);
   }
 }

@@ -3,8 +3,9 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.address.MailingAddress;
-import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,5 +73,10 @@ public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
             mailingAddressDao.find(p.getMailingAddressId()).ifPresent(p::setMailingAddress);
         }
         return p;
+    }
+
+    public Profile loadProfile(PortalParticipantUser ppUser) {
+        return loadWithMailingAddress(ppUser.getProfileId())
+                .orElseThrow(IllegalStateException::new);
     }
 }

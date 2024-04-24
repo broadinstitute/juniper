@@ -255,6 +255,9 @@ databaseChangeLog:
       file: changesets/2024_04_12_remove_sitemedia_uploadfilename.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_04_19_add_proxy_enrollment_config.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_04_16_data_import.yaml
       relativeToChangelogFile: true
 

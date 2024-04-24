@@ -1,4 +1,4 @@
-import React  from 'react'
+import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Study, StudyEnvironment } from 'api/api'
 import { Link } from 'react-router-dom'
@@ -68,9 +68,10 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
   const config = studyEnv.studyEnvironmentConfig
   return <div>
     <label>Password protected:</label> {config.passwordProtected ? 'Yes' : 'No'}
-    { config.passwordProtected && <span className="detail ms-3">{config.password}</span> }
+    {config.passwordProtected && <span className="detail ms-3">{config.password}</span>}
     <br/>
     <label>Accepting enrollment:</label> {config.acceptingEnrollment ? 'Yes' : 'No'}<br/>
+    <label>Accepting proxy enrollment:</label> {config.acceptingProxyEnrollment ? 'Yes' : 'No'}<br/>
     <p>
       <Link to={`env/${studyEnv.environmentName}`}>View / Configure</Link>
     </p>

@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.workflow;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -33,6 +34,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public Optional<ParticipantTask> findByEnrolleeId(UUID taskId, UUID enrolleeId) {
+        return findByTwoProperties("id", taskId, "enrollee_id", enrolleeId);
+    }
+
     public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
         return findAllByPropertyCollection("enrollee_id", enrolleeIds)
                 .stream().collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toList()));
@@ -45,6 +50,20 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
                                 + " and target_stable_id = :activityStableId and study_environment_id = :studyEnvironmentId"
                         )
                         .bind("ppUserId", ppUserId)
+                        .bind("activityStableId", activityStableId)
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .mapTo(clazz)
+                        .stream().findFirst()
+        );
+    }
+
+    /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the first */
+    public Optional<ParticipantTask> findTaskForActivity(Enrollee enrollee, UUID studyEnvironmentId, String activityStableId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select * from " + tableName + " where enrollee_id = :enrolleeId "
+                                + " and target_stable_id = :activityStableId and study_environment_id = :studyEnvironmentId"
+                        )
+                        .bind("enrolleeId", enrollee.getId())
                         .bind("activityStableId", activityStableId)
                         .bind("studyEnvironmentId", studyEnvironmentId)
                         .mapTo(clazz)

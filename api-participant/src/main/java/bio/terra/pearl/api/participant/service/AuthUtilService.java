@@ -38,14 +38,17 @@ public class AuthUtilService {
    * returns the enrollee if the user is authorized to access/modify it, throws an error otherwise
    */
   public Enrollee authParticipantUserToEnrollee(UUID participantUserId, String enrolleeShortcode) {
-    // for now, a user is only allowed to access an enrollee if it's themself.  Later, we'll add
-    // proxies
+    // a user is only allowed to access an enrollee if it's themself or their proxy
     Optional<Enrollee> enrolleeOpt =
         enrolleeService.findByParticipantUserIdAndShortcode(participantUserId, enrolleeShortcode);
-    if (enrolleeOpt.isEmpty()) {
-      throw new PermissionDeniedException("Access denied for %s".formatted(enrolleeShortcode));
-    }
-    return enrolleeOpt.get();
+    return enrolleeOpt.orElseGet(
+        () ->
+            enrolleeRelationService
+                .isUserProxyForEnrollee(participantUserId, enrolleeShortcode)
+                .orElseThrow(
+                    () ->
+                        new PermissionDeniedException(
+                            "Access denied for %s".formatted(enrolleeShortcode))));
   }
 
   public PortalParticipantUser authParticipantUserToPortalParticipantUser(
