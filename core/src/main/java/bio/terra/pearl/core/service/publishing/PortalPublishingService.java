@@ -196,7 +196,7 @@ public class PortalPublishingService {
     private ParticipantDashboardAlert getDefaultDashboardAlert(PortalEnvironment destEnv, AlertTrigger trigger) {
         return ParticipantDashboardAlert.builder()
                 .portalEnvironmentId(destEnv.getId())
-                .type(AlertType.PRIMARY)
+                .alertType(AlertType.PRIMARY)
                 .title("")
                 .detail("")
                 .portalEnvironmentId(destEnv.getId())

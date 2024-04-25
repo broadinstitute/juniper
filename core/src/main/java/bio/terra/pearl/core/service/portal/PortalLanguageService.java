@@ -15,7 +15,7 @@ public class PortalLanguageService extends ImmutableEntityService<PortalEnvironm
         super(portalLanguageDao);
     }
 
-    public List<PortalEnvironmentLanguage> findByPortalId(UUID portalId) {
+    public List<PortalEnvironmentLanguage> findByPortalEnvId(UUID portalId) {
         return dao.findByPortalEnvId(portalId);
     }
 

@@ -72,7 +72,7 @@ public class DashboardExtService {
 
     alert.setTitle(newAlert.getTitle());
     alert.setDetail(newAlert.getDetail());
-    alert.setType(newAlert.getType());
+    alert.setAlertType(newAlert.getAlertType());
     return portalDashboardConfigService.update(alert);
   }
 
