@@ -92,7 +92,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       const hubUpdate: HubUpdate = {
         message: {
           title: `You are already enrolled in ${studyName}.`,
-          type: alertDefaults['STUDY_ALREADY_ENROLLED'].type as AlertLevel
+          type: alertDefaults['STUDY_ALREADY_ENROLLED'].alertType as AlertLevel
         }
       }
       navigate('/hub', { replace: true, state: hubUpdate })
