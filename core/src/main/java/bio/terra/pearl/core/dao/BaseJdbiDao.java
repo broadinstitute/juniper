@@ -17,13 +17,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -254,6 +248,19 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
                         .bind("columnValue", columnValue)
                         .mapTo(clazz)
                         .findOne()
+        );
+    }
+
+    public List<T> findByTriggerId(UUID triggerId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "select sge.* from " + tableName + " sge " +
+                                        " inner join notification n on n.id = sge.notification_id " +
+                                        " inner join trigger t on t.id = n.trigger_id " +
+                                        " where t.id = :triggerId")
+                        .bind("triggerId", triggerId)
+                        .mapTo(clazz)
+                        .list()
         );
     }
 
