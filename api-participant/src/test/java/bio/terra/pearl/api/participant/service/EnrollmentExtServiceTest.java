@@ -1,7 +1,5 @@
 package bio.terra.pearl.api.participant.service;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -21,11 +19,14 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyService;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class EnrollmentExtServiceTest extends BaseSpringBootTest {
 
@@ -47,10 +48,10 @@ class EnrollmentExtServiceTest extends BaseSpringBootTest {
   void testEnrollGovernedUser_NewProxy(TestInfo info) {
     // step 1: create portal env
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-    // step 2: create 1 study envs
+    // step 2: create a study env
     StudyEnvironment studyEnvironment =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-    // step 3: enroll a user with a proxy via factor
+    // step 3: enroll a user with a proxy via factory
     EnrolleeFactory.EnrolleeAndProxy bundle =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info), portalEnv, studyEnvironment);
@@ -87,12 +88,12 @@ class EnrollmentExtServiceTest extends BaseSpringBootTest {
   void testEnrollGovernedUser_ExistingProxyNewStudy(TestInfo info) {
     // step 1: create portal env
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-    // step 2: create 1 study envs
+    // step 2: create 2 study envs
     StudyEnvironment studyEnvironment1 =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
     StudyEnvironment studyEnvironment2 =
         studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-    // step 3: enroll a user with a proxy via factor
+    // step 3: enroll a user with a proxy via factory
     EnrolleeFactory.EnrolleeAndProxy bundle =
         enrolleeFactory.buildProxyAndGovernedEnrollee(
             getTestName(info), portalEnv, studyEnvironment1);
