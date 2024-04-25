@@ -56,6 +56,10 @@ public class NotificationService extends CrudService<Notification, NotificationD
             attachEnrollees(notifications);
         }
 
+        for (Notification notification : notifications) {
+            dao.attachSendgridEvent(notification);
+        }
+
         return notifications;
     }
 
