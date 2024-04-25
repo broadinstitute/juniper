@@ -1,5 +1,7 @@
 package bio.terra.pearl.api.participant.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import bio.terra.pearl.api.participant.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -19,14 +21,11 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EnrollmentExtServiceTest extends BaseSpringBootTest {
 
