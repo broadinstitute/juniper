@@ -251,19 +251,6 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    public List<T> findByTriggerId(UUID triggerId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery(
-                                "select sge.* from " + tableName + " sge " +
-                                        " inner join notification n on n.id = sge.notification_id " +
-                                        " inner join trigger t on t.id = n.trigger_id " +
-                                        " where t.id = :triggerId")
-                        .bind("triggerId", triggerId)
-                        .mapTo(clazz)
-                        .list()
-        );
-    }
-
 
     protected List<T> findAllByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
