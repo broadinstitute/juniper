@@ -5,20 +5,18 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
-public class ImportController implements DataImportApi {
+public class DataImportController implements DataImportApi {
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private EnrolleeImportExtService enrolleeImportExtService;
 
-  public ImportController(
+  public DataImportController(
       AuthUtilService authUtilService,
       HttpServletRequest request,
       EnrolleeImportExtService enrolleeImportExtService) {
@@ -35,22 +33,18 @@ public class ImportController implements DataImportApi {
 
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
-    return DataImportApi.super.get(portalShortcode, studyShortcode, envName);
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(enrolleeImportExtService.list(portalShortcode, operator));
   }
 
   @Override
   public ResponseEntity<Object> callImport(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      String importFileName,
-      Object body) {
+      String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     try {
-      InputStream inputStream = new DataInputStream(new FileInputStream(importFileName));
       return ResponseEntity.ok(
           enrolleeImportExtService.importData(
-              portalShortcode, studyShortcode, envName, inputStream, operator));
+              portalShortcode, studyShortcode, envName, importFile.getInputStream(), operator));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read import data");
     }

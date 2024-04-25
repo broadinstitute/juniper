@@ -7,6 +7,8 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
+import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.dataimport.ImportType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import org.junit.jupiter.api.Test;
@@ -39,8 +41,8 @@ public class ImportServiceTest extends BaseSpringBootTest {
         Import dataImport = Import.builder()
                 .responsibleUserId(savedAdmin.getId())
                 .studyEnvironmentId(bundle.getStudyEnv().getId())
-                .type("PARTICIPANT")
-                .status("PROCESSING")
+                .importType(ImportType.PARTICIPANT)
+                .status(ImportStatus.PROCESSING)
                 .createdAt(Instant.now())
                 .lastUpdatedAt(Instant.now())
                 .build();

@@ -3,6 +3,9 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
+import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
+import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.dataimport.ImportType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -92,8 +95,8 @@ public class EnrolleeImportService {
                 .responsibleUserId(adminId)
                 .studyEnvironmentId(studyEnv.getId())
                 .responsibleUserId(adminId)
-                .type("PARTICIPANT")
-                .status("PROCESSING")
+                .importType(ImportType.PARTICIPANT)
+                .status(ImportStatus.PROCESSING)
                 .createdAt(Instant.now())
                 .lastUpdatedAt(Instant.now())
                 .build();
@@ -102,42 +105,32 @@ public class EnrolleeImportService {
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
             Enrollee enrollee = null;
-            boolean success = true;
-            String detail = null;
-            String message = null;
+            ImportItem importItem;
             try {
                 enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
+                importItem = ImportItem.builder()
+                        .createdEnrolleeId(enrollee.getId())
+                        .importId(dataImport.getId())
+                        .createdParticipantUserId(enrollee.getParticipantUserId())
+                        .createdAt(Instant.now())
+                        .lastUpdatedAt(Instant.now())
+                        .status(ImportItemStatus.SUCCESS).build();
             } catch (Exception e) {
-                success = false;
-                message = e.getMessage();
-                detail = Arrays.toString(e.getStackTrace());
-            }
-
-            ImportItem importItem;
-            if (success) {
                 importItem = ImportItem.builder()
                         .createdEnrolleeId(enrollee.getId())
                         .importId(dataImport.getId())
                         .createdParticipantUserId(enrollee.getParticipantUserId())
                         .createdAt(Instant.now())
                         .lastUpdatedAt(Instant.now())
-                        .status("SUCCESS").build();
-            } else {
-                importItem = ImportItem.builder()
-                        .createdEnrolleeId(enrollee.getId())
-                        .importId(dataImport.getId())
-                        .createdParticipantUserId(enrollee.getParticipantUserId())
-                        .createdAt(Instant.now())
-                        .lastUpdatedAt(Instant.now())
-                        .status("FAILED")
-                        .detail(detail)
-                        .message(message).build();
+                        .status(ImportItemStatus.FAILED)
+                        .message(e.getMessage())
+                        .detail(Arrays.toString(e.getStackTrace())).build();
             }
 
             ImportItem importItem1 = importItemService.create(importItem);
             log.debug("populated Import Item ID: {}", importItem1.getId());
         }
-        dataImport.setStatus("DONE");
+        dataImport.setStatus(ImportStatus.DONE);
         importService.update(dataImport);
         importItemService.attachImportItems(dataImport);
         log.info("Completed importing : {} items for Import ID: {}", dataImport.getImportItems().size(), dataImport.getId());

@@ -14,7 +14,7 @@ public class ImportItem extends BaseEntity {
     private UUID createdEnrolleeId;
     private UUID createdParticipantUserId;
     private UUID importId;
-    private String status;
+    private ImportItemStatus status;
     private String message;
     private String detail;
 

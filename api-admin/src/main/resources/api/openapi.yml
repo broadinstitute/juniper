@@ -1707,7 +1707,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/dataImports:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/dataImport:
     get:
         summary: Gets a list of imports for a study
         tags: [ dataImport ]
@@ -1739,7 +1739,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/import/{importFileName}:
     post:
       summary: imports participant data files
       tags: [ dataImport ]
@@ -1748,10 +1747,15 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: importFileName, in: path, required: true, schema: { type: string } }
       requestBody:
-        required: true
-        content: { application/json: { schema: { type: object } } }
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                importFile:
+                  type: string
+                  format: binary
       responses:
         '200':
           description: saved import data

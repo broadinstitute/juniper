@@ -16,8 +16,8 @@ import java.util.UUID;
 public class Import extends BaseEntity {
     private UUID responsibleUserId;
     private UUID studyEnvironmentId;
-    private String type;
-    private String status;
+    private ImportType importType;
+    private ImportStatus status;
     @Builder.Default
     private List<ImportItem> importItems = new ArrayList<>();
 }

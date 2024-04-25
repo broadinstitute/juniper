@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
+import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -88,6 +89,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
+        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
         importItemService.attachImportItems(dataImport);
         List<ImportItem> imports = dataImport.getImportItems();
         assertThat(imports, hasSize(2));
