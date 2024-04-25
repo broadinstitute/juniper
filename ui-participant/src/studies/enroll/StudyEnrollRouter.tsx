@@ -69,10 +69,6 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   const enrolleesForUser = enrollees.filter(enrollee => enrollee.profileId === ppUser?.profileId)
 
-  console.log(isProxyEnrollment)
-  console.log(ppUser)
-  console.log(enrolleesForUser)
-
   const navigate = useNavigate()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [preEnrollSatisfied, setPreEnrollSatisfied] = useState(!studyEnv.preEnrollSurvey)

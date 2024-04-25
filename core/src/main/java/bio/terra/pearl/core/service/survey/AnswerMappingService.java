@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.ImmutableEntityService;
-import bio.terra.pearl.core.service.portal.PortalService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,12 +13,11 @@ import java.util.UUID;
 @Service
 public class AnswerMappingService extends ImmutableEntityService<AnswerMapping, AnswerMappingDao> {
     private final SurveyService surveyService;
-    private final PortalService portalService;
 
-    public AnswerMappingService(AnswerMappingDao dao, SurveyService surveyService, PortalService portalService) {
+    public AnswerMappingService(AnswerMappingDao dao,
+                                SurveyService surveyService) {
         super(dao);
         this.surveyService = surveyService;
-        this.portalService = portalService;
     }
 
     public Optional<AnswerMapping> findByTargetField(String portalShortcode, String surveyStableId, int surveyVersion, AnswerMappingTargetType type, String targetField) {
