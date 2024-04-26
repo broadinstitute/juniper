@@ -16,7 +16,7 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
-  const { studyEnv, updatePreEnrollResponseId } = enrollContext
+  const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment } = enrollContext
   const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
@@ -26,8 +26,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
-    undefined,
-    { extraCssClasses: { container: 'my-0' } }
+    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 
   surveyModel.locale = selectedLanguage || 'default'
@@ -64,6 +63,7 @@ export default function PreEnrollView({ enrollContext, survey }:
       refreshSurvey(surveyModel.data, 1)
     })
   }
+
 
   useEffect(() => {
     // if we're on this page, make sure we clear out any saved response ids -- this handles cases where the user

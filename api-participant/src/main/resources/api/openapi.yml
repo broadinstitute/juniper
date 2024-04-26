@@ -203,7 +203,26 @@ paths:
         - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
       responses:
         '200':
-          description: preenrollment response
+          description: hub response with enrollee
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/governedUser:
+    post:
+      summary:
+        Creates a new proxy enrollee signed-in user and indicated study. If no governedPpUserId is provided,
+        then they will be registered as well.
+      tags: [ enrollment ]
+      operationId: createGovernedUser
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: preEnrollResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+        - { name: governedPpUserId, in: query, required: false, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: hub response with enrollee
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
