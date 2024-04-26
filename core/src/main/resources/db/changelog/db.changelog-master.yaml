@@ -244,7 +244,7 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changesets/2024_04_03_anonymous_user_responsible_entity.yaml
-      relativeToChangelogFile: true        
+      relativeToChangelogFile: true
   - include:
       file: changesets/2024_04_08_portal_env_default_language.yaml
       relativeToChangelogFile: true
@@ -256,6 +256,12 @@ databaseChangeLog:
       relativeToChangelogFile: true
   - include:
       file: changesets/2024_04_19_add_proxy_enrollment_config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_16_data_import.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_26_rename_alert_type.yaml
       relativeToChangelogFile: true
 
 

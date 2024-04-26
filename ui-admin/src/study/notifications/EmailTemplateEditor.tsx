@@ -1,9 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
-import { EmailTemplate } from '@juniper/ui-core'
+import { EmailTemplate, PortalEnvironmentLanguage } from '@juniper/ui-core'
 import { Tab, Tabs } from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
-import { useDefaultLanguage } from 'portal/useDefaultPortalLanguage'
+import { usePortalLanguage } from 'portal/usePortalLanguage'
+import useReactSingleSelect from 'util/react-select-utils'
+import Select from 'react-select'
 
 export type EmailTemplateEditorProps = {
   emailTemplate: EmailTemplate,
@@ -19,9 +21,31 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
   const emailTemplateRef = useRef(emailTemplate)
   emailTemplateRef.current = emailTemplate
   const [activeTab, setActiveTab] = useState<string | null>('designer')
-  const defaultLanguage = useDefaultLanguage()
+  const { defaultLanguage, supportedLanguages } = usePortalLanguage()
+  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
   const localizedEmailTemplate = emailTemplate.localizedEmailTemplates.find(template =>
-    template.language === defaultLanguage.languageCode)
+    template.language === selectedLanguage?.languageCode)
+
+  useEffect(() => {
+    if (emailEditorRef.current?.editor && localizedEmailTemplate) {
+      emailEditorRef.current.editor.loadDesign({
+        // @ts-ignore
+        html: replacePlaceholders(localizedEmailTemplate.body),
+        classic: true
+      })
+    }
+  }, [localizedEmailTemplate])
+
+  const {
+    onChange: languageOnChange, options: languageOptions,
+    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
+  } =
+      useReactSingleSelect(
+        supportedLanguages,
+        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
+        setSelectedLanguage,
+        selectedLanguage
+      )
 
   if (!localizedEmailTemplate) {
     return <div>no localized template found for {defaultLanguage.languageCode}</div>
@@ -66,6 +90,15 @@ export default function EmailTemplateEditor({ emailTemplate, updateEmailTemplate
                 ({emailTemplate.stableId} {templateVersionString})
       </div>
     </div>
+    { supportedLanguages.length > 1 && <div style={{ width: 200 }}>
+      <label className="form-label">Language
+        <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+          aria-label={'Select a language'}
+          onChange={e => {
+            languageOnChange(e)
+          }}/>
+      </label>
+    </div> }
     <div>
       <label className="form-label">Subject
         <input className="form-control" type="text" size={100} value={localizedEmailTemplate.subject}

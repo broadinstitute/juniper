@@ -1,13 +1,17 @@
 package bio.terra.pearl.populate;
 
+import bio.terra.pearl.core.dao.dashboard.ParticipantDashboardAlertDao;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.export.DictionaryExportService;
 import bio.terra.pearl.core.service.export.EnrolleeExportService;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -74,4 +78,10 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected ParticipantUserService participantUserService;
     @Autowired
     protected ProfileService profileService;
+    @Autowired
+    protected ParticipantDashboardAlertDao participantDashboardAlertDao;
+    @Autowired
+    protected StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    @Autowired
+    protected PortalLanguageService portalLanguageService;
 }

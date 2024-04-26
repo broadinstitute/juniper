@@ -1,6 +1,11 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.dataimport.Import;
+import bio.terra.pearl.core.model.dataimport.ImportItem;
+import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
+import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.dataimport.ImportType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -9,6 +14,8 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.dataimport.ImportItemService;
+import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
@@ -25,19 +32,23 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class EnrolleeImportService {
     /**
      * for now, we only support importing from a specific style of export.
@@ -57,10 +68,13 @@ public class EnrolleeImportService {
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
     private final PortalService portalService;
+    private final ImportService importService;
+    private final ImportItemService importItemService;
 
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
-                                 SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService) {
+                                 SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
+                                 ImportService importService, ImportItemService importItemService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -68,17 +82,58 @@ public class EnrolleeImportService {
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.portalService = portalService;
+        this.importService = importService;
+        this.importItemService = importItemService;
     }
 
     @Transactional
     /**
      * imports the enrollees serialized in the inputstream to the given environment
      */
-    public void importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in) {
+    public Import importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in, UUID adminId) {
+        Import dataImport = Import.builder()
+                .responsibleUserId(adminId)
+                .studyEnvironmentId(studyEnv.getId())
+                .responsibleUserId(adminId)
+                .importType(ImportType.PARTICIPANT)
+                .status(ImportStatus.PROCESSING)
+                .createdAt(Instant.now())
+                .lastUpdatedAt(Instant.now())
+                .build();
+        dataImport = importService.create(dataImport);
+        log.info("Started Import ID: {}", dataImport.getId());
         List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
-            Enrollee enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
+            Enrollee enrollee = null;
+            ImportItem importItem;
+            try {
+                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
+                importItem = ImportItem.builder()
+                        .createdEnrolleeId(enrollee.getId())
+                        .importId(dataImport.getId())
+                        .createdParticipantUserId(enrollee.getParticipantUserId())
+                        .createdAt(Instant.now())
+                        .lastUpdatedAt(Instant.now())
+                        .status(ImportItemStatus.SUCCESS).build();
+            } catch (Exception e) {
+                importItem = ImportItem.builder()
+                        .importId(dataImport.getId())
+                        .createdParticipantUserId(adminId)
+                        .createdAt(Instant.now())
+                        .lastUpdatedAt(Instant.now())
+                        .status(ImportItemStatus.FAILED)
+                        .message(e.getMessage())
+                        .detail(Arrays.toString(e.getStackTrace())).build();
+            }
+
+            importItem = importItemService.create(importItem);
+            log.debug("populated Import Item ID: {}", importItem.getId());
         }
+        dataImport.setStatus(ImportStatus.DONE);
+        importService.update(dataImport);
+        importItemService.attachImportItems(dataImport);
+        log.info("Completed importing : {} items for Import ID: {}", dataImport.getImportItems().size(), dataImport.getId());
+        return dataImport;
     }
 
     /**

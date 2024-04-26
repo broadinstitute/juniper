@@ -2,6 +2,7 @@ package bio.terra.pearl.populate.extract;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -44,6 +45,10 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
 
         ZipInputStream zis = new ZipInputStream(new FileInputStream(tmpFileName));
         Portal restoredPortal = portalPopulator.populateFromZipFile(zis, true, null);
+        PortalEnvironment sandboxPortalEnv = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).orElseThrow();
+        // confirm portal environment properties got copied
+        assertThat(participantDashboardAlertDao.findByPortalEnvironmentId(sandboxPortalEnv.getId()), hasSize(1));
+        assertThat(portalLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
 
         // confirm all templates got repopulated
         assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(12));
@@ -57,6 +62,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
         assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(6));
+        assertThat(studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(sandboxEnv.getId()), hasSize(1));
     }
 
 }

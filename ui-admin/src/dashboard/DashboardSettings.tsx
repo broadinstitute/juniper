@@ -15,7 +15,7 @@ import classNames from 'classnames'
 export const AlertPreview = ({ alert }: { alert: ParticipantDashboardAlert }) => {
   return <Alert
     title={alert.title}
-    level={alert.type}
+    level={alert.alertType}
     style={{ maxWidth: 768 }}
     detail={alert.detail}
     className={classNames('shadow-sm')}/>
@@ -50,8 +50,8 @@ export const AlertEditor = ({ initial, isReadOnly, updateAlert, onSave }: {
       </div>
       <div className="form-group pt-2">
         <label htmlFor="type">Type</label>
-        <select className="form-control" disabled={isReadOnly} id="type" value={initial.type} onChange={e =>
-          updateAlert({ ...initial, type: e.target.value as AlertLevel })
+        <select className="form-control" disabled={isReadOnly} id="type" value={initial.alertType} onChange={e =>
+          updateAlert({ ...initial, alertType: e.target.value as AlertLevel })
         }>
           <option value="PRIMARY">Primary</option>
           <option value="SUCCESS">Success</option>
