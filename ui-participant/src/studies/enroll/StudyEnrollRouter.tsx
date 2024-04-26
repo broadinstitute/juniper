@@ -3,7 +3,7 @@ import { useUser } from 'providers/UserProvider'
 import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
 import Api, { ParticipantUser, Portal, StudyEnvironment, Survey } from 'api/api'
-import NavBar from '../../Navbar'
+import NavBar from 'Navbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import { HubUpdate } from 'hub/hubUpdates'
@@ -13,8 +13,8 @@ import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPers
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
 import { alertDefaults, AlertLevel } from '@juniper/ui-core'
-import { enrollCurrentUserInStudy, enrollProxyUserInStudy } from '../../util/enrolleeUtils'
-import { logError } from '../../util/loggingUtils'
+import { enrollCurrentUserInStudy, enrollProxyUserInStudy } from 'util/enrolleeUtils'
+import { logError } from 'util/loggingUtils'
 
 export type StudyEnrollContext = {
   user: ParticipantUser | null,
