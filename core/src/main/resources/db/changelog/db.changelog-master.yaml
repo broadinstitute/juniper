@@ -257,6 +257,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_04_19_add_proxy_enrollment_config.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_16_data_import.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
