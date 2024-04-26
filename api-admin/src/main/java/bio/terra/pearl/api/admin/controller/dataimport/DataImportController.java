@@ -3,7 +3,9 @@ package bio.terra.pearl.api.admin.controller.dataimport;
 import bio.terra.pearl.api.admin.api.DataImportApi;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,7 @@ public class DataImportController implements DataImportApi {
       AuthUtilService authUtilService,
       HttpServletRequest request,
       EnrolleeImportExtService enrolleeImportExtService) {
+
     this.authUtilService = authUtilService;
     this.request = request;
     this.enrolleeImportExtService = enrolleeImportExtService;
@@ -41,10 +44,11 @@ public class DataImportController implements DataImportApi {
   public ResponseEntity<Object> callImport(
       String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
     AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     try {
       return ResponseEntity.ok(
           enrolleeImportExtService.importData(
-              portalShortcode, studyShortcode, envName, importFile.getInputStream(), operator));
+              portalShortcode, studyShortcode, environmentName, importFile.getInputStream(), operator));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read import data");
     }

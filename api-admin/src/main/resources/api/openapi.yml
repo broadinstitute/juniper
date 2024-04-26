@@ -1734,8 +1734,7 @@ paths:
         - { name: importId, in: query, required: true, schema: { type: integer } }
       responses:
         '200':
-          description: import list
-          content: { application/json: { schema: { type: object } } }
+          description: successful deletion
         '500':
           $ref: '#/components/responses/ServerError'
 

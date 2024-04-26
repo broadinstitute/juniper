@@ -117,9 +117,8 @@ public class EnrolleeImportService {
                         .status(ImportItemStatus.SUCCESS).build();
             } catch (Exception e) {
                 importItem = ImportItem.builder()
-                        .createdEnrolleeId(enrollee.getId())
                         .importId(dataImport.getId())
-                        .createdParticipantUserId(enrollee.getParticipantUserId())
+                        .createdParticipantUserId(adminId)
                         .createdAt(Instant.now())
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.FAILED)
@@ -127,8 +126,8 @@ public class EnrolleeImportService {
                         .detail(Arrays.toString(e.getStackTrace())).build();
             }
 
-            ImportItem importItem1 = importItemService.create(importItem);
-            log.debug("populated Import Item ID: {}", importItem1.getId());
+            importItem = importItemService.create(importItem);
+            log.debug("populated Import Item ID: {}", importItem.getId());
         }
         dataImport.setStatus(ImportStatus.DONE);
         importService.update(dataImport);
