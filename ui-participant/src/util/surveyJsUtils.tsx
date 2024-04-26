@@ -77,6 +77,8 @@ type UseSurveyJsModelOpts = {
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
+ * @param opts.extraVariables extra variables you might want to include for a specific survey type that would not
+ * be useful for all surveys (e.g., {isProxyEnrollment} for the pre-enroll survey)
  */
 export function useSurveyJSModel(
   form: ConsentForm | Survey,
