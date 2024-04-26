@@ -5,52 +5,61 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.UUID;
+
 @Controller
 public class DataImportController implements DataImportApi {
-  private AuthUtilService authUtilService;
-  private HttpServletRequest request;
-  private EnrolleeImportExtService enrolleeImportExtService;
+    private AuthUtilService authUtilService;
+    private HttpServletRequest request;
+    private EnrolleeImportExtService enrolleeImportExtService;
 
-  public DataImportController(
-      AuthUtilService authUtilService,
-      HttpServletRequest request,
-      EnrolleeImportExtService enrolleeImportExtService) {
+    public DataImportController(
+            AuthUtilService authUtilService,
+            HttpServletRequest request,
+            EnrolleeImportExtService enrolleeImportExtService) {
 
-    this.authUtilService = authUtilService;
-    this.request = request;
-    this.enrolleeImportExtService = enrolleeImportExtService;
-  }
-
-  @Override
-  public ResponseEntity<Object> delete(
-      String portalShortcode, String studyShortcode, String envName, Integer importId) {
-    return DataImportApi.super.delete(portalShortcode, studyShortcode, envName, importId);
-  }
-
-  @Override
-  public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
-    AdminUser operator = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(enrolleeImportExtService.list(portalShortcode, operator));
-  }
-
-  @Override
-  public ResponseEntity<Object> callImport(
-      String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
-    AdminUser operator = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    try {
-      return ResponseEntity.ok(
-          enrolleeImportExtService.importData(
-              portalShortcode, studyShortcode, environmentName, importFile.getInputStream(), operator));
-    } catch (IOException e) {
-      throw new IllegalArgumentException("could not read import data");
+        this.authUtilService = authUtilService;
+        this.request = request;
+        this.enrolleeImportExtService = enrolleeImportExtService;
     }
-  }
+
+    @Override
+    public ResponseEntity<Void> delete(
+            String portalShortcode, String studyShortcode, String envName, UUID importId) {
+        AdminUser operator = authUtilService.requireAdminUser(request);
+        EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+        enrolleeImportExtService.delete(
+                portalShortcode, studyShortcode, environmentName, importId, operator);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Override
+    public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
+        AdminUser operator = authUtilService.requireAdminUser(request);
+        return ResponseEntity.ok(enrolleeImportExtService.list(portalShortcode, operator));
+    }
+
+    @Override
+    public ResponseEntity<Object> callImport(
+            String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
+        AdminUser operator = authUtilService.requireAdminUser(request);
+        EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+        try {
+            return ResponseEntity.ok(
+                    enrolleeImportExtService.importData(
+                            portalShortcode,
+                            studyShortcode,
+                            environmentName,
+                            importFile.getInputStream(),
+                            operator));
+        } catch (IOException e) {
+            throw new IllegalArgumentException("could not read import data");
+        }
+    }
 }
