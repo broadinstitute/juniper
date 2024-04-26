@@ -11,67 +11,65 @@ import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.export.EnrolleeImportService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeImportExtService {
-    private EnrolleeImportService enrolleImportService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private AuthUtilService authUtilService;
-    private ImportService importService;
+  private EnrolleeImportService enrolleImportService;
+  private StudyEnvironmentService studyEnvironmentService;
+  private AuthUtilService authUtilService;
+  private ImportService importService;
 
-    public void EnrolleImportExtService(
-            EnrolleeImportService enrolleImportService,
-            AuthUtilService authUtilService,
-            ImportService importService,
-            StudyEnvironmentService studyEnvironmentService) {
-        this.enrolleImportService = enrolleImportService;
-        this.authUtilService = authUtilService;
-        this.importService = importService;
-        this.studyEnvironmentService = studyEnvironmentService;
-    }
+  public void EnrolleImportExtService(
+      EnrolleeImportService enrolleImportService,
+      AuthUtilService authUtilService,
+      ImportService importService,
+      StudyEnvironmentService studyEnvironmentService) {
+    this.enrolleImportService = enrolleImportService;
+    this.authUtilService = authUtilService;
+    this.importService = importService;
+    this.studyEnvironmentService = studyEnvironmentService;
+  }
 
-    public List<Import> list(String portalShortcode, AdminUser operator) {
-        authUtilService.authUserToPortal(operator, portalShortcode);
-        return importService.findAll();
-    }
+  public List<Import> list(String portalShortcode, AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    return importService.findAll();
+  }
 
-    public Import importData(
-            String portalShortcode,
-            String studyShortcode,
-            EnvironmentName environmentName,
-            InputStream tsvData,
-            AdminUser operator) {
-        authUtilService.authUserToPortal(operator, portalShortcode);
-        PortalStudy portalStudy =
-                authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
-        return enrolleImportService.importEnrollees(
-                portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId());
-    }
+  public Import importData(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      InputStream tsvData,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
+        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    return enrolleImportService.importEnrollees(
+        portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId());
+  }
 
-    public void delete(
-            String portalShortcode,
-            String studyShortcode,
-            EnvironmentName environmentName,
-            UUID id,
-            AdminUser operator) {
-        authUtilService.authUserToPortal(operator, portalShortcode);
-        PortalStudy portalStudy =
-                authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
-        Import dataImport = importService.find(id).get();
-        if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
-            throw new PermissionDeniedException(
-                    "Import Id does not belong to the given study environment");
-        }
-        importService.delete(id, CascadeProperty.EMPTY_SET);
+  public void delete(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      UUID id,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
+        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    Import dataImport = importService.find(id).get();
+    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
+      throw new PermissionDeniedException(
+          "Import Id does not belong to the given study environment");
     }
+    importService.delete(id, CascadeProperty.EMPTY_SET);
+  }
 }
