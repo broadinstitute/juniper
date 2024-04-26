@@ -313,24 +313,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/answerMapping/{stableId}/{version}/{targetType}/{targetField}:
-    get:
-      summary: Finds a specific answer mapping for a survey within a portal.
-      tags: [ answerMapping ]
-      operationId: findAnswerMapping
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: false, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
-        - { name: targetType, in: path, required: true, schema: { type: string } }
-        - { name: targetField, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: answer mapping object
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/tasks:
     get:
       summary: List the tasks available to the signed-in user of the given type, includes the survey for each task
