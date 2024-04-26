@@ -10,9 +10,9 @@ import { alertDefaults, ParticipantDashboardAlert, useI18n } from '@juniper/ui-c
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
-import HubPageParticipantSelector from './HubPageParticipantSelector'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
+import ParticipantSelector from '../participant/ParticipantSelector'
 
 
 /** renders the logged-in hub page */
@@ -77,11 +77,14 @@ export default function HubPage() {
           />
         )}
 
+        <div className="w-100 mt-2 mb-0 d-flex align-content-center justify-content-center align-items-center">
+          {relations.length > 0 && <ParticipantSelector/>}
+        </div>
+
         <main
           className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
           style={{ background: '#fff', maxWidth: 768 }}
         >
-          {relations.length > 0 && <HubPageParticipantSelector/>}
           {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
         </main>
         <div className="hub-dashboard mx-auto"
