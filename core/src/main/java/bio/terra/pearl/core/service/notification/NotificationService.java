@@ -56,6 +56,19 @@ public class NotificationService extends CrudService<Notification, NotificationD
             attachEnrollees(notifications);
         }
 
+        // assumption: not all notifications have sendgrid events, so we have to manually find the notification
+        //             by id. even though this the number of notifications likely on the order of thousands,
+        //             it shouldn't be too slow since it is only one DB call.
+        sendgridEventDao.findByTriggerId(configId)
+                .forEach(sendgridEvent -> {
+                    Notification notification = notifications
+                            .stream()
+                            .filter(n -> n.getId().equals(sendgridEvent.getNotificationId()))
+                            .findFirst()
+                            .orElseThrow(() -> new RuntimeException("Sendgrid event without notification"));
+                    notification.setEventDetails(sendgridEvent);
+                });
+
         return notifications;
     }
 

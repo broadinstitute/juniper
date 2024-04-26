@@ -258,6 +258,9 @@ databaseChangeLog:
       file: changesets/2024_04_19_add_proxy_enrollment_config.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_04_16_data_import.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_04_26_rename_alert_type.yaml
       relativeToChangelogFile: true
 

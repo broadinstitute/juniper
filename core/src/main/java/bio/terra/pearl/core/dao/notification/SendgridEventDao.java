@@ -36,4 +36,17 @@ public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
     public void deleteByNotificationId(UUID notificationId) {
         deleteByProperty("notification_id", notificationId);
     }
+
+    public List<SendgridEvent> findByTriggerId(UUID triggerId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "select sge.* from " + tableName + " sge " +
+                                        " inner join notification n on n.id = sge.notification_id " +
+                                        " inner join trigger t on t.id = n.trigger_id " +
+                                        " where t.id = :triggerId")
+                        .bind("triggerId", triggerId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
 }

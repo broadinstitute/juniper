@@ -1707,6 +1707,61 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/dataImport:
+    get:
+        summary: Gets a list of imports for a study
+        tags: [ dataImport ]
+        operationId: get
+        parameters:
+          - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+          - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+          - { name: envName, in: path, required: true, schema: { type: string } }
+        responses:
+          '200':
+            description: import list
+            content: { application/json: { schema: { type: object } } }
+          '500':
+            $ref: '#/components/responses/ServerError'
+
+    delete:
+      summary: delete imports for a study
+      tags: [ dataImport ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: importId, in: query, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      summary: imports participant data files
+      tags: [ dataImport ]
+      operationId: importData
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                importFile:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: saved import data
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 components:
   responses:
     SystemStatusResponse:
