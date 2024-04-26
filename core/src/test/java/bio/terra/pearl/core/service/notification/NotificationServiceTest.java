@@ -18,10 +18,14 @@ import java.util.List;
 
 class NotificationServiceTest extends BaseSpringBootTest {
 
-    @Autowired NotificationService notificationService;
-    @Autowired NotificationFactory notificationFactory;
-    @Autowired TriggerFactory triggerFactory;
-    @Autowired EnrolleeFactory enrolleeFactory;
+    @Autowired
+    NotificationService notificationService;
+    @Autowired
+    NotificationFactory notificationFactory;
+    @Autowired
+    TriggerFactory triggerFactory;
+    @Autowired
+    EnrolleeFactory enrolleeFactory;
     @Autowired
     SendgridEventDao sendgridEventDao;
 
