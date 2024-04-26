@@ -26,8 +26,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
-    undefined,
-    { extraCssClasses: { container: 'my-0' } }
+    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 
   surveyModel.locale = selectedLanguage || 'default'
@@ -65,37 +64,11 @@ export default function PreEnrollView({ enrollContext, survey }:
     })
   }
 
-  const fetchProxyQuestion = async (): Promise<string | null> => {
-    try {
-      const proxyAnswerMapping = await Api.findAnswerMapping(survey.stableId, survey.version, 'PROXY', 'isProxy')
-      return proxyAnswerMapping?.questionStableId
-    } catch (e) {
-      return null
-    }
-  }
-
-  const disableProxyQuestion = async () => {
-    const proxyQuestion = await fetchProxyQuestion()
-    if (!proxyQuestion) {
-      return
-    }
-
-    // set proxy question to true by default so any proxy-specific questions are shown
-    surveyModel.setValue(proxyQuestion, 'true')
-    // disable proxy question so the user can't change it
-    surveyModel.getQuestionByName(proxyQuestion).readOnly = true
-  }
-
 
   useEffect(() => {
     // if we're on this page, make sure we clear out any saved response ids -- this handles cases where the user
     // uses the back button
     updatePreEnrollResponseId(null)
-
-    // also, if we're doing proxy enrollment, we need to pre-set the proxy question, if it exists
-    if (isProxyEnrollment) {
-      disableProxyQuestion()
-    }
   }, [])
 
   return (

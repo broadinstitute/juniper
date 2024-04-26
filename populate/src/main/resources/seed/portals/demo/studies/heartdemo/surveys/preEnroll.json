@@ -86,21 +86,25 @@
                   "dev": "DEV_I am enrolling on behalf of my child / my legal dependent."
                 }
               }
-            ]
+            ],
+            "enableIf": "{isProxyEnrollment} != true",
+            "defaultValueExpression": "iif({isProxyEnrollment} = true, 'true', '')"
           },
           {
             "type": "text",
             "isRequired": true,
             "name": "proxy_given_name",
             "title": "Proxy User Given Name",
-            "visibleIf": "{proxy_enrollment} = true"
+            "visibleIf": "{proxy_enrollment} = true",
+            "defaultValueExpression": "{proxyProfile.givenName}"
           },
           {
             "type": "text",
             "isRequired": true,
             "name": "proxy_family_name",
             "title": "Proxy User Family Name",
-            "visibleIf": "{proxy_enrollment} = true"
+            "visibleIf": "{proxy_enrollment} = true",
+            "defaultValueExpression": "{proxyProfile.familyName}"
           },
           {
             "type": "text",
