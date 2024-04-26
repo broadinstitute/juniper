@@ -17,5 +17,5 @@ public class ParticipantDashboardAlert extends BaseEntity {
     private String title;
     private String detail;
     private AlertTrigger trigger;
-    private AlertType type;
+    private AlertType alertType;
 }

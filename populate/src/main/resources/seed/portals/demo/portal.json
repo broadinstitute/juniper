@@ -53,7 +53,13 @@
           "name": "Alice Messager",
           "email": "alice@test.com"
         }
-      ]
+      ],
+      "participantDashboardAlerts": [{
+        "title": "Thanks!",
+        "detail": "You've completed your tasks. We'll reach out with updates to our research to keep you informed.",
+        "alertType": "SUCCESS",
+        "trigger": "NO_ACTIVITIES_REMAIN"
+      }]
     },{
       "environmentName": "irb",
       "portalEnvironmentConfig": {

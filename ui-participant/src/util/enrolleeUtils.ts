@@ -18,7 +18,7 @@ export async function enrollCurrentUserInStudy(studyShortcode: string, studyName
     message: {
       title: `Welcome to ${studyName}`,
       detail: alertDefaults['WELCOME'].detail,
-      type: alertDefaults['WELCOME'].type as AlertLevel
+      type: alertDefaults['WELCOME'].alertType as AlertLevel
     }
   }
   await refreshLogin()
