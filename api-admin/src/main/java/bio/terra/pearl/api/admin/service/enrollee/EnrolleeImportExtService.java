@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.dataimport.ImportService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.export.EnrolleeImportService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -65,7 +66,8 @@ public class EnrolleeImportExtService {
         authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnv =
         studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
-    Import dataImport = importService.find(id).get();
+    Import dataImport =
+        importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
     if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
       throw new PermissionDeniedException(
           "Import Id does not belong to the given study environment");

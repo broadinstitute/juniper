@@ -14,7 +14,6 @@ public class ImportItemDao extends BaseMutableJdbiDao<ImportItem> {
 
     public ImportItemDao(Jdbi jdbi) {
         super(jdbi);
-        jdbi.registerRowMapper(ImportItem.class, BeanMapper.of(ImportItem.class));
     }
 
     @Override

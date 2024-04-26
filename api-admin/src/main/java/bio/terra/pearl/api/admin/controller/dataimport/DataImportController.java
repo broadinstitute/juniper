@@ -45,7 +45,7 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Object> callImport(
+  public ResponseEntity<Object> importData(
       String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);

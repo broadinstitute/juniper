@@ -1741,7 +1741,7 @@ paths:
     post:
       summary: imports participant data files
       tags: [ dataImport ]
-      operationId: import
+      operationId: importData
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
