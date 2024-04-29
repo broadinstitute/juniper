@@ -147,8 +147,17 @@ export default function ConsentView() {
       navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
         + `/${version}?taskId=${taskId}`)
     } catch (e) {
-      // if we can't load it, go back to the hub
-      navigate('/hub')
+      try {
+        // if we can't load it as a survey, try loading it as a consent
+        const response = await Api.fetchConsentAndResponses({
+          studyShortcode,
+          enrolleeShortcode: enrollee.shortcode, stableId, version
+        })
+        setFormAndResponses(response)
+      } catch (e) {
+        // if everything fails, go back to the hub
+        navigate('/hub')
+      }
     }
   }
 
