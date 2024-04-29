@@ -65,8 +65,12 @@ export const useName = (ppUser: PortalParticipantUser) => {
     .find(enrollee => enrollee.profileId === ppUser.profileId && !isNil(enrollee.profile))?.profile
   const hasProxies = relations.some(relation => relation.relationshipType === 'PROXY')
   const isMainUser = ppUser.participantUserId === user?.id
-  if (profile && !isEmpty(`${profile.givenName}${profile.familyName}`.trim())) {
-    return `${profile.givenName} ${profile.familyName}${hasProxies && isMainUser ? ` ${i18n('youInParens')}` : ''}`
+
+  const givenName = profile?.givenName || ''
+  const familyName = profile?.familyName || ''
+
+  if (profile && !isEmpty(`${givenName}${familyName}`.trim())) {
+    return `${givenName} ${familyName}${hasProxies && isMainUser ? ` ${i18n('youInParens')}` : ''}`
   } else {
     if (isMainUser) {
       return i18n('you')

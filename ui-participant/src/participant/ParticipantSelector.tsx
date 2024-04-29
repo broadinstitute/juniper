@@ -23,7 +23,7 @@ export default function ParticipantSelector() {
   const defaultStudyToEnroll = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
   return (
-    <div className="dropdown" style={{ width: '300px' }}>
+    <div className="dropdown participant-selector">
       <button
         className="w-100 btn btn-outline-dark border-0 bg-white d-flex align-items-center link-dark"
         type="button" data-bs-toggle="dropdown"
@@ -36,7 +36,7 @@ export default function ParticipantSelector() {
           <FontAwesomeIcon icon={faAngleDown} />
         </div>
       </button>
-      <ul className="dropdown-menu ms-1 ms-md-0">
+      <ul className="dropdown-menu participant-selector-dropdown mx-1 ms-md-0" id="participant-dropdown">
         {
           ppUsers.map(ppUser => {
             const name = useName(ppUser)

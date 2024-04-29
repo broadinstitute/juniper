@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { dateToDefaultString, MailingAddress, useI18n } from '@juniper/ui-core'
 import Api, { Profile } from 'api/api'
 import { isEmpty } from 'lodash'
@@ -13,7 +13,7 @@ import {
   EditPhoneNumber
 } from './EditParticipantProfileModals'
 import { useActiveUser } from '../providers/ActiveUserProvider'
-import { useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useUser } from '../providers/UserProvider'
 
 /**
@@ -24,15 +24,19 @@ import { useUser } from '../providers/UserProvider'
 export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
-  const { ppUsers, updateProfile, enrollees } = useUser()
+  const { ppUsers, updateProfile, enrollees, user } = useUser()
   const { ppUser: activePpUser } = useActiveUser()
 
-  const { state: { ppUserId: ppUserIdFromState } } = useLocation()
+  const { state } = useLocation()
+
+  const ppUserIdFromState = state?.ppUserId
 
   const ppUser = ppUserIdFromState
     ? ppUsers.find(ppUser => ppUser.id === ppUserIdFromState)
     : activePpUser
   const profile = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)?.profile
+
+  const hasProxiedUsers = ppUsers.some(ppUser => ppUser.participantUserId !== user?.id)
 
   const { i18n } = useI18n()
 
@@ -94,6 +98,14 @@ export function ParticipantProfile() {
     className="hub-dashboard-background flex-grow-1"
     style={{ background: 'var(--dashboard-background-color)' }} // todo: don't hardcode, see jn-902
   >
+
+    {
+      hasProxiedUsers &&
+        <Link to='/hub/manageProfiles' className={'m-2 ms-3'} style={{ position: 'absolute' }}>
+          <FontAwesomeIcon icon={faChevronLeft}/>
+          <span className="ms-2">All Profiles</span>
+        </Link>
+    }
     <div className="row mx-0 justify-content-center py-5">
       <div className="col-12 col-sm-10 col-lg-6">
         {/*Readonly profile view*/}
