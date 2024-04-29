@@ -13,6 +13,8 @@ import {
   EditPhoneNumber
 } from './EditParticipantProfileModals'
 import { useActiveUser } from '../providers/ActiveUserProvider'
+import { useLocation } from 'react-router-dom'
+import { useUser } from '../providers/UserProvider'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -22,7 +24,15 @@ import { useActiveUser } from '../providers/ActiveUserProvider'
 export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
-  const { ppUser, profile, updateProfile } = useActiveUser()
+  const { ppUsers, updateProfile, enrollees } = useUser()
+  const { ppUser: activePpUser } = useActiveUser()
+
+  const { state: { ppUserId: ppUserIdFromState } } = useLocation()
+
+  const ppUser = ppUserIdFromState
+    ? ppUsers.find(ppUser => ppUser.id === ppUserIdFromState)
+    : activePpUser
+  const profile = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)?.profile
 
   const { i18n } = useI18n()
 

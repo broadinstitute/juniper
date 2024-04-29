@@ -124,10 +124,21 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   function updateProfile(profile: Profile, updateWithoutRerender = false): Promise<void> {
+    const isPrimaryUser = (
+      loginState?.ppUsers.find(ppUser => ppUser.profileId === profile.id)?.participantUserId === loginState?.user?.id
+    )
+
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      loginState.profile = profile
+      if (isPrimaryUser) {
+        loginState.profile = profile
+      }
+      loginState?.enrollees.forEach(enrollee => {
+        if (enrollee.profileId === profile.id) {
+          enrollee.profile = profile
+        }
+      })
     } else {
       setLoginState(oldState => {
         if (oldState == null) {
@@ -135,6 +146,12 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         }
         return {
           ...oldState,
+          enrollees: oldState.enrollees.map(enrollee => {
+            if (enrollee.profileId === profile.id) {
+              enrollee.profile = profile
+            }
+            return enrollee
+          }),
           profile
         }
       })

@@ -3,13 +3,24 @@ import { useActiveUser } from '../providers/ActiveUserProvider'
 import { useUser } from '../providers/UserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleDown, faPlus, faUser, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { useName } from '../util/enrolleeUtils'
+import { Link } from 'react-router-dom'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
 
 /**
  *
  */
 export default function ParticipantSelector() {
-  const { ppUsers, enrollees, user } = useUser()
-  const { setActiveUser, profile, ppUser } = useActiveUser()
+  const { ppUsers } = useUser()
+  const { setActiveUser, ppUser } = useActiveUser()
+
+  const activeUserName = ppUser ? useName(ppUser) : ''
+
+  const { portal } = usePortalEnv()
+
+  // TODO: this should be multi-study compatible
+  const defaultStudyToEnroll = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
   return (
     <div className="dropdown" style={{ width: '300px' }}>
@@ -19,24 +30,22 @@ export default function ParticipantSelector() {
         aria-expanded="false">
         <FontAwesomeIcon icon={faUsers}/>
         <span className='mx-2 fs-5'>
-          {profile?.givenName} {profile?.familyName}
-          {ppUser?.participantUserId === user?.id ? ' (you)' : ''}
+          {activeUserName}
         </span>
         <div className='flex-grow-1 d-flex justify-content-end'>
           <FontAwesomeIcon icon={faAngleDown} />
         </div>
       </button>
-      <ul className="dropdown-menu">
+      <ul className="dropdown-menu ms-1 ms-md-0">
         {
           ppUsers.map(ppUser => {
-            const userProfile = enrollees.find(enrollee => enrollee.profileId === ppUser.profileId)?.profile
+            const name = useName(ppUser)
             return (
               <li key={ppUser.id}>
                 <button className="dropdown-item" onClick={() => setActiveUser(ppUser.id)}>
                   <FontAwesomeIcon icon={faUser}/>
                   <span className='ms-2'>
-                    {userProfile?.givenName} {userProfile?.familyName}
-                    {ppUser.participantUserId === user?.id ? ' (you)' : ''}
+                    {name}
                   </span>
                 </button>
               </li>
@@ -44,20 +53,21 @@ export default function ParticipantSelector() {
           })
         }
         <li>
-          <button className="dropdown-item" onClick={() => {
-            // todo
-          }}>
+          <Link className="dropdown-item"
+            to={
+              defaultStudyToEnroll
+                ? `/studies/${defaultStudyToEnroll.shortcode}/join?isProxyEnrollment=true`
+                : '#'
+            }>
             <FontAwesomeIcon icon={faPlus}/>
             <span className='ms-2'>Add new participant</span>
-          </button>
+          </Link>
         </li>
         <li>
-          <button className="dropdown-item" onClick={() => {
-            // todo
-          }}>
+          <Link className="dropdown-item" to='/hub/manageProfiles'>
             <FontAwesomeIcon icon={faPlus} className='opacity-0'/>
             <span className='ms-2'>Manage Profiles</span>
-          </button>
+          </Link>
         </li>
       </ul>
     </div>

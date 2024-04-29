@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from 'providers/PortalProvider'
 
-import Api, { Enrollee, Portal, Profile, Study } from '../api/api'
+import Api, { Enrollee, Portal, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
@@ -64,7 +64,7 @@ export default function HubPage() {
           className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
           role="alert"
           style={{ maxWidth: 768 }}
-        /> }
+        />}
         {!!hubUpdate?.message && showMessage && (
           <HubMessageAlert
             message={hubUpdate.message}
@@ -77,16 +77,19 @@ export default function HubPage() {
           />
         )}
 
-        <div className="w-100 mt-2 mb-0 d-flex align-content-center justify-content-center align-items-center">
-          {relations.length > 0 && <ParticipantSelector/>}
+
+        <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
+          <div className="w-100 mt-2 mb-0 d-flex mb-2">
+            {relations.length > 0 && <ParticipantSelector/>}
+          </div>
+          <main
+            className="hub-dashboard py-4 px-2 px-md-5 shadow-sm"
+            style={{ background: '#fff' }}
+          >
+            {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
+          </main>
         </div>
 
-        <main
-          className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
-          style={{ background: '#fff', maxWidth: 768 }}
-        >
-          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
-        </main>
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
           <OutreachTasks enrollees={enrollees} studies={portal.portalStudies.map(pStudy => pStudy.study)}/>
@@ -107,22 +110,12 @@ const StudySection = (props: StudySectionProps) => {
     portal
   } = props
 
-  const { relations } = useUser()
-
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
-
-  function getName(profile: Profile) {
-    if (!profile || !profile.givenName || !profile.familyName) {
-      return ''
-    }
-    return (profile && (`${profile.givenName} ${profile.familyName}`)) || ''
-  }
 
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
-      {relations.length > 0 && <h4 className="mb-4">{getName(enrollee.profile)}</h4>}
       {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
       <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
         participantTasks={enrollee.participantTasks} />

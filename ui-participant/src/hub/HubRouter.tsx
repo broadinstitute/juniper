@@ -8,6 +8,7 @@ import HubPage from './HubPage'
 import SurveyView from './survey/SurveyView'
 import { ParticipantProfile } from 'participant/ParticipantProfile'
 import PrintSurveyView from './survey/PrintSurveyView'
+import ManageProfiles from '../participant/ManageProfiles'
 
 /** Handles url pathing for hub routes (a.k.a participant is signed in) */
 export default function HubRouter() {
@@ -29,6 +30,8 @@ export default function HubRouter() {
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/outreach/:stableId/:version"
         element={<HubPage/>}/>
       <Route index element={<HubPage/>}/>
+      <Route path="manageProfiles"
+        element={<ManageProfiles/>}/>
       <Route path="profile"
         element={<ParticipantProfile/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>

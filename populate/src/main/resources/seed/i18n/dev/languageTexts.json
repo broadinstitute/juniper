@@ -67,6 +67,8 @@
   {"keyName": "suggestBetterAddressHeader", "text": "DEV_Is this the correct address?", "language": "dev"},
   {"keyName": "suggestBetterAddressBody", "text": "DEV_We were able to verify a similar address. Please select which you would like to use.", "language": "dev"},
   {"keyName": "newAddress", "text": "DEV_New Address", "language": "dev"},
-  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"}
-
+  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"},
+  {"keyName": "you", "text": "DEV_You", "language": "dev"},
+  {"keyName": "yourDependent", "text": "DEV_Your Dependent", "language": "dev"},
+  {"keyName": "youInParens", "text": "DEV_(you)", "language": "dev"}
 ]

@@ -95,6 +95,7 @@ export type EnrolleeRelation = {
 }
 
 export type Profile = {
+  id?: string
   givenName?: string,
   familyName?: string,
   contactEmail?: string,

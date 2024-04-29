@@ -1,6 +1,8 @@
-import Api, { Enrollee, Study } from 'api/api'
+import Api, { Enrollee, PortalParticipantUser, Study } from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { alertDefaults, AlertLevel } from '@juniper/ui-core'
+import { alertDefaults, AlertLevel, useI18n } from '@juniper/ui-core'
+import { useUser } from '../providers/UserProvider'
+import { isEmpty, isNil } from 'lodash'
 
 /** whether the list of enrollees contains an enrollee matching the study */
 export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
@@ -50,4 +52,26 @@ export async function enrollProxyUserInStudy(
   }
   await refreshLogin()
   return hubUpdate
+}
+
+/**
+ *
+ */
+export const useName = (ppUser: PortalParticipantUser) => {
+  const { i18n } = useI18n()
+  const { enrollees, user, relations } = useUser()
+
+  const profile = enrollees
+    .find(enrollee => enrollee.profileId === ppUser.profileId && !isNil(enrollee.profile))?.profile
+  const hasProxies = relations.some(relation => relation.relationshipType === 'PROXY')
+  const isMainUser = ppUser.participantUserId === user?.id
+  if (profile && !isEmpty(`${profile.givenName}${profile.familyName}`.trim())) {
+    return `${profile.givenName} ${profile.familyName}${hasProxies && isMainUser ? ` ${i18n('youInParens')}` : ''}`
+  } else {
+    if (isMainUser) {
+      return i18n('you')
+    } else {
+      return i18n('yourDependent')
+    }
+  }
 }
