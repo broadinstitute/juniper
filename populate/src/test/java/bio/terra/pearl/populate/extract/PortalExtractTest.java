@@ -51,7 +51,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         assertThat(portalLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
 
         // confirm all templates got repopulated
-        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(12));
+        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(13));
         assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
         assertThat(consentFormService.findByPortalId(restoredPortal.getId()), hasSize(0));
         assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(6));
