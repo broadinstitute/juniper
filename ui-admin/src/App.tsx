@@ -10,7 +10,6 @@ import { ReactNotifications } from 'react-notifications-component'
 
 import { Config } from 'api/api'
 
-
 import { RedirectFromOAuth } from 'login/RedirectFromOAuth'
 import { ProtectedRoute } from 'login/ProtectedRoute'
 import AdminNavbar from 'navbar/AdminNavbar'
