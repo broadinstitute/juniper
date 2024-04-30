@@ -26,8 +26,8 @@ import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
 import { ApiProvider, EnvironmentName, I18nProvider } from '@juniper/ui-core'
-import DashboardSettings from '../dashboard/DashboardSettings'
-import { previewApi } from '../util/apiContextUtils'
+import DashboardSettings from 'dashboard/DashboardSettings'
+import { previewApi } from 'util/apiContextUtils'
 
 export type StudyEnvParams = {
   studyShortcode: string

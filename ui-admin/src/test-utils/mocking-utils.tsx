@@ -24,7 +24,8 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
-  LocalizedEmailTemplate, ParticipantDashboardAlert,
+  LocalizedEmailTemplate,
+  ParticipantDashboardAlert,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,

@@ -90,7 +90,7 @@ export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
         If this is an error, contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>.
       </div>
     </div>}
-    {!isLoading && !isError &&<I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
+    {!isLoading && !isError && <I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
       {children}
     </I18nContext.Provider>}
   </>
