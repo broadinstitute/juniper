@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
-import { useNavigate } from 'react-router-dom'
 import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
@@ -64,7 +63,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
-  const navigate = useNavigate()
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
