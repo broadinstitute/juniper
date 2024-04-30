@@ -47,11 +47,19 @@ const sallyProfile: Profile = {
 }
 
 jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom')
+  ...jest.requireActual('react-router-dom'),
+  useLocation: jest.fn()
 }))
 
 
 test('renders jsalk profile', async () => {
+  asMockedFn(useLocation).mockReturnValue({
+    state: {},
+    key: 'test',
+    hash: '',
+    pathname: '',
+    search: ''
+  })
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const { RoutedComponent } = setupRouterTest(
@@ -77,6 +85,13 @@ test('renders jsalk profile', async () => {
 })
 
 test('renders empty profile', async () => {
+  asMockedFn(useLocation).mockReturnValue({
+    state: {},
+    key: 'test',
+    hash: '',
+    pathname: '',
+    search: ''
+  })
   jest.spyOn(Api, 'findProfile').mockResolvedValue({})
 
 
@@ -99,6 +114,13 @@ test('renders empty profile', async () => {
 })
 
 test('opens expected modals', async () => {
+  asMockedFn(useLocation).mockReturnValue({
+    state: {},
+    key: 'test',
+    hash: '',
+    pathname: '',
+    search: ''
+  })
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
 
@@ -161,6 +183,13 @@ test('opens expected modals', async () => {
 })
 
 test('updates name properly', async () => {
+  asMockedFn(useLocation).mockReturnValue({
+    state: {},
+    key: 'test',
+    hash: '',
+    pathname: '',
+    search: ''
+  })
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const updatedProfile: Profile = {
@@ -206,6 +235,8 @@ test('updates name properly', async () => {
     }))
 
   expect(screen.getByText('Test McTester')).toBeInTheDocument()
+  // should not have a link to all profiles if not proxied
+  expect(screen.queryByText('All Profiles')).not.toBeInTheDocument()
 })
 
 test('shows correct profile in proxied environment', async () => {
@@ -251,9 +282,23 @@ test('shows correct profile in proxied environment', async () => {
     {
       id: 'testsallyenrollee',
       profileId: '5678',
-      profile: sallyProfile
+      profile: sallyProfile,
+      consented: true,
+      subject: false,
+      consentResponses: [],
+      createdAt: 0,
+      kitRequests: [],
+      lastUpdatedAt: 0,
+      participantTasks: [],
+      participantUserId: 'testjsalkuser',
+      shortcode: 'ABCD',
+      studyEnvironmentId: 'asdf',
+      surveyResponses: []
     }
   ]
+
+  jest.spyOn(Api, 'findProfile').mockResolvedValue(sallyProfile)
+
 
   const { RoutedComponent } = setupRouterTest(
     <ProvideFullTestUserContext
@@ -264,4 +309,11 @@ test('shows correct profile in proxied environment', async () => {
         <ParticipantProfile/>
       </MockI18nProvider>
     </ProvideFullTestUserContext>)
+  render(RoutedComponent)
+  // should show sally's profile
+
+  await waitFor(() => expect(screen.getByText('Sally Salk')).toBeInTheDocument())
+
+  expect(screen.getByText('Sally Salk')).toBeInTheDocument()
+  expect(screen.getByText('All Profiles')).toBeInTheDocument() // should be a link to all profiles if proxied
 })

@@ -64,7 +64,6 @@ export function ParticipantProfile() {
   }
 
   if (!ppUser || !profile) {
-    console.log('No profile found')
     return null
   }
 
