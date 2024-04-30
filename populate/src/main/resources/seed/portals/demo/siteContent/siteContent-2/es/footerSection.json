@@ -2,7 +2,7 @@
   "sectionType": "LINK_SECTIONS_FOOTER",
   "sectionConfigJson": {
     "itemSections": [{
-      "title": "OurHealth",
+      "title": "Demostración de Juniper Heart",
       "items": [{
         "type": "internalLink",
         "text": "Inicio",
@@ -45,14 +45,14 @@
         "text": "617-724-1240",
         "href": "tel:617-724-1240"
       },{
-        "text": "info@ourhealthstudy.org",
-        "href": "mailto:info@ourhealthstudy.org"
+        "text": "support@juniper.terra.bio",
+        "href": "mailto:support@juniper.terra.bio"
       }]
     },{
       "title": "Donar",
       "items": [{
         "text": "Contribuir fondos",
-        "href": "mailto:info@ourhealthstudy.org"
+        "href": "mailto:support@juniper.terra.biog"
       }]
     },{
       "title": "Para Participantes",
@@ -62,7 +62,7 @@
         "href": "/hub"
       },{
         "type": "join",
-        "text": "Únete a OurHealth",
+        "text": "Únete a demostración de Juniper Heart",
         "studyShortcode": "heartdemo"
       }]
     }]

@@ -97,7 +97,7 @@
         "blurb": "Volunteer to be the driving force behind transformative cardiovascular research.",
         "buttons": [{
           "type": "join",
-          "text": "Join OurHealth",
+          "text": "Join Juniper Heart Demo",
           "studyShortcode": "heartdemo"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"

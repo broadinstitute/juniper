@@ -17,9 +17,9 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "backgroundColor": "#F2F2F2",
-        "title": "Sobre OurHealth",
+        "title": "Sobre demostración de Juniper Heart",
         "blurbAlign": "left",
-        "blurb": "OurHealth fue fundado por cardiólogos e investigadores genéticos del Massachusetts General Hospital y el Broad Institute of MIT y Harvard que se dedican a descubrir los factores genéticos subyacentes para el riesgo de enfermedad cardiovascular en las poblaciones del sur de Asia.\n\nLos participantes impulsan la investigación proporcionando información sobre sus hábitos de vida y antecedentes médicos en forma de respuestas a encuestas, así como donando muestras biológicas para su estudio y análisis. A partir de estos datos, el equipo de estudio de OurHealth secuencia y analiza los datos para descubrir tendencias genómicas que puedan explicar el alto riesgo de enfermedad cardiovascular en los surasiáticos.\n\nLos surasiáticos han sido históricamente subrepresentados en los estudios genéticos, una disparidad que el equipo de OurHealth espera abordar con su ayuda!",
+        "blurb": "Demostración de Juniper Heart fue fundado por cardiólogos e investigadores genéticos del Massachusetts General Hospital y el Broad Institute of MIT y Harvard que se dedican a descubrir los factores genéticos subyacentes para el riesgo de enfermedad cardiovascular en las poblaciones del sur de Asia.\n\nLos participantes impulsan la investigación proporcionando información sobre sus hábitos de vida y antecedentes médicos en forma de respuestas a encuestas, así como donando muestras biológicas para su estudio y análisis. A partir de estos datos, el equipo de estudio de demostración de Juniper Heart secuencia y analiza los datos para descubrir tendencias genómicas que puedan explicar el alto riesgo de enfermedad cardiovascular en los surasiáticos.\n\nLos surasiáticos han sido históricamente subrepresentados en los estudios genéticos, una disparidad que el equipo de demostración de Juniper Heart espera abordar con su ayuda!",
         "buttons": [{
           "text": "Aprenda más sobre la participación",
           "type": "internalLink",
@@ -54,7 +54,7 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "blurbAlign": "left",
-        "blurb": "Los investigadores de OurHealth, liderados por los Co-Investigadores Principales Dr. Pradeep Natarajan y Dr. Amit V. Khera, tienen una amplia experiencia en el estudio de la base genética de la enfermedad cardiovascular y cardiometabólica. Al estudiar de cerca la contribución de la genética a la enfermedad cardíaca y metabólica en personas de ascendencia surasiática que viven fuera de los Estados Unidos, han ayudado a desarrollar un nuevo conjunto de genotipos optimizado para los surasiáticos. Desafortunadamente, los conjuntos de datos surasiáticos siguen siendo limitados en tamaño, diversidad cultural y representación diaspórica.\n\n¡Ayúdenos a cerrar esta brecha! [Únase al estudio OurHealth](/studies/heartdemo/join) y contribuya a mejorar la salud cardíaca de los surasiáticos."
+        "blurb": "Los investigadores de demostración de Juniper Heart, liderados por los Co-Investigadores Principales Dr. Pradeep Natarajan y Dr. Amit V. Khera, tienen una amplia experiencia en el estudio de la base genética de la enfermedad cardiovascular y cardiometabólica. Al estudiar de cerca la contribución de la genética a la enfermedad cardíaca y metabólica en personas de ascendencia surasiática que viven fuera de los Estados Unidos, han ayudado a desarrollar un nuevo conjunto de genotipos optimizado para los surasiáticos. Desafortunadamente, los conjuntos de datos surasiáticos siguen siendo limitados en tamaño, diversidad cultural y representación diaspórica.\n\n¡Ayúdenos a cerrar esta brecha! [Únase al estudio demostración de Juniper Heart](/studies/heartdemo/join) y contribuya a mejorar la salud cardíaca de los surasiáticos."
       }
     },
     {

@@ -17,9 +17,9 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "backgroundColor": "#F2F2F2",
-        "title": "DEV_About OurHealth",
+        "title": "DEV_About Juniper Heart Demo",
         "blurbAlign": "left",
-        "blurb": "DEV_OurHealth was founded by cardiologists and genetic researchers at Massachusetts General Hospital and the Broad Institute of MIT and Harvard who are dedicated to discovering the underlying genetic factors for cardiovascular disease risk in South Asian populations.\n\nParticipants drive forward research by providing information about their lifestyle habits and medical history in the form of survey responses, as well as by donating biological samples for study and analysis. From these data, the OurHealth study team sequences and analyzes the data to discover genomic trends that may explain the high cardiovascular disease risk in South Asians.\n\nSouth Asians have historically been underrepresented in genetic studies, a disparity the OurHealth team hopes to address with your help!",
+        "blurb": "DEV_Juniper Heart Demo was founded by cardiologists and genetic researchers at Massachusetts General Hospital and the Broad Institute of MIT and Harvard who are dedicated to discovering the underlying genetic factors for cardiovascular disease risk in South Asian populations.\n\nParticipants drive forward research by providing information about their lifestyle habits and medical history in the form of survey responses, as well as by donating biological samples for study and analysis. From these data, the Juniper Heart Demo study team sequences and analyzes the data to discover genomic trends that may explain the high cardiovascular disease risk in South Asians.\n\nSouth Asians have historically been underrepresented in genetic studies, a disparity the Juniper Heart Demo team hopes to address with your help!",
         "buttons": [{
           "text": "DEV_Learn More About Participation",
           "type": "internalLink",
@@ -54,7 +54,7 @@
       "sectionType": "HERO_CENTERED",
       "sectionConfigJson": {
         "blurbAlign": "left",
-        "blurb": "DEV_The OurHealth investigators, led by Co-Principal Investigators Dr. Pradeep Natarajan and Dr. Amit V. Khera, have extensive experience in studying the genetic basis of cardiovascular and cardiometabolic disease. By closely studying the contribution of genetics towards heart and metabolic disease in individuals of South Asian ancestry living outside the United States, they have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diasporic representation.\n\nHelp us close this gap! [Join the OurHealth study](/studies/heartdemo/join) and contribute to improving South Asian heart health."
+        "blurb": "DEV_The Juniper Heart Demo investigators, led by Co-Principal Investigators Dr. Pradeep Natarajan and Dr. Amit V. Khera, have extensive experience in studying the genetic basis of cardiovascular and cardiometabolic disease. By closely studying the contribution of genetics towards heart and metabolic disease in individuals of South Asian ancestry living outside the United States, they have helped develop a new genotyping array optimized for South Asians. Unfortunately, South Asian datasets remain limited in size, cultural diversity, and diasporic representation.\n\nHelp us close this gap! [Join the Juniper Heart Demo study](/studies/heartdemo/join) and contribute to improving South Asian heart health."
       }
     },
     {
