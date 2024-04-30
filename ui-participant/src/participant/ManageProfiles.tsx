@@ -16,12 +16,14 @@ export default function ManageProfiles() {
       className="hub-dashboard-background flex-grow-1 mb-2"
       style={{ background: 'var(--dashboard-background-color)' }}
     >
-      <Link to='/hub' className={'m-2 ms-3'} style={{ position: 'absolute' }}>
-        <FontAwesomeIcon icon={faChevronLeft}/>
-        <span className="ms-2">Dashboard</span>
-      </Link>
 
       <div className="my-md-4 my-5 mx-auto" style={{ maxWidth: 768 }}>
+        <div className='m-2'>
+          <Link to='/hub'>
+            <FontAwesomeIcon icon={faChevronLeft}/>
+            <span className="ms-2">Dashboard</span>
+          </Link>
+        </div>
         <main
           className="hub-dashboard shadow-sm"
           style={{ background: '#fff' }}

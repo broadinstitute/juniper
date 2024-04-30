@@ -64,6 +64,7 @@ export function ParticipantProfile() {
   }
 
   if (!ppUser || !profile) {
+    console.log('No profile found')
     return null
   }
 
@@ -99,15 +100,17 @@ export function ParticipantProfile() {
     style={{ background: 'var(--dashboard-background-color)' }} // todo: don't hardcode, see jn-902
   >
 
-    {
-      hasProxiedUsers &&
-        <Link to='/hub/manageProfiles' className={'m-2 ms-3'} style={{ position: 'absolute' }}>
-          <FontAwesomeIcon icon={faChevronLeft}/>
-          <span className="ms-2">All Profiles</span>
-        </Link>
-    }
-    <div className="row mx-0 justify-content-center py-5">
+    <div className="row mx-0 justify-content-center py-4">
       <div className="col-12 col-sm-10 col-lg-6">
+        {
+          hasProxiedUsers &&
+            <div className={'m-2 mt-0'}>
+              <Link to='/hub/manageProfiles'>
+                <FontAwesomeIcon icon={faChevronLeft}/>
+                <span className="ms-2">All Profiles</span>
+              </Link>
+            </div>
+        }
         {/*Readonly profile view*/}
         <ProfileCard title={i18n('profile')}>
           <ProfileRow
