@@ -24,7 +24,7 @@ export type UserContextT = {
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
-  refreshLoginState: () => void
+  refreshLoginState: () => Promise<void>
 }
 
 /** current user object context */

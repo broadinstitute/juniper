@@ -42,20 +42,17 @@ export default function ActiveUserProvider({ children }: { children: React.React
   // When there are changes to the ppUsers (e.g., when initially logged in), find
   // an appropriate active user to set
   useEffect(() => {
-    // if there is no active user, or the active user is not in the list of ppUsers,
-    // then set the active user to the first user that has a enrollee that is a subject
-    if (!activePpUser || !ppUsers.some(ppUser => ppUser.id === activePpUser.id)) {
-      const ppUserWithSubject = ppUsers.find(
-        ppUser => enrollees.some(
-          enrollee => enrollee.profileId === ppUser.profileId && enrollee.subject))
+    // set the active user to the first user that has a enrollee that is a subject
+    const ppUserWithSubject = ppUsers.find(
+      ppUser => enrollees.some(
+        enrollee => enrollee.profileId === ppUser.profileId && enrollee.subject))
 
-      if (ppUserWithSubject) {
-        setActivePpUser(ppUserWithSubject)
-      } else if (ppUsers.length > 0) {
-        setActivePpUser(ppUsers[0])
-      }
+    if (ppUserWithSubject) {
+      setActivePpUser(ppUserWithSubject)
+    } else if (ppUsers.length > 0) {
+      setActivePpUser(ppUsers[0])
     }
-  }, [userContext])
+  }, [userContext.ppUsers])
 
   const context: ActiveUserContextT = {
     ppUser: activePpUser,

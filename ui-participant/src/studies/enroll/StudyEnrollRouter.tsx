@@ -123,10 +123,10 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         // when preEnroll is satisfied, and we have a user, we're clear to create an Enrollee
         try {
           const hubUpdate = isProxyEnrollment
-            ? enrollProxyUserInStudy(
+            ? await enrollProxyUserInStudy(
               studyShortcode, studyName, preEnrollResponseId, governedPpUserId, refreshLoginState
             )
-            : enrollCurrentUserInStudy(
+            : await enrollCurrentUserInStudy(
               studyShortcode, studyName, preEnrollResponseId, refreshLoginState
             )
           navigate('/hub', { replace: true, state: hubUpdate })
