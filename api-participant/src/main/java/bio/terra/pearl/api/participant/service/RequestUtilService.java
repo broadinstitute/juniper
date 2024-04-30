@@ -51,9 +51,13 @@ public class RequestUtilService {
 
   protected Optional<ParticipantUser> getUserFromToken(HttpServletRequest request, String token) {
     EnvironmentName envName = environmentNameFromRequest(request);
-    DecodedJWT decodedJWT = JWT.decode(token);
-    String email = decodedJWT.getClaim("email").asString();
+    String email = getUsernameFromToken(token);
     return currentUserService.findByUsername(email, envName);
+  }
+
+  public String getUsernameFromToken(String token) {
+    DecodedJWT decodedJWT = JWT.decode(token);
+    return decodedJWT.getClaim("email").asString();
   }
 
   public EnvironmentName environmentNameFromRequest(HttpServletRequest request) {

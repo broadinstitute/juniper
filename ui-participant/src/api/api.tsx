@@ -336,6 +336,21 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  /** same as register, but won't fail if the user already exists */
+  async registerOrLogin({ preRegResponseId, email, accessToken, preferredLanguage }: {
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
+  }): Promise<LoginResult> {
+    bearerToken = accessToken
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(false)}/registerOrLogin?${params}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ email })
+    })
+    return await this.processJsonResponse(response)
+  },
+
   /** submits registration data for a particular portal, from an anonymous user */
   async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
     preRegResponseId: string, fullData: object, preferredLanguage: string

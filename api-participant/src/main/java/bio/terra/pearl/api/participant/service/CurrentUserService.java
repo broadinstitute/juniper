@@ -9,12 +9,14 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class CurrentUserService {
-  private ParticipantUserDao participantUserDao;
-  private PortalParticipantUserService portalParticipantUserService;
-  private EnrolleeService enrolleeService;
-  private EnrolleeRelationService enrolleeRelationService;
-  private ParticipantTaskService participantTaskService;
-  private ProfileService profileService;
+  private final ParticipantUserDao participantUserDao;
+  private final PortalParticipantUserService portalParticipantUserService;
+  private final EnrolleeService enrolleeService;
+  private final EnrolleeRelationService enrolleeRelationService;
+  private final ParticipantTaskService participantTaskService;
+  private final ProfileService profileService;
+  private final RegistrationService registrationService;
 
   public CurrentUserService(
       ParticipantUserDao participantUserDao,
@@ -35,13 +38,15 @@ public class CurrentUserService {
       EnrolleeService enrolleeService,
       EnrolleeRelationService enrolleeRelationService,
       ParticipantTaskService participantTaskService,
-      ProfileService profileService) {
+      ProfileService profileService,
+      RegistrationService registrationService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.participantTaskService = participantTaskService;
     this.profileService = profileService;
+    this.registrationService = registrationService;
   }
 
   /**
@@ -135,6 +140,21 @@ public class CurrentUserService {
     }
 
     return relations;
+  }
+
+  @Transactional
+  public CurrentUserService.UserLoginDto registerOrLogin(
+      String token,
+      String portalShortcode,
+      EnvironmentName environmentName,
+      String email,
+      UUID preRegResponseId,
+      String preferredLanguage) {
+    if (portalParticipantUserService.findOne(email, portalShortcode, environmentName).isEmpty()) {
+      registrationService.register(
+          portalShortcode, environmentName, email, preRegResponseId, preferredLanguage);
+    }
+    return tokenLogin(token, portalShortcode, environmentName);
   }
 
   @Transactional
