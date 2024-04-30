@@ -97,7 +97,7 @@
         "blurb": "Voluntario para ser la fuerza impulsora detrás de la investigación cardiovascular transformadora.",
         "buttons": [{
           "type": "join",
-          "text": "Únete a OurHealth",
+          "text": "Únete a demostración de Juniper Heart",
           "studyShortcode": "heartdemo"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
