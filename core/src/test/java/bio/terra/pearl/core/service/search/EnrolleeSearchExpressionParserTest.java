@@ -19,7 +19,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
     @Test
     public void testParseIntoSQL() {
-        String rule = "{profile.givenName} = 'John' and {answer.oh_oh_basics.oh_oh_givenName} = 'John'";
+        String rule = "{age} > 18 and {answer.basics.diagnosis} = 'something' and ({profile.mailingAddress.country} = 'gb' or {profile.mailingAddress.country} = 'us')";
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
@@ -28,50 +28,62 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
                         "enrollee.last_updated_at as enrollee_last_updated_at, " +
                         "enrollee.participant_user_id as enrollee_participant_user_id, " +
                         "enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, " +
-                        "enrollee.profile_id as enrollee_profile_id, " +
-                        "enrollee.shortcode as enrollee_shortcode, " +
+                        "enrollee.profile_id as enrollee_profile_id, enrollee.shortcode as enrollee_shortcode, " +
                         "enrollee.study_environment_id as enrollee_study_environment_id, " +
-                        "enrollee.subject as enrollee_subject, " +
-                        "profile.birth_date as profile_birth_date, profile.contact_email as profile_contact_email, " +
-                        "profile.created_at as profile_created_at, profile.do_not_email as profile_do_not_email, " +
+                        "enrollee.subject as enrollee_subject, profile.birth_date as profile_birth_date, " +
+                        "profile.contact_email as profile_contact_email, profile.created_at as profile_created_at, " +
+                        "profile.do_not_email as profile_do_not_email, " +
                         "profile.do_not_email_solicit as profile_do_not_email_solicit, " +
-                        "profile.family_name as profile_family_name, " +
-                        "profile.given_name as profile_given_name, profile.id as profile_id, " +
-                        "profile.last_updated_at as profile_last_updated_at, " +
+                        "profile.family_name as profile_family_name, profile.given_name as profile_given_name, " +
+                        "profile.id as profile_id, profile.last_updated_at as profile_last_updated_at, " +
                         "profile.mailing_address_id as profile_mailing_address_id, " +
                         "profile.phone_number as profile_phone_number, " +
                         "profile.preferred_language as profile_preferred_language, " +
                         "profile.sex_at_birth as profile_sex_at_birth, " +
-                        "answer_oh_oh_givenName.answer_type as answer_oh_oh_givenName_answer_type, " +
-                        "answer_oh_oh_givenName.boolean_value as answer_oh_oh_givenName_boolean_value, " +
-                        "answer_oh_oh_givenName.created_at as answer_oh_oh_givenName_created_at, " +
-                        "answer_oh_oh_givenName.creating_admin_user_id as answer_oh_oh_givenName_creating_admin_user_id, " +
-                        "answer_oh_oh_givenName.creating_participant_user_id as answer_oh_oh_givenName_creating_participant_user_id, " +
-                        "answer_oh_oh_givenName.enrollee_id as answer_oh_oh_givenName_enrollee_id, " +
-                        "answer_oh_oh_givenName.id as answer_oh_oh_givenName_id, " +
-                        "answer_oh_oh_givenName.last_updated_at as answer_oh_oh_givenName_last_updated_at, " +
-                        "answer_oh_oh_givenName.number_value as answer_oh_oh_givenName_number_value, " +
-                        "answer_oh_oh_givenName.object_value as answer_oh_oh_givenName_object_value, " +
-                        "answer_oh_oh_givenName.other_description as answer_oh_oh_givenName_other_description, " +
-                        "answer_oh_oh_givenName.question_stable_id as answer_oh_oh_givenName_question_stable_id, " +
-                        "answer_oh_oh_givenName.string_value as answer_oh_oh_givenName_string_value, " +
-                        "answer_oh_oh_givenName.survey_response_id as answer_oh_oh_givenName_survey_response_id, " +
-                        "answer_oh_oh_givenName.survey_stable_id as answer_oh_oh_givenName_survey_stable_id, " +
-                        "answer_oh_oh_givenName.survey_version as answer_oh_oh_givenName_survey_version, " +
-                        "answer_oh_oh_givenName.viewed_language as answer_oh_oh_givenName_viewed_language " +
+                        "answer_diagnosis.answer_type as answer_diagnosis_answer_type, " +
+                        "answer_diagnosis.boolean_value as answer_diagnosis_boolean_value, " +
+                        "answer_diagnosis.created_at as answer_diagnosis_created_at, " +
+                        "answer_diagnosis.creating_admin_user_id as answer_diagnosis_creating_admin_user_id, " +
+                        "answer_diagnosis.creating_participant_user_id as answer_diagnosis_creating_participant_user_id, " +
+                        "answer_diagnosis.enrollee_id as answer_diagnosis_enrollee_id, " +
+                        "answer_diagnosis.id as answer_diagnosis_id, " +
+                        "answer_diagnosis.last_updated_at as answer_diagnosis_last_updated_at, " +
+                        "answer_diagnosis.number_value as answer_diagnosis_number_value, " +
+                        "answer_diagnosis.object_value as answer_diagnosis_object_value, " +
+                        "answer_diagnosis.other_description as answer_diagnosis_other_description, " +
+                        "answer_diagnosis.question_stable_id as answer_diagnosis_question_stable_id, " +
+                        "answer_diagnosis.string_value as answer_diagnosis_string_value, " +
+                        "answer_diagnosis.survey_response_id as answer_diagnosis_survey_response_id, " +
+                        "answer_diagnosis.survey_stable_id as answer_diagnosis_survey_stable_id, " +
+                        "answer_diagnosis.survey_version as answer_diagnosis_survey_version, " +
+                        "answer_diagnosis.viewed_language as answer_diagnosis_viewed_language, " +
+                        "mailing_address.city as mailing_address_city, " +
+                        "mailing_address.country as mailing_address_country, " +
+                        "mailing_address.created_at as mailing_address_created_at, " +
+                        "mailing_address.id as mailing_address_id, " +
+                        "mailing_address.last_updated_at as mailing_address_last_updated_at, " +
+                        "mailing_address.postal_code as mailing_address_postal_code, " +
+                        "mailing_address.state as mailing_address_state, " +
+                        "mailing_address.street1 as mailing_address_street1, " +
+                        "mailing_address.street2 as mailing_address_street2 " +
                         "from enrollee enrollee " +
                         "left outer join profile profile on (enrollee.profile_id = profile.id) " +
-                        "left outer join answer answer_oh_oh_givenName on (enrollee.id = answer_oh_oh_givenName.enrollee_id) " +
-                        "where ((answer_oh_oh_givenName.survey_stable_id = ? AND answer_oh_oh_givenName.question_stable_id = ?) " +
-                        "and (answer_oh_oh_givenName.string_value = ?) and (profile.given_name = ?) and (enrollee.study_environment_id = ?))",
+                        "left outer join answer answer_diagnosis on (enrollee.id = answer_diagnosis.enrollee_id) " +
+                        "left outer join mailing_address mailing_address on (profile.mailing_address_id = mailing_address.id) " +
+                        "where (((mailing_address.country = ?) or (mailing_address.country = ?)) " +
+                        "and (answer_diagnosis.survey_stable_id = ? AND answer_diagnosis.question_stable_id = ?) " +
+                        "and (answer_diagnosis.string_value = ?) and (EXTRACT('YEAR' FROM AGE(profile.birth_date)) > ?) " +
+                        "and (enrollee.study_environment_id = ?))",
                 query.getSQL());
 
-        assertEquals(5, query.getBindValues().size());
-        assertEquals("oh_oh_basics", query.getBindValues().get(0));
-        assertEquals("oh_oh_givenName", query.getBindValues().get(1));
-        assertEquals("John", query.getBindValues().get(2));
-        assertEquals("John", query.getBindValues().get(3));
-        assertEquals(fakeStudyEnvId, query.getBindValues().get(4));
+        assertEquals(7, query.getBindValues().size());
+        assertEquals("us", query.getBindValues().get(0));
+        assertEquals("gb", query.getBindValues().get(1));
+        assertEquals("basics", query.getBindValues().get(2));
+        assertEquals("diagnosis", query.getBindValues().get(3));
+        assertEquals("something", query.getBindValues().get(4));
+        assertEquals(18.0, query.getBindValues().get(5));
+        assertEquals(fakeStudyEnvId, query.getBindValues().get(6));
     }
 
     @Test

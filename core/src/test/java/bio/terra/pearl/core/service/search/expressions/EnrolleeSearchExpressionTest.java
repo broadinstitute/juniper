@@ -180,5 +180,84 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 .build()));
     }
 
+    @Test
+    public void testParenthesis() {
+        assertTrue(
+                enrolleeSearchExpressionParser
+                        .parseRule("1 = 1 and (1 = 1 or 1 = 2)")
+                        .evaluate(EnrolleeSearchContext.builder().build())
+        );
+
+        assertTrue(
+                enrolleeSearchExpressionParser
+                        .parseRule("1 = 1 and (1 = 2 or (1 = 2 or (1 = 1 and 2 = 2)))")
+                        .evaluate(EnrolleeSearchContext.builder().build())
+        );
+    }
+
+    @Test
+    @Transactional
+    public void testAnswersWithParensEvaluate(TestInfo info) {
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        surveyFactory.attachToEnv(survey, studyEnvironment.getId(), true);
+
+        Enrollee enrolleeMatches1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeMatches1, survey, Map.of(
+                "diagnosis", "diag1",
+                "country", "us"
+
+        ));
+
+        Enrollee enrolleeMatches2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeMatches2, survey, Map.of(
+                "diagnosis", "diag2",
+                "country", "us"
+        ));
+
+        Enrollee enrolleeDoesNotMatch1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeDoesNotMatch1, survey, Map.of(
+                "diagnosis", "diag3",
+                "country", "us"
+        ));
+
+        Enrollee enrolleeDoesNotMatch2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeDoesNotMatch2, survey, Map.of(
+                "diagnosis", "diag2",
+                "country", "gb"
+        ));
+
+        Enrollee enrolleeNoResponse = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+
+
+        String rule = "{answer.%s.country} = 'us' and ({answer.%s.diagnosis} = 'diag1' or {answer.%s.diagnosis} = 'diag2')".formatted(survey.getStableId(), survey.getStableId(), survey.getStableId());
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
+
+        assertTrue(searchExp.evaluate(EnrolleeSearchContext
+                .builder()
+                .enrollee(enrolleeMatches1)
+                .build()));
+
+        assertTrue(searchExp.evaluate(EnrolleeSearchContext
+                .builder()
+                .enrollee(enrolleeMatches1)
+                .build()));
+
+        assertFalse(searchExp.evaluate(EnrolleeSearchContext
+                .builder()
+                .enrollee(enrolleeDoesNotMatch1)
+                .build()));
+
+        assertFalse(searchExp.evaluate(EnrolleeSearchContext
+                .builder()
+                .enrollee(enrolleeDoesNotMatch2)
+                .build()));
+
+        assertFalse(searchExp.evaluate(EnrolleeSearchContext
+                .builder()
+                .enrollee(enrolleeNoResponse)
+                .build()));
+    }
 
 }
