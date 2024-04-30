@@ -17,7 +17,7 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
     getImageUrl,
     submitMailingListContact: () => Promise.resolve({}),
     getLanguageTexts: (selectedLanguage: string) => {
-      return Api.getLanguageTexts(portalShortcode, selectedLanguage)
+      return Api.getLanguageTexts(selectedLanguage, portalShortcode)
     }
   }
 }
