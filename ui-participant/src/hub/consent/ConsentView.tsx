@@ -40,7 +40,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
                           }) {
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData, onComplete, pager)
   const navigate = useNavigate()
-  const { selectedLanguage } = useI18n()
+  const { selectedLanguage, i18n } = useI18n()
   const { updateEnrollee } = useUser()
 
   surveyModel.locale = selectedLanguage || 'default'
@@ -74,7 +74,14 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       response.enrollee.participantTasks = response.tasks
       const hubUpdate: HubUpdate = {
         message: {
-          title: `${form.name} completed`,
+          title: i18n(
+            'hubUpdateFormSubmitted',
+            {
+              substitutions: {
+                formName: i18n(`${form.stableId}:${form.version}`)
+              },
+              defaultValue: form.name
+            }),
           type: 'SUCCESS'
         }
       }

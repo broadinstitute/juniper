@@ -68,6 +68,15 @@
   {"keyName": "suggestBetterAddressHeader", "text": "¿Es esta la dirección correcta?", "language": "es"},
   {"keyName": "suggestBetterAddressBody", "text": "Pudimos verificar una dirección similar. Por favor, seleccione cuál le gustaría usar.", "language": "es"},
   {"keyName": "newAddress", "text": "Nueva Dirección", "language": "es"},
-  {"keyName": "oldAddress", "text": "Dirección Anterior", "language": "es"}
-
+  {"keyName": "oldAddress", "text": "Dirección Anterior", "language": "es"},
+  {"keyName": "oldAddress", "text": "Dirección Anterior", "language": "es"},
+  {"keyName": "hubUpdateFormSubmittedTitle", "text": "{formName} completado", "language": "es"},
+  {"keyName": "hubUpdateNoActivitiesTitle", "text": "Todas las actividades completadas.", "language": "es"},
+  {"keyName": "hubUpdateNoActivitiesDetail", "text": "Ha completado todas las actividades de este estudio. Te avisaremos tan pronto como haya nuevas actividades disponibles. ¡Gracias por su participación!", "language": "es"},
+  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "Bienvenido a {studyName}", "language": "es"},
+  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "Lea y firme el formulario de consentimiento a continuación para continuar.", "language": "es"},
+  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "Ya estás inscrito en ${studyName}.", "language": "es"},
+  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "Este usuario ya está inscrito en ${studyName}.", "language": "es"},
+  {"keyName": "cookieAlertTitle", "text": "Galletas", "language": "es"},
+  {"keyName": "cookieAlertDetail", "text": "Este sitio utiliza tokens de Internet llamados &quot;cookies&quot; para permitir el correcto funcionamiento y seguridad de nuestro sitio web, y para mejorar su experiencia mientras lo utiliza. Todas las cookies que utilizamos son cookies estrictamente necesarias. Este tipo de cookie no recopila ninguna información de identificación personal sobre usted y no rastrea sus hábitos de navegación. Para obtener más información, [lea nuestra Política de privacidad](/privacy).", "language": "es"}
 ]

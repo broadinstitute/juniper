@@ -15,6 +15,7 @@ import { enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { filterUnjoinableStudies } from 'Navbar'
 import { logError } from 'util/loggingUtils'
+import { useI18n } from '@juniper/ui-core'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -28,6 +29,7 @@ export const RedirectFromOAuth = () => {
   const [invitationType, setInvitationType] = useInvitationType()
   const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
+  const { i18n } = useI18n()
 
   const defaultEnrollStudy = findDefaultEnrollmentStudy(returnToStudy, portal.portalStudies)
 
@@ -71,7 +73,7 @@ export const RedirectFromOAuth = () => {
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
               const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState)
+                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState, i18n)
               navigate('/hub', { replace: true, state: hubUpdate })
             } else {
               navigate('/hub', { replace: true })

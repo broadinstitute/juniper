@@ -12,7 +12,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
-import { alertDefaults, AlertLevel } from '@juniper/ui-core'
+import { useI18n } from '@juniper/ui-core'
 import { enrollCurrentUserInStudy, enrollProxyUserInStudy } from 'util/enrolleeUtils'
 import { logError } from 'util/loggingUtils'
 
@@ -55,6 +55,7 @@ type StudyEnrollOutletMatchedProps = {
 /** handles the rendering and useEffect logic */
 function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   const { portal, studyEnv, studyName, studyShortcode } = props
+  const { i18n } = useI18n()
 
   const [searchParams] = useSearchParams()
   const isProxyEnrollment = searchParams.get('isProxyEnrollment') === 'true'
@@ -105,9 +106,9 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
       const hubUpdate: HubUpdate = {
         message: {
           title: isProxyEnrollment
-            ? `This user is already enrolled in ${studyName}`
-            : `You are already enrolled in ${studyName}.`,
-          type: alertDefaults['STUDY_ALREADY_ENROLLED'].alertType as AlertLevel
+            ? i18n('hubUpdateGovernedUserAlreadyEnrolledTitle', { substitutions: { studyName } })
+            : i18n('hubUpdateAlreadyEnrolledTitle', { substitutions: { studyName } }),
+          type: 'INFO'
         }
       }
       navigate('/hub', { replace: true, state: hubUpdate })
@@ -124,10 +125,10 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         try {
           const hubUpdate = isProxyEnrollment
             ? enrollProxyUserInStudy(
-              studyShortcode, studyName, preEnrollResponseId, governedPpUserId, refreshLoginState
+              studyShortcode, studyName, preEnrollResponseId, governedPpUserId, refreshLoginState, i18n
             )
             : enrollCurrentUserInStudy(
-              studyShortcode, studyName, preEnrollResponseId, refreshLoginState
+              studyShortcode, studyName, preEnrollResponseId, refreshLoginState, i18n
             )
           navigate('/hub', { replace: true, state: hubUpdate })
         } catch (e) {

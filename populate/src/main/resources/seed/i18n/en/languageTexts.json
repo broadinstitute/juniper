@@ -67,5 +67,15 @@
   {"keyName": "suggestBetterAddressHeader", "text": "Is this the correct address?", "language": "en"},
   {"keyName": "suggestBetterAddressBody", "text": "We were able to verify a similar address. Please select which you would like to use.", "language": "en"},
   {"keyName": "newAddress", "text": "New Address", "language": "en"},
-  {"keyName": "oldAddress", "text": "Old Address", "language": "en"}
+  {"keyName": "oldAddress", "text": "Old Address", "language": "en"},
+  {"keyName": "oldAddress", "text": "Old Address", "language": "en"},
+  {"keyName": "hubUpdateFormSubmittedTitle", "text": "{formName} completed", "language": "en"},
+  {"keyName": "hubUpdateNoActivitiesTitle", "text": "All activities complete", "language": "en"},
+  {"keyName": "hubUpdateNoActivitiesDetail", "text": "You have completed all activities for this study. We will notify you as soon as new activities are available. Thank you for your participation!", "language": "en"},
+  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "Welcome to {studyName}", "language": "en"},
+  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "Please read and sign the consent form below to continue.", "language": "en"},
+  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "You are already enrolled in ${studyName}.", "language": "en"},
+  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "This user is already enrolled in ${studyName}.", "language": "en"},
+  {"keyName": "cookieAlertTitle", "text": "Cookies", "language": "en"},
+  {"keyName": "cookieAlertDetail", "text": "This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "en"}
 ]

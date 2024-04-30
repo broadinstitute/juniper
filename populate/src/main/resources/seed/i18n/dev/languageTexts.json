@@ -67,6 +67,15 @@
   {"keyName": "suggestBetterAddressHeader", "text": "DEV_Is this the correct address?", "language": "dev"},
   {"keyName": "suggestBetterAddressBody", "text": "DEV_We were able to verify a similar address. Please select which you would like to use.", "language": "dev"},
   {"keyName": "newAddress", "text": "DEV_New Address", "language": "dev"},
-  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"}
-
+  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"},
+  {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"},
+  {"keyName": "hubUpdateFormSubmittedTitle", "text": "DEV_{formName} completed", "language": "dev"},
+  {"keyName": "hubUpdateNoActivitiesTitle", "text": "DEV_All activities complete", "language": "dev"},
+  {"keyName": "hubUpdateNoActivitiesDetail", "text": "DEV_You have completed all activities for this study. We will notify you as soon as new activities are available. Thank you for your participation!", "language": "dev"},
+  {"keyName": "hubUpdateWelcomeToStudyTitle", "text": "DEV_Welcome to {studyName}", "language": "dev"},
+  {"keyName": "hubUpdateWelcomeToStudyDetail", "text": "DEV_Please read and sign the consent form below to continue.", "language": "dev"},
+  {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "DEV_You are already enrolled in ${studyName}.", "language": "dev"},
+  {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "DEV_This user is already enrolled in ${studyName}.", "language": "dev"},
+  {"keyName": "cookieAlertTitle", "text": "DEV_Cookies", "language": "dev"},
+  {"keyName": "cookieAlertDetail", "text": "DEV_This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "dev"}
 ]

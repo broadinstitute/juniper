@@ -82,7 +82,14 @@ export function RawSurveyView({
       response.enrollee.participantTasks = response.tasks
       const hubUpdate: HubUpdate = {
         message: {
-          title: `${form.name} completed`,
+          title: i18n(
+            'hubUpdateFormSubmitted',
+            {
+              substitutions: {
+                formName: i18n(`${form.stableId}:${form.version}`)
+              },
+              defaultValue: form.name
+            }),
           type: 'SUCCESS'
         }
       }
@@ -152,13 +159,13 @@ export function RawSurveyView({
 
   return (
     <>
-      <DocumentTitle title={i18n(`${form.stableId}:${form.version}`, form.name)}/>
+      <DocumentTitle title={i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}/>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
         {showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/>}
         {showHeaders && <SurveyAutoCompleteButton surveyModel={surveyModel}/>}
         {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
-          {i18n(`${form.stableId}:${form.version}`, form.name)}
+          {i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}
         </h1>}
         <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>

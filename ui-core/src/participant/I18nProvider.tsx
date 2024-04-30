@@ -3,9 +3,14 @@ import { useApiContext } from './ApiProvider'
 
 export const I18nContext = createContext<I18nContextT | null>(null)
 
+export type I18nOptions = {
+  substitutions?: Record<string, string>,
+  defaultValue?: string
+}
+
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string, defaultValue?: string) => string,
+  i18n: (key: string, options?: I18nOptions) => string,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
 }
@@ -63,8 +68,16 @@ export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
     })
   }
 
-  const i18n = (key: string, defaultValue?: string) => {
-    return languageTexts[key] || defaultValue || `{${key}}`
+  const i18n = (key: string, options?: I18nOptions) => {
+    let text = languageTexts[key] || options?.defaultValue || `{${key}}`
+    if (options && options.substitutions) {
+      Object.keys(options.substitutions).forEach(substitutionKey => {
+        if (options.substitutions) {
+          text = text.replace(`{${substitutionKey}}`, options.substitutions[substitutionKey])
+        }
+      })
+    }
+    return text
   }
 
   return <>
@@ -77,7 +90,7 @@ export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
         If this is an error, contact <a href="mailto:support@juniper.terra.bio">support@juniper.terra.bio</a>.
       </div>
     </div>}
-    {!isLoading && !isError && <I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
+    {!isLoading && !isError &&<I18nContext.Provider value={{ languageTexts, i18n, selectedLanguage, changeLanguage }}>
       {children}
     </I18nContext.Provider>}
   </>

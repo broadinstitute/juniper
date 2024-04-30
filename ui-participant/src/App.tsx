@@ -19,7 +19,6 @@ import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
-import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
 import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
@@ -27,6 +26,7 @@ import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import InvitationPage from './landing/registration/InvitationPage'
 import AuthError from './login/AuthError'
 import ActiveUserProvider from './providers/ActiveUserProvider'
+import { CookieAlert } from './CookieAlert'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -133,6 +133,7 @@ function App() {
                               <Route path="*" element={<div>unmatched route</div>}/>
                             </Routes>
                           </Suspense>
+                          {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
                         </I18nProvider>
                       </ActiveUserProvider>
                     </UserProvider>
@@ -140,7 +141,6 @@ function App() {
                 }
               </ConfigConsumer>
             </ConfigProvider>
-            {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
           </BrowserRouter>
         </div>
       </PortalPasswordGate>
