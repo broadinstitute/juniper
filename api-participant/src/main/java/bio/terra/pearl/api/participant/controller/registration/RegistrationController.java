@@ -58,10 +58,9 @@ public class RegistrationController implements RegistrationApi {
       RegistrationInfo body) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     String token = requestUtilService.requireToken(request);
-    String email = requestUtilService.getUsernameFromToken(token);
     CurrentUserService.UserLoginDto userLoginDto =
         currentUserService.registerOrLogin(
-            token, portalShortcode, environmentName, email, preRegResponseId, preferredLanguage);
+            token, portalShortcode, environmentName, preRegResponseId, preferredLanguage);
     return ResponseEntity.ok(userLoginDto);
   }
 

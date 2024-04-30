@@ -62,6 +62,11 @@ public class CurrentUserService {
     return user;
   }
 
+  public String getUsernameFromToken(String token) {
+    DecodedJWT decodedJWT = JWT.decode(token);
+    return decodedJWT.getClaim("email").asString();
+  }
+
   @Transactional
   public UserLoginDto refresh(
       String token, String portalShortcode, EnvironmentName environmentName) {
@@ -147,9 +152,10 @@ public class CurrentUserService {
       String token,
       String portalShortcode,
       EnvironmentName environmentName,
-      String email,
       UUID preRegResponseId,
       String preferredLanguage) {
+
+    String email = getUsernameFromToken(token);
     if (portalParticipantUserService.findOne(email, portalShortcode, environmentName).isEmpty()) {
       registrationService.register(
           portalShortcode, environmentName, email, preRegResponseId, preferredLanguage);

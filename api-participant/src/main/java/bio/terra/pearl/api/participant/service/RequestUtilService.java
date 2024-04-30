@@ -6,8 +6,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -51,13 +49,8 @@ public class RequestUtilService {
 
   protected Optional<ParticipantUser> getUserFromToken(HttpServletRequest request, String token) {
     EnvironmentName envName = environmentNameFromRequest(request);
-    String email = getUsernameFromToken(token);
+    String email = currentUserService.getUsernameFromToken(token);
     return currentUserService.findByUsername(email, envName);
-  }
-
-  public String getUsernameFromToken(String token) {
-    DecodedJWT decodedJWT = JWT.decode(token);
-    return decodedJWT.getClaim("email").asString();
   }
 
   public EnvironmentName environmentNameFromRequest(HttpServletRequest request) {
