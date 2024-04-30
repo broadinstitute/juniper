@@ -140,9 +140,13 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     }
   }
 
+  const [isLoading, setIsLoading] = useState(false)
   // when either preEnrollment or login status changes, navigate accordingly
   useEffect(() => {
+    setIsLoading(true)
     determineNextRoute()
+      .then(() => setIsLoading(false))
+      .catch(() => setIsLoading(false))
   }, [mustProvidePassword, preEnrollSatisfied, user?.username])
 
   const enrollContext: StudyEnrollContext = {
@@ -154,6 +158,8 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     isProxyEnrollment
   }
   const hasPreEnroll = !!enrollContext.studyEnv.preEnrollSurvey
+
+  if (isLoading) { return <PageLoadingIndicator/> }
   return <>
     <NavBar/>
     {mustProvidePassword

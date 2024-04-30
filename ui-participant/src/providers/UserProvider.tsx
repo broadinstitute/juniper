@@ -148,7 +148,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
-      Api.refreshLogin(oauthAccessToken).then(loginResult => {
+      return Api.refreshLogin(oauthAccessToken).then(loginResult => {
         loginUser(loginResult, oauthAccessToken)
         setIsLoading(false)
       }).catch(() => {
@@ -156,7 +156,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
       })
     } else if (internalLogintoken) {
-      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
+      return Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
         loginUserInternal(loginResult)
         setIsLoading(false)
       }).catch(() => {

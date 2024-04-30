@@ -13,7 +13,6 @@ import OutreachTasks from './OutreachTasks'
 import HubPageParticipantSelector from './HubPageParticipantSelector'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
-import { LoadingSpinner } from '../util/LoadingSpinner'
 
 
 /** renders the logged-in hub page */
@@ -83,9 +82,6 @@ export default function HubPage() {
           style={{ background: '#fff', maxWidth: 768 }}
         >
           {relations.length > 0 && <HubPageParticipantSelector/>}
-          {enrollees.length === 0 && <div className={'d-flex justify-content-center'}>
-            <LoadingSpinner/>
-          </div>}
           {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
         </main>
         <div className="hub-dashboard mx-auto"
