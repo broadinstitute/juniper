@@ -12,7 +12,8 @@ type ProvideTestUserProps = {
   user?: ParticipantUser,
   portal?: Portal,
   enrollees?: Enrollee[],
-  relations?: EnrolleeRelation[]
+  relations?: EnrolleeRelation[],
+  activePpUserId?: string,
   children: React.ReactNode
 }
 /**
@@ -87,6 +88,7 @@ const _ProvideTestUser = ({
   user,
   enrollees = [],
   relations = [],
+  activePpUserId,
   children
 }: ProvideTestUserProps) => {
   const {
@@ -154,7 +156,7 @@ const _ProvideTestUser = ({
       relations
     })
 
-    setActiveUser(ppUsers[0].id)
+    setActiveUser(activePpUserId || ppUsers[0].id)
   }, [])
 
   return <>

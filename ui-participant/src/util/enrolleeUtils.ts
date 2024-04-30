@@ -57,10 +57,13 @@ export async function enrollProxyUserInStudy(
 /**
  *
  */
-export const useName = (ppUser: PortalParticipantUser) => {
+export const useName = (ppUser: PortalParticipantUser | undefined) => {
   const { i18n } = useI18n()
   const { enrollees, user, relations } = useUser()
 
+  if (!ppUser) {
+    return ''
+  }
   const profile = enrollees
     .find(enrollee => enrollee.profileId === ppUser.profileId && !isNil(enrollee.profile))?.profile
   const hasProxies = relations.some(relation => relation.relationshipType === 'PROXY')

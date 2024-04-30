@@ -15,7 +15,7 @@ export default function ParticipantSelector() {
   const { ppUsers } = useUser()
   const { setActiveUser, ppUser } = useActiveUser()
 
-  const activeUserName = ppUser ? useName(ppUser) : ''
+  const activeUserName = useName(ppUser || undefined)
 
   const { portal } = usePortalEnv()
 
