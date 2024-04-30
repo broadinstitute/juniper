@@ -83,7 +83,6 @@ export default function HubPage() {
           style={{ background: '#fff', maxWidth: 768 }}
         >
           {relations.length > 0 && <HubPageParticipantSelector/>}
-          {/* eslint-disable-next-line react/jsx-no-undef */}
           {enrollees.length === 0 && <div className={'d-flex justify-content-center'}>
             <LoadingSpinner/>
           </div>}
