@@ -75,7 +75,7 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
       const hubUpdate: HubUpdate = {
         message: {
           title: i18n(
-            'hubUpdateFormSubmitted',
+            'hubUpdateFormSubmittedTitle',
             {
               substitutions: {
                 formName: i18n(`${form.stableId}:${form.version}`)

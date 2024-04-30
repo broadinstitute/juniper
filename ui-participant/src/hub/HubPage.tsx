@@ -59,7 +59,7 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
-        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
+        {hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,
