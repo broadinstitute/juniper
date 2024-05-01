@@ -42,7 +42,7 @@ describe('HubPage with proxies', () => {
     await waitFor(() => expect(screen.getByText('Test Study')).toBeInTheDocument())
     await waitFor(
       async () => expect(
-        await screen.findByLabelText('Select participant')
+        await screen.findByLabelText('{selectParticipant}')
       ).toHaveTextContent('Jonas Salk {youInParens}'))
   })
   it('switches between proxies', async () => {
@@ -62,22 +62,22 @@ describe('HubPage with proxies', () => {
     render(RoutedComponent)
 
     await waitFor(() => expect(screen.getByText('Test Study')).toBeInTheDocument())
-    expect(await screen.findByLabelText('Select participant')).toHaveTextContent('Jonas Salk {youInParens}')
+    expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonas Salk {youInParens}')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
     selectParticipant('Peter Salk')
-    expect(await screen.findByLabelText('Select participant')).toHaveTextContent('Peter Salk')
+    expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Peter Salk')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeInTheDocument()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
     selectParticipant('Jonathan Salk')
-    expect(await screen.findByLabelText('Select participant')).toHaveTextContent('Jonathan Salk')
+    expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonathan Salk')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeInTheDocument()
   })
 })
 
 const selectParticipant = (name: string) => {
-  const select = screen.getByLabelText('Select participant')
+  const select = screen.getByLabelText('{selectParticipant}')
   fireEvent.click(select)
 
   const option = screen.getByText(name)

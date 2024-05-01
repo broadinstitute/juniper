@@ -70,5 +70,11 @@
   {"keyName": "oldAddress", "text": "DEV_Old Address", "language": "dev"},
   {"keyName": "you", "text": "DEV_You", "language": "dev"},
   {"keyName": "yourDependent", "text": "DEV_Your Dependent", "language": "dev"},
-  {"keyName": "youInParens", "text": "DEV_(you)", "language": "dev"}
+  {"keyName": "youInParens", "text": "DEV_(you)", "language": "dev"},
+  {"keyName": "allProfiles", "text": "DEV_All Profiles", "language": "dev"},
+  {"keyName": "manageProfiles", "text": "DEV_Manage Profiles", "language": "dev"},
+  {"keyName": "addNewParticipant", "text": "DEV_Add New Participant", "language": "dev"},
+  {"keyName": "dashboard", "text": "DEV_Dashboard", "language": "dev"},
+  {"keyName": "selectParticipant", "text": "DEV_Select Participant", "language": "dev"}
+
 ]

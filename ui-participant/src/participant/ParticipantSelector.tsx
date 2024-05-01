@@ -7,6 +7,7 @@ import { useName } from '../util/enrolleeUtils'
 import { Link } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
+import { useI18n } from '@juniper/ui-core'
 
 /**
  * Dropdown selector which globally changes the currently active participant. In addition, provides related options,
@@ -15,6 +16,8 @@ import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
 export default function ParticipantSelector() {
   const { ppUsers } = useUser()
   const { setActiveUser, ppUser } = useActiveUser()
+
+  const { i18n } = useI18n()
 
   const activeUserName = useName(ppUser || undefined)
 
@@ -28,7 +31,7 @@ export default function ParticipantSelector() {
     <div className="dropdown participant-selector">
       <button
         className="w-100 btn btn-outline-dark border-0 bg-white d-flex align-items-center link-dark"
-        type="button" data-bs-toggle="dropdown" aria-label='Select participant'
+        type="button" data-bs-toggle="dropdown" aria-label={i18n('selectParticipant')}
         aria-expanded="false">
         <FontAwesomeIcon icon={faUsers}/>
         <span className='mx-2 fs-5'>
@@ -62,13 +65,13 @@ export default function ParticipantSelector() {
                 : '#'
             }>
             <FontAwesomeIcon icon={faPlus}/>
-            <span className='ms-2'>Add new participant</span>
+            <span className='ms-2'>{i18n('addNewParticipant')}</span>
           </Link>
         </li>
         <li>
           <Link className="dropdown-item" to='/hub/manageProfiles'>
             <FontAwesomeIcon icon={faPlus} className='opacity-0'/>
-            <span className='ms-2'>Manage Profiles</span>
+            <span className='ms-2'>{i18n('manageProfiles')}</span>
           </Link>
         </li>
       </ul>

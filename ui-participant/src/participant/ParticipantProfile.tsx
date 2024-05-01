@@ -106,7 +106,7 @@ export function ParticipantProfile() {
             <div className={'m-2 mt-0'}>
               <Link to='/hub/manageProfiles'>
                 <FontAwesomeIcon icon={faChevronLeft}/>
-                <span className="ms-2">All Profiles</span>
+                <span className="ms-2">{i18n('allProfiles')}</span>
               </Link>
             </div>
         }

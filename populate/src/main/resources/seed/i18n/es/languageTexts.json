@@ -71,6 +71,10 @@
   {"keyName": "oldAddress", "text": "Dirección Anterior", "language": "es"},
   {"keyName": "you", "text": "Tú", "language": "es"},
   {"keyName": "yourDependent", "text": "Tu Dependiente", "language": "es"},
-  {"keyName": "youInParens", "text": "(tú)", "language": "es"}
-
+  {"keyName": "youInParens", "text": "(tú)", "language": "es"},
+  {"keyName": "allProfiles", "text": "Todos los Perfiles", "language": "es"},
+  {"keyName": "manageProfiles", "text": "Gestionar Perfiles", "language": "es"},
+  {"keyName": "addNewParticipant", "text": "Agregar Nuevo Participante", "language": "es"},
+  {"keyName": "dashboard", "text": "Tablero", "language": "es"},
+  {"keyName": "selectParticipant", "text": "Seleccionar Participante", "language": "es"}
 ]
