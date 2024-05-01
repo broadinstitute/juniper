@@ -24,7 +24,7 @@ export type UserContextT = {
   logoutUser: () => void,
   updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
-  refreshLoginState: () => void
+  refreshLoginState: () => Promise<void>
 }
 
 /** current user object context */
@@ -148,21 +148,23 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
-      Api.refreshLogin(oauthAccessToken).then(loginResult => {
+      try {
+        const loginResult = await Api.refreshLogin(oauthAccessToken)
         loginUser(loginResult, oauthAccessToken)
         setIsLoading(false)
-      }).catch(() => {
+      } catch (e) {
         setIsLoading(false)
         localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-      })
+      }
     } else if (internalLogintoken) {
-      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
+      try {
+        const loginResult = await Api.unauthedRefreshLogin(internalLogintoken)
         loginUserInternal(loginResult)
         setIsLoading(false)
-      }).catch(() => {
+      } catch (e) {
         setIsLoading(false)
         localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-      })
+      }
     } else {
       setIsLoading(false)
     }
