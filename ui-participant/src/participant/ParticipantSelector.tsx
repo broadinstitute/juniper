@@ -9,7 +9,8 @@ import { usePortalEnv } from '../providers/PortalProvider'
 import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
 
 /**
- *
+ * Dropdown selector which globally changes the currently active participant. In addition, provides related options,
+ * e.g. "Add new participant" and "Manage Profiles".
  */
 export default function ParticipantSelector() {
   const { ppUsers } = useUser()
@@ -19,7 +20,8 @@ export default function ParticipantSelector() {
 
   const { portal } = usePortalEnv()
 
-  // TODO: this should be multi-study compatible
+  // in the future, this will need to be refactored to be multi-study compatible. possibly, it could
+  // link to a separate page where you select the desired study to enroll in.
   const defaultStudyToEnroll = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
   return (

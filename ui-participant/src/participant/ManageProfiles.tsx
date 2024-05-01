@@ -6,7 +6,7 @@ import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons
 import { Link } from 'react-router-dom'
 
 /**
- *
+ * Intermediate page for proxies to select which profile (whether it be their own or a proxied user) to edit.
  */
 export default function ManageProfiles() {
   const { ppUsers } = useUser()
