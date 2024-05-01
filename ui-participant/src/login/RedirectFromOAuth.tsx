@@ -25,7 +25,7 @@ export const RedirectFromOAuth = () => {
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
-  const [setInvitationType] = useInvitationType()
+  const [, setInvitationType] = useInvitationType()
   const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
 
