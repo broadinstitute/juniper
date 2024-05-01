@@ -23,6 +23,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Autowired
@@ -245,5 +247,53 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(e1.getId())));
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(e2.getId())));
         Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(e3.getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testAnswersWithParensEvaluate(TestInfo info) {
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+
+        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        surveyFactory.attachToEnv(survey, studyEnvironment.getId(), true);
+
+        Enrollee enrolleeMatches1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeMatches1, survey, Map.of(
+                "diagnosis", "diag1",
+                "country", "us"
+
+        ));
+
+        Enrollee enrolleeMatches2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeMatches2, survey, Map.of(
+                "diagnosis", "diag2",
+                "country", "us"
+        ));
+
+        Enrollee enrolleeDoesNotMatch1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeDoesNotMatch1, survey, Map.of(
+                "diagnosis", "diag3",
+                "country", "us"
+        ));
+
+        Enrollee enrolleeDoesNotMatch2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        surveyResponseFactory.buildWithAnswers(enrolleeDoesNotMatch2, survey, Map.of(
+                "diagnosis", "diag2",
+                "country", "gb"
+        ));
+
+        // enrollee with no response
+        enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+
+
+        String rule = "{answer.%s.country} = 'us' and ({answer.%s.diagnosis} = 'diag1' or {answer.%s.diagnosis} = 'diag2')".formatted(survey.getStableId(), survey.getStableId(), survey.getStableId());
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
+
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(searchExp, studyEnvironment.getId());
+
+        Assertions.assertEquals(2, results.size());
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeMatches1.getId())));
+        assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(enrolleeMatches2.getId())));
     }
 }

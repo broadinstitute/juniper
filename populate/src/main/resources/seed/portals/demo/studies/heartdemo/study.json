@@ -13,9 +13,7 @@
     "surveys/socialHealth.json",
     "surveys/socialHealthV2.json",
     "surveys/socialHealthV3.json",
-    "surveys/sandboxSurvey.json"
-  ],
-  "consentFormFiles": [
+    "surveys/sandboxSurvey.json",
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
@@ -51,12 +49,8 @@
         {"populateFileName": "surveys/socialHealth.json", "active": false},
         {"populateFileName": "surveys/socialHealthV2.json", "active": false},
         {"populateFileName": "surveys/socialHealthV3.json"},
-        {"populateFileName": "surveys/sandboxSurvey.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/sandboxSurvey.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",
@@ -139,12 +133,8 @@
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/socialHealthV2.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",
@@ -191,12 +181,8 @@
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/socialHealthV2.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",

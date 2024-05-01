@@ -11,7 +11,7 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 
 /** enrolls the user and displays a welcome banner on the dashboard */
 export async function enrollCurrentUserInStudy(studyShortcode: string, studyName: string,
-  preEnrollResponseId: string | null, refreshLogin: () => void) {
+  preEnrollResponseId: string | null, refreshLogin: () => Promise<void>) {
   await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
@@ -36,7 +36,7 @@ export async function enrollProxyUserInStudy(
   studyName: string,
   preEnrollResponseId: string | null,
   governedPpUserId: string | null,
-  refreshLogin: () => void
+  refreshLogin: () => Promise<void>
 ) {
   await Api.createGovernedEnrollee({
     studyShortcode,

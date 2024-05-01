@@ -12,7 +12,7 @@ type LoadingSpinnerProps = {
 }
 
 /** Spinning DNA icon */
-const LoadingSpinner = (props: LoadingSpinnerProps) => {
+export const LoadingSpinner = (props: LoadingSpinnerProps) => {
   const { className, style, testId } = props
   return (
     <FontAwesomeIcon

@@ -63,7 +63,7 @@
         "blurb": "DEV_With your help, patients can be the driving force behind transformative cardiovascular research.",
         "buttons": [{
           "type": "join",
-          "text": "DEV_Join OurHealth",
+          "text": "DEV_Join Juniper Heart Demo",
           "studyShortcode": "heartdemo"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"

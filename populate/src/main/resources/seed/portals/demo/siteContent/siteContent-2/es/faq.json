@@ -19,23 +19,23 @@
           "title": "",
           "questions": [
             {
-              "question": "¿Qué es el estudio OurHealth?",
-              "answer": "OurHealth es una iniciativa de investigación sin fines de lucro que permite a las personas de ascendencia del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
+              "question": "¿Qué es el estudio demostración de Juniper Heart?",
+              "answer": "El studio demostración de Juniper Heart es una iniciativa de investigación sin fines de lucro que permite a las personas de ascendencia del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
             },
             {
               "question": "¿Por qué es necesario?",
-              "answer": "Las personas de ascendencia del sur de Asia se ven desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentadas en los estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo para la enfermedad cardiovascular, lo que destaca una brecha de conocimiento. OurHealth tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
+              "answer": "Las personas de ascendencia del sur de Asia se ven desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentadas en los estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo para la enfermedad cardiovascular, lo que destaca una brecha de conocimiento. Demostración de Juniper Heart tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
             },
             {
               "question": "¿Cómo puedo participar?",
-              "answer": "Si tiene más de 18 años, vive en los Estados Unidos e identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/ourhealth/join)."
+              "answer": "Si tiene más de 18 años, vive en los Estados Unidos e identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/heartdemo/join)."
             },
             {
-              "question": "¿Qué hace OurHealth con los datos?",
+              "question": "¿Qué hace demostración de Juniper Heart con los datos?",
               "answer": "Los datos y/o muestras solo se recopilarán si son necesarios para la realización del estudio. Los datos electrónicos recopilados se mantendrán en un lugar seguro con protecciones adecuadas, incluida la protección con contraseña, el cifrado y/o medidas de seguridad física (archivos/áreas bloqueados). Las muestras recopiladas se mantendrán en un lugar seguro con protecciones adecuadas (por ejemplo, espacios de almacenamiento bloqueados, áreas de laboratorio). Los datos y las muestras solo se compartirán con personas que sean miembros del equipo de investigación aprobado por el IRB o aprobados para compartir según lo descrito en el protocolo del IRB. Los identificadores se codificarán y el acceso a los archivos que vinculan los identificadores con datos o muestras codificadas se limitará a los miembros mínimos necesarios del equipo de investigación. Todo el personal está capacitado y seguirá las políticas y procedimientos de Mass General Brigham para mantener la confidencialidad adecuada de los datos y muestras de investigación. Toda la comunicación electrónica con los participantes cumplirá con las políticas de comunicación segura de Mass General Brigham."
             },
             {
-              "question": "¿Cómo puedo recibir actualizaciones sobre OurHealth?",
+              "question": "¿Cómo puedo recibir actualizaciones sobre demostración de Juniper Heart?",
               "answer": "Por favor [regístrese en nuestra lista de correo](#mailing-list) para recibir actualizaciones."
             },
             {
@@ -48,11 +48,11 @@
             },
             {
               "question": "¿Es este un ensayo clínico?",
-              "answer": "OurHealth no es un ensayo clínico. Unirse no tendrá ningún impacto en el curso de atención de un participante, y a OurHealth no se le permite dar ningún consejo clínico como parte de la participación en este proyecto."
+              "answer": "Demostración de Juniper Heart no es un ensayo clínico. Unirse no tendrá ningún impacto en el curso de atención de un participante, y a demostración de Juniper Heart no se le permite dar ningún consejo clínico como parte de la participación en este proyecto."
             },
             {
-              "question": "¿Puedo dejar de participar en OurHealth?",
-              "answer": "Puede dejar de participar en OurHealth en cualquier momento. Sin embargo, la información que ya se haya utilizado para la investigación no se puede retirar. Si se retira, las muestras de saliva y/o los datos restantes no se utilizarán en futuras investigaciones. Para retirar su permiso, comuníquese con el equipo de estudio [info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)."
+              "question": "¿Puedo dejar de participar en demostración de Juniper Heart?",
+              "answer": "Puede dejar de participar en demostración de Juniper Heart en cualquier momento. Sin embargo, la información que ya se haya utilizado para la investigación no se puede retirar. Si se retira, las muestras de saliva y/o los datos restantes no se utilizarán en futuras investigaciones. Para retirar su permiso, comuníquese con el equipo de estudio [support@juniper.terra.bio](mailto:support@juniper.terra.bio)."
             }
           ]
         }

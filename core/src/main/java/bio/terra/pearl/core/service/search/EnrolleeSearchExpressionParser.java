@@ -12,12 +12,7 @@ import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
-import bio.terra.pearl.core.service.search.terms.AgeTerm;
-import bio.terra.pearl.core.service.search.terms.AnswerTerm;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
-import bio.terra.pearl.core.service.search.terms.ProfileTerm;
-import bio.terra.pearl.core.service.search.terms.SearchValue;
-import bio.terra.pearl.core.service.search.terms.UserInputTerm;
+import bio.terra.pearl.core.service.search.terms.*;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -68,6 +63,13 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private EnrolleeSearchExpression parseExpression(CohortRuleParser.ExprContext ctx) {
+        if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
+            if (!ctx.expr().isEmpty()) {
+                return parseExpression(ctx.expr(0));
+            } else {
+                return new DefaultSearchExpression(enrolleeDao, profileDao);
+            }
+        }
         if (ctx.expr().size() > 1) {
             EnrolleeSearchExpression left = parseExpression(ctx.expr(0));
             EnrolleeSearchExpression right = parseExpression(ctx.expr(1));

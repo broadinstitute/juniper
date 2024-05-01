@@ -102,23 +102,23 @@
     "sectionConfigJson": {
       "backgroundColor": "#f2f2f2",
       "title": "Preguntas Frecuentes",
-      "blurb": "Si su pregunta no se responde a continuación, puede llamar o enviar un correo electrónico a nuestro personal de estudio al **[617&#x2011;724&#x2011;1240](tel:+16177241240)** o **[info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)**.",
+      "blurb": "Si su pregunta no se responde a continuación, puede llamar o enviar un correo electrónico a nuestro personal de estudio al **[617&#x2011;724&#x2011;1240](tel:+16177241240)** o **[support@juniper.terra.bio](mailto:support@juniper.terra.bio)**.",
       "showToggleAllButton": false,
       "questions": [
         {
-          "question": "¿Qué es el estudio OurHealth?",
-          "answer": "OurHealth es una iniciativa de investigación sin fines de lucro que permite a las personas que se identifican como del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
+          "question": "¿Qué es el estudio demostración de Juniper Heart?",
+          "answer": "Demostración de Juniper Heart es una iniciativa de investigación sin fines de lucro que permite a las personas que se identifican como del sur de Asia contribuir a la investigación cardiovascular compartiendo sus muestras, su información clínica y sus voces."
         },
         {
           "question": "¿Por qué estamos haciendo este estudio?",
-          "answer": "Las personas de ascendencia del sur de Asia están desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentados en estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo que aumenta la enfermedad cardiovascular, lo que destaca una conciencia pero una brecha de conocimiento distinta. OurHealth tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
+          "answer": "Las personas de ascendencia del sur de Asia están desproporcionadamente afectadas por enfermedades cardiometabólicas, incluyendo enfermedades cardíacas, accidentes cerebrovasculares y diabetes. Sin embargo, históricamente han estado subrepresentados en estudios genéticos. En los Estados Unidos, la ascendencia del sur de Asia ahora se considera un factor de riesgo que aumenta la enfermedad cardiovascular, lo que destaca una conciencia pero una brecha de conocimiento distinta. Demostración de Juniper Heart tiene como objetivo abordar esta brecha creando una cohorte de individuos del sur de Asia, cuyos datos de encuestas y genómicos se analizarán para mejorar nuestra comprensión del riesgo de enfermedad cardiovascular en esta población."
         },
         {
           "question": "¿Cómo puedo participar?",
           "answer": "Si tiene más de 18 años, vive en los Estados Unidos y se identifica como del sur de Asia, puede inscribirse haciendo clic en [“Unirse”](/studies/heartdemo/join)."
         },
         {
-          "question": "¿Qué hace OurHealth con los datos?",
+          "question": "¿Qué hace demostración de Juniper Heart con los datos?",
           "answer": "Los datos recopilados se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos. Los datos se utilizarán para estudiar la genética y la salud de las personas del sur de Asia que viven en los Estados Unidos."
         }]
     }
@@ -168,7 +168,7 @@
       "blurb": "Con su ayuda, los pacientes pueden ser la fuerza impulsora detrás de la investigación cardiovascular transformadora.",
       "buttons": [{
         "type": "join",
-        "text": "Únase a OurHealth",
+        "text": "Únase a demostración de Juniper Heart",
         "studyShortcode": "heartdemo"
       }],
       "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
