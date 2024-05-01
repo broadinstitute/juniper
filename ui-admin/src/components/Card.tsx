@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash'
 
 
 /**
- *
+ * Stylized card component for displaying read-only or editable data.
  */
 export function Card({ children }: { children: React.ReactNode }) {
   return <div className="card w-75 border shadow-sm mb-3">
@@ -12,7 +12,7 @@ export function Card({ children }: { children: React.ReactNode }) {
 }
 
 /**
- *
+ * Header of the card, usually used with CardTitle to display the title of the card.
  */
 export function CardHeader({ children }: { children: React.ReactNode }) {
   return <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
@@ -21,14 +21,14 @@ export function CardHeader({ children }: { children: React.ReactNode }) {
 }
 
 /**
- *
+ * Title of the card.
  */
 export function CardTitle({ title }: { title: string }) {
   return <div className="fw-bold lead my-1">{title}</div>
 }
 
 /**
- *
+ * Body of the card, usually used with CardRow or CardValueRow to display the data.
  */
 export function CardBody({ children }: { children: React.ReactNode }) {
   return <div className="card-body d-flex flex-row flex-wrap">
@@ -37,7 +37,7 @@ export function CardBody({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * One row of the profile's data.
+ * One row of data in the card, where the title is on the left-hand side and the values are on the right.
  */
 export function CardRow(
   { title, children }: {
@@ -58,6 +58,7 @@ export function CardRow(
 
 /**
  * Row of readonly data, where the title takes the leftmost portion and the values are on the rightmost.
+ * If the value(s) provided are empty, then "None provided" is displayed.
  */
 export function CardValueRow(
   { title, values }: {
