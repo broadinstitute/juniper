@@ -1723,23 +1723,6 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/dataImport/{importId}:
-    get:
-      summary: Get the import
-      tags: [ dataImport ]
-      operationId: get
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: importId, in: path, required: true, schema: { type: string, format: uuid } }
-      responses:
-        '200':
-          description: import
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
     delete:
       summary: delete imports for a study
       tags: [ dataImport ]
@@ -1778,6 +1761,24 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/dataImport/{importId}:
+    get:
+      summary: Get the import
+      tags: [ dataImport ]
+      operationId: get
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: importId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: import
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 
 components:
   responses:

@@ -1215,7 +1215,6 @@ export default {
 
   async uploadDataImport(file: File, portalShortCode: string, studyShortcode: string, envName: EnvironmentName):
         Promise<DataImport> {
-    //const params = queryString.stringify({ portalShortCode, studyShortcode, envName  })
     const url = `${baseStudyEnvUrl(portalShortCode, studyShortcode, envName)}/dataImport`
     const headers = this.getInitHeaders()
     delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
