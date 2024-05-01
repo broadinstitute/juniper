@@ -88,11 +88,11 @@ const _ProvideTestUser = ({
   user,
   enrollees = [],
   relations = [],
-  activePpUserId,
   children
 }: ProvideTestUserProps) => {
   const {
-    loginUserInternal
+    loginUserInternal,
+    ppUsers: ppUsersFromContext
   } = useUser()
   const {
     setActiveUser
@@ -155,8 +155,6 @@ const _ProvideTestUser = ({
       enrollees,
       relations
     })
-
-    setActiveUser(activePpUserId || ppUsers[0].id)
   }, [])
 
   return <>

@@ -26,7 +26,7 @@ export default function ParticipantSelector() {
     <div className="dropdown participant-selector">
       <button
         className="w-100 btn btn-outline-dark border-0 bg-white d-flex align-items-center link-dark"
-        type="button" data-bs-toggle="dropdown"
+        type="button" data-bs-toggle="dropdown" aria-label='Select participant'
         aria-expanded="false">
         <FontAwesomeIcon icon={faUsers}/>
         <span className='mx-2 fs-5'>

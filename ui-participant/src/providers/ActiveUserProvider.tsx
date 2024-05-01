@@ -55,7 +55,7 @@ export default function ActiveUserProvider({ children }: { children: React.React
         setActivePpUser(ppUsers[0])
       }
     }
-  }, [userContext])
+  }, [userContext.ppUsers])
 
   const context: ActiveUserContextT = {
     ppUser: activePpUser,
