@@ -18,6 +18,8 @@ import DatasetDashboard from './participants/datarepo/DatasetDashboard'
 import DatasetList from './participants/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
+import DataImportList from '../portal/DataImportList'
+import DataImportView from '../portal/DataImportView'
 import StudySettings from './StudySettings'
 import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
 import TriggerList from './notifications/TriggerList'
@@ -29,14 +31,14 @@ import DashboardSettings from 'dashboard/DashboardSettings'
 import { EnvironmentName } from '@juniper/ui-core'
 
 export type StudyEnvParams = {
-  studyShortcode: string
-  envName: EnvironmentName
-  portalShortcode: string
+    studyShortcode: string
+    envName: EnvironmentName
+    portalShortcode: string
 }
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */
-function StudyEnvironmentRouter({ study }: {study: Study}) {
+function StudyEnvironmentRouter({ study }: { study: Study }) {
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
@@ -99,6 +101,10 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
       <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
       <Route path="mailingList" element={<MailingListView portalContext={portalContext}
         portalEnv={portalEnv}/>}/>
+
+      <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
+      <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
+
       <Route path="settings" element={<StudySettings studyEnvContext={studyEnvContext}
         portalContext={portalContext}/>}/>
       <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
@@ -205,6 +211,13 @@ export const studyEnvMetricsPath = (portalShortcode: string, studyShortcode: str
  */
 export const studyEnvMailingListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/mailingList`
+}
+
+/**
+ *
+ */
+export const studyEnvImportPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/dataImports`
 }
 
 /**

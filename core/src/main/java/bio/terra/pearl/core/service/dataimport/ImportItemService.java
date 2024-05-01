@@ -16,7 +16,7 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
     }
 
     public void attachImportItems(Import dataImport) {
-        dataImport.setImportItems(dao.findByItem(dataImport.getId()));
+        dataImport.setImportItems(dao.findAllByImport(dataImport.getId()));
     }
 
 }

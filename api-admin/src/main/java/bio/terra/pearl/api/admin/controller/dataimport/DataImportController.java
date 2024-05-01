@@ -41,7 +41,25 @@ public class DataImportController implements DataImportApi {
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(enrolleeImportExtService.list(portalShortcode, operator));
+    return ResponseEntity.ok(
+        enrolleeImportExtService.list(
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName),
+            operator));
+  }
+
+  @Override
+  public ResponseEntity<Object> get_0(
+      String portalShortcode, String studyShortcode, String envName, UUID importId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        enrolleeImportExtService.get(
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName),
+            operator,
+            importId));
   }
 
   @Override
