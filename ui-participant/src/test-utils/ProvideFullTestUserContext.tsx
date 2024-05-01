@@ -3,7 +3,7 @@ import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
 import PortalProvider from '../providers/PortalProvider'
-import ActiveUserProvider, { useActiveUser } from '../providers/ActiveUserProvider'
+import ActiveUserProvider from '../providers/ActiveUserProvider'
 
 
 type ProvideTestUserProps = {
@@ -13,7 +13,6 @@ type ProvideTestUserProps = {
   portal?: Portal,
   enrollees?: Enrollee[],
   relations?: EnrolleeRelation[],
-  activePpUserId?: string,
   children: React.ReactNode
 }
 /**
@@ -91,12 +90,8 @@ const _ProvideTestUser = ({
   children
 }: ProvideTestUserProps) => {
   const {
-    loginUserInternal,
-    ppUsers: ppUsersFromContext
+    loginUserInternal
   } = useUser()
-  const {
-    setActiveUser
-  } = useActiveUser()
   useEffect(() => {
     if (!ppUsers) {
       ppUsers = [{

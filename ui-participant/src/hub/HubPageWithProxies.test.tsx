@@ -53,7 +53,6 @@ describe('HubPage with proxies', () => {
         relations={mockRelations}
         user={mockUser}
         portal={mockPortal}
-        activePpUserId={'test-psalk-pp-user'}
       >
         <MockI18nProvider>
           <HubPage/>
