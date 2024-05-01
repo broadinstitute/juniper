@@ -13,96 +13,95 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.export.EnrolleeImportService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class EnrolleeImportExtService {
-    private EnrolleeImportService enrolleImportService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private AuthUtilService authUtilService;
-    private ImportService importService;
-    private ImportItemService importItemService;
+  private EnrolleeImportService enrolleImportService;
+  private StudyEnvironmentService studyEnvironmentService;
+  private AuthUtilService authUtilService;
+  private ImportService importService;
+  private ImportItemService importItemService;
 
-    public EnrolleeImportExtService(
-            EnrolleeImportService enrolleImportService,
-            AuthUtilService authUtilService,
-            ImportService importService,
-            ImportItemService importItemService,
-            StudyEnvironmentService studyEnvironmentService) {
-        this.enrolleImportService = enrolleImportService;
-        this.authUtilService = authUtilService;
-        this.importService = importService;
-        this.importItemService = importItemService;
-        this.studyEnvironmentService = studyEnvironmentService;
-    }
+  public EnrolleeImportExtService(
+      EnrolleeImportService enrolleImportService,
+      AuthUtilService authUtilService,
+      ImportService importService,
+      ImportItemService importItemService,
+      StudyEnvironmentService studyEnvironmentService) {
+    this.enrolleImportService = enrolleImportService;
+    this.authUtilService = authUtilService;
+    this.importService = importService;
+    this.importItemService = importItemService;
+    this.studyEnvironmentService = studyEnvironmentService;
+  }
 
-    public List<Import> list(
-            String portalShortcode, String studyShortcode, EnvironmentName envName, AdminUser operator) {
+  public List<Import> list(
+      String portalShortcode, String studyShortcode, EnvironmentName envName, AdminUser operator) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService
+            .findByStudy(studyShortcode, envName)
+            .orElseThrow(() -> new NotFoundException("Study environment not found"));
+    return importService.findAllByStudyEnv(studyEnv.getId());
+  }
+
+  public Import get(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName envName,
+      AdminUser operator,
+      UUID id) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    log.info("looking imports for shortCode: {}", portalShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService
+            .findByStudy(studyShortcode, envName)
+            .orElseThrow(() -> new NotFoundException("Study environment not found"));
+    log.info("looking imports for shortCode::: {}", portalShortcode);
+    Import dataImport =
+        importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
+    importItemService.attachImportItems(dataImport);
+    return dataImport;
+  }
+
+  public Import importData(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      InputStream tsvData,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
         authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService
-                        .findByStudy(studyShortcode, envName)
-                        .orElseThrow(() -> new NotFoundException("Study environment not found"));
-        return importService.findAllByStudyEnv(studyEnv.getId());
-    }
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    return enrolleImportService.importEnrollees(
+        portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId());
+  }
 
-    public Import get(
-            String portalShortcode,
-            String studyShortcode,
-            EnvironmentName envName,
-            AdminUser operator,
-            UUID id) {
+  public void delete(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      UUID id,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
         authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        log.info("looking imports for shortCode: {}", portalShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService
-                        .findByStudy(studyShortcode, envName)
-                        .orElseThrow(() -> new NotFoundException("Study environment not found"));
-        log.info("looking imports for shortCode::: {}", portalShortcode);
-        Import dataImport =
-                importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
-        importItemService.attachImportItems(dataImport);
-        return dataImport;
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    Import dataImport =
+        importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
+    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
+      throw new PermissionDeniedException(
+          "Import Id does not belong to the given study environment");
     }
-
-    public Import importData(
-            String portalShortcode,
-            String studyShortcode,
-            EnvironmentName environmentName,
-            InputStream tsvData,
-            AdminUser operator) {
-        authUtilService.authUserToPortal(operator, portalShortcode);
-        PortalStudy portalStudy =
-                authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
-        return enrolleImportService.importEnrollees(
-                portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId());
-    }
-
-    public void delete(
-            String portalShortcode,
-            String studyShortcode,
-            EnvironmentName environmentName,
-            UUID id,
-            AdminUser operator) {
-        authUtilService.authUserToPortal(operator, portalShortcode);
-        PortalStudy portalStudy =
-                authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-        StudyEnvironment studyEnv =
-                studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
-        Import dataImport =
-                importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
-        if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
-            throw new PermissionDeniedException(
-                    "Import Id does not belong to the given study environment");
-        }
-        importService.delete(id, CascadeProperty.EMPTY_SET);
-    }
+    importService.delete(id, CascadeProperty.EMPTY_SET);
+  }
 }

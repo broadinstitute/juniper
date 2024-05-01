@@ -34,21 +34,18 @@ export default function DataImportView({ studyEnvContext }:
           onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
       </div>
     )
-  }, {
-    header: 'ImportItemId',
-    accessorKey: 'id'
-  },
-  {
-    header: 'ImportId',
-    accessorKey: 'importId'
-  },
-  {
-    header: 'Operator',
-    accessorKey: 'createdParticipantUserId'
   },
   {
     header: 'EnrolleeId',
     accessorKey: 'createdEnrolleeId'
+  },
+  {
+    header: 'Imported Date',
+    accessorKey: 'createdAt',
+    meta: {
+      columnType: 'instant'
+    },
+    cell: info => instantToDefaultString(info.getValue() as number)
   },
   {
     header: 'Status',
@@ -57,14 +54,6 @@ export default function DataImportView({ studyEnvContext }:
   {
     header: 'Message',
     accessorKey: 'message'
-  },
-  {
-    header: 'Imported At',
-    accessorKey: 'createdAt',
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as number)
   }]
 
   const table = useReactTable({

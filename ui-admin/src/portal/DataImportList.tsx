@@ -9,7 +9,6 @@ import {
   renderEmptyMessage,
   RowVisibilityCount
 } from 'util/tableUtils'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { Button } from 'components/forms/Button'
 import { failureNotification, successNotification } from '../util/notifications'
 import { Store } from 'react-notifications-component'
@@ -22,6 +21,7 @@ import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvir
 import AddDataImportModal from './AddDataImportModal'
 import { Link } from 'react-router-dom'
 import { useAdminUserContext } from '../providers/AdminUserProvider'
+import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 
 
 /** show the dataImport list in table */
@@ -47,10 +47,14 @@ export default function DataImportList({ studyEnvContext }:
     )
   },
   {
-    header: 'ImportId',
+    header: 'Imported Date',
+    accessorKey: 'createdAt',
+    meta: {
+      columnType: 'instant'
+    },
     cell: ({ row }) => {
       return <Link to={`${studyEnvContext.currentEnvPath}/dataimports/${row.original.id}`}
-        className="me-1"> {row.original.id}</Link>
+        className="me-1"> {instantToDefaultString(row.original.createdAt)}</Link>
     }
   },
 
@@ -67,14 +71,6 @@ export default function DataImportList({ studyEnvContext }:
   {
     header: 'Status',
     accessorKey: 'status'
-  },
-  {
-    header: 'Imported Date',
-    accessorKey: 'createdAt',
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as number)
   }]
 
   const table = useReactTable({
