@@ -236,7 +236,7 @@ test('updates name properly', async () => {
 
   expect(screen.getByText('Test McTester')).toBeInTheDocument()
   // should not have a link to all profiles if not proxied
-  expect(screen.queryByText('All Profiles')).not.toBeInTheDocument()
+  expect(screen.queryByText('{allProfiles}')).not.toBeInTheDocument()
 })
 
 test('shows correct profile in proxied environment', async () => {
@@ -315,5 +315,5 @@ test('shows correct profile in proxied environment', async () => {
   await waitFor(() => expect(screen.getByText('Sally Salk')).toBeInTheDocument())
 
   expect(screen.getByText('Sally Salk')).toBeInTheDocument()
-  expect(screen.getByText('All Profiles')).toBeInTheDocument() // should be a link to all profiles if proxied
+  expect(screen.getByText('{allProfiles}')).toBeInTheDocument() // should be a link to all profiles if proxied
 })
