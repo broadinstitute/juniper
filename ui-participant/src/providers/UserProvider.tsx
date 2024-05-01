@@ -148,21 +148,23 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
     const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
     if (oauthAccessToken) {
-      return Api.refreshLogin(oauthAccessToken).then(loginResult => {
+      try {
+        const loginResult = await Api.refreshLogin(oauthAccessToken)
         loginUser(loginResult, oauthAccessToken)
         setIsLoading(false)
-      }).catch(() => {
+      } catch (e) {
         setIsLoading(false)
         localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-      })
+      }
     } else if (internalLogintoken) {
-      return Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
+      try {
+        const loginResult = await Api.unauthedRefreshLogin(internalLogintoken)
         loginUserInternal(loginResult)
         setIsLoading(false)
-      }).catch(() => {
+      } catch (e) {
         setIsLoading(false)
         localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-      })
+      }
     } else {
       setIsLoading(false)
     }

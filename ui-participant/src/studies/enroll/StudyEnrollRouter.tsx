@@ -145,8 +145,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
   useEffect(() => {
     setIsLoading(true)
     determineNextRoute()
-      .then(() => setIsLoading(false))
-      .catch(() => setIsLoading(false))
+      .finally(() => setIsLoading(false))
   }, [mustProvidePassword, preEnrollSatisfied, user?.username])
 
   const enrollContext: StudyEnrollContext = {
