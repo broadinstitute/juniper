@@ -101,6 +101,21 @@ export type Enrollee = {
   profile: Profile
 }
 
+type RelationshipType = 'PROXY'
+
+export type EnrolleeRelation = {
+  id: string
+  relationshipType: RelationshipType,
+  targetEnrolleeId: string,
+  targetEnrollee: Enrollee
+  enrolleeId: string
+  enrollee: Enrollee
+  createdAt: number
+  lastUpdatedAt: number
+  beginDate: number
+  endDate: number
+}
+
 export type Profile = {
   givenName: string,
   familyName: string,
@@ -922,6 +937,18 @@ export default {
     envName: string
   ): Promise<Enrollee[]> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleesWithKits`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async findRelationsByTargetShortcode(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: EnvironmentName,
+    enrolleeShortcode: string): Promise<EnrolleeRelation[]> {
+    const url = (
+        `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/byTarget/${enrolleeShortcode}`
+    )
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
