@@ -15,6 +15,7 @@
     "html-react-parser": "^3.0.4",
     "lodash": "^4.17.21",
     "micromark": "3.1.0",
+    "mixpanel-browser": "^2.50.0",
     "oidc-client-ts": "^2.2.0",
     "polished": "^4.2.2",
     "react": "^18.2.0",
@@ -32,6 +33,7 @@
   "devDependencies": {
     "@types/bootstrap": "^5.2.6",
     "@types/lodash": "^4.14.184",
+    "@types/mixpanel-browser": "^2.49.0",
     "@types/react": "^18.0.18",
     "@types/react-dom": "^18.0.6",
     "@types/react-router-hash-link": "^2.4.5"

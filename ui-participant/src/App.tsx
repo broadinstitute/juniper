@@ -27,6 +27,21 @@ import { isBrowserCompatible } from './util/browserCompatibilityUtils'
 import InvitationPage from './landing/registration/InvitationPage'
 import AuthError from './login/AuthError'
 import ActiveUserProvider from './providers/ActiveUserProvider'
+import mixpanel from 'mixpanel-browser'
+import { generateUniqueID } from 'web-vitals/dist/modules/lib/generateUniqueID'
+
+mixpanel.init('YOUR_TOKEN', {
+  debug: true,
+  // eslint-disable-next-line camelcase
+  track_pageview: 'url-with-path',
+  persistence: 'localStorage',
+  // eslint-disable-next-line camelcase
+  api_host: `https://${  window.location.host}`,
+  // eslint-disable-next-line camelcase
+  api_routes: { track: 'api/public/log/v1/event' }
+})
+
+mixpanel.identify(generateUniqueID())
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
