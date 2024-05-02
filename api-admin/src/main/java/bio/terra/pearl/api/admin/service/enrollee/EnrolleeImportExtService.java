@@ -4,9 +4,11 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
+import bio.terra.pearl.core.model.dataimport.ImportItem;
+import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
+import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -102,6 +104,29 @@ public class EnrolleeImportExtService {
       throw new PermissionDeniedException(
           "Import Id does not belong to the given study environment");
     }
-    importService.delete(id, CascadeProperty.EMPTY_SET);
+    importService.updateStatus(id, ImportStatus.DELETED);
+  }
+
+  public void deleteImportItem(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      UUID importId,
+      UUID id,
+      AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    PortalStudy portalStudy =
+        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+    Import dataImport =
+        importService.find(importId).orElseThrow(() -> new NotFoundException("Import not found"));
+    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
+      throw new PermissionDeniedException(
+          "Import Id does not belong to the given study environment");
+    }
+    ImportItem importItem =
+        importItemService.find(id).orElseThrow(() -> new NotFoundException("ImportItem not found"));
+    importItemService.updateStatus(id, ImportItemStatus.DELETED);
   }
 }

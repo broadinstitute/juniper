@@ -39,6 +39,20 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
+  public ResponseEntity<Void> delete_0(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      UUID importId,
+      UUID importItemId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    enrolleeImportExtService.deleteImportItem(
+        portalShortcode, studyShortcode, environmentName, importId, importItemId, operator);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
   public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     return ResponseEntity.ok(

@@ -24,5 +24,4 @@ public class ImportItemDao extends BaseMutableJdbiDao<ImportItem> {
         return super.findAllByProperty("import_id", importId);
     }
 
-
 }

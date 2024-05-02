@@ -1228,8 +1228,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async deleteDataImport(portalShortcode: string, envName: string, dataImportId: string): Promise<Response> {
-    const url = `${basePortalEnvUrl(portalShortcode, envName)}/dataImport/${dataImportId}`
+  async deleteDataImport(portalShortcode: string, studyShortcode: string, envName: string,
+    dataImportId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/dataImport/${dataImportId}`
+
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()

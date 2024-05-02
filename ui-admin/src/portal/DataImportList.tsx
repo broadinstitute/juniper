@@ -53,7 +53,7 @@ export default function DataImportList({ studyEnvContext }:
       columnType: 'instant'
     },
     cell: ({ row }) => {
-      return <Link to={`${studyEnvContext.currentEnvPath}/dataimports/${row.original.id}`}
+      return <Link to={`${studyEnvContext.currentEnvPath}/dataImports/${row.original.id}`}
         className="me-1"> {instantToDefaultString(row.original.createdAt)}</Link>
     }
   },
@@ -101,19 +101,20 @@ export default function DataImportList({ studyEnvContext }:
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName])
 
   const performDelete = async () => {
-    const contactsSelected = Object.keys(rowSelection)
+    const importsSelected = Object.keys(rowSelection)
       .filter(key => rowSelection[key])
       .map(key => dataImports[parseInt(key)])
     try {
       await Promise.all(
-        contactsSelected.map(contact => {
-          if (contact.id) {
+        importsSelected.map(dataImport => {
+          if (dataImport.id) {
             return Api.deleteDataImport(
-              studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName, contact.id)
+              studyEnvContext.portal.shortcode, studyShortCode,
+              studyEnvContext.currentEnv.environmentName, dataImport.id)
           }
         })
       )
-      Store.addNotification(successNotification(`${contactsSelected.length} entries removed`))
+      Store.addNotification(successNotification(`${importsSelected.length} entries removed`))
     } catch {
       Store.addNotification(failureNotification('Error: some entries could not be removed'))
     }
@@ -149,7 +150,7 @@ export default function DataImportList({ studyEnvContext }:
       {renderEmptyMessage(dataImports, 'No data imports')}
       {showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
         <Modal.Body>
-          <div>Do you want to delete the <strong>{numSelected}</strong> selected entries?</div>
+          <div>Do you want to soft delete the <strong>{numSelected}</strong> selected entries?</div>
 
           <div className="pt-3">This operation CANNOT BE UNDONE.</div>
         </Modal.Body>
