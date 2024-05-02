@@ -124,7 +124,6 @@ public class EnrolleeImportService {
                         .status(ImportItemStatus.FAILED)
                         .message(e.getMessage())
                         .detail(Arrays.toString(e.getStackTrace())).build();
-                e.printStackTrace();
             }
 
             importItem = importItemService.create(importItem);
