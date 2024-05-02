@@ -7,11 +7,13 @@ import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -23,6 +25,9 @@ public class ImportService extends CrudService<Import, ImportDao> {
 
     @Autowired
     AdminUserService adminUserService;
+
+    @Autowired
+    EnrolleeService enrolleeService;
 
     public ImportService(ImportDao dao) {
         super(dao);
@@ -41,6 +46,19 @@ public class ImportService extends CrudService<Import, ImportDao> {
         //update all importItems
         importItemService.updateStatusByImportId(id, ImportItemStatus.DELETED);
         return dao.update(dataImport);
+    }
+
+    public void deleteEnrolleesByImportId(UUID id) {
+        Import dataImport = dao.find(id).orElseThrow(() -> new NotFoundException("Import not found "));
+        if (dataImport.getImportItems().isEmpty()) {
+            //try to load
+            importItemService.attachImportItems(dataImport);
+        }
+        dataImport.getImportItems().forEach(importItem -> {
+            if (importItem.getCreatedEnrolleeId() != null) {
+                enrolleeService.delete(importItem.getCreatedEnrolleeId(), Set.of(EnrolleeService.AllowedCascades.PARTICIPANT_USER));
+            }
+        });
     }
 
 }

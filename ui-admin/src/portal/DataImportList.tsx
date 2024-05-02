@@ -150,9 +150,9 @@ export default function DataImportList({ studyEnvContext }:
       {renderEmptyMessage(dataImports, 'No data imports')}
       {showDeleteConfirm && <Modal show={true} onHide={() => setShowDeleteConfirm(false)}>
         <Modal.Body>
-          <div>Do you want to soft delete the <strong>{numSelected}</strong> selected entries?</div>
+          <div>Do you want to soft delete the <strong>{numSelected}</strong> selected imports?</div>
 
-          <div className="pt-3">This operation CANNOT BE UNDONE.</div>
+          <div className="pt-3">All related enrollees will be deleted. This operation CANNOT BE UNDONE.</div>
         </Modal.Body>
         <Modal.Footer>
           <button type="button" className="btn btn-danger" onClick={performDelete}>
