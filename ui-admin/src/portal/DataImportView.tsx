@@ -74,14 +74,14 @@ export default function DataImportView({ studyEnvContext }:
   if (!dataImportId) {
     return <></>
   }
-  const numSelected = Object.keys(rowSelection).length
+  //const numSelected = Object.keys(rowSelection).length
   const studyEnvParams = useStudyEnvParamsFromPath()
   const studyShortCode = studyEnvParams.studyShortcode
   if (!studyShortCode) {
     return <></>
   }
 
-  const { isLoading, reload } = useLoadingEffect(async () => {
+  const { isLoading } = useLoadingEffect(async () => {
     const result = await Api.fetchDataImport(studyEnvContext.portal.shortcode, studyShortCode,
       studyEnvContext.currentEnv.environmentName, dataImportId)
     // @ts-ignore
