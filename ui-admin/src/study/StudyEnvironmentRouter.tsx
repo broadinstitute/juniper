@@ -30,9 +30,9 @@ import DashboardSettings from 'dashboard/DashboardSettings'
 import { previewApi } from 'util/apiContextUtils'
 
 export type StudyEnvParams = {
-    studyShortcode: string
-    envName: EnvironmentName
-    portalShortcode: string
+  studyShortcode: string
+  envName: EnvironmentName
+  portalShortcode: string
 }
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
