@@ -2,13 +2,7 @@ import React, { useState } from 'react'
 import Api, { DataImportItem } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import {
-  basicTableLayout,
-  DownloadControl,
-  IndeterminateCheckbox,
-  renderEmptyMessage,
-  RowVisibilityCount
-} from 'util/tableUtils'
+import { basicTableLayout, DownloadControl, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
 import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
@@ -22,39 +16,28 @@ export default function DataImportView({ studyEnvContext }:
   const [dataImportItems, setDataImportItems] = useState<DataImportItem[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-  const columns: ColumnDef<DataImportItem>[] = [{
-    id: 'select',
-    header: ({ table }) => <IndeterminateCheckbox
-      checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
-      onChange={table.getToggleAllRowsSelectedHandler()}/>,
-    cell: ({ row }) => (
-      <div className="px-1">
-        <IndeterminateCheckbox
-          checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
-          onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
-      </div>
-    )
-  },
-  {
-    header: 'EnrolleeId',
-    accessorKey: 'createdEnrolleeId'
-  },
-  {
-    header: 'Imported Date',
-    accessorKey: 'createdAt',
-    meta: {
-      columnType: 'instant'
+  const columns: ColumnDef<DataImportItem>[] = [
+    {
+      header: 'EnrolleeId',
+      accessorKey: 'createdEnrolleeId'
     },
-    cell: info => instantToDefaultString(info.getValue() as number)
-  },
-  {
-    header: 'Status',
-    accessorKey: 'status'
-  },
-  {
-    header: 'Message',
-    accessorKey: 'message'
-  }]
+    {
+      header: 'Imported Date',
+      accessorKey: 'createdAt',
+      meta: {
+        columnType: 'instant'
+      },
+      cell: info => instantToDefaultString(info.getValue() as number)
+    },
+    {
+      header: 'Status',
+      accessorKey: 'status'
+    },
+    {
+      header: 'Message',
+      accessorKey: 'message'
+    }
+  ]
 
   const table = useReactTable({
     data: dataImportItems,
