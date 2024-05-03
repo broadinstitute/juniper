@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class EnrolleeExtServiceTests extends BaseSpringBootTest {
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
@@ -25,6 +26,7 @@ public class EnrolleeExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalAdminUserFactory portalAdminUserFactory;
 
   @Test
+  @Transactional
   public void testFindById(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
