@@ -19,19 +19,16 @@ import org.springframework.stereotype.Component;
 public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
     private StudyEnvironmentConfigDao studyEnvironmentConfigDao;
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
-    private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private TriggerDao triggerDao;
     private SurveyService surveyService;
     private SurveyDao surveyDao;
     public StudyEnvironmentDao(Jdbi jdbi, StudyEnvironmentConfigDao studyEnvironmentConfigDao,
                                StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
-                               StudyEnvironmentConsentDao studyEnvironmentConsentDao,
                                TriggerDao triggerDao, SurveyService surveyService,
                                SurveyDao surveyDao) {
         super(jdbi);
         this.studyEnvironmentConfigDao = studyEnvironmentConfigDao;
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
-        this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.triggerDao = triggerDao;
         this.surveyService = surveyService;
         this.surveyDao = surveyDao;
@@ -96,8 +93,6 @@ public class StudyEnvironmentDao extends BaseMutableJdbiDao<StudyEnvironment> {
         if (studyEnv.getPreEnrollSurveyId() != null) {
             studyEnv.setPreEnrollSurvey(surveyService.find(studyEnv.getPreEnrollSurveyId()).get());
         }
-        studyEnv.setConfiguredConsents(studyEnvironmentConsentDao
-                .findAllByStudyEnvIdWithConsent(studyEnvId));
         List<Trigger> triggers = triggerDao.findByStudyEnvironmentId(studyEnvId, true);
         triggerDao.attachTemplates(triggers);
         studyEnv.setTriggers(triggers);

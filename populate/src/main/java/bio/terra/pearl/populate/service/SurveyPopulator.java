@@ -2,15 +2,10 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dao.SurveyPopulateDao;
@@ -35,25 +30,20 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
     private final SurveyPopulateDao surveyPopulateDao;
     private final AnswerMappingDao answerMappingDao;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
-    private final StudyEnvironmentConsentService studyEnvConsentService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private final ConsentFormService consentFormService;
 
     public SurveyPopulator(SurveyService surveyService,
                            PortalService portalService,
                            SurveyPopulateDao surveyPopulateDao,
                            SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
                            AnswerMappingDao answerMappingDao,
-                           StudyEnvironmentConsentService studyEnvConsentService,
-                           StudyEnvironmentSurveyService studyEnvironmentSurveyService, ConsentFormService consentFormService) {
+                           StudyEnvironmentSurveyService studyEnvironmentSurveyService) {
         this.portalService = portalService;
         this.surveyPopulateDao = surveyPopulateDao;
         this.surveyService = surveyService;
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
-        this.studyEnvConsentService = studyEnvConsentService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
-        this.consentFormService = consentFormService;
     }
 
     @Override
@@ -160,58 +150,4 @@ public class SurveyPopulator extends BasePopulator<Survey, SurveyPopDto, PortalP
                 Objects.equals(mapA.getQuestionStableId(), mapB.getQuestionStableId()) &&
                 Objects.equals(mapA.isErrorOnFail(), mapB.isErrorOnFail());
     }
-
-    @Transactional
-    /** migration method to convert any existing ConsentForm objects to Surveys */
-    public Map<String, Object> convertAllConsentForms() {
-        List<Portal> portals = portalService.findAll();
-        int formsConverted = 0;
-        List<String> formsErrored = new ArrayList<>();
-        for (Portal portal : portals) {
-            List<ConsentForm> allConsents = consentFormService.findByPortalId(portal.getId());
-            for (ConsentForm form : allConsents) {
-                try {
-                    convertConsentForm(form);
-                } catch (Exception e) {
-                    log.warn("Error converting consent %s v%d".formatted(form.getStableId(), form.getVersion()), e);
-                    formsErrored.add("%s v%d".formatted(form.getStableId(), form.getVersion()));
-                }
-            }
-            formsConverted += allConsents.size();
-        }
-        return Map.of("formsConverted", formsConverted, "formsErrored", formsErrored);
-    }
-
-    public Survey convertConsentForm(ConsentForm form) {
-        Survey survey = Survey.builder()
-                .name(form.getName())
-                .stableId(form.getStableId())
-                .version(form.getVersion())
-                .content(form.getContent())
-                .surveyType(SurveyType.CONSENT)
-                .required(true)
-                .portalId(form.getPortalId())
-                .allowAdminEdit(false)
-                .allowParticipantReedit(false)
-                .build();
-        survey = surveyService.create(survey);
-        List<StudyEnvironmentConsent> studyEnvConsents = studyEnvConsentService.findAllByConsentForm(form.getId());
-        for (StudyEnvironmentConsent studyEnvConsent : studyEnvConsents) {
-            convertStudyEnvConsent(studyEnvConsent, survey);
-        }
-        return survey;
-    }
-
-    /** creates a studyEnvironmentSurvey based on the studyEnvConsent, then deletes the StudyEnvConsent */
-    public StudyEnvironmentSurvey convertStudyEnvConsent(StudyEnvironmentConsent studyEnvConsent, Survey survey) {
-        StudyEnvironmentSurvey studyEnvironmentSurvey = StudyEnvironmentSurvey.builder()
-                .studyEnvironmentId(studyEnvConsent.getStudyEnvironmentId())
-                .surveyId(survey.getId())
-                .active(true) // study environment consents were all active
-                .surveyOrder(studyEnvConsent.getConsentOrder()).build();
-        studyEnvConsentService.delete(studyEnvConsent.getId(), CascadeProperty.EMPTY_SET);
-        return studyEnvironmentSurveyService.create(studyEnvironmentSurvey);
-
-    }
-
 }

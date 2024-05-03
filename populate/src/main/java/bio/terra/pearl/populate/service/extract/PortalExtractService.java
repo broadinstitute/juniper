@@ -35,7 +35,6 @@ public class PortalExtractService {
     private final SiteContentExtractor siteContentExtractor;
     private final StudyExtractor studyExtractor;
     private final MediaExtractor mediaExtractor;
-    private final ConsentFormExtractor consentFormExtractor;
     private final EmailTemplateExtractor emailTemplateExtractor;
     private final ParticipantDashboardAlertDao participantDashboardAlertDao;
     private final PortalLanguageService portalLanguageService;
@@ -50,7 +49,6 @@ public class PortalExtractService {
                                 SiteContentExtractor siteContentExtractor,
                                 StudyExtractor studyExtractor,
                                 MediaExtractor mediaExtractor,
-                                ConsentFormExtractor consentFormExtractor,
                                 EmailTemplateExtractor emailTemplateExtractor,
                                 ParticipantDashboardAlertDao participantDashboardAlertDao,
                                 PortalLanguageService portalLanguageService,
@@ -62,7 +60,6 @@ public class PortalExtractService {
         this.siteContentExtractor = siteContentExtractor;
         this.studyExtractor = studyExtractor;
         this.mediaExtractor = mediaExtractor;
-        this.consentFormExtractor = consentFormExtractor;
         this.emailTemplateExtractor = emailTemplateExtractor;
         this.participantDashboardAlertDao = participantDashboardAlertDao;
         this.portalLanguageService = portalLanguageService;
@@ -77,7 +74,6 @@ public class PortalExtractService {
         ExtractPopulateContext context = new ExtractPopulateContext(portal, zipOut);
         mediaExtractor.writeMedia(portal, context);
         siteContentExtractor.writeSiteContents(portal, context);
-        consentFormExtractor.writeForms(portal, context);
         surveyExtractor.writeSurveys(portal, context);
         emailTemplateExtractor.writeEmailTemplates(portal, context);
         studyExtractor.writeStudies(portal, context);
