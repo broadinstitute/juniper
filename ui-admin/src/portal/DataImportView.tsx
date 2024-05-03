@@ -89,7 +89,7 @@ export default function DataImportView({ studyEnvContext }:
   }, [studyEnvContext.portal.shortcode, studyEnvContext.currentEnv.environmentName])
 
   return <div className="container-fluid px-4 py-2">
-    {renderPageHeader('Data Imports')}
+    {renderPageHeader('Data Import Items')}
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">
@@ -104,7 +104,7 @@ export default function DataImportView({ studyEnvContext }:
       </div>
 
       {basicTableLayout(table)}
-      {renderEmptyMessage(dataImportItems, 'No data imports')}
+      {renderEmptyMessage(dataImportItems, 'No data import items')}
     </LoadingSpinner>
   </div>
 }
