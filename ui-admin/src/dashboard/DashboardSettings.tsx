@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { AlertLevel, ParticipantDashboardAlert, alertDefaults, AlertTrigger, Alert } from '@juniper/ui-core'
+import {
+  AlertLevel,
+  ParticipantDashboardAlert,
+  AlertTrigger,
+  Alert,
+  useI18n,
+  PortalEnvironment
+} from '@juniper/ui-core'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from '../util/notifications'
@@ -96,9 +102,9 @@ export const AlertEditorView = ({ initial, isReadOnly, updateAlert, onSave }: {
  * at the portal-level. we'll soon add support for configuring these at the study-level.
  * The intended order of precedence will be study > portal > default
  */
-export default function DashboardSettings({ studyEnvContext, portalContext }:
-                                      {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
-  const currentEnv = studyEnvContext.currentEnv
+export default function DashboardSettings({ portalContext, currentEnv }:
+                                      {portalContext: LoadedPortalContextT, currentEnv: PortalEnvironment}) {
+  const { i18n } = useI18n()
   const [isLoading, setIsLoading] = useState(false)
   const [dashboardAlerts, setDashboardAlerts] = useState<ParticipantDashboardAlert[]>([])
   const isReadOnly = currentEnv.environmentName !== 'sandbox'
@@ -109,7 +115,12 @@ export default function DashboardSettings({ studyEnvContext, portalContext }:
 
   //Currently, we only support editing the 'NO_ACTIVITIES_REMAIN' alert, but once we support
   //editing other alerts, we'll need to add them here.
-  const defaultEditableAlerts = [alertDefaults['NO_ACTIVITIES_REMAIN']]
+  const defaultEditableAlerts = [{
+    alertType: 'PRIMARY',
+    trigger: 'NO_ACTIVITIES_REMAIN',
+    title: i18n('hubUpdateNoActivitiesTitle'),
+    detail: i18n('hubUpdateNoActivitiesDetail')
+  } as ParticipantDashboardAlert]
 
   useEffect(() => {
     loadAlerts()

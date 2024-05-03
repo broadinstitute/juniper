@@ -392,7 +392,7 @@ export type InternalConfig = {
 export type ParticipantTaskUpdateDto = {
     updates: TaskUpdateSpec[]
     portalParticipantUserIds?: string[]
-    updateAll: boolean //if true, the portalParticipantUserIds list will be ignored and all participants will be updated
+    updateAll: boolean // if true, the portalParticipantUserIds list will be ignored and all participants will be updated
 }
 
 export type ParticipantTaskAssignDto = {
@@ -537,8 +537,8 @@ export default {
   },
 
   async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/i18n${selectedLanguage ?
-            `?language=${selectedLanguage}` : ''}`
+    const params = queryString.stringify({ portalShortcode, language: selectedLanguage })
+    const url = `${API_ROOT}/i18n/v1?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -929,8 +929,7 @@ export default {
     enrolleeShortcode: string,
     note: { text: string, assignedAdminUserId?: string }): Promise<ParticipantNote> {
     const url =
-            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}
-            /enrollees/${enrolleeShortcode}/participantNote`
+            `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/participantNote`
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(note),

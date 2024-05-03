@@ -1,6 +1,6 @@
 import Api, { Enrollee, Study } from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { alertDefaults, AlertLevel } from '@juniper/ui-core'
+import { I18nOptions } from '@juniper/ui-core'
 
 /** whether the list of enrollees contains an enrollee matching the study */
 export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
@@ -8,17 +8,22 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 }
 
 /** enrolls the user and displays a welcome banner on the dashboard */
-export async function enrollCurrentUserInStudy(studyShortcode: string, studyName: string,
-  preEnrollResponseId: string | null, refreshLogin: () => Promise<void>) {
+export async function enrollCurrentUserInStudy(
+  studyShortcode: string,
+  studyName: string,
+  preEnrollResponseId: string | null,
+  refreshLogin: () => Promise<void>,
+  i18n: (key: string, options?: I18nOptions) => string
+) {
   await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
   })
   const hubUpdate: HubUpdate = {
     message: {
-      title: `Welcome to ${studyName}`,
-      detail: alertDefaults['WELCOME'].detail,
-      type: alertDefaults['WELCOME'].alertType as AlertLevel
+      title: i18n('hubUpdateWelcomeToStudyTitle', { substitutions: { studyName } }),
+      detail: i18n('hubUpdateWelcomeToStudyDetail'),
+      type: 'INFO'
     }
   }
   await refreshLogin()
@@ -34,7 +39,8 @@ export async function enrollProxyUserInStudy(
   studyName: string,
   preEnrollResponseId: string | null,
   governedPpUserId: string | null,
-  refreshLogin: () => Promise<void>
+  refreshLogin: () => Promise<void>,
+  i18n: (key: string, options?: I18nOptions) => string
 ) {
   await Api.createGovernedEnrollee({
     studyShortcode,
@@ -43,9 +49,9 @@ export async function enrollProxyUserInStudy(
   })
   const hubUpdate: HubUpdate = {
     message: {
-      title: `Welcome to ${studyName}`,
-      detail: alertDefaults['WELCOME'].detail,
-      type: alertDefaults['WELCOME'].alertType as AlertLevel
+      title: i18n('hubUpdateWelcomeToStudyTitle', { substitutions: { studyName } }),
+      detail: i18n('hubUpdateWelcomeToStudyDetail'),
+      type: 'INFO'
     }
   }
   await refreshLogin()
