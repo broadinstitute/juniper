@@ -28,6 +28,8 @@ import PreRegView from './surveys/PreRegView'
 import { ApiProvider, EnvironmentName, I18nProvider } from '@juniper/ui-core'
 import DashboardSettings from 'dashboard/DashboardSettings'
 import { previewApi } from 'util/apiContextUtils'
+import DataImportView from '../portal/DataImportView'
+import DataImportList from '../portal/DataImportList'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -102,6 +104,8 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
           <Route path="mailingList" element={<MailingListView portalContext={portalContext}
             portalEnv={portalEnv}/>}/>
+          <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
+          <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
           <Route path="settings" element={<StudySettings studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}/>
           <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
