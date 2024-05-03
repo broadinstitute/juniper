@@ -20,7 +20,7 @@ public class I18nController implements I18nApi {
   }
 
   @Override
-  public ResponseEntity<Object> listLanguageTexts(String portalShortcode, String language) {
+  public ResponseEntity<Object> listLanguageTexts(String language, String portalShortcode) {
     Portal portal =
         portalService
             .findOneByShortcode(portalShortcode)

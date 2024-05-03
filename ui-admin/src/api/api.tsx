@@ -515,8 +515,8 @@ export default {
   },
 
   async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/i18n${selectedLanguage ?
-        `?language=${selectedLanguage}` : ''}`
+    const params = queryString.stringify({ portalShortcode, language: selectedLanguage  })
+    const url = `${API_ROOT}/i18n/v1?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
