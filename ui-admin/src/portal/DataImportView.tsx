@@ -81,7 +81,7 @@ export default function DataImportView({ studyEnvContext }:
         <div className="d-flex">
           <DownloadControl
             table={table}
-            fileName={`${studyEnvContext.portal.shortcode}-DataImport-${currentIsoDate()}.tsv`}
+            fileName={`${studyEnvContext.portal.shortcode}-DataImportItem-${currentIsoDate()}`}
           />
         </div>
       </div>

@@ -136,7 +136,7 @@ export default function DataImportList({ studyEnvContext }:
           </Button>
           <DownloadControl
             table={table}
-            fileName={`${studyEnvContext.portal.shortcode}-DataImport-${currentIsoDate()}.tsv`}
+            fileName={`${studyEnvContext.portal.shortcode}-DataImport-${currentIsoDate()}`}
           />
           <Button onClick={() => setShowDeleteConfirm(!showDeleteConfirm)}
             variant="light" className="border m-1" disabled={!numSelected}
