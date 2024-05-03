@@ -13,7 +13,7 @@ export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext
           participants</Link>
     </NavBreadcrumb>
     <Routes>
-      <Route path=":enrolleeShortcode/*" element={<EnrolleeView studyEnvContext={studyEnvContext}/>}/>
+      <Route path=":enrolleeShortcodeOrId/*" element={<EnrolleeView studyEnvContext={studyEnvContext}/>}/>
       <Route index element={<ParticipantList studyEnvContext={studyEnvContext}/>}/>
       <Route path="*" element={<div>Unknown participant page</div>}/>
     </Routes>

@@ -34,7 +34,7 @@ public class ParticipantNotePopulator {
     }
 
     public ParticipantNote populate(Enrollee enrollee, ParticipantNotePopDto notePopDto) {
-        AdminUser creatingUser = adminUserDao.findByUsername(notePopDto.getCreatingAdminUsername()).get();
+        AdminUser creatingUser = adminUserDao.findByUsername(notePopDto.getCreatingAdminUsername()).orElseThrow();
         UUID kitRequestId = null;
         if (notePopDto.getKitRequestIndex() != null) {
             kitRequestId = enrollee.getKitRequests().get(notePopDto.getKitRequestIndex()).getId();
