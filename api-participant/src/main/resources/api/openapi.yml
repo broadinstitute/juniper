@@ -411,6 +411,27 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/registerOrLogin:
+    post:
+      summary: Logs in or registers, depending on whether the user already exists
+      tags: [ registration ]
+      operationId: registerOrLogin
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: preferredLanguage, in: query, required: false, schema: { type: string } }
+        - { name: preRegResponseId, in: query, required: false, schema: { type: string, format: uuid } }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationInfo'
+      responses:
+        '200':
+          description: preregistration response
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteImages/{version}/{cleanFileName}:
     get:
       summary: Returns the binary image data for the image of the given shortcode (legacy endpoint for siteMedia--will be removed)
