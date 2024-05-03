@@ -21,7 +21,7 @@ public class ImportItemDao extends BaseMutableJdbiDao<ImportItem> {
     }
 
     public List<ImportItem> findAllByImport(UUID importId) {
-        return super.findAllByProperty("import_id", importId);
+        return findAllByProperty("import_id", importId);
     }
 
 }

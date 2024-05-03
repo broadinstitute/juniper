@@ -10,6 +10,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -30,12 +31,14 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
         dataImport.setImportItems(dao.findAllByImport(dataImport.getId()));
     }
 
+    @Transactional
     public ImportItem updateStatus(UUID id, ImportItemStatus status) {
         ImportItem importItem = dao.find(id).orElseThrow(() -> new NotFoundException("Import Item not found for id: " + id));
         importItem.setStatus(status);
         return dao.update(importItem);
     }
 
+    @Transactional
     public void updateStatusByImportId(UUID importId, ImportItemStatus status) {
         List<ImportItem> importItems = dao.findAllByImport(importId);
         importItems.forEach(importItem -> {
@@ -44,6 +47,7 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
         });
     }
 
+    @Transactional
     public void deleteEnrolleeById(UUID id) {
         ImportItem importItem = dao.find(id).orElseThrow(() -> new NotFoundException("Import not found "));
         if (importItem.getCreatedEnrolleeId() != null) {

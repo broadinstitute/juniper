@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -85,6 +86,7 @@ public class EnrolleeImportExtService {
         portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId());
   }
 
+  @Transactional
   public void delete(
       String portalShortcode,
       String studyShortcode,
@@ -106,6 +108,7 @@ public class EnrolleeImportExtService {
     importService.updateStatus(id, ImportStatus.DELETED);
   }
 
+  @Transactional
   public void deleteImportItem(
       String portalShortcode,
       String studyShortcode,

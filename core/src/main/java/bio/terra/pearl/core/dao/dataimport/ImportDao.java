@@ -23,7 +23,7 @@ public class ImportDao extends BaseMutableJdbiDao<Import> {
     }
 
     public List<Import> findAllByStudyEnv(UUID studyEnvId) {
-        return super.findAllByProperty("study_environment_id", studyEnvId);
+        return findAllByProperty("study_environment_id", studyEnvId);
     }
 
 
