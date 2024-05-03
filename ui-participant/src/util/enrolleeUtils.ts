@@ -9,7 +9,7 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 
 /** enrolls the user and displays a welcome banner on the dashboard */
 export async function enrollCurrentUserInStudy(studyShortcode: string, studyName: string,
-  preEnrollResponseId: string | null, refreshLogin: () => void) {
+  preEnrollResponseId: string | null, refreshLogin: () => Promise<void>) {
   await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
@@ -18,7 +18,34 @@ export async function enrollCurrentUserInStudy(studyShortcode: string, studyName
     message: {
       title: `Welcome to ${studyName}`,
       detail: alertDefaults['WELCOME'].detail,
-      type: alertDefaults['WELCOME'].type as AlertLevel
+      type: alertDefaults['WELCOME'].alertType as AlertLevel
+    }
+  }
+  await refreshLogin()
+  return hubUpdate
+}
+
+/**
+ * Enrolls a proxy user in a study; if the proxyPpUserId is provided, then it will be attached
+ * to an existing user, otherwise a new user will be created.
+ */
+export async function enrollProxyUserInStudy(
+  studyShortcode: string,
+  studyName: string,
+  preEnrollResponseId: string | null,
+  governedPpUserId: string | null,
+  refreshLogin: () => Promise<void>
+) {
+  await Api.createGovernedEnrollee({
+    studyShortcode,
+    preEnrollResponseId,
+    governedPpUserId
+  })
+  const hubUpdate: HubUpdate = {
+    message: {
+      title: `Welcome to ${studyName}`,
+      detail: alertDefaults['WELCOME'].detail,
+      type: alertDefaults['WELCOME'].alertType as AlertLevel
     }
   }
   await refreshLogin()

@@ -78,6 +78,10 @@ function RawConsentView({ form, enrollee, resumableData, pager, studyShortcode, 
           type: 'SUCCESS'
         }
       }
+
+      if (!response.enrollee.profile) {
+        response.enrollee.profile = enrollee.profile
+      }
       updateEnrollee(response.enrollee).then(() => {
         navigate('/hub', { state: hubUpdate })
       })
@@ -136,20 +140,20 @@ export default function ConsentView() {
 
   const loadForm = async () => {
     try {
-      const response = await Api.fetchConsentAndResponses({
-        studyShortcode,
-        enrolleeShortcode: enrollee.shortcode, stableId, version
+      await Api.fetchSurveyAndResponse({
+        studyShortcode, enrolleeShortcode: enrollee.shortcode, stableId, version, taskId
       })
-      setFormAndResponses(response)
+      // it's a survey -- view it there
+      navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
+        + `/${version}?taskId=${taskId}`)
     } catch (e) {
-      // if we can't load it as a consent form, try loading it as a survey
       try {
-        await Api.fetchSurveyAndResponse({
-          studyShortcode, enrolleeShortcode: enrollee.shortcode, stableId, version, taskId
+        // if we can't load it as a survey, try loading it as a consent
+        const response = await Api.fetchConsentAndResponses({
+          studyShortcode,
+          enrolleeShortcode: enrollee.shortcode, stableId, version
         })
-        // it's a survey -- view it there
-        navigate(`/hub/study/${studyShortcode}/enrollee/${enrollee.shortcode}/survey/${stableId}`
-          + `/${version}?taskId=${taskId}`)
+        setFormAndResponses(response)
       } catch (e) {
         // if everything fails, go back to the hub
         navigate('/hub')

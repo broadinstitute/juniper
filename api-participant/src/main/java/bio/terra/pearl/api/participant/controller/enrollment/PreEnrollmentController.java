@@ -18,11 +18,11 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class PreEnrollmentController implements PreEnrollmentApi {
-  private ObjectMapper objectMapper;
-  private EnrollmentService enrollmentService;
-  private RequestUtilService requestUtilService;
-  private HttpServletRequest request;
-  private PortalService portalService;
+  private final ObjectMapper objectMapper;
+  private final EnrollmentService enrollmentService;
+  private final RequestUtilService requestUtilService;
+  private final HttpServletRequest request;
+  private final PortalService portalService;
 
   public PreEnrollmentController(
       ObjectMapper objectMapper,

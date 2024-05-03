@@ -258,31 +258,50 @@ public class EnrollmentService {
         Enrollee proxyEnrollee = enrolleeService.findByParticipantUserIdAndStudyEnv(proxyUser.getId(), studyShortcode, envName)
                 .orElseGet(() -> this.enroll(ppUser, envName, studyShortcode, proxyUser, ppUser, null, false).getEnrollee());
         HubResponse<Enrollee> governedResponse =
-                this.enrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
+                this.registerAndEnrollGovernedUser(envName, studyShortcode, proxyEnrollee, proxyUser, ppUser, preEnrollResponseId, governedUsername);
         governedResponse.setEnrollee(proxyEnrollee);
 
         return governedResponse;
     }
 
     @Transactional
-    public HubResponse<Enrollee> enrollGovernedUser(EnvironmentName envName,
-                                                    String studyShortcode,
-                                                    Enrollee governingEnrollee,
-                                                    ParticipantUser proxyUser,
-                                                    PortalParticipantUser proxyPpUser,
-                                                    UUID preEnrollResponseId,
-                                                    String governedUserName) {
+    public HubResponse<Enrollee> registerAndEnrollGovernedUser(EnvironmentName envName,
+                                                               String studyShortcode,
+                                                               Enrollee governingEnrollee,
+                                                               ParticipantUser proxyUser,
+                                                               PortalParticipantUser proxyPpUser,
+                                                               UUID preEnrollResponseId,
+                                                               String governedUserName) {
         ParticipantUser governedUserParticipantUserOpt = participantUserService.findOne(governedUserName, envName).orElse(null);
         // Before this, at time of registration we have registered the proxy as a participant user, but now we need to both register and enroll the child they are enrolling
         RegistrationService.RegistrationResult registrationResult =
                 registrationService.registerGovernedUser(proxyUser, proxyPpUser, governedUserName, governedUserParticipantUserOpt);
 
+        return enrollGovernedUser(
+                envName,
+                studyShortcode,
+                governingEnrollee,
+                proxyUser,
+                proxyPpUser,
+                registrationResult.participantUser(),
+                registrationResult.portalParticipantUser(),
+                preEnrollResponseId);
+    }
+
+    public HubResponse enrollGovernedUser(EnvironmentName envName,
+                                          String studyShortcode,
+                                          Enrollee governingEnrollee,
+                                          ParticipantUser proxyUser,
+                                          PortalParticipantUser proxyPpUser,
+                                          ParticipantUser governedUser,
+                                          PortalParticipantUser governedPpUser,
+                                          UUID preEnrollResponseId) {
         HubResponse<Enrollee> hubResponse =
                 this.enroll(proxyPpUser,
                         envName,
                         studyShortcode,
-                        registrationResult.participantUser(),
-                        registrationResult.portalParticipantUser(),
+                        governedUser,
+                        governedPpUser,
                         preEnrollResponseId,
                         true);
 

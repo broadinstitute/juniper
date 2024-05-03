@@ -13,6 +13,10 @@ export default function SurveyAutoCompleteButton({ surveyModel }: { surveyModel:
     if (surveyModel) {
       surveyModel.pages.forEach(page => {
         page.questions.forEach(question => {
+          if (question.readOnly || question.isReadOnly) {
+            return
+          }
+
           if (question.getType() === 'radiogroup' || 'checkbox' && question.choices && question.choices.length > 0) {
             surveyModel.setValue(question.name, question.choices[0].value)
           }

@@ -24,17 +24,21 @@ import java.util.stream.IntStream;
 
 @Service
 public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
+    private final ObjectMapper objectMapper;
     private final AnswerMappingDao answerMappingDao;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
     private final LanguageTextDao languageTextDao;
     private final EventDao eventDao;
+    private final SurveyDao surveyDao;
 
-    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao) {
+    public SurveyService(ObjectMapper objectMapper, SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao) {
         super(surveyDao);
+        this.objectMapper = objectMapper;
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.languageTextDao = languageTextDao;
         this.eventDao = eventDao;
+        this.surveyDao = surveyDao;
     }
 
     public List<Survey> findByStableIdNoContent(String stableId) {
@@ -210,6 +214,5 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     public void attachAnswerMappings(Survey survey) {
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
     }
-
 
 }

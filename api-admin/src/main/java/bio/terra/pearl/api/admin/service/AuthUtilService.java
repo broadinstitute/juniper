@@ -110,11 +110,11 @@ public class AuthUtilService {
     List<PortalStudy> portalStudies = portalStudyService.findByEnrollee(enrolleeShortcode);
     List<UUID> portalIds = portalStudies.stream().map(PortalStudy::getPortalId).toList();
     if (!portalService.checkAdminInAtLeastOnePortal(user, portalIds)) {
-      throw new PermissionDeniedException(
+      throw new NotFoundException(
           "User %s does not have permissions on enrollee %s or enrollee does not exist"
               .formatted(user.getUsername(), enrolleeShortcode));
     }
-    return enrolleeService.findOneByShortcode(enrolleeShortcode).get();
+    return enrolleeService.findOneByShortcode(enrolleeShortcode).orElseThrow();
   }
 
   /** confirms that the Survey is accessible from the given portal */

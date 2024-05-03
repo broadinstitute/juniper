@@ -21,7 +21,7 @@ export type ParticipantDashboardAlert = {
   id?: string
   title: string
   detail?: string
-  type: AlertLevel
+  alertType: AlertLevel
   trigger: AlertTrigger
 }
 
@@ -30,18 +30,18 @@ export const alertDefaults: Record<AlertTrigger, ParticipantDashboardAlert> = {
     title: 'All activities complete',
     detail: 'You have completed all activities for this study. We will notify you ' +
       'as soon as new activities are available. Thank you for your participation!',
-    type: 'PRIMARY',
+    alertType: 'PRIMARY',
     trigger: 'NO_ACTIVITIES_REMAIN'
   },
   'WELCOME': {
     title: 'Welcome to the study.',
     detail: 'Please read and sign the consent form below to continue.',
-    type: 'INFO',
+    alertType: 'INFO',
     trigger: 'WELCOME'
   },
   'STUDY_ALREADY_ENROLLED': {
     title: 'You are already enrolled in this study.',
-    type: 'INFO',
+    alertType: 'INFO',
     trigger: 'STUDY_ALREADY_ENROLLED'
   }
 }

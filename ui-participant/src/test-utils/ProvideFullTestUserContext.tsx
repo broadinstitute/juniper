@@ -100,7 +100,8 @@ const _ProvideTestUser = ({
       ppUser = {
         id: 'testppuserid',
         profile: {},
-        profileId: ''
+        profileId: '',
+        participantUserId: ''
       }
     }
     if (!ppUser.id) {

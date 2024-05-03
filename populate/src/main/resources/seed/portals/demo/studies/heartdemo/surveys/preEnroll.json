@@ -54,6 +54,74 @@
     "pages": [
       {
         "name": "page1",
+        "elements": [
+          {
+            "type": "radiogroup",
+            "name": "proxy_enrollment",
+            "title": {
+              "default": "Who are you enrolling in the study?",
+              "es": "¿A quién inscribirá en el estudio?",
+              "dev": "DEV_Who are you enrolling in the study?"
+            },
+            "description": {
+              "default": "Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent",
+              "es": "Por favor elija la respuesta correcta. Si se está inscribiendo usted y su hijo/dependiente, primero complete la inscripción usted mismo y luego podrá agregar a su dependiente.",
+              "dev": "DEV_Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent"
+            },
+            "isRequired": true,
+            "choices": [
+              {
+                "value": "false",
+                "text": {
+                  "default": "I am enrolling myself.",
+                  "es": "Me estoy inscribiendo.",
+                  "dev": "DEV_I am enrolling myself."
+                }
+              },
+              {
+                "value": "true",
+                "text": {
+                  "default": "I am enrolling on behalf of my child / my legal dependent.",
+                  "es": "Me inscribo en nombre de mi hijo/mi dependiente legal.",
+                  "dev": "DEV_I am enrolling on behalf of my child / my legal dependent."
+                }
+              }
+            ],
+            "enableIf": "{isProxyEnrollment} != true",
+            "defaultValueExpression": "iif({isProxyEnrollment} = true, 'true', '')"
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "proxy_given_name",
+            "title": "Proxy User Given Name",
+            "visibleIf": "{proxy_enrollment} = true",
+            "defaultValueExpression": "{proxyProfile.givenName}"
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "proxy_family_name",
+            "title": "Proxy User Family Name",
+            "visibleIf": "{proxy_enrollment} = true",
+            "defaultValueExpression": "{proxyProfile.familyName}"
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "governed_given_name",
+            "title": "Given Name"
+          },
+          {
+            "type": "text",
+            "isRequired": true,
+            "name": "governed_family_name",
+            "title": "Family Name"
+          }
+        ]
+      },
+      {
+        "name": "page2",
         "title": {
           "default": "Study Eligibility",
           "es": "Elegibilidad para el estudio",
@@ -176,69 +244,6 @@
                 }
               }
             ]
-          }
-        ]
-      },
-      {
-        "elements": [
-          {
-            "type": "radiogroup",
-            "name": "proxy_enrollment",
-            "title": {
-              "default": "Who are you enrolling in the study?",
-              "es": "¿A quién inscribirá en el estudio?",
-              "dev": "DEV_Who are you enrolling in the study?"
-            },
-            "description": {
-              "default": "Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent",
-              "es": "Por favor elija la respuesta correcta. Si se está inscribiendo usted y su hijo/dependiente, primero complete la inscripción usted mismo y luego podrá agregar a su dependiente.",
-              "dev": "DEV_Please choose the correct response. If you are enrolling both yourself and your child/dependent, please first complete the enrollment for yourself and later you can add your dependent"
-            },
-            "isRequired": true,
-            "choices": [
-              {
-                "value": "false",
-                "text": {
-                  "default": "I am enrolling myself.",
-                  "es": "Me estoy inscribiendo.",
-                  "dev": "DEV_I am enrolling myself."
-                }
-              },
-              {
-                "value": "true",
-                "text": {
-                  "default": "I am enrolling on behalf of my child / my legal dependent.",
-                  "es": "Me inscribo en nombre de mi hijo/mi dependiente legal.",
-                  "dev": "DEV_I am enrolling on behalf of my child / my legal dependent."
-                }
-              }
-            ]
-          },
-          {
-            "type": "text",
-            "isRequired": true,
-            "name": "proxy_given_name",
-            "title": "Proxy User Given Name",
-            "visibleIf": "{proxy_enrollment} = true"
-          },
-          {
-            "type": "text",
-            "isRequired": true,
-            "name": "proxy_family_name",
-            "title": "Proxy User Family Name",
-            "visibleIf": "{proxy_enrollment} = true"
-          },
-          {
-            "type": "text",
-            "isRequired": true,
-            "name": "governed_given_name",
-            "title": "Given Name"
-          },
-          {
-            "type": "text",
-            "isRequired": true,
-            "name": "governed_family_name",
-            "title": "Family Name"
           }
         ]
       }

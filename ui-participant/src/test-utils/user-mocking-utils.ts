@@ -1,4 +1,5 @@
 import { UserContextT } from '../providers/UserProvider'
+import { ActiveUserContextT } from '../providers/ActiveUserProvider'
 
 /**
  * Returns a mock object that can be returned by the useUser hook
@@ -15,5 +16,24 @@ export const mockUseUser = (isAnonymous: boolean): UserContextT => {
     ppUsers: [],
     enrollees: [],
     relations: []
+  }
+}
+
+/**
+ Returns a mock object that can be returned by the useActiveUser hook
+ */
+export const mockUseActiveUser = (): ActiveUserContextT => {
+  return {
+    ppUser: {
+      id: '',
+      profile: {},
+      profileId: 'asdf',
+      participantUserId: ''
+    },
+    profile: {},
+    enrollees: [],
+    relations: [],
+    setActiveUser: jest.fn(),
+    updateProfile: jest.fn()
   }
 }

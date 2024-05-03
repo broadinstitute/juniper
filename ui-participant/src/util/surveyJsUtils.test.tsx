@@ -12,17 +12,22 @@ import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
 import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
+import { useUser } from '../providers/UserProvider'
+import { mockUseActiveUser, mockUseUser } from '../test-utils/user-mocking-utils'
+import { useActiveUser } from '../providers/ActiveUserProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
+jest.mock('providers/UserProvider')
+jest.mock('providers/ActiveUserProvider')
 
 beforeEach(() => {
   asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
-function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm | Survey, profile?: Profile }) {
+function PlainSurveyComponent({ formModel }: { formModel: ConsentForm | Survey }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, profile)
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager)
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
@@ -30,6 +35,9 @@ function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm |
 }
 
 test('it starts on the first page', () => {
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
       <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
@@ -39,6 +47,9 @@ test('it starts on the first page', () => {
 })
 
 test('handles page numbers in initial url', () => {
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
       <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
@@ -49,6 +60,9 @@ test('handles page numbers in initial url', () => {
 })
 
 test('updates urls on page navigation', async () => {
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
   const user = userEvent.setup()
   const { RoutedComponent, router } = setupRouterTest(
     <MockI18nProvider>
@@ -93,10 +107,15 @@ const dynamicSurvey = generateSurvey({
 
 test('enables hide on profile attributes', () => {
   const maleProfile: Profile = { sexAtBirth: 'male' }
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue({
+    ...mockUseActiveUser(),
+    profile: maleProfile
+  })
+
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}
-        profile={maleProfile}/>
+      <PlainSurveyComponent formModel={dynamicSurvey}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
@@ -106,10 +125,15 @@ test('enables hide on profile attributes', () => {
 
 test('enables show on profile attributes', () => {
   const femaleProfile: Profile = { sexAtBirth: 'female' }
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue({
+    ...mockUseActiveUser(),
+    profile: femaleProfile
+  })
+
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}
-        profile={femaleProfile}/>
+      <PlainSurveyComponent formModel={dynamicSurvey}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()

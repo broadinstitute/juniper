@@ -11,11 +11,13 @@ import { render, screen } from '@testing-library/react'
 import { PagedSurveyView, SurveyFooter } from './SurveyView'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import { MockI18nProvider, Survey, useAutosaveEffect } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, Survey, useAutosaveEffect } from '@juniper/ui-core'
 import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { mockUseActiveUser, mockUseUser } from '../../test-utils/user-mocking-utils'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -44,15 +46,25 @@ beforeEach(() => {
   })
 })
 
+jest.mock('providers/ActiveUserProvider')
+
+
 const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Survey}) => {
   const pager: PageNumberControl = { pageNumber: pageNum, updatePageNumber: () => 1 }
   const { surveyModel } = useSurveyJSModel(survey, null,
-    () => 1, pager, { sexAtBirth: 'male' })
+    () => 1, pager)
   return <SurveyFooter survey={survey} surveyModel={surveyModel}/>
 }
 
+
 describe('SurveyFooter', () => {
   it('does not render if not on the last page', () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
     render(<MockI18nProvider>
       <FooterTestComponent survey={survey} pageNum={1}/>
@@ -61,6 +73,12 @@ describe('SurveyFooter', () => {
   })
 
   it('renders if on the last page', () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
     render(
       <MockI18nProvider>
@@ -73,6 +91,12 @@ describe('SurveyFooter', () => {
 
 describe('Renders a survey', () => {
   it('allows a user to complete the survey', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy } = setupSurveyTest(generateThreePageSurvey())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
@@ -94,6 +118,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosaves question and page progress', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
 
     await userEvent.click(screen.getByText('Green'))
@@ -117,6 +147,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosaves question and page progress with diffs', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
 
     await userEvent.click(screen.getByText('Green'))
@@ -142,6 +178,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosave handles updated questions', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
@@ -166,6 +208,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosave handles hidden questions with default clear-on-submit behavior', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(mockSurveyWithHiddenQuestion())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
@@ -194,6 +242,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosave handles hidden questions with clear-on-hidden', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(mockSurveyWithHiddenQuestionClearOnHidden())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
@@ -222,6 +276,12 @@ describe('Renders a survey', () => {
   })
 
   it('retries autosave if autosave fails', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
     submitSpy.mockImplementation(() => Promise.reject({}))
 

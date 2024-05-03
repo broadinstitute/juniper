@@ -1,12 +1,14 @@
 package bio.terra.pearl.populate.service.extract;
 
 import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.study.*;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
@@ -34,11 +36,13 @@ public class StudyExtractor {
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final StudyEnvironmentConsentService studyEnvironmentConsentService;
     private final TriggerService triggerService;
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
     public StudyExtractor(@Qualifier("extractionObjectMapper") ObjectMapper objectMapper, StudyService studyService,
                           PortalStudyService portalStudyService, StudyEnvironmentService studyEnvironmentService,
                           StudyEnvironmentConfigService studyEnvironmentConfigService, StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                          StudyEnvironmentConsentService studyEnvironmentConsentService, TriggerService triggerService) {
+                          StudyEnvironmentConsentService studyEnvironmentConsentService,
+                          TriggerService triggerService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         this.studyService = studyService;
         this.portalStudyService = portalStudyService;
         this.studyEnvironmentService = studyEnvironmentService;
@@ -47,6 +51,7 @@ public class StudyExtractor {
         this.objectMapper = objectMapper;
         this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.triggerService = triggerService;
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         objectMapper.addMixIn(Study.class, StudyMixin.class);
         objectMapper.addMixIn(StudyEnvironment.class, StudyEnvironmentMixin.class);
     }
@@ -116,7 +121,8 @@ public class StudyExtractor {
             studyEnvPopDto.getTriggerDtos().add(configPopDto);
         }
 
-        // TODO extract dashboard configs
+        List<KitType> kitTypes = studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+        studyEnvPopDto.setKitTypeNames(kitTypes.stream().map(KitType::getName).toList());
         return studyEnvPopDto;
     }
 

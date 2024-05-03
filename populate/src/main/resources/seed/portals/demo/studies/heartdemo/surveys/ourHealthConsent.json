@@ -1,6 +1,7 @@
 {
   "name": "OurHealth Consent",
   "stableId": "hd_hd_consent",
+  "surveyType": "CONSENT",
   "version": 1,
   "jsonContent":
 {

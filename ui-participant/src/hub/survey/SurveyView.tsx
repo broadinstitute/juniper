@@ -54,7 +54,7 @@ export function RawSurveyView({
                                 }) {
   const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
-  const { updateEnrollee, profile, updateProfile } = useUser()
+  const { updateEnrollee, updateProfile } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
   const { i18n } = useI18n()
@@ -95,7 +95,7 @@ export function RawSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
-    onComplete, pager, profile)
+    onComplete, pager)
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {

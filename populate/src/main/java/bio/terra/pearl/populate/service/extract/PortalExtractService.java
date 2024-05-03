@@ -1,13 +1,16 @@
 package bio.terra.pearl.populate.service.extract;
 
+import bio.terra.pearl.core.dao.dashboard.ParticipantDashboardAlertDao;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
@@ -34,7 +37,11 @@ public class PortalExtractService {
     private final MediaExtractor mediaExtractor;
     private final ConsentFormExtractor consentFormExtractor;
     private final EmailTemplateExtractor emailTemplateExtractor;
+    private final ParticipantDashboardAlertDao participantDashboardAlertDao;
+    private final PortalLanguageService portalLanguageService;
+
     private final ObjectMapper objectMapper;
+
 
     public PortalExtractService(PortalService portalService,
                                 PortalEnvironmentService portalEnvironmentService,
@@ -45,6 +52,8 @@ public class PortalExtractService {
                                 MediaExtractor mediaExtractor,
                                 ConsentFormExtractor consentFormExtractor,
                                 EmailTemplateExtractor emailTemplateExtractor,
+                                ParticipantDashboardAlertDao participantDashboardAlertDao,
+                                PortalLanguageService portalLanguageService,
                                 @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -55,6 +64,8 @@ public class PortalExtractService {
         this.mediaExtractor = mediaExtractor;
         this.consentFormExtractor = consentFormExtractor;
         this.emailTemplateExtractor = emailTemplateExtractor;
+        this.participantDashboardAlertDao = participantDashboardAlertDao;
+        this.portalLanguageService = portalLanguageService;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -87,24 +98,34 @@ public class PortalExtractService {
 
     /** updates the portalPopDto in the context with the portal environment configs */
     public void extractPortalEnvs(Portal portal, ExtractPopulateContext context) {
-        portalEnvironmentService.findByPortal(portal.getId()).forEach(env -> {
-            PortalEnvironmentPopDto envPopDto = new PortalEnvironmentPopDto();
-            envPopDto.setEnvironmentName(env.getEnvironmentName());
-            envPopDto.setPortalEnvironmentConfig(portalEnvironmentConfigService
-                    .find(env.getPortalEnvironmentConfigId()).orElseThrow(PortalConfigMissing::new));
-            if (env.getSiteContentId() != null) {
-                SiteContentExtractor.SiteContentPopDtoStub siteContentPopDto = new SiteContentExtractor.SiteContentPopDtoStub();
-                siteContentPopDto.setPopulateFileName(context.getFileNameForEntity(env.getSiteContentId()));
-                envPopDto.setSiteContentPopDto(siteContentPopDto);
-            }
-            if (env.getPreRegSurveyId() != null) {
-                SurveyPopDto surveyPopDto = new SurveyPopDto();
-                surveyPopDto.setPopulateFileName(context.getFileNameForEntity(env.getPreRegSurveyId()));
-                envPopDto.setPreRegSurveyDto(surveyPopDto);
-            }
-            context.getPortalPopDto().getPortalEnvironmentDtos().add(envPopDto);
-        });
+        List<PortalEnvironment> portalEnvironments = portalEnvironmentService.findByPortal(portal.getId());
+        for (PortalEnvironment portalEnvironment : portalEnvironments) {
+            PortalEnvironmentPopDto popDto = extractPortalEnv(portalEnvironment, context);
+            context.getPortalPopDto().getPortalEnvironmentDtos().add(popDto);
+        }
     }
+
+    public PortalEnvironmentPopDto extractPortalEnv(PortalEnvironment portalEnv, ExtractPopulateContext context) {
+        PortalEnvironmentPopDto envPopDto = new PortalEnvironmentPopDto();
+        envPopDto.setEnvironmentName(portalEnv.getEnvironmentName());
+        envPopDto.setPortalEnvironmentConfig(portalEnvironmentConfigService
+                .find(portalEnv.getPortalEnvironmentConfigId()).orElseThrow(PortalConfigMissing::new));
+        if (portalEnv.getSiteContentId() != null) {
+            SiteContentExtractor.SiteContentPopDtoStub siteContentPopDto = new SiteContentExtractor.SiteContentPopDtoStub();
+            siteContentPopDto.setPopulateFileName(context.getFileNameForEntity(portalEnv.getSiteContentId()));
+            envPopDto.setSiteContentPopDto(siteContentPopDto);
+        }
+        if (portalEnv.getPreRegSurveyId() != null) {
+            SurveyPopDto surveyPopDto = new SurveyPopDto();
+            surveyPopDto.setPopulateFileName(context.getFileNameForEntity(portalEnv.getPreRegSurveyId()));
+            envPopDto.setPreRegSurveyDto(surveyPopDto);
+        }
+        envPopDto.setSupportedLanguages(portalLanguageService.findByPortalEnvId(portalEnv.getId()));
+        envPopDto.setParticipantDashboardAlerts(participantDashboardAlertDao.findByPortalEnvironmentId(portalEnv.getId()));
+        return envPopDto;
+    }
+
+
 
     protected static class PortalMixin {
         @JsonIgnore public List<PortalParticipantUser> getPortalParticipantUsers() { return null; }

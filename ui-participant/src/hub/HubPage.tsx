@@ -59,7 +59,7 @@ export default function HubPage() {
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,
-            type: noActivitiesAlert.type
+            type: noActivitiesAlert.alertType
           } as HubUpdateMessage}
           className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
           role="alert"
