@@ -213,9 +213,12 @@ public class EnrolleeImportService {
         List<SurveyResponse> responses = new ArrayList<>();
         UUID portalId = portalService.findOneByShortcode(portalShortcode).orElseThrow().getId();
         for (SurveyFormatter formatter : surveyModules) {
-            responses.add(importSurveyResponse(portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo));
+            SurveyResponse surveyResponse = importSurveyResponse(portalId, formatter, enrolleeMap, exportOptions, studyEnv, ppUser, enrollee, auditInfo);
+            if (surveyResponse != null) {
+                responses.add(surveyResponse);
+            }
         }
-        return null;
+        return responses;
     }
 
     protected SurveyResponse importSurveyResponse(UUID portalId, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
