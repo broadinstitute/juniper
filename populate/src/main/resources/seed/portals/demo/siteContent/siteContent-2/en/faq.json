@@ -19,8 +19,8 @@
           "title": "",
           "questions": [
             {
-              "question": "What is the OurHealth study?",
-              "answer": "OurHealth is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+              "question": "What is the Juniper Heart Demo study?",
+              "answer": "Juniper Heart Demo is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
             },
             {
               "question": "Why is this needed?",
@@ -31,11 +31,11 @@
               "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/heartdemo/join)."
             },
             {
-              "question": "What does OurHealth do with the data?",
+              "question": "What does Juniper Heart Demo do with the data?",
               "answer": "Only data and/or specimens necessary for study conduct will be collected. The electronic data collected will be maintained in a secure location with appropriate protections including password protection, encryption, and/or physical security measures (locked files/areas). The specimens collected will be maintained in a secure location with appropriate protections (e.g. locked storage spaces, laboratory areas). Data and specimens will only be shared with individuals who are members of the IRB-approved research team or approved for sharing as described in the IRB protocol. Identifiers will be coded and access to files linking identifiers with coded data or specimens will be limited to the minimal necessary members of the research team. All staff are trained on and will follow the Mass General Brigham policies and procedures for maintaining appropriate confidentiality of research data and specimens. All electronic communication with participants will comply with Mass General Brigham secure communication policies."
             },
             {
-              "question": "How can I receive updates on OurHealth?",
+              "question": "How can I receive updates on Juniper Heart Demo?",
               "answer": "Please [sign up for our mailing list](#mailing-list) to receive updates."
             },
             {
@@ -48,11 +48,11 @@
             },
             {
               "question": "Is this a clinical trial?",
-              "answer": "OurHealth is not a clinical trial. Joining will not have any impact on a participant's course of care, and OurHealth is not permitted to give any clinical advice as part of participation in this project."
+              "answer": "Juniper Heart Demo is not a clinical trial. Joining will not have any impact on a participant's course of care, and Juniper Heart Demo is not permitted to give any clinical advice as part of participation in this project."
             },
             {
-              "question": "Can I stop taking part in OurHealth?",
-              "answer": "You can stop participating in OurHealth at any time. However, information that has already been used for research cannot be withdrawn. If you withdraw, any remaining saliva samples and/or data will not be used in future research. To withdraw your permission, reach out to the study team [info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)."
+              "question": "Can I stop taking part in Juniper Heart Demo?",
+              "answer": "You can stop participating in Juniper Heart Demo at any time. However, information that has already been used for research cannot be withdrawn. If you withdraw, any remaining saliva samples and/or data will not be used in future research. To withdraw your permission, reach out to the study team [info@ourhealthstudy.org](mailto:info@ourhealthstudy.org)."
             }
           ]
         }

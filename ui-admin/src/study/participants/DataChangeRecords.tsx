@@ -108,6 +108,12 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
   }, [enrollee.shortcode])
   return <div>
     <h5>Audit history</h5>
+    <dl >
+      <dt className="fw-semibold">Enrollee internal ID</dt>
+      <dd>{enrollee.id}</dd>
+      <dt className="fw-semibold">Enrollee created</dt>
+      <dd>{instantToDefaultString(enrollee.createdAt)}</dd>
+    </dl>
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
     </LoadingSpinner>

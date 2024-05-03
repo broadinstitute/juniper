@@ -62,8 +62,11 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }
 
   useEffect(() => {
-    loadOutreachActivities()
-  }, [enrollees])
+    if (enrollees.length) {
+      // the component may get rendered with zero enrollees during login/logout, don't bother fetching tasks then
+      loadOutreachActivities()
+    }
+  }, [enrollees.map(enrollee => enrollee.shortcode).join(',')])
 
   useEffect(() => {
     const matchedTask = outreachTasks.find(({ task }) => task.id === outreachParams.taskId)?.task

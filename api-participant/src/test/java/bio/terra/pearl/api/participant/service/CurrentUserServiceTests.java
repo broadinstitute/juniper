@@ -78,6 +78,37 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
+  public void testRegisterOrLoginNewUser(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+    String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+    String username = getTestName(info) + "@test.er" + RandomStringUtils.randomAlphabetic(4);
+    String token = generateFakeJwtToken(username);
+
+    CurrentUserService.UserLoginDto loadedUser =
+        currentUserService.registerOrLogin(
+            token, portalShortcode, portalEnv.getEnvironmentName(), null, "en");
+    // confirm new user is created
+    assertThat(loadedUser.user().getUsername(), equalTo(username));
+    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+  }
+
+  @Test
+  @Transactional
+  public void testRegisterOrLoginExistingUser(TestInfo info) {
+    PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+    ParticipantUserFactory.ParticipantUserAndPortalUser userBundle =
+        participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+    String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+    String token = generateFakeJwtToken(userBundle.user().getUsername());
+
+    CurrentUserService.UserLoginDto loadedUser =
+        currentUserService.tokenLogin(token, portalShortcode, portalEnv.getEnvironmentName());
+    assertThat(loadedUser.user().getUsername(), equalTo(userBundle.user().getUsername()));
+    assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
+  }
+
+  @Test
+  @Transactional
   public void testUserLoginWithEnrollees(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);

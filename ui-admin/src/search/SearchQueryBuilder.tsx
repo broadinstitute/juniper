@@ -56,7 +56,7 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
         removeRule: 'btn btn-outline-dark',
         removeGroup: 'btn btn-outline-dark',
         addRule: 'btn btn-outline-dark',
-        addGroup: 'btn btn-outline-dark d-none',
+        addGroup: 'btn btn-outline-dark',
         combinators: 'form-select w-25'
       }}
       fields={facets.map(facet => facetToReactQueryField(facet.facet, facet.type))}
