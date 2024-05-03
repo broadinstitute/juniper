@@ -33,7 +33,7 @@ public class ImportService extends CrudService<Import, ImportDao> {
         super(dao);
     }
 
-    public List<Import> findAllByStudyEnv(UUID studyEnvId) {
+    public List<Import> findByStudyEnvWithItems(UUID studyEnvId) {
         List<Import> imports = dao.findAllByStudyEnv(studyEnvId);
         //load ImportItems
         imports.forEach(anImport -> importItemService.attachImportItems(anImport));

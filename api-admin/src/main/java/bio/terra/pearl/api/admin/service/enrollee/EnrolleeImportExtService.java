@@ -50,7 +50,7 @@ public class EnrolleeImportExtService {
         studyEnvironmentService
             .findByStudy(studyShortcode, envName)
             .orElseThrow(() -> new NotFoundException("Study environment not found"));
-    return importService.findAllByStudyEnv(studyEnv.getId());
+    return importService.findByStudyEnvWithItems(studyEnv.getId());
   }
 
   public Import get(

@@ -1711,7 +1711,7 @@ paths:
     get:
       summary: Gets a list of imports for a study
       tags: [ dataImport ]
-      operationId: get
+      operationId: getAll
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
@@ -1784,7 +1784,7 @@ paths:
     delete:
       summary: delete import item for a study
       tags: [ dataImport ]
-      operationId: delete
+      operationId: deleteItem
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }

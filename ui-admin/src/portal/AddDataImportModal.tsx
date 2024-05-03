@@ -10,13 +10,10 @@ import { useFileUploadButton } from 'util/uploadUtils'
 import { EnvironmentName } from '@juniper/ui-core'
 
 
-export const allowedIFileTypes = ['csv', 'tsv']
-export const allowedDocumentTypes = ['pdf', 'json']
-export const allowedTextTypes = ['csv', 'txt']
-export const allowedFileTypes = [...allowedIFileTypes, ...allowedDocumentTypes, ...allowedTextTypes]
+export const allowedFileTypes = ['csv', 'tsv']
 const FILE_TYPE_REGEX = new RegExp(`\\.(${allowedFileTypes.join('|')})$`)
 
-/** Renders a modal for an admin to submit a sample collection kit request. */
+/** Renders a modal for an admin to upload a data import file. */
 export default function AddDataImportModal({
   portalShortcode, studyShortcode, envName,
   onDismiss, onSubmit
@@ -32,7 +29,7 @@ export default function AddDataImportModal({
   const [fileName, setFileName] = useState('')
 
   const handleFileChange = (newFile: File) => {
-    setFileName(cleanFileName(newFile.name))
+    setFileName(newFile.name)
   }
 
   const { file, FileChooser } = useFileUploadButton(handleFileChange)
@@ -61,7 +58,7 @@ export default function AddDataImportModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          <p>Supported extensions are {allowedIFileTypes.join(', ')}.</p>
+          <p>Supported extensions are {allowedFileTypes.join(', ')}.</p>
                     File:
           <div>
             {FileChooser}
@@ -78,16 +75,4 @@ export default function AddDataImportModal({
       </LoadingSpinner>
     </Modal.Footer>
   </Modal>
-}
-
-/**
- * A cleanFileName is a portal-scoped-unique, URL-safe identifier.
- * cleanFileName is the upload filename with whitespace replaced with _,
- * stripped of special characters and whitespace except "." "_" or "-", then lowercased.
- * See SiteMediaService.java for the server-side implementation of this
- */
-export const cleanFileName = (fileName: string) => {
-  return fileName.toLowerCase()
-    .replaceAll(/\s/g, '_')
-    .replaceAll(/[^a-z\d._-]/g, '')
 }

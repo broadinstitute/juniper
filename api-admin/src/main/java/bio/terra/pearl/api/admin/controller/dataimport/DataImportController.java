@@ -39,7 +39,7 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Void> delete_0(
+  public ResponseEntity<Void> deleteItem(
       String portalShortcode,
       String studyShortcode,
       String envName,
@@ -53,7 +53,8 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
+  public ResponseEntity<Object> getAll(
+      String portalShortcode, String studyShortcode, String envName) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     return ResponseEntity.ok(
         enrolleeImportExtService.list(
@@ -64,7 +65,7 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Object> get_0(
+  public ResponseEntity<Object> get(
       String portalShortcode, String studyShortcode, String envName, UUID importId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     return ResponseEntity.ok(
