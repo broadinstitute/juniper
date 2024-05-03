@@ -68,14 +68,16 @@ export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
     })
   }
 
+  const substitute = (text: string, substitutionKey: string, substitutions: Record<string, string>): string => {
+    return text.replace(`\${${substitutionKey}}`, substitutions[substitutionKey])
+  }
+
   const i18n = (key: string, options?: I18nOptions) => {
     let text = languageTexts[key] || options?.defaultValue || `{${key}}`
     if (options && options.substitutions) {
-      Object.keys(options.substitutions).forEach(substitutionKey => {
-        if (options.substitutions) {
-          text = text.replace(`{${substitutionKey}}`, options.substitutions[substitutionKey])
-        }
-      })
+      for (const substitutionKey of Object.keys(options.substitutions)) {
+        text = substitute(text, substitutionKey, options.substitutions)
+      }
     }
     return text
   }

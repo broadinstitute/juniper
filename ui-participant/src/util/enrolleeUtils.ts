@@ -8,8 +8,13 @@ export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
 }
 
 /** enrolls the user and displays a welcome banner on the dashboard */
-export async function enrollCurrentUserInStudy(studyShortcode: string, studyName: string,
-  preEnrollResponseId: string | null, refreshLogin: () => Promise<void>, i18n: (key: string, options?: I18nOptions) => string) {
+export async function enrollCurrentUserInStudy(
+  studyShortcode: string,
+  studyName: string,
+  preEnrollResponseId: string | null,
+  refreshLogin: () => Promise<void>,
+  i18n: (key: string, options?: I18nOptions) => string
+) {
   await Api.createEnrollee({
     studyShortcode,
     preEnrollResponseId
