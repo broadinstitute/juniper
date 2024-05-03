@@ -63,7 +63,7 @@
         "blurb": "Con su ayuda, los pacientes pueden ser la fuerza impulsora detrás de una investigación cardiovascular transformadora.",
         "buttons": [{
           "type": "join",
-          "text": "Únete a OurHealth",
+          "text": "Únete a demostración de Juniper Heart",
           "studyShortcode": "heartdemo"
         }],
         "background": "linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%)"
