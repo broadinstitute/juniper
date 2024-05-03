@@ -151,7 +151,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       } catch (e) {
         setIsLoading(false)
         localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
-      })
+      }
     } else if (internalLogintoken) {
       try {
         const loginResult = await Api.unauthedRefreshLogin(internalLogintoken)
