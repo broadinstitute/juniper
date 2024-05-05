@@ -1,8 +1,6 @@
 import {
   AddressValidationResult,
   AlertTrigger,
-  ConsentForm,
-  ConsentResponse,
   EnvironmentName,
   MailingAddress,
   ParticipantDashboardAlert,
@@ -15,7 +13,6 @@ import {
   SiteContent,
   Study,
   StudyEnvironmentConfig,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse,
@@ -29,8 +26,6 @@ import { AdminUser, NewAdminUser } from './adminUser'
 export type {
   Answer,
   AddressValidationResult,
-  ConsentForm,
-  ConsentResponse,
   HtmlPage,
   HtmlSection,
   LocalSiteContent,
@@ -54,7 +49,6 @@ export type {
   Study,
   StudyEnvironment,
   StudyEnvironmentConfig,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse,
@@ -91,7 +85,6 @@ export type Enrollee = {
   createdAt: number,
   participantUserId: string,
   surveyResponses: SurveyResponse[],
-  consentResponses: ConsentResponse[],
   preRegResponse?: PreregistrationResponse,
   preEnrollmentResponse?: PreregistrationResponse,
   participantTasks: ParticipantTask[],
@@ -260,7 +253,6 @@ export type StudyEnvironmentChange = {
   studyShortcode: string
   configChanges: ConfigChange[]
   preEnrollSurveyChanges: VersionedEntityChange
-  consentChanges: ListChange<StudyEnvironmentConsent, VersionedConfigChange>
   surveyChanges: ListChange<StudyEnvironmentSurvey, VersionedConfigChange>
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
 }
@@ -614,66 +606,6 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(configuredSurvey)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  async getConsentForm(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/${version}`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async getConsentFormVersions(portalShortcode: string, stableId: string): Promise<Survey[]> {
-    const response = await fetch(`${API_ROOT}/portals/v1/${portalShortcode}/consentForms/${stableId}/metadata`,
-      this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async updateConfiguredConsent(portalShortcode: string, studyShortcode: string, environmentName: string,
-    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}` +
-      `/env/${environmentName}/configuredConsents/${configuredConsent.id}`
-
-    const response = await fetch(url, {
-      method: 'PATCH',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredConsent)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  async createNewConsentForm(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
-      + `${consentForm.stableId}`
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(consentForm)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  async createNewConsentVersion(portalShortcode: string, consentForm: ConsentForm): Promise<ConsentForm> {
-    const url = `${API_ROOT}/portals/v1/${portalShortcode}/consentForms/`
-      + `${consentForm.stableId}/${consentForm.version}/newVersion`
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(consentForm)
-    })
-    return await this.processJsonResponse(response)
-  },
-
-  async createConfiguredConsent(portalShortcode: string, studyShortcode: string, envName: string,
-    configuredConsent: StudyEnvironmentConsent): Promise<StudyEnvironmentConsent> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredConsents`
-
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredConsent)
     })
     return await this.processJsonResponse(response)
   },

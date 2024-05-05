@@ -6,7 +6,6 @@ import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { LoadedPortalContextT, PortalContext, PortalParams } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
-import ConsentView from './surveys/ConsentView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
 import KitsRouter from './kits/KitsRouter'
@@ -119,13 +118,6 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
           </Route>
           <Route path="scratch" element={<QuestionScratchbox/>}/>
           <Route path="*" element={<div>Unknown survey page</div>}/>
-        </Route>
-        <Route path="consentForms">
-          <Route path=":consentStableId">
-            <Route path=":version" element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
-            <Route index element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
-          </Route>
-          <Route path="*" element={<div>Unknown consent page</div>}/>
         </Route>
         <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
       </Route>
