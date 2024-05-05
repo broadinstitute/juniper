@@ -20,8 +20,10 @@ import {
   Trigger
 } from 'api/api'
 import {
+  AlertTrigger,
   defaultSurvey,
   LocalizedEmailTemplate,
+  ParticipantDashboardAlert,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
@@ -492,6 +494,17 @@ export const mockSiteMedia = (): SiteMediaMetadata => {
     createdAt: Date.now(),
     cleanFileName: 'fileName.png',
     version: 1
+  }
+}
+
+/** mock ParticipantDashboardAlert */
+export const mockDashboardAlert = (title: string, detail: string, trigger: AlertTrigger): ParticipantDashboardAlert => {
+  return {
+    id: randomId('alert'),
+    title,
+    detail,
+    alertType: 'INFO',
+    trigger
   }
 }
 
