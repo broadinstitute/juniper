@@ -310,9 +310,13 @@ export const AccountOptionsDropdown = () => {
             {user.username}
           </p>
           <hr className="dropdown-divider d-none d-lg-block"/>
-          {relations.length === 0 && <NavLink to="/hub/profile">
+          {relations.length === 0 ? <NavLink to="/hub/profile">
             <button className="dropdown-item" aria-label="edit profile">
               {i18n('profile')}
+            </button>
+          </NavLink> : <NavLink to="/hub/manageProfiles">
+            <button className="dropdown-item" aria-label="manage profiles">
+              {i18n('manageProfiles')}
             </button>
           </NavLink>}
           <button className="dropdown-item" aria-label="change password" onClick={doChangePassword}>

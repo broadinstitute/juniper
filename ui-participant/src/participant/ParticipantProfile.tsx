@@ -13,7 +13,7 @@ import {
   EditPhoneNumber
 } from './EditParticipantProfileModals'
 import { useActiveUser } from '../providers/ActiveUserProvider'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useUser } from '../providers/UserProvider'
 
 /**
@@ -27,13 +27,12 @@ export function ParticipantProfile() {
   const { ppUsers, updateProfile, enrollees, user } = useUser()
   const { ppUser: activePpUser } = useActiveUser()
 
-  const { state } = useLocation()
+  const { ppUserId } = useParams()
 
-  const ppUserIdFromState = state?.ppUserId
-
-  const ppUser = ppUserIdFromState
-    ? ppUsers.find(ppUser => ppUser.id === ppUserIdFromState)
+  const ppUser = ppUserId
+    ? ppUsers.find(ppUser => ppUser.id === ppUserId)
     : activePpUser
+
   const profile = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)?.profile
 
   const hasProxiedUsers = ppUsers.some(ppUser => ppUser.participantUserId !== user?.id)

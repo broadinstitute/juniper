@@ -55,7 +55,8 @@ export async function enrollProxyUserInStudy(
 }
 
 /**
- * Provides the name of the user (or 'You' if no name provided). If undefined, returns an empty string.
+ * Provides the name of the user (or 'You' / 'Your dependent' if no name provided).
+ * If undefined, returns an empty string.
  */
 export const useName = (ppUser: PortalParticipantUser | undefined) => {
   const { i18n } = useI18n()
