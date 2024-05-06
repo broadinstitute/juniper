@@ -16,6 +16,7 @@ import {
   studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
+import { isSuperuser } from 'user/UserProvider'
 import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
 
@@ -52,10 +53,10 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
-        <li className="mb-2">
-          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
+        {isSuperuser() && <li>
+          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
-        </li>
+        </li>}
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
         <li className="mb-2">
