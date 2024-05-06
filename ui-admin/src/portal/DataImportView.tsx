@@ -7,19 +7,23 @@ import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 
 /** show the dataImportItem list in table */
 export default function DataImportView({ studyEnvContext }:
-                                           { studyEnvContext: StudyEnvContextT }) {
+                                         { studyEnvContext: StudyEnvContextT }) {
   const [dataImportItems, setDataImportItems] = useState<DataImportItem[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
   const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const columns: ColumnDef<DataImportItem>[] = [
     {
       header: 'EnrolleeId',
-      accessorKey: 'createdEnrolleeId'
+      accessorKey: 'createdEnrolleeId',
+      cell: ({ row }) => {
+        return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
+          className="me-1"> {row.original.createdEnrolleeId}</Link>
+      }
     },
     {
       header: 'Imported Date',
