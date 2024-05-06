@@ -18,11 +18,11 @@ export default function AddDataImportModal({
   portalShortcode, studyShortcode, envName,
   onDismiss, onSubmit
 }: {
-    portalShortcode: string,
-    studyShortcode: string,
-    envName: EnvironmentName,
-    onDismiss: () => void,
-    onSubmit: () => void
+  portalShortcode: string,
+  studyShortcode: string,
+  envName: EnvironmentName,
+  onDismiss: () => void,
+  onSubmit: () => void
 }) {
   const [isLoading, setIsLoading] = useState(false)
 
@@ -37,7 +37,6 @@ export default function AddDataImportModal({
     if (!file) {
       return
     }
-    //const version = existingMedia?.version ? existingMedia.version + 1 : 1
     doApiLoad(async () => {
       await Api.uploadDataImport(file, portalShortcode, studyShortcode, envName)
       Store.addNotification(successNotification('data import file loaded'))
@@ -59,7 +58,7 @@ export default function AddDataImportModal({
       <form onSubmit={e => e.preventDefault()}>
         <div>
           <p>Supported extensions are {allowedFileTypes.join(', ')}.</p>
-                    File:
+          File:
           <div>
             {FileChooser}
             <span className="text-muted fst-italic ms-2">{file?.name}</span>

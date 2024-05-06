@@ -22,7 +22,7 @@ export default function DataImportView({ studyEnvContext }:
       accessorKey: 'createdEnrolleeId',
       cell: ({ row }) => {
         const enrolleIdLast8 = row.original?.createdEnrolleeId?.slice(-8)
-        if (row.original.status == 'DELETED') {
+        if (row.original.status == 'DELETED' || row.original.status == 'FAILED') {
           return <p>detail-{enrolleIdLast8}</p>
         } else {
           return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
