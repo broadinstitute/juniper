@@ -32,7 +32,7 @@ export default function HubRouter() {
       <Route index element={<HubPage/>}/>
       <Route path="manageProfiles"
         element={<ManageProfiles/>}/>
-      <Route path="profile(/:ppUserId)"
+      <Route path="profile/:ppUserId?"
         element={<ParticipantProfile/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>
