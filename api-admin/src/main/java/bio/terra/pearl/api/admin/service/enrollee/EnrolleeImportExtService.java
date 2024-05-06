@@ -67,6 +67,10 @@ public class EnrolleeImportExtService {
             .orElseThrow(() -> new NotFoundException("Study environment not found"));
     Import dataImport =
         importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
+    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
+      throw new PermissionDeniedException(
+          "Import Id does not belong to the given study environment");
+    }
     importItemService.attachImportItems(dataImport);
     return dataImport;
   }
