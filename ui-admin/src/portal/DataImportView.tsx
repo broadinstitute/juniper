@@ -3,7 +3,7 @@ import Api, { DataImportItem } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, DownloadControl, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
-import { currentIsoDate } from '@juniper/ui-core'
+import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
@@ -15,15 +15,19 @@ export default function DataImportView({ studyEnvContext }:
                                          { studyEnvContext: StudyEnvContextT }) {
   const [dataImportItems, setDataImportItems] = useState<DataImportItem[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+  const importedDate = instantToDefaultString(dataImportItems[0]?.createdAt)
   const columns: ColumnDef<DataImportItem>[] = [
     {
       header: 'EnrolleeId',
       accessorKey: 'createdEnrolleeId',
       cell: ({ row }) => {
-        // @ts-ignore
-        const enrolleIdLast8 = row.original.createdEnrolleeId.slice(-8)
-        return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
-          className="me-1"> detail-{enrolleIdLast8}</Link>
+        const enrolleIdLast8 = row.original?.createdEnrolleeId?.slice(-8)
+        if (row.original.status == 'DELETED') {
+          return <p>detail-{enrolleIdLast8}</p>
+        } else {
+          return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
+            className="me-1"> detail-{enrolleIdLast8}</Link>
+        }
       }
     },
     {
@@ -66,6 +70,7 @@ export default function DataImportView({ studyEnvContext }:
 
   return <div className="container-fluid px-4 py-2">
     {renderPageHeader('Data Import Items')}
+    {`Imported Date:${importedDate}`}
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">
