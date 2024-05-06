@@ -26,7 +26,7 @@ export default function DataImportView({ studyEnvContext }:
           return <p>detail-{enrolleIdLast8}</p>
         } else {
           return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
-            className="me-1"> detail-{enrolleIdLast8}</Link>
+            className="me-1">view detail-{enrolleIdLast8}</Link>
         }
       }
     },
