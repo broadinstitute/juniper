@@ -271,10 +271,7 @@ export const AccountOptionsDropdown = () => {
 
   /** send a logout to the api then logout */
   function doLogout() {
-    Api.logout().then(() => {
-      logoutUser()
-      window.location.href = '/'
-    })
+    logoutUser()
   }
 
   if (!user) {

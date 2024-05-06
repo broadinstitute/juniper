@@ -9,7 +9,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
 
     Assertions.assertThrows(
-        PermissionDeniedException.class,
+        NotFoundException.class,
         () -> {
           profileExtService.updateProfileForEnrollee(
               operator,

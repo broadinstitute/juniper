@@ -15,6 +15,7 @@ import { enrollCurrentUserInStudy } from 'util/enrolleeUtils'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { filterUnjoinableStudies } from 'Navbar'
 import { logError } from 'util/loggingUtils'
+import { useI18n } from '@juniper/ui-core'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -25,9 +26,10 @@ export const RedirectFromOAuth = () => {
   const [preRegResponseId, setPreRegResponseId] = usePreRegResponseId()
   const [preEnrollResponseId, setPreEnrollResponseId] = usePreEnrollResponseId()
   const [returnToStudy, setReturnToStudy] = useReturnToStudy()
-  const [invitationType, setInvitationType] = useInvitationType()
+  const [, setInvitationType] = useInvitationType()
   const [returnToLanguage, setReturnToLanguage] = useReturnToLanguage()
   const { portal } = usePortalEnv()
+  const { i18n } = useI18n()
 
   const defaultEnrollStudy = findDefaultEnrollmentStudy(returnToStudy, portal.portalStudies)
 
@@ -61,17 +63,21 @@ export const RedirectFromOAuth = () => {
           const accessToken = auth.user.access_token
           // Register or login
           try {
-            const isNewRegistration = auth.user.profile.newUser && !invitationType
-            const loginResult = isNewRegistration
-              ? await Api.register({ preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage  })
-              : await Api.tokenLogin(accessToken)
+            /**
+             * we attempt to either register or login, since detecting whether this is a new signup is
+             * occasionally unreliable due to network events, etc...
+             * If we later add portals with very strict pre-registration criteria, we may want to update this code
+             */
+            const loginResult = await Api.registerOrLogin({
+              preRegResponseId, email, accessToken, preferredLanguage: returnToLanguage
+            })
 
             loginUser(loginResult, accessToken)
 
             // Enroll in the study if not already enrolled in any other study
             if (defaultEnrollStudy && !loginResult.enrollees.length) {
               const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
-                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState)
+                defaultEnrollStudy.name, preEnrollResponseId, refreshLoginState, i18n)
               navigate('/hub', { replace: true, state: hubUpdate })
             } else {
               navigate('/hub', { replace: true })

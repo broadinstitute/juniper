@@ -6,7 +6,7 @@ import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { alertDefaults, ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
+import { ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
@@ -39,7 +39,11 @@ export default function HubPage() {
     if (!portalEnv) { return }
     const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
     setNoActivitiesAlert({
-      ...alertDefaults['NO_ACTIVITIES_REMAIN'],
+      ...{
+        title: i18n('hubUpdateNoActivitiesTitle'),
+        detail: i18n('hubUpdateNoActivitiesDetail'),
+        alertType: 'INFO'
+      } as ParticipantDashboardAlert,
       ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
     })
   }

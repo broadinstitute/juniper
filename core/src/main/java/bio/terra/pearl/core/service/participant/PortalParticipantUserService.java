@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.survey.PreregistrationResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.CascadeProperty;
@@ -21,18 +22,21 @@ import java.util.UUID;
 
 @Service
 public class PortalParticipantUserService extends ImmutableEntityService<PortalParticipantUser, PortalParticipantUserDao> {
-    private ProfileService profileService;
-    private PreregistrationResponseDao preregistrationResponseDao;
-    private DataChangeRecordService dataChangeRecordService;
+    private final ProfileService profileService;
+    private final PreregistrationResponseDao preregistrationResponseDao;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final ParticipantUserService participantUserService;
 
     public PortalParticipantUserService(PortalParticipantUserDao dao,
                                         ProfileService profileService,
                                         PreregistrationResponseDao preregistrationResponseDao,
-                                        @Lazy DataChangeRecordService dataChangeRecordService) {
+                                        @Lazy DataChangeRecordService dataChangeRecordService,
+                                        @Lazy ParticipantUserService participantUserService) {
         super(dao);
         this.profileService = profileService;
         this.preregistrationResponseDao = preregistrationResponseDao;
         this.dataChangeRecordService = dataChangeRecordService;
+        this.participantUserService = participantUserService;
     }
 
     @Transactional
@@ -68,6 +72,12 @@ public class PortalParticipantUserService extends ImmutableEntityService<PortalP
 
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode, EnvironmentName envName) {
         return dao.findOne(participantUserId, portalShortcode, envName);
+    }
+
+    public Optional<PortalParticipantUser> findOne(String username, String portalShortcode, EnvironmentName envName) {
+        return participantUserService.findOne(username, envName).map(
+             user -> findOne(user.getId(), portalShortcode, envName)
+        ).orElse(Optional.empty());
     }
 
     public Optional<PortalParticipantUser> findOne(UUID participantUserId, String portalShortcode) {
