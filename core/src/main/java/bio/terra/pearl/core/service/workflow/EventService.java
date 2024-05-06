@@ -76,7 +76,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         populateEvent(event);
         log.info("consent event for enrollee {}, studyEnv {} - form {}, consented - {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
-                response.getSurveyId(), task.getStatus().equals(TaskStatus.COMPLETE));
+                response.getSurveyId(), TaskStatus.COMPLETE.equals(task.getStatus()));
         saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;
