@@ -9,7 +9,7 @@ import React from 'react'
 import {
   adminTasksPath,
   studyEnvDataBrowserPath, studyEnvDatasetListViewPath, studyEnvFormsPath,
-  studyEnvMailingListPath, studyEnvAlertsPath,
+  studyEnvMailingListPath,
   studyEnvMetricsPath, studyEnvNotificationsPath,
   studyEnvSiteContentPath, studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
@@ -77,10 +77,6 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
         <li className="mb-2">
           <NavLink to={studyEnvNotificationsPath(portalShortcode, study.shortcode, 'sandbox')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Emails &amp; Notifications</NavLink>
-        </li>
-        <li>
-          <NavLink to={studyEnvAlertsPath(portalShortcode, study.shortcode, 'sandbox')}
-            className={sidebarNavLinkClasses} style={navStyleFunc}>Participant Dashboard</NavLink>
         </li>
       </ul>}/>
       <CollapsableMenu header={'Publish'} content={<ul className="list-unstyled">

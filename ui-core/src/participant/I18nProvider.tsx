@@ -3,9 +3,14 @@ import { useApiContext } from './ApiProvider'
 
 export const I18nContext = createContext<I18nContextT | null>(null)
 
+export type I18nOptions = {
+  substitutions?: Record<string, string>,
+  defaultValue?: string
+}
+
 export type I18nContextT = {
   languageTexts: Record<string, string>
-  i18n: (key: string, defaultValue?: string) => string,
+  i18n: (key: string, options?: I18nOptions) => string,
   selectedLanguage: string,
   changeLanguage: (language: string) => void
 }
@@ -63,8 +68,18 @@ export function I18nProvider({ defaultLanguage, portalShortcode, children }: {
     })
   }
 
-  const i18n = (key: string, defaultValue?: string) => {
-    return languageTexts[key] || defaultValue || `{${key}}`
+  const substitute = (text: string, substitutionKey: string, substitutions: Record<string, string>): string => {
+    return text.replace(`\${${substitutionKey}}`, substitutions[substitutionKey])
+  }
+
+  const i18n = (key: string, options?: I18nOptions) => {
+    let text = languageTexts[key] || options?.defaultValue || `{${key}}`
+    if (options && options.substitutions) {
+      for (const substitutionKey of Object.keys(options.substitutions)) {
+        text = substitute(text, substitutionKey, options.substitutions)
+      }
+    }
+    return text
   }
 
   return <>
