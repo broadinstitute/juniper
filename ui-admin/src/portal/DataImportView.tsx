@@ -3,7 +3,7 @@ import Api, { DataImportItem } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, DownloadControl, renderEmptyMessage, RowVisibilityCount } from 'util/tableUtils'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import { currentIsoDate } from '@juniper/ui-core'
 import { useLoadingEffect } from '../api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import { StudyEnvContextT, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
@@ -15,23 +15,16 @@ export default function DataImportView({ studyEnvContext }:
                                          { studyEnvContext: StudyEnvContextT }) {
   const [dataImportItems, setDataImportItems] = useState<DataImportItem[]>([])
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
-  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
   const columns: ColumnDef<DataImportItem>[] = [
     {
       header: 'EnrolleeId',
       accessorKey: 'createdEnrolleeId',
       cell: ({ row }) => {
+        // @ts-ignore
+        const enrolleIdLast8 = row.original.createdEnrolleeId.slice(-8)
         return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.createdEnrolleeId}`}
-          className="me-1"> {row.original.createdEnrolleeId}</Link>
+          className="me-1"> detail-{enrolleIdLast8}</Link>
       }
-    },
-    {
-      header: 'Imported Date',
-      accessorKey: 'createdAt',
-      meta: {
-        columnType: 'instant'
-      },
-      cell: info => instantToDefaultString(info.getValue() as number)
     },
     {
       header: 'Status',
@@ -47,21 +40,17 @@ export default function DataImportView({ studyEnvContext }:
     data: dataImportItems,
     columns,
     state: {
-      sorting,
-      rowSelection
+      sorting
     },
-    enableRowSelection: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onRowSelectionChange: setRowSelection
+    getSortedRowModel: getSortedRowModel()
   })
 
   const { dataImportId } = useParams()
   if (!dataImportId) {
     return <></>
   }
-  //const numSelected = Object.keys(rowSelection).length
   const studyEnvParams = useStudyEnvParamsFromPath()
   const studyShortCode = studyEnvParams.studyShortcode
   if (!studyShortCode) {
