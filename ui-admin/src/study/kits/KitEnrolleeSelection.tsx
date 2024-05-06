@@ -84,13 +84,14 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const numSelected = enrolleesSelected.length
   const enableActionButtons = numSelected > 0
 
-  const requiredSurveys = currentEnv.configuredSurveys
-    .filter(studyEnvSurvey => studyEnvSurvey.survey.required)
-  const hasCompletedAllRequiredSurveys = (enrollee: Enrollee) => {
+  const requiredResearchSurveys = currentEnv.configuredSurveys
+    .filter(studyEnvSurvey => studyEnvSurvey.survey.required && studyEnvSurvey.survey.surveyType === 'RESEARCH')
+  const hasCompletedAllRequiredResearchSurveys = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
       task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
-    ).length === requiredSurveys.length
+    ).length  === requiredResearchSurveys.length
   }
+
   const optionalSurveysCompleted = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
       task => !task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
@@ -136,7 +137,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   }, {
     header: 'Required surveys complete',
     id: 'requiredSurveysComplete',
-    accessorFn: enrollee => hasCompletedAllRequiredSurveys(enrollee),
+    accessorFn: enrollee => hasCompletedAllRequiredResearchSurveys(enrollee),
     meta: {
       columnType: 'boolean',
       filterOptions: [
