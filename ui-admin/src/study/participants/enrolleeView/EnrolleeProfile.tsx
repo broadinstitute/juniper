@@ -18,7 +18,14 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
-import { Card, CardBody, CardHeader, CardRow, CardTitle, CardValueRow } from '../../../components/Card'
+import {
+  InfoCard,
+  InfoCardBody,
+  InfoCardHeader,
+  InfoCardRow,
+  InfoCardTitle,
+  InfoCardValue
+} from '../../../components/InfoCard'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -60,9 +67,9 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   }
 
   return <div>
-    <Card>
-      <CardHeader>
-        <CardTitle title={editMode ? 'Edit Profile' : 'Profile'}/>
+    <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={editMode ? 'Edit Profile' : 'Profile'}/>
         {!editMode && <button className="mx-2 btn btn-light text-primary" onClick={() => setEditMode(true)}>
           <FontAwesomeIcon icon={faPencil} className={'me-2'}/>
           Edit
@@ -74,13 +81,13 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
           </button>
           <button className="btn btn-outline-primary" onClick={() => setEditMode(false)}>Cancel</button>
         </div>}
-      </CardHeader>
-      <CardBody>
+      </InfoCardHeader>
+      <InfoCardBody>
         {editMode
           ? <EditableProfile profile={editedProfile} setProfile={onProfileUpdate}/>
           : <ReadOnlyProfile profile={enrollee.profile} supportedLanguages={supportedLanguages}/>}
-      </CardBody>
-    </Card>
+      </InfoCardBody>
+    </InfoCard>
 
     {
       showJustifyAndSaveModal && (
@@ -108,18 +115,18 @@ function ReadOnlyProfile(
   const mailingAddress = profile.mailingAddress
 
   return <>
-    <CardValueRow title={'Name'}
+    <InfoCardValue title={'Name'}
       values={[
                    `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
       ]}/>
-    <CardValueRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
+    <InfoCardValue title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
-    <CardValueRow title={'Email'} values={[profile.contactEmail]}/>
-    <CardValueRow title={'Phone'} values={[profile.phoneNumber]}/>
-    <CardValueRow title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
-    <CardValueRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
+    <InfoCardValue title={'Email'} values={[profile.contactEmail]}/>
+    <InfoCardValue title={'Phone'} values={[profile.phoneNumber]}/>
+    <InfoCardValue title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
+    <InfoCardValue title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
     { supportedLanguages.length > 0 &&
-        <CardValueRow title={'Preferred Language'} values={[supportedLanguages.find(lang =>
+        <InfoCardValue title={'Preferred Language'} values={[supportedLanguages.find(lang =>
           lang.languageCode === profile.preferredLanguage)?.languageName || '']}/>
     }
   </>
@@ -155,7 +162,7 @@ function EditableProfile(
   }
 
   return <>
-    <CardRow title={'Name'}>
+    <InfoCardRow title={'Name'}>
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
@@ -168,8 +175,8 @@ function EditableProfile(
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
-    </CardRow>
-    <CardRow title={'Birthdate'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Birthdate'}>
       <div className='row'>
         <div className="col">
           <input className="form-control" type="date"
@@ -179,22 +186,22 @@ function EditableProfile(
         </div>
         <div className="col"/>
       </div>
-    </CardRow>
+    </InfoCardRow>
     <EditMailingAddressRow
       title={'Primary Address'} mailingAddress={profile.mailingAddress}
       onFieldChange={onFieldChange}
     />
-    <CardRow title={'Email'}>
+    <InfoCardRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
-    </CardRow>
-    <CardRow title={'Phone'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
         placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
-    </CardRow>
-    <CardRow title={'Notifications'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Notifications'}>
       <div className='row mt-2'>
         <div className="col-auto">
           <div className="form-check">
@@ -218,7 +225,7 @@ function EditableProfile(
           </div>
         </div>
       </div>
-    </CardRow>
+    </InfoCardRow>
   </>
 }
 
@@ -251,7 +258,7 @@ export function ReadOnlyMailingAddress(
 
     return outPieces.join(' ').trim()
   }
-  return <CardValueRow title={title} values={[
+  return <InfoCardValue title={title} values={[
     mailingAddress.street1 || '',
     mailingAddress.street2 || '',
     createCityStatePostalRow(),
@@ -275,9 +282,9 @@ function EditMailingAddressRow(
     onFieldChange('mailingAddress', editableMailingAddress)
   }, [editableMailingAddress])
 
-  return <CardRow title={title}>
+  return <InfoCardRow title={title}>
     <EditMailingAddress
       mailingAddress={editableMailingAddress}
       setMailingAddress={setEditableMailingAddress}/>
-  </CardRow>
+  </InfoCardRow>
 }

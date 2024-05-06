@@ -4,15 +4,16 @@ import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
 import { dateToDefaultString } from '@juniper/ui-core'
 import KitRequests from '../KitRequests'
-import { Card, CardBody, CardHeader, CardTitle, CardValueRow } from '../../../components/Card'
+import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardTitle, InfoCardValue } from '../../../components/InfoCard'
 import { useLoadingEffect } from '../../../api/api-utils'
+import LoadingSpinner from '../../../util/LoadingSpinner'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
         {enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const [relations, setRelations] = React.useState<EnrolleeRelation[]>([])
 
-  useLoadingEffect(async () => {
+  const { isLoading } = useLoadingEffect(async () => {
     const relations = await Api.findRelationsByTargetShortcode(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
@@ -21,44 +22,48 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     setRelations(relations)
   })
 
+  if (isLoading) {
+    return <LoadingSpinner/>
+  }
+
   return <div>
-    <Card>
-      <CardHeader>
-        <CardTitle title={'Overview'}/>
-      </CardHeader>
-      <CardBody>
-        <CardValueRow
+    <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={'Overview'}/>
+      </InfoCardHeader>
+      <InfoCardBody>
+        <InfoCardValue
           title={'Name'}
           values={[formatName(enrollee.profile)]}
         />
-        <CardValueRow
+        <InfoCardValue
           title={'Birthdate'}
           values={[dateToDefaultString(enrollee.profile.birthDate) || '']}
         />
-      </CardBody>
-    </Card>
+      </InfoCardBody>
+    </InfoCard>
 
     {
       relations
         .filter(relation => relation.relationshipType === 'PROXY')
         .map(relation => {
-          return <Card>
-            <CardHeader>
-              <CardTitle title={'Proxy'}/>
-            </CardHeader>
-            <CardBody>
-              <CardValueRow
+          return <InfoCard>
+            <InfoCardHeader>
+              <InfoCardTitle title={'Proxy'}/>
+            </InfoCardHeader>
+            <InfoCardBody>
+              <InfoCardValue
                 title={'Name'}
                 values={
                   [formatName(relation.enrollee.profile)]
                 }
               />
-              <CardValueRow
+              <InfoCardValue
                 title={'Contact Email'}
                 values={[relation.enrollee?.profile?.contactEmail || '']}
               />
-            </CardBody>
-          </Card>
+            </InfoCardBody>
+          </InfoCard>
         })}
 
 
