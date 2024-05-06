@@ -6,7 +6,7 @@ import ProvideFullTestUserContext from '../test-utils/ProvideFullTestUserContext
 import { ParticipantProfile } from './ParticipantProfile'
 import userEvent from '@testing-library/user-event'
 import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
-import { useLocation } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 const jsalkProfile: Profile = {
   id: '1234',
@@ -48,18 +48,12 @@ const sallyProfile: Profile = {
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useLocation: jest.fn()
+  useParams: jest.fn()
 }))
 
 
 test('renders jsalk profile', async () => {
-  asMockedFn(useLocation).mockReturnValue({
-    state: {},
-    key: 'test',
-    hash: '',
-    pathname: '',
-    search: ''
-  })
+  asMockedFn(useParams).mockReturnValue({})
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const { RoutedComponent } = setupRouterTest(
@@ -85,13 +79,8 @@ test('renders jsalk profile', async () => {
 })
 
 test('renders empty profile', async () => {
-  asMockedFn(useLocation).mockReturnValue({
-    state: {},
-    key: 'test',
-    hash: '',
-    pathname: '',
-    search: ''
-  })
+  asMockedFn(useParams).mockReturnValue({})
+
   jest.spyOn(Api, 'findProfile').mockResolvedValue({})
 
 
@@ -114,13 +103,8 @@ test('renders empty profile', async () => {
 })
 
 test('opens expected modals', async () => {
-  asMockedFn(useLocation).mockReturnValue({
-    state: {},
-    key: 'test',
-    hash: '',
-    pathname: '',
-    search: ''
-  })
+  asMockedFn(useParams).mockReturnValue({})
+
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
 
@@ -183,13 +167,8 @@ test('opens expected modals', async () => {
 })
 
 test('updates name properly', async () => {
-  asMockedFn(useLocation).mockReturnValue({
-    state: {},
-    key: 'test',
-    hash: '',
-    pathname: '',
-    search: ''
-  })
+  asMockedFn(useParams).mockReturnValue({})
+
   jest.spyOn(Api, 'findProfile').mockResolvedValue(jsalkProfile)
 
   const updatedProfile: Profile = {
@@ -240,12 +219,8 @@ test('updates name properly', async () => {
 })
 
 test('shows correct profile in proxied environment', async () => {
-  asMockedFn(useLocation).mockReturnValue({
-    state: { ppUserId: 'sallyUser' },
-    key: 'test',
-    hash: '',
-    pathname: '',
-    search: ''
+  asMockedFn(useParams).mockReturnValue({
+    ppUserId: 'sallyUser'
   })
 
   const ppusers: PortalParticipantUser[] = [
