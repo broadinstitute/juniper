@@ -48,11 +48,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={adminTasksPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Tasks</NavLink>
         </li>
-        <li>
+        <li className="mb-2">
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
-        <li>
+        <li className="mb-2">
           <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
         </li>
