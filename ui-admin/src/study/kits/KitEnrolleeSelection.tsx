@@ -89,7 +89,7 @@ export default function KitEnrolleeSelection({ studyEnvContext }: { studyEnvCont
   const hasCompletedAllRequiredResearchSurveys = (enrollee: Enrollee) => {
     return enrollee.participantTasks.filter(
       task => task.blocksHub && task.status === 'COMPLETE' && task.taskType === 'SURVEY'
-    ).length  === requiredResearchSurveys.length
+    ).length === requiredResearchSurveys.length
   }
 
   const optionalSurveysCompleted = (enrollee: Enrollee) => {
