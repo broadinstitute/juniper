@@ -53,7 +53,7 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
-        {isSuperuser() && <li>
+        {isSuperuser() && <li className="mb-2">
           <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
         </li>}
