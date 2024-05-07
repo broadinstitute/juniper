@@ -8,6 +8,7 @@ import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import org.junit.jupiter.api.Assertions;
@@ -61,5 +62,32 @@ public class EnrolleeServiceTests extends BaseSpringBootTest {
             enrolleeService.delete(enrolleeBundle.enrollee().getId(), CascadeProperty.EMPTY_SET);
         });
         assertThat(enrolleeService.find(enrolleeBundle.enrollee().getId()).isPresent(), equalTo(true));
+    }
+
+    @Test
+    @Transactional
+    public void testFindByShortcodeAndStudyEnv(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle1 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        StudyEnvironment studyEnv1 = bundle1.getStudyEnv();
+        Study study = bundle1.getStudy();
+        PortalEnvironment portalEnv1 = bundle1.getPortalEnv();
+
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+
+
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnv1, studyEnv1);
+
+        Enrollee foundEnrollee = enrolleeService
+                .findByShortcodeAndStudyEnv(enrolleeBundle.enrollee().getShortcode(), study.getShortcode(), EnvironmentName.sandbox)
+                .orElseThrow();
+        assertThat(foundEnrollee.getId(), equalTo(enrolleeBundle.enrollee().getId()));
+
+        Assertions.assertFalse(enrolleeService
+                .findByShortcodeAndStudyEnv(enrolleeBundle.enrollee().getShortcode(), study.getShortcode(), EnvironmentName.live)
+                .isPresent());
+
+        Assertions.assertFalse(enrolleeService
+                .findByShortcodeAndStudyEnv(enrolleeBundle.enrollee().getShortcode(), bundle2.getStudy().getShortcode(), EnvironmentName.sandbox)
+                .isPresent());
     }
 }

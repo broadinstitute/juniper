@@ -18,14 +18,7 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
-import {
-  InfoCard,
-  InfoCardBody,
-  InfoCardHeader,
-  InfoCardRow,
-  InfoCardTitle,
-  InfoCardValue
-} from '../../../components/InfoCard'
+import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardRow, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side

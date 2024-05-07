@@ -30,12 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -299,6 +294,19 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName)
                 .orElseThrow(() -> new NotFoundException("Study environment %s %s not found".formatted(studyShortcode, envName)));
         return findByParticipantUserIdAndStudyEnvId(participantUserId, studyEnv.getId());
+    }
+
+    public Optional<Enrollee> findByShortcodeAndStudyEnv(String enrolleeShortcode, String studyShortcode, EnvironmentName envName) {
+        Optional<StudyEnvironment> studyEnvironment =
+                studyEnvironmentService
+                        .findByStudy(studyShortcode, envName);
+
+        return studyEnvironment.flatMap(
+                environment -> {
+                    return findOneByShortcode(enrolleeShortcode)
+                            .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(environment.getId()));
+                });
+
     }
 
     public enum AllowedCascades implements CascadeProperty {

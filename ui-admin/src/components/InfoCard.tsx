@@ -4,6 +4,47 @@ import { isEmpty } from 'lodash'
 
 /**
  * Stylized card component for displaying read-only or editable data.
+ * The components in this file can/should be nested similarly to the
+ * React modal component.
+ *
+ * Example usage:
+ * ```tsx
+ * <InfoCard>
+ *   <InfoCardHeader>
+ *     <InfoCardTitle title={'Basic Information'}/>
+ *   </InfoCardHeader>
+ *   <InfoCardBody>
+ *     <InfoCardValue
+ *       title={'Name'}
+ *       values={[formatName(enrollee.profile)]}
+ *     />
+ *     <InfoCardValue
+ *       title={'Birthdate'}
+ *       values={[dateToDefaultString(enrollee.profile.birthDate) || '']}
+ *     />
+ *   </InfoCardBody>
+ * </InfoCard>
+ * ```
+ *
+ * If you want to customize the way a row looks, you can use the `InfoCardRow` component
+ * directly. For example:
+ * ```tsx
+ * <InfoCard>
+ *   <InfoCardHeader>
+ *     <InfoCardTitle title={'Basic Information'}/>
+ *   </InfoCardHeader>
+ *   <InfoCardBody>
+ *     <InfoCardValue
+ *       title={'Name'}
+ *       values={[formatName(enrollee.profile)]}
+ *     />
+ *     <InfoCardRow title={'Birthdate'}>
+ *         <p>My custom birthday row:</p>
+ *         <p>{dateToDefaultString(enrollee.profile.birthDate) || ''}</p>
+ *     <InfoCardRow/>
+ *   </InfoCardBody>
+ * </InfoCard>
+ * ```
  */
 export function InfoCard({ children }: { children: React.ReactNode }) {
   return <div className="card w-75 border shadow-sm mb-3">

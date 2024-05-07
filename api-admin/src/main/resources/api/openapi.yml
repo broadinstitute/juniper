@@ -756,7 +756,7 @@ paths:
     get:
       summary: Finds all of the relations that the given enrollee is a target of. Includes the full enrollee objects.
       tags: [ enrolleeRelation ]
-      operationId: findRelationsByTargetIdWithEnrollees
+      operationId: findRelationsForTargetEnrollee
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }

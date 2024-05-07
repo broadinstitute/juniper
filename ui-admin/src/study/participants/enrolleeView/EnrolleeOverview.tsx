@@ -13,7 +13,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
         {enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const [relations, setRelations] = React.useState<EnrolleeRelation[]>([])
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading: isLoadingRelations } = useLoadingEffect(async () => {
     const relations = await Api.findRelationsByTargetShortcode(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
@@ -22,14 +22,14 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     setRelations(relations)
   })
 
-  if (isLoading) {
+  if (isLoadingRelations) {
     return <LoadingSpinner/>
   }
 
   return <div>
     <InfoCard>
       <InfoCardHeader>
-        <InfoCardTitle title={'Overview'}/>
+        <InfoCardTitle title={'Basic Information'}/>
       </InfoCardHeader>
       <InfoCardBody>
         <InfoCardValue

@@ -5,7 +5,6 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -31,25 +30,18 @@ public class EnrolleeRelationExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public List<EnrolleeRelation> findRelationsByTargetIdWithEnrollees(
+  public List<EnrolleeRelation> findRelationsForTargetEnrollee(
+      AdminUser operator,
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
-      AdminUser operator,
       String enrolleeShortcode) {
     authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
 
-    StudyEnvironment studyEnvironment =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, environmentName)
-            .orElseThrow(() -> new NotFoundException("Study environment not found"));
-
-    Enrollee found =
+    Enrollee enrollee =
         enrolleeService
-            .findOneByShortcode(enrolleeShortcode)
-            .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(studyEnvironment.getId()))
+            .findByShortcodeAndStudyEnv(enrolleeShortcode, studyShortcode, environmentName)
             .orElseThrow(() -> new NotFoundException("Enrollee not found"));
-
-    return enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(found.getId());
+    return enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId());
   }
 }

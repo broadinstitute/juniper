@@ -208,7 +208,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
               </li>
             </ul>
           </div>
-          <div className="participantTabContent flex-grow-1 bg-white p-3">
+          <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
