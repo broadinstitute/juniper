@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Getter @Setter @SuperBuilder
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 public class Import extends BaseEntity {
     private UUID responsibleUserId;

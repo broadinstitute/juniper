@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.UUID;
@@ -39,9 +40,42 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String portalShortcode, String studyShortcode, String envName) {
+  public ResponseEntity<Void> deleteItem(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      UUID importId,
+      UUID importItemId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(enrolleeImportExtService.list(portalShortcode, operator));
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    enrolleeImportExtService.deleteImportItem(
+        portalShortcode, studyShortcode, environmentName, importId, importItemId, operator);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Object> getAll(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        enrolleeImportExtService.list(
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName),
+            operator));
+  }
+
+  @Override
+  public ResponseEntity<Object> get(
+      String portalShortcode, String studyShortcode, String envName, UUID importId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        enrolleeImportExtService.get(
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName),
+            operator,
+            importId));
   }
 
   @Override
@@ -49,6 +83,10 @@ public class DataImportController implements DataImportApi {
       String portalShortcode, String studyShortcode, String envName, MultipartFile importFile) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    ImportFileFormat fileFormat = ImportFileFormat.TSV;
+    if (importFile.getOriginalFilename().toLowerCase().contains(".csv")) {
+      fileFormat = ImportFileFormat.CSV;
+    }
     try {
       return ResponseEntity.ok(
           enrolleeImportExtService.importData(
@@ -56,7 +94,8 @@ public class DataImportController implements DataImportApi {
               studyShortcode,
               environmentName,
               importFile.getInputStream(),
-              operator));
+              operator,
+              fileFormat));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read import data");
     }
