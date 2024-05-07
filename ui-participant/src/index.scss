@@ -182,3 +182,21 @@ a {
   display: inline-flex;
   justify-content: center;
 }
+
+@include media-breakpoint-down(sm) {
+  .participant-selector {
+    width: 100%;
+  }
+  .participant-selector-dropdown {
+    width: 98%;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .participant-selector {
+    width: 300px;
+  }
+  .participant-selector-dropdown {
+    width: 300px;
+  }
+}

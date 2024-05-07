@@ -3,16 +3,16 @@ import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
 import PortalProvider from '../providers/PortalProvider'
-import ActiveUserProvider, { useActiveUser } from '../providers/ActiveUserProvider'
+import ActiveUserProvider from '../providers/ActiveUserProvider'
 
 
 type ProvideTestUserProps = {
   profile?: Profile,
-  ppUser?: PortalParticipantUser,
+  ppUsers?: PortalParticipantUser[],
   user?: ParticipantUser,
   portal?: Portal,
   enrollees?: Enrollee[],
-  relations?: EnrolleeRelation[]
+  relations?: EnrolleeRelation[],
   children: React.ReactNode
 }
 /**
@@ -83,7 +83,7 @@ export default function ProvideFullTestUserContext(
 
 const _ProvideTestUser = ({
   profile,
-  ppUser,
+  ppUsers,
   user,
   enrollees = [],
   relations = [],
@@ -92,29 +92,29 @@ const _ProvideTestUser = ({
   const {
     loginUserInternal
   } = useUser()
-  const {
-    setActiveUser
-  } = useActiveUser()
   useEffect(() => {
-    if (!ppUser) {
-      ppUser = {
-        id: 'testppuserid',
+    if (!ppUsers) {
+      ppUsers = [{
+        id: 'testppuserid0',
         profile: {},
-        profileId: '',
+        profileId: profile?.id || 'testppuserprofileid0',
         participantUserId: ''
+      }]
+    }
+
+    ppUsers.forEach((ppUser, idx) => {
+      if (!ppUser.id) {
+        ppUser.id = `testppuserid${idx}`
       }
-    }
-    if (!ppUser.id) {
-      ppUser.id = 'testppuserid'
-    }
-    if (!ppUser.profileId) {
-      ppUser.profileId = 'testppuserprofileid'
-    }
+      if (!ppUser.profileId) {
+        ppUser.profileId = profile?.id || `testppuserprofileid${idx}`
+      }
+    })
 
     if (profile && (!enrollees || enrollees.length === 0)) {
       enrollees = [{
         id: 'testenrolleeid',
-        profileId: ppUser.profileId,
+        profileId: profile?.id || ppUsers[0].profileId,
         subject: true,
         consented: true,
         profile,
@@ -130,28 +130,26 @@ const _ProvideTestUser = ({
       }]
     } else if (profile) {
       enrollees.forEach(enrollee => {
-        enrollee.profileId = ppUser?.profileId || 'testppuserprofileid'
-        enrollee.profile = profile
+        if (!enrollee.profileId) {
+          enrollee.profileId = profile.id || (ppUsers || [])[0]?.profileId || 'testppuserprofileid'
+        }
+        if (!enrollee.profile) {
+          enrollee.profile = profile
+        }
       })
     }
 
     loginUserInternal({
       profile: profile || {},
-      ppUsers: [ppUser || {
-        id: 'testppuserid',
-        profile: {},
-        profileId: ''
-      }],
+      ppUsers,
       user: user || {
         id: '',
         username: '',
         token: ''
       },
-      enrollees: enrollees || [],
-      relations: relations || []
+      enrollees,
+      relations
     })
-
-    setActiveUser(ppUser.id)
   }, [])
 
   return <>
