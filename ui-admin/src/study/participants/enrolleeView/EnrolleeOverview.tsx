@@ -22,10 +22,6 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     setRelations(relations)
   })
 
-  if (isLoadingRelations) {
-    return <LoadingSpinner/>
-  }
-
   return <div>
     <InfoCard>
       <InfoCardHeader>
@@ -43,6 +39,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
       </InfoCardBody>
     </InfoCard>
 
+    {isLoadingRelations && <LoadingSpinner/>}
     {
       relations
         .filter(relation => relation.relationshipType === 'PROXY')
