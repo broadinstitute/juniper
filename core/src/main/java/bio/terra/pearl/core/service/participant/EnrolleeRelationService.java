@@ -34,12 +34,20 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return filterValid(dao.findByEnrolleeIdAndRelationshipType(enrolleeId, relationshipType));
     }
 
+    public List<EnrolleeRelation> findByTargetEnrolleeIdAndRelationshipType(UUID enrolleeId, RelationshipType relationshipType) {
+        return filterValid(dao.findByTargetEnrolleeIdAndRelationshipType(enrolleeId, relationshipType));
+    }
+
     public List<EnrolleeRelation> findByEnrolleeIdsAndRelationType(List<UUID> enrolleeIds, RelationshipType relationshipType) {
         return filterValid(dao.findByEnrolleeIdsAndRelationshipType(enrolleeIds, relationshipType));
     }
 
     public List<EnrolleeRelation> findByTargetEnrolleeId(UUID enrolleeId) {
         return filterValid(dao.findByTargetEnrolleeId(enrolleeId));
+    }
+
+    public List<EnrolleeRelation> findAllByEnrolleeId(UUID enrolleeId) {
+        return filterValid(dao.findAllByEnrolleeId(enrolleeId));
     }
 
     public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
@@ -89,20 +97,20 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     }
 
     /**
-     * This method returns a list of enrollees that are exclusively proxied by the given enrollee.
+     * This method returns a list of enrollees that are proxies only for this target user.
      * An enrollee is exclusively proxied if it is only proxied by the given enrollee and no other enrollees.
-     * @param enrolleeId the id of the enrollee to find exclusive proxied enrollees for
+     * @param targetEnrolleeId the id of the target enrollee
      * @return a list of enrollees that are exclusively proxied by the given enrollee
      * */
-    public List<Enrollee> findExclusiveProxiedEnrollees(UUID enrolleeId) {
-        List<EnrolleeRelation> enrolleeRelations = dao.findByEnrolleeIdAndRelationshipType(enrolleeId, RelationshipType.PROXY);
-        List<Enrollee> exclusiveGovernedEnrollees = new ArrayList<>();
+    public List<Enrollee> findExclusiveProxiesForTargetEnrollee(UUID targetEnrolleeId) {
+        List<EnrolleeRelation> enrolleeRelations = dao.findByTargetEnrolleeIdAndRelationshipType(targetEnrolleeId, RelationshipType.PROXY);
+        List<Enrollee> exclusiveProxies = new ArrayList<>();
         for (EnrolleeRelation enrolleeRelation : enrolleeRelations) {
-            if (findByTargetEnrolleeId(enrolleeRelation.getTargetEnrolleeId()).size() == 1) {
-                enrolleeService.find(enrolleeRelation.getTargetEnrolleeId()).ifPresent(exclusiveGovernedEnrollees::add);
+            if (findAllByEnrolleeId(enrolleeRelation.getEnrolleeId()).size() == 1) {
+                enrolleeService.find(enrolleeRelation.getEnrolleeId()).ifPresent(exclusiveProxies::add);
             }
         }
-        return exclusiveGovernedEnrollees;
+        return exclusiveProxies;
     }
 
     public List<EnrolleeRelation> filterValid(List<EnrolleeRelation> enrolleeRelations) {
