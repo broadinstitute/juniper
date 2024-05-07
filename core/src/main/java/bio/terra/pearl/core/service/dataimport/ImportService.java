@@ -53,10 +53,8 @@ public class ImportService extends CrudService<Import, ImportDao> {
     @Transactional
     public void deleteEnrolleesByImportId(UUID id) {
         Import dataImport = dao.find(id).orElseThrow(() -> new NotFoundException("Import not found "));
-        if (dataImport.getImportItems().isEmpty()) {
-            //try to load
-            importItemService.attachImportItems(dataImport);
-        }
+        //try to load
+        importItemService.attachImportItems(dataImport);
         dataImport.getImportItems().forEach(importItem -> {
             if (importItem.getCreatedEnrolleeId() != null) {
                 enrolleeService.delete(importItem.getCreatedEnrolleeId(), Set.of(EnrolleeService.AllowedCascades.PARTICIPANT_USER));
