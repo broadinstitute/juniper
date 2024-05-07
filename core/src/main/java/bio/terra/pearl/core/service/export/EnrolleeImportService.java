@@ -14,6 +14,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
@@ -50,14 +51,20 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class EnrolleeImportService {
-    /**
-     * for now, we only support importing from a specific style of export.
-     */
-    ExportOptions IMPORT_OPTIONS = ExportOptions
+
+    ExportOptions IMPORT_OPTIONS_TSV = ExportOptions
             .builder()
             .stableIdsForOptions(true)
             .onlyIncludeMostRecent(true)
             .fileFormat(ExportFileFormat.TSV)
+            .limit(null)
+            .build();
+
+    ExportOptions IMPORT_OPTIONS_CSV = ExportOptions
+            .builder()
+            .stableIdsForOptions(true)
+            .onlyIncludeMostRecent(true)
+            .fileFormat(ExportFileFormat.CSV)
             .limit(null)
             .build();
 
@@ -70,6 +77,8 @@ public class EnrolleeImportService {
     private final PortalService portalService;
     private final ImportService importService;
     private final ImportItemService importItemService;
+    private final char CSV_DELIMITER = ',';
+    private final char TSV_DELIMITER = '\t';
 
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
@@ -90,7 +99,8 @@ public class EnrolleeImportService {
     /**
      * imports the enrollees serialized in the inputstream to the given environment
      */
-    public Import importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in, UUID adminId) {
+    public Import importEnrollees(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, InputStream in,
+                                  UUID adminId, ImportFileFormat fileFormat) {
         Import dataImport = Import.builder()
                 .responsibleUserId(adminId)
                 .studyEnvironmentId(studyEnv.getId())
@@ -102,12 +112,17 @@ public class EnrolleeImportService {
                 .build();
         dataImport = importService.create(dataImport);
         log.info("Started Import ID: {}", dataImport.getId());
-        List<Map<String, String>> enrolleeMaps = generateImportMaps(in);
+
+        ExportOptions exportOptions = IMPORT_OPTIONS_TSV;
+        if (ImportFileFormat.CSV.equals(fileFormat)) {
+            exportOptions = IMPORT_OPTIONS_CSV;
+        }
+        List<Map<String, String>> enrolleeMaps = generateImportMaps(in, fileFormat);
         for (Map<String, String> enrolleeMap : enrolleeMaps) {
             Enrollee enrollee = null;
             ImportItem importItem;
             try {
-                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, IMPORT_OPTIONS);
+                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions);
                 importItem = ImportItem.builder()
                         .createdEnrolleeId(enrollee.getId())
                         .importId(dataImport.getId())
@@ -139,10 +154,14 @@ public class EnrolleeImportService {
     /**
      * transforms a TSV import input stream into a List of string maps, one map per enrollee
      */
-    public List<Map<String, String>> generateImportMaps(InputStream in) {
+    public List<Map<String, String>> generateImportMaps(InputStream in, ImportFileFormat fileFormat) {
         List<Map<String, String>> importMaps = new ArrayList<>();
+        char separator = TSV_DELIMITER;
+        if (fileFormat == ImportFileFormat.CSV) {
+            separator = CSV_DELIMITER;
+        }
         CSVParser parser = new CSVParserBuilder()
-                .withSeparator('\t').build();
+                .withSeparator(separator).build();
         try (CSVReader csvReader = new CSVReaderBuilder(new InputStreamReader(in)).withCSVParser(parser).build()) {
             String[] headers = csvReader.readNext();
             String[] line;
