@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { dateToDefaultString, MailingAddress, useI18n } from '@juniper/ui-core'
 import Api, { Profile } from 'api/api'
 import { isEmpty } from 'lodash'
@@ -13,6 +13,8 @@ import {
   EditPhoneNumber
 } from './EditParticipantProfileModals'
 import { useActiveUser } from '../providers/ActiveUserProvider'
+import { Link, useParams } from 'react-router-dom'
+import { useUser } from '../providers/UserProvider'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -22,7 +24,18 @@ import { useActiveUser } from '../providers/ActiveUserProvider'
 export function ParticipantProfile() {
   const [showEditFieldModal, setShowEditFieldModal] = useState<keyof Profile | undefined>()
 
-  const { ppUser, profile, updateProfile } = useActiveUser()
+  const { ppUsers, updateProfile, enrollees, user } = useUser()
+  const { ppUser: activePpUser } = useActiveUser()
+
+  const { ppUserId } = useParams()
+
+  const ppUser = ppUserId
+    ? ppUsers.find(ppUser => ppUser.id === ppUserId)
+    : activePpUser
+
+  const profile = enrollees.find(enrollee => enrollee.profileId === ppUser?.profileId)?.profile
+
+  const hasProxiedUsers = ppUsers.some(ppUser => ppUser.participantUserId !== user?.id)
 
   const { i18n } = useI18n()
 
@@ -84,8 +97,18 @@ export function ParticipantProfile() {
     className="hub-dashboard-background flex-grow-1"
     style={{ background: 'var(--dashboard-background-color)' }} // todo: don't hardcode, see jn-902
   >
-    <div className="row mx-0 justify-content-center py-5">
+
+    <div className="row mx-0 justify-content-center py-4">
       <div className="col-12 col-sm-10 col-lg-6">
+        {
+          hasProxiedUsers &&
+            <div className={'m-2 mt-0'}>
+              <Link to='/hub/manageProfiles'>
+                <FontAwesomeIcon icon={faChevronLeft}/>
+                <span className="ms-2">{i18n('allProfiles')}</span>
+              </Link>
+            </div>
+        }
         {/*Readonly profile view*/}
         <ProfileCard title={i18n('profile')}>
           <ProfileRow

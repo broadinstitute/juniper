@@ -246,6 +246,28 @@ export type MailingListContact = {
   createdAt?: number
 }
 
+export type DataImport = {
+  id: string,
+  importType: string,
+  responsibleUserId: string,
+  studyEnvironmentId: string,
+  status?: string,
+  createdAt: number,
+  lastUpdatedAt?: number,
+  importItems?: DataImportItem[]
+}
+
+export type DataImportItem = {
+  id?: string,
+  importId: string,
+  createdParticipantUserId?: string,
+  createdEnrolleeId?: string,
+  status?: string,
+  message?: string,
+  detail?: string,
+  createdAt: number,
+  lastUpdatedAt?: number
+}
 
 export type PortalEnvironmentChange = {
   siteContentChange: VersionedEntityChange
@@ -515,7 +537,7 @@ export default {
   },
 
   async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
-    const params = queryString.stringify({ portalShortcode, language: selectedLanguage  })
+    const params = queryString.stringify({ portalShortcode, language: selectedLanguage })
     const url = `${API_ROOT}/i18n/v1?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
@@ -802,7 +824,7 @@ export default {
 
   async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<EnrolleeSearchFacet[]> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1078,16 +1100,16 @@ export default {
   },
 
   async findTrigger(portalShortcode: string, studyShortcode: string, envName: string, id: string):
-Promise<Trigger> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${id}`
-    const response = await fetch(url,  this.getGetInit())
+    Promise<Trigger> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${id}`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async findTriggersForStudyEnv(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<Trigger[]> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers`
-    const response = await fetch(url,  this.getGetInit())
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -1095,14 +1117,14 @@ Promise<Trigger> {
     portalShortcode, studyShortcode, envName, enrolleeShortcodes,
     customMessages, triggerId
   }: {
-      portalShortcode: string,
-      studyShortcode: string,
-      envName: string,
-      enrolleeShortcodes: string[],
-      customMessages: Record<string, string>,
-      triggerId: string
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    enrolleeShortcodes: string[],
+    customMessages: Record<string, string>,
+    triggerId: string
   }): Promise<Response> {
-    const url =`${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notifications/adhoc`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/notifications/adhoc`
     return await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -1170,6 +1192,45 @@ Promise<Trigger> {
 
   async deleteMailingListContact(portalShortcode: string, envName: string, contactId: string): Promise<Response> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/mailingList/${contactId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
+  },
+
+  async fetchDataImports(portalShortcode: string, studyShortcode: string, envName: string): Promise<DataImport[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/dataImport`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchDataImport(portalShortcode: string, studyShortcode: string,
+    envName: string, importId: string): Promise<DataImport> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/dataImport/${importId}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async uploadDataImport(file: File, portalShortCode: string, studyShortcode: string, envName: EnvironmentName):
+    Promise<DataImport> {
+    const url = `${baseStudyEnvUrl(portalShortCode, studyShortcode, envName)}/dataImport`
+    const headers = this.getInitHeaders()
+    delete headers['Content-Type'] // browsers will auto-add the correct type for the multipart file
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers,
+      body: formData
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async deleteDataImport(portalShortcode: string, studyShortcode: string, envName: string,
+    dataImportId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/dataImport/${dataImportId}`
+
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()

@@ -17,6 +17,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -68,6 +69,44 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
+    public void testImportEnrolleesCSV(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
+        AdminUser savedAdmin = adminUserService.create(adminUser);
+
+        String tsvString = """
+                column1,column2,column3,account.username
+                a,b,c,userName1
+                x,y,z,userName2             
+                """;
+
+        Import dataImport = enrolleeImportService.importEnrollees(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                new ByteArrayInputStream(tsvString.getBytes()),
+                savedAdmin.getId(), ImportFileFormat.CSV);
+
+        Import dataImportQueried = importService.find(dataImport.getId()).get();
+        assertThat(dataImport, is(dataImportQueried));
+        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
+        importItemService.attachImportItems(dataImport);
+        List<ImportItem> imports = dataImport.getImportItems();
+        assertThat(imports, hasSize(2));
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        assertThat(enrollee.isSubject(), equalTo(true));
+        assertThat(user.getUsername(), equalTo("userName1"));
+
+        user = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
+        enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        assertThat(enrollee.isSubject(), equalTo(true));
+        assertThat(user.getUsername(), equalTo("userName2"));
+    }
+
+    @Test
+    @Transactional
     public void testImportEnrollees(TestInfo info) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
@@ -75,17 +114,17 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         AdminUser savedAdmin = adminUserService.create(adminUser);
 
         String tsvString = """
-        column1\tcolumn2\tcolumn3\taccount.username
-        a\tb\tc\tuserName1
-        x\t\tz\tuserName2             
-        """;
+                column1\tcolumn2\tcolumn3\taccount.username
+                a\tb\tc\tuserName1
+                x\t\tz\tuserName2             
+                """;
 
         Import dataImport = enrolleeImportService.importEnrollees(
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
                 new ByteArrayInputStream(tsvString.getBytes()),
-                savedAdmin.getId());
+                savedAdmin.getId(), ImportFileFormat.TSV);
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
@@ -112,7 +151,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 a\tb\tc
                 x\t\tz             
                 """;
-        List<Map<String, String>> imports = enrolleeImportService.generateImportMaps(new ByteArrayInputStream(tsvString.getBytes()));
+        List<Map<String, String>> imports = enrolleeImportService.generateImportMaps(
+                new ByteArrayInputStream(tsvString.getBytes()), ImportFileFormat.TSV);
         assertThat(imports, hasSize(2));
         Map<String, String> expectedMap = Map.of("column1", "a", "column2", "b", "column3", "c");
         assertThat(imports.get(0), equalTo(expectedMap));
@@ -165,33 +205,33 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     }
 
     String TWO_QUESTION_SURVEY_CONTENT = """
-                {
-                	"title": "The Basics",
-                	"showQuestionNumbers": "off",
-                	"pages": [{
-                		"elements": [{
-                			"name": "importFirstName",
-                			"type": "text",
-                			"title": "First name",
-                			"isRequired": true
-                		}, {
-                			"name": "importFavColors",
-                			"type": "checkbox",
-                			"title": "What colors do you like?",
-                			"isRequired": true,
-                			"choices": [{
-                				"text": "red",
-                				"value": "red"
-                			}, {
-                				"text": "green",
-                				"value": "green"
-                			}, {
-                				"text": "blue",
-                				"value": "blue"
-                			}]
-                		}]
-                	}]
-                }""";
+            {
+            	"title": "The Basics",
+            	"showQuestionNumbers": "off",
+            	"pages": [{
+            		"elements": [{
+            			"name": "importFirstName",
+            			"type": "text",
+            			"title": "First name",
+            			"isRequired": true
+            		}, {
+            			"name": "importFavColors",
+            			"type": "checkbox",
+            			"title": "What colors do you like?",
+            			"isRequired": true,
+            			"choices": [{
+            				"text": "red",
+            				"value": "red"
+            			}, {
+            				"text": "green",
+            				"value": "green"
+            			}, {
+            				"text": "blue",
+            				"value": "blue"
+            			}]
+            		}]
+            	}]
+            }""";
 
     @Test
     @Transactional
@@ -210,7 +250,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 "importTest1.lastUpdatedAt", "2023-08-21 05:17AM",
                 "importTest1.importFirstName", "Jeff",
                 "importTest1.importFavColors", "[\"red\", \"blue\"]");
-        Enrollee enrollee =enrolleeImportService.importEnrollee(
+        Enrollee enrollee = enrolleeImportService.importEnrollee(
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),

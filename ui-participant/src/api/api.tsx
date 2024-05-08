@@ -83,18 +83,13 @@ export type EnrolleeRelation = {
   id: string
   relationshipType: string,
   targetEnrolleeId: string,
-  consentResponses: []
   createdAt: number
-  kitRequests: []
   lastUpdatedAt: number
-  participantTasks: ParticipantTask[]
   participantUserId: string
-  preEnrollmentResponseId?: string
-  studyEnvironmentId: string
-  surveyResponses: []
 }
 
 export type Profile = {
+  id?: string
   givenName?: string,
   familyName?: string,
   contactEmail?: string,

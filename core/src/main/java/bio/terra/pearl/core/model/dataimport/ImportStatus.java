@@ -4,7 +4,8 @@ import java.util.Optional;
 
 public enum ImportStatus {
     PROCESSING,
-    DONE;
+    DONE,
+    DELETED;
 
     public static ImportStatus valueOfCaseInsensitive(String value) {
         return ImportStatus.valueOf(value.toUpperCase());
