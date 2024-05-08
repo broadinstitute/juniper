@@ -87,6 +87,23 @@ export default defineConfig({
             : 'https://sandbox.ourhealth.localhost:3001'
       }
     },
+    {
+      name: 'HeartDemo-Chrome',
+      testDir: 'src/tests/studies/demo',
+      use: {
+        ...devices['Desktop Chrome'],
+        contextOptions: {
+          ignoreHTTPSErrors: true
+        },
+        ignoreHTTPSErrors: true,
+        // set OURHEALTH_PARTICIPANT_URL environment variable to override default URLs
+        baseURL: OURHEALTH_PARTICIPANT_URL
+          ? OURHEALTH_PARTICIPANT_URL
+          : CI
+            ? 'http://sandbox.demo.localhost:8081'
+            : 'https://sandbox.demo.localhost:3001'
+      }
+    },
     /* Running all tests exclude any study tests */
     {
       name: 'Chrome',
