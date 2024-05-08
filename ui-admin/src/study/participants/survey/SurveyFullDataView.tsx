@@ -8,7 +8,7 @@ import {
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
 } from '@juniper/ui-core'
-import Api, { Answer, ConsentForm, Survey } from 'api/api'
+import Api, { Answer, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
@@ -19,7 +19,7 @@ import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 type SurveyFullDataViewProps = {
   answers: Answer[],
-  survey: Survey | ConsentForm,
+  survey: Survey,
   resumeData?: string,
   userId?: string,
   studyEnvContext: StudyEnvContextT

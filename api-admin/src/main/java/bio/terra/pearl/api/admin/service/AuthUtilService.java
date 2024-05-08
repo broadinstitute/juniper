@@ -4,14 +4,12 @@ import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;
 import bio.terra.pearl.core.model.PortalAttached;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.admin.AdminUserService;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -35,7 +33,6 @@ public class AuthUtilService {
   private final PortalStudyService portalStudyService;
   private final EnrolleeService enrolleeService;
   private final SurveyService surveyService;
-  private final ConsentFormService consentFormService;
 
   public AuthUtilService(
       AdminUserService adminUserService,
@@ -43,15 +40,13 @@ public class AuthUtilService {
       PortalService portalService,
       PortalStudyService portalStudyService,
       EnrolleeService enrolleeService,
-      SurveyService surveyService,
-      ConsentFormService consentFormService) {
+      SurveyService surveyService) {
     this.adminUserService = adminUserService;
     this.bearerTokenFactory = bearerTokenFactory;
     this.portalService = portalService;
     this.portalStudyService = portalStudyService;
     this.enrolleeService = enrolleeService;
     this.surveyService = surveyService;
-    this.consentFormService = consentFormService;
   }
 
   /** gets the user from the request, throwing an exception if not present */
@@ -127,12 +122,6 @@ public class AuthUtilService {
   public Survey authSurveyToPortal(Portal portal, UUID surveyId) {
     Optional<Survey> surveyOpt = surveyService.find(surveyId);
     return verifyObjInPortal(portal, surveyOpt);
-  }
-
-  public ConsentForm authConsentFormToPortal(Portal portal, String stableId, int version) {
-    Optional<ConsentForm> consentOpt =
-        consentFormService.findByStableId(stableId, version, portal.getId());
-    return verifyObjInPortal(portal, consentOpt);
   }
 
   /** confirms the optional exists and contains an object attached to the given portal */

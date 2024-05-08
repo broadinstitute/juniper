@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
@@ -20,7 +19,6 @@ import java.util.stream.Stream;
 
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
-    private final ConsentResponseDao consentResponseDao;
     private final KitRequestDao kitRequestDao;
     private final KitTypeDao kitTypeDao;
     private final ParticipantTaskDao participantTaskDao;
@@ -30,7 +28,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     private final ParticipantNoteDao participantNoteDao;
 
     public EnrolleeDao(Jdbi jdbi,
-                       ConsentResponseDao consentResponseDao,
                        KitRequestDao kitRequestDao,
                        KitTypeDao kitTypeDao,
                        ParticipantTaskDao participantTaskDao,
@@ -39,7 +36,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                        SurveyResponseDao surveyResponseDao,
                        ParticipantNoteDao participantNoteDao) {
         super(jdbi);
-        this.consentResponseDao = consentResponseDao;
         this.kitRequestDao = kitRequestDao;
         this.kitTypeDao = kitTypeDao;
         this.participantTaskDao = participantTaskDao;

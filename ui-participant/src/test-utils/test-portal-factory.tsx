@@ -42,7 +42,6 @@ export const mockStudyEnv = (): StudyEnvironment => {
       password: 'password'
     },
     configuredSurveys: [],
-    configuredConsents: [],
     triggers: []
   }
 }

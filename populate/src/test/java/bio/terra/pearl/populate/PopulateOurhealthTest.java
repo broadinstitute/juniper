@@ -74,7 +74,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1, portalId).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
-        Assertions.assertEquals(4, jonasResponses.size());
+        Assertions.assertEquals(5, jonasResponses.size());
         SurveyResponse cardioHistoryResp = jonasResponses.stream()
                 .filter(response -> cardioHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();

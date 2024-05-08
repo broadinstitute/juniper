@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -37,8 +36,6 @@ public class Enrollee extends BaseEntity {
     private boolean consented;
     @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
-    @Builder.Default
-    private List<ConsentResponse> consentResponses = new ArrayList<>();
     @Builder.Default
     private List<ParticipantTask> participantTasks = new ArrayList<>();
     @Builder.Default

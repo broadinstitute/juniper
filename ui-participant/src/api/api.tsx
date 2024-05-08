@@ -1,13 +1,11 @@
 import {
   AddressValidationResult,
-  ConsentResponse,
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
@@ -17,8 +15,6 @@ import queryString from 'query-string'
 
 export type {
   Answer,
-  ConsentForm,
-  ConsentResponse,
   HtmlPage,
   HtmlSection,
   LocalSiteContent,
@@ -42,7 +38,6 @@ export type {
   Study,
   StudyEnvironment,
   StudyEnvironmentConfig,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
@@ -135,11 +130,6 @@ export type RegistrationResponse = {
   participantUser: ParticipantUser,
   portalParticipantUser: PortalParticipantUser,
   profile: Profile
-}
-
-export type ConsentWithResponses = {
-  studyEnvironmentConsent: StudyEnvironmentConsent,
-  consentResponses: ConsentResponse[]
 }
 
 export type SurveyWithResponse = {
@@ -389,30 +379,6 @@ export default {
       headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)
-  },
-
-  async fetchConsentAndResponses({ studyShortcode, stableId, version, enrolleeShortcode }: {
-    studyShortcode: string, enrolleeShortcode: string,
-    stableId: string, version: number
-  }): Promise<ConsentWithResponses> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
-      + `/consents/${stableId}/${version}`
-    const response = await fetch(url, { headers: this.getInitHeaders() })
-    // don't alert errors since we'll fall back to looking for a survey
-    return await this.processJsonResponse(response, { alertErrors: false })
-  },
-
-  async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response }: {
-    studyShortcode: string, stableId: string, version: number, response: ConsentResponse, enrolleeShortcode: string
-  }): Promise<HubResponse> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
-      + `/consents/${stableId}/${version}`
-    const result = await fetch(url, {
-      method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(response)
-    })
-    return await this.processJsonResponse(result)
   },
 
   async fetchSurveyAndResponse({ studyShortcode, stableId, version, enrolleeShortcode, taskId }: {

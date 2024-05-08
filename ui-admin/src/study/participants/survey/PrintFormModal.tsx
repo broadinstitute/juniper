@@ -6,7 +6,6 @@ import {
   makeSurveyJsData,
   waitForImages,
   Survey,
-  ConsentForm,
   configureModelForPrint
 } from '@juniper/ui-core'
 
@@ -17,7 +16,7 @@ import { Link } from 'react-router-dom'
 type DownloadFormViewProps = {
     answers: Answer[],
     resumeData?: string,
-    survey: Survey | ConsentForm
+    survey: Survey
 }
 
 

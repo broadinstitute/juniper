@@ -27,22 +27,12 @@ export default function FormHistoryModal({
   const selectId = useId()
 
   const { isLoading } = useLoadingEffect(async () => {
-    let result
-    if (isConsentForm) {
-      result = await Api.getConsentFormVersions(studyEnvContext.portal.shortcode, stableId)
-    } else {
-      result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
-    }
+    const result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
     setVersionList(result.sort((a, b) => b.version - a.version))
   }, [stableId])
 
   async function loadVersion(version: number) {
-    let result
-    if (isConsentForm) {
-      result = await Api.getConsentForm(studyEnvContext.portal.shortcode, stableId, version)
-    } else {
-      result = await Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version)
-    }
+    const result =  await Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version)
     setVisibleVersionPreviews([...visibleVersionPreviews, result])
   }
 

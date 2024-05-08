@@ -274,45 +274,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{envName}/studies/{studyShortcode}/enrollee/{enrolleeShortcode}/consents/{stableId}/{version}:
-    get:
-      summary: Gets a consent form and any existing responses for the signed-in user
-      tags: [ consentResponse ]
-      operationId: formAndResponses
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: false, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
-      responses:
-        '200':
-          description: consent form and past responses
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-    post:
-      summary: Posts a consent form response
-      tags: [ consentResponse ]
-      operationId: response
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: false, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
-      requestBody:
-        content:
-          application/json:
-            schema: { type: object }
-      responses:
-        '200':
-          description: consent form and past responses
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/tasks:
     get:
       summary: List the tasks available to the signed-in user of the given type, includes the survey for each task

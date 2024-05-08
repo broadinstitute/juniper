@@ -4,13 +4,11 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
-import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
 import bio.terra.pearl.core.model.study.Study;
@@ -21,9 +19,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -187,27 +183,6 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
         assertThat(tasks.get(0).getTargetStableId(), equalTo(autoAssignSurvey.getStableId()));
     }
 
-
-    @Test
-    @Transactional
-    public void testApplyChangesConsents(TestInfo info) throws Exception {
-        String testName = getTestName(info);
-        Portal portal = portalFactory.buildPersisted(testName);
-        Study study = studyFactory.buildPersisted(portal.getId(), testName);
-        StudyEnvironment irbEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.irb, study.getId(), testName);
-        StudyEnvironment liveEnv = studyEnvironmentFactory.buildPersisted(EnvironmentName.live, study.getId(), testName);
-
-        ConsentForm form = consentFormFactory.buildPersisted(testName, portal.getId());
-        consentFormFactory.addConsentToStudyEnv(irbEnv.getId(), form.getId());
-
-        diffAndApplyChanges(study.getShortcode(), portal.getId(), EnvironmentName.irb, EnvironmentName.live);
-
-        assertThat(studyEnvironmentConsentService.findByConsentForm(liveEnv.getId(), form.getId()).isPresent(), equalTo(true));
-
-        form = consentFormService.find(form.getId()).get();
-        assertThat(form.getPublishedVersion(), equalTo(1));
-    }
-
     private void diffAndApplyChanges(String studyShortcode, UUID portalId, EnvironmentName src, EnvironmentName dest) throws Exception {
         StudyEnvironmentChange changes = portalDiffService.diffStudyEnvs(studyShortcode, src, dest);
         StudyEnvironment loadedLiveEnv = portalDiffService.loadStudyEnvForProcessing(studyShortcode, dest);
@@ -225,15 +200,9 @@ public class StudyPublishingServiceTests extends BaseSpringBootTest {
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
-    private StudyEnvironmentConsentService studyEnvironmentConsentService;
-    @Autowired
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     @Autowired
     private SurveyService surveyService;
-    @Autowired
-    private ConsentFormFactory consentFormFactory;
-    @Autowired
-    private ConsentFormService consentFormService;
     @Autowired
     private SurveyFactory surveyFactory;
     @Autowired

@@ -1,12 +1,10 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -48,7 +46,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private SurveyResponseService surveyResponseService;
     private ParticipantTaskService participantTaskService;
     private StudyEnvironmentService studyEnvironmentService;
-    private ConsentResponseDao consentResponseDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private NotificationService notificationService;
     private DataChangeRecordService dataChangeRecordService;
@@ -69,7 +66,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy SurveyResponseService surveyResponseService,
                            ParticipantTaskService participantTaskService,
                            @Lazy StudyEnvironmentService studyEnvironmentService,
-                           ConsentResponseDao consentResponseDao,
                            PreEnrollmentResponseDao preEnrollmentResponseDao,
                            NotificationService notificationService,
                            @Lazy DataChangeRecordService dataChangeRecordService,
@@ -88,7 +84,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentService = studyEnvironmentService;
-        this.consentResponseDao = consentResponseDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.notificationService = notificationService;
         this.dataChangeRecordService = dataChangeRecordService;
@@ -139,7 +134,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
      * */
     public Enrollee loadForAdminView(Enrollee enrollee) {
         enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
-        enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
         if (enrollee.getPreEnrollmentResponseId() != null) {
             enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).orElseThrow());
         }
@@ -218,9 +212,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         participantTaskService.deleteByEnrolleeId(enrolleeId);
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
-        }
-        for (ConsentResponse consentResponse : consentResponseDao.findByEnrolleeId(enrolleeId)) {
-            consentResponseDao.delete(consentResponse.getId());
         }
         adminTaskService.deleteByEnrolleId(enrolleeId, null);
         participantNoteService.deleteByEnrollee(enrolleeId);

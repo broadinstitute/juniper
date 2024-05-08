@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "killConsents"
+      author: dbush
+      changes:
+        - dropColumn:
+            tableName: participant_task
+            columnName: consent_response_id
+        - dropTable:
+            tableName: study_environment_consent
+        - dropTable:
+            tableName: consent_response
+        - dropTable:
+            tableName: consent_form
