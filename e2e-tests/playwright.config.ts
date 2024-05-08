@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 import { config } from 'dotenv'
 
 const CI = !!process.env.CI
-const { SLOW_MO, OURHEALTH_PARTICIPANT_URL } = process.env
+const { SLOW_MO, OURHEALTH_PARTICIPANT_URL, HEARTDEMO_PARTICIPANT_URL } = process.env
 
 /**
  * Pass in `TEST_ENV` environment variable to read environment variables from .env.* file. Example: TEST_ENV=local
@@ -96,9 +96,9 @@ export default defineConfig({
           ignoreHTTPSErrors: true
         },
         ignoreHTTPSErrors: true,
-        // set OURHEALTH_PARTICIPANT_URL environment variable to override default URLs
-        baseURL: OURHEALTH_PARTICIPANT_URL
-          ? OURHEALTH_PARTICIPANT_URL
+        // set HEARTDEMO_PARTICIPANT_URL environment variable to override default URLs
+        baseURL: HEARTDEMO_PARTICIPANT_URL
+          ? HEARTDEMO_PARTICIPANT_URL
           : CI
             ? 'http://sandbox.demo.localhost:8081'
             : 'https://sandbox.demo.localhost:3001'
