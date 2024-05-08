@@ -1,8 +1,8 @@
 import { expect, Locator, Page } from '@playwright/test'
-import OurHealthPageBase from 'pages/ourhealth/ourhealth-page-base'
 import data from 'src/data/ourhealth-en.json'
+import DemoPageBase from 'pages/demo/demo-page-base'
 
-export  default  class HomeAboutUs extends OurHealthPageBase {
+export default class HomeAboutUs extends DemoPageBase {
   title = 'About Us | Juniper Demo'
 
   // Locators to find web elements
