@@ -20,12 +20,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
-import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
-import bio.terra.pearl.core.service.kit.pepper.PepperErrorResponse;
-import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -99,7 +94,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profile.getMailingAddress().setStreet1("123 Fake Street");
         profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
-        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any())).thenAnswer(invocation -> {
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenAnswer(invocation -> {
             KitRequest kitRequest = (KitRequest) invocation.getArguments()[2];
             throw new PepperApiException("Error from Pepper with unexpected format: boom",
                     PepperErrorResponse.builder()
@@ -132,7 +127,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .scanDate(sentDate)
                 .errorMessage(errorMessage)
                 .build();
-        when(mockPepperDSMClient.fetchKitStatus(kitRequest.getId())).thenReturn(pepperKit);
+        when(mockPepperDSMClient.fetchKitStatus(any(), kitRequest.getId())).thenReturn(pepperKit);
         when(mockEventService.publishKitStatusEvent(any(KitRequest.class),
                 any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenReturn(null);
 
@@ -326,9 +321,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getShortcode()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getShortcode(), any()))
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode(), any()))
                 .thenReturn(List.of(kitStatus2));
         when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class)))
                 .thenReturn(null);
@@ -398,7 +393,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
 
     @MockBean
-    private PepperDSMClient mockPepperDSMClient;
+    private StubPepperDSMClient mockPepperDSMClient;
     @MockBean
     private EventService mockEventService;
     @Autowired

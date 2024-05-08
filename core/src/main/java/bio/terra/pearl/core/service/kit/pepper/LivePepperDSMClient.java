@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -11,7 +12,6 @@ import jakarta.validation.ConstraintViolation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
@@ -35,6 +35,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
     private final Validator validator;
+    private final static String DEV_STUDY_REALM = "juniper-dev";
 
     public LivePepperDSMClient(PepperDSMConfig pepperDSMConfig,
                                WebClient.Builder webClientBuilder,
@@ -47,19 +48,19 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address)
     throws PepperApiException, PepperParseException {
-        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, enrollee, kitRequest, address));
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedPostRequest("shipKit", makeKitRequestBody(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, address));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
             throw new PepperParseException("Expected a single result from shipKit by ID (%s), got %d".formatted(
-                    kitRequest.getId(), response.getKits().length), response.getKits().toString(), response);
+                    kitRequest.getId(), response.getKits().length), Arrays.toString(response.getKits()), response);
         }
         return response.getKits()[0];
     }
 
     @Override
-    public PepperKit fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException {
+    public PepperKit fetchKitStatus(StudyEnvironmentConfig studyEnvironmentConfig, UUID kitRequestId) throws PepperApiException, PepperParseException {
         WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedGetRequest("kitstatus/juniperKit/%s" .formatted(kitRequestId));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         if (response.getKits().length != 1) {
@@ -70,17 +71,21 @@ public class LivePepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException {
-        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request = buildAuthedGetRequest("kitstatus/study/%s" .formatted(makePepperStudyName(studyShortcode)));
+    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig) throws PepperApiException, PepperParseException {
+        WebClient.RequestHeadersSpec<? extends WebClient.RequestHeadersSpec<?>> request =
+                buildAuthedGetRequest("kitstatus/study/%s" .formatted(getPepperStudyName(studyShortcode, studyEnvironmentConfig)));
         PepperKitStatusResponse response = retrieveAndDeserializeResponse(request, PepperKitStatusResponse.class);
         return Arrays.asList(response.getKits());
     }
 
-    private String makePepperStudyName(String studyShortcode) {
-        return "juniper-" + studyShortcode;
+    public static String getPepperStudyName(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig) {
+        if (studyEnvironmentConfig.isUseDevDsmRealm()) {
+            return DEV_STUDY_REALM;
+        }
+        return "juniper-%s".formatted(studyShortcode);
     }
 
-    private String makeKitRequestBody(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    private String makeKitRequestBody(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         PepperDSMKitRequest.JuniperKitRequest juniperKitRequest = PepperDSMKitRequest.JuniperKitRequest.builderWithAddress(address)
                 .juniperKitId(kitRequest.getId().toString())
                 .juniperParticipantId(enrollee.getShortcode())
@@ -89,7 +94,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
         PepperDSMKitRequest pepperDSMKitRequest = PepperDSMKitRequest.builder()
                 .juniperKitRequest(juniperKitRequest)
                 .kitType(kitRequest.getKitType().getName())
-                .juniperStudyId("juniper-%s".formatted(studyShortcode))
+                .juniperStudyId(getPepperStudyName(studyShortcode, studyEnvironmentConfig))
                 .build();
 
         try {
@@ -226,14 +231,11 @@ public class LivePepperDSMClient implements PepperDSMClient {
     @Getter
     @Setter
     public static class PepperDSMConfig {
-        @Accessors(fluent = true)
-        private boolean useLiveDsm = false;
         private String basePath;
         private String issuerClaim;
         private String secret;
 
         public PepperDSMConfig(Environment environment) {
-            this.useLiveDsm = environment.getProperty("env.dsm.useLiveDsm", Boolean.class, false);
             this.basePath = environment.getProperty("env.dsm.basePath");
             this.issuerClaim = environment.getProperty("env.dsm.issuerClaim");
             this.secret = environment.getProperty("env.dsm.secret");

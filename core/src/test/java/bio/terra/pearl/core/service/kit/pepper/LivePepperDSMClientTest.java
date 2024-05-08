@@ -5,6 +5,7 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
@@ -82,7 +83,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
 
         // Assert
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, act);
@@ -108,7 +109,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.BAD_REQUEST, unexpectedJsonBody);
 
         PepperApiException pepperApiException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address));
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address));
 
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getErrorResponse().getErrorMessage(), equalTo("unknown kit"));
@@ -136,7 +137,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class,
-                () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address)
+                () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address)
         );
         assertThat(pepperException.getMessage(), containsString(kitId));
         assertThat(pepperException.getMessage(), containsString(errorMessage));
@@ -154,7 +155,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
         mockPepperResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorResponseBody);
 
         // "Act"
-        Executable act = () -> client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        Executable act = () -> client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
 
         // Assert
         PepperApiException pepperException = assertThrows(PepperApiException.class, act);
@@ -179,7 +180,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(mockResponse));
 
-        PepperKit parsedResponse = client.sendKitRequest("testStudy", enrollee, kitRequest, address);
+        PepperKit parsedResponse = client.sendKitRequest("testStudy", new StudyEnvironmentConfig(), enrollee, kitRequest, address);
 
         assertThat(parsedResponse.getCurrentStatus(), equalTo(PepperKitStatus.CREATED.pepperString));
         verifyRequestForPath("/shipKit");
@@ -201,7 +202,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Act
         UUID kitId = UUID.randomUUID();
-        PepperKit fetchedKitStatus = client.fetchKitStatus(kitId);
+        PepperKit fetchedKitStatus = client.fetchKitStatus(new StudyEnvironmentConfig(), kitId);
 
         // Assert
         assertThat(fetchedKitStatus, equalTo(kitStatus));
@@ -229,7 +230,7 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Act
         String studyShortcode = "test_study";
-        Collection<PepperKit> fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode);
+        Collection<PepperKit> fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode, new StudyEnvironmentConfig());
 
         // Assert
         assertThat(fetchedKitStatuses.size(), equalTo(2));

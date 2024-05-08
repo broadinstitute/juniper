@@ -8,6 +8,8 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestInfo;
@@ -38,6 +40,8 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
     @Autowired
     private LivePepperDSMClient livePepperDSMClient;
+    @Autowired
+    private StudyEnvironmentConfigService studyEnvironmentConfigService;
 
     @Disabled("Avoid creating endless test data in dev DSM")
     @Transactional
@@ -57,8 +61,8 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .postalCode("02142")
                 .country("USA")
                 .build();
-
-        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        PepperKit sendKitResponse = livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
         assertThat(sendKitResponse.getCurrentStatus(), equalTo("Kit without label"));
     }
 
@@ -77,8 +81,10 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
                 .country("USA")
                 .build();
 
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+
         PepperApiException pepperApiException = assertThrows(PepperApiException.class, () -> {
-            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, enrollee, kitRequest, address);
+            livePepperDSMClient.sendKitRequest(STUDY_SHORTCODE, studyEnvironmentConfig, enrollee, kitRequest, address);
         });
         assertThat(pepperApiException.getMessage(), pepperApiException.getErrorResponse(), notNullValue());
         assertThat(pepperApiException.getMessage(), equalTo("UNKNOWN_KIT_TYPE"));
@@ -92,7 +98,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
 
         // "Act"
         Executable act = () -> {
-            livePepperDSMClient.fetchKitStatus(kitId);
+            livePepperDSMClient.fetchKitStatus(new StudyEnvironmentConfig(), kitId);
         };
 
         // Assert
@@ -111,7 +117,7 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
         String kitId = "09f5651b-f6e3-4489-a5e7-ffd10700a724";
 
         // Act
-        PepperKit status = livePepperDSMClient.fetchKitStatus(UUID.fromString(kitId));
+        PepperKit status = livePepperDSMClient.fetchKitStatus(new StudyEnvironmentConfig(),UUID.fromString(kitId));
 
         // Assert
         assertThat(status.getJuniperKitId(), equalTo(kitId));
@@ -121,9 +127,11 @@ public class LivePepperDSMClientIntegrationTest extends BaseSpringBootTest {
     @IntegrationTest
     public void testGetKitStatusesByStudy() throws Exception {
         // No arrange; assumes that DSM contains some kits to find
+        StudyEnvironmentConfig config = StudyEnvironmentConfig.builder()
+                .useDevDsmRealm(false).build();
 
         // Act
-        Collection<PepperKit> statuses = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE);
+        Collection<PepperKit> statuses = livePepperDSMClient.fetchKitStatusByStudy(STUDY_SHORTCODE, config);
 
         // Assert
         assertThat(statuses, not(statuses.isEmpty()));
