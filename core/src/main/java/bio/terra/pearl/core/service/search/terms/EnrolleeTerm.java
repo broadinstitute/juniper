@@ -5,42 +5,58 @@ import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
- * Represents a term that can be used to search for enrollees. This can be anything from a field on the enrollee's profile
- * to a derived field like age.
+ * TODO
  */
-public interface EnrolleeTerm {
-    /**
-     * Extract the term's value from the enrollee.
-     */
-    SearchValue extract(EnrolleeSearchContext enrollee);
+public class EnrolleeTerm implements SearchTerm {
 
-    /**
-     * Joins required to extract this term in a SQL search.
-     */
-    List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses();
+    private final String field;
 
-    /**
-     * Select clauses required to extract this term in a SQL search.
-     */
-    List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses();
+    public EnrolleeTerm(String field) {
+        if (!FIELDS.containsKey(field)) {
+            throw new IllegalArgumentException("Invalid field: " + field);
+        }
 
-    /**
-     * Required where conditions - for example, if the term is an answer field, the survey and question stable ids
-     * need to be checked before the term can be extracted.
-     */
-    Optional<Condition> requiredConditions();
+        this.field = field;
+    }
 
-    /**
-     * The actual term clause to be used in the SQL query. For example, `profile.given_name` or `?` if it needs to be
-     * bound and sanitized.
-     */
-    String termClause();
 
-    /**
-     * Bound objects to be used in the SQL query. For example, the value of the term if user inputted.
-     */
-    List<Object> boundObjects();
+    @Override
+    public SearchValue extract(EnrolleeSearchContext context) {
+        return SearchValue.ofNestedProperty(context.getEnrollee(), field, FIELDS.get(field));
+    }
+
+    @Override
+    public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
+        return List.of();
+    }
+
+    @Override
+    public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
+        return List.of();
+    }
+
+    @Override
+    public Optional<Condition> requiredConditions() {
+        return Optional.empty();
+    }
+
+    @Override
+    public String termClause() {
+        return "enrollee." + field;
+    }
+
+    @Override
+    public List<Object> boundObjects() {
+        return List.of();
+    }
+
+    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
+            Map.entry("shortcode", SearchValue.SearchValueType.STRING),
+            Map.entry("subject", SearchValue.SearchValueType.BOOLEAN),
+            Map.entry("consented", SearchValue.SearchValueType.BOOLEAN));
+
 }

@@ -16,7 +16,7 @@ import static org.jooq.impl.DSL.condition;
  * This term can be used to search for an answer to a question in a survey. Note that using the evaluate method on
  * this term requires a SQL call to the database per enrollee and as such could be slow for a large list of enrollees.
  */
-public class AnswerTerm implements EnrolleeTerm {
+public class AnswerTerm implements SearchTerm {
     private final String questionStableId;
     private final String surveyStableId;
     private final AnswerDao answerDao;

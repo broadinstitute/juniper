@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * Represents a search term that is based on user input, for example `John` in `{profile.givenName} = 'John'`.
  */
-public class UserInputTerm implements EnrolleeTerm {
+public class UserInputTerm implements SearchTerm {
 
     private final SearchValue searchValue;
 
