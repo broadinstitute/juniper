@@ -303,7 +303,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             }
             String stringVal = enrolleeMap.get(columnName);
 
-            if (!stringVal.isEmpty()) {
+            if (stringVal != null && !stringVal.isEmpty()) {
                 itemFormatter.importValueToBean(response, stringVal);
             }
         }
