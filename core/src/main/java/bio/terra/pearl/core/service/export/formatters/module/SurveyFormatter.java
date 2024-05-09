@@ -298,12 +298,14 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, 1);
             if (!enrolleeMap.containsKey(columnName)) {
-                //strip surveyName
+                //try stripping surveyName
                 columnName = stripSurveyPrefix(columnName);
             }
             String stringVal = enrolleeMap.get(columnName);
 
-            itemFormatter.importValueToBean(response, stringVal);
+            if (!stringVal.isEmpty()) {
+                itemFormatter.importValueToBean(response, stringVal);
+            }
         }
         return (response.getAnswers().isEmpty() ? null : response);
     }
