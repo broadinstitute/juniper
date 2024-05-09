@@ -17,3 +17,17 @@ export type AddressValidationResult = {
   hasInferredComponents?: boolean,
   vacant?: boolean
 }
+
+export type Profile = {
+  id?: string
+  givenName?: string,
+  familyName?: string,
+  contactEmail?: string,
+  doNotEmail?: boolean,
+  doNotEmailSolicit?: boolean,
+  mailingAddress?: MailingAddress,
+  phoneNumber?: string,
+  birthDate?: number[],
+  sexAtBirth?: string,
+  preferredLanguage?: string,
+}

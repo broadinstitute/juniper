@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ParticipantTask, Enrollee } from 'api/api'
+import { ParticipantTask } from 'api/api'
 
 import {
   ColumnDef,
@@ -10,7 +10,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { tableHeader } from 'util/tableUtils'
-import { instantToDefaultString } from '@juniper/ui-core'
+import { Enrollee, instantToDefaultString } from '@juniper/ui-core'
 
 const columns: ColumnDef<ParticipantTask>[] = [{
   header: 'Task',

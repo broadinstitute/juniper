@@ -18,6 +18,11 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
     submitMailingListContact: () => Promise.resolve({}),
     getLanguageTexts: (selectedLanguage: string) => {
       return Api.getLanguageTexts(selectedLanguage, portalShortcode)
+    },
+    updateSurveyResponse: ({ studyEnvParams, stableId, version, enrolleeShortcode, response, taskId }) => {
+      return Api.updateSurveyResponse({
+        studyEnvParams, stableId, version, enrolleeShortcode, response, taskId
+      })
     }
   }
 }

@@ -9,6 +9,12 @@ export type Study = {
 export type EnvironmentName = 'sandbox' | 'irb' | 'live'
 export const ENVIRONMENT_NAMES: EnvironmentName[] =  ['sandbox', 'irb', 'live']
 
+export type StudyEnvParams = {
+  studyShortcode: string
+  envName: EnvironmentName
+  portalShortcode: string
+}
+
 export type StudyEnvironment = {
   id: string
   environmentName: EnvironmentName

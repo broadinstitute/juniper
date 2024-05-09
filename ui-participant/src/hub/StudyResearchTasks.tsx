@@ -1,8 +1,8 @@
 import TaskLink, { getTaskPath, isTaskAccessible, isTaskActive } from './TaskLink'
 import { Link } from 'react-router-dom'
 import React from 'react'
-import { Enrollee, ParticipantTask } from 'api/api'
-import { useI18n } from '@juniper/ui-core'
+import { ParticipantTask } from 'api/api'
+import { Enrollee, useI18n } from '@juniper/ui-core'
 
 
 const taskTypeMap: Record<string, string> = {

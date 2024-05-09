@@ -6,12 +6,18 @@ import {
   mockSurveyWithHiddenQuestion,
   mockSurveyWithHiddenQuestionClearOnHidden
 } from 'test-utils/test-survey-factory'
-import { PageNumberControl, useSurveyJSModel } from 'util/surveyJsUtils'
+import { useSurveyJSModel } from 'util/surveyJsUtils'
 import { render, screen } from '@testing-library/react'
-import { PagedSurveyView, SurveyFooter } from './SurveyView'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import { asMockedFn, MockI18nProvider, Survey, useAutosaveEffect } from '@juniper/ui-core'
+import {
+  asMockedFn,
+  MockI18nProvider, PagedSurveyView,
+  PageNumberControl,
+  Survey,
+  SurveyFooter,
+  useAutosaveEffect
+} from '@juniper/ui-core'
 import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
@@ -325,8 +331,10 @@ const setupSurveyTest = (survey: Survey) => {
   }
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
-        studyShortcode={'study'} taskId={'guid34'}/>
+      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey} response={mockHubResponse().response}
+        studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
+        selectedLanguage={'en'} updateProfile={jest.fn()}
+        taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()

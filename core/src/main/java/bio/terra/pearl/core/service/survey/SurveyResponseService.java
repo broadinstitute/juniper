@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
@@ -20,6 +21,7 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -127,7 +129,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates a survey response and fires appropriate downstream events.
      */
     @Transactional
-    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, UUID participantUserId,
+    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, ResponsibleEntity operator,
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
@@ -139,15 +141,16 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         validateResponse(survey, task, responseDto.getAnswers());
 
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, participantUserId, responseDto, portalId);
+        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
+
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
-                .responsibleUserId(participantUserId)
                 .enrolleeId(enrollee.getId())
                 .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
                 .build();
+        auditInfo.setResponsibleEntity(operator);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(
@@ -176,7 +179,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      */
     protected SurveyResponse findOrCreateResponse(ParticipantTask task, Enrollee enrollee,
                                                   UUID participantUserId, SurveyResponse responseDto,
-                                                  UUID portalId) {
+                                                  UUID portalId, ResponsibleEntity operator) {
         UUID taskResponseId = task.getSurveyResponseId();
         Survey survey = surveyService.findByStableId(task.getTargetStableId(), task.getTargetAssignedVersion(), portalId).get();
         SurveyResponse response;
@@ -192,11 +195,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         } else {
             SurveyResponse newResponse = SurveyResponse.builder()
                     .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(participantUserId)
                     .surveyId(survey.getId())
                     .complete(responseDto.isComplete())
                     .resumeData(responseDto.getResumeData())
                     .build();
+            Optional.ofNullable(operator.getParticipantUser()).ifPresent(pUser -> newResponse.setCreatingParticipantUserId(pUser.getId()));
+            Optional.ofNullable(operator.getAdminUser()).ifPresent(admin -> newResponse.setCreatingAdminUserId(admin.getId()));
             response = dao.create(newResponse);
         }
 

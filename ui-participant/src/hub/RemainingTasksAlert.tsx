@@ -1,5 +1,5 @@
-import { Enrollee } from '../api/api'
 import React from 'react'
+import { Enrollee } from '@juniper/ui-core'
 
 /**
  * Alert component which shows the number of remaining tasks for a participant.

@@ -1,5 +1,6 @@
 import { SiteContent, LocalSiteContent, HtmlPage } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
+import { HubResponse } from '@juniper/ui-core'
 
 /** mock site content */
 export const mockSiteContent = (): SiteContent => {
@@ -51,5 +52,6 @@ export const mockHtmlSection = (): HtmlSection => {
 export const emptyApi = {
   getImageUrl: () => '',
   submitMailingListContact: () => Promise.resolve({}),
-  getLanguageTexts: () => Promise.resolve({})
+  getLanguageTexts: () => Promise.resolve({}),
+  updateSurveyResponse: () => Promise.resolve({} as HubResponse)
 }

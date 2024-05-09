@@ -6,6 +6,7 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -148,7 +149,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
-                                  PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context)
+                                  PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context,
+                                  ParticipantUser responsibleUser)
             throws JsonProcessingException {
         Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
                 responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
@@ -166,8 +168,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
-                .portalParticipantUserId(ppUser.getId())
-                .systemProcess(DataAuditInfo.systemProcessName(getClass(),  ".populateResponse")).build();
+                .portalParticipantUserId(ppUser.getId()).build();
+        auditInfo.setResponsibleEntity(new ResponsibleEntity(responsibleUser));
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
@@ -182,7 +184,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, ppUser.getParticipantUserId(), ppUser, enrollee, task.getId(), survey.getPortalId());
+                    .updateResponse(response, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
@@ -414,9 +416,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private void populateEnrolleeData(Enrollee enrollee, EnrolleePopDto popDto, PortalParticipantUser ppUser,
                                       List<ParticipantTask> tasks, StudyEnvironment attachedEnv, StudyPopulateContext context)
             throws JsonProcessingException {
-
+        ParticipantUser responsibleUser = participantUserService.find(enrollee.getParticipantUserId()).orElseThrow();
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
-            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context);
+            populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context, responsibleUser);
         }
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);

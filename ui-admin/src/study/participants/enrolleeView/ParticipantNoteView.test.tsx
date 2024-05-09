@@ -4,7 +4,7 @@ import { mockEnrollee, mockParticipantNote, mockStudyEnvContext } from 'test-uti
 import { mockAdminUser } from 'test-utils/user-mocking-utils'
 import { render, screen } from '@testing-library/react'
 import { ParticipantNoteView } from './ParticipantNoteView'
-import { ParticipantNote } from 'api/api'
+import { ParticipantNote } from '@juniper/ui-core'
 
 test('renders a note with the admin user name', async () => {
   const enrollee = mockEnrollee()

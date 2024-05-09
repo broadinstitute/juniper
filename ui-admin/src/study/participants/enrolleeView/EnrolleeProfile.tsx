@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, MailingAddress, PortalEnvironment, Profile } from 'api/api'
+import Api, { MailingAddress, PortalEnvironment, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
-  dateToDefaultString,
+  dateToDefaultString, Enrollee,
   findDifferencesBetweenObjects,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,

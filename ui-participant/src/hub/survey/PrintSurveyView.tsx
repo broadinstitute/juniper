@@ -3,9 +3,15 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Model } from 'survey-core'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 
-import { configureModelForPrint, makeSurveyJsData, surveyJSModelFromForm, waitForImages } from '@juniper/ui-core'
+import {
+  configureModelForPrint,
+  Enrollee,
+  makeSurveyJsData,
+  surveyJSModelFromForm,
+  waitForImages
+} from '@juniper/ui-core'
 
-import Api, { Enrollee } from 'api/api'
+import Api from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
