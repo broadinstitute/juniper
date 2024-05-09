@@ -10,9 +10,7 @@
     "surveys/phq9gad7.json",
     "surveys/medList.json",
     "surveys/basic.json",
-    "surveys/socialHealth.json"
-  ],
-  "consentFormFiles": [
+    "surveys/socialHealth.json",
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
@@ -42,12 +40,8 @@
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},
         {"populateFileName": "surveys/lifestyle.json"},
-        {"populateFileName": "surveys/phq9gad7.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/phq9gad7.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",

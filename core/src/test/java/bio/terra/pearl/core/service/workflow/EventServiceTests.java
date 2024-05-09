@@ -3,13 +3,14 @@ package bio.terra.pearl.core.service.workflow;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.Event;
 import bio.terra.pearl.core.model.workflow.EventClass;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -34,8 +35,10 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeConsentEvent(
                 bundle.enrollee(),
-                ConsentResponse.builder().build(),
-                bundle.portalParticipantUser());
+                bundle.portalParticipantUser(),
+                SurveyResponse.builder().build(),
+                ParticipantTask.builder().status(TaskStatus.NEW).build()
+                );
 
         List<Event> createdEvents = eventService.findAll();
         Assertions.assertEquals(1, createdEvents.size());

@@ -3,7 +3,6 @@ import { StudyEnvironmentChange } from 'api/api'
 import {
   ConfigChangeListView,
   ConfigChanges, renderNotificationConfig,
-  renderStudyEnvironmentConsent,
   renderStudyEnvironmentSurvey,
   VersionChangeView
 } from './diffComponents'
@@ -43,16 +42,6 @@ const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedC
             })}/> }
         <VersionChangeView record={studyEnvChange.preEnrollSurveyChanges}/>
       </label>
-    </div>
-    <div className="my-1">
-      <h3 className="h6">Consents</h3>
-      <div className="ms-4">
-        <ConfigChangeListView configChangeList={studyEnvChange.consentChanges}
-          selectedChanges={selectedChanges.consentChanges}
-          setSelectedChanges={consentChanges =>
-            setSelectedChanges({ ...selectedChanges, consentChanges })}
-          renderItemSummary={renderStudyEnvironmentConsent}/>
-      </div>
     </div>
     <div className="my-1">
       <h3 className="h6">Surveys</h3>

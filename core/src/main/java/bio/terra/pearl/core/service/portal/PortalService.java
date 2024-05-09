@@ -10,7 +10,6 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.site.SiteContentService;
@@ -18,7 +17,6 @@ import bio.terra.pearl.core.service.site.SiteMediaService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +33,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     private final PortalAdminUserService portalAdminUserService;
     private final StudyService studyService;
     private final SurveyService surveyService;
-    private final ConsentFormService consentFormService;
     private final SiteContentService siteContentService;
     private final EmailTemplateService emailTemplateService;
     private final SiteMediaService siteMediaService;
@@ -44,8 +41,7 @@ public class PortalService extends CrudService<Portal, PortalDao> {
     public PortalService(PortalDao portalDao, PortalStudyService portalStudyService,
                          PortalAdminUserService portalAdminUserService, StudyService studyService,
                          PortalEnvironmentService portalEnvironmentService,
-                         SurveyService surveyService,
-                         ConsentFormService consentFormService, SiteContentService siteContentService,
+                         SurveyService surveyService, SiteContentService siteContentService,
                          EmailTemplateService emailTemplateService,
                          SiteMediaService siteMediaService, LanguageTextService languageTextService) {
         super(portalDao);
@@ -54,7 +50,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         this.portalEnvironmentService = portalEnvironmentService;
         this.studyService = studyService;
         this.surveyService = surveyService;
-        this.consentFormService = consentFormService;
         this.siteContentService = siteContentService;
         this.emailTemplateService = emailTemplateService;
         this.siteMediaService = siteMediaService;
@@ -91,7 +86,6 @@ public class PortalService extends CrudService<Portal, PortalDao> {
             portalEnvironmentService.delete(portalEnvironment.getId(), cascades);
         }
         surveyService.deleteByPortalId(portalId);
-        consentFormService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         languageTextService.deleteByPortalId(portalId);

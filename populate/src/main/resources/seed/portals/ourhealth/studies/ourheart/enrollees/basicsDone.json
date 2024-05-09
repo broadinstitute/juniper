@@ -28,13 +28,11 @@
       "currentPageNo": 1,
       "complete": true,
       "submittedHoursAgo": 3
-    }
-  ],
-  "consentResponseDtos": [{
-    "consentStableId": "oh_oh_consent",
-    "consentVersion": 1,
-    "consented": true,
-    "answers": [
+    },{
+    "surveyStableId": "oh_oh_consent",
+    "surveyVersion": 1,
+    "complete": true,
+    "answerPopDtos": [
       {"questionStableId": "oh_oh_consent_signatureDate", "objectValue": "\"2023-09-24T15:59:46.164Z\""},
       {"questionStableId": "oh_oh_consent_formattedSignatureDate", "stringValue": "9/24/2023"},
       {"questionStableId": "oh_oh_consent_legalName", "stringValue": "Basic Done"},

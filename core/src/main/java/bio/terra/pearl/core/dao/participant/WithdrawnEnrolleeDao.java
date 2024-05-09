@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
@@ -19,18 +18,15 @@ import java.util.UUID;
 public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
   private ProfileDao profileDao;
   private SurveyResponseDao surveyResponseDao;
-  private ConsentResponseDao consentResponseDao;
   private ParticipantTaskDao participantTaskDao;
   private PreEnrollmentResponseDao preEnrollmentResponseDao;
   private EnrolleeRelationDao enrolleeRelationDao;
 
-  public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
-                              ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao,
+  public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao, ParticipantTaskDao participantTaskDao,
                               PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao) {
     super(jdbi);
     this.profileDao = profileDao;
     this.surveyResponseDao = surveyResponseDao;
-    this.consentResponseDao = consentResponseDao;
     this.participantTaskDao = participantTaskDao;
     this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     this.enrolleeRelationDao = enrolleeRelationDao;
@@ -61,7 +57,6 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
    * */
   public Enrollee loadForWithdrawalPreservation(Enrollee enrollee) {
     enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
-    enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
     if (enrollee.getProfileId() != null) {
       enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).get());
     }

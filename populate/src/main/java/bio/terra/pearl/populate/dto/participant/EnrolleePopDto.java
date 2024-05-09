@@ -7,7 +7,6 @@ import java.util.Set;
 
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.populate.dto.TimeShiftable;
-import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
@@ -33,7 +32,6 @@ public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
 
     private Set<SurveyResponsePopDto> surveyResponseDtos = new HashSet<>();
-    private Set<ConsentResponsePopDto> consentResponseDtos = new HashSet<>();
     private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
     private List<NotificationPopDto> notifications = new ArrayList<>();
     private List<ParticipantNotePopDto> participantNoteDtos = new ArrayList<>();

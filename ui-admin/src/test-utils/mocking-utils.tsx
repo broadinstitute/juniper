@@ -2,7 +2,6 @@ import { StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
   Answer,
-  ConsentForm,
   DatasetDetails,
   Enrollee,
   EnrolleeSearchFacet,
@@ -17,7 +16,6 @@ import {
   PortalStudy,
   SiteMediaMetadata,
   StudyEnvironment,
-  StudyEnvironmentConsent,
   SurveyResponse,
   Trigger
 } from 'api/api'
@@ -153,7 +151,6 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
   const sandboxEnv: StudyEnvironment = {
     environmentName: 'sandbox',
     id: 'studyEnvId',
-    configuredConsents: [mockConfiguredConsent()],
     configuredSurveys: [mockConfiguredSurvey()],
     triggers: [],
     studyEnvironmentConfig: {
@@ -198,34 +195,6 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     allowParticipantReedit: true,
     prepopulate: true,
     survey: mockSurvey()
-  }
-}
-
-/** Mock StudyEnvironmentConsent */
-export const mockConfiguredConsent = (): StudyEnvironmentConsent => {
-  return {
-    id: 'fakeGuid',
-    consentFormId: 'consentId1',
-    studyEnvironmentId: 'studyEnvId1',
-    consentOrder: 1,
-    consentForm: mockConsentForm(),
-    allowAdminEdit: false,
-    allowParticipantReedit: false,
-    allowParticipantStart: true,
-    prepopulate: false
-  }
-}
-
-/** fake ConsentForm */
-export const mockConsentForm = (): ConsentForm => {
-  return {
-    id: 'fakeGuid2',
-    content: '{"pages": []}',
-    stableId: 'form1',
-    version: 1,
-    name: 'Mock consent',
-    createdAt: 0,
-    lastUpdatedAt: 0
   }
 }
 
@@ -381,7 +350,7 @@ export const mockOptionsFacetValue: (facet: StringOptionsFacet, optionValue: str
   }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string, taskType: ParticipantTaskType):
+export const taskForForm = (form: Survey, enrolleeId: string, taskType: ParticipantTaskType):
     ParticipantTask => {
   return {
     id: randomString(10),

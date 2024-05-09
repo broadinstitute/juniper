@@ -17,7 +17,7 @@ import {
   useI18n
 } from '@juniper/ui-core'
 
-import Api, { Answer, ConsentForm, Survey, UserResumeData } from 'api/api'
+import Api, { Answer, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 import '../components/ThemedSurveyAddressValidation'
@@ -81,7 +81,7 @@ type UseSurveyJsModelOpts = {
  * be useful for all surveys (e.g., {isProxyEnrollment} for the pre-enroll survey)
  */
 export function useSurveyJSModel(
-  form: ConsentForm | Survey,
+  form: Survey,
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,

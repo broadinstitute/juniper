@@ -49,7 +49,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final PortalParticipantUserPopulator portalParticipantUserPopulator;
     private final MailingListContactService mailingListContactService;
     private final AdminUserPopulator adminUserPopulator;
-    private final ConsentFormPopulator consentFormPopulator;
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
     private final PortalLanguageService portalLanguageService;
@@ -65,7 +64,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            SiteMediaPopulator siteMediaPopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
-                           ConsentFormPopulator consentFormPopulator,
                            EmailTemplatePopulator emailTemplatePopulator,
                            PortalLanguageService portalLanguageService) {
         this.siteContentPopulator = siteContentPopulator;
@@ -79,7 +77,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalStudyService = portalStudyService;
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
-        this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.portalLanguageService = portalLanguageService;
     }
@@ -200,9 +197,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
-        }
-        for (String consentFile : popDto.getConsentFormFiles()) {
-            consentFormPopulator.populate(portalPopContext.newFrom(consentFile), overwrite);
         }
         for (String emailTemplateFile : popDto.getEmailTemplateFiles()) {
             emailTemplatePopulator.populate(portalPopContext.newFrom(emailTemplateFile), overwrite);

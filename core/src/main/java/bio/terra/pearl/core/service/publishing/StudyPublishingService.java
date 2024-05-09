@@ -1,7 +1,5 @@
 package bio.terra.pearl.core.service.publishing;
 
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
@@ -13,14 +11,11 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentConsentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -37,8 +32,6 @@ public class StudyPublishingService {
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private StudyEnvironmentService studyEnvironmentService;
     private SurveyService surveyService;
-    private ConsentFormService consentFormService;
-    private StudyEnvironmentConsentService studyEnvironmentConsentService;
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private TriggerService triggerService;
     private EmailTemplateService emailTemplateService;
@@ -47,15 +40,12 @@ public class StudyPublishingService {
 
     public StudyPublishingService(StudyEnvironmentConfigService studyEnvironmentConfigService,
                                   StudyEnvironmentService studyEnvironmentService, SurveyService surveyService,
-                                  ConsentFormService consentFormService, StudyEnvironmentConsentService studyEnvironmentConsentService,
                                   StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                   TriggerService triggerService,
                                   EmailTemplateService emailTemplateService, EventService eventService, PortalEnvironmentService portalEnvironmentService) {
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.surveyService = surveyService;
-        this.consentFormService = consentFormService;
-        this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.triggerService = triggerService;
         this.emailTemplateService = emailTemplateService;
@@ -71,7 +61,6 @@ public class StudyPublishingService {
                                          UUID destPortalEnvId, UUID portalId) {
         applyChangesToStudyEnvConfig(destEnv, envChange.configChanges());
         applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges(), portalId);
-        applyChangesToConsents(destEnv, envChange.consentChanges(), portalId);
         applyChangesToSurveys(destEnv, envChange.surveyChanges(), destPortalEnvId, portalId);
         applyChangesToTriggers(destEnv, envChange.triggerChanges(), destPortalEnvId, portalId);
         return destEnv;
@@ -103,27 +92,6 @@ public class StudyPublishingService {
         destEnv.setPreEnrollSurveyId(newSurveyId);
         PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), destPortalId, change, surveyService);
         return studyEnvironmentService.update(destEnv);
-    }
-
-    private List<StudyEnvironmentConsent> applyChangesToConsents(StudyEnvironment destEnv,
-                                                                 ListChange<StudyEnvironmentConsent,
-                                                                         VersionedConfigChange<ConsentForm>> listChange,
-                                                                 UUID destPortalId) {
-
-        for (StudyEnvironmentConsent config : listChange.addedItems()) {
-            config.setStudyEnvironmentId(destEnv.getId());
-            studyEnvironmentConsentService.create(config.cleanForCopying());
-            destEnv.getConfiguredConsents().add(config);
-            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, consentFormService);
-        }
-        for (StudyEnvironmentConsent config : listChange.removedItems()) {
-            studyEnvironmentConsentService.delete(config.getId(), CascadeProperty.EMPTY_SET);
-            destEnv.getConfiguredConsents().remove(config);
-        }
-        for (VersionedConfigChange<ConsentForm> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, studyEnvironmentConsentService, consentFormService, destEnv.getEnvironmentName(), destPortalId);
-        }
-        return destEnv.getConfiguredConsents();
     }
 
     private List<StudyEnvironmentSurvey> applyChangesToSurveys(StudyEnvironment destEnv,
