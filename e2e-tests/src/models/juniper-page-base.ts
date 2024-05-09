@@ -32,7 +32,7 @@ export default abstract class JuniperPageBase implements JuniperPageInterface {
 
   /** Need more roles? See all roles on https://playwright.dev/docs/api/class-locator#locator-get-by-role  **/
   async clickByRole(role: 'button' | 'checkbox' | 'link' | 'radiogroup', name: string | RegExp): Promise<this> {
-    const link = this.page.getByRole(role, { name })
+    const link = this.page.getByRole(role, { name, exact: true })
     await link.click()
     return this
   }
