@@ -52,7 +52,6 @@ export const mockPortal: Portal = {
           password: ''
         },
         environmentName: 'sandbox',
-        configuredConsents: [],
         configuredSurveys: [],
         triggers: []
       }]

@@ -2,7 +2,6 @@ package bio.terra.pearl.core.service.workflow;
 
 import bio.terra.pearl.core.dao.workflow.EventDao;
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -66,22 +65,6 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         return event;
     }
 
-    public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee, ConsentResponse response,
-                                                            PortalParticipantUser ppUser) {
-        EnrolleeConsentEvent event = EnrolleeConsentEvent.builder()
-                .consentResponse(response)
-                .enrollee(enrollee)
-                .portalParticipantUser(ppUser)
-                .build();
-        populateEvent(event);
-        log.info("consent event for enrollee {}, studyEnv {} - formId {}, consented {}",
-                enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
-                response.getConsentFormId(), response.isConsented());
-        saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
-        applicationEventPublisher.publishEvent(event);
-        return event;
-    }
-
     public EnrolleeConsentEvent publishEnrolleeConsentEvent(Enrollee enrollee,
                                                             PortalParticipantUser ppUser, SurveyResponse response,
                                                             ParticipantTask task) {
@@ -93,7 +76,7 @@ public class EventService extends ImmutableEntityService<Event, EventDao> {
         populateEvent(event);
         log.info("consent event for enrollee {}, studyEnv {} - form {}, consented - {}",
                 enrollee.getShortcode(), enrollee.getStudyEnvironmentId(),
-                response.getSurveyId(), task.getStatus().equals(TaskStatus.COMPLETE));
+                response.getSurveyId(), TaskStatus.COMPLETE.equals(task.getStatus()));
         saveEvent(EventClass.ENROLLEE_CONSENT_EVENT, ppUser.getPortalEnvironmentId(), enrollee);
         applicationEventPublisher.publishEvent(event);
         return event;

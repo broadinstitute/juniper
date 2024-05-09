@@ -245,4 +245,26 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
                 enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId()).size());
 
     }
+
+    @Test
+    @Transactional
+    void testFindByTargetEnrolleeIdWithEnrollees(TestInfo info) {
+        EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
+        Enrollee proxyEnrollee = hubResponse.proxy();
+        Enrollee governedEnrollee = hubResponse.governedEnrollee();
+
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(governedEnrollee.getId());
+
+        Assertions.assertEquals(1, enrolleeRelations.size());
+
+        EnrolleeRelation relation = enrolleeRelations.get(0);
+
+        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrolleeId());
+        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrolleeId());
+        Assertions.assertEquals(RelationshipType.PROXY, relation.getRelationshipType());
+        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrollee().getId());
+        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrollee().getId());
+        Assertions.assertNotNull(relation.getTargetEnrollee().getProfile());
+        Assertions.assertNotNull(relation.getEnrollee().getProfile());
+    }
 }

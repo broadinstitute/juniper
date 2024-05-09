@@ -2,6 +2,7 @@
   "name": "OurHealth Consent",
   "stableId": "oh_oh_consent",
   "version": 1,
+  "surveyType": "CONSENT",
   "jsonContent":
   {
     "logoPosition": "right",

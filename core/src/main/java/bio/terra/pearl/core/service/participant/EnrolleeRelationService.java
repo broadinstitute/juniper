@@ -21,13 +21,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
-    EnrolleeService enrolleeService;
+    private final EnrolleeService enrolleeService;
+    private final ProfileService profileService;
     public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                    DataChangeRecordService dataChangeRecordService,
                                    @Lazy EnrolleeService enrolleeService,
-                                   ObjectMapper objectMapper) {
+                                   ObjectMapper objectMapper,
+                                   ProfileService profileService) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
+        this.profileService = profileService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -51,12 +54,19 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     }
 
     public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
-        Enrollee target = this.enrolleeService.find(enrolleeId).orElse(null);
+        Enrollee target = this.enrolleeService.find(enrolleeId).orElseThrow(() -> new NotFoundException("Enrollee not found"));
+        profileService
+                .loadWithMailingAddress(target.getProfileId())
+                .ifPresent(target::setProfile);
+
         List<EnrolleeRelation> relations = findByTargetEnrolleeId(enrolleeId);
 
         return relations.stream().map(relation -> {
             relation.setTargetEnrollee(target);
             relation.setEnrollee(this.enrolleeService.find(relation.getEnrolleeId()).orElse(null));
+            profileService
+                    .loadWithMailingAddress(relation.getEnrollee().getProfileId())
+                    .ifPresent(relation.getEnrollee()::setProfile);
             return relation;
         }).toList();
     }

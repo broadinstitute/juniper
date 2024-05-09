@@ -3,16 +3,12 @@ package bio.terra.pearl.core.service.workflow;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
-import bio.terra.pearl.core.factory.consent.ConsentFormFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.AnswerFactory;
 import bio.terra.pearl.core.factory.survey.PreEnrollmentSurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.ConsentResponseDto;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -26,7 +22,6 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -66,19 +61,13 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
     @Autowired
-    private ConsentFormFactory consentFormFactory;
-    @Autowired
     private SurveyFactory surveyFactory;
-    @Autowired
-    private StudyEnvironmentConsentService studyEnvironmentConsentService;
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     @Autowired
     private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     @Autowired
     private ParticipantTaskService participantTaskService;
-    @Autowired
-    private ConsentResponseService consentResponseService;
     @Autowired
     private SurveyResponseService surveyResponseService;
     @Autowired
@@ -89,7 +78,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ProfileService profileService;
     @Autowired
     private StudyEnvironmentService studyEnvironmentService;
-    
+
     @Test
     @Transactional
     public void testEnroll(TestInfo info) {
@@ -98,14 +87,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(info));
-        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
-                .consentFormId(consent.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnvironmentConsentService.create(studyEnvConsent);
-
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
+        Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.CONSENT)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(consent, studyEnv.getId(), true);
 
         HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
@@ -129,20 +114,13 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
 
+        Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.CONSENT)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(consent, studyEnv.getId(), true);
 
-        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(info));
-        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
-                .consentFormId(consent.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnvironmentConsentService.create(studyEnvConsent);
-
-        Survey survey = surveyFactory.buildPersisted(getTestName(info));
-        StudyEnvironmentSurvey studyEnvSurvey = StudyEnvironmentSurvey.builder()
-                .surveyId(survey.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnvironmentSurveyService.create(studyEnvSurvey);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info)).portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
         String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
@@ -155,16 +133,16 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(enrollee.getParticipantTasks(), hasSize(2));
         ParticipantTask consentTask = enrollee.getParticipantTasks().stream()
                 .filter(task -> task.getTaskType().equals(TaskType.CONSENT))
-                .findFirst().get();
+                .findFirst().orElseThrow();
         assertThat(enrollee.isConsented(), equalTo(false));
 
-        ConsentResponseDto responseDto = ConsentResponseDto.builder()
-                        .consented(true)
-                        .consentFormId(consent.getId())
-                        .fullData("{\"items\": []}")
-                        .build();
-        consentResponseService.submitResponse(userBundle.user().getId(), userBundle.ppUser(),
-            enrollee, responseDto);
+        SurveyResponse consentResponseDto = SurveyResponse.builder()
+                .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
+                .complete(true)
+                .resumeData("stuff")
+                .build();
+        surveyResponseService.updateResponse(consentResponseDto, userBundle.user().getId(), userBundle.ppUser(),
+                enrollee, consentTask.getId(), consent.getPortalId());
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
@@ -196,19 +174,16 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testGovernedUserEnrollment(TestInfo testInfo){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(testInfo));
+    public void testGovernedUserEnrollment(TestInfo info){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(testInfo));
-        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
-                .consentFormId(consent.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnvironmentConsentService.create(studyEnvConsent);
+        Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.CONSENT)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(consent, studyEnv.getId(), true);
 
         HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                 null);
@@ -239,18 +214,16 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testProxyEnrollingMultipleChild(TestInfo testInfo){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(testInfo));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(testInfo));
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(testInfo));
+    public void testProxyEnrollingMultipleChild(TestInfo info){
+        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
-        ConsentForm consent = consentFormFactory.buildPersisted(getTestName(testInfo));
-        StudyEnvironmentConsent studyEnvConsent = StudyEnvironmentConsent.builder()
-                .consentFormId(consent.getId())
-                .studyEnvironmentId(studyEnv.getId())
-                .build();
-        studyEnvironmentConsentService.create(studyEnvConsent);
+        Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
+                .surveyType(SurveyType.CONSENT)
+                .portalId(portalEnv.getPortalId()));
+        surveyFactory.attachToEnv(consent, studyEnv.getId(), true);
 
         HubResponse<Enrollee> hubResponse1 = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                  null);

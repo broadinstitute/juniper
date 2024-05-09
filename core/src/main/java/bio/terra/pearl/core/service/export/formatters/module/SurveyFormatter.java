@@ -1,6 +1,10 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.QuestionChoice;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
@@ -10,11 +14,18 @@ import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -53,6 +64,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         displayName = latestSurvey.getName();
         moduleName = stableId;
     }
+
     @Override
     public String getColumnKey(ItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum) {
         return getColumnKeyChoiceStableId(itemFormatter, isOtherDescription, choice == null ? null : choice.stableId(), moduleRepeatNum);
@@ -68,7 +80,9 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return columnKey;
     }
 
-    /** this method largely mirrors "getColumnKey", but it strips out the prefixes to make the headers more readable */
+    /**
+     * this method largely mirrors "getColumnKey", but it strips out the prefixes to make the headers more readable
+     */
     @Override
     public String getColumnHeader(ItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum) {
         String columnHeader = super.getColumnHeader(itemFormatter, isOtherDescription, choice, moduleRepeatNum);
@@ -76,7 +90,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
             AnswerItemFormatter answerItemFormatter = (AnswerItemFormatter) itemFormatter;
             // for now, strip the prefixes to aid in readability.  Once we have multi-source surveys, we can revisit this.
             String cleanStableId = stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId());
-            columnHeader =  moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
+            columnHeader = moduleName + ExportFormatUtils.COLUMN_NAME_DELIMITER + cleanStableId;
             if (isOtherDescription) {
                 columnHeader += OTHER_DESCRIPTION_KEY_SUFFIX;
             } else if (answerItemFormatter.isSplitOptionsIntoColumns() && choice != null) {
@@ -89,7 +103,9 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return columnHeader;
     }
 
-    /** returns either the question or the choice as friendly-ish text */
+    /**
+     * returns either the question or the choice as friendly-ish text
+     */
     @Override
     public String getColumnSubHeader(ItemFormatter itemFormatter, boolean isOtherDescription, QuestionChoice choice, int moduleRepeatNum) {
         if (itemFormatter instanceof PropertyItemFormatter) {
@@ -105,7 +121,9 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return ExportFormatUtils.camelToWordCase(stripStudyAndSurveyPrefixes(answerItemFormatter.getQuestionStableId()));
     }
 
-    /** strip out study and survey prefixes.  so e.g. "oh_oh_famHx_question1" becomes "question1" */
+    /**
+     * strip out study and survey prefixes.  so e.g. "oh_oh_famHx_question1" becomes "question1"
+     */
     public static String stripStudyAndSurveyPrefixes(String stableId) {
         // if there are >= 3 underscores, filter out everything before the third underscore
         int thirdUnderscoreIndex = StringUtils.ordinalIndexOf(stableId, "_", 3);
@@ -149,7 +167,6 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     }
 
 
-
     public void addAnswersToMap(AnswerItemFormatter itemFormatter,
                                 Map<String, List<Answer>> answerMap, Map<String, String> valueMap) {
         List<Answer> matchedAnswers = answerMap.get(itemFormatter.getQuestionStableId());
@@ -169,7 +186,7 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     }
 
     protected void addAnswerToMap(AnswerItemFormatter itemFormatter,
-                                         Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
+                                  Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
         if (itemFormatter.isSplitOptionsIntoColumns()) {
             addSplitOptionSelectionsToMap(itemFormatter, answer, valueMap, objectMapper);
         } else {
@@ -199,9 +216,11 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return "";
     }
 
-    /** adds an entry to the valueMap for each selected option of a 'splitOptionsIntoColumns' question */
+    /**
+     * adds an entry to the valueMap for each selected option of a 'splitOptionsIntoColumns' question
+     */
     protected void addSplitOptionSelectionsToMap(ItemFormatter itemFormatter,
-                                                        Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
+                                                 Answer answer, Map<String, String> valueMap, ObjectMapper objectMapper) {
         if (answer.getStringValue() != null) {
             // this was a single-select question, so we only need to add the selected option
             valueMap.put(
@@ -211,10 +230,11 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         } else if (answer.getObjectValue() != null) {
             // this was a multi-select question, so we need to add all selected options
             try {
-                List<String> answerValues = objectMapper.readValue(answer.getObjectValue(), new TypeReference<List<String>>() {});
+                List<String> answerValues = objectMapper.readValue(answer.getObjectValue(), new TypeReference<List<String>>() {
+                });
                 for (String answerValue : answerValues) {
                     valueMap.put(
-                            getColumnKeyChoiceStableId(itemFormatter,false, answerValue, 1),
+                            getColumnKeyChoiceStableId(itemFormatter, false, answerValue, 1),
                             SPLIT_OPTION_SELECTED_VALUE
                     );
                 }
@@ -256,13 +276,13 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     }
 
     @Override
-    public SurveyResponse fromStringMap(UUID studyEnvironmentId,  Map<String, String> enrolleeMap) {
+    public SurveyResponse fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
         SurveyResponse response = new SurveyResponse();
         for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, 1);
             String stringVal = enrolleeMap.get(columnName);
             itemFormatter.importValueToBean(response, stringVal);
         }
-        return response;
+        return (response.getAnswers().isEmpty() ? null : response);
     }
 }

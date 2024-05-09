@@ -5,7 +5,7 @@ export enum Activities
 {
   Consent = 'OurHealth Consent',
   Basics = 'The Basics',
-  CardiometabolicMedicalHistory = 'Cardiometabolic Medical History',
+  CardiometabolicMedicalHistory = 'OurHealth Medical History',
   OtherMedicalHistory = 'Other Medical History',
   FamilyHistory = 'Family History',
   Medications = 'Medications',
