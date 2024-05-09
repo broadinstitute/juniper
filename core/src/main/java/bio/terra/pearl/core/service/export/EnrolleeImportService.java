@@ -172,6 +172,10 @@ public class EnrolleeImportService {
             String[] headers = csvReader.readNext();
             String[] line;
             while ((line = csvReader.readNext()) != null) {
+                if (line[0].equalsIgnoreCase("shortcode")) {
+                    //skip this sub header line
+                    continue;
+                }
                 Map<String, String> enrolleeMap = new HashMap<>();
                 for (int i = 0; i < line.length; i++) {
                     enrolleeMap.put(headers[i], line[i]);
