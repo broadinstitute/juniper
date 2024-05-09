@@ -4,8 +4,6 @@ import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.Versioned;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
@@ -207,10 +205,6 @@ public class PortalDiffService {
                 destEnv.getStudyEnvironmentConfig(),
                 CONFIG_IGNORE_PROPS);
         VersionedEntityChange<Survey> preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
-        ListChange<StudyEnvironmentConsent, VersionedConfigChange<ConsentForm>> consentChanges = diffConfigLists(
-                sourceEnv.getConfiguredConsents(),
-                destEnv.getConfiguredConsents(),
-                CONFIG_IGNORE_PROPS);
         ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = diffConfigLists(
                 sourceEnv.getConfiguredSurveys(),
                 destEnv.getConfiguredSurveys(),
@@ -224,7 +218,6 @@ public class PortalDiffService {
                 studyShortcode,
                 envConfigChanges,
                 preEnrollChange,
-                consentChanges,
                 surveyChanges,
                 triggerChanges
         );

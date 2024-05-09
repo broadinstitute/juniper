@@ -6,9 +6,6 @@ import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.consent.ConsentForm;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
-import bio.terra.pearl.core.model.consent.ConsentResponseDto;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -27,8 +24,6 @@ import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
-import bio.terra.pearl.core.service.consent.ConsentFormService;
-import bio.terra.pearl.core.service.consent.ConsentResponseService;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
@@ -49,7 +44,6 @@ import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
 import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
-import bio.terra.pearl.populate.dto.consent.ConsentResponsePopDto;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
@@ -97,8 +91,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private final PreEnrollmentResponseDao preEnrollmentResponseDao;
     private final SurveyService surveyService;
     private final SurveyResponseService surveyResponseService;
-    private final ConsentFormService consentFormService;
-    private final ConsentResponseService consentResponseService;
     private final ParticipantTaskService participantTaskService;
     private final TriggerService triggerService;
     private final NotificationService notificationService;
@@ -120,8 +112,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              ParticipantUserService participantUserService,
                              PortalParticipantUserService portalParticipantUserService,
                              PreEnrollmentResponseDao preEnrollmentResponseDao, SurveyService surveyService,
-                             SurveyResponseService surveyResponseService, ConsentFormService consentFormService,
-                             ConsentResponseService consentResponseService,
+                             SurveyResponseService surveyResponseService,
                              ParticipantTaskService participantTaskService,
                              TriggerService triggerService,
                              NotificationService notificationService, AnswerProcessingService answerProcessingService,
@@ -136,8 +127,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
         this.surveyResponseService = surveyResponseService;
-        this.consentFormService = consentFormService;
-        this.consentResponseService = consentResponseService;
         this.participantTaskService = participantTaskService;
         this.triggerService = triggerService;
         this.notificationService = notificationService;
@@ -243,33 +232,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return preEnrollmentResponseDao.create(response);
     }
 
-    private void populateConsent(Enrollee enrollee, PortalParticipantUser ppUser, ConsentResponsePopDto responsePopDto,
-                                 List<ParticipantTask> tasks, boolean simulateSubmissions, StudyPopulateContext context) throws JsonProcessingException {
-        ConsentForm consentForm = consentFormService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getConsentStableId()),
-                responsePopDto.getConsentVersion(), context.getPortalShortcode()).get();
-
-        ConsentResponse savedResponse;
-
-        ConsentResponseDto responseDto = ConsentResponseDto.builder()
-                .consentFormId(consentForm.getId())
-                .enrolleeId(enrollee.getId())
-                .creatingParticipantUserId(enrollee.getParticipantUserId())
-                .consented(responsePopDto.isConsented())
-                .answers(responsePopDto.getAnswers())
-                .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
-                .build();
-        if (simulateSubmissions) {
-            HubResponse<ConsentResponse> hubResponse = consentResponseService.submitResponse(enrollee.getParticipantUserId(),
-                    ppUser, enrollee, responseDto);
-            savedResponse = hubResponse.getResponse();
-        } else {
-            String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
-            responseDto.setFullData(fullData);
-            savedResponse = consentResponseService.create(responseDto);
-        }
-        enrollee.getConsentResponses().add(savedResponse);
-    }
-
     private void populateTask(Enrollee enrollee, PortalParticipantUser ppUser, ParticipantTaskPopDto taskDto) {
         taskDto.setEnrolleeId(enrollee.getId());
         taskDto.setStudyEnvironmentId(enrollee.getStudyEnvironmentId());
@@ -311,10 +273,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private String getTargetName(TaskType taskType, String stableId, UUID portalId, int version) {
-        if (taskType.equals(TaskType.SURVEY)) {
+        if (taskType.equals(TaskType.SURVEY) || taskType.equals(TaskType.CONSENT)) {
             return surveyService.findByStableId(stableId, version, portalId).get().getName();
-        } else if (taskType.equals(TaskType.CONSENT)) {
-            return consentFormService.findByStableId(stableId, version, portalId).get().getName();
         }
         throw new IllegalArgumentException("cannot find target name for TaskType " + taskType);
     }
@@ -458,9 +418,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         for (SurveyResponsePopDto responsePopDto : popDto.getSurveyResponseDtos()) {
             populateResponse(enrollee, responsePopDto, ppUser, popDto.isSimulateSubmissions(), context);
         }
-        for (ConsentResponsePopDto consentPopDto : popDto.getConsentResponseDtos()) {
-            populateConsent(enrollee, ppUser, consentPopDto, tasks, popDto.isSimulateSubmissions(), context);
-        }
         for (ParticipantTaskPopDto taskDto : popDto.getParticipantTaskDtos()) {
             populateTask(enrollee, ppUser, taskDto);
         }
@@ -578,56 +535,5 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         Enrollee proxyEnrollee;
         boolean doNotEmailSetting; // the original doNotEmail setting, stored here so it can be restored post-populate
     }
-
-    @Transactional
-    public Map<String, Object> convertAllConsentResponses() {
-        List<StudyEnvironment> studyEnvs = studyEnvironmentService.findAll();
-        List<String> enrolleeFailShortcodes =  new ArrayList<>();
-        for (StudyEnvironment studyEnv : studyEnvs) {
-            List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnv.getId());
-            for (Enrollee enrollee : enrollees) {
-                List<ConsentResponse> consentResponses = consentResponseService.findByEnrolleeId(enrollee.getId());
-                for (ConsentResponse consentResponse : consentResponses) {
-                    try {
-                        convertConsentResponse(studyEnv, enrollee, consentResponse);
-                    } catch (Exception e) {
-                        enrolleeFailShortcodes.add(enrollee.getShortcode());
-                    }
-                }
-            }
-        }
-        return Map.of("enrolleeFailShortcodes", enrolleeFailShortcodes);
-    }
-
-    /** convert a consentResponse to a surveyResponse, updating related tasks */
-    public SurveyResponse convertConsentResponse(StudyEnvironment studyEnv, Enrollee enrollee, ConsentResponse consentResponse) {
-        ConsentForm matchedConsent = consentFormService.find(consentResponse.getConsentFormId()).orElseThrow(() -> new IllegalStateException("missing form"));
-        Survey survey = surveyService.findByStableId(matchedConsent.getStableId(), matchedConsent.getVersion(), matchedConsent.getPortalId())
-                .orElseThrow(() -> new IllegalStateException("missing survey"));
-        try {
-            List<Answer> answers = objectMapper.readValue(consentResponse.getFullData(), new TypeReference<List<Answer>>(){});
-            SurveyResponse surveyResponse = SurveyResponse.builder()
-                    .surveyId(survey.getId())
-                    .answers(answers)
-                    .enrolleeId(enrollee.getId())
-                    .creatingParticipantUserId(consentResponse.getCreatingParticipantUserId())
-                    .resumeData(consentResponse.getResumeData())
-                    .complete(consentResponse.isConsented()) // for existing consents, consented and completed are synonymous, and we weren't logging completion
-                    .build();
-            surveyResponse = surveyResponseService.create(surveyResponse);
-            timeShiftPopulateDao.changeSurveyResponseTime(surveyResponse.getId(), consentResponse.getCreatedAt());
-            ParticipantTask relatedTask = participantTaskService.findByConsentResponseId(consentResponse.getId()).orElseThrow();
-            relatedTask.setConsentResponseId(null);
-            relatedTask.setSurveyResponseId(surveyResponse.getId());
-            participantTaskService.update(relatedTask, DataAuditInfo.builder()
-                    .systemProcess(DataAuditInfo.systemProcessName(getClass(), "convertConsentResponse"))
-                    .build());
-            return surveyResponse;
-        } catch (Exception e) {
-            log.warn("Error converting response enrollee %s".formatted(enrollee.getShortcode()), e);
-            throw new IllegalArgumentException("couldn't convert response", e);
-        }
-    }
-
 }
 

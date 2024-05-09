@@ -1,7 +1,6 @@
 package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.ConsentForm;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
@@ -185,11 +184,6 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(surveys, hasSize(13));
         surveys.forEach(survey -> {
             assertThat(survey.getStableId(), Matchers.startsWith(newShortcode));
-        });
-        List<ConsentForm> consentForms = consentFormService.findByPortalId(portal.getId());
-        assertThat(consentForms, hasSize(0));
-        consentForms.forEach(consentForm -> {
-            assertThat(consentForm.getStableId(), Matchers.startsWith(newShortcode));
         });
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         assertThat(siteContents, hasSize(2));

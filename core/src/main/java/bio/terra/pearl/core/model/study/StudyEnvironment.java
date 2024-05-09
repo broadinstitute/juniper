@@ -2,7 +2,6 @@ package bio.terra.pearl.core.model.study;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -28,8 +27,6 @@ public class StudyEnvironment extends BaseEntity {
     private Survey preEnrollSurvey;
     @Builder.Default
     private List<StudyEnvironmentSurvey> configuredSurveys = new ArrayList<>();
-    @Builder.Default
-    private List<StudyEnvironmentConsent> configuredConsents = new ArrayList<>();
     @Builder.Default
     private List<Trigger> triggers = new ArrayList<>();
 }

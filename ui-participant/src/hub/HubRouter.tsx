@@ -1,13 +1,12 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Navbar from '../Navbar'
-import ConsentView from './consent/ConsentView'
-import PrintConsentView from './consent/PrintConsentView'
 import HubPage from './HubPage'
 
 import SurveyView from './survey/SurveyView'
 import { ParticipantProfile } from 'participant/ParticipantProfile'
 import PrintSurveyView from './survey/PrintSurveyView'
+import ManageProfiles from '../participant/ManageProfiles'
 
 /** Handles url pathing for hub routes (a.k.a participant is signed in) */
 export default function HubRouter() {
@@ -15,10 +14,10 @@ export default function HubRouter() {
     <Navbar/>
     <Routes>
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version"
-        element={<ConsentView/>}/>
+        element={<SurveyView/>}/>
       <Route
         path="study/:studyShortcode/enrollee/:enrolleeShortcode/consent/:stableId/:version/print"
-        element={<PrintConsentView/>}
+        element={<PrintSurveyView/>}
       />
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/survey/:stableId/:version"
         element={<SurveyView/>}/>
@@ -29,7 +28,9 @@ export default function HubRouter() {
       <Route path="study/:studyShortcode/enrollee/:enrolleeShortcode/outreach/:stableId/:version"
         element={<HubPage/>}/>
       <Route index element={<HubPage/>}/>
-      <Route path="profile"
+      <Route path="manageProfiles"
+        element={<ManageProfiles/>}/>
+      <Route path="profile/:ppUserId?"
         element={<ParticipantProfile/>}/>
       <Route path="*" element={<div>unknown hub route</div>}/>
     </Routes>

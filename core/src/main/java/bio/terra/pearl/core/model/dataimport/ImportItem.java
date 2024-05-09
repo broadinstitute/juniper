@@ -8,7 +8,9 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.UUID;
 
-@Getter @Setter @SuperBuilder
+@Getter
+@Setter
+@SuperBuilder
 @NoArgsConstructor
 public class ImportItem extends BaseEntity {
     private UUID createdEnrolleeId;

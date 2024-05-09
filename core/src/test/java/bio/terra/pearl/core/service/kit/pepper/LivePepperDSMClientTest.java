@@ -213,7 +213,6 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
     @Transactional
     @Test
     public void testFetchKitStatusByStudy(TestInfo info) throws Exception {
-
         // Arrange
         PepperKit kitStatus1 = PepperKit.builder()
                 .juniperKitId(getTestName(info) + "_kit1")
@@ -230,11 +229,18 @@ public class LivePepperDSMClientTest extends BaseSpringBootTest {
 
         // Act
         String studyShortcode = "test_study";
-        Collection<PepperKit> fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode, new StudyEnvironmentConfig());
+        StudyEnvironmentConfig config = StudyEnvironmentConfig.builder().useDevDsmRealm(true).build();
+        Collection<PepperKit> fetchedKitStatuses = client.fetchKitStatusByStudy(studyShortcode, config);
 
         // Assert
         assertThat(fetchedKitStatuses.size(), equalTo(2));
         assertThat(fetchedKitStatuses, contains(kitStatus1, kitStatus2));
+        verifyRequestForPath("/kitstatus/study/%s".formatted(LivePepperDSMClient.DEV_STUDY_REALM));
+
+        // now check without the dev path
+        config = StudyEnvironmentConfig.builder().useDevDsmRealm(false).build();
+        mockPepperResponse(HttpStatus.OK, objectMapper.writeValueAsString(pepperResponse));
+        client.fetchKitStatusByStudy(studyShortcode, config);
         verifyRequestForPath("/kitstatus/study/juniper-%s".formatted(studyShortcode));
     }
 

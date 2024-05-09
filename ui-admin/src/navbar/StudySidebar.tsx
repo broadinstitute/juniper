@@ -1,32 +1,35 @@
 import { Portal, Study } from '@juniper/ui-core'
 import { NavLink, useNavigate } from 'react-router-dom'
-import {
-  studyKitsPath,
-  studyParticipantsPath
-} from 'portal/PortalRouter'
+import { studyKitsPath, studyParticipantsPath } from 'portal/PortalRouter'
 import StudySelector from './StudySelector'
 import React from 'react'
 import {
   adminTasksPath,
-  studyEnvDataBrowserPath, studyEnvDatasetListViewPath, studyEnvFormsPath,
+  studyEnvDataBrowserPath,
+  studyEnvDatasetListViewPath,
+  studyEnvFormsPath,
+  studyEnvImportPath,
   studyEnvMailingListPath,
-  studyEnvMetricsPath, studyEnvNotificationsPath,
-  studyEnvSiteContentPath, studyEnvSiteSettingsPath
+  studyEnvMetricsPath,
+  studyEnvNotificationsPath,
+  studyEnvSiteContentPath,
+  studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
+import { isSuperuser } from 'user/UserProvider'
 import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
 
 
 /** shows menu options related to the current study */
 export const StudySidebar = ({ study, portalList, portalShortcode }:
-                                 {study: Study, portalList: Portal[], portalShortcode: string}) => {
+                               { study: Study, portalList: Portal[], portalShortcode: string }) => {
   const navigate = useNavigate()
   /** updates the selected study -- routes to that study's homepage */
   const setSelectedStudy = (portalShortcode: string, studyShortcode: string) => {
     navigate(studyParticipantsPath(portalShortcode, studyShortcode, 'live'))
   }
-  const navStyleFunc = ({ isActive }: {isActive: boolean}) => {
+  const navStyleFunc = ({ isActive }: { isActive: boolean }) => {
     return isActive ? { background: 'rgba(255, 255, 255, 0.3)' } : {}
   }
 
@@ -46,10 +49,14 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={adminTasksPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Tasks</NavLink>
         </li>
-        <li>
+        <li className="mb-2">
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
+        {isSuperuser() && <li className="mb-2">
+          <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
+            className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
+        </li>}
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
         <li className="mb-2">

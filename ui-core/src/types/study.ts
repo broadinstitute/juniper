@@ -1,4 +1,4 @@
-import { ConsentForm, Survey } from './forms'
+import { Survey } from './forms'
 
 export type Study = {
   name: string
@@ -15,7 +15,6 @@ export type StudyEnvironment = {
   studyEnvironmentConfig: StudyEnvironmentConfig
   preEnrollSurvey?: Survey
   preEnrollSurveyId?: string
-  configuredConsents: StudyEnvironmentConsent[]
   configuredSurveys: StudyEnvironmentSurvey[]
   triggers: Trigger[]
 }
@@ -26,6 +25,8 @@ export type StudyEnvironmentConfig = {
   initialized: boolean
   passwordProtected: boolean
   password: string
+  useStubDsm: boolean
+  useDevDsmRealm: boolean
 }
 
 export type StudyEnvironmentSurvey = {
@@ -40,18 +41,6 @@ export type StudyEnvironmentSurvey = {
 
 export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
   envName: EnvironmentName
-}
-
-export type StudyEnvironmentConsent = {
-  id: string
-  consentForm: ConsentForm
-  consentFormId: string
-  studyEnvironmentId: string
-  consentOrder: number
-  allowAdminEdit: boolean
-  allowParticipantStart: boolean
-  allowParticipantReedit: boolean
-  prepopulate: boolean
 }
 
 export type Trigger = {

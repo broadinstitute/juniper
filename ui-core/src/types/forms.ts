@@ -42,8 +42,6 @@ export const defaultSurvey = {
   prepopulate: false
 }
 
-export type ConsentForm = VersionedForm
-
 export type Answer = {
   questionStableId: string
   stringValue?: string
@@ -62,14 +60,6 @@ export type FormResponse = {
   resumeData: string
   createdAt?: number
   lastUpdatedAt?: number
-}
-
-export type ConsentResponse = FormResponse & {
-  consentFormId: string
-  enrolleeId: string
-  fullData: string
-  completed: boolean
-  consented: boolean
 }
 
 export type SurveyResponse = FormResponse & {

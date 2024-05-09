@@ -10,7 +10,6 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.workflow.HubResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -244,5 +243,27 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         Assertions.assertEquals(1,
                 enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId()).size());
 
+    }
+
+    @Test
+    @Transactional
+    void testFindByTargetEnrolleeIdWithEnrollees(TestInfo info) {
+        EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
+        Enrollee proxyEnrollee = hubResponse.proxy();
+        Enrollee governedEnrollee = hubResponse.governedEnrollee();
+
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(governedEnrollee.getId());
+
+        Assertions.assertEquals(1, enrolleeRelations.size());
+
+        EnrolleeRelation relation = enrolleeRelations.get(0);
+
+        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrolleeId());
+        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrolleeId());
+        Assertions.assertEquals(RelationshipType.PROXY, relation.getRelationshipType());
+        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrollee().getId());
+        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrollee().getId());
+        Assertions.assertNotNull(relation.getTargetEnrollee().getProfile());
+        Assertions.assertNotNull(relation.getEnrollee().getProfile());
     }
 }

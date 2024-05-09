@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
@@ -24,7 +23,6 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
-import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
@@ -42,7 +40,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
     private SurveyService surveyService;
-    private ConsentFormPopulator consentFormPopulator;
     private EmailTemplatePopulator emailTemplatePopulator;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private PortalDiffService portalDiffService;
@@ -54,7 +51,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
                           SurveyPopulator surveyPopulator, SurveyService surveyService,
-                          ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
                           PortalDiffService portalDiffService, StudyPublishingService studyPublishingService,
@@ -65,7 +61,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
         this.surveyService = surveyService;
-        this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.portalDiffService = portalDiffService;
@@ -86,11 +81,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             Survey preEnrollSurvey = surveyPopulator.findFromDto(studyEnv.getPreEnrollSurveyDto(), context).get();
             studyEnv.setPreEnrollSurveyId(preEnrollSurvey.getId());
             studyEnv.setPreEnrollSurvey(preEnrollSurvey);
-        }
-        for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
-            StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
-            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context, context.getPortalShortcode());
-            studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (TriggerPopDto configPopDto : studyEnv.getTriggerDtos()) {
             Trigger trigger = emailTemplatePopulator.convertTrigger(configPopDto, context);
@@ -205,9 +195,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     protected void populateDocuments(StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(context.newFrom(surveyFile), overwrite);
-        }
-        for (String consentFile : popDto.getConsentFormFiles()) {
-            consentFormPopulator.populate(context.newFrom(consentFile), overwrite);
         }
         for (String template : popDto.getEmailTemplateFiles()) {
             emailTemplatePopulator.populate(context.newFrom(template), overwrite);

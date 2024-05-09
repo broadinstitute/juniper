@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.kit.KitTypeFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
@@ -20,8 +21,10 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +32,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 public class KitRequestServiceTest extends BaseSpringBootTest {
@@ -95,13 +100,12 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         profileService.updateWithMailingAddress(profile, DataAuditInfo.builder().build());
 
         when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenAnswer(invocation -> {
-            KitRequest kitRequest = (KitRequest) invocation.getArguments()[2];
+            KitRequest kitRequest = (KitRequest) invocation.getArguments()[3];
             throw new PepperApiException("Error from Pepper with unexpected format: boom",
                     PepperErrorResponse.builder()
                             .juniperKitId(kitRequest.getId().toString())
                             .build(), HttpStatus.BAD_REQUEST);
         });
-
 
         assertThrows(PepperApiException.class, () ->
                 kitRequestService.requestKit(adminUser, "testStudy" , enrollee, new KitRequestService.KitRequestCreationDto(kitType.getName(), false))
@@ -127,7 +131,7 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .scanDate(sentDate)
                 .errorMessage(errorMessage)
                 .build();
-        when(mockPepperDSMClient.fetchKitStatus(any(), kitRequest.getId())).thenReturn(pepperKit);
+        when(mockPepperDSMClient.fetchKitStatus(any(), eq(kitRequest.getId()))).thenReturn(pepperKit);
         when(mockEventService.publishKitStatusEvent(any(KitRequest.class),
                 any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class))).thenReturn(null);
 
@@ -321,9 +325,9 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
                 .errorMessage("Something went wrong")
                 .errorDate(DateTimeFormatter.ISO_LOCAL_DATE_TIME.withZone(ZoneId.systemDefault()).format(Instant.now()))
                 .build();
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study.getShortcode(), any()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(eq(study.getShortcode()), any()))
                 .thenReturn(List.of(kitStatus1a, kitStatus1b));
-        when(mockPepperDSMClient.fetchKitStatusByStudy(study2.getShortcode(), any()))
+        when(mockPepperDSMClient.fetchKitStatusByStudy(eq(study2.getShortcode()), any()))
                 .thenReturn(List.of(kitStatus2));
         when(mockEventService.publishKitStatusEvent(any(KitRequest.class), any(Enrollee.class), any(PortalParticipantUser.class), any(KitRequestStatus.class)))
                 .thenReturn(null);
@@ -383,6 +387,40 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
         Mockito.verifyNoInteractions(mockPepperDSMClient);
     }
 
+    /** test that requests are dispatched to the live/stub DSM based on the study environment config */
+    @Transactional
+    @Test
+    public void testRequestKitStudyEnvConfig(TestInfo testInfo) throws Exception {
+        PepperKit mockKit = PepperKit.builder().currentStatus("blah").build();
+        // set up a study and enrollee, initially set the study env to use stub DSM
+        String testName = getTestName(testInfo);
+        AdminUser adminUser = adminUserFactory.buildPersisted(testName);
+        StudyEnvironmentFactory.StudyEnvironmentBundle envBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.find(envBundle.getStudyEnv().getStudyEnvironmentConfigId()).orElseThrow();
+        config.setUseStubDsm(true);
+        studyEnvironmentConfigService.update(config);
+        Enrollee enrollee = enrolleeFactory.buildWithPortalUser(testName, envBundle.getPortalEnv(), envBundle.getStudyEnv(), new Profile()).enrollee();
+        when(mockPepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
+        when(mockPepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
+        KitRequestDto kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", true) );
+        kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
+        Mockito.verify(mockPepperDSMClient).fetchKitStatus(any(), any());
+        Mockito.verify(mockPepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        Mockito.verifyNoInteractions(livePepperDSMClient);
+
+        // now configure to use the live dsmClient
+        config.setUseStubDsm(false);
+        studyEnvironmentConfigService.update(config);
+        when(livePepperDSMClient.sendKitRequest(any(), any(), any(), any(), any())).thenReturn(mockKit);
+        when(livePepperDSMClient.fetchKitStatus(any(), any())).thenReturn(mockKit);
+        kitRequestDto = kitRequestService.requestKit(adminUser, envBundle.getStudy().getShortcode(),
+                enrollee, new KitRequestService.KitRequestCreationDto("SALIVA", true) );
+        kitRequestService.syncKitStatusFromPepper(kitRequestDto.getId());
+        Mockito.verify(livePepperDSMClient).sendKitRequest(any(), any(), any(), any(), any());
+        Mockito.verify(livePepperDSMClient).fetchKitStatus(any(), any());
+    }
+
     private void verifyKit(KitRequest kit, PepperKit expectedDSMStatus, KitRequestStatus expectedStatus)
             throws JsonProcessingException {
         KitRequest savedKit = kitRequestDao.find(kit.getId()).get();
@@ -394,6 +432,8 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
 
     @MockBean
     private StubPepperDSMClient mockPepperDSMClient;
+    @MockBean
+    private LivePepperDSMClient livePepperDSMClient;
     @MockBean
     private EventService mockEventService;
     @Autowired
@@ -418,4 +458,6 @@ public class KitRequestServiceTest extends BaseSpringBootTest {
     private StudyEnvironmentFactory studyEnvironmentFactory;
     @Autowired
     private PortalEnvironmentFactory portalEnvironmentFactory;
+    @Autowired
+    private StudyEnvironmentConfigService studyEnvironmentConfigService;
 }

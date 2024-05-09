@@ -7,7 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
-import { Trigger, StudyEnvironmentConsent, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { Trigger, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
 
 /**
  * returns html for displaying the differences in versions.  this does not yet include support
@@ -101,7 +101,7 @@ export const versionDisplay = (stableId: string, version: number) => {
   return <span>{stableId} v{version}</span>
 }
 
-export type Configable = StudyEnvironmentConsent | StudyEnvironmentSurvey | Trigger
+export type Configable = StudyEnvironmentSurvey | Trigger
 type ConfigChangeListViewProps<T extends Configable> = {
   configChangeList: ListChange<T, VersionedConfigChange>,
   selectedChanges: ListChange<T, VersionedConfigChange>,
@@ -201,13 +201,6 @@ export const ConfigChangeListView = <T extends Configable>
 export const renderStudyEnvironmentSurvey = (change: StudyEnvironmentSurvey) => {
   return <span>{change.survey.name} <span className="text-muted fst-italic">
     ({change.survey.stableId} v{change.survey.version})
-  </span></span>
-}
-
-/** summarizes a configured consent */
-export const renderStudyEnvironmentConsent = (change: StudyEnvironmentConsent) => {
-  return <span>{change.consentForm.name} <span className="text-muted fst-italic">
-    ({change.consentForm.stableId} v{change.consentForm.version})
   </span></span>
 }
 

@@ -35,7 +35,7 @@ public class LivePepperDSMClient implements PepperDSMClient {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
     private final Validator validator;
-    private final static String DEV_STUDY_REALM = "juniper-dev";
+    public final static String DEV_STUDY_REALM = "juniper-dev";
 
     public LivePepperDSMClient(PepperDSMConfig pepperDSMConfig,
                                WebClient.Builder webClientBuilder,

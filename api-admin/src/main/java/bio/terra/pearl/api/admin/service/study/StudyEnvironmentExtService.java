@@ -12,6 +12,7 @@ import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.List;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -61,10 +62,7 @@ public class StudyEnvironmentExtService {
         studyEnvConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
     // we don't allow directly setting the 'initialized' field -- that comes from the publishing
     // flows
-    existing.setPasswordProtected(update.isPasswordProtected());
-    existing.setAcceptingEnrollment(update.isAcceptingEnrollment());
-    existing.setAcceptingProxyEnrollment(update.isAcceptingProxyEnrollment());
-    existing.setPassword(update.getPassword());
+    BeanUtils.copyProperties(update, existing, "initialized", "id", "createdAt", "lastUpdatedAt");
     return studyEnvConfigService.update(existing);
   }
 
