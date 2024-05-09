@@ -21,11 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -221,13 +217,15 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
 
         Map<String, SearchValue.SearchValueType> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
 
-        Assertions.assertEquals(18, results.size());
-        Assertions.assertEquals(Map.ofEntries(
+        Assertions.assertEquals(27, results.size());
+        Map.ofEntries(
                 Map.entry("profile.givenName", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.familyName", SearchValue.SearchValueType.STRING),
+                Map.entry("profile.name", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.contactEmail", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.phoneNumber", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.birthDate", SearchValue.SearchValueType.DATE),
+                Map.entry("profile.sexAtBirth", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.mailingAddress.street1", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.mailingAddress.street2", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.mailingAddress.city", SearchValue.SearchValueType.STRING),
@@ -240,8 +238,18 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("answer.test_survey_1.oh_oh_basic_firstName", SearchValue.SearchValueType.STRING),
                 Map.entry("answer.test_survey_1.oh_oh_basic_lastName", SearchValue.SearchValueType.STRING),
                 Map.entry("answer.test_survey_1.oh_oh_basic_middleInitial", SearchValue.SearchValueType.STRING),
+                Map.entry("task.another_survey.status", SearchValue.SearchValueType.STRING),
+                Map.entry("task.another_survey.assigned", SearchValue.SearchValueType.BOOLEAN),
+                Map.entry("task.test_survey_1.assigned", SearchValue.SearchValueType.BOOLEAN),
+                Map.entry("task.test_survey_1.status", SearchValue.SearchValueType.STRING),
+                Map.entry("enrollee.subject", SearchValue.SearchValueType.BOOLEAN),
+                Map.entry("enrollee.consented", SearchValue.SearchValueType.BOOLEAN),
+                Map.entry("enrollee.shortcode", SearchValue.SearchValueType.STRING),
                 Map.entry("age", SearchValue.SearchValueType.INTEGER)
-        ), results);
+        ).forEach((key, value) -> {
+            Assertions.assertTrue(results.containsKey(key), "Key not found: " + key);
+            Assertions.assertEquals(value, results.get(key), "Wrong value for key: " + key + ", expected: " + value + " got: " + results.get(key));
+        });
 
     }
 }

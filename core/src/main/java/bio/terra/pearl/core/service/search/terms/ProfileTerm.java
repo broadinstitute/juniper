@@ -35,7 +35,7 @@ public class ProfileTerm implements SearchTerm {
             return new SearchValue();
         }
 
-        if (field.equals("fullName")) {
+        if (field.equals("name")) {
             String givenName = Objects.requireNonNullElse(context.getProfile().getGivenName(), "");
             String familyName = Objects.requireNonNullElse(context.getProfile().getFamilyName(), "");
             return new SearchValue((givenName + " " + familyName).trim());
@@ -75,7 +75,7 @@ public class ProfileTerm implements SearchTerm {
     public String termClause() {
         if (field.startsWith("mailingAddress"))
             return "mailing_address." + toSnakeCase(field.substring(field.indexOf(".") + 1));
-        if (field.equals("fullName"))
+        if (field.equals("name"))
             return "concat(profile.given_name, ' ', profile.family_name)";
         return "profile." + toSnakeCase(field);
     }
@@ -88,7 +88,7 @@ public class ProfileTerm implements SearchTerm {
     public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
             Map.entry("givenName", SearchValue.SearchValueType.STRING),
             Map.entry("familyName", SearchValue.SearchValueType.STRING),
-            Map.entry("fullName", SearchValue.SearchValueType.STRING),
+            Map.entry("name", SearchValue.SearchValueType.STRING),
             Map.entry("contactEmail", SearchValue.SearchValueType.STRING),
             Map.entry("phoneNumber", SearchValue.SearchValueType.STRING),
             Map.entry("birthDate", SearchValue.SearchValueType.DATE),

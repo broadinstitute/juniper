@@ -55,7 +55,7 @@ public class TaskTerm implements SearchTerm {
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
-        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("answer", alias(), "enrollee.id = %s.enrollee_id".formatted(alias())));
+        return List.of(new EnrolleeSearchQueryBuilder.JoinClause("participant_task", alias(), "enrollee.id = %s.enrollee_id".formatted(alias())));
     }
 
     @Override
@@ -95,5 +95,5 @@ public class TaskTerm implements SearchTerm {
 
     public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
             Map.entry("status", SearchValue.SearchValueType.STRING),
-            Map.entry("assigned", SearchValue.SearchValueType.STRING));
+            Map.entry("assigned", SearchValue.SearchValueType.BOOLEAN));
 }
