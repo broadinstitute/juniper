@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
@@ -25,7 +27,9 @@ import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.opencsv.CSVParser;
@@ -73,6 +77,7 @@ public class EnrolleeImportService {
     private final ProfileService profileService;
     private final EnrolleeExportService enrolleeExportService;
     private final SurveyResponseService surveyResponseService;
+    private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final ParticipantTaskService participantTaskService;
     private final PortalService portalService;
     private final ImportService importService;
@@ -83,7 +88,7 @@ public class EnrolleeImportService {
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
-                                 ImportService importService, ImportItemService importItemService) {
+                                 ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -93,6 +98,7 @@ public class EnrolleeImportService {
         this.portalService = portalService;
         this.importService = importService;
         this.importItemService = importItemService;
+        this.surveyTaskDispatcher = surveyTaskDispatcher;
     }
 
     @Transactional
@@ -247,7 +253,20 @@ public class EnrolleeImportService {
             return null;
         }
         ParticipantTask relatedTask = participantTaskService.findTaskForActivity(ppUser.getId(), studyEnv.getId(), formatter.getModuleName())
-                .orElseThrow(() -> new IllegalStateException("Task not found to enable import of response for " + formatter.getModuleName()));
+                .orElse(null);
+        if (relatedTask == null) {
+            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
+                    TaskType.SURVEY,
+                    formatter.getModuleName(),
+                    1,
+                    null,
+                    true,
+                    true);
+
+            List<ParticipantTask> tasks = surveyTaskDispatcher.assign(assignDto, studyEnv.getId(),
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.assignToExistingEnrollees")));
+            relatedTask = tasks.get(0);
+        }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }

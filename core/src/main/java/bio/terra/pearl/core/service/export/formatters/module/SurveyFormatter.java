@@ -133,6 +133,23 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         return stableId.substring(thirdUnderscoreIndex + 1);
     }
 
+    /**
+     * strip out survey prefixes.  so e.g. "oh_oh_famHx.oh_oh_famHx_question1" becomes "oh_oh_famHx.question1"
+     */
+    public static String stripSurveyPrefix(String stableId) {
+        String surveyName = null;
+        int dotIndex = StringUtils.indexOf(stableId, ".");
+        if (dotIndex > 0) {
+            surveyName = stableId.substring(0, dotIndex + 1);
+            stableId = stableId.substring(dotIndex + 1);
+        }
+        String cleanStableId = stripStudyAndSurveyPrefixes(stableId);
+        if (surveyName != null) {
+            return surveyName.concat(cleanStableId);
+        } else {
+            return cleanStableId;
+        }
+    }
 
     @Override
     public Map<String, String> toStringMap(EnrolleeExportData exportData) {
@@ -280,7 +297,12 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
         SurveyResponse response = new SurveyResponse();
         for (ItemFormatter<SurveyResponse> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, 1);
+            if (!enrolleeMap.containsKey(columnName)) {
+                //strip surveyName
+                columnName = stripSurveyPrefix(columnName);
+            }
             String stringVal = enrolleeMap.get(columnName);
+
             itemFormatter.importValueToBean(response, stringVal);
         }
         return (response.getAnswers().isEmpty() ? null : response);
