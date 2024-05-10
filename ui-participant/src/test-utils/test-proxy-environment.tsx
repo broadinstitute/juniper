@@ -49,7 +49,9 @@ export const mockPortal: Portal = {
           acceptingProxyEnrollment: true,
           initialized: true,
           passwordProtected: false,
-          password: ''
+          password: '',
+          useDevDsmRealm: true,
+          useStubDsm: true
         },
         environmentName: 'sandbox',
         configuredSurveys: [],
