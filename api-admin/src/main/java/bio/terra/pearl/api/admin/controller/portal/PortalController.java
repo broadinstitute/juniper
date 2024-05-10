@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.controller.portal;
 
 import bio.terra.pearl.api.admin.api.PortalApi;
 import bio.terra.pearl.api.admin.model.PortalShallowDto;
+import bio.terra.pearl.api.admin.models.dto.PortalRenameDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.portal.PortalExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -36,6 +37,14 @@ public class PortalController implements PortalApi {
   public ResponseEntity<Object> get(String portalShortcode, String language) {
     AdminUser adminUser = requestService.requireAdminUser(request);
     Portal portal = portalExtService.fullLoad(adminUser, portalShortcode, language);
+    return ResponseEntity.ok(portal);
+  }
+
+  @Override
+  public ResponseEntity<Object> rename(String portalShortcode, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    PortalRenameDto renameDto = objectMapper.convertValue(body, PortalRenameDto.class);
+    Portal portal = portalExtService.rename(portalShortcode, renameDto.getNewName(), adminUser);
     return ResponseEntity.ok(portal);
   }
 

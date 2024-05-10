@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.controller.study;
 
 import bio.terra.pearl.api.admin.api.StudyApi;
+import bio.terra.pearl.api.admin.models.dto.PortalRenameDto;
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
@@ -36,6 +37,14 @@ public class StudyController implements StudyApi {
     AdminUser operator = requestService.requireAdminUser(request);
     StudyCreationDto studyDto = objectMapper.convertValue(body, StudyCreationDto.class);
     Study study = studyExtService.create(portalShortcode, studyDto, operator);
+    return ResponseEntity.ok(study);
+  }
+
+  @Override
+  public ResponseEntity<Object> rename(String portalShortCode, String studyShortcode, Object body) {
+    AdminUser operator = requestService.requireAdminUser(request);
+    PortalRenameDto studyDto = objectMapper.convertValue(body, PortalRenameDto.class);
+    Study study = studyExtService.rename(portalShortCode, studyShortcode, studyDto, operator);
     return ResponseEntity.ok(study);
   }
 

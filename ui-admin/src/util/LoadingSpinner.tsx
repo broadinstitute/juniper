@@ -10,6 +10,11 @@ import { faDna } from '@fortawesome/free-solid-svg-icons'
  */
 export default function LoadingSpinner({ children, testId='loading-spinner', isLoading }:
     { children?: React.ReactNode, testId?: string, isLoading?: boolean}) {
+  // const spinner = (
+  //     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+  //       <FontAwesomeIcon icon={faDna} className="fa-2x gene-load-spinner" data-testid={testId}/>
+  //     </div>
+  // )
   const spinner = <FontAwesomeIcon icon={faDna} className="gene-load-spinner" data-testid={testId}/>
   if (!children && typeof(isLoading) === 'undefined') {
     return spinner

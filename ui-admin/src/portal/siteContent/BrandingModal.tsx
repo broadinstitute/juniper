@@ -5,9 +5,9 @@ import { useLoadingEffect } from 'api/api-utils'
 import Api, { getMediaUrl, SiteMediaMetadata } from 'api/api'
 import { filterPriorVersions } from '../media/SiteMediaList'
 import useReactSingleSelect from 'util/react-select-utils'
-import LoadingSpinner from 'util/LoadingSpinner'
 import Select from 'react-select'
 import InfoPopup from 'components/forms/InfoPopup'
+import LoadingSpinner from '../../util/LoadingSpinner'
 
 const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => <div>
   {image.cleanFileName} <img style={{ maxHeight: '1.5em' }}
@@ -46,47 +46,48 @@ export default function BrandingModal({ onDismiss, localContent, updateLocalCont
       <Modal.Title>Branding</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <form onSubmit={e => e.preventDefault()}>
-        <label htmlFor={selectInputId}>Navbar logo</label>
-        <InfoPopup content={`The logo that appears in the top left corner of the participant navbar`}/>
-        <LoadingSpinner isLoading={isImageListLoading}>
+      { isImageListLoading ?
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <LoadingSpinner isLoading={isImageListLoading}/>
+        </div> :
+        <form onSubmit={e => e.preventDefault()}>
+          <label htmlFor={selectInputId}>Navbar Logo</label>
+          <InfoPopup content={`The logo that appears in the top left corner of the participant navbar`}/>
           <Select inputId={selectInputId} options={options} value={selectedOption} onChange={onChange}/>
-        </LoadingSpinner>
-        <label htmlFor="colorInput" className="mt-3">Primary Brand Color</label>
-        <InfoPopup content={<span>
+          <label htmlFor="colorInput" className="mt-3">Primary Brand Color</label>
+          <InfoPopup content={<span>
           Color for links and action buttons for participants. This should be
           specified as a CSS color string, either hex (<code>#33aabb</code>) or RGB (<code>rgb(25,180,100)</code>)
-        </span>}/>
-        <div className="d-flex">
-          <input type="text" className="form-control" id="colorInput"
-            value={color}
-            onChange={event => {
-              setColor(event.target.value)
-            }}/>
-          <span className="px-4 ms-2" style={{ background: color }} title="color preview"/>
-        </div>
+          </span>}/>
+          <div className="d-flex">
+            <input type="text" className="form-control" id="colorInput"
+              value={color}
+              onChange={event => {
+                setColor(event.target.value)
+              }}/>
+            <span className="px-4 ms-2" style={{ background: color }} title="color preview"/>
+          </div>
 
-        <label htmlFor="backgroundColorInput" className="mt-3">Dashboard Background Color</label>
-        <InfoPopup content={<span>
+          <label htmlFor="backgroundColorInput" className="mt-3">Dashboard Background Color</label>
+          <InfoPopup content={<span>
           Background color for the participant&lsquo;s dashboard. This should be
           specified as a CSS color string, either hex (<code>#33aabb</code>), RGB (<code>rgb(25,180,100)</code>),
           or any other valid CSS color string (e.g., <code>linear-gradient</code>)
-        </span>}/>
-        <div className="d-flex">
-          <input type="text" className="form-control" id="backgroundColorInput"
-            value={backgroundColor}
-            onChange={event => {
-              setBackgroundColor(event.target.value)
-            }}/>
-          <span className="px-4 ms-2" style={{ background: backgroundColor }} title="dashboard background preview"/>
-        </div>
-
-
-      </form>
+          </span>}/>
+          <div className="d-flex">
+            <input type="text" className="form-control" id="backgroundColorInput"
+              value={backgroundColor}
+              onChange={event => {
+                setBackgroundColor(event.target.value)
+              }}/>
+            <span className="px-4 ms-2" style={{ background: backgroundColor }} title="dashboard background preview"/>
+          </div>
+        </form> }
     </Modal.Body>
     <Modal.Footer>
       <button
         className="btn btn-primary"
+        disabled={isImageListLoading}
         onClick={() => {
           updateLocalContent({
             ...localContent,

@@ -53,6 +53,12 @@ public class PortalExtService {
     return portals;
   }
 
+  public Portal rename(String portalShortcode, String newName, AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    portal.setName(newName);
+    return portalService.update(portal);
+  }
+
   public PortalEnvironmentConfig updateConfig(
       String portalShortcode,
       EnvironmentName envName,
