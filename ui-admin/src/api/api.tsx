@@ -480,6 +480,26 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async renamePortal(portalShortcode: string, newName: string): Promise<Portal> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/name`
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ newName })
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async renameStudy(portalShortcode: string, studyShortcode: string, newName: string): Promise<Study> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/studies/${studyShortcode}/name`
+    const response = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ newName })
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
     const params = queryString.stringify({ portalShortcode, language: selectedLanguage })
     const url = `${API_ROOT}/i18n/v1?${params}`

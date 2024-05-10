@@ -102,6 +102,22 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/name:
+    put:
+      summary: Renames the portal
+      tags: [ portal ]
+      operationId: rename
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: updated portal object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/i18n/v1:
     get:
       summary: Lists the language texts for a given language
@@ -439,6 +455,23 @@ paths:
       responses:
         '204':
           description: no content
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/name:
+    put:
+      summary: renames a study
+      tags: [ study ]
+      operationId: rename
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: study object
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kitTypes:

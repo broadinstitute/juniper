@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service.study;
 
+import bio.terra.pearl.api.admin.models.dto.PortalRenameDto;
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -115,6 +116,24 @@ public class StudyExtService {
     } catch (IOException e) {
       throw new InternalServerException("Failed to pre-populate study.");
     }
+  }
+
+  public Study rename(
+      String portalShortcode,
+      String studyShortcode,
+      PortalRenameDto renameDto,
+      AdminUser operator) {
+    if (!operator.isSuperuser()) {
+      throw new PermissionDeniedException("You do not have permission to rename studies");
+    }
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+    Study existingStudy =
+        studyService
+            .findByShortcode(studyShortcode)
+            .orElseThrow(() -> new NotFoundException("Study " + studyShortcode + " not found"));
+    existingStudy.setName(renameDto.getNewName());
+    return studyService.update(existingStudy);
   }
 
   @Transactional
