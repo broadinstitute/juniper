@@ -144,6 +144,16 @@ public class EnrolleeImportService {
                         .createdAt(Instant.now())
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.SUCCESS).build();
+                //update createAt and lastUpdated
+                if (enrolleeMap.get("enrollee.createdAt") != null) {
+                    timeShiftPopulateDao.changeEnrolleeCreationTime(
+                            enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
+                    Enrollee enrollee1 = enrolleeService.find(enrollee.getId()).get();
+                }
+                if (enrolleeMap.get("enrollee.lastUpdatedAt") != null) {
+                    timeShiftPopulateDao.changeEnrolleeCreationTime(
+                            enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
+                }
             } catch (Exception e) {
                 importItem = ImportItem.builder()
                         .importId(dataImport.getId())
@@ -216,15 +226,6 @@ public class EnrolleeImportService {
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        //to do update createAt and lastUpdated
-        if (enrolleeMap.containsKey("enrollee.createdAt")) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(
-                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
-        }
-        if (enrolleeMap.containsKey("enrollee.lastUpdatedAt")) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(
-                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
-        }
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
         /** now update the profile */
