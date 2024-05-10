@@ -3,10 +3,8 @@ package bio.terra.pearl.core.dao.study;
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
