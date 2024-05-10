@@ -1,15 +1,13 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.dao.workflow.AdminTaskDao;
+import bio.terra.pearl.core.dao.common.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.AdminTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
-import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
 import bio.terra.pearl.populate.dto.AdminTaskPopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
 import org.springframework.stereotype.Service;

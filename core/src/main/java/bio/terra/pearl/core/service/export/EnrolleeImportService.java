@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.dao.common.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.Import;
@@ -20,10 +21,12 @@ import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -56,6 +59,7 @@ import java.util.UUID;
 @Slf4j
 public class EnrolleeImportService {
 
+    private final EnrolleeService enrolleeService;
     ExportOptions IMPORT_OPTIONS_TSV = ExportOptions
             .builder()
             .stableIdsForOptions(true)
@@ -80,6 +84,7 @@ public class EnrolleeImportService {
     private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final ParticipantTaskService participantTaskService;
     private final PortalService portalService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
     private final char CSV_DELIMITER = ',';
@@ -88,7 +93,8 @@ public class EnrolleeImportService {
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
-                                 ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher) {
+                                 ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
+                                 TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -99,6 +105,8 @@ public class EnrolleeImportService {
         this.importService = importService;
         this.importItemService = importItemService;
         this.surveyTaskDispatcher = surveyTaskDispatcher;
+        this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.enrolleeService = enrolleeService;
     }
 
     @Transactional
@@ -208,6 +216,15 @@ public class EnrolleeImportService {
         /** now create the enrollee */
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        //to do update createAt and lastUpdated
+        if (enrolleeMap.containsKey("enrollee.createdAt")) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(
+                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
+        }
+        if (enrolleeMap.containsKey("enrollee.lastUpdatedAt")) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(
+                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
+        }
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
 
         /** now update the profile */

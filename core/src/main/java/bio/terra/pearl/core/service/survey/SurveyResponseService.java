@@ -5,7 +5,12 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -164,7 +169,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         if (survey.getSurveyType().equals(SurveyType.CONSENT)) {
             eventService.publishEnrolleeConsentEvent(enrollee, ppUser, response, task);
         }
-        logger.info("SurveyReponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
+        logger.info("SurveyResponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
         HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(event, response);
         return hubResponse;
     }
@@ -183,7 +188,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         if (taskResponseId != null) {
             response = dao.find(taskResponseId).get();
             // don't allow the response to be marked incomplete if it's already complete
-            if(!response.isComplete()) {
+            if (!response.isComplete()) {
                 response.setComplete(responseDto.isComplete());
             }
             // to enable simultaneous editing with page-saving, update this to be a merge, rather than a set
@@ -226,10 +231,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         return participantTaskService.update(task, auditInfo);
     }
 
-    /** Creates and attaches the answers to the response. */
+    /**
+     * Creates and attaches the answers to the response.
+     */
     @Transactional
     public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
-                                                 Survey survey, PortalParticipantUser ppUser) {
+                                              Survey survey, PortalParticipantUser ppUser) {
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
@@ -256,7 +263,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
     @Transactional
     public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
-                                  Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
+                               Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
         if (existing.valuesEqual(updated)) {
             // if the values are the same, don't bother with an update
             return existing;
@@ -273,7 +280,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .newValue(updated.valueAsString()).build();
         changeRecords.add(change);
         existing.setSurveyVersion(updated.getSurveyVersion());
-        if (existing.getSurveyVersion() == 0)  {
+        if (existing.getSurveyVersion() == 0) {
             // if the frontend didn't specify a specific version,
             // default to the assigned version
             existing.setSurveyVersion(survey.getVersion());
@@ -283,7 +290,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
-                                  Survey survey, PortalParticipantUser ppUser) {
+                                Survey survey, PortalParticipantUser ppUser) {
         answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());

@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
+import bio.terra.pearl.core.dao.common.TimeShiftPopulateDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
@@ -43,7 +44,6 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.dao.ParticipantUserPopulateDao;
-import bio.terra.pearl.populate.dao.TimeShiftPopulateDao;
 import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.participant.EnrolleePopDto;
@@ -56,7 +56,6 @@ import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -167,7 +166,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .systemProcess(DataAuditInfo.systemProcessName(getClass(),  ".populateResponse")).build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), ".populateResponse")).build();
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
@@ -212,7 +211,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         return popDto;
     }
 
-    /** persists any preEnrollmentResponse, and then attaches it to the enrollee */
+    /**
+     * persists any preEnrollmentResponse, and then attaches it to the enrollee
+     */
     private PreEnrollmentResponse populatePreEnrollResponse(EnrolleePopDto enrolleeDto, StudyEnvironment studyEnv, StudyPopulateContext context) throws JsonProcessingException {
         PreEnrollmentResponsePopDto responsePopDto = enrolleeDto.getPreEnrollmentResponseDto();
         if (responsePopDto == null) {
@@ -240,7 +241,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .systemProcess(DataAuditInfo.systemProcessName(getClass(),".populateTask")).build();
+                .systemProcess(DataAuditInfo.systemProcessName(getClass(), ".populateTask")).build();
         if (taskDto.getTargetName() == null) {
             taskDto.setTargetName(getTargetName(taskDto.getTaskType(), taskDto.getTargetStableId(), portal.getId(),
                     taskDto.getTargetAssignedVersion()));
@@ -248,7 +249,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         participantTaskService.create(taskDto, auditInfo);
     }
 
-    /** creates the kit request in the DB and attaches it to the passed-in enrollee object */
+    /**
+     * creates the kit request in the DB and attaches it to the passed-in enrollee object
+     */
     private KitRequest populateKitRequest(Enrollee enrollee, Profile profile, KitRequestPopDto kitRequestPopDto) throws JsonProcessingException {
         AdminUser adminUser = adminUserDao.findByUsername(kitRequestPopDto.getCreatingAdminUsername()).get();
         KitType kitType = kitTypeDao.findByName(kitRequestPopDto.getKitTypeName()).get();
@@ -280,7 +283,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     private void populateNotifications(Enrollee enrollee, EnrolleePopDto enrolleeDto, UUID studyEnvironmentId,
-    PortalParticipantUser ppUser) {
+                                       PortalParticipantUser ppUser) {
         List<Trigger> triggers = triggerService.findByStudyEnvironmentId(studyEnvironmentId);
         for (NotificationPopDto notificationPopDto : enrolleeDto.getNotifications()) {
             Trigger matchedConfig = matchTriggerToNotification(triggers, notificationPopDto);
@@ -293,13 +296,15 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         }
     }
 
-    /** quick-and-dirty match based on types -- this is not robust but it's sufficient for our current testing needs */
+    /**
+     * quick-and-dirty match based on types -- this is not robust but it's sufficient for our current testing needs
+     */
     private Trigger matchTriggerToNotification(List<Trigger> triggers,
                                                NotificationPopDto notification) {
         return triggers.stream().filter(config ->
                         config.getEventType().equals(notification.getTriggerEventType()) &&
                                 config.getTriggerType().equals(notification.getTriggerType()) &&
-                config.getDeliveryType().equals(notification.getDeliveryType()))
+                                config.getDeliveryType().equals(notification.getDeliveryType()))
                 .findFirst().orElse(null);
     }
 
@@ -338,7 +343,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         if (!popDto.getProxyPopDtos().isEmpty()) {
             // for now assuming only one proxy per user
             ProxyPopDto firstProxy = popDto.getProxyPopDtos().get(0);
-            if (firstProxy.isEnrollAsProxy()){
+            if (firstProxy.isEnrollAsProxy()) {
                 enrolleePopulationData = this.createNewGovernedEnrollee(attachedEnv.getEnvironmentName(), popDto, context, firstProxy);
             }
         } else {
@@ -441,10 +446,10 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                                                              ProxyPopDto proxyPopDto) {
         String governedUsername = popDto.getLinkedUsername();
         ParticipantUser proxyParticipantUser = participantUserService.findOne(proxyPopDto.getUsername(), environmentName).get();
-        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(),  context.getPortalShortcode()).get();
+        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(proxyParticipantUser.getId(), context.getPortalShortcode()).get();
         boolean prevEmailSetting = updateDoNotEmail(portalParticipantUser, true, "createNewGovernedEnrollee");
         // for governed and proxy users we always simulate submissions
-        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy( environmentName, context.getStudyShortcode(), proxyParticipantUser,
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(environmentName, context.getStudyShortcode(), proxyParticipantUser,
                 portalParticipantUser, popDto.getPreEnrollmentResponseId(), governedUsername);
         Enrollee proxyEnrollee = hubResponse.getEnrollee();
         proxyEnrollee.setShortcode(proxyPopDto.getShortcode());
@@ -526,7 +531,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 kitDto.setCreatedAt(recent.minus(PopulateUtils.randomInteger(12, 48), HOURS));
         }
     }
-    @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     protected class EnrolleePopulationData {
         EnrolleePopDto enrolleePopDto;
         Enrollee enrollee;

@@ -1,6 +1,10 @@
 package bio.terra.pearl.core.service.notification.email;
 
-import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.notification.EmailTemplate;
+import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
+import bio.terra.pearl.core.model.notification.Notification;
+import bio.terra.pearl.core.model.notification.NotificationDeliveryStatus;
+import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
@@ -87,6 +91,7 @@ public class EnrolleeEmailService implements NotificationSender {
                     // email starts, so the notification update will fail. This is expected and not a problem.
                     log.info("notification update failed for populated withdrawn participant -- this is expected");
                 } else {
+                    e.printStackTrace();
                     log.error("failed to update notification: {}", notification.getId());
                 }
             }
@@ -99,7 +104,7 @@ public class EnrolleeEmailService implements NotificationSender {
     /**
      * skips processing, checks, and logging, and just sends the email. Should only be used for debugging and
      * test emails, since we want all regular emails to be logged via notifications in standard ways.
-     * */
+     */
     @Override
     public void sendTestNotification(Trigger config, EnrolleeContext ruleData) {
         NotificationContextInfo contextInfo = loadContextInfo(config);
@@ -107,7 +112,7 @@ public class EnrolleeEmailService implements NotificationSender {
     }
 
     protected String buildAndSendEmail(NotificationContextInfo contextInfo, EnrolleeContext ruleData,
-                                     Notification notification) {
+                                       Notification notification) {
         Mail mail = buildEmail(contextInfo, ruleData, notification);
         return sendgridClient.sendEmail(mail);
     }
@@ -117,7 +122,7 @@ public class EnrolleeEmailService implements NotificationSender {
         LocalizedEmailTemplate localizedEmailTemplate = getPreferredTemplateWithDefault(contextInfo.template(), preferredLanguage);
 
         StringSubstitutor substitutor = EnrolleeEmailSubstitutor
-            .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
+                .newSubstitutor(ruleData, contextInfo, routingPaths, notification.getCustomMessagesMap());
         String fromAddress = contextInfo.portalEnvConfig().getEmailSourceAddress();
         if (fromAddress == null) {
             // if this portal environment hasn't been configured with a specific email, just send from the support address
@@ -165,7 +170,7 @@ public class EnrolleeEmailService implements NotificationSender {
     /**
      * loads the context information needed to send a notification (things not specific to an enrollee/user)
      * this method will almost certainly benefit from caching, especially with respect to bulk emails.
-     *
+     * <p>
      * This can return null if called in an async context where the trigger points to an
      * environment that either no longer exists or has not yet been populated (e.g. during a populate_portal.sh call)
      */
