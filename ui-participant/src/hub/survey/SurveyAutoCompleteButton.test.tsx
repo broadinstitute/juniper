@@ -14,7 +14,7 @@ describe('SurveyAutoCompleteButton', () => {
       shortcode: 'demo'
     })
     render(<SurveyAutoCompleteButton surveyModel={null} />)
-    expect(screen.getByLabelText('automatically complete the survey')).toBeInTheDocument()
+    expect(screen.getByLabelText('automatically fill in the survey')).toBeInTheDocument()
   })
 
   it('should not render in live environment', () => {
@@ -24,6 +24,6 @@ describe('SurveyAutoCompleteButton', () => {
       shortcode: 'demo'
     })
     render(<SurveyAutoCompleteButton surveyModel={null} />)
-    expect(screen.queryByLabelText('automatically complete the survey')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('automatically fill in the survey')).not.toBeInTheDocument()
   })
 })
