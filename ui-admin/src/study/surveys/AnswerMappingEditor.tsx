@@ -43,9 +43,9 @@ const AnswerMappingMapTypeLabels: { [key in AnswerMappingMapType]: string} = {
 }
 
 /**
- * TODO
+ * Table which allows viewing, deleting, and creating new answer mappings.
  */
-export default function AnswerMappingEditorView(
+export default function AnswerMappingEditor(
   {
     studyEnvContext, formContent
   } : {

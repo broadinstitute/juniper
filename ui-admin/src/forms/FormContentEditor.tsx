@@ -11,7 +11,7 @@ import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
 import useStateCallback from '../util/useStateCallback'
-import AnswerMappingEditorView from '../study/surveys/AnswerMappingEditorView'
+import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
 import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 
 type FormContentEditorProps = {
@@ -100,7 +100,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Answer Mappings"
         >
           <ErrorBoundary>
-            <AnswerMappingEditorView studyEnvContext={studyEnvContext} formContent={currentForm}/>
+            <AnswerMappingEditor studyEnvContext={studyEnvContext} formContent={currentForm}/>
           </ErrorBoundary>
         </Tab>
         <Tab
