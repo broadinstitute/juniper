@@ -429,6 +429,22 @@ export type StudyCreationDto = {
 
 export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 
+export const answerMappingTargetTypes = ['PROFILE', 'PROXY', 'PROXY_PROFILE'] as const
+export type AnswerMappingTargetType = typeof answerMappingTargetTypes[number];
+
+export const answerMappingMapTypes = ['STRING_TO_STRING', 'STRING_TO_LOCAL_DATE', 'STRING_TO_BOOLEAN'] as const
+export type AnswerMappingMapType = typeof answerMappingMapTypes[number];
+
+export type AnswerMapping = {
+  id: string
+  questionStableId: string
+  surveyId: string
+  targetType: AnswerMappingTargetType
+  targetField: string
+  mapType: AnswerMappingMapType
+  formatString: string
+  errorOnFail: boolean
+}
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -643,6 +659,39 @@ export default {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(configuredSurvey)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async getSurveyAnswerMappings(portalShortcode: string, stableId: string, version: number): Promise<AnswerMapping[]> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}/answerMapping`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async createAnswerMapping(
+    portalShortcode: string,
+    stableId: string,
+    version: number,
+    mapping: AnswerMapping): Promise<AnswerMapping> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}/answerMapping`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(mapping)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async deleteAnswerMapping(
+    portalShortcode: string,
+    stableId: string,
+    version: number,
+    mappingId: string): Promise<AnswerMapping> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}/answerMapping/${mappingId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
     })
     return await this.processJsonResponse(response)
   },

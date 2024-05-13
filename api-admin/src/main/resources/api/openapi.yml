@@ -256,6 +256,53 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/answerMapping:
+    get:
+      summary: gets the requested survey's answer mappings
+      tags: [ answerMapping ]
+      operationId: findBySurvey
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      responses:
+        '200':
+          description: list of answer mappings
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: creates a new answer mappings for the given survey
+      tags: [ answerMapping ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: new answer mapping
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}/answerMapping/{answerMappingId}:
+    delete:
+      summary: Deletes an answer mapping from a survey
+      tags: [ answerMapping ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - { name: version, in: path, required: true, schema: { type: integer } }
+        - { name: answerMappingId, in: path, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204':
+          description: No Content
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/configuredSurveys/findWithNoContent:
     get:
       summary: Lists all the configured surveys for a study

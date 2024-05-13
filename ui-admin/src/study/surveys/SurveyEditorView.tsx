@@ -228,6 +228,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       </div>
       <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
         <FormContentEditor
+          studyEnvContext={studyEnvContext}
+          currentForm={currentForm}
           initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
           visibleVersionPreviews={visibleVersionPreviews}
           supportedLanguages={portalEnv?.supportedLanguages || []}

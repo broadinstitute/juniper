@@ -11,8 +11,12 @@ import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
 import useStateCallback from '../util/useStateCallback'
+import AnswerMappingEditorView from '../study/surveys/AnswerMappingEditorView'
+import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 
 type FormContentEditorProps = {
+  studyEnvContext: StudyEnvContextT
+  currentForm: VersionedForm
   initialContent: string
   visibleVersionPreviews: VersionedForm[]
   supportedLanguages: PortalEnvironmentLanguage[]
@@ -23,7 +27,15 @@ type FormContentEditorProps = {
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
-  const { initialContent, visibleVersionPreviews, supportedLanguages, readOnly, onChange } = props
+  const {
+    initialContent,
+    visibleVersionPreviews,
+    supportedLanguages,
+    readOnly,
+    onChange,
+    studyEnvContext,
+    currentForm
+  } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
@@ -80,6 +92,15 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
                 setTabsEnabled(isEmpty(validationErrors))
               }}
             />
+          </ErrorBoundary>
+        </Tab>
+        <Tab
+          disabled={activeTab !== 'answermappings' && !tabsEnabled}
+          eventKey="answermappings"
+          title="Answer Mappings"
+        >
+          <ErrorBoundary>
+            <AnswerMappingEditorView studyEnvContext={studyEnvContext} formContent={currentForm}/>
           </ErrorBoundary>
         </Tab>
         <Tab
