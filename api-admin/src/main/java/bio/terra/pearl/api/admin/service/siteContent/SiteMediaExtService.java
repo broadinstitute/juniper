@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteMedia;
 import bio.terra.pearl.core.model.site.SiteMediaMetadata;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.site.SiteMediaService;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,18 @@ public class SiteMediaExtService {
   public List<SiteMediaMetadata> list(String portalShortcode, AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
     return siteMediaService.findMetadataByPortal(portalShortcode);
+  }
+
+  /*
+   * For versioning purposes, renaming an image leaves the old image in
+   * place and creates a new image with the new name.
+   */
+  public SiteMedia rename(
+      String portalShortcode, UUID id, String newCleanFileName, AdminUser operator) {
+    authUtilService.authUserToPortal(operator, portalShortcode);
+    SiteMedia image =
+        siteMediaService.find(id).orElseThrow(() -> new NotFoundException("Image not found"));
+    return siteMediaService.rename(image, newCleanFileName);
   }
 
   public SiteMedia upload(

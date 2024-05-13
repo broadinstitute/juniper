@@ -43,6 +43,14 @@ public class SiteMediaService extends ImmutableEntityService<SiteMedia, SiteMedi
         return dao.findMetadataByPortal(portalShortcode);
     }
 
+    public SiteMedia rename(SiteMedia image, String newCleanFileName) {
+        int nextVersion = getNextVersion(newCleanFileName, image.getPortalShortcode());
+        image.cleanForCopying();
+        image.setCleanFileName(newCleanFileName);
+        image.setVersion(nextVersion);
+        return dao.create(image);
+    }
+
     @Override
     public SiteMedia create(SiteMedia image) {
 

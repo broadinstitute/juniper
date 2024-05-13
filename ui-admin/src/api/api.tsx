@@ -526,6 +526,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async renamePortalMedia(portalShortcode: string, siteMediaId: string, rename: { newCleanFileName: string }):
+    Promise<SiteMediaMetadata> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/${siteMediaId}/rename`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(rename)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async deletePortalMedia(portalShortcode: string, id: string): Promise<Response> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/siteMedia/${id}`
     const response = await fetch(url, {

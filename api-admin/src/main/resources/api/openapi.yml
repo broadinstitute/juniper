@@ -1556,6 +1556,22 @@ paths:
           description: successful deletion
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/siteMedia/{id}/rename:
+    post:
+      summary: Rename the site media
+      tags: [ siteMedia ]
+      operationId: rename
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: successful rename
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteMedia/upload/{uploadFileName}/{version}:
     post:
       summary: upload an image
