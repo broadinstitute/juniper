@@ -23,7 +23,16 @@ const ProfileFields: { [key: string]: AnswerMappingMapType } = {
   'familyName': 'STRING_TO_STRING',
   'contactEmail': 'STRING_TO_STRING',
   'phoneNumber': 'STRING_TO_STRING',
-  'birthDate': 'STRING_TO_LOCAL_DATE'
+  'birthDate': 'STRING_TO_LOCAL_DATE',
+  'doNotEmail': 'STRING_TO_BOOLEAN',
+  'doNotEmailSolicit': 'STRING_TO_BOOLEAN',
+  'sexAtBirth': 'STRING_TO_STRING',
+  'mailingAddress.street1': 'STRING_TO_STRING',
+  'mailingAddress.street2': 'STRING_TO_STRING',
+  'mailingAddress.city': 'STRING_TO_STRING',
+  'mailingAddress.state': 'STRING_TO_STRING',
+  'mailingAddress.postalCode': 'STRING_TO_STRING',
+  'mailingAddress.country': 'STRING_TO_STRING'
 }
 
 const ProxyFields: { [key: string]: AnswerMappingMapType } = {
