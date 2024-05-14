@@ -259,6 +259,7 @@ type UseSurveyJsModelOpts = {
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
  * @param pager the control object for paging the survey
+ * @param envName
  * @param profile
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See

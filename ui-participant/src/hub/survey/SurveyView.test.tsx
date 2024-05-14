@@ -330,7 +330,7 @@ const setupSurveyTest = (survey: Survey) => {
   }
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey} response={mockHubResponse().response}
+      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey.survey} response={mockHubResponse().response}
         studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
         selectedLanguage={'en'} updateProfile={jest.fn()}
         taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
