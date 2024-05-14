@@ -1,6 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.dao.common.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.Import;
@@ -144,16 +144,8 @@ public class EnrolleeImportService {
                         .createdAt(Instant.now())
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.SUCCESS).build();
-                //update createAt and lastUpdated
-                if (enrolleeMap.get("enrollee.createdAt") != null) {
-                    timeShiftPopulateDao.changeEnrolleeCreationTime(
-                            enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
-                    Enrollee enrollee1 = enrolleeService.find(enrollee.getId()).get();
-                }
-                if (enrolleeMap.get("enrollee.lastUpdatedAt") != null) {
-                    timeShiftPopulateDao.changeEnrolleeCreationTime(
-                            enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
-                }
+                doTimeShifts(enrolleeMap, enrollee);
+
             } catch (Exception e) {
                 importItem = ImportItem.builder()
                         .importId(dataImport.getId())
@@ -173,6 +165,22 @@ public class EnrolleeImportService {
         importItemService.attachImportItems(dataImport);
         log.info("Completed importing : {} items for Import ID: {}", dataImport.getImportItems().size(), dataImport.getId());
         return dataImport;
+    }
+
+    private void doTimeShifts(Map<String, String> enrolleeMap, Enrollee enrollee) {
+        //update createAt and lastUpdated
+        if (enrolleeMap.get("enrollee.createdAt") != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(
+                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
+        }
+        if (enrolleeMap.get("enrollee.lastUpdatedAt") != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(
+                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
+        }
+        if (enrolleeMap.get("account.createdAt") != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(
+                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("account.createdAt")));
+        }
     }
 
     /**
@@ -227,7 +235,12 @@ public class EnrolleeImportService {
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
-
+        /*if (enrollee.getCreatedAt() != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), enrollee.getCreatedAt());
+        }
+        if (enrollee.getLastUpdatedAt() != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), enrollee.getLastUpdatedAt());
+        }*/
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 

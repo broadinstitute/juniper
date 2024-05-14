@@ -1,7 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
-import bio.terra.pearl.core.dao.common.TimeShiftPopulateDao;
+import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;

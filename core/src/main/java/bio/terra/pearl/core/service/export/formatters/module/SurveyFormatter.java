@@ -136,19 +136,12 @@ public class SurveyFormatter extends ModuleFormatter<SurveyResponse, ItemFormatt
     /**
      * strip out survey prefixes.  so e.g. "oh_oh_famHx.oh_oh_famHx_question1" becomes "oh_oh_famHx.question1"
      */
-    public static String stripSurveyPrefix(String stableId) {
-        String surveyName = null;
-        int dotIndex = StringUtils.indexOf(stableId, ".");
-        if (dotIndex > 0) {
-            surveyName = stableId.substring(0, dotIndex + 1);
-            stableId = stableId.substring(dotIndex + 1);
+    public static String stripSurveyPrefix(String columnKey) {
+        String[] parts = columnKey.split("\\.");
+        if (parts.length == 2) {
+            return "%s.%s".formatted(parts[0], stripStudyAndSurveyPrefixes(parts[1]));
         }
-        String cleanStableId = stripStudyAndSurveyPrefixes(stableId);
-        if (surveyName != null) {
-            return surveyName.concat(cleanStableId);
-        } else {
-            return cleanStableId;
-        }
+        return columnKey;
     }
 
     @Override
