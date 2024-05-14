@@ -7,12 +7,14 @@ import { useSearchParams } from 'react-router-dom'
 import { Enrollee, PagedSurveyView } from '@juniper/ui-core'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from '../../../util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
+import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
 export default function SurveyEditView({ studyEnvContext, response, survey, enrollee, adminUserId }: {
   studyEnvContext: StudyEnvContextT, response?: SurveyResponse, survey: Survey, enrollee: Enrollee, adminUserId: string
 }) {
+  const { defaultLanguage } = usePortalLanguage()
   const taskId = useTaskIdParam()
   if (!taskId) {
     return <span>Task Id must be specified</span>
@@ -28,7 +30,7 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
     <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
     <div>
       <PagedSurveyView studyEnvParams={studyEnvParams} form={survey} enrollee={enrollee}
-        adminUserId={adminUserId} response={workingResponse} selectedLanguage={'en'}
+        adminUserId={adminUserId} response={workingResponse} selectedLanguage={defaultLanguage.languageCode}
         onSuccess={() => Store.addNotification(successNotification('Response saved'))}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
         updateProfile={() => console.log('meh')}
