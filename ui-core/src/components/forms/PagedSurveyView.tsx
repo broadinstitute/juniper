@@ -94,7 +94,8 @@ export function PagedSurveyView({
       resumeData: getResumeData(surveyModel, enrollee.participantUserId),
       enrolleeId: enrollee.id,
       answers: updatedAnswers,
-      creatingParticipantId: enrollee.participantUserId,
+      creatingParticipantId: adminUserId ? null : enrollee.participantUserId,
+      creatingAdminUserId: adminUserId,
       surveyId: form.id,
       complete: response?.complete ?? false
     } as SurveyResponse

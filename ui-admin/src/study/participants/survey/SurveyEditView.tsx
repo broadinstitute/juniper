@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Survey, SurveyResponse } from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 
@@ -19,8 +19,7 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
   if (!taskId) {
     return <span>Task Id must be specified</span>
   }
-  const [workingResponse] = useState<SurveyResponse>(response ? _cloneDeep(response) :
-    makeEmptyResponse(enrollee, survey, adminUserId))
+  const workingResponse = response ? _cloneDeep(response) : makeEmptyResponse(enrollee, survey, adminUserId)
   const studyEnvParams = {
     studyShortcode: studyEnvContext.study.shortcode,
     envName: studyEnvContext.currentEnv.environmentName,
@@ -37,7 +36,6 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
         }}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
         updateProfile={// empty function to avoid updating profile
-          // eslint-disable-next-line @typescript-eslint/no-empty-function
           () => {}}
         taskId={taskId} updateEnrollee={() => onUpdate} showHeaders={true}/>
     </div>
