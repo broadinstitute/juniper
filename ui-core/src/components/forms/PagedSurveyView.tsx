@@ -48,9 +48,9 @@ export function PagedSurveyView({
     }
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const responseDto = {
-      resumeData: getResumeData(surveyModel, adminUserId, true),
+      resumeData: getResumeData(surveyModel, adminUserId || enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(resumableData || {}, currentModelValues, selectedLanguage),
+      answers: getUpdatedAnswers(resumableData.data || {}, currentModelValues, selectedLanguage),
       creatingParticipantId: adminUserId ? null : enrollee.participantUserId,
       creatingAdminUserId: adminUserId,
       surveyId: form.id,

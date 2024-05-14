@@ -10,14 +10,14 @@ import { render, screen } from '@testing-library/react'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import {
-  asMockedFn,
+  ApiContextT, ApiProvider,
+  asMockedFn, emptyApi,
   MockI18nProvider, PagedSurveyView,
   PageNumberControl,
   Survey,
   SurveyFooter,
   useAutosaveEffect, useSurveyJSModel
 } from '@juniper/ui-core'
-import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
@@ -314,7 +314,13 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
+  const mockUpdateSurveyResponse = jest.fn().mockResolvedValue(mockHubResponse())
+
+  const mockApi: ApiContextT = {
+    ...emptyApi,
+    updateSurveyResponse: mockUpdateSurveyResponse
+  }
+
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };
@@ -329,15 +335,17 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <MockI18nProvider>
-      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey.survey} response={mockHubResponse().response}
-        studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
-        selectedLanguage={'en'} updateProfile={jest.fn()}
-        taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
-    </MockI18nProvider>)
+    <ApiProvider api={mockApi}>
+      <MockI18nProvider>
+        <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey.survey} response={mockHubResponse().response}
+          studyEnvParams={{ studyShortcode: 'study', portalShortcode: 'portal', envName: 'sandbox' }}
+          selectedLanguage={'en'} updateProfile={jest.fn()}
+          taskId={'guid34'} adminUserId={null} updateEnrollee={jest.fn()} onFailure={jest.fn()} onSuccess={jest.fn()}/>
+      </MockI18nProvider>
+    </ApiProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
-  return { submitSpy, RoutedComponent, triggerAutosave }
+  return { submitSpy: mockUpdateSurveyResponse, RoutedComponent, triggerAutosave }
 }
 
 

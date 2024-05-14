@@ -18,7 +18,7 @@ import { Markdown } from './participant/landing/Markdown'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
-  data: object
+  data: Record<string, SurveyJsValueType>
 }
 
 export type SurveyJsValueType = string | boolean | number | object | null
