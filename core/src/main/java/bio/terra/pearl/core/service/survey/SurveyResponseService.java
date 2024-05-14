@@ -35,34 +35,29 @@ import java.util.UUID;
 
 @Service
 public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
-    private AnswerService answerService;
-    private EnrolleeService enrolleeService;
-    private SurveyService surveyService;
-    private ParticipantTaskService participantTaskService;
-    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private AnswerProcessingService answerProcessingService;
-    private DataChangeRecordService dataChangeRecordService;
-    private EventService eventService;
-    private PortalService portalService;
+    private final AnswerService answerService;
+    private final SurveyService surveyService;
+    private final ParticipantTaskService participantTaskService;
+    private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
+    private final AnswerProcessingService answerProcessingService;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final EventService eventService;
     public static final String CONSENTED_ANSWER_STABLE_ID = "consented";
 
     public SurveyResponseService(SurveyResponseDao dao, AnswerService answerService,
-                                 EnrolleeService enrolleeService, SurveyService surveyService,
+                                 SurveyService surveyService,
                                  ParticipantTaskService participantTaskService,
                                  StudyEnvironmentSurveyService studyEnvironmentSurveyService,
                                  AnswerProcessingService answerProcessingService,
-                                 DataChangeRecordService dataChangeRecordService, EventService eventService,
-                                 PortalService portalService) {
+                                 DataChangeRecordService dataChangeRecordService, EventService eventService) {
         super(dao);
         this.answerService = answerService;
-        this.enrolleeService = enrolleeService;
         this.surveyService = surveyService;
         this.participantTaskService = participantTaskService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.answerProcessingService = answerProcessingService;
         this.dataChangeRecordService = dataChangeRecordService;
         this.eventService = eventService;
-        this.portalService = portalService;
     }
 
     public List<SurveyResponse> findByEnrolleeId(UUID enrolleeId) {

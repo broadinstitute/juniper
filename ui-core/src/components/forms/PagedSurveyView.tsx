@@ -1,22 +1,20 @@
 import { Survey, SurveyResponse } from 'src/types/forms'
-import { useApiContext } from '../participant/ApiProvider'
+import { useApiContext } from '../../participant/ApiProvider'
 import {
   getDataWithCalculatedValues,
   getResumeData,
   getUpdatedAnswers,
   makeSurveyJsData,
-  PageNumberControl,
   SurveyFooter,
-  SurveyJsResumeData,
   useRoutablePageNumber,
   useSurveyJSModel
-} from '../surveyUtils'
+} from '../../surveyUtils'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import React, { useRef } from 'react'
-import { useAutosaveEffect } from '../autoSaveUtils'
-import { useI18n } from '../participant/I18nProvider'
-import { SurveyAutoCompleteButton } from '../components/SurveyAutoCompleteButton'
-import { SurveyReviewModeButton } from '../components/ReviewModeButton'
+import { useAutosaveEffect } from '../../autoSaveUtils'
+import { useI18n } from '../../participant/I18nProvider'
+import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
+import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import { Enrollee } from 'src/types/user'
 import { Profile } from 'src/types/address'
@@ -38,35 +36,6 @@ export function PagedSurveyView({
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
   const pager = useRoutablePageNumber()
 
-  return <RawSurveyView studyEnvParams={studyEnvParams} form={form} taskId={taskId} updateEnrollee={updateEnrollee}
-    updateProfile={updateProfile}
-    resumableData={resumableData} pager={pager} enrollee={enrollee} onSuccess={onSuccess} onFailure={onFailure}
-    selectedLanguage={selectedLanguage} adminUserId={adminUserId} showHeaders={showHeaders}/>
-}
-
-/**
- * display a single survey form to a participant.
- */
-export function RawSurveyView({
-  studyEnvParams, form, resumableData, pager, updateEnrollee,
-  updateProfile, onSuccess, onFailure, selectedLanguage,
-  taskId, response, adminUserId, enrollee, showHeaders = true
-}: {
-  studyEnvParams: StudyEnvParams,
-  form: Survey,
-  taskId: string,
-  selectedLanguage: string,
-  response?: SurveyResponse,
-  adminUserId: string | null,
-  updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
-  updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
-  onSuccess: () => void,
-  onFailure: () => void,
-  resumableData: SurveyJsResumeData | null,
-  pager: PageNumberControl,
-  enrollee: Enrollee,
-  showHeaders?: boolean
-}) {
   const Api = useApiContext()
   const { i18n } = useI18n()
   const prevSave = useRef(resumableData?.data ?? {})
@@ -94,8 +63,8 @@ export function RawSurveyView({
         version: form.version, response: responseDto, taskId
       })
       response.enrollee.participantTasks = response.tasks
-      await updateEnrollee(response.enrollee)
-      await updateProfile(response.profile)
+      updateEnrollee(response.enrollee)
+      updateProfile(response.profile)
       refreshSurvey(surveyModel, null)
       onSuccess()
     } catch {
@@ -112,7 +81,7 @@ export function RawSurveyView({
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const updatedAnswers = getUpdatedAnswers(
-      prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
+        prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
