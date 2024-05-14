@@ -1,39 +1,47 @@
 package bio.terra.pearl.core.service.participant;
 
 import bio.terra.pearl.core.dao.participant.WithdrawnEnrolleeDao;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEnrollee, WithdrawnEnrolleeDao> {
-    private EnrolleeService enrolleeService;
-    private EnrolleeRelationService enrolleeRelationService;
-    private ObjectMapper objectMapper;
-    private PortalParticipantUserService portalParticipantUserService;
-    private ParticipantUserService participantUserService;
+    private final EnrolleeService enrolleeService;
+    private final EnrolleeRelationService enrolleeRelationService;
+    private final ObjectMapper objectMapper;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final ParticipantUserService participantUserService;
+    private final EnrollmentService enrollmentService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final StudyService studyService;
 
     public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
                                     PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
-                                    EnrolleeRelationService enrolleeRelationService) {
+                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
         super(dao);
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
         this.portalParticipantUserService = portalParticipantUserService;
         this.participantUserService = participantUserService;
         this.enrolleeRelationService = enrolleeRelationService;
+        this.enrollmentService = enrollmentService;
+        this.studyEnvironmentService = studyEnvironmentService;
+        this.studyService = studyService;
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -54,7 +62,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
      * an irreversible operation.
      */
     @Transactional
-    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee) {
+    public WithdrawnEnrollee withdrawEnrollee(Enrollee enrollee, DataAuditInfo dataAuditInfo) {
         dao.loadForWithdrawalPreservation(enrollee);
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         try {
@@ -67,38 +75,56 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
             withdrawnEnrollee = create(withdrawnEnrollee);
             // if a governed user is being withdrawn, we should withdraw the proxies that are only proxying this user.
             List<Enrollee> targetEnrolleesOnlyProxiedByEnrollee = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(enrollee.getId());
+
+            // EDGE CASE: if an enrollee is withdrawing themselves but are also a proxy for someone else,
+            // we need to recreate withdraw them then recreate a new, non-subject enrollee for them.
+            List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(enrollee.getId(), RelationshipType.PROXY);
+
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
+
             //now withdraw all the proxied users
             for (Enrollee proxy : targetEnrolleesOnlyProxiedByEnrollee) {
-                withdrawEnrollee(proxy);
+                withdrawEnrollee(proxy, dataAuditInfo);
+            }
+
+            if (!relations.isEmpty()) {
+                StudyEnvironment studyEnvironment = studyEnvironmentService
+                        .find(enrollee.getStudyEnvironmentId())
+                        .orElseThrow(() -> new IllegalStateException("Study environment not found for enrollee"));
+                Study study = studyService.find(studyEnvironment.getStudyId()).orElseThrow(() -> new IllegalStateException("Study not found for study environment"));
+                PortalParticipantUser ppUser = portalParticipantUserService.findByParticipantUserId(user.getId()).get(0);
+
+                Enrollee newProxy = this.enrollmentService.enroll(
+                        ppUser,
+                        studyEnvironment.getEnvironmentName(),
+                        study.getShortcode(),
+                        user,
+                        ppUser,
+                        null,
+                        false
+                ).getResponse();
+
+                for (EnrolleeRelation relation : relations) {
+                    Enrollee governedEnrollee = enrolleeService
+                            .find(relation.getTargetEnrolleeId())
+                            .orElseThrow(() -> new IllegalStateException("Enrollee not found for relation"));
+
+                    this.enrolleeRelationService.create(
+                            EnrolleeRelation.builder()
+                                    .enrolleeId(newProxy.getId())
+                                    .targetEnrolleeId(governedEnrollee.getId())
+                                    .relationshipType(RelationshipType.PROXY)
+                                    .beginDate(relation.getBeginDate())
+                                    .build(),
+                            dataAuditInfo
+                    );
+                }
             }
 
             return withdrawnEnrollee;
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Error serializing enrollee or user data", e);
         }
-    }
-
-    @Transactional
-    public List<WithdrawnEnrollee> withdrawFromPortal(PortalParticipantUser ppUser) throws JsonProcessingException {
-        List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(ppUser);
-        List<WithdrawnEnrollee> withdrawns = new ArrayList<>();
-        for (Enrollee enrollee : enrollees) {
-            withdrawns.add(withdrawEnrollee(enrollee));
-        }
-        portalParticipantUserService.delete(ppUser.getId(), CascadeProperty.EMPTY_SET);
-        return withdrawns;
-    }
-
-    @Transactional
-    public List<WithdrawnEnrollee> withdrawFromJuniper(ParticipantUser participantUser) throws JsonProcessingException {
-        List<PortalParticipantUser> ppUsers = portalParticipantUserService.findByParticipantUserId(participantUser.getId());
-        List<WithdrawnEnrollee> withdrawns = new ArrayList<>();
-        for (PortalParticipantUser ppUser : ppUsers) {
-            withdrawns.addAll(withdrawFromPortal(ppUser));
-        }
-        participantUserService.delete(participantUser.getId(), CascadeProperty.EMPTY_SET);
-        return withdrawns;
     }
 }

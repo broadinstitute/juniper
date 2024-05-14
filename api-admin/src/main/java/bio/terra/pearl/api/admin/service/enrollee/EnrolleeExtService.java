@@ -3,6 +3,7 @@ package bio.terra.pearl.api.admin.service.enrollee;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
@@ -17,9 +18,10 @@ import bio.terra.pearl.core.service.participant.search.facets.sql.EnrolleeFacetS
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExtService {
@@ -101,6 +103,6 @@ public class EnrolleeExtService {
   public WithdrawnEnrollee withdrawEnrollee(AdminUser operator, String enrolleeShortcode)
       throws JsonProcessingException {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
-    return withdrawnEnrolleeService.withdrawEnrollee(enrollee);
+    return withdrawnEnrolleeService.withdrawEnrollee(enrollee, DataAuditInfo.builder().responsibleAdminUserId(operator.getId()).build());
   }
 }

@@ -30,11 +30,7 @@ import bio.terra.pearl.core.service.kit.pepper.PepperKit;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.TriggerService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
-import bio.terra.pearl.core.service.participant.ProfileService;
-import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.AnswerProcessingService;
@@ -56,7 +52,6 @@ import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
 import bio.terra.pearl.populate.util.PopulateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -70,13 +65,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.HOURS;
@@ -433,7 +422,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), popDto.shiftedInstant());
         }
         if (popDto.isWithdrawn()) {
-            withdrawnEnrolleeService.withdrawEnrollee(enrollee);
+            withdrawnEnrolleeService.withdrawEnrollee(enrollee, DataAuditInfo.builder().systemProcess("populateEnrolleeData").build());
         }
     }
 
