@@ -20,12 +20,14 @@ import { HubUpdate } from 'hub/hubUpdates'
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useActiveUser()
-  const { updateEnrollee, updateProfile } = useUser()
+  const { user, updateEnrollee, updateProfile } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const studyShortcode = params.studyShortcode
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
+
+  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
 
   const { i18n, selectedLanguage } = useI18n()
   const taskId = useTaskIdParam() ?? ''
@@ -88,6 +90,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         studyEnvParams={studyEnvParams}
         form={formAndResponses.studyEnvironmentSurvey.survey}
         enrollee={enrollee}
+        proxyProfile={proxyProfile}
         response={formAndResponses.surveyResponse}
         selectedLanguage={selectedLanguage}
         adminUserId={null}

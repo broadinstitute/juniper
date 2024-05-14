@@ -31,6 +31,7 @@ export function PagedSurveyView({
     selectedLanguage: string,
     updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
     updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
+    proxyProfile?: Profile,
     taskId: string, adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)

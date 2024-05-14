@@ -272,6 +272,7 @@ export function useSurveyJSModel(
   pager: PageNumberControl,
   envName: EnvironmentName,
   profile?: Profile,
+  proxyProfile?: Profile,
   opts: UseSurveyJsModelOpts = {}
 ) {
   const {
@@ -310,7 +311,7 @@ export function useSurveyJSModel(
     }
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
-    //TODO: this needs to deal with proxies, which got lost in the shuffle after a rebase
+    newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('portalEnvironmentName', envName)
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
