@@ -11,8 +11,8 @@ import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
 export default function SurveyEditView({ studyEnvContext, response, survey, enrollee, adminUserId, onUpdate }: {
-  studyEnvContext: StudyEnvContextT, response?: SurveyResponse, survey: Survey, enrollee: Enrollee, adminUserId: string,
-  onUpdate: () => void
+  studyEnvContext: StudyEnvContextT, response?: SurveyResponse,
+  survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void
 }) {
   const { defaultLanguage } = usePortalLanguage()
   const taskId = useTaskIdParam()
@@ -28,16 +28,22 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
     <div>
-      <PagedSurveyView studyEnvParams={studyEnvParams} form={survey} enrollee={enrollee}
-        adminUserId={adminUserId} response={workingResponse} selectedLanguage={defaultLanguage.languageCode}
+      <PagedSurveyView
+        studyEnvParams={studyEnvParams}
+        form={survey}
+        enrollee={enrollee}
+        response={workingResponse}
+        selectedLanguage={defaultLanguage.languageCode}
+        adminUserId={adminUserId}
         onSuccess={() => {
           onUpdate()
           Store.addNotification(successNotification('Response saved'))
         }}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
-        updateProfile={// empty function to avoid updating profile
-          () => {}}
-        taskId={taskId} updateEnrollee={() => onUpdate} showHeaders={true}/>
+        updateProfile={() => {}} //eslint-disable-line @typescript-eslint/no-empty-function
+        updateEnrollee={() => {}} //eslint-disable-line @typescript-eslint/no-empty-function
+        taskId={taskId}
+        showHeaders={true}/>
     </div>
   </div>
 }

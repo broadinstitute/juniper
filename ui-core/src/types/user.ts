@@ -4,12 +4,12 @@ import { PreregistrationResponse, SurveyResponse } from 'src/types/forms'
 import { Profile } from 'src/types/address'
 
 export type ParticipantNote = {
-    id: string,
-    createdAt: number,
-    lastUpdatedAt: number,
-    enrolleeId: string,
-    text: string,
-    kitRequestId?: string,
+    id: string
+    createdAt: number
+    lastUpdatedAt: number
+    enrolleeId: string
+    text: string
+    kitRequestId?: string
     creatingAdminUserId: string
 }
 
@@ -21,9 +21,9 @@ export type Enrollee = {
     kitRequests: KitRequest[]
     lastUpdatedAt: number
     participantTasks: ParticipantTask[]
-    participantNotes: ParticipantNote[], //todo: optional?
+    participantNotes: ParticipantNote[]
     participantUserId: string
-    preRegResponse?: PreregistrationResponse,
+    preRegResponse?: PreregistrationResponse
     preEnrollmentResponse?: PreregistrationResponse
     profile: Profile
     profileId: string
@@ -33,8 +33,8 @@ export type Enrollee = {
 }
 
 export type HubResponse = {
-    enrollee: Enrollee,
-    tasks: ParticipantTask[],
-    response: object,
+    enrollee: Enrollee
+    tasks: ParticipantTask[]
+    response: object
     profile: Profile
 }

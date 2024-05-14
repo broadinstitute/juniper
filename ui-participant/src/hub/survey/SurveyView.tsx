@@ -85,17 +85,17 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
     <ApiProvider api={Api}>
       <DocumentTitle title={i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}/>
       <PagedSurveyView
-        enrollee={enrollee}
-        form={formAndResponses.studyEnvironmentSurvey.survey}
-        response={formAndResponses.surveyResponse}
-        updateEnrollee={updateEnrollee}
-        updateProfile={updateProfile}
         studyEnvParams={studyEnvParams}
-        taskId={taskId}
+        form={formAndResponses.studyEnvironmentSurvey.survey}
+        enrollee={enrollee}
+        response={formAndResponses.surveyResponse}
         selectedLanguage={selectedLanguage}
         adminUserId={null}
         onSuccess={onSuccess}
         onFailure={onFailure}
+        updateEnrollee={updateEnrollee}
+        updateProfile={updateProfile}
+        taskId={taskId}
         showHeaders={showHeaders}
       />
     </ApiProvider>
