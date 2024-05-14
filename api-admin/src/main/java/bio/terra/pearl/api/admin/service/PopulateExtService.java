@@ -128,6 +128,22 @@ public class PopulateExtService {
     return enrolleePopulator.populate(config, overwrite);
   }
 
+  public Enrollee populateEnrollee(
+      String portalShortcode,
+      EnvironmentName envName,
+      String studyShortcode,
+      EnrolleePopulateType enrolleePopulateType,
+      AdminUser user) {
+    authorizeUser(user);
+    if (EnvironmentName.live.equals(envName)) {
+      throw new IllegalArgumentException("cannot populate live environment");
+    }
+    StudyPopulateContext config =
+        new StudyPopulateContext(
+            null, portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
+    return enrolleePopulator.populateFromType(enrolleePopulateType, config);
+  }
+
   public void bulkPopulateEnrollees(
       String portalShortcode,
       EnvironmentName envName,

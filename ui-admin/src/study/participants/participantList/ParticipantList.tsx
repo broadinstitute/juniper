@@ -21,7 +21,7 @@ import {
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faCheck, faEnvelope, faPlus } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
 import { ALL_FACETS, Facet, FacetValue, facetValuesFromString, facetValuesToString } from 'api/enrolleeSearch'
 import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
@@ -31,6 +31,7 @@ import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
 import _cloneDeep from 'lodash/cloneDeep'
+import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -39,6 +40,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
   const [facets, setFacets] = useState<Facet[]>([])
   const [showEmailModal, setShowEmailModal] = useState(false)
+  const [showSyntheticModal, setShowSyntheticModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
   ])
@@ -167,7 +169,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     return criteria
   }
 
-  const { isLoading } = useLoadingEffect(async () => {
+  const { isLoading, reload } = useLoadingEffect(async () => {
     const res = await Api.getSearchFacets(portal.shortcode,
       study.shortcode, currentEnv.environmentName)
     const criteria = updateSearchCriteria(res)
@@ -207,7 +209,16 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       { basicTableLayout(table, { filterable: true }) }
       { renderEmptyMessage(participantList, 'No participants') }
       <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
+      {(currentEnv.environmentName != 'live') && <div>
+        <Button variant="secondary" onClick={() => setShowSyntheticModal(!showSyntheticModal)}>
+          <FontAwesomeIcon icon={faPlus}/> Add synthetic participant
+        </Button>
+      </div>}
     </LoadingSpinner>
+    { showSyntheticModal && <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
+      onDismiss={() => setShowSyntheticModal(false)}
+      onSubmit={() => { setShowSyntheticModal(false); reload() }}
+    />}
   </div>
 }
 

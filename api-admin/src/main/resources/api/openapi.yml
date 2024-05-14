@@ -822,6 +822,27 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/populate:
+    post:
+      summary: Populates an Enrollee to a given portal/study/env.
+      tags: [ populate ]
+      operationId: populateEnrollee
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: filePathName, in: query, required: false, schema: { type: string } }
+        - { name: popType, in: query, required: false, schema: { type: string } }
+        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
+      responses:
+        '201':
+          description: enrollee object
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
     get:
       summary: gets all the active triggered actions for the environment
@@ -1385,26 +1406,6 @@ paths:
       responses:
         '201':
           description: survey object
-          content:
-            application/json:
-              schema:
-                type: object
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/internal/v1/populate/enrollee/{portalShortcode}/env/{envName}/study/{studyShortcode}:
-    post:
-      summary: Populates an Enrollee to a given portal/study/env.
-      tags: [ populate ]
-      operationId: populateEnrollee
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: filePathName, in: query, required: true, schema: { type: string } }
-        - { name: overwrite, in: query, required: false, schema: { type: boolean } }
-      responses:
-        '201':
-          description: enrollee object
           content:
             application/json:
               schema:

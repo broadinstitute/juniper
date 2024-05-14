@@ -1373,6 +1373,15 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async populateEnrollee(studyEnvParams: StudyEnvParams, popType: string) {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/populate?popType=${popType}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async populateSiteContent(fileName: string, overwrite: boolean, portalShortcode: string) {
     const url = `${basePopulateUrl()}/siteContent/${portalShortcode}?filePathName=${fileName}&overwrite=${overwrite}`
     const response = await fetch(url, {

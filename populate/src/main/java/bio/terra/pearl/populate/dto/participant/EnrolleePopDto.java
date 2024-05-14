@@ -11,11 +11,13 @@ import bio.terra.pearl.populate.dto.kit.KitRequestPopDto;
 import bio.terra.pearl.populate.dto.notifications.NotificationPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyResponsePopDto;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-@Getter @Setter @NoArgsConstructor
+@Getter @Setter @NoArgsConstructor @SuperBuilder
 public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private String linkedUsername;
     private String linkedUsernameKey; // for enrollees linked to users with key-specified accounts
@@ -30,12 +32,17 @@ public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     /** if true, the enrollee will be withdrawn via the withdrawEnrollee method in WithdrawnEnrolleeService after creation */
     private boolean withdrawn = false;
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
-
+    @Builder.Default
     private Set<SurveyResponsePopDto> surveyResponseDtos = new HashSet<>();
+    @Builder.Default
     private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
+    @Builder.Default
     private List<NotificationPopDto> notifications = new ArrayList<>();
+    @Builder.Default
     private List<ParticipantNotePopDto> participantNoteDtos = new ArrayList<>();
     private Integer submittedHoursAgo;
+    @Builder.Default
     private Set<KitRequestPopDto> kitRequestDtos = new HashSet<>();
+    @Builder.Default
     private List<ProxyPopDto> proxyPopDtos = new ArrayList<>();
 }

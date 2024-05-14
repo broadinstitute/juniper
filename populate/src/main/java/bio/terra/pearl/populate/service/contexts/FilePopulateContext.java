@@ -46,6 +46,9 @@ public class FilePopulateContext {
 
 
     protected void setPaths(String filePathName) {
+        if (filePathName == null) {
+            return;
+        }
         Path filePath = Paths.get(filePathName);
         this.rootFileName = filePath.getFileName().toString();
         this.basePath = filePath.getParent().toString();

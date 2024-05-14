@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.populate.service.AdminConfigPopulator;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
+import bio.terra.pearl.populate.service.EnrolleePopulateType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
@@ -113,17 +114,27 @@ public class PopulateController implements PopulateApi {
       String envName,
       String studyShortcode,
       String filePathName,
+      String popType,
       Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
-    Enrollee populatedObj =
-        populateExtService.populateEnrollee(
-            portalShortcode,
-            environmentName,
-            studyShortcode,
-            filePathName,
-            user,
-            Boolean.TRUE.equals(overwrite));
+    Enrollee populatedObj;
+    if (StringUtils.isBlank(popType)) {
+      populatedObj =
+          populateExtService.populateEnrollee(
+              portalShortcode,
+              environmentName,
+              studyShortcode,
+              filePathName,
+              user,
+              Boolean.TRUE.equals(overwrite));
+
+    } else {
+      EnrolleePopulateType populateType = EnrolleePopulateType.valueOf(popType.toUpperCase());
+      populatedObj =
+          populateExtService.populateEnrollee(
+              portalShortcode, environmentName, studyShortcode, populateType, user);
+    }
     return ResponseEntity.ok(populatedObj);
   }
 
