@@ -169,7 +169,6 @@ public class EnrolleeEmailService implements NotificationSender {
     /**
      * loads the context information needed to send a notification (things not specific to an enrollee/user)
      * this method will almost certainly benefit from caching, especially with respect to bulk emails.
-     * <p>
      * This can return null if called in an async context where the trigger points to an
      * environment that either no longer exists or has not yet been populated (e.g. during a populate_portal.sh call)
      */
