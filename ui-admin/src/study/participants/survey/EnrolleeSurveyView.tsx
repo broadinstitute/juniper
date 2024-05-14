@@ -12,10 +12,12 @@ import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useUser } from 'user/UserProvider'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPencil, faX } from '@fortawesome/free-solid-svg-icons'
 
 /** Show responses for a survey based on url param */
-export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext }:
-  {enrollee: Enrollee, responseMap: ResponseMapT, studyEnvContext: StudyEnvContextT}) {
+export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext, onUpdate }:
+  {enrollee: Enrollee, responseMap: ResponseMapT, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const params = useParams<EnrolleeParams>()
 
   const surveyStableId: string | undefined = params.surveyStableId
@@ -29,20 +31,20 @@ export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvCont
   }
   // key forces the component to be destroyed/remounted when different survey selectect
   return <RawEnrolleeSurveyView key={surveyStableId} enrollee={enrollee} studyEnvContext={studyEnvContext}
-    configSurvey={surveyAndResponses.survey} response={surveyAndResponses.response}/>
+    configSurvey={surveyAndResponses.survey} response={surveyAndResponses.response} onUpdate={onUpdate}/>
 }
 
 /** show responses for a survey */
-export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyEnvContext }: {
+export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyEnvContext, onUpdate }: {
     enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey,
-  response?: SurveyResponse, studyEnvContext: StudyEnvContextT
+  response?: SurveyResponse, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const { user } = useUser()
   // if this is a dedicated admin form, default to edit mode
   if (!configSurvey.survey.allowParticipantStart && configSurvey.survey.allowAdminEdit && user) {
     return <SurveyEditView studyEnvContext={studyEnvContext} survey={configSurvey.survey}
-      adminUserId={user.id} response={response} enrollee={enrollee}/>
+      adminUserId={user.id} response={response} enrollee={enrollee} onUpdate={onUpdate}/>
   }
 
   if (!response && !configSurvey.survey.allowAdminEdit) {
@@ -67,9 +69,12 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
         <span>({versionString})</span></> }
       </span>
 
-      { configSurvey.survey.allowAdminEdit && <button className="ms-5 btn btn-secondary"
+      { configSurvey.survey.allowAdminEdit && <button className="btn btn-secondary"
         onClick={() => setIsEditing(!isEditing)}>
-        {isEditing ? 'cancel' : 'update / edit'}
+        {isEditing ?
+          <div><FontAwesomeIcon icon={faX}/> Cancel</div> :
+          <div><FontAwesomeIcon icon={faPencil}/> Edit Response</div>
+        }
       </button> }
       <hr/>
       {(!isEditing && !response?.answers.length) && <div>
@@ -80,7 +85,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
         userId={enrollee.participantUserId} studyEnvContext={studyEnvContext}/> }
       {isEditing && user && <SurveyEditView studyEnvContext={studyEnvContext}
         survey={configSurvey.survey} response={response} adminUserId={user.id}
-        enrollee={enrollee}/>}
+        enrollee={enrollee} onUpdate={onUpdate}/>}
     </div>
   </div>
 }

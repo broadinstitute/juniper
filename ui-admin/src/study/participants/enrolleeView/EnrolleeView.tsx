@@ -1,6 +1,6 @@
 import React from 'react'
 import { ParticipantTask, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
@@ -112,7 +112,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId]?.task?.id}`}
+                          className={getLinkCssClasses}>
                           {survey.survey.name}
                         </NavLink>
                         {badgeForResponses(responseMap[stableId]?.response)}
@@ -197,7 +198,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 }/>}
                 <Route path="surveys">
                   <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
-                    responseMap={responseMap} studyEnvContext={studyEnvContext}/>}/>
+                    responseMap={responseMap} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>

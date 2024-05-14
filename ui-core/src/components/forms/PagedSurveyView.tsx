@@ -73,8 +73,9 @@ export function PagedSurveyView({
     }
   }
 
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
-    onComplete, pager, studyEnvParams.envName, enrollee.profile)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(
+    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile
+  )
 
   surveyModel.locale = selectedLanguage
 

@@ -7,7 +7,7 @@ import {
   configureModelForPrint,
   Enrollee,
   makeSurveyJsData,
-  surveyJSModelFromForm,
+  surveyJSModelFromForm, useTaskIdParam,
   waitForImages
 } from '@juniper/ui-core'
 
@@ -16,7 +16,7 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { enrolleeForStudy, useTaskIdParam } from './SurveyView'
+import { enrolleeForStudy } from './SurveyView'
 
 
 type UsePrintableConsentArgs = {

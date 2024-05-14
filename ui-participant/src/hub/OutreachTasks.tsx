@@ -3,8 +3,7 @@ import Api, { ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api
 import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
-import { useTaskIdParam } from './survey/SurveyView'
-import { Enrollee, EnvironmentName, useI18n } from '@juniper/ui-core'
+import { Enrollee, EnvironmentName, useI18n, useTaskIdParam } from '@juniper/ui-core'
 import { usePortalEnv } from '../providers/PortalProvider'
 
 type OutreachParams = {

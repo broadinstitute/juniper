@@ -3,16 +3,16 @@ import { Survey, SurveyResponse } from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 
 import _cloneDeep from 'lodash/cloneDeep'
-import { useSearchParams } from 'react-router-dom'
-import { Enrollee, PagedSurveyView } from '@juniper/ui-core'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { Enrollee, PagedSurveyView, useTaskIdParam } from '@juniper/ui-core'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
 import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
-export default function SurveyEditView({ studyEnvContext, response, survey, enrollee, adminUserId }: {
-  studyEnvContext: StudyEnvContextT, response?: SurveyResponse, survey: Survey, enrollee: Enrollee, adminUserId: string
+export default function SurveyEditView({ studyEnvContext, response, survey, enrollee, adminUserId, onUpdate }: {
+  studyEnvContext: StudyEnvContextT, response?: SurveyResponse, survey: Survey, enrollee: Enrollee, adminUserId: string,
+  onUpdate: () => void
 }) {
   const { defaultLanguage } = usePortalLanguage()
   const taskId = useTaskIdParam()
@@ -31,10 +31,15 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
     <div>
       <PagedSurveyView studyEnvParams={studyEnvParams} form={survey} enrollee={enrollee}
         adminUserId={adminUserId} response={workingResponse} selectedLanguage={defaultLanguage.languageCode}
-        onSuccess={() => Store.addNotification(successNotification('Response saved'))}
+        onSuccess={() => {
+          onUpdate()
+          Store.addNotification(successNotification('Response saved'))
+        }}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
-        updateProfile={() => console.log('meh')}
-        taskId={taskId} updateEnrollee={() => console.log('meh')} showHeaders={true}/>
+        updateProfile={// empty function to avoid updating profile
+          // eslint-disable-next-line @typescript-eslint/no-empty-function
+          () => {}}
+        taskId={taskId} updateEnrollee={() => onUpdate} showHeaders={true}/>
     </div>
   </div>
 }
@@ -49,11 +54,4 @@ const makeEmptyResponse = (enrollee: Enrollee, survey: Survey, adminUserId: stri
     answers: [],
     complete: false
   }
-}
-
-const TASK_ID_PARAM = 'taskId'
-/** gets the task ID from the URL */
-export const useTaskIdParam = (): string | null => {
-  const [searchParams] = useSearchParams()
-  return searchParams.get(TASK_ID_PARAM)
 }

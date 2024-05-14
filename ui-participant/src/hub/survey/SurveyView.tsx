@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import 'survey-core/survey.i18n'
 
 import Api, { Portal, SurveyWithResponse } from 'api/api'
 
 import {
   ApiProvider, Enrollee, EnvironmentName, PagedSurveyView,
-  useI18n
+  useI18n, useTaskIdParam
 } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
@@ -14,15 +14,7 @@ import { withErrorBoundary } from 'util/ErrorBoundary'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
-import { HubUpdate } from '../hubUpdates'
-
-const TASK_ID_PARAM = 'taskId'
-
-/** gets the task ID from the URL */
-export const useTaskIdParam = (): string | null => {
-  const [searchParams] = useSearchParams()
-  return searchParams.get(TASK_ID_PARAM)
-}
+import { HubUpdate } from 'hub/hubUpdates'
 
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {

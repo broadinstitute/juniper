@@ -26,6 +26,7 @@ export * from './timeUtils'
 export * from './addressUtils'
 export * from './i18nUtils'
 export * from './waitForImages'
+export * from './useTaskIdParam'
 
 export * from './test-utils/asMockedFn'
 
