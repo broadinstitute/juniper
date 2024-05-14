@@ -3,13 +3,17 @@ package bio.terra.pearl.core.service.search.expressions;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
@@ -39,6 +43,9 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     @Autowired
     EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+
+    @Autowired
+    ParticipantTaskFactory participantTaskFactory;
 
     @Test
     @Transactional
@@ -258,6 +265,168 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 .builder()
                 .enrollee(enrolleeNoResponse)
                 .build()));
+    }
+
+    @Test
+    public void testTaskEvaluate(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        EnrolleeSearchExpression assignedExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.demographic_survey.assigned} = true"
+        );
+
+        EnrolleeSearchExpression inProgressExp = enrolleeSearchExpressionParser.parseRule(
+                "{task.demographic_survey.status} = 'IN_PROGRESS'"
+        );
+
+        // enrollee not assigned
+        EnrolleeFactory.EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        Enrollee enrolleeNotAssigned = eBundleNotAssigned.enrollee();
+
+        // enrollee assigned not started
+        EnrolleeFactory.EnrolleeBundle eBundleNotStarted = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(eBundleNotStarted, "demographic_survey", TaskStatus.NEW, TaskType.SURVEY);
+        Enrollee enrolleeNotStarted = eBundleNotStarted.enrollee();
+
+        // enrollee assigned in progress
+        EnrolleeFactory.EnrolleeBundle eBundleInProgress = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(eBundleInProgress, "demographic_survey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
+        Enrollee enrolleeInProgress = eBundleInProgress.enrollee();
+
+        // enrollee assigned in progress but different task
+        EnrolleeFactory.EnrolleeBundle eBundleInProgressWrongTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(eBundleInProgressWrongTask, "something_else", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
+        Enrollee enrolleeInProgressWrongTask = eBundleInProgressWrongTask.enrollee();
+
+        assertTrue(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotStarted).build()));
+        assertTrue(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgress).build()));
+        assertFalse(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotAssigned).build()));
+        assertFalse(assignedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgressWrongTask).build()));
+
+        assertTrue(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgress).build()));
+        assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotStarted).build()));
+        assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNotAssigned).build()));
+        assertFalse(inProgressExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeInProgressWrongTask).build()));
+    }
+
+    @Test
+    public void testEnrolleeFields() {
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.consented} = true")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .consented(true)
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.consented} = false")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .consented(true)
+                                        .build())
+                                .build()));
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.subject} = true")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .subject(true)
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.subject} = false")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .subject(true)
+                                        .build())
+                                .build()));
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{enrollee.shortcode} = 'JSALK'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .enrollee(Enrollee.builder()
+                                        .shortcode("JSALK")
+                                        .build())
+                                .build()));
+    }
+
+    @Test
+    public void testContains() {
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'Jonas Salk'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Salk")
+                                        .build())
+                                .build()));
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'nas Sa'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Salk")
+                                        .build())
+                                .build()));
+
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'alk'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Salk")
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'Jonas Sa'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Balk")
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'John Salk'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Salk")
+                                        .build())
+                                .build()));
+
+        assertFalse(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'null'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .build())
+                                .build()));
+
     }
 
 }

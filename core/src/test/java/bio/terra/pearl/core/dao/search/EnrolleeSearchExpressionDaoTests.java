@@ -322,6 +322,7 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         // enrollee not assigned
         EnrolleeFactory.EnrolleeBundle eBundleNotAssigned = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         Enrollee enrolleeNotAssigned = eBundleNotAssigned.enrollee();
+
         // enrollee assigned not started
         EnrolleeFactory.EnrolleeBundle eBundleNotStarted = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleNotStarted, "demographic_survey", TaskStatus.NEW, TaskType.SURVEY);
@@ -331,6 +332,10 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         EnrolleeFactory.EnrolleeBundle eBundleInProgress = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
         participantTaskFactory.buildPersisted(eBundleInProgress, "demographic_survey", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
         Enrollee enrolleeInProgress = eBundleInProgress.enrollee();
+
+        // enrollee assigned in progress but different task
+        EnrolleeFactory.EnrolleeBundle eBundleInProgressWrongTask = enrolleeFactory.buildWithPortalUser(getTestName(info), studyEnvBundle.getPortalEnv(), studyEnvBundle.getStudyEnv());
+        participantTaskFactory.buildPersisted(eBundleInProgressWrongTask, "something_else", TaskStatus.IN_PROGRESS, TaskType.SURVEY);
 
         List<EnrolleeSearchExpressionResult> resultsAssigned = enrolleeSearchExpressionDao.executeSearch(assignedExp, studyEnvBundle.getStudyEnv().getId());
         List<EnrolleeSearchExpressionResult> resultsInProgress = enrolleeSearchExpressionDao.executeSearch(inProgressExp, studyEnvBundle.getStudyEnv().getId());

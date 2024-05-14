@@ -38,6 +38,7 @@ public class ProfileTerm implements SearchTerm {
         if (field.equals("name")) {
             String givenName = Objects.requireNonNullElse(context.getProfile().getGivenName(), "");
             String familyName = Objects.requireNonNullElse(context.getProfile().getFamilyName(), "");
+            System.out.println("Yeah! " + (givenName + " " + familyName).trim());
             return new SearchValue((givenName + " " + familyName).trim());
         }
 

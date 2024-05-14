@@ -6,7 +6,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Result of a search term (profile.givenName) or user input ("John"). Useful when executing a
@@ -20,7 +19,6 @@ public class SearchValue {
     private Instant instantValue = null;
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
-    private List<String> stringArrValue = null;
 
     private final SearchValueType searchValueType;
 
@@ -52,11 +50,6 @@ public class SearchValue {
     public SearchValue(Boolean booleanValue) {
         this.booleanValue = booleanValue;
         this.searchValueType = SearchValueType.BOOLEAN;
-    }
-
-    public SearchValue(List<String> stringArrValue) {
-        this.stringArrValue = stringArrValue;
-        this.searchValueType = SearchValueType.STRING_ARRAY;
     }
 
     public SearchValue() {
@@ -91,12 +84,6 @@ public class SearchValue {
 
     public boolean equals(SearchValue right) {
         return switch (this.searchValueType) {
-            case STRING_ARRAY -> {
-                if (right.searchValueType.equals(SearchValueType.STRING)) {
-                    yield this.stringArrValue.contains(right.stringValue);
-                }
-                yield this.stringArrValue.equals(right.stringArrValue);
-            }
             case STRING -> this.stringValue.equals(right.stringValue);
             case INTEGER -> {
                 if (right.doubleValue != null)
@@ -112,7 +99,7 @@ public class SearchValue {
             case INSTANT -> this.instantValue.equals(right.instantValue);
             case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
             default -> false;
-        } || right.equals(this);
+        };
     }
 
     public boolean greaterThan(SearchValue right) {
@@ -161,7 +148,6 @@ public class SearchValue {
 
     public enum SearchValueType {
         STRING,
-        STRING_ARRAY,
         INTEGER,
         DOUBLE,
         INSTANT,
