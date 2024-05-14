@@ -235,12 +235,6 @@ public class EnrolleeImportService {
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
-        /*if (enrollee.getCreatedAt() != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), enrollee.getCreatedAt());
-        }
-        if (enrollee.getLastUpdatedAt() != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(enrollee.getId(), enrollee.getLastUpdatedAt());
-        }*/
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
