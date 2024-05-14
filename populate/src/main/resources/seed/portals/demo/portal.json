@@ -16,7 +16,7 @@
         "password": "broad_institute",
         "initialized": true,
         "emailSourceAddress": "support@juniper.terra.bio",
-        "defaultLanguage": "es"
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",

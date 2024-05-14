@@ -19,6 +19,8 @@ export default class Navbar extends WebComponentBase {
 
   linkLogIn: Locator
 
+  languageSelector: Locator
+
   constructor(page: Page) {
     super(page)
     this.root = this.page.locator('.navbar')
@@ -29,5 +31,6 @@ export default class Navbar extends WebComponentBase {
     this.linkScientificBackground = this.root.locator('a.nav-link', { hasText: new RegExp(/^Scientific Background$/) })
     this.linkRegister = this.root.locator('a.btn', { hasText: new RegExp(/^Register$/) })
     this.linkLogIn = this.root.locator('a.btn', { hasText: new RegExp(/^Log In$/) })
+    this.languageSelector = this.root.locator('button.dropdown-toggle')
   }
 }
