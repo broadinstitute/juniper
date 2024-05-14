@@ -28,6 +28,10 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return dao.findAllWithSurvey(studyEnvId, active);
     }
 
+    public List<StudyEnvironmentSurvey> findAllByStudyEnvIdWithSurveyNoContent(UUID studyEnvId, Boolean active) {
+        return dao.findAllWithSurveyNoContent(List.of(studyEnvId), null, active);
+    }
+
     public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, UUID surveyId) {
         return dao.findActiveBySurvey(studyEnvId, surveyId);
     }
