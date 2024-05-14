@@ -25,9 +25,9 @@ beforeEach(() => {
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
-function PlainSurveyComponent({ formModel }: { formModel: Survey }) {
+function PlainSurveyComponent({ formModel, profile }: { formModel: Survey, profile?: Profile }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, 'sandbox')
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, 'sandbox', profile)
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
@@ -115,7 +115,7 @@ test('enables hide on profile attributes', () => {
 
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}/>
+      <PlainSurveyComponent formModel={dynamicSurvey} profile={maleProfile}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
@@ -133,7 +133,7 @@ test('enables show on profile attributes', () => {
 
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}/>
+      <PlainSurveyComponent formModel={dynamicSurvey} profile={femaleProfile}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()

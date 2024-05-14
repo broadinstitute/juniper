@@ -310,6 +310,7 @@ export function useSurveyJSModel(
     }
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
+    //TODO: this needs to deal with proxies, which got lost in the shuffle after a rebase
     newSurveyModel.setVariable('portalEnvironmentName', envName)
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
