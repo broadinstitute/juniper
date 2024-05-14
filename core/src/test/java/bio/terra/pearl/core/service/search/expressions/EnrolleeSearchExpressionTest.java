@@ -237,7 +237,6 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
         Enrollee enrolleeNoResponse = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
 
-
         String rule = "{answer.%s.country} = 'us' and ({answer.%s.diagnosis} = 'diag1' or {answer.%s.diagnosis} = 'diag2')".formatted(survey.getStableId(), survey.getStableId(), survey.getStableId());
         EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule(rule);
 

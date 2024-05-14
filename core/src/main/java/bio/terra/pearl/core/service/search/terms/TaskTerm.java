@@ -14,7 +14,7 @@ import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 import static org.jooq.impl.DSL.condition;
 
 /**
- * TODO
+ * Allows searching on an enrollee's task status.
  */
 public class TaskTerm implements SearchTerm {
     private final String targetStableId;

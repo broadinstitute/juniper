@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * TODO
+ * Allows searching on basic properties of the enrollee, e.g. "consented"
  */
 public class EnrolleeTerm implements SearchTerm {
 
