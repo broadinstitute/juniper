@@ -241,7 +241,8 @@ export function useRoutablePageNumber(): PageNumberControl {
 
 
 type UseSurveyJsModelOpts = {
-  extraCssClasses?: Record<string, string>
+  extraCssClasses?: Record<string, string>,
+  extraVariables?: Record<string, any> // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 /**

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils'
+import { getResumeData, getSurveyJsAnswerList } from 'util/surveyJsUtils'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { SurveyAutoCompleteButton, SurveyReviewModeButton, useI18n } from '@juniper/ui-core'
+import { SurveyAutoCompleteButton, SurveyReviewModeButton, useI18n, useSurveyJSModel } from '@juniper/ui-core'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -24,6 +24,8 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
+    studyEnv.environmentName,
+    undefined,
     { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 

@@ -7,6 +7,8 @@ import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
 import { MockI18nProvider } from '@juniper/ui-core'
 
+jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
+
 describe('OutreachTasks', () => {
   it('show tasks with blurbs', async () => {
     const enrollee = mockEnrollee()

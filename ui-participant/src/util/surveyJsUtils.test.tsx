@@ -5,12 +5,12 @@ import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { Survey } from 'api/api'
 
-import { getSurveyJsAnswerList, getUpdatedAnswers, useSurveyJSModel } from './surveyJsUtils'
+import { getSurveyJsAnswerList, getUpdatedAnswers } from './surveyJsUtils'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateSurvey, generateThreePageSurvey } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { asMockedFn, MockI18nProvider, Profile, useRoutablePageNumber } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, Profile, useRoutablePageNumber, useSurveyJSModel } from '@juniper/ui-core'
 import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
 import { useUser } from '../providers/UserProvider'
 import { mockUseActiveUser, mockUseUser } from '../test-utils/user-mocking-utils'
@@ -27,7 +27,7 @@ beforeEach(() => {
 /** does nothing except render a survey using the hooks from surveyJsUtils */
 function PlainSurveyComponent({ formModel }: { formModel: Survey }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager)
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, 'sandbox')
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}

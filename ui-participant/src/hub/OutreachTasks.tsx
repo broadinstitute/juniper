@@ -30,7 +30,7 @@ const useOutreachParams = () => {
  * multiple studies and therefore enrollees */
 export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
   const { i18n } = useI18n()
-  const foo = usePortalEnv()
+  const portalEnvContext = usePortalEnv()
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
@@ -40,9 +40,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   })
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     const studyEnvParams = {
-      portalShortcode: foo.portal.shortcode,
+      portalShortcode: portalEnvContext.portal.shortcode,
       studyShortcode: study.shortcode,
-      envName: foo.portalEnv.environmentName as EnvironmentName
+      envName: portalEnvContext.portalEnv.environmentName as EnvironmentName
     }
     const responseDto = {
       resumeData: '{}',

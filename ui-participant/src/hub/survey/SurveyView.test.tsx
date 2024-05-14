@@ -6,7 +6,6 @@ import {
   mockSurveyWithHiddenQuestion,
   mockSurveyWithHiddenQuestionClearOnHidden
 } from 'test-utils/test-survey-factory'
-import { useSurveyJSModel } from 'util/surveyJsUtils'
 import { render, screen } from '@testing-library/react'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -16,14 +15,14 @@ import {
   PageNumberControl,
   Survey,
   SurveyFooter,
-  useAutosaveEffect
+  useAutosaveEffect, useSurveyJSModel
 } from '@juniper/ui-core'
 import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { mockUseActiveUser, mockUseUser } from '../../test-utils/user-mocking-utils'
-import { useActiveUser } from '../../providers/ActiveUserProvider'
+import { mockUseActiveUser, mockUseUser } from 'test-utils/user-mocking-utils'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -58,7 +57,7 @@ jest.mock('providers/ActiveUserProvider')
 const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Survey}) => {
   const pager: PageNumberControl = { pageNumber: pageNum, updatePageNumber: () => 1 }
   const { surveyModel } = useSurveyJSModel(survey, null,
-    () => 1, pager)
+    () => 1, pager, 'sandbox')
   return <SurveyFooter survey={survey} surveyModel={surveyModel}/>
 }
 
