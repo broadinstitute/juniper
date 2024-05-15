@@ -1,12 +1,13 @@
 import React from 'react'
 
 import SiteContentEditor from './SiteContentEditor'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { renderWithRouter, setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { MockI18nProvider, NavbarItemExternal } from '@juniper/ui-core'
+import { select } from 'react-select-event'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()
@@ -87,7 +88,7 @@ test('invalid site JSON disables Save button', async () => {
   expect(screen.queryByText('Save')).toHaveAttribute('aria-disabled', 'true')
 })
 
-test('invalid site JSON disables Add Page button', async () => {
+test('invalid site JSON disables Add navbar button', async () => {
   //Arrange
   const siteContent = mockSiteContent()
   const { RoutedComponent } = setupRouterTest(
@@ -102,7 +103,7 @@ test('invalid site JSON disables Add Page button', async () => {
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
 
   //Assert
-  const addPageButton = screen.getByText('Add page')
+  const addPageButton = screen.getByText('Add navbar item')
   expect(addPageButton).toHaveAttribute('aria-disabled', 'true')
 })
 
@@ -134,7 +135,7 @@ test('delete page button is disabled when Landing page is selected', async () =>
   render(RoutedComponent)
 
   //Assert
-  const deletePageButton = screen.getByText('Delete page')
+  const deletePageButton = screen.getByText('Delete navbar item')
   expect(deletePageButton).toHaveAttribute('aria-disabled', 'true')
 })
 
@@ -168,4 +169,33 @@ test('does not render a language selector when there is only one language', asyn
   render(RoutedComponent)
 
   expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()
+})
+
+test('renders href editor for external links', async () => {
+  const siteContent = {
+    ...mockSiteContent(),
+    localizedSiteContents: [
+      {
+        ...mockSiteContent().localizedSiteContents[0],
+        navbarItems: [
+          {
+            text: 'external1',
+            itemType: 'EXTERNAL',
+            itemOrder: 1,
+            href: 'https://example.com'
+          } as NavbarItemExternal
+        ]
+      }
+    ]
+  }
+  const mockContext = mockPortalEnvContext('sandbox')
+
+  renderWithRouter(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={mockContext}/>)
+
+  await select(screen.getByLabelText('Select a page'), 'external1')
+
+  expect(screen.getByLabelText('External link')).toHaveValue('https://example.com')
 })

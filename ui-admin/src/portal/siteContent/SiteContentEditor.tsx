@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { HtmlSection, NavbarItemInternal } from 'api/api'
+import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -11,12 +11,12 @@ import {
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
-import AddPageModal from './AddPageModal'
+import AddNavbarItemModal, { NavItemProps } from './AddNavbarItemModal'
 import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { Tab, Tabs } from 'react-bootstrap'
-import DeletePageModal from './DeletePageModal'
+import DeleteNavItemModal from './DeleteNavItemModal'
 import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
@@ -61,8 +61,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   if (!localContent) {
     return <div>no content for language {selectedLanguage?.languageName}</div>
   }
-  const navBarInternalItems = localContent.navbarItems
-    .filter((navItem): navItem is NavbarItemInternal => navItem.itemType === 'INTERNAL')
+  const navBarItems = localContent.navbarItems
 
   const {
     onChange: languageOnChange, options: languageOptions,
@@ -88,15 +87,29 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     setWorkingContent(newWorkingContent)
   }
 
-  const insertNewPage = (page: HtmlPage) => {
+  const insertNewNavItem = (itemProps: NavItemProps) => {
     if (!localContent) {
       return
     }
-    const newNavBarItem: NavbarItemInternal = {
-      itemType: 'INTERNAL',
-      itemOrder: localContent.navbarItems.length,
-      text: page.title,
-      htmlPage: page
+    let newNavBarItem: NavbarItemInternal | NavbarItemExternal
+    if (itemProps.itemType === 'INTERNAL') {
+      newNavBarItem = {
+        itemType: 'INTERNAL',
+        itemOrder: localContent.navbarItems.length,
+        text: itemProps.text,
+        htmlPage: {
+          path: itemProps.href,
+          sections: [],
+          title: itemProps.text
+        }
+      }
+    } else {
+      newNavBarItem = {
+        itemType: 'EXTERNAL',
+        itemOrder: localContent.navbarItems.length,
+        text: itemProps.text,
+        href: itemProps.href
+      }
     }
     const updatedLocalContent = {
       ...localContent,
@@ -106,12 +119,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     setSelectedNavOpt({ label: newNavBarItem.text, value: newNavBarItem.text || 'Landing page' })
   }
 
-  const deletePage = (page: HtmlPage) => {
+  const deleteNavItem = (navItemText: string) => {
     if (!localContent) {
       return
     }
     const updatedNavBarItems = [...localContent.navbarItems]
-    const matchedNavItemIndex = navBarInternalItems.findIndex(navItem => navItem.htmlPage === page)
+    const matchedNavItemIndex = updatedNavBarItems.findIndex(navItem => navItem.text === navItemText)
     if (matchedNavItemIndex === -1) {
       return
     }
@@ -138,7 +151,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       }
     } else {
       const updatedNavBarItems = [...localContent.navbarItems]
-      const matchedNavItem = navBarInternalItems.find(navItem => navItem.text === navItemText)
+      const matchedNavItem = navBarItems.find(navItem => navItem.text === navItemText) as NavbarItemInternal
       if (!matchedNavItem) {
         return
       }
@@ -182,11 +195,11 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
-  const currentNavBarItem = selectedNavOpt.value ? navBarInternalItems
+  const currentNavBarItem = selectedNavOpt.value ? navBarItems
     .find(navItem => navItem.text === selectedNavOpt.value) : null
-  const pageToRender = currentNavBarItem ? currentNavBarItem.htmlPage : localContent.landingPage
+  const pageToRender = currentNavBarItem ? (currentNavBarItem as NavbarItemInternal).htmlPage : localContent.landingPage
 
-  const pageOpts: {label: string, value: string}[] = navBarInternalItems
+  const pageOpts: {label: string, value: string}[] = navBarItems
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
   pageOpts.unshift(landingPageOption)
 
@@ -255,13 +268,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
-            <FontAwesomeIcon icon={faPlus}/> Add page
+            <FontAwesomeIcon icon={faPlus}/> Add navbar item
           </Button>
           <Button className="btn btn-secondary"
             tooltip={!isLandingPage ? 'Delete this page' : 'You cannot delete the landing page'}
             disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
             onClick={() => setShowDeletePageModal(!showAddPageModal)}>
-            <FontAwesomeIcon icon={faTrash}/> Delete page
+            <FontAwesomeIcon icon={faTrash}/> Delete navbar item
           </Button>
           <Button variant="light"  className="ms-auto  border m-1" tooltip={''}
             onClick={() => setShowBrandingModal(true)}
@@ -286,45 +299,64 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
       </div>
       <div className="d-flex flex-column flex-grow-1 mt-2">
-        <Tabs
-          activeKey={activeTab ?? undefined}
-          className="mb-1"
-          mountOnEnter
-          unmountOnExit
-          onSelect={setActiveTab}
-        >
-          <Tab
-            eventKey="designer"
-            title="Designer"
-            disabled={hasInvalidSection}
+        { pageToRender &&
+          <Tabs
+            activeKey={activeTab ?? undefined}
+            className="mb-1"
+            mountOnEnter
+            unmountOnExit
+            onSelect={setActiveTab}
           >
-            <ErrorBoundary>
-              <div>
-                {pageToRender &&
-                    <ApiProvider api={previewApi}>
-                      <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
-                        siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
-                        footerSection={localContent.footerSection} updateFooter={updateFooter}
-                        updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
-                    </ApiProvider>}
-              </div>
-            </ErrorBoundary>
-          </Tab>
-          <Tab
-            eventKey="preview"
-            title="Preview"
-            disabled={hasInvalidSection}
-          >
-            <ErrorBoundary>
-              <ApiProvider api={previewApi}>
-                { pageToRender.sections.map((section: HtmlSection) =>
-                  <HtmlSectionView section={section} key={section.id}/>)
+            <Tab
+              eventKey="designer"
+              title="Designer"
+              disabled={hasInvalidSection}
+            >
+              <ErrorBoundary>
+                <div>
+                  {pageToRender &&
+                      <ApiProvider api={previewApi}>
+                        <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                          siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
+                          footerSection={localContent.footerSection} updateFooter={updateFooter}
+                          updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
+                      </ApiProvider>}
+                </div>
+              </ErrorBoundary>
+            </Tab>
+            <Tab
+              eventKey="preview"
+              title="Preview"
+              disabled={hasInvalidSection}
+            >
+              <ErrorBoundary>
+                <ApiProvider api={previewApi}>
+                  { pageToRender.sections.map((section: HtmlSection) =>
+                    <HtmlSectionView section={section} key={section.id}/>)
+                  }
+                  <SiteFooter footerSection={localContent.footerSection}/>
+                </ApiProvider>
+              </ErrorBoundary>
+            </Tab>
+          </Tabs> }
+        { currentNavBarItem?.itemType === 'EXTERNAL' && <div className="mt-2">
+          <form className="container">
+            <label htmlFor="externalHref">External link</label>
+            <input type="text" id="externalHref" className="form-control"
+              value={(currentNavBarItem as NavbarItemExternal).href}
+              onChange={e => {
+                const updatedNavItem = { ...currentNavBarItem, href: e.target.value }
+                const updatedNavBarItems = [...localContent.navbarItems]
+                updatedNavBarItems[updatedNavItem.itemOrder] = updatedNavItem
+                const updatedLocalContent = {
+                  ...localContent,
+                  navbarItems: updatedNavBarItems
                 }
-                <SiteFooter footerSection={localContent.footerSection}/>
-              </ApiProvider>
-            </ErrorBoundary>
-          </Tab>
-        </Tabs>
+                updateLocalContent(updatedLocalContent)
+              }}/>
+          </form>
+        </div>
+        }
       </div>
     </div>
     { showVersionSelector &&
@@ -334,12 +366,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           onDismiss={() => setShowVersionSelector(false)}/>
     }
     { showAddPageModal &&
-        <AddPageModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
-          insertNewPage={insertNewPage}
+        <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+          insertNewNavItem={insertNewNavItem}
           onDismiss={() => setShowAddPageModal(false)}/>
     }
-    { showDeletePageModal &&
-        <DeletePageModal renderedPage={pageToRender} deletePage={deletePage}
+    { (showDeletePageModal && currentNavBarItem) &&
+        <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
           onDismiss={() => setShowDeletePageModal(false)}/>
     }
     { showAddPreRegModal &&
