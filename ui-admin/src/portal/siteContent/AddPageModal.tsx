@@ -1,31 +1,54 @@
 import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
-import { HtmlPage, PortalEnvironment } from '@juniper/ui-core'
+import { BaseNavBarItem, NavBarItemType, PortalEnvironment } from '@juniper/ui-core'
 import Api from 'api/api'
 import { useConfig } from 'providers/ConfigProvider'
+import { useNonNullReactSingleSelect } from '../../util/react-select-utils'
+import Select from 'react-select'
+
+const ITEM_TYPE_OPTIONS: {label: string, value: NavBarItemType}[] = [{
+  label: 'Page', value: 'INTERNAL'
+}, {
+  label: 'External link', value: 'EXTERNAL'
+}]
+
+export type NavItemProps = BaseNavBarItem & {href: string}
+
+const EMPTY_NAV_ITEM: NavItemProps = {
+  text: '',
+  itemType: 'INTERNAL',
+  href: '',
+  itemOrder: -1
+}
 
 /** renders a modal that adds a new page to the site */
-const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, onDismiss }: {
-  portalEnv: PortalEnvironment, portalShortcode: string, insertNewPage: (page: HtmlPage) => void,
+const AddPageModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDismiss }: {
+  portalEnv: PortalEnvironment, portalShortcode: string, insertNewNavItem: (item: NavItemProps) => void,
   onDismiss: () => void
 }) => {
   const zoneConfig = useConfig()
+  const [navbarItem, setNavbarItem] = useState(EMPTY_NAV_ITEM)
 
-  const [pageTitle, setPageTitle] = useState('')
-  const [pagePath, setPagePath] = useState('')
+  const {
+    selectInputId, selectedOption,
+    options: itemTypeOptions, onChange: onItemTypeChange
+  } = useNonNullReactSingleSelect<NavBarItemType>(
+    ITEM_TYPE_OPTIONS.map(opt => opt.value),
+    itemTypeOpt => ITEM_TYPE_OPTIONS.find(opt => opt.value === itemTypeOpt)!,
+    (opt: NavBarItemType) => setNavbarItem({ ...navbarItem, itemType: opt }),
+    navbarItem.itemType)
 
   const addPage = async () => {
-    insertNewPage({
-      title: pageTitle,
-      path: pagePath,
-      sections: []
-    })
+    insertNewNavItem(navbarItem)
     onDismiss()
   }
 
+  const isItemValid = (navbarItem: NavItemProps) => {
+    return navbarItem.text && navbarItem.itemType && navbarItem.href
+  }
+
   const clearFields = () => {
-    setPageTitle('')
-    setPagePath('')
+    setNavbarItem(EMPTY_NAV_ITEM)
   }
 
   const portalUrl = Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
@@ -41,28 +64,45 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewPage, onDismiss }: 
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <label htmlFor="inputPageTitle">Page Title</label>
-        <input type="text" size={50} className="form-control mb-3" id="inputPageTitle" value={pageTitle}
+        <input type="text" size={50} className="form-control mb-3" id="inputPageTitle" value={navbarItem.text}
           onChange={event => {
-            setPageTitle(event.target.value)
+            setNavbarItem({ ...navbarItem, text: event.target.value })
           }}/>
-        <label htmlFor="inputPagePath">Page Path</label>
-        <div className="input-group">
-          <div className="input-group-prepend">
-            <span className="input-group-text" style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-              id="pathPrefix">{portalUrl}/</span>
-          </div>
-          <input type="text" className="form-control" id="inputPagePath"
-            value={pagePath} aria-describedby="pathPrefix"
-            onChange={event => {
-              setPagePath(event.target.value)
-            }}/>
+        <div className="mb-3">
+          <label htmlFor={selectInputId}>Navbar item type</label>
+          <Select options={itemTypeOptions} value={selectedOption} inputId={selectInputId}
+            aria-label={'Select the navbar item type'}
+            onChange={onItemTypeChange}/>
         </div>
+        { navbarItem.itemType === 'EXTERNAL' && <div>
+          <label htmlFor="inputPagePath">Link</label>
+          <input type="text" className="form-control" id="inputPageHref"
+            value={navbarItem.href}
+            onChange={event => {
+              setNavbarItem({ ...navbarItem, href: event.target.value })
+            }}/>
+        </div>}
+        { navbarItem.itemType === 'INTERNAL' && <div>
+          <label htmlFor="inputPagePath">Page Path</label>
+          <div className="input-group">
+            <div className="input-group-prepend">
+              <span className="input-group-text" style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
+                id="pathPrefix">{portalUrl}/</span>
+            </div>
+            <input type="text" className="form-control" id="inputPagePath"
+              value={navbarItem.href} aria-describedby="pathPrefix"
+              onChange={event => {
+                setNavbarItem({ ...navbarItem, href: event.target.value })
+              }}/>
+          </div>
+        </div>
+        }
       </form>
     </Modal.Body>
     <Modal.Footer>
       <button
         className="btn btn-primary"
-        disabled={!pageTitle || !pagePath}
+        disabled={!isItemValid(navbarItem)}
         onClick={addPage}
       >Create</button>
       <button className="btn btn-secondary" onClick={() => {

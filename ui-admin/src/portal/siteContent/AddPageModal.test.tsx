@@ -10,7 +10,7 @@ describe('AddPageModal', () => {
     //Arrange
     const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewPage={jest.fn()}
+      insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -26,7 +26,7 @@ describe('AddPageModal', () => {
     //Arrange
     const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewPage={jest.fn()}
+      insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -50,7 +50,7 @@ describe('AddPageModal', () => {
     const mockInsertNewPageFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(<AddPageModal
       onDismiss={jest.fn()}
-      insertNewPage={mockInsertNewPageFn}
+      insertNewNavItem={mockInsertNewPageFn}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -68,9 +68,10 @@ describe('AddPageModal', () => {
 
     //Assert
     expect(mockInsertNewPageFn).toHaveBeenCalledWith({
-      title: 'My New Page',
-      path: 'newPage',
-      sections: []
+      href: 'newPage',
+      itemOrder: -1,
+      itemType: 'INTERNAL',
+      text: 'My New Page'
     })
   })
 })

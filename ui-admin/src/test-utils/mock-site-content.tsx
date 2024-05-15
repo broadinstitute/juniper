@@ -1,4 +1,4 @@
-import { SiteContent, LocalSiteContent, HtmlPage } from 'api/api'
+import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
 
 /** mock site content */
@@ -32,6 +32,16 @@ export const mockHtmlPage = (): HtmlPage => {
     path: '/',
     sections: [mockHtmlSection()],
     title: 'example page'
+  }
+}
+
+/** mock nav iteme */
+export const mockNavbarItem= (): NavbarItem => {
+  return {
+    text: 'example page',
+    itemType: 'EXTERNAL',
+    itemOrder: 1,
+    href: 'https://example.com'
   }
 }
 
