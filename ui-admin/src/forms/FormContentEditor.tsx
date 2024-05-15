@@ -98,13 +98,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           eventKey="answermappings"
           title="Answer Mappings"
         >
-          <ErrorBoundary>
-            <AnswerMappingEditor
-              formContent={editedContent}
-              initialAnswerMappings={initialAnswerMappings}
-              onChange={onAnswerMappingChange}
-            />
-          </ErrorBoundary>
+          <AnswerMappingEditor
+            formContent={editedContent}
+            initialAnswerMappings={initialAnswerMappings}
+            onChange={onAnswerMappingChange}
+          />
         </Tab>
         <Tab
           disabled={activeTab !== 'preview' && !tabsEnabled}
