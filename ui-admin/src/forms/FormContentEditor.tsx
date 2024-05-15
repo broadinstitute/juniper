@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
+import { AnswerMapping, FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
-import { OnChangeFormContent } from './formEditorTypes'
+import { OnChangeAnswerMappings, OnChangeFormContent } from './formEditorTypes'
 import { FormContentJsonEditor } from './FormContentJsonEditor'
 import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
@@ -12,16 +12,15 @@ import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
 import useStateCallback from '../util/useStateCallback'
 import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
-import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 
 type FormContentEditorProps = {
-  studyEnvContext: StudyEnvContextT
-  currentForm: VersionedForm
   initialContent: string
+  initialAnswerMappings: AnswerMapping[]
   visibleVersionPreviews: VersionedForm[]
   supportedLanguages: PortalEnvironmentLanguage[]
   readOnly: boolean
-  onChange: OnChangeFormContent
+  onFormContentChange: OnChangeFormContent
+  onAnswerMappingChange: OnChangeAnswerMappings
 }
 
 // TODO: Add JSDoc
@@ -29,12 +28,12 @@ type FormContentEditorProps = {
 export const FormContentEditor = (props: FormContentEditorProps) => {
   const {
     initialContent,
+    initialAnswerMappings,
     visibleVersionPreviews,
     supportedLanguages,
     readOnly,
-    onChange,
-    studyEnvContext,
-    currentForm
+    onFormContentChange,
+    onAnswerMappingChange
   } = props
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
@@ -64,10 +63,10 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
                 setEditedContent(newContent, callback)
                 try {
                   const errors = validateFormContent(newContent)
-                  onChange(errors, newContent)
+                  onFormContentChange(errors, newContent)
                 } catch (err) {
                   //@ts-ignore
-                  onChange([err.message], undefined)
+                  onFormContentChange([err.message], undefined)
                 }
               }}
             />
@@ -85,9 +84,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               onChange={(validationErrors, newContent) => {
                 if (isEmpty(validationErrors) && newContent) {
                   setEditedContent(newContent)
-                  onChange(validationErrors, newContent)
+                  onFormContentChange(validationErrors, newContent)
                 } else {
-                  onChange(validationErrors, undefined)
+                  onFormContentChange(validationErrors, undefined)
                 }
                 setTabsEnabled(isEmpty(validationErrors))
               }}
@@ -100,7 +99,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Answer Mappings"
         >
           <ErrorBoundary>
-            <AnswerMappingEditor studyEnvContext={studyEnvContext} formContent={currentForm}/>
+            <AnswerMappingEditor
+              formContent={editedContent}
+              initialAnswerMappings={initialAnswerMappings}
+              onChange={onAnswerMappingChange}
+            />
           </ErrorBoundary>
         </Tab>
         <Tab

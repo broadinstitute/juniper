@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { useLoadingEffect } from '../../api/api-utils'
-import Api, { AnswerMapping, AnswerMappingMapType, AnswerMappingTargetType, Survey, VersionedForm } from '../../api/api'
-import LoadingSpinner from '../../util/LoadingSpinner'
 import { faCheck, faPlus, faTrash, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Select from 'react-select'
 import Creatable from 'react-select/creatable'
-import { getFormContent, getFormElements } from '@juniper/ui-core'
+import {
+  AnswerMapping,
+  AnswerMappingMapType,
+  AnswerMappingTargetType,
+  FormContent,
+  getFormElements
+} from '@juniper/ui-core'
 import { isEmpty } from 'lodash'
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from 'react-bootstrap'
+import { OnChangeAnswerMappings } from '../../forms/formEditorTypes'
 
 
 const AnswerMappingLabels: {[key in AnswerMappingTargetType]: string} = {
@@ -56,62 +59,35 @@ const AnswerMappingMapTypeLabels: { [key in AnswerMappingMapType]: string} = {
  */
 export default function AnswerMappingEditor(
   {
-    studyEnvContext, formContent
+    formContent, initialAnswerMappings, onChange
   } : {
-    studyEnvContext: StudyEnvContextT, formContent: VersionedForm
+    formContent: FormContent, initialAnswerMappings: AnswerMapping[], onChange: OnChangeAnswerMappings
   }
 ) {
-  const [answerMappings, setAnswerMappings] = useState<AnswerMapping[]>([])
-  const [survey, setSurvey] = useState<Survey>()
-
-  const stableId = formContent.stableId
-  const version = formContent.version
+  const [answerMappings, setAnswerMappings] = useState<AnswerMapping[]>(initialAnswerMappings || [])
 
   const [openDeleteMappingModal, setOpenDeleteMappingModal] = useState<AnswerMapping | null>(null)
 
-  const { isLoading } = useLoadingEffect(async () => {
-    const survey = await Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version)
-
-    setSurvey(survey)
-    const newAnswerMappings = await Api.getSurveyAnswerMappings(
-      studyEnvContext.portal.shortcode,
-      survey.stableId,
-      survey.version)
-    setAnswerMappings(newAnswerMappings)
-  })
 
   const deleteAnswerMapping = async () => {
-    if (!openDeleteMappingModal || !survey) {
+    if (!openDeleteMappingModal) {
       return
     }
 
-    try {
-      await Api.deleteAnswerMapping(
-        studyEnvContext.portal.shortcode,
-        survey.stableId,
-        survey.version,
-        openDeleteMappingModal.id)
-    } finally {
-      setAnswerMappings(answerMappings.filter(m => m.id !== openDeleteMappingModal.id))
-      setOpenDeleteMappingModal(null)
-    }
+    const filteredMappings = answerMappings.filter(m => m.id !== openDeleteMappingModal.id)
+
+    onChange([], filteredMappings)
+    setAnswerMappings(filteredMappings)
+    setOpenDeleteMappingModal(null)
   }
 
   const [addNewAnswerMapping, setAddNewAnswerMapping] = useState(false)
 
-  if (isLoading) {
-    return <LoadingSpinner/>
-  }
-
   const saveNewMapping = async (mapping: AnswerMapping) => {
-    if (!survey) {
-      return
-    }
+    const newMappings = [...answerMappings, mapping]
 
-    const newMapping = await Api.createAnswerMapping(
-      studyEnvContext.portal.shortcode, survey.stableId, survey.version, mapping
-    )
-    setAnswerMappings([...answerMappings, newMapping])
+    onChange([], newMappings)
+    setAnswerMappings(newMappings)
     setAddNewAnswerMapping(false)
   }
 
@@ -161,10 +137,10 @@ export default function AnswerMappingEditor(
             </tr>
           })
         }
-        {addNewAnswerMapping && survey ? <AddNewAnswerMappingRow
+        {addNewAnswerMapping && formContent ? <AddNewAnswerMappingRow
           onSave={saveNewMapping}
           existingMappings={answerMappings}
-          survey={survey}
+          formContent={formContent}
           onCancel={() => setAddNewAnswerMapping(false)}/>: <tr>
           <td className={'border-0'}>
           </td>
@@ -193,9 +169,14 @@ export default function AnswerMappingEditor(
 }
 
 const AddNewAnswerMappingRow = (
-  { onSave, onCancel, survey, existingMappings }
+  { onSave, onCancel, formContent, existingMappings }
     :
-  { onSave: (mapping: AnswerMapping) => void, onCancel: () => void, survey: Survey, existingMappings: AnswerMapping[] }
+    {
+      onSave: (mapping: AnswerMapping) => void,
+      onCancel: () => void,
+      formContent: FormContent,
+      existingMappings: AnswerMapping[]
+    }
 ) => {
   const [questionStableId, setQuestionStableId] = useState<string>()
   const [targetType, setTargetType] = useState<AnswerMappingTargetType>()
@@ -203,8 +184,7 @@ const AddNewAnswerMappingRow = (
   const [formatString, setFormatString] = useState<string>()
   const [mapType, setMapType] = useState<AnswerMappingMapType>('STRING_TO_STRING')
 
-  const content = getFormContent(survey)
-  const elements = getFormElements(content)
+  const elements = getFormElements(formContent)
   const names = elements.filter(e => 'name' in e).map(e => 'name' in e ? e.name : '')
 
   useEffect(() => {
@@ -289,7 +269,7 @@ const AddNewAnswerMappingRow = (
           targetField: targetField!,
           formatString: formatString || '',
           mapType,
-          surveyId: survey.id,
+          surveyId: '', // backend will set
           errorOnFail: false
         })}>
         <FontAwesomeIcon icon={faCheck}/>

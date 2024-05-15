@@ -201,13 +201,6 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId(), portalId);
         newSurvey.setVersion(nextVersion);
-        newSurvey.getAnswerMappings().clear();
-        for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
-            // we need to clone the answer mappings and attach them to the new version
-            AnswerMapping newAnswerMapping = new AnswerMapping();
-            BeanUtils.copyProperties(answerMapping, newAnswerMapping, "id", "createdAt", "lastUpdatedAt");
-            newSurvey.getAnswerMappings().add(newAnswerMapping);
-        }
         return create(newSurvey);
     }
 

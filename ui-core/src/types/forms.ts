@@ -1,3 +1,20 @@
+export const answerMappingTargetTypes = ['PROFILE', 'PROXY', 'PROXY_PROFILE'] as const
+export type AnswerMappingTargetType = typeof answerMappingTargetTypes[number];
+
+export const answerMappingMapTypes = ['STRING_TO_STRING', 'STRING_TO_LOCAL_DATE', 'STRING_TO_BOOLEAN'] as const
+export type AnswerMappingMapType = typeof answerMappingMapTypes[number];
+
+export type AnswerMapping = {
+  id: string
+  questionStableId: string
+  surveyId: string
+  targetType: AnswerMappingTargetType
+  targetField: string
+  mapType: AnswerMappingMapType
+  formatString: string
+  errorOnFail: boolean
+}
+
 export type VersionedForm = {
   id: string
   stableId: string
@@ -7,6 +24,7 @@ export type VersionedForm = {
   createdAt: number
   lastUpdatedAt: number
   content: string
+  answerMappings?: AnswerMapping[]
   footer?: string
 }
 
