@@ -4,23 +4,16 @@ import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
-import org.apache.commons.beanutils.NestedNullException;
-import org.apache.commons.beanutils.PropertyUtils;
 import org.jooq.Condition;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
 
 /**
  * This term can be used to search for any of the profile or mailing address fields within a search expression.
  */
-public class ProfileTerm implements EnrolleeTerm {
+public class ProfileTerm implements SearchTerm {
     private final String field;
     private final ProfileDao profileDao;
     private final MailingAddressDao mailingAddressDao;
@@ -42,28 +35,14 @@ public class ProfileTerm implements EnrolleeTerm {
             return new SearchValue();
         }
 
-        SearchValue value;
-        try {
-            Object objValue = PropertyUtils.getNestedProperty(context.getProfile(), field);
+        if (field.equals("name")) {
+            String givenName = Objects.requireNonNullElse(context.getProfile().getGivenName(), "");
+            String familyName = Objects.requireNonNullElse(context.getProfile().getFamilyName(), "");
 
-            SearchValue.SearchValueType type = FIELDS.get(field);
-
-            switch (type) {
-                case STRING -> value = new SearchValue(objValue.toString());
-                case DATE -> value = new SearchValue((LocalDate) objValue);
-                case INTEGER -> value = new SearchValue((Integer) objValue);
-                case DOUBLE -> value = new SearchValue((Double) objValue);
-                case BOOLEAN -> value = new SearchValue((Boolean) objValue);
-                default -> throw new IllegalArgumentException("Unsupported field type: " + type);
-            }
-        } catch (NullPointerException | NestedNullException e) {
-            // if the field is null / not provided, we want to return null/empty search value
-            return new SearchValue();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Invalid field: " + field);
+            return new SearchValue((givenName + " " + familyName).trim());
         }
 
-        return value;
+        return SearchValue.ofNestedProperty(context.getProfile(), field, FIELDS.get(field));
     }
 
     @Override
@@ -97,6 +76,8 @@ public class ProfileTerm implements EnrolleeTerm {
     public String termClause() {
         if (field.startsWith("mailingAddress"))
             return "mailing_address." + toSnakeCase(field.substring(field.indexOf(".") + 1));
+        if (field.equals("name"))
+            return "concat(profile.given_name, ' ', profile.family_name)";
         return "profile." + toSnakeCase(field);
     }
 
@@ -108,9 +89,11 @@ public class ProfileTerm implements EnrolleeTerm {
     public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
             Map.entry("givenName", SearchValue.SearchValueType.STRING),
             Map.entry("familyName", SearchValue.SearchValueType.STRING),
+            Map.entry("name", SearchValue.SearchValueType.STRING),
             Map.entry("contactEmail", SearchValue.SearchValueType.STRING),
             Map.entry("phoneNumber", SearchValue.SearchValueType.STRING),
             Map.entry("birthDate", SearchValue.SearchValueType.DATE),
+            Map.entry("sexAtBirth", SearchValue.SearchValueType.STRING),
             Map.entry("mailingAddress.state", SearchValue.SearchValueType.STRING),
             Map.entry("mailingAddress.city", SearchValue.SearchValueType.STRING),
             Map.entry("mailingAddress.postalCode", SearchValue.SearchValueType.STRING),
