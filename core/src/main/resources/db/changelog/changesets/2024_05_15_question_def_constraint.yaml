@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: "question_def_constraint"
+      author: dbush
+      changes:
+        - dropUniqueConstraint: # drop this constraint, surveys are now portal-scoped
+            tableName: survey_question_definition
+            constraintName: uc_survey_question_definition_version
+        - addUniqueConstraint:
+            tableName: survey_question_definition
+            constraintName: uc_survey_question_definition_survey
+            columnNames: survey_id, question_stable_id
+        - dropIndex: # this isn't how we fetch these anymore, we get them by surveyId
+            tableName: survey_question_definition
+            indexName: idx_survey_question_definition_stable_id_version
+        - createIndex:
+            tableName: survey_question_definition
+            indexName: idx_survey_question_definition_survey
+            columns:
+              - column:
+                  name: survey_id
+
