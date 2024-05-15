@@ -272,6 +272,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .oldValue(existing.valueAsString())
                 .newValue(updated.valueAsString()).build();
         changeRecords.add(change);
+        existing.inferTypeIfMissing();
         existing.setSurveyVersion(updated.getSurveyVersion());
         if (existing.getSurveyVersion() == 0)  {
             // if the frontend didn't specify a specific version,
@@ -293,6 +294,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             answer.setSurveyVersion(survey.getVersion());
         }
         answer.setEnrolleeId(response.getEnrolleeId());
+        answer.inferTypeIfMissing();
         return answerService.create(answer);
     }
 

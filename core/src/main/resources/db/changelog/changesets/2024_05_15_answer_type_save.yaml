@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: "answer_type_save"
+      author: dbush
+      changes:
+        - sql:
+            sql: update answer set answer_type = 'OBJECT' where object_value is not null;
+        - sql:
+            sql: update answer set answer_type = 'BOOLEAN' where boolean_value is not null;
+        - sql:
+            sql: update answer set answer_type = 'NUMBER' where number_value is not null;
+        - sql:
+            sql: update answer set answer_type = 'STRING' where string_value is not null;
+
