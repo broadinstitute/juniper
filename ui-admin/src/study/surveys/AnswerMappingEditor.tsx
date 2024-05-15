@@ -267,7 +267,7 @@ export default function AnswerMappingEditor(
   return <div className='px-3 pt-1'>
     <p>
       Answer mappings allow you to map answers from questions in the survey to other parts of the system.
-      For example, you could map a question which collects the participant&apos;s first name to the profile&apos;s.
+      For example, you could map a question which collects the participant&apos;s first name to the profile&apos;s
       given name field. Then, any changes the participant makes to the survey will result in changes to their profile.
     </p>
     {basicTableLayout(table)}
