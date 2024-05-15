@@ -2,9 +2,13 @@ package bio.terra.pearl.core.factory.survey;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.survey.AnswerType;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.workflow.HubResponse;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,5 +53,27 @@ public class SurveyResponseFactory {
         List<Answer> answers = answerFactory.createFromMap(answerMap, enrollee, survey, response);
         response.setAnswers(answers);
         return response;
+    }
+
+    public HubResponse<SurveyResponse> submitStringAnswer(ParticipantTask task,
+                                                          String questionStableId,
+                                                          String answerValue,
+                                                          boolean complete,
+                                                          EnrolleeFactory.EnrolleeBundle bundle,
+                                                          Portal portal) {
+        return surveyResponseService.updateResponse(
+                SurveyResponse.builder()
+                        .answers(List.of(
+                                Answer.builder()
+                                        .questionStableId(questionStableId)
+                                        .answerType(AnswerType.STRING)
+                                        .stringValue(answerValue).build()))
+                        .complete(complete)
+                        .build(),
+                bundle.participantUser().getId(),
+                bundle.portalParticipantUser(),
+                bundle.enrollee(),
+                task.getId(),
+                portal.getId());
     }
 }

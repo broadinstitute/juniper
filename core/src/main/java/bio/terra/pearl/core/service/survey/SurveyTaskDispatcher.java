@@ -131,8 +131,10 @@ public class SurveyTaskDispatcher {
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void updateSurveyTasks(EnrolleeSurveyEvent enrolleeEvent) {
-        /** for now, only recompute on completion events */
-        if (!enrolleeEvent.()) {
+        /** for now, only recompute on updates involving a completed survey.  This will
+         * avoid assigning surveys based on an answer that was quickly changed, since we don't
+         * yet have functions for unassigning surveys */
+        if (!enrolleeEvent.getSurveyResponse().isComplete()) {
             return;
         }
         DataAuditInfo auditInfo = DataAuditInfo.builder()
