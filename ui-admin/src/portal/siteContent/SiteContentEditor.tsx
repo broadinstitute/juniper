@@ -11,7 +11,7 @@ import {
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
-import AddPageModal, { NavItemProps } from './AddPageModal'
+import AddNavbarItemModal, { NavItemProps } from './AddNavbarItemModal'
 import CreatePreRegSurveyModal from '../CreatePreRegSurveyModal'
 import { PortalEnvContext } from '../PortalRouter'
 import ErrorBoundary from 'util/ErrorBoundary'
@@ -340,7 +340,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             </Tab>
           </Tabs> }
         { currentNavBarItem?.itemType === 'EXTERNAL' && <div className="mt-2">
-          <form>
+          <form className="container">
             <label htmlFor="externalHref">External link</label>
             <input type="text" id="externalHref" className="form-control"
               value={(currentNavBarItem as NavbarItemExternal).href}
@@ -366,7 +366,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           onDismiss={() => setShowVersionSelector(false)}/>
     }
     { showAddPageModal &&
-        <AddPageModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+        <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
           insertNewNavItem={insertNewNavItem}
           onDismiss={() => setShowAddPageModal(false)}/>
     }

@@ -9,7 +9,7 @@ import Select from 'react-select'
 const ITEM_TYPE_OPTIONS: {label: string, value: NavBarItemType}[] = [{
   label: 'Page', value: 'INTERNAL'
 }, {
-  label: 'External link', value: 'EXTERNAL'
+  label: 'Link', value: 'EXTERNAL'
 }]
 
 export type NavItemProps = BaseNavBarItem & {href: string}
@@ -22,7 +22,7 @@ const EMPTY_NAV_ITEM: NavItemProps = {
 }
 
 /** renders a modal that adds a new page to the site */
-const AddPageModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDismiss }: {
+const AddNavbarItemModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDismiss }: {
   portalEnv: PortalEnvironment, portalShortcode: string, insertNewNavItem: (item: NavItemProps) => void,
   onDismiss: () => void
 }) => {
@@ -81,6 +81,10 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDismiss 
             onChange={event => {
               setNavbarItem({ ...navbarItem, href: event.target.value })
             }}/>
+          <div className="text-muted fst-italic">
+            (for links to pages outside of the portal, start the link with http:// or https://. Otherwise
+            the link will be treated as a relative path)
+          </div>
         </div>}
         { navbarItem.itemType === 'INTERNAL' && <div>
           <label htmlFor="inputPagePath">Page Path</label>
@@ -113,4 +117,4 @@ const AddPageModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDismiss 
   </Modal>
 }
 
-export default AddPageModal
+export default AddNavbarItemModal
