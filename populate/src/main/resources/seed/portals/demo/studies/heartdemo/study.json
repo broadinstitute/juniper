@@ -13,7 +13,7 @@
     "surveys/socialHealth.json",
     "surveys/socialHealthV2.json",
     "surveys/socialHealthV3.json",
-    "surveys/sandboxSurvey.json",
+    "surveys/lostInterest.json",
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
@@ -49,7 +49,7 @@
         {"populateFileName": "surveys/socialHealth.json", "active": false},
         {"populateFileName": "surveys/socialHealthV2.json", "active": false},
         {"populateFileName": "surveys/socialHealthV3.json"},
-        {"populateFileName": "surveys/sandboxSurvey.json"},
+        {"populateFileName": "surveys/lostInterest.json"},
         {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
