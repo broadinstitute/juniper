@@ -1,12 +1,11 @@
 import React from 'react'
 
 import SiteContentEditor from './SiteContentEditor'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()

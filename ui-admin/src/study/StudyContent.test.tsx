@@ -3,8 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 
 import StudyContent from './StudyContent'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import Api from 'api/api'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders surveys in-order', async () => {
   const studyEnvContext = mockStudyEnvContext()

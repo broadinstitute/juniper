@@ -1,10 +1,9 @@
 import React from 'react'
 
 import EnrolleeProfile from './EnrolleeProfile'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString, MockI18nProvider } from '@juniper/ui-core'
+import { dateToDefaultString, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'

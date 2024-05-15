@@ -1,10 +1,10 @@
 import React from 'react'
 
 import DataChangeRecords from './DataChangeRecords'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, Screen, waitFor, within } from '@testing-library/react'
 import Api, { DataChangeRecord } from '../../api/api'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 const assertRowContents = (

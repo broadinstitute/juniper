@@ -5,9 +5,8 @@ import {
   mockSurvey
 } from 'test-utils/mocking-utils'
 import { screen } from '@testing-library/react'
-import { StudyEnvironmentSurveyNamed } from '@juniper/ui-core'
+import { renderWithRouter, StudyEnvironmentSurveyNamed } from '@juniper/ui-core'
 import SurveyEnvironmentTable from './SurveyEnvironmentTable'
-import { renderWithRouter } from '../../test-utils/router-testing-utils'
 import { getTableCell } from '../../test-utils/table-testing-utils'
 import userEvent from '@testing-library/user-event'
 

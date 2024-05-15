@@ -70,7 +70,11 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
       </span>
 
       { configSurvey.survey.allowAdminEdit && <button className="btn btn-secondary"
-        onClick={() => setIsEditing(!isEditing)}>
+        onClick={() => {
+          setIsEditing(!isEditing)
+          if (isEditing) { onUpdate() }
+        }
+        }>
         {isEditing ?
           <div><FontAwesomeIcon icon={faX}/> Cancel</div> :
           <div><FontAwesomeIcon icon={faPencil}/> Edit Response</div>

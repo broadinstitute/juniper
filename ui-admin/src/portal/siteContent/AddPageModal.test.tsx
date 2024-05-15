@@ -1,9 +1,9 @@
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvironment } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import AddPageModal from './AddPageModal'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AddPageModal', () => {
   test('disables Create button when title and path aren\'t filled out', async () => {

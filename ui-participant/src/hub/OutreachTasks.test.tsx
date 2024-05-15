@@ -1,11 +1,10 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask, mockSurvey } from 'test-utils/test-participant-factory'
 import OutreachTasks from './OutreachTasks'
 import { mockStudy, mockStudyEnv } from 'test-utils/test-portal-factory'
 import Api, { TaskWithSurvey } from 'api/api'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 

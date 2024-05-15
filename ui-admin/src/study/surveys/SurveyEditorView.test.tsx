@@ -2,9 +2,8 @@ import React from 'react'
 import { screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
-import { defaultSurvey, Survey } from '@juniper/ui-core'
+import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { renderWithRouter } from '../../test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 
 describe('SurveyEditorView', () => {

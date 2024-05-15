@@ -1,11 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import Api, { PortalParticipantUser } from '../api/api'
-import { setupRouterTest } from '../test-utils/router-testing-utils'
 import ProvideFullTestUserContext from '../test-utils/ProvideFullTestUserContext'
 import { ParticipantProfile } from './ParticipantProfile'
 import userEvent from '@testing-library/user-event'
-import { asMockedFn, Enrollee, MockI18nProvider, Profile } from '@juniper/ui-core'
+import { asMockedFn, Enrollee, MockI18nProvider, Profile, setupRouterTest } from '@juniper/ui-core'
 import { useParams } from 'react-router-dom'
 
 const jsalkProfile: Profile = {

@@ -2,9 +2,9 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 
 import { mockTrigger } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import TestEmailSender from './TestEmailSender'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('replaces the email with the username', async () => {
   const { RoutedComponent } =

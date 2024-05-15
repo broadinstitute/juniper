@@ -1,10 +1,9 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockParticipantNote, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { mockAdminUser } from 'test-utils/user-mocking-utils'
 import { render, screen } from '@testing-library/react'
 import { ParticipantNoteView } from './ParticipantNoteView'
-import { ParticipantNote } from '@juniper/ui-core'
+import { ParticipantNote, setupRouterTest } from '@juniper/ui-core'
 
 test('renders a note with the admin user name', async () => {
   const enrollee = mockEnrollee()

@@ -29,6 +29,7 @@ export * from './waitForImages'
 export * from './useTaskIdParam'
 
 export * from './test-utils/asMockedFn'
+export * from './test-utils/router-testing-utils'
 
 export * from './participant/dashboard/Alert'
 export * from './participant/landing/sections/HtmlSectionView'

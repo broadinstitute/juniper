@@ -13,14 +13,13 @@ import {
   ApiContextT, ApiProvider,
   asMockedFn, emptyApi,
   MockI18nProvider, PagedSurveyView,
-  PageNumberControl,
+  PageNumberControl, setupRouterTest,
   Survey,
   SurveyFooter,
   useAutosaveEffect, useSurveyJSModel
 } from '@juniper/ui-core'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockUseActiveUser, mockUseUser } from 'test-utils/user-mocking-utils'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 

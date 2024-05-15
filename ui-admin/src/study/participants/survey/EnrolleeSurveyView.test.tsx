@@ -8,7 +8,7 @@ import {
   mockStudyEnvContext,
   mockSurveyResponse
 } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('RawEnrolleeSurveyView', () => {
   it('renders the survey version from the answers', async () => {

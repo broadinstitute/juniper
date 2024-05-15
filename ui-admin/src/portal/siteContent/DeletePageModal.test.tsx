@@ -1,9 +1,9 @@
 import userEvent from '@testing-library/user-event'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import DeletePageModal from './DeletePageModal'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockHtmlPage } from 'test-utils/mock-site-content'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('DeletePageModal', () => {
   test('Delete button calls deletePage with the page', async () => {
