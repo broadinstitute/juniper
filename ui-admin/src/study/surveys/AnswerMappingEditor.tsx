@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import { faCheck, faPlus, faTrash, faX } from '@fortawesome/free-solid-svg-icons'
+import React, { useEffect, useMemo, useState } from 'react'
+import { faCheck, faPlus, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Select from 'react-select'
 import Creatable from 'react-select/creatable'
@@ -13,6 +13,9 @@ import {
 import { isEmpty } from 'lodash'
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from 'react-bootstrap'
 import { OnChangeAnswerMappings } from '../../forms/formEditorTypes'
+import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import { basicTableLayout } from '../../util/tableUtils'
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 
 
 const AnswerMappingLabels: {[key in AnswerMappingTargetType]: string} = {
@@ -54,6 +57,8 @@ const AnswerMappingMapTypeLabels: { [key in AnswerMappingMapType]: string} = {
   'STRING_TO_LOCAL_DATE': 'Date'
 }
 
+type AnswerMappingRow = Partial<AnswerMapping> & { isLastRow?: boolean }
+
 /**
  * Table which allows viewing, deleting, and creating new answer mappings.
  */
@@ -89,95 +94,14 @@ export default function AnswerMappingEditor(
     onChange([], newMappings)
     setAnswerMappings(newMappings)
     setAddNewAnswerMapping(false)
+    setQuestionStableId(undefined)
+    setTargetType(undefined)
+    setTargetField(undefined)
+    setFormatString(undefined)
+    setMapType('STRING_TO_STRING')
   }
 
-  return <div className='px-3 pt-1'>
-    <p>
-      Answer mappings allow you to map answers from questions in the survey to other parts of the system.
-      For example, you could map a question which collects the participant&apos;s first name to the profile&apos;s.
-      given name field. Then, any changes the participant makes to the survey will result in changes to their profile.
-    </p>
-    <table className={'table'}>
-      <thead>
-        <tr>
-          <th scope="col" className="col-1">Question ID</th>
-          <th scope="col" className="col-1">Target</th>
-          <th scope="col" className="col-1">Field</th>
-          <th scope="col" className="col-1">Format</th>
-          <th scope="col" className="col-1">Type</th>
-          <th scope="col" className="col-1">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {
-          answerMappings.map((answerMapping, index) => {
-            return <tr key={index}>
-              <td>
-                {answerMapping.questionStableId}
-              </td>
-              <td >
-                {AnswerMappingLabels[answerMapping.targetType]}
-              </td>
-              <td >
-                {answerMapping.targetField}
-              </td>
-              <td >
-                {answerMapping.formatString}
-              </td>
-              <td >
-                {AnswerMappingMapTypeLabels[answerMapping.mapType] || answerMapping.mapType}
-              </td>
-              <td>
-                <button className='btn btn-danger' onClick={() => {
-                  setOpenDeleteMappingModal(answerMapping)
-                }}>
-                  <FontAwesomeIcon icon={faTrash}/>
-                </button>
-              </td>
-            </tr>
-          })
-        }
-        {addNewAnswerMapping && formContent ? <AddNewAnswerMappingRow
-          onSave={saveNewMapping}
-          existingMappings={answerMappings}
-          formContent={formContent}
-          onCancel={() => setAddNewAnswerMapping(false)}/>: <tr>
-          <td className={'border-0'}>
-          </td>
-          <td className={'border-0'}>
-          </td>
-          <td className={'border-0'}>
-          </td>
-          <td className={'border-0'}>
-          </td>
-          <td className={'border-0'}>
-          </td>
-          <td className={'border-0'}>
-            <button className='btn btn-primary' onClick={() => setAddNewAnswerMapping(true)}>
-              <FontAwesomeIcon icon={faPlus}/>
-            </button>
-          </td>
-        </tr>}
-      </tbody>
-    </table>
-    {openDeleteMappingModal && <DeleteAnswerMappingModal
-      onConfirm={deleteAnswerMapping}
-      onCancel={() => setOpenDeleteMappingModal(null)}/>}
-    <div>
-    </div>
-  </div>
-}
-
-const AddNewAnswerMappingRow = (
-  { onSave, onCancel, formContent, existingMappings }
-    :
-    {
-      onSave: (mapping: AnswerMapping) => void,
-      onCancel: () => void,
-      formContent: FormContent,
-      existingMappings: AnswerMapping[]
-    }
-) => {
+  // state for new mapping
   const [questionStableId, setQuestionStableId] = useState<string>()
   const [targetType, setTargetType] = useState<AnswerMappingTargetType>()
   const [targetField, setTargetField] = useState<string>()
@@ -196,89 +120,163 @@ const AddNewAnswerMappingRow = (
     }
   }, [targetType, targetField])
 
-  return <tr>
-    <td>
-      {/* question stable id */}
-      <Creatable
-        options={names.map(name => {
-          return {
-            value: name,
-            label: name,
-            isDisabled: existingMappings.some(m => m.questionStableId === name)
-          }
-        })}
-        value={questionStableId && { value: questionStableId, label: questionStableId }}
-        onChange={e => e && setQuestionStableId(e.value)}
-      />
-    </td>
-    <td>
-      {/* target */}
-      <Select
-        isDisabled={isEmpty(questionStableId)}
-        options={Object.keys(AnswerMappingTargets).map(target => {
-          return {
-            value: target as string,
-            label: AnswerMappingLabels[target as AnswerMappingTargetType] || target
-          }
-        })}
-        onChange={e => e && setTargetType(e.value as AnswerMappingTargetType)}
-        value={targetType && { value: targetType as string, label: AnswerMappingLabels[targetType] || targetType }}
-      />
-    </td>
-    <td>
-      {/* field */}
-      <Select
-        isDisabled={isEmpty(targetType)}
-        options={targetType && Object.keys(AnswerMappingTargets[targetType] || {})?.map(field => {
-          return {
-            value: field,
-            label: field,
-            isDisabled: existingMappings.some(m => m.targetType === targetType && m.targetField === field)
-          }
-        })}
-        value={targetField && { value: targetField, label: targetField }}
-        onChange={e => e && setTargetField(e.value)}
-      />
-    </td>
-    <td>
-      {/* format */}
-      {
-        mapType === 'STRING_TO_LOCAL_DATE' ?
-          <Select
-            options={[{
-              value: 'MM/dd/yyyy',
-              label: 'MM/dd/yyyy'
-            }]}
-            onChange={e => e && setFormatString(e.value)}
+  const columns = useMemo<ColumnDef<AnswerMappingRow>[]>(() => [
+    {
+      header: 'Question ID',
+      accessorKey: 'questionStableId',
+      cell: ({ row }) => {
+        const value = row.original.questionStableId
+        if (row.original.isLastRow && addNewAnswerMapping) {
+          return <Creatable
+            options={names.map(name => {
+              return {
+                value: name,
+                label: name,
+                isDisabled: answerMappings.some(m => m.questionStableId === name)
+              }
+            })}
+            value={questionStableId && { value: questionStableId, label: questionStableId }}
+            onChange={e => e && setQuestionStableId(e.value)}
           />
-          : ''
+        }
+        return value
       }
-    </td>
-    <td>
-      {/* map type (automatically set) */}
-      {AnswerMappingMapTypeLabels[mapType]}
-    </td>
-    <td>
-      <button
-        className='btn btn-success me-2'
-        disabled={isEmpty(questionStableId) || isEmpty(targetType) || isEmpty(targetField)}
-        onClick={() => onSave({
-          id: '',
-          questionStableId: questionStableId!,
-          targetType: targetType!,
-          targetField: targetField!,
-          formatString: formatString || '',
-          mapType,
-          surveyId: '', // backend will set
-          errorOnFail: false
-        })}>
-        <FontAwesomeIcon icon={faCheck}/>
-      </button>
-      <button className='btn btn-danger' onClick={onCancel}>
-        <FontAwesomeIcon icon={faX}/>
-      </button>
-    </td>
-  </tr>
+    },
+    {
+      header: 'Target',
+      accessorKey: 'targetType',
+      cell: ({ row }) => {
+        const value = row.original.targetType
+        if (row.original.isLastRow && addNewAnswerMapping) {
+          return <Select
+            isDisabled={isEmpty(questionStableId)}
+            options={Object.keys(AnswerMappingTargets).map(target => {
+              return {
+                value: target as string,
+                label: AnswerMappingLabels[target as AnswerMappingTargetType] || target
+              }
+            })}
+            onChange={e => e && setTargetType(e.value as AnswerMappingTargetType)}
+            value={targetType && { value: targetType as string, label: AnswerMappingLabels[targetType] || targetType }}
+          />
+        }
+        return value && AnswerMappingLabels[value]
+      }
+    },
+    {
+      header: 'Field',
+      accessorKey: 'targetField',
+      cell: ({ row }) => {
+        const value = row.original.targetField
+        if (row.original.isLastRow && addNewAnswerMapping) {
+          return <Select
+            isDisabled={isEmpty(targetType)}
+            options={targetType && Object.keys(AnswerMappingTargets[targetType] || {})?.map(field => {
+              return {
+                value: field,
+                label: field,
+                isDisabled: answerMappings.some(m => m.targetType === targetType && m.targetField === field)
+              }
+            })}
+            value={targetField && { value: targetField, label: targetField }}
+            onChange={e => e && setTargetField(e.value)}
+          />
+        }
+        return value
+      }
+    },
+    {
+      header: 'Format',
+      accessorKey: 'formatString',
+      cell: ({ row }) => {
+        const value = row.original.formatString
+        if (row.original.isLastRow && addNewAnswerMapping) {
+          return mapType === 'STRING_TO_LOCAL_DATE' ?
+            <Select
+              options={[{
+                value: 'MM/dd/yyyy',
+                label: 'MM/dd/yyyy'
+              }]}
+              onChange={e => e && setFormatString(e.value)}
+            />
+            : ''
+        }
+        return value
+      }
+    },
+    {
+      header: 'Type',
+      accessorKey: 'mapType',
+      cell: ({ row }) => {
+        const value = row.original.mapType
+        if (row.original.isLastRow && addNewAnswerMapping) {
+          return AnswerMappingMapTypeLabels[mapType]
+        }
+        return value && AnswerMappingMapTypeLabels[value]
+      }
+    },
+    {
+      header: 'Actions',
+      id: 'actions',
+      cell: ({ row }) => {
+        if (row.original.isLastRow) {
+          if (!addNewAnswerMapping) {
+            return <button className='btn btn-success border-0' onClick={() => setAddNewAnswerMapping(true)}>
+              <FontAwesomeIcon icon={faPlus}/>
+            </button>
+          }
+
+          return <>
+            <button
+              className='btn btn-success me-2'
+              disabled={isEmpty(questionStableId) || isEmpty(targetType) || isEmpty(targetField)}
+              onClick={() => saveNewMapping({
+                id: '',
+                questionStableId: questionStableId!,
+                targetType: targetType!,
+                targetField: targetField!,
+                formatString: formatString || '',
+                mapType,
+                surveyId: '', // backend will set
+                errorOnFail: false
+              })}>
+              <FontAwesomeIcon icon={faCheck}/>
+            </button>
+            <button className='btn btn-danger' onClick={() => setAddNewAnswerMapping(false)}>
+              <FontAwesomeIcon icon={faX}/>
+            </button>
+          </>
+        }
+        return <button className='btn btn-outline-danger border-0' onClick={() => {
+          setOpenDeleteMappingModal(row.original as AnswerMapping)
+        }}>
+          <FontAwesomeIcon icon={faTrashCan}/>
+        </button>
+      }
+    }
+  ], [addNewAnswerMapping, questionStableId, targetType, targetField, formatString, mapType, answerMappings])
+
+  const data = useMemo(() => (answerMappings as AnswerMappingRow[]).concat({ isLastRow: true }), [answerMappings])
+
+  const table = useReactTable<AnswerMappingRow>({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel()
+  })
+
+  return <div className='px-3 pt-1'>
+    <p>
+      Answer mappings allow you to map answers from questions in the survey to other parts of the system.
+      For example, you could map a question which collects the participant&apos;s first name to the profile&apos;s.
+      given name field. Then, any changes the participant makes to the survey will result in changes to their profile.
+    </p>
+    {basicTableLayout(table)}
+    {openDeleteMappingModal && <DeleteAnswerMappingModal
+      onConfirm={deleteAnswerMapping}
+      onCancel={() => setOpenDeleteMappingModal(null)}/>}
+    <div>
+    </div>
+  </div>
 }
 
 const DeleteAnswerMappingModal = (
