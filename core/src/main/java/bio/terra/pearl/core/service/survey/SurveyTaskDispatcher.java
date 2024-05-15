@@ -131,10 +131,15 @@ public class SurveyTaskDispatcher {
     @EventListener
     @Order(DispatcherOrder.SURVEY_TASK)
     public void updateSurveyTasks(EnrolleeSurveyEvent enrolleeEvent) {
+        /** for now, only recompute on completion events */
+        if (!enrolleeEvent.()) {
+            return;
+        }
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .systemProcess(getClass().getSimpleName() + ".updateSurveyTasks")
                 .portalParticipantUserId(enrolleeEvent.getPortalParticipantUser().getId())
                 .enrolleeId(enrolleeEvent.getEnrollee().getId()).build();
+
         List<StudyEnvironmentSurvey> studyEnvSurveys = studyEnvironmentSurveyService
                 .findAllByStudyEnvIdWithSurveyNoContent(enrolleeEvent.getEnrollee().getStudyEnvironmentId(), true);
 
