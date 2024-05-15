@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: "dsm_env_config"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: { name: use_dev_dsm_realm, type: boolean, defaultValueBoolean: true, constraints: { nullable: false} }
+              - column: { name: use_stub_dsm, type: boolean, defaultValueBoolean: true, constraints: { nullable: false} }
+        - addDefaultValue:
+            tableName: study_environment_config
+            columnName: accepting_proxy_enrollment
+            defaultValueBoolean: false
+        - sql:
+            sql: update study_environment_config set use_dev_dsm_realm = false
+              where id IN (select study_environment_config_id from study_environment
+              join study on study_environment.study_id = study.id
+              where study.shortcode = 'ourheart' and environment_name = 'live')
+        - sql:
+            sql: update study_environment_config set use_stub_dsm = false
+              where id IN (select study_environment_config_id from study_environment
+              join study on study_environment.study_id = study.id
+              where study.shortcode = 'ourheart' and environment_name = 'live')
+
+        - addNotNullConstraint:
+            tableName: study_environment_config
+            columnName: accepting_proxy_enrollment
+

@@ -43,7 +43,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kit = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
 
         // Act
-        PepperKit kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
+        PepperKit kitStatus = stubPepperDSMClient.fetchKitStatus(new StudyEnvironmentConfig(), kit.getId());
 
         // Assert
         assertThat(kitStatus, hasProperty("currentStatus", equalTo("SENT")));
@@ -65,7 +65,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrollee, PepperKitStatus.SENT);
 
         // Act
-        Collection<PepperKit> kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        Collection<PepperKit> kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode(), new StudyEnvironmentConfig());
 
         // Assert
         assertThat(kitStatuses.size(), equalTo(1));

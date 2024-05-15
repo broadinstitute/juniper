@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +38,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
+    public PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig config, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) {
         log.info("STUB sending kit request");
         if (address.getCity().startsWith(BAD_ADDRESS_PREFIX) || address.getStreet1().startsWith(BAD_ADDRESS_PREFIX)) {
             throw new  PepperApiException(
@@ -60,7 +61,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public PepperKit fetchKitStatus(UUID kitRequestId) {
+    public PepperKit fetchKitStatus(StudyEnvironmentConfig studyEnvironmentConfig, UUID kitRequestId) {
         log.info("STUB fetching kit status");
         return PepperKit.builder()
                 .juniperKitId(kitRequestId.toString())
@@ -69,7 +70,7 @@ public class StubPepperDSMClient implements PepperDSMClient {
     }
 
     @Override
-    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) {
+    public Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode, StudyEnvironmentConfig config) {
         log.info("STUB fetching status by study");
         StudyEnvironment studyEnvironment = studyEnvironmentDao.findByStudy(studyShortcode, EnvironmentName.sandbox).get();
         return kitRequestService.findByStudyEnvironment(studyEnvironment.getId()).stream().map(kit -> {

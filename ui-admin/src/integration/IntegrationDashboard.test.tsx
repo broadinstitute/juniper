@@ -12,8 +12,8 @@ test('routes to integration paths', async () => {
   })
   const { RoutedComponent } = setupRouterTest(<IntegrationDashboard/>)
   render(RoutedComponent)
-  expect(screen.queryByText('useLiveDsm')).not.toBeInTheDocument()
+  expect(screen.queryByText('basePath')).not.toBeInTheDocument()
   await userEvent.click(screen.getByText('Kits'))
 
-  expect(screen.queryByText('useLiveDsm')).toBeInTheDocument()
+  expect(screen.queryByText('basePath')).toBeInTheDocument()
 })
