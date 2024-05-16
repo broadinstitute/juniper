@@ -100,7 +100,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
         >
           <AnswerMappingEditor
             formContent={editedContent}
-            initialAnswerMappings={initialAnswerMappings}
+            answerMappings={initialAnswerMappings}
             onChange={onAnswerMappingChange}
           />
         </Tab>
