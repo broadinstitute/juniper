@@ -3,25 +3,10 @@ import React from 'react'
 import DataChangeRecords from './DataChangeRecords'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { render, screen, Screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import Api, { DataChangeRecord } from '../../api/api'
+import { assertRowContents, getRows } from 'test-utils/table-utils'
 
-
-const assertRowContents = (
-  row: Node, ...contains: string[]
-) => {
-  contains.forEach(shouldBePresent => {
-    expect(row).toHaveTextContent(shouldBePresent)
-  })
-}
-
-const getRows = (screen: Screen): Node[] => {
-  const table = screen.getByRole('table')
-
-  // first row group is header
-  const tbody = within(table).getAllByRole('rowgroup')[1]
-  return within(tbody).getAllByRole('row')
-}
 
 test('renders basic data change records', async () => {
   const enrollee = mockEnrollee()

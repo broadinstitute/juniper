@@ -16,8 +16,11 @@ describe('FormContentEditor', () => {
     // avoid cluttering the console with the error message from the expected error
     jest.spyOn(console, 'error').mockImplementation(jest.fn())
     const { container } = render(<FormContentEditor
+      initialAnswerMappings={[]}
       supportedLanguages={[]}
-      initialContent={formContent} visibleVersionPreviews={[]} readOnly={false} onChange={jest.fn()}
+      initialContent={formContent} visibleVersionPreviews={[]} readOnly={false}
+      onFormContentChange={jest.fn()}
+      onAnswerMappingChange={jest.fn()}
     />)
 
     // Our custom ErrorBoundary text

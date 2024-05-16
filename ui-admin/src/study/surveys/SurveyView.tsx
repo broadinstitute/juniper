@@ -10,6 +10,7 @@ import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
+import { AnswerMapping } from '@juniper/ui-core'
 
 export type SurveyParamsT = StudyParams & {
   surveyStableId: string,
@@ -18,6 +19,7 @@ export type SurveyParamsT = StudyParams & {
 
 export type SaveableFormProps = {
   content: string
+  answerMappings?: AnswerMapping[]
   required?: boolean
   assignToAllNewEnrollees?: boolean
   assignToExistingEnrollees?: boolean

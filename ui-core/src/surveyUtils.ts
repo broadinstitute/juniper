@@ -58,7 +58,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
 }
 
 /** Get a VersionedForm's form content. */
-const getFormContent = (form: VersionedForm): FormContent => {
+export const getFormContent = (form: VersionedForm): FormContent => {
   return JSON.parse(form.content) as FormContent
 }
 

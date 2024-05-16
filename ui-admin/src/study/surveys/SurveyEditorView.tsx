@@ -12,7 +12,7 @@ import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FormOptionsModal from './FormOptionsModal'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { isEmpty } from 'lodash'
+import { isEmpty, isEqual } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
 import { ApiProvider } from '@juniper/ui-core'
 import { previewApi } from 'util/apiContextUtils'
@@ -64,7 +64,8 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
-      if (currentDraft && currentDraft?.content !== getDraft({ formDraftKey: FORM_DRAFT_KEY })?.content) {
+      // isEqual performs a deep comparison, so we can avoid saving the draft if it hasn't changed.
+      if (currentDraft && !isEqual(currentDraft, getDraft({ formDraftKey: FORM_DRAFT_KEY }))) {
         saveDraft({
           formDraftKey: FORM_DRAFT_KEY,
           draft: currentDraft,
@@ -229,13 +230,25 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
         <FormContentEditor
           initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
+          initialAnswerMappings={draft?.answerMappings || currentForm.answerMappings || []}
           visibleVersionPreviews={visibleVersionPreviews}
           supportedLanguages={portalEnv?.supportedLanguages || []}
           readOnly={readOnly}
-          onChange={(newValidationErrors, newContent) => {
+          onFormContentChange={(newValidationErrors, newContent) => {
             if (isEmpty(newValidationErrors)) {
               setShowErrors(false)
               setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
+            }
+            setValidationErrors(newValidationErrors)
+          }}
+          onAnswerMappingChange={(newValidationErrors, newAnswerMappings) => {
+            if (isEmpty(newValidationErrors)) {
+              setDraft({
+                ...draft,
+                content: draft?.content || currentForm.content,
+                answerMappings: newAnswerMappings,
+                date: Date.now()
+              })
             }
             setValidationErrors(newValidationErrors)
           }}

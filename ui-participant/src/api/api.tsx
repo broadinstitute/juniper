@@ -97,18 +97,6 @@ export type Profile = {
   preferredLanguage?: string,
 }
 
-export type AnswerMappingTargetType = 'PROFILE' | 'PROXY' | 'PROXY_PROFILE'
-
-export type AnswerMapping = {
-  questionStableId: string
-  surveyId: string
-  targetType: AnswerMappingTargetType
-  targetField: string
-  mapType: string
-  formatString: string
-  errorOnFail: boolean
-}
-
 export type KitRequest = {
   id: string,
   createdAt: number,
@@ -425,15 +413,6 @@ export default {
 
     const response = await fetch(url, { headers: this.getInitHeaders() })
     return await this.processJsonResponse(response, { alertErrors })
-  },
-
-  async findAnswerMapping(
-    stableId: string, version: number, targetType: string, targetField: string
-  ): Promise<AnswerMapping> {
-    const url = `${baseEnvUrl(false)}/answerMapping/${stableId}/${version}/${targetType}/${targetField}`
-
-    const response = await fetch(url, { headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
   },
 
   async updateProfile(
