@@ -121,4 +121,36 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
     assertThat(enrolleeRelations.get(0).getEnrolleeId(), equalTo(newProxyEnrollee.getId()));
     assertThat(enrolleeRelations.get(0).getTargetEnrolleeId(), equalTo(governedEnrollee.getId()));
   }
+
+  @Test
+  @Transactional
+  public void testWithdrawGovernedUserWithProxyThatIsSubject(TestInfo info) {
+    // potential edge case: withdrawing a governed user that is being proxied by a subject should withdraw ONLY the governed user
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+    StudyEnvironment studyEnvironment = studyEnvBundle.getStudyEnv();
+    PortalEnvironment portalEnvironment = studyEnvBundle.getPortalEnv();
+
+
+    EnrolleeFactory.EnrolleeBundle proxyBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+    EnrolleeFactory.EnrolleeBundle governedBundle = enrolleeFactory.buildWithPortalUser(getTestName(info), portalEnvironment, studyEnvironment);
+
+    Enrollee proxyEnrollee = proxyBundle.enrollee();
+    Enrollee governedEnrollee = governedBundle.enrollee();
+
+    enrolleeRelationService.create(
+            EnrolleeRelation
+                    .builder()
+                    .enrolleeId(proxyEnrollee.getId())
+                    .targetEnrolleeId(governedEnrollee.getId())
+                    .relationshipType(RelationshipType.PROXY)
+                    .beginDate(Instant.now())
+                    .build(),
+            getAuditInfo(info)
+    );
+
+    withdrawnEnrolleeService.withdrawEnrollee(governedEnrollee, getAuditInfo(info));
+
+    assertThat(withdrawnEnrolleeService.isWithdrawn(governedEnrollee.getShortcode()), equalTo(true));
+    assertThat(withdrawnEnrolleeService.isWithdrawn(proxyEnrollee.getShortcode()), equalTo(false));
+  }
 }

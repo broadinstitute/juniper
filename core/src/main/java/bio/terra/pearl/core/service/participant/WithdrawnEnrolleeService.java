@@ -77,7 +77,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
             List<Enrollee> targetEnrolleesOnlyProxiedByEnrollee = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(enrollee.getId());
 
             // EDGE CASE: if an enrollee is withdrawing themselves but are also a proxy for someone else,
-            // we need to recreate withdraw them then recreate a new, non-subject enrollee for them.
+            // we need to withdraw them then recreate a new, non-subject enrollee for them.
             List<EnrolleeRelation> relations = enrolleeRelationService.findByEnrolleeIdAndRelationType(enrollee.getId(), RelationshipType.PROXY);
 
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
@@ -85,6 +85,9 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
             //now withdraw all the proxied users
             for (Enrollee proxy : targetEnrolleesOnlyProxiedByEnrollee) {
+                if (proxy.isSubject()) {
+                    continue; // don't withdraw proxies that are also subjects; if they want to withdraw, they should do so separately.
+                }
                 withdrawEnrollee(proxy, dataAuditInfo);
             }
 
