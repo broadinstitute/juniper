@@ -243,13 +243,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           }}
           onAnswerMappingChange={(newValidationErrors, newAnswerMappings) => {
             if (isEmpty(newValidationErrors)) {
-              console.log('updating draft')
-              console.log({
-                ...draft,
-                content: draft?.content || currentForm.content,
-                answerMappings: newAnswerMappings,
-                date: Date.now()
-              })
               setDraft({
                 ...draft,
                 content: draft?.content || currentForm.content,

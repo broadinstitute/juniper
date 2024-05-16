@@ -10,7 +10,7 @@ import {
   FormContent,
   getFormElements
 } from '@juniper/ui-core'
-import { isEmpty } from 'lodash'
+import { isEmpty, isNil } from 'lodash'
 import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from 'react-bootstrap'
 import { OnChangeAnswerMappings } from '../../forms/formEditorTypes'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
@@ -57,7 +57,11 @@ const AnswerMappingMapTypeLabels: { [key in AnswerMappingMapType]: string} = {
   'STRING_TO_LOCAL_DATE': 'Date'
 }
 
-type AnswerMappingRow = Partial<AnswerMapping> & { isLastRow?: boolean }
+type EditableAnswerMapping = Partial<AnswerMapping> & { isEditing: boolean }
+type AnswerMappingRow = AnswerMapping | EditableAnswerMapping
+const isEditable = (row: AnswerMappingRow): row is EditableAnswerMapping => {
+  return !isNil((row as EditableAnswerMapping).isEditing)
+}
 
 /**
  * Table which allows viewing, deleting, and creating new answer mappings.
@@ -71,19 +75,19 @@ export default function AnswerMappingEditor(
 ) {
   const [answerMappings, setAnswerMappings] = useState<AnswerMapping[]>(initialAnswerMappings || [])
 
-  const [openDeleteMappingModal, setOpenDeleteMappingModal] = useState<AnswerMapping | null>(null)
+  const [mappingSelectedForDeletion, setMappingSelectedForDeletion] = useState<AnswerMapping | null>(null)
 
 
   const deleteAnswerMapping = async () => {
-    if (!openDeleteMappingModal) {
+    if (!mappingSelectedForDeletion) {
       return
     }
 
-    const filteredMappings = answerMappings.filter(m => m.id !== openDeleteMappingModal.id)
+    const filteredMappings = answerMappings.filter(m => m.id !== mappingSelectedForDeletion.id)
 
     onChange([], filteredMappings)
     setAnswerMappings(filteredMappings)
-    setOpenDeleteMappingModal(null)
+    setMappingSelectedForDeletion(null)
   }
 
   const [addNewAnswerMapping, setAddNewAnswerMapping] = useState(false)
@@ -93,32 +97,36 @@ export default function AnswerMappingEditor(
 
     onChange([], newMappings)
     setAnswerMappings(newMappings)
-    setAddNewAnswerMapping(false)
-    setQuestionStableId(undefined)
-    setTargetType(undefined)
-    setTargetField(undefined)
-    setFormatString(undefined)
-    setMapType('STRING_TO_STRING')
+    setNewAnswerMapping({ isEditing: false })
   }
 
   // state for new mapping
-  const [questionStableId, setQuestionStableId] = useState<string>()
-  const [targetType, setTargetType] = useState<AnswerMappingTargetType>()
-  const [targetField, setTargetField] = useState<string>()
-  const [formatString, setFormatString] = useState<string>()
-  const [mapType, setMapType] = useState<AnswerMappingMapType>('STRING_TO_STRING')
+  const [newAnswerMapping, setNewAnswerMapping] = useState<EditableAnswerMapping>({ isEditing: false })
 
   const elements = getFormElements(formContent)
   const names = elements.filter(e => 'name' in e).map(e => 'name' in e ? e.name : '')
 
   useEffect(() => {
     // automatically set map type
-    if (targetType && targetField) {
-      setMapType(
-        (AnswerMappingTargets[targetType] && AnswerMappingTargets[targetType][targetField]) || 'STRING_TO_STRING'
-      )
+    if (newAnswerMapping?.targetType && newAnswerMapping?.targetField) {
+      setNewAnswerMapping({
+        ...newAnswerMapping,
+        mapType: (
+          (
+            AnswerMappingTargets[newAnswerMapping.targetType]
+            && AnswerMappingTargets[newAnswerMapping.targetType][newAnswerMapping.targetField]
+          ) || 'STRING_TO_STRING'
+        )
+      })
     }
-  }, [targetType, targetField])
+  }, [newAnswerMapping?.targetType, newAnswerMapping?.targetField])
+
+  const onNewAnswerMappingChange = (field: keyof EditableAnswerMapping, value: string | boolean) => {
+    setNewAnswerMapping({
+      ...newAnswerMapping,
+      [field]: value
+    })
+  }
 
   const columns = useMemo<ColumnDef<AnswerMappingRow>[]>(() => [
     {
@@ -126,7 +134,7 @@ export default function AnswerMappingEditor(
       accessorKey: 'questionStableId',
       cell: ({ row }) => {
         const value = row.original.questionStableId
-        if (row.original.isLastRow && addNewAnswerMapping) {
+        if (isEditable(row.original) && row.original.isEditing) {
           return <Creatable
             options={names.map(name => {
               return {
@@ -135,8 +143,11 @@ export default function AnswerMappingEditor(
                 isDisabled: answerMappings.some(m => m.questionStableId === name)
               }
             })}
-            value={questionStableId && { value: questionStableId, label: questionStableId }}
-            onChange={e => e && setQuestionStableId(e.value)}
+            value={row.original.questionStableId && {
+              value: row.original.questionStableId,
+              label: row.original.questionStableId
+            }}
+            onChange={e => e && onNewAnswerMappingChange('questionStableId', e.value as string)}
           />
         }
         return value
@@ -147,17 +158,20 @@ export default function AnswerMappingEditor(
       accessorKey: 'targetType',
       cell: ({ row }) => {
         const value = row.original.targetType
-        if (row.original.isLastRow && addNewAnswerMapping) {
+        if (isEditable(row.original) && row.original.isEditing) {
           return <Select
-            isDisabled={isEmpty(questionStableId)}
+            isDisabled={isEmpty(row.original.questionStableId)}
             options={Object.keys(AnswerMappingTargets).map(target => {
               return {
                 value: target as string,
                 label: AnswerMappingLabels[target as AnswerMappingTargetType] || target
               }
             })}
-            onChange={e => e && setTargetType(e.value as AnswerMappingTargetType)}
-            value={targetType && { value: targetType as string, label: AnswerMappingLabels[targetType] || targetType }}
+            onChange={e => e && onNewAnswerMappingChange('targetType', e.value as AnswerMappingTargetType)}
+            value={row.original.targetType && {
+              value: row.original.targetType as string,
+              label: AnswerMappingLabels[row.original.targetType] || row.original.targetType
+            }}
           />
         }
         return value && AnswerMappingLabels[value]
@@ -168,18 +182,22 @@ export default function AnswerMappingEditor(
       accessorKey: 'targetField',
       cell: ({ row }) => {
         const value = row.original.targetField
-        if (row.original.isLastRow && addNewAnswerMapping) {
+        if (isEditable(row.original) && row.original.isEditing) {
           return <Select
-            isDisabled={isEmpty(targetType)}
-            options={targetType && Object.keys(AnswerMappingTargets[targetType] || {})?.map(field => {
-              return {
-                value: field,
-                label: field,
-                isDisabled: answerMappings.some(m => m.targetType === targetType && m.targetField === field)
-              }
-            })}
-            value={targetField && { value: targetField, label: targetField }}
-            onChange={e => e && setTargetField(e.value)}
+            isDisabled={isEmpty(row.original.targetType)}
+            options={
+              row.original.targetType && Object.keys(
+                AnswerMappingTargets[row.original.targetType] || {})
+                ?.map(field => {
+                  return {
+                    value: field,
+                    label: field,
+                    isDisabled: answerMappings.some(
+                      m => m.targetType === row.original.targetType && m.targetField === field)
+                  }
+                })}
+            value={row.original.targetField && { value: row.original.targetField, label: row.original.targetField }}
+            onChange={e => e && onNewAnswerMappingChange('targetField', e.value)}
           />
         }
         return value
@@ -190,14 +208,14 @@ export default function AnswerMappingEditor(
       accessorKey: 'formatString',
       cell: ({ row }) => {
         const value = row.original.formatString
-        if (row.original.isLastRow && addNewAnswerMapping) {
-          return mapType === 'STRING_TO_LOCAL_DATE' ?
+        if (isEditable(row.original) && row.original.isEditing) {
+          return row.original.mapType === 'STRING_TO_LOCAL_DATE' ?
             <Select
               options={[{
                 value: 'MM/dd/yyyy',
                 label: 'MM/dd/yyyy'
               }]}
-              onChange={e => e && setFormatString(e.value)}
+              onChange={e => e && onNewAnswerMappingChange('formatString', e.value)}
             />
             : ''
         }
@@ -209,8 +227,8 @@ export default function AnswerMappingEditor(
       accessorKey: 'mapType',
       cell: ({ row }) => {
         const value = row.original.mapType
-        if (row.original.isLastRow && addNewAnswerMapping) {
-          return AnswerMappingMapTypeLabels[mapType]
+        if (isEditable(row.original) && row.original.isEditing) {
+          return AnswerMappingMapTypeLabels[row.original.mapType as AnswerMappingMapType]
         }
         return value && AnswerMappingMapTypeLabels[value]
       }
@@ -219,9 +237,11 @@ export default function AnswerMappingEditor(
       header: 'Actions',
       id: 'actions',
       cell: ({ row }) => {
-        if (row.original.isLastRow) {
-          if (!addNewAnswerMapping) {
-            return <button className='btn btn-success border-0' onClick={() => setAddNewAnswerMapping(true)}>
+        if (isEditable(row.original)) {
+          if (!row.original.isEditing) {
+            return <button
+              className='btn btn-success border-0'
+              onClick={() => onNewAnswerMappingChange('isEditing', true)}>
               <FontAwesomeIcon icon={faPlus}/>
             </button>
           }
@@ -229,14 +249,17 @@ export default function AnswerMappingEditor(
           return <>
             <button
               className='btn btn-success me-2'
-              disabled={isEmpty(questionStableId) || isEmpty(targetType) || isEmpty(targetField)}
+              disabled={
+                isEmpty(row.original.questionStableId)
+                || isEmpty(row.original.targetType)
+                || isEmpty(row.original.targetField)}
               onClick={() => saveNewMapping({
                 id: '',
-                questionStableId: questionStableId!,
-                targetType: targetType!,
-                targetField: targetField!,
-                formatString: formatString || '',
-                mapType,
+                questionStableId: row.original.questionStableId!,
+                targetType: row.original.targetType!,
+                targetField: row.original.targetField!,
+                formatString: row.original.formatString || '',
+                mapType: row.original.mapType || 'STRING_TO_STRING',
                 surveyId: '', // backend will set
                 errorOnFail: false
               })}>
@@ -248,15 +271,17 @@ export default function AnswerMappingEditor(
           </>
         }
         return <button className='btn btn-outline-danger border-0' onClick={() => {
-          setOpenDeleteMappingModal(row.original as AnswerMapping)
+          setMappingSelectedForDeletion(row.original as AnswerMapping)
         }}>
           <FontAwesomeIcon icon={faTrashCan}/>
         </button>
       }
     }
-  ], [addNewAnswerMapping, questionStableId, targetType, targetField, formatString, mapType, answerMappings])
+  ], [addNewAnswerMapping, newAnswerMapping, answerMappings])
 
-  const data = useMemo(() => (answerMappings as AnswerMappingRow[]).concat({ isLastRow: true }), [answerMappings])
+  const data = useMemo(
+    () => (answerMappings as AnswerMappingRow[]).concat(newAnswerMapping),
+    [answerMappings, newAnswerMapping])
 
   const table = useReactTable<AnswerMappingRow>({
     data,
@@ -271,9 +296,9 @@ export default function AnswerMappingEditor(
       given name field. Then, any changes the participant makes to the survey will result in changes to their profile.
     </p>
     {basicTableLayout(table)}
-    {openDeleteMappingModal && <DeleteAnswerMappingModal
+    {mappingSelectedForDeletion && <DeleteAnswerMappingModal
       onConfirm={deleteAnswerMapping}
-      onCancel={() => setOpenDeleteMappingModal(null)}/>}
+      onCancel={() => setMappingSelectedForDeletion(null)}/>}
     <div>
     </div>
   </div>
