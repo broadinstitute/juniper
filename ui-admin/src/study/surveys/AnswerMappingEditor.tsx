@@ -90,8 +90,6 @@ export default function AnswerMappingEditor(
     setMappingSelectedForDeletion(null)
   }
 
-  const [addNewAnswerMapping, setAddNewAnswerMapping] = useState(false)
-
   const saveNewMapping = async (mapping: AnswerMapping) => {
     const newMappings = [...answerMappings, mapping]
 
@@ -134,8 +132,8 @@ export default function AnswerMappingEditor(
       accessorKey: 'questionStableId',
       cell: ({ row }) => {
         const value = row.original.questionStableId
-        if (isEditable(row.original) && row.original.isEditing) {
-          return <Creatable
+        if (isEditable(row.original)) {
+          return row.original.isEditing && <Creatable
             options={names.map(name => {
               return {
                 value: name,
@@ -158,8 +156,8 @@ export default function AnswerMappingEditor(
       accessorKey: 'targetType',
       cell: ({ row }) => {
         const value = row.original.targetType
-        if (isEditable(row.original) && row.original.isEditing) {
-          return <Select
+        if (isEditable(row.original)) {
+          return row.original.isEditing && <Select
             isDisabled={isEmpty(row.original.questionStableId)}
             options={Object.keys(AnswerMappingTargets).map(target => {
               return {
@@ -182,8 +180,8 @@ export default function AnswerMappingEditor(
       accessorKey: 'targetField',
       cell: ({ row }) => {
         const value = row.original.targetField
-        if (isEditable(row.original) && row.original.isEditing) {
-          return <Select
+        if (isEditable(row.original)) {
+          return row.original.isEditing && <Select
             isDisabled={isEmpty(row.original.targetType)}
             options={
               row.original.targetType && Object.keys(
@@ -208,13 +206,17 @@ export default function AnswerMappingEditor(
       accessorKey: 'formatString',
       cell: ({ row }) => {
         const value = row.original.formatString
-        if (isEditable(row.original) && row.original.isEditing) {
-          return row.original.mapType === 'STRING_TO_LOCAL_DATE' ?
+        if (isEditable(row.original)) {
+          return row.original.isEditing && row.original.mapType === 'STRING_TO_LOCAL_DATE' ?
             <Select
               options={[{
                 value: 'MM/dd/yyyy',
                 label: 'MM/dd/yyyy'
               }]}
+              value={row.original.formatString && {
+                value: row.original.formatString,
+                label: row.original.formatString
+              }}
               onChange={e => e && onNewAnswerMappingChange('formatString', e.value)}
             />
             : ''
@@ -227,8 +229,8 @@ export default function AnswerMappingEditor(
       accessorKey: 'mapType',
       cell: ({ row }) => {
         const value = row.original.mapType
-        if (isEditable(row.original) && row.original.isEditing) {
-          return AnswerMappingMapTypeLabels[row.original.mapType as AnswerMappingMapType]
+        if (isEditable(row.original)) {
+          return row.original.isEditing && AnswerMappingMapTypeLabels[row.original.mapType as AnswerMappingMapType]
         }
         return value && AnswerMappingMapTypeLabels[value]
       }
@@ -240,7 +242,7 @@ export default function AnswerMappingEditor(
         if (isEditable(row.original)) {
           if (!row.original.isEditing) {
             return <button
-              className='btn btn-success border-0'
+              className='btn btn-primary border-0'
               onClick={() => onNewAnswerMappingChange('isEditing', true)}>
               <FontAwesomeIcon icon={faPlus}/>
             </button>
@@ -265,7 +267,7 @@ export default function AnswerMappingEditor(
               })}>
               <FontAwesomeIcon icon={faCheck}/>
             </button>
-            <button className='btn btn-danger' onClick={() => setAddNewAnswerMapping(false)}>
+            <button className='btn btn-danger' onClick={() => onNewAnswerMappingChange('isEditing', false)}>
               <FontAwesomeIcon icon={faX}/>
             </button>
           </>
@@ -277,7 +279,7 @@ export default function AnswerMappingEditor(
         </button>
       }
     }
-  ], [addNewAnswerMapping, newAnswerMapping, answerMappings])
+  ], [newAnswerMapping, answerMappings])
 
   const data = useMemo(
     () => (answerMappings as AnswerMappingRow[]).concat(newAnswerMapping),
@@ -295,7 +297,7 @@ export default function AnswerMappingEditor(
       For example, you could map a question which collects the participant&apos;s first name to the profile&apos;s
       given name field. Then, any changes the participant makes to the survey will result in changes to their profile.
     </p>
-    {basicTableLayout(table)}
+    {basicTableLayout(table, { tdClass: 'col-1 ' })}
     {mappingSelectedForDeletion && <DeleteAnswerMappingModal
       onConfirm={deleteAnswerMapping}
       onCancel={() => setMappingSelectedForDeletion(null)}/>}
