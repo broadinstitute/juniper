@@ -90,4 +90,13 @@ public class TimeShiftPopulateDao {
         );
     }
 
+    public void changeParticipantAccountCreationTime(UUID participantId, Instant creationTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update participant_user set created_at = :creationTime where id = :participantId;")
+                        .bind("participantId", participantId)
+                        .bind("creationTime", creationTime)
+                        .execute()
+        );
+    }
+
 }

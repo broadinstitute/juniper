@@ -144,8 +144,6 @@ public class EnrolleeImportService {
                         .createdAt(Instant.now())
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.SUCCESS).build();
-                doTimeShifts(enrolleeMap, enrollee);
-
             } catch (Exception e) {
                 importItem = ImportItem.builder()
                         .importId(dataImport.getId())
@@ -178,7 +176,7 @@ public class EnrolleeImportService {
                     enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
         }
         if (enrolleeMap.get("account.createdAt") != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(
+            timeShiftPopulateDao.changeParticipantAccountCreationTime(
                     enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("account.createdAt")));
         }
     }
@@ -235,6 +233,14 @@ public class EnrolleeImportService {
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
+        //update createdAt
+        if (enrollee.getCreatedAt() != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
+        }
+        if (participantUser.getCreatedAt() != null) {
+            timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
+        }
+
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 

@@ -25,6 +25,7 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +43,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+@Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private AdminUserService adminUserService;
@@ -76,9 +79,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         AdminUser savedAdmin = adminUserService.create(adminUser);
 
         String tsvString = """
-                column1,column2,column3,account.username
-                a,b,c,userName1
-                x,y,z,userName2             
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
         Import dataImport = enrolleeImportService.importEnrollees(
@@ -98,11 +101,15 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
         assertThat(user.getUsername(), equalTo("userName1"));
+        assertThat(user.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:37:00Z")));
+        assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:38:00Z")));
 
         user = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
         enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
         assertThat(user.getUsername(), equalTo("userName2"));
+        assertThat(user.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
+        assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
     }
 
     @Test
