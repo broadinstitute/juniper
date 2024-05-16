@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker'
-import { errors, expect, Page, test, Response } from '@playwright/test'
-import StudyEligibility from 'pages/ourhealth/study-eligibility'
+import { errors, expect, Page, Response, test } from '@playwright/test'
+import StudyEligibilityOurHealth from 'pages/ourhealth/study-eligibility'
+import StudyEligibilityDemo from 'pages/demo/study-eligibility'
 import Navbar from 'src/page-components/navbar'
 import { EnvironmentName } from '@juniper/ui-core'
 
@@ -68,10 +69,24 @@ export async function adminLogin(page: Page, username?: string) {
  * @param {Page} page
  * @returns {Promise<StudyEligibility>}
  */
-export async function goToStudyEligibility(page: Page): Promise<StudyEligibility> {
+export async function goToOurhealthPreEnroll(page: Page): Promise<StudyEligibilityOurHealth> {
   const navbar = new Navbar(page)
   await navbar.linkRegister.click()
-  const prequal = new StudyEligibility(page)
+  const prequal = new StudyEligibilityOurHealth(page)
+  await prequal.waitReady()
+  return prequal
+}
+
+
+/**
+ * Click Register button on Home page to go to the Study Eligibility page.
+ * @param {Page} page
+ * @returns {Promise<StudyEligibility>}
+ */
+export async function goToDemoPreEnroll(page: Page): Promise<StudyEligibilityDemo> {
+  const navbar = new Navbar(page)
+  await navbar.linkRegister.click()
+  const prequal = new StudyEligibilityDemo(page)
   await prequal.waitReady()
   return prequal
 }

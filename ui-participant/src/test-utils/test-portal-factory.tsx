@@ -39,7 +39,9 @@ export const mockStudyEnv = (): StudyEnvironment => {
       acceptingProxyEnrollment: false,
       initialized: true,
       passwordProtected: false,
-      password: 'password'
+      password: 'password',
+      useDevDsmRealm: true,
+      useStubDsm: true
     },
     configuredSurveys: [],
     triggers: []

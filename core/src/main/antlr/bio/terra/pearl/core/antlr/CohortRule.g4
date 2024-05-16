@@ -14,7 +14,7 @@ VARIABLE: '{' ([a-zA-Z0-9_]|'.')+ '}';
 BOOLEAN: 'true' | 'false';
 NULL: 'null';
 WS: [ \t\r\n]+ -> skip;
-OPERATOR: '=' | '!=' | '>' | '<' | '>=' | '<=';
+OPERATOR: '=' | '!=' | '>' | '<' | '>=' | '<=' | 'contains';
 AND: 'and';
 OR: 'or';
 PAR_OPEN: '(';

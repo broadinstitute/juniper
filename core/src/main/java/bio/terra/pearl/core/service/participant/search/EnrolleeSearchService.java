@@ -9,18 +9,16 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
 import bio.terra.pearl.core.service.search.terms.ProfileTerm;
 import bio.terra.pearl.core.service.search.terms.SearchValue;
+import bio.terra.pearl.core.service.search.terms.TaskTerm;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class EnrolleeSearchService {
@@ -79,11 +77,16 @@ public class EnrolleeSearchService {
         Map<String, SearchValue.SearchValueType> fields = new HashMap<>();
         // profile fields
         ProfileTerm.FIELDS.forEach((term, type) -> fields.put("profile." + term, type));
+        // enrollee fields
+        EnrolleeTerm.FIELDS.forEach((term, type) -> fields.put("enrollee." + term, type));
         // age
         fields.put("age", SearchValue.SearchValueType.INTEGER);
         // answers
         List<Survey> surveys = surveyService.findByStudyEnvironmentIdWithContent(studyEnvId);
         for (Survey survey : surveys) {
+            // task fields
+            TaskTerm.FIELDS.forEach((term, type) -> fields.put("task." + survey.getStableId() + "." + term, type));
+            // answer fields
             surveyService
                     .getSurveyQuestionDefinitions(survey)
                     .forEach(def -> {

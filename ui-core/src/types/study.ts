@@ -25,6 +25,8 @@ export type StudyEnvironmentConfig = {
   initialized: boolean
   passwordProtected: boolean
   password: string
+  useStubDsm: boolean
+  useDevDsmRealm: boolean
 }
 
 export type StudyEnvironmentSurvey = {

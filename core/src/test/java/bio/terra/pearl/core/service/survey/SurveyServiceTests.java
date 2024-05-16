@@ -181,7 +181,36 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testGetSurveyQuestionDefinitions(TestInfo info) {
         Survey survey = surveyFactory.buildPersisted(getTestName(info));
-        String surveyContent = """
+
+        survey.setContent(twoQuestionSurveyContent);
+
+        List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
+        Assertions.assertEquals(4, actual.size());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateSurveyQuestionDefinitionsSameShortcode(TestInfo info) {
+        String sharedStableId = "someSurvey" + RandomStringUtils.randomAlphabetic(4);
+        Survey survey = surveyFactory.builderWithDependencies(getTestName(info))
+                .stableId(sharedStableId)
+                .content(twoQuestionSurveyContent)
+                        .build();
+        surveyService.create(survey);
+
+        Survey survey2 = surveyFactory.builderWithDependencies(getTestName(info))
+                .stableId(sharedStableId)
+                .content(twoQuestionSurveyContent)
+                .build();
+        surveyService.create(survey2);
+
+        List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
+        Assertions.assertEquals(4, actual.size());
+        List<SurveyQuestionDefinition> actual2 = surveyService.getSurveyQuestionDefinitions(survey2);
+        Assertions.assertEquals(4, actual2.size());
+    }
+
+    private final String twoQuestionSurveyContent = """
                 {
                 	"title": "The Basics",
                 	"showQuestionNumbers": "off",
@@ -219,11 +248,6 @@ public class SurveyServiceTests extends BaseSpringBootTest {
                 	}]
                 }""";
 
-        survey.setContent(surveyContent);
-
-        List<SurveyQuestionDefinition> actual = surveyService.getSurveyQuestionDefinitions(survey);
-        Assertions.assertEquals(4, actual.size());
-    }
 
     @Test
     @Transactional

@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
 import { ApiPreenrollResponse } from 'src/models/api-preenroll-response'
-import { goToStudyEligibility, waitForResponse } from 'tests/e2e-utils'
+import { goToOurhealthPreEnroll, waitForResponse } from 'tests/e2e-utils'
 import data from 'src/data/ourhealth-en.json'
 
 test.describe('POST /preEnroll request', () => {
@@ -11,7 +11,7 @@ test.describe('POST /preEnroll request', () => {
     ]
   }, async ({ page }) => {
     await test.step('Answer "Yes" to all eligibility questions', async () => {
-      const prequal = await goToStudyEligibility(page)
+      const prequal = await goToOurhealthPreEnroll(page)
 
       const submitResponse = await prequal.getQuestion(data.QLabel.SouthAsianAncestry).select('Yes')
         .then(async () => prequal.getQuestion(data.QLabel.UnderstandEnglish).select('Yes'))

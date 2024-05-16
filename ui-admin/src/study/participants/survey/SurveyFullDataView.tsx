@@ -150,7 +150,7 @@ export const getDisplayValue = (answer: Answer,
   if (answer.booleanValue !== undefined) {
     displayValue = answer.booleanValue ? 'True' : 'False'
   }
-  if (answer.questionStableId.endsWith('signature')) {
+  if (question.getType() === 'signaturepad') {
     displayValue = <img src={answer.stringValue}/>
   }
   if (answer.otherDescription) {

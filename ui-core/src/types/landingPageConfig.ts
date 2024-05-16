@@ -52,9 +52,11 @@ export type NavbarItem =
   | NavbarItemMailingList
   | NavbarItemExternal
 
-type BaseNavBarItem = {
+export type NavBarItemType = 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
+
+export type BaseNavBarItem = {
   id?: string
-  itemType: 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
+  itemType: NavBarItemType
   text: string
   itemOrder: number
 }

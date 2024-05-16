@@ -4,7 +4,7 @@ import * as process from 'process'
 import StudyConsent from 'pages/ourhealth/study-consent'
 import StudyCreateAcct from 'pages/ourhealth/study-create-acct'
 import StudyDashboard, { Activities } from 'pages/ourhealth/study-dashboard'
-import { emailAlias, goToStudyEligibility } from 'tests/e2e-utils'
+import { emailAlias, goToOurhealthPreEnroll } from 'tests/e2e-utils'
 import data from 'src/data/ourhealth-en.json'
 
 const { PARTICIPANT_EMAIL_1 } = process.env
@@ -18,7 +18,7 @@ test.describe('Home page', () => {
     const testEmail = emailAlias(PARTICIPANT_EMAIL_1 ? PARTICIPANT_EMAIL_1 : 'dbush@broadinstitute.org')
 
     await test.step('Answer "Yes" to all eligibility questions', async () => {
-      const prequal = await goToStudyEligibility(page)
+      const prequal = await goToOurhealthPreEnroll(page)
 
       await prequal.getQuestion(data.QLabel.SouthAsianAncestry).select('Yes')
       expect(await prequal.progress()).toMatch('Answered 1/4 questions')

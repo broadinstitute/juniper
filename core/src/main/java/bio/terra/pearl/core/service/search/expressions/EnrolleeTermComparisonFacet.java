@@ -5,7 +5,7 @@ import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
+import bio.terra.pearl.core.service.search.terms.SearchTerm;
 import bio.terra.pearl.core.service.search.terms.SearchValue;
 import org.jooq.Condition;
 import org.jooq.Operator;
@@ -23,11 +23,11 @@ import static org.jooq.impl.DSL.condition;
 public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
     private final EnrolleeDao enrolleeDao;
     private final ProfileDao profileDao;
-    private final EnrolleeTerm leftTermExtractor;
-    private final EnrolleeTerm rightTermExtractor;
-    private final ComparisonOperator operator;
+    private final SearchTerm leftTermExtractor;
+    private final SearchTerm rightTermExtractor;
+    private final SearchOperators operator;
 
-    public EnrolleeTermComparisonFacet(EnrolleeDao enrolleeDao, ProfileDao profileDao, EnrolleeTerm leftTermExtractor, EnrolleeTerm rightTermExtractor, ComparisonOperator operator) {
+    public EnrolleeTermComparisonFacet(EnrolleeDao enrolleeDao, ProfileDao profileDao, SearchTerm leftTermExtractor, SearchTerm rightTermExtractor, SearchOperators operator) {
         this.leftTermExtractor = leftTermExtractor;
         this.rightTermExtractor = rightTermExtractor;
         this.operator = operator;
@@ -47,6 +47,7 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
             case LESS_THAN -> rightSearchValue.greaterThan(leftSearchValue);
             case GREATER_THAN_EQ -> leftSearchValue.greaterThanOrEqualTo(rightSearchValue);
             case LESS_THAN_EQ -> rightSearchValue.greaterThanOrEqualTo(leftSearchValue);
+            case CONTAINS -> leftSearchValue.contains(rightSearchValue);
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
         };
     }
@@ -65,9 +66,19 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
         boundObjects.addAll(leftTermExtractor.boundObjects());
         boundObjects.addAll(rightTermExtractor.boundObjects());
 
-        Condition whereCondition = condition(
-                this.leftTermExtractor.termClause() + " " + this.operator.getOperator() + " " + this.rightTermExtractor.termClause(),
-                boundObjects.toArray());
+        Condition whereCondition;
+        if (this.operator.equals(SearchOperators.CONTAINS)) {
+            // If the operator is CONTAINS, we need to wrap the right term in % to make it a valid SQL LIKE clause
+            whereCondition = condition(
+                    this.leftTermExtractor.termClause() + " LIKE concat('%', " + rightTermExtractor.termClause() + ", '%')",
+                    boundObjects.toArray()
+            );
+        } else {
+            whereCondition = condition(
+                    this.leftTermExtractor.termClause() + " " + this.operator.getOperator() + " " + this.rightTermExtractor.termClause(),
+                    boundObjects.toArray());
+
+        }
 
         if (leftTermExtractor.requiredConditions().isPresent()) {
             whereCondition = condition(Operator.AND, leftTermExtractor.requiredConditions().get(), whereCondition);

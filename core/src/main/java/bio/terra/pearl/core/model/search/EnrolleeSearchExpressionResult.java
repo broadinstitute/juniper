@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,4 +22,5 @@ public class EnrolleeSearchExpressionResult {
     private Profile profile;
     private MailingAddress mailingAddress;
     private final List<Answer> answers = new ArrayList<>();
+    private final List<ParticipantTask> tasks = new ArrayList<>();
 }

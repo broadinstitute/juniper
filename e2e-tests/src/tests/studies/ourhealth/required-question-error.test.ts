@@ -1,7 +1,7 @@
 import { expect } from '@playwright/test'
 import { test } from 'lib/fixtures/ourhealth-fixture'
 import Question from 'src/page-components/question'
-import { goToStudyEligibility } from 'tests/e2e-utils'
+import { goToOurhealthPreEnroll } from 'tests/e2e-utils'
 import data from 'src/data/ourhealth-en.json'
 
 test.describe('Question validation', () => {
@@ -13,7 +13,7 @@ test.describe('Question validation', () => {
     await test.step('"Response required" question error should be visible', async () => {
       const expErr = 'Response required.'
 
-      const prequal = await goToStudyEligibility(page)
+      const prequal = await goToOurhealthPreEnroll(page)
       await prequal.submit()
 
       let question = new Question(page, { qText: data.QLabel.SouthAsianAncestry })
