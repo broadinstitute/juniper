@@ -24,7 +24,7 @@ const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are c
 /** handles paging the form */
 export function PagedSurveyView({
   studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage,
-  enrollee, adminUserId, onSuccess, onFailure, showHeaders = true
+  enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
 }: {
     studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse,
     onSuccess: () => void, onFailure: () => void,
@@ -51,7 +51,7 @@ export function PagedSurveyView({
     const responseDto = {
       resumeData: getResumeData(surveyModel, adminUserId || enrollee.participantUserId, true),
       enrolleeId: enrollee.id,
-      answers: getUpdatedAnswers(resumableData.data || {}, currentModelValues, selectedLanguage),
+      answers: getUpdatedAnswers(prevSave.current as Record<string, object>, currentModelValues, selectedLanguage),
       creatingParticipantId: adminUserId ? null : enrollee.participantUserId,
       creatingAdminUserId: adminUserId,
       surveyId: form.id,
@@ -75,7 +75,7 @@ export function PagedSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(
-    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile
+    form, resumableData, onComplete, pager, studyEnvParams.envName, enrollee.profile, proxyProfile
   )
 
   surveyModel.locale = selectedLanguage
