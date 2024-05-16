@@ -21,12 +21,10 @@ import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.export.formatters.ExportFormatUtils;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -59,7 +57,6 @@ import java.util.UUID;
 @Slf4j
 public class EnrolleeImportService {
 
-    private final EnrolleeService enrolleeService;
     ExportOptions IMPORT_OPTIONS_TSV = ExportOptions
             .builder()
             .stableIdsForOptions(true)
@@ -94,7 +91,7 @@ public class EnrolleeImportService {
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
-                                 TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService) {
+                                 TimeShiftPopulateDao timeShiftPopulateDao) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -106,7 +103,6 @@ public class EnrolleeImportService {
         this.importItemService = importItemService;
         this.surveyTaskDispatcher = surveyTaskDispatcher;
         this.timeShiftPopulateDao = timeShiftPopulateDao;
-        this.enrolleeService = enrolleeService;
     }
 
     @Transactional
@@ -163,22 +159,6 @@ public class EnrolleeImportService {
         importItemService.attachImportItems(dataImport);
         log.info("Completed importing : {} items for Import ID: {}", dataImport.getImportItems().size(), dataImport.getId());
         return dataImport;
-    }
-
-    private void doTimeShifts(Map<String, String> enrolleeMap, Enrollee enrollee) {
-        //update createAt and lastUpdated
-        if (enrolleeMap.get("enrollee.createdAt") != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(
-                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.createdAt")));
-        }
-        if (enrolleeMap.get("enrollee.lastUpdatedAt") != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(
-                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("enrollee.lastUpdatedAt")));
-        }
-        if (enrolleeMap.get("account.createdAt") != null) {
-            timeShiftPopulateDao.changeParticipantAccountCreationTime(
-                    enrollee.getId(), ExportFormatUtils.importInstant(enrolleeMap.get("account.createdAt")));
-        }
     }
 
     /**
