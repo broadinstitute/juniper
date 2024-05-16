@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { PortalEnvironment, Survey, VersionedForm } from 'api/api'
 
@@ -55,6 +55,13 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
+
+  useEffect(() => {
+    console.log('draft')
+    console.log(draft)
+    console.log('currentForm')
+    console.log(currentForm)
+  }, [draft, currentForm])
 
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
@@ -221,7 +228,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           studyEnvContext={studyEnvContext}
           workingForm={{ ...currentForm, ...draft }}
           updateWorkingForm={(props: SaveableFormProps) => {
-            setDraft({ ...draft, ...props, date: Date.now() })
+            setDraft({ ...currentForm, ...draft, ...props, date: Date.now() })
           }}
           onDismiss={() => setShowAdvancedOptions(false)}/>
         }
@@ -235,7 +242,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           onChange={(newValidationErrors, newContent) => {
             if (isEmpty(newValidationErrors)) {
               setShowErrors(false)
-              setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
+              setDraft({ ...currentForm, ...draft, content: JSON.stringify(newContent), date: Date.now() })
             }
             setValidationErrors(newValidationErrors)
           }}
