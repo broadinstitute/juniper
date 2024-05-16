@@ -134,6 +134,7 @@ export default function AnswerMappingEditor(
         const value = row.original.questionStableId
         if (isEditable(row.original)) {
           return row.original.isEditing && <Creatable
+            aria-label={'New Answer Mapping Question ID'}
             options={names.map(name => {
               return {
                 value: name,
@@ -158,6 +159,7 @@ export default function AnswerMappingEditor(
         const value = row.original.targetType
         if (isEditable(row.original)) {
           return row.original.isEditing && <Select
+            aria-label={'New Answer Mapping Target Type'}
             isDisabled={isEmpty(row.original.questionStableId)}
             options={Object.keys(AnswerMappingTargets).map(target => {
               return {
@@ -182,6 +184,7 @@ export default function AnswerMappingEditor(
         const value = row.original.targetField
         if (isEditable(row.original)) {
           return row.original.isEditing && <Select
+            aria-label={'New Answer Mapping Target Field'}
             isDisabled={isEmpty(row.original.targetType)}
             options={
               row.original.targetType && Object.keys(
@@ -209,6 +212,7 @@ export default function AnswerMappingEditor(
         if (isEditable(row.original)) {
           return row.original.isEditing && row.original.mapType === 'STRING_TO_LOCAL_DATE' ?
             <Select
+              aria-label={'New Answer Mapping Format'}
               options={[{
                 value: 'MM/dd/yyyy',
                 label: 'MM/dd/yyyy'
@@ -244,7 +248,7 @@ export default function AnswerMappingEditor(
             return <button
               className='btn btn-primary border-0'
               onClick={() => onNewAnswerMappingChange('isEditing', true)}>
-              <FontAwesomeIcon icon={faPlus}/>
+              <FontAwesomeIcon icon={faPlus} aria-label={'Create New Answer Mapping'}/>
             </button>
           }
 
@@ -265,17 +269,17 @@ export default function AnswerMappingEditor(
                 surveyId: '', // backend will set
                 errorOnFail: false
               })}>
-              <FontAwesomeIcon icon={faCheck}/>
+              <FontAwesomeIcon icon={faCheck} aria-label={'Accept New Answer Mapping'}/>
             </button>
             <button className='btn btn-danger' onClick={() => onNewAnswerMappingChange('isEditing', false)}>
-              <FontAwesomeIcon icon={faX}/>
+              <FontAwesomeIcon icon={faX} aria-label={'Cancel New Answer Mapping'}/>
             </button>
           </>
         }
         return <button className='btn btn-outline-danger border-0' onClick={() => {
           setMappingSelectedForDeletion(row.original as AnswerMapping)
         }}>
-          <FontAwesomeIcon icon={faTrashCan}/>
+          <FontAwesomeIcon icon={faTrashCan} aria-label={'Delete Answer Mapping'}/>
         </button>
       }
     }
