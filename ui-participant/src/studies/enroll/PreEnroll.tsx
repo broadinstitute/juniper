@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { useI18n } from '@juniper/ui-core'
-import SurveyReviewModeButton from 'hub/survey/ReviewModeButton'
-import SurveyAutoCompleteButton from 'hub/survey/SurveyAutoCompleteButton'
+import {
+  getResumeData, getSurveyJsAnswerList,
+  SurveyAutoCompleteButton,
+  SurveyReviewModeButton,
+  useI18n,
+  useSurveyJSModel
+} from '@juniper/ui-core'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -26,6 +29,9 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
+    studyEnv.environmentName,
+    undefined,
+    undefined,
     { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 
@@ -73,8 +79,8 @@ export default function PreEnrollView({ enrollContext, survey }:
 
   return (
     <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
-      <SurveyReviewModeButton surveyModel={surveyModel}/>
-      <SurveyAutoCompleteButton surveyModel={surveyModel}/>
+      <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnv.environmentName}/>
+      <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnv.environmentName}/>
       {SurveyComponent}
     </div>
   )

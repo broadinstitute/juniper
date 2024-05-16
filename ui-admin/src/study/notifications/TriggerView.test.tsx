@@ -1,11 +1,11 @@
 import React from 'react'
 import { mockTrigger, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import Api from 'api/api'
-import { renderWithRouter } from 'test-utils/router-testing-utils'
 import TriggerView from './TriggerView'
 import { waitFor, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ReactNotifications } from 'react-notifications-component'
+import { renderWithRouter } from '@juniper/ui-core'
 
 
 test('enables updating of email templates', async () => {

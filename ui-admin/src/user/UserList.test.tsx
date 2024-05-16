@@ -1,11 +1,11 @@
 import React from 'react'
-import { renderWithRouter } from 'test-utils/router-testing-utils'
 import { screen, waitFor } from '@testing-library/react'
 import { mockAdminUser } from '../test-utils/user-mocking-utils'
 import UserList from './UserList'
 import Api from '../api/api'
 import { mockPortal } from '../test-utils/mocking-utils'
 import { expectCellToHaveText, getTableCell } from '../test-utils/table-testing-utils'
+import { renderWithRouter } from '@juniper/ui-core'
 
 describe('UserList', () => {
   test('shows a list of all users', async () => {

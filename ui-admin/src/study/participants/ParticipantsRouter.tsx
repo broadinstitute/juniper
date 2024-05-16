@@ -1,9 +1,10 @@
 import React from 'react'
 import { Link, Route, Routes } from 'react-router-dom'
 import ParticipantList from './participantList/ParticipantList'
-import { StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
+import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import EnrolleeView from './enrolleeView/EnrolleeView'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
+import { StudyEnvParams } from '@juniper/ui-core'
 
 /** routes to list or individual enrollee view as appropriate */
 export default function ParticipantsRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

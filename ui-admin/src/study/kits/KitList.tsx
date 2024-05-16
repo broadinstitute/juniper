@@ -13,11 +13,11 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { KitRequest } from 'api/api'
+import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { basicTableLayout, ColumnVisibilityControl, renderEmptyMessage } from 'util/tableUtils'
-import { instantToDateString } from '@juniper/ui-core'
+import { instantToDateString, KitRequest } from '@juniper/ui-core'
 import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'
 import KitStatusCell from '../participants/KitStatusCell'

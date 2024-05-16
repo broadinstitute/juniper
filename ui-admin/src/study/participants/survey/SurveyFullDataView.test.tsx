@@ -4,9 +4,9 @@ import React from 'react'
 import SurveyFullDataView, { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 describe('getDisplayValue', () => {

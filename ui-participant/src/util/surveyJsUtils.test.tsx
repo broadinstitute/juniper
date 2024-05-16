@@ -2,15 +2,20 @@ import React from 'react'
 
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { Profile, Survey } from 'api/api'
+import { Survey } from 'api/api'
 
-import { getSurveyJsAnswerList, getUpdatedAnswers, useRoutablePageNumber, useSurveyJSModel } from './surveyJsUtils'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateSurvey, generateThreePageSurvey } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
-import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import {
+  asMockedFn, getSurveyJsAnswerList, getUpdatedAnswers,
+  MockI18nProvider,
+  Profile,
+  setupRouterTest,
+  useRoutablePageNumber,
+  useSurveyJSModel
+} from '@juniper/ui-core'
 import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
 import { useUser } from '../providers/UserProvider'
 import { mockUseActiveUser, mockUseUser } from '../test-utils/user-mocking-utils'
@@ -25,9 +30,9 @@ beforeEach(() => {
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
-function PlainSurveyComponent({ formModel }: { formModel: Survey }) {
+function PlainSurveyComponent({ formModel, profile }: { formModel: Survey, profile?: Profile }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager)
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, 'sandbox', profile)
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
@@ -115,7 +120,7 @@ test('enables hide on profile attributes', () => {
 
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}/>
+      <PlainSurveyComponent formModel={dynamicSurvey} profile={maleProfile}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
@@ -133,7 +138,7 @@ test('enables show on profile attributes', () => {
 
   const { RoutedComponent } = setupRouterTest(
     <MockI18nProvider>
-      <PlainSurveyComponent formModel={dynamicSurvey}/>
+      <PlainSurveyComponent formModel={dynamicSurvey} profile={femaleProfile}/>
     </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()

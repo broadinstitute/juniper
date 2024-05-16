@@ -1,11 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage, mockHtmlSection } from 'test-utils/mock-site-content'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
-import { SectionType } from '@juniper/ui-core'
+import { SectionType, setupRouterTest } from '@juniper/ui-core'
 
 test('readOnly disables section type selection', async () => {
   const mockPage = mockHtmlPage()

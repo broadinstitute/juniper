@@ -1,6 +1,6 @@
-import Api, { Enrollee, PortalParticipantUser, Study } from 'api/api'
+import Api, { PortalParticipantUser, Study } from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { I18nOptions, useI18n } from '@juniper/ui-core'
+import { I18nOptions, useI18n, Enrollee } from '@juniper/ui-core'
 import { useUser } from '../providers/UserProvider'
 import { isEmpty, isNil } from 'lodash'
 

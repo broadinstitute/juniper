@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import UserProvider, { useUser } from './UserProvider'
 import { mockEnrollee, mockParticipantUser } from '../test-utils/test-participant-factory'
-import { setupRouterTest } from '../test-utils/router-testing-utils'
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { AuthProvider } from 'react-oidc-context'
+import { setupRouterTest } from '@juniper/ui-core'
 
 /** component for tracing how enrollee update state is propagated */
 const UpdateEnrolleeTestComponent = () => {

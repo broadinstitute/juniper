@@ -1,9 +1,8 @@
-import { StudyEnvParams } from '../StudyEnvironmentRouter'
 import {
   ENVIRONMENT_NAMES,
   EnvironmentName,
   StudyEnvironmentSurvey,
-  StudyEnvironmentSurveyNamed
+  StudyEnvironmentSurveyNamed, StudyEnvParams
 } from '@juniper/ui-core'
 import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'

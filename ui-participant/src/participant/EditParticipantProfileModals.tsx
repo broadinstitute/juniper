@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import Api, { Profile } from '../api/api'
+import Api from 'api/api'
 import {
   AddressValidationResult,
   EditAddress,
   isSameAddress,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  MailingAddress,
+  MailingAddress, Profile,
   SuggestBetterAddressModal,
   useI18n
 } from '@juniper/ui-core'

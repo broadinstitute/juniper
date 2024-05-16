@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { Enrollee, ParticipantTask, ParticipantTaskStatus } from 'api/api'
+import { ParticipantTask, ParticipantTaskStatus } from 'api/api'
 import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-solid-svg-icons'
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
-import { useI18n } from '@juniper/ui-core'
+import { Enrollee, useI18n } from '@juniper/ui-core'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
