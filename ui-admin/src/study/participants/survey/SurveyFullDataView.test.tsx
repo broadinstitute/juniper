@@ -11,7 +11,7 @@ import userEvent from '@testing-library/user-event'
 
 describe('getDisplayValue', () => {
   it('renders a plaintext value', async () => {
-    const question: Question = { isVisible: true } as Question
+    const question: Question = { isVisible: true, getType: () => 'text' } as Question
     const answer: Answer = { stringValue: 'test123', questionStableId: 'testQ' } as Answer
     render(<span>{getDisplayValue(answer, question)}</span>)
     expect(screen.getByText('test123')).toBeTruthy()
@@ -20,6 +20,7 @@ describe('getDisplayValue', () => {
   it('renders a choice value', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'radiogroup',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -34,6 +35,7 @@ describe('getDisplayValue', () => {
   it('renders a free text other description', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'radiogroup',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -51,6 +53,7 @@ describe('getDisplayValue', () => {
   it('renders a choice array value', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'checkbox',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -95,7 +98,7 @@ test('shows the download/print modal', async () => {
 
 describe('ItemDisplay', () => {
   it('renders the language used to answer a question', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',
@@ -115,7 +118,7 @@ describe('ItemDisplay', () => {
   })
 
   it('renders correctly if a viewedLanguage is not specified', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',
@@ -134,7 +137,7 @@ describe('ItemDisplay', () => {
   })
 
   it('does not render a language name if it doesnt match a supported language', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',
