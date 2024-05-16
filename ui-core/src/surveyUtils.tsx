@@ -16,6 +16,8 @@ import { EnvironmentName } from 'src/types/study'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import { Markdown } from './participant/landing/Markdown'
 import { useI18n } from './participant/I18nProvider'
+import { createAddressValidator } from './surveyjs/address-validator'
+import { useApiContext } from './participant/ApiProvider'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -283,8 +285,10 @@ export function useSurveyJSModel(
     extraVariables = {}
   } = opts
 
-  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
+  const Api = useApiContext()
   const { i18n } = useI18n()
+
+  const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
   function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
@@ -325,8 +329,7 @@ export function useSurveyJSModel(
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
-    //TODO: move validateAddress into the ApiProvider
-    // newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
+    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return newSurveyModel
   }
 

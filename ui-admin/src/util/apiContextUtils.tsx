@@ -1,4 +1,4 @@
-import { ApiContextT } from '@juniper/ui-core'
+import { ApiContextT, MailingAddress } from '@juniper/ui-core'
 import Api from '../api/api'
 
 /** uses the admin image retrieval endpoint */
@@ -23,6 +23,9 @@ export const previewApi = (portalShortcode: string, portalEnvName: string): ApiC
       return Api.updateSurveyResponse({
         studyEnvParams, stableId, version, enrolleeShortcode, response, taskId
       })
+    },
+    validateAddress: (address: MailingAddress) => {
+      return Api.validateAddress(address)
     }
   }
 }
