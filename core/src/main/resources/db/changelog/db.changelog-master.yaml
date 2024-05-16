@@ -270,11 +270,10 @@ databaseChangeLog:
       file: changesets/2024_05_08_dsm_env_config.yaml
       relativeToChangelogFile: true
   - include:
-<<<<<<< db-save-answer-type
-      file: changesets/2024_05_15_answer_type_save.yaml
-=======
       file: changesets/2024_05_15_question_def_constraint.yaml
->>>>>>> development
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_05_15_answer_type_save.yaml
       relativeToChangelogFile: true
 
 
