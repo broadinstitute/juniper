@@ -74,7 +74,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
                     .build();
             withdrawnEnrollee = create(withdrawnEnrollee);
             // if a governed user is being withdrawn, we should withdraw the proxies that are only proxying this user.
-            List<Enrollee> targetEnrolleesOnlyProxiedByEnrollee = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(enrollee.getId());
+            List<Enrollee> proxiesOnlyProxyingForThisUser = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(enrollee.getId());
 
             // EDGE CASE: if an enrollee is withdrawing themselves but are also a proxy for someone else,
             // we need to withdraw them then recreate a new, non-subject enrollee for them.
@@ -84,7 +84,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
 
             //now withdraw all the proxied users
-            for (Enrollee proxy : targetEnrolleesOnlyProxiedByEnrollee) {
+            for (Enrollee proxy : proxiesOnlyProxyingForThisUser) {
                 if (proxy.isSubject()) {
                     continue; // don't withdraw proxies that are also subjects; if they want to withdraw, they should do so separately.
                 }
