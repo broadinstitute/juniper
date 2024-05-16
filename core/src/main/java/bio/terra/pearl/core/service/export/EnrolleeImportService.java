@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
@@ -14,6 +16,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
@@ -25,7 +28,9 @@ import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
+import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.opencsv.CSVParser;
@@ -73,8 +78,10 @@ public class EnrolleeImportService {
     private final ProfileService profileService;
     private final EnrolleeExportService enrolleeExportService;
     private final SurveyResponseService surveyResponseService;
+    private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final ParticipantTaskService participantTaskService;
     private final PortalService portalService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
     private final char CSV_DELIMITER = ',';
@@ -83,7 +90,8 @@ public class EnrolleeImportService {
     public EnrolleeImportService(RegistrationService registrationService, EnrollmentService enrollmentService,
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
-                                 ImportService importService, ImportItemService importItemService) {
+                                 ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
+                                 TimeShiftPopulateDao timeShiftPopulateDao) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -93,6 +101,8 @@ public class EnrolleeImportService {
         this.portalService = portalService;
         this.importService = importService;
         this.importItemService = importItemService;
+        this.surveyTaskDispatcher = surveyTaskDispatcher;
+        this.timeShiftPopulateDao = timeShiftPopulateDao;
     }
 
     @Transactional
@@ -166,6 +176,10 @@ public class EnrolleeImportService {
             String[] headers = csvReader.readNext();
             String[] line;
             while ((line = csvReader.readNext()) != null) {
+                if (line[0].equalsIgnoreCase("shortcode")) {
+                    //skip this sub header line
+                    continue;
+                }
                 Map<String, String> enrolleeMap = new HashMap<>();
                 for (int i = 0; i < line.length; i++) {
                     enrolleeMap.put(headers[i], line[i]);
@@ -199,6 +213,13 @@ public class EnrolleeImportService {
         EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
         Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
         HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
+        //update createdAt
+        if (enrollee.getCreatedAt() != null) {
+            timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
+        }
+        if (participantUser.getCreatedAt() != null) {
+            timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
+        }
 
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
@@ -247,7 +268,20 @@ public class EnrolleeImportService {
             return null;
         }
         ParticipantTask relatedTask = participantTaskService.findTaskForActivity(ppUser.getId(), studyEnv.getId(), formatter.getModuleName())
-                .orElseThrow(() -> new IllegalStateException("Task not found to enable import of response for " + formatter.getModuleName()));
+                .orElse(null);
+        if (relatedTask == null) {
+            ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
+                    TaskType.SURVEY,
+                    formatter.getModuleName(),
+                    1,
+                    null,
+                    true,
+                    true);
+
+            List<ParticipantTask> tasks = surveyTaskDispatcher.assign(assignDto, studyEnv.getId(),
+                    new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "handleSurveyPublished.assignToExistingEnrollees")));
+            relatedTask = tasks.get(0);
+        }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
