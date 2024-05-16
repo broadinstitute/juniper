@@ -89,42 +89,46 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
             }
 
             if (!relations.isEmpty()) {
-                StudyEnvironment studyEnvironment = studyEnvironmentService
-                        .find(enrollee.getStudyEnvironmentId())
-                        .orElseThrow(() -> new IllegalStateException("Study environment not found for enrollee"));
-                Study study = studyService.find(studyEnvironment.getStudyId()).orElseThrow(() -> new IllegalStateException("Study not found for study environment"));
-                PortalParticipantUser ppUser = portalParticipantUserService.findByParticipantUserId(user.getId()).get(0);
-
-                Enrollee newProxy = this.enrollmentService.enroll(
-                        ppUser,
-                        studyEnvironment.getEnvironmentName(),
-                        study.getShortcode(),
-                        user,
-                        ppUser,
-                        null,
-                        false
-                ).getResponse();
-
-                for (EnrolleeRelation relation : relations) {
-                    Enrollee governedEnrollee = enrolleeService
-                            .find(relation.getTargetEnrolleeId())
-                            .orElseThrow(() -> new IllegalStateException("Enrollee not found for relation"));
-
-                    this.enrolleeRelationService.create(
-                            EnrolleeRelation.builder()
-                                    .enrolleeId(newProxy.getId())
-                                    .targetEnrolleeId(governedEnrollee.getId())
-                                    .relationshipType(RelationshipType.PROXY)
-                                    .beginDate(relation.getBeginDate())
-                                    .build(),
-                            dataAuditInfo
-                    );
-                }
+                recreateEnrolleeAsProxy(user, enrollee, relations, dataAuditInfo);
             }
 
             return withdrawnEnrollee;
         } catch (JsonProcessingException e) {
             throw new InternalServerException("Error serializing enrollee or user data", e);
+        }
+    }
+
+    private void recreateEnrolleeAsProxy(ParticipantUser user, Enrollee withdrawnEnrollee, List<EnrolleeRelation> relations, DataAuditInfo dataAuditInfo) {
+        StudyEnvironment studyEnvironment = studyEnvironmentService
+                .find(withdrawnEnrollee.getStudyEnvironmentId())
+                .orElseThrow(() -> new IllegalStateException("Study environment not found for enrollee"));
+        Study study = studyService.find(studyEnvironment.getStudyId()).orElseThrow(() -> new IllegalStateException("Study not found for study environment"));
+        PortalParticipantUser ppUser = portalParticipantUserService.findByParticipantUserId(user.getId()).get(0);
+
+        Enrollee newProxy = this.enrollmentService.enroll(
+                ppUser,
+                studyEnvironment.getEnvironmentName(),
+                study.getShortcode(),
+                user,
+                ppUser,
+                null,
+                false
+        ).getResponse();
+
+        for (EnrolleeRelation relation : relations) {
+            Enrollee governedEnrollee = enrolleeService
+                    .find(relation.getTargetEnrolleeId())
+                    .orElseThrow(() -> new IllegalStateException("Enrollee not found for relation"));
+
+            this.enrolleeRelationService.create(
+                    EnrolleeRelation.builder()
+                            .enrolleeId(newProxy.getId())
+                            .targetEnrolleeId(governedEnrollee.getId())
+                            .relationshipType(RelationshipType.PROXY)
+                            .beginDate(relation.getBeginDate())
+                            .build(),
+                    dataAuditInfo
+            );
         }
     }
 }
