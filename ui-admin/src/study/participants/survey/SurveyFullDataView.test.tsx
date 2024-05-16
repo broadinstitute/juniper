@@ -68,6 +68,18 @@ describe('getDisplayValue', () => {
     render(<span>{getDisplayValue(answer, question)}</span>)
     expect(screen.getByText('["option 2","option 4"]')).toBeTruthy()
   })
+
+  it('renders a signaturepad as an image', async () => {
+    const question = {
+      name: 'testQ', text: 'test question',
+      isVisible: true, type: 'signaturepad',
+      getType: () => 'signaturepad'
+    }
+    const answer: Answer = { stringValue: 'data:image/png;base64, test123', questionStableId: 'testQ' } as Answer
+    render(<span>{getDisplayValue(answer, question as unknown as Question)}</span>)
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64, test123')
+    expect(screen.queryByText('data:image/png;base64, test123')).not.toBeInTheDocument()
+  })
 })
 
 test('shows the download/print modal', async () => {
