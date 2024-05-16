@@ -35,6 +35,6 @@ export type Enrollee = {
 export type HubResponse = {
     enrollee: Enrollee
     tasks: ParticipantTask[]
-    response: object
+    response: SurveyResponse
     profile: Profile
 }
