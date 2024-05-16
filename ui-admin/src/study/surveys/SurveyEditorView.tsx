@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { PortalEnvironment, Survey, VersionedForm } from 'api/api'
 
@@ -55,13 +55,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
     !readOnly ? getDraft({ formDraftKey: FORM_DRAFT_KEY }) : undefined)
-
-  useEffect(() => {
-    console.log('draft')
-    console.log(draft)
-    console.log('currentForm')
-    console.log(currentForm)
-  }, [draft, currentForm])
 
   const [validationErrors, setValidationErrors] = useState<string[]>([])
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
