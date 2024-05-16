@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList } from 'util/surveyJsUtils'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { SurveyAutoCompleteButton, SurveyReviewModeButton, useI18n, useSurveyJSModel } from '@juniper/ui-core'
+import {
+  getResumeData, getSurveyJsAnswerList,
+  SurveyAutoCompleteButton,
+  SurveyReviewModeButton,
+  useI18n,
+  useSurveyJSModel
+} from '@juniper/ui-core'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates

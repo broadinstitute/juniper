@@ -92,7 +92,7 @@ export function PagedSurveyView({
     prevSave.current = currentModelValues
 
     const responseDto = {
-      resumeData: getResumeData(surveyModel, enrollee.participantUserId),
+      resumeData: getResumeData(surveyModel, adminUserId || enrollee.participantUserId),
       enrolleeId: enrollee.id,
       answers: updatedAnswers,
       creatingParticipantId: adminUserId ? null : enrollee.participantUserId,

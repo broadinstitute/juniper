@@ -1,9 +1,8 @@
 import React from 'react'
 import Api, { PreregistrationResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList } from 'util/surveyJsUtils'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useNavigate } from 'react-router-dom'
-import { useI18n, useSurveyJSModel } from '@juniper/ui-core'
+import { getResumeData, getSurveyJsAnswerList, useI18n, useSurveyJSModel } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 
 /** Renders a preregistration form, and handles submitting the user-inputted response */

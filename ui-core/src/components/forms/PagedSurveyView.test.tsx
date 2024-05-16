@@ -44,13 +44,9 @@ describe('PagedSurveyView', () => {
   })
   //
   it('autosaves question and page progress', async () => {
-    // asMockedFn(useUser).mockReturnValue(mockUseUser(false))
-    // asMockedFn(useActiveUser).mockReturnValue({
-    //   ...mockUseActiveUser(),
-    //   profile: { sexAtBirth: 'male' }
-    // })
+    const profile = { sexAtBirth: 'male' }
 
-    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
+    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey(), profile)
 
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
@@ -73,13 +69,9 @@ describe('PagedSurveyView', () => {
   })
 
   it('autosaves question and page progress with diffs', async () => {
-    // asMockedFn(useUser).mockReturnValue(mockUseUser(false))
-    // asMockedFn(useActiveUser).mockReturnValue({
-    //   ...mockUseActiveUser(),
-    //   profile: { sexAtBirth: 'male' }
-    // })
+    const profile = { sexAtBirth: 'male' }
 
-    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
+    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey(), profile)
 
     await userEvent.click(screen.getByText('Green'))
     triggerAutosave()
@@ -104,13 +96,9 @@ describe('PagedSurveyView', () => {
   })
 
   it('autosave handles updated questions', async () => {
-    // asMockedFn(useUser).mockReturnValue(mockUseUser(false))
-    // asMockedFn(useActiveUser).mockReturnValue({
-    //   ...mockUseActiveUser(),
-    //   profile: { sexAtBirth: 'male' }
-    // })
+    const profile = { sexAtBirth: 'male' }
 
-    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
+    const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey(), profile)
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
     triggerAutosave()

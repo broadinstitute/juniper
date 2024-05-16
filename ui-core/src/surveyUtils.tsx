@@ -15,6 +15,7 @@ import { micromark } from 'micromark'
 import { EnvironmentName } from 'src/types/study'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import { Markdown } from './participant/landing/Markdown'
+import { useI18n } from './participant/I18nProvider'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -185,6 +186,7 @@ export function getUpdatedAnswers(original: Record<string, SurveyJsValueType>,
   return dedupedKeys.map(key => makeAnswer(updated[key], key, updated, viewedLanguage))
 }
 
+
 /** get a merge of both the explicit answer data and the calculated values */
 export function getDataWithCalculatedValues(model: SurveyModel) {
   const calculatedHash: Record<string, object> = {}
@@ -261,6 +263,7 @@ type UseSurveyJsModelOpts = {
  * @param pager the control object for paging the survey
  * @param envName
  * @param profile
+ * @param proxyProfile
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
@@ -276,10 +279,12 @@ export function useSurveyJSModel(
   opts: UseSurveyJsModelOpts = {}
 ) {
   const {
-    extraCssClasses = {}
+    extraCssClasses = {},
+    extraVariables = {}
   } = opts
 
   const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
+  const { i18n } = useI18n()
 
   /** hand a page change by updating state of both the surveyJS model and our internal state*/
   function handlePageChanged(model: SurveyModel, options: any) { // eslint-disable-line @typescript-eslint/no-explicit-any, max-len
@@ -313,10 +318,15 @@ export function useSurveyJSModel(
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('portalEnvironmentName', envName)
+    Object.keys(extraVariables).forEach(key => {
+      newSurveyModel.setVariable(key, extraVariables[key])
+    })
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
+    //TODO: move validateAddress into the ApiProvider
+    // newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return newSurveyModel
   }
 

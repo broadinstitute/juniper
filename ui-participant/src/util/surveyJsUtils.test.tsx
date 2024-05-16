@@ -4,13 +4,12 @@ import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Survey } from 'api/api'
 
-import { getSurveyJsAnswerList, getUpdatedAnswers } from './surveyJsUtils'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { generateSurvey, generateThreePageSurvey } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import {
-  asMockedFn,
+  asMockedFn, getSurveyJsAnswerList, getUpdatedAnswers,
   MockI18nProvider,
   Profile,
   setupRouterTest,
