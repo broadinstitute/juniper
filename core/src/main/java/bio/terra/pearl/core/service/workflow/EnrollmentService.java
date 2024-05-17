@@ -133,13 +133,30 @@ public class EnrollmentService {
 
         // if the user is signed up, but not a subject, we can just return the existing enrollee,
         // otherwise create a new one for them
-        Enrollee enrollee = enrolleeService
-                .findByParticipantUserIdAndStudyEnv(user.getId(), studyShortcode, envName)
+        Enrollee enrollee = findOrCreateEnrolleeForEnrollment(user, ppUser, studyEnv, studyShortcode, preEnrollResponseId, isSubject);
+
+        if (preEnrollResponse != null) {
+            preEnrollResponse.setCreatingParticipantUserId(user.getId());
+            preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
+            preEnrollmentResponseDao.update(preEnrollResponse);
+
+            // backfill the enrollee with the pre-enrollment response data
+            this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
+        }
+
+        EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
+        log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
+                user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
+        HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
+        return hubResponse;
+    }
+
+    private Enrollee findOrCreateEnrolleeForEnrollment(ParticipantUser user, PortalParticipantUser ppUser, StudyEnvironment studyEnv, String studyShortcode, UUID preEnrollResponseId, boolean isSubjectEnrollment) {
+        return enrolleeService
+                .findByParticipantUserIdAndStudyEnv(user.getId(), studyShortcode, studyEnv.getEnvironmentName())
                 .filter(e -> {
-                    System.out.println(e.getShortcode());
-                    System.out.println("e.isSubject() = " + e.isSubject());
                     // if the user isn't a subject, but is now, update the enrollee
-                    if (isSubject && !e.isSubject()) {
+                    if (isSubjectEnrollment && !e.isSubject()) {
                         e.setSubject(true);
                         e.setPreEnrollmentResponseId(preEnrollResponseId);
                         enrolleeService.update(e);
@@ -156,26 +173,10 @@ public class EnrollmentService {
                             .participantUserId(user.getId())
                             .profileId(ppUser.getProfileId())
                             .preEnrollmentResponseId(preEnrollResponseId)
-                            .subject(isSubject)
+                            .subject(isSubjectEnrollment)
                             .build();
                     return enrolleeService.create(newEnrollee);
                 });
-
-
-        if (preEnrollResponse != null) {
-            preEnrollResponse.setCreatingParticipantUserId(user.getId());
-            preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
-            preEnrollmentResponseDao.update(preEnrollResponse);
-
-            // backfill the enrollee with the pre-enrollment response data
-            this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
-        }
-
-        EnrolleeEvent event = eventService.publishEnrolleeCreationEvent(enrollee, ppUser);
-        log.info("Enrollee created: user {}, study {}, shortcode {}, {} tasks added",
-                user.getId(), studyShortcode, enrollee.getShortcode(), enrollee.getParticipantTasks().size());
-        HubResponse hubResponse = eventService.buildHubResponse(event, enrollee);
-        return hubResponse;
     }
 
     private void backfillPreEnrollResponse(PortalParticipantUser operator, Enrollee enrollee, PreEnrollmentResponse preEnrollResponse) {
