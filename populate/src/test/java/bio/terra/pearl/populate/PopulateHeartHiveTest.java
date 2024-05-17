@@ -2,6 +2,7 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -9,20 +10,16 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
-
-import org.jdbi.v3.core.Jdbi;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 
 public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
     @Autowired
@@ -62,7 +59,7 @@ public class PopulateHeartHiveTest extends BasePopulatePortalsTest {
             // the failed populate won't roll back since we're inside a test-wide transaction, so roll it back manually
             status.rollbackToSavepoint(savepoint);
 
-            withdrawnEnrolleeService.withdrawEnrollee(prodEnrollee.enrollee());
+            withdrawnEnrolleeService.withdrawEnrollee(prodEnrollee.enrollee(), DataAuditInfo.builder().build());
             // confirm we can now repopulate with overwrite
             portalPopulator.populate(new FilePopulateContext("portals/hearthive/portal.json"), true);
             // now roll back the whole transaction so that the test doesn't actually persist the changes

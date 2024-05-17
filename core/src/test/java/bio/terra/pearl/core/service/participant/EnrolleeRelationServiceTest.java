@@ -205,13 +205,30 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
-        List<Enrollee> targetEnrollees = enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId());
+        List<Enrollee> targetEnrollees = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId());
         Assertions.assertEquals(1, targetEnrollees.size());
-        Assertions.assertEquals(governedEnrollee, targetEnrollees.get(0));
+        Assertions.assertEquals(proxyEnrollee, targetEnrollees.get(0));
 
-        //now test that if target enrollee has multiple proxies, it is not returned
+        //now test that if proxy enrollee has multiple governed users, it is not returned
+        Enrollee governed2 = enrolleeFactory.buildPersisted(getTestName(info));
+        enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(proxyEnrollee.getId())
+                        .targetEnrolleeId(governed2.getId())
+                        .relationshipType(RelationshipType.PROXY)
+                        .beginDate(Instant.now())
+                        .endDate(null)
+                        .build(),
+                getAuditInfo(info)
+        );
+
+        List<Enrollee> targetEnrollees2 = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId());
+        Assertions.assertEquals(0, targetEnrollees2.size());
+
+        // create another exclusive proxy, make sure they are returned
         Enrollee proxy2 = enrolleeFactory.buildPersisted(getTestName(info));
-        EnrolleeRelation enrolleeRelation = enrolleeRelationService.create(
+        enrolleeRelationService.create(
                 EnrolleeRelation
                         .builder()
                         .enrolleeId(proxy2.getId())
@@ -223,25 +240,9 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
                 getAuditInfo(info)
         );
 
-        List<Enrollee> targetEnrollees2 = enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId());
-        Assertions.assertEquals(0, targetEnrollees2.size());
-
-        Enrollee governedEnrollee2 = enrolleeFactory.buildPersisted(getTestName(info));
-        EnrolleeRelation enrolleeRelation2 = enrolleeRelationService.create(
-                EnrolleeRelation
-                        .builder()
-                        .enrolleeId(proxyEnrollee.getId())
-                        .targetEnrolleeId(governedEnrollee2.getId())
-                        .relationshipType(RelationshipType.PROXY)
-                        .beginDate(Instant.now())
-                        .endDate(null)
-                        .build(),
-                getAuditInfo(info)
-        );
-
 
         Assertions.assertEquals(1,
-                enrolleeRelationService.findExclusiveProxiedEnrollees(proxyEnrollee.getId()).size());
+                enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId()).size());
 
     }
 
