@@ -27,6 +27,7 @@ import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
         AdminUser savedAdmin = adminUserService.create(adminUser);
+
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
         String csvString = """
                 column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
@@ -142,6 +145,29 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         //load and verify that new birthDate was inserted for user2
         profileUpdated = profileService.find(enrollee2.getProfileId()).orElseThrow();
         assertThat(profileUpdated.getBirthDate(), equalTo(LocalDate.parse("1990-10-10")));
+
+        //same user different portal
+        String csvStringPortal2 = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        //same participant, diff profile
+        Import dataImportUpd2 = enrolleeImportService.importEnrollees(
+                bundle2.getPortal().getShortcode(),
+                bundle2.getStudy().getShortcode(),
+                bundle2.getStudyEnv(),
+                new ByteArrayInputStream(csvStringPortal2.getBytes()),
+                savedAdmin.getId(), ImportFileFormat.CSV);
+
+        ImportItem importItem2 = dataImportUpd2.getImportItems().get(0);
+        ParticipantUser userUpdated2 = participantUserService.find(importItem2.getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrolleeUpdated2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated2.getId(), bundle2.getStudyEnv().getId()).orElseThrow();
+        //should be the same participant and enrollee and profile
+        assertThat(userUpdated2.getId(), equalTo(user.getId()));
+        Assertions.assertNotEquals(enrollee.getId(), enrolleeUpdated2.getId());
+        Assertions.assertNotEquals(enrollee.getProfileId(), enrolleeUpdated2.getProfileId());
+
     }
 
     @Test
