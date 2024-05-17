@@ -41,7 +41,6 @@ export default function ParticipantSelector() {
           {activeUserName}
         </span>
         <div className='flex-grow-1 d-flex justify-content-end align-items-center'>
-          {/*<ParticipantTaskCount enrollees={enrollees}/>*/}
           <FontAwesomeIcon icon={faAngleDown} className={'ms-2'}/>
         </div>
       </button>
