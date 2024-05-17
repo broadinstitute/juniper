@@ -51,7 +51,7 @@ public class SurveyParseUtils {
                 .questionStableId(question.get("name").asText())
                 .exportOrder(globalOrder)
                 .build();
-
+        validateQuestionStableId(definition.getQuestionStableId());
         //The following fields may either be specified in the question itself,
         //or as part of a question template. Resolve the remaining fields against
         //the template (if applicable), so we have the full question definition.
@@ -84,6 +84,15 @@ public class SurveyParseUtils {
         }
 
         return definition;
+    }
+
+    public static void validateQuestionStableId(String questionStableId) {
+        if (questionStableId == null || questionStableId.isBlank()) {
+            throw new IllegalArgumentException("Question stableId cannot be null or empty");
+        }
+        if (questionStableId.matches(".*\\s.*")) {
+            throw new IllegalArgumentException("Question stableId cannot contain whitespace: '" + questionStableId + "'");
+        }
     }
 
     public static String unmarshalSurveyQuestionChoices(JsonNode question) {

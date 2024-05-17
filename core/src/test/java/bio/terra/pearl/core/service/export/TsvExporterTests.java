@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.export;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -34,9 +35,37 @@ public class TsvExporterTests extends BaseSpringBootTest {
         sampleFormatter.getItemFormatters().add(new PropertyItemFormatter<Enrollee>("consented", Enrollee.class));
         Map<String, String> valueMap = Map.of("enrollee.shortcode", "ABCDEF",
                 "enrollee.consented", "false");
-        TsvExporter exporter = new TsvExporter(List.of(sampleFormatter), List.of(valueMap));
         String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
         assertThat(outString, equalTo("enrollee.shortcode\tenrollee.consented\nShortcode\tConsented\nABCDEF\tfalse\n"));
+    }
+
+    @Test
+    public void testExportValueSanitization() throws Exception {
+        EnrolleeFormatter sampleFormatter = new EnrolleeFormatter(new ExportOptions());
+        // replace the formatters with a simple set we control
+        // replace the formatters with a simple set we control
+        sampleFormatter.getItemFormatters().clear();
+        sampleFormatter.getItemFormatters().add(new PropertyItemFormatter<Enrollee>("shortcode", Enrollee.class));
+        sampleFormatter.getItemFormatters().add(new PropertyItemFormatter<Enrollee>("consented", Enrollee.class));
+        Map<String, String> valueMap = Map.of("enrollee.shortcode", "ABCD\"EF",
+                "enrollee.consented", "fa\tlse");
+        String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
+        assertThat(outString, equalTo("enrollee.shortcode\tenrollee.consented\nShortcode\tConsented\nABCD'EF\t\"fa\tlse\"\n"));
+    }
+
+    @Test
+    public void testExportHeaderSanitization() throws Exception {
+        Survey survey = Survey.builder().stableId("survey1").build();
+        SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
+                .questionStableId("tabTrailing\t")
+                .questionText("Question 1")
+                .questionType("text")
+                .build();
+        SurveyFormatter sampleFormatter = new SurveyFormatter(new ExportOptions(), "survey1", List.of(survey), List.of(questionDef), objectMapper);
+        Map<String, String> valueMap = Map.of("survey1.tabTrailing\t", "blah");
+        String outString = getExportResult(List.of(valueMap), List.of(sampleFormatter));
+        // header and subheader should be quoted
+        assertThat(outString, equalTo("survey1.lastUpdatedAt\tsurvey1.complete\t\"survey1.tabTrailing\t\"\nLast Updated At\tComplete\t\"Tab Trailing \t\"\n\t\tblah\n"));
     }
 
     @Test
