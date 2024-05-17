@@ -78,17 +78,23 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
         AdminUser savedAdmin = adminUserService.create(adminUser);
 
-        String tsvString = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM"
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+
+        String csvStringUpdate = """
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
                 """;
 
         Import dataImport = enrolleeImportService.importEnrollees(
                 bundle.getPortal().getShortcode(),
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
-                new ByteArrayInputStream(tsvString.getBytes()),
+                new ByteArrayInputStream(csvString.getBytes()),
                 savedAdmin.getId(), ImportFileFormat.CSV);
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
@@ -104,12 +110,20 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(user.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:37:00Z")));
         assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:38:00Z")));
 
+        //load profile
+        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        assertThat(profile.getBirthDate(), equalTo(LocalDate.parse("1980-10-10")));
+
         user = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
         enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
         assertThat(user.getUsername(), equalTo("userName2"));
         assertThat(user.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
         assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
+
+
+        //now try update
+
     }
 
     @Test

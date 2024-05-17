@@ -151,6 +151,7 @@ public class EnrolleeImportService {
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.SUCCESS).build();
             } catch (Exception e) {
+                e.printStackTrace();
                 importItem = ImportItem.builder()
                         .importId(dataImport.getId())
                         .createdParticipantUserId(adminId)
@@ -240,7 +241,6 @@ public class EnrolleeImportService {
             enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
             portalParticipantUser = regResult.portalParticipantUser();
             HubResponse<Enrollee> response = enrollmentService.enroll(portalParticipantUser, studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
-            enrollee = response.getEnrollee();
             //update createdAt
             if (enrollee.getCreatedAt() != null) {
                 timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
@@ -248,6 +248,7 @@ public class EnrolleeImportService {
             if (participantUser.getCreatedAt() != null) {
                 timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
             }
+            enrollee = response.getEnrollee();
         } else {
             profile = profileService.find(enrollee.getProfileId()).orElseThrow();
         }
