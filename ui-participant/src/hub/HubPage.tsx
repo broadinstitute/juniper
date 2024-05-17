@@ -120,16 +120,13 @@ const StudySection = (props: StudySectionProps) => {
   } = props
 
   const { ppUsers } = useUser()
-  const ppUser = ppUsers.find(ppUser => ppUser.profileId === enrollee.profileId)
+  const ppUser = ppUsers?.find(ppUser => ppUser.profileId === enrollee.profileId)
 
   const { i18n } = useI18n()
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
 
-  if (!ppUser) {
-    return <></>
-  }
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
@@ -141,7 +138,7 @@ const StudySection = (props: StudySectionProps) => {
           {/* if the user is not a subject, prompt them to enroll */}
           <Link
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
-            to={`${getJoinLink(matchedStudy, { ppUserId: ppUser.id })}`}
+            to={`${getJoinLink(matchedStudy, { ppUserId: ppUser?.id })}`}
           >
             {i18n('joinStudy')}
           </Link>
