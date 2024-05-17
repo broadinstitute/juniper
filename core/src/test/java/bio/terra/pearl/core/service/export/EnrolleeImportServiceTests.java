@@ -88,9 +88,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 """;
 
         String csvStringUpdate = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
-                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
                 """;
 
         Import dataImport = importAndVerify(bundle, savedAdmin, csvString, "1980-10-10");
@@ -117,9 +117,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         //same user different portal.. should create new profile
         String csvStringPortal2 = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
-                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         //same participant, diff profile
         Import dataImportUpd2 = importAndVerify(bundle2, savedAdmin, csvStringPortal2, "1990-10-10");
