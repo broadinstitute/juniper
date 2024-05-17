@@ -84,9 +84,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 """;
 
         String csvStringUpdate = """
-                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
-                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
+                account.username,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:38PM","1982-10-10"
+                userName2,"2024-05-11 10:00AM","1990-10-10"
                 """;
 
         Import dataImport = enrolleeImportService.importEnrollees(
