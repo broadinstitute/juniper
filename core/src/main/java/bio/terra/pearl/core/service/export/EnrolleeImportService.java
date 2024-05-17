@@ -259,7 +259,7 @@ public class EnrolleeImportService {
         /** now update the profile */
         profile = importProfile(enrolleeMap, profile, exportOptions, studyEnv, auditInfo);
 
-        List<SurveyResponse> surveyResponses = importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, portalParticipantUser, enrollee, auditInfo);
+        importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, portalParticipantUser, enrollee, auditInfo);
 
         /** restore email */
         profile.setDoNotEmail(false);
