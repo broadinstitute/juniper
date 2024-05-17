@@ -23,6 +23,7 @@ export type StudyEnrollContext = {
   preEnrollResponseId: string | null,
   updatePreEnrollResponseId: (newId: string | null) => void,
   isProxyEnrollment: boolean
+  isSubjectEnrollment: boolean
 }
 
 /** Handles routing and loading for enrollment in a study */
@@ -99,12 +100,13 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     }
   }, [])
 
+  const matchedEnrollee = enrolleesForUser.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+
   /** route to a page depending on where in the pre-enroll/registration process the user is */
   const determineNextRoute = async () => {
     // if the user is a proxy, they still can enroll in the study
-    const isAlreadyEnrolled = !!enrolleesForUser.find(
-      rollee => rollee.studyEnvironmentId === studyEnv.id && rollee.subject
-    )
+    const isAlreadyEnrolled = !!matchedEnrollee && matchedEnrollee.subject
+
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {
@@ -158,6 +160,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
     user,
     preEnrollResponseId,
     updatePreEnrollResponseId,
+    isSubjectEnrollment: !!matchedEnrollee && !matchedEnrollee.subject,
     isProxyEnrollment
   }
   const hasPreEnroll = !!enrollContext.studyEnv.preEnrollSurvey

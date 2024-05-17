@@ -13,8 +13,7 @@ import OutreachTasks from './OutreachTasks'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import ParticipantSelector from '../participant/ParticipantSelector'
-import classNames from 'classnames'
-import { NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { getJoinLink } from '../Navbar'
 
 
@@ -56,6 +55,7 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
   const hasActiveTasks = enrollees.some(enrollee => enrollee.participantTasks.some(task => isTaskActive(task)))
+  const hasSubjectEnrollee = enrollees.some(enrollee => enrollee.subject)
 
   return (
     <>
@@ -64,7 +64,7 @@ export default function HubPage() {
         className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
-        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
+        {!hasActiveTasks && hasSubjectEnrollee && noActivitiesAlert && <HubMessageAlert
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,
@@ -137,16 +137,14 @@ const StudySection = (props: StudySectionProps) => {
       {enrollee.subject
         ? <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
           participantTasks={enrollee.participantTasks}/>
-        : <div>
-          <NavLink
-            className={classNames(
-              'btn btn-primary',
-              'mb-3 mb-lg-0 ms-lg-3'
-            )}
+        : <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+          {/* if the user is not a subject, prompt them to enroll */}
+          <Link
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
             to={`${getJoinLink(matchedStudy, { ppUserId: ppUser.id })}`}
           >
-            {i18n('navbarJoin')}
-          </NavLink>
+            {i18n('joinStudy')}
+          </Link>
         </div>}
     </>
   )
