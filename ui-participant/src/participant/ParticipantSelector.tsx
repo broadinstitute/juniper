@@ -41,7 +41,7 @@ export default function ParticipantSelector() {
           {activeUserName}
         </span>
         <div className='flex-grow-1 d-flex justify-content-end align-items-center'>
-          <FontAwesomeIcon icon={faAngleDown} className={'ms-2'}/>
+          <FontAwesomeIcon icon={faAngleDown}/>
         </div>
       </button>
       <ul className="dropdown-menu participant-selector-dropdown mx-1 ms-md-0" id="participant-dropdown">
