@@ -69,6 +69,7 @@ describe('HubPage with proxies', () => {
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonas Salk {youInParens}')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
+    expect(screen.queryByText('{joinStudy}')).toBeInTheDocument() // should be a join study link
     selectParticipant('Jonathan Salk')
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonathan Salk')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
