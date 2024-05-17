@@ -151,7 +151,6 @@ public class EnrolleeImportService {
                         .lastUpdatedAt(Instant.now())
                         .status(ImportItemStatus.SUCCESS).build();
             } catch (Exception e) {
-                e.printStackTrace();
                 importItem = ImportItem.builder()
                         .importId(dataImport.getId())
                         .createdParticipantUserId(adminId)
@@ -204,6 +203,11 @@ public class EnrolleeImportService {
     }
 
     public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions) {
+        /** while importing handle update for existing import
+         if same enrolle: update enrollee
+         if same participant & same portal.. new enrollee & same profile
+         if same participant & different portal.. new enrollee & new profile
+         **/
 
         DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
