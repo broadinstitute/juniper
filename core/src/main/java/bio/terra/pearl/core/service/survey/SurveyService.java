@@ -134,8 +134,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
-            questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i,false));
+            SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                    questionTemplates, i,false);
+            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+            questionDefinitions.add(questionDefinition);
         }
 
         // add any questions from calculatedValues
