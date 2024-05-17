@@ -59,13 +59,13 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   const [searchParams] = useSearchParams()
   const isProxyEnrollment = searchParams.get('isProxyEnrollment') === 'true'
-  const governedPpUserId = searchParams.get('governedPpUserId')
+  const ppUserId = searchParams.get('ppUserId')
 
   const { user, ppUsers, enrollees, refreshLoginState } = useUser()
 
   // ppUser / enrollees for the user or the proxied user depending on the context
   const ppUser = isProxyEnrollment
-    ? ppUsers.find(ppUser => ppUser.id === governedPpUserId) // could be null if new user enrollment
+    ? ppUsers.find(ppUser => ppUser.id === ppUserId) // could be null if new user enrollment
     : ppUsers.find(ppUser => ppUser.participantUserId === user?.id)
 
   const enrolleesForUser = enrollees.filter(enrollee => enrollee.profileId === ppUser?.profileId)
@@ -101,7 +101,10 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
 
   /** route to a page depending on where in the pre-enroll/registration process the user is */
   const determineNextRoute = async () => {
-    const isAlreadyEnrolled = !!enrolleesForUser.find(rollee => rollee.studyEnvironmentId === studyEnv.id)
+    // if the user is a proxy, they still can enroll in the study
+    const isAlreadyEnrolled = !!enrolleesForUser.find(
+      rollee => rollee.studyEnvironmentId === studyEnv.id && rollee.subject
+    )
     if (isAlreadyEnrolled) {
       const hubUpdate: HubUpdate = {
         message: {
@@ -125,7 +128,7 @@ function StudyEnrollOutletMatched(props: StudyEnrollOutletMatchedProps) {
         try {
           const hubUpdate = isProxyEnrollment
             ? await enrollProxyUserInStudy(
-              studyShortcode, studyName, preEnrollResponseId, governedPpUserId, refreshLoginState, i18n
+              studyShortcode, studyName, preEnrollResponseId, ppUserId, refreshLoginState, i18n
             )
             : await enrollCurrentUserInStudy(
               studyShortcode, studyName, preEnrollResponseId, refreshLoginState, i18n

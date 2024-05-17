@@ -130,16 +130,37 @@ public class EnrollmentService {
             throw new IllegalArgumentException("study %s is not accepting enrollment".formatted(studyShortcode));
         }
         PreEnrollmentResponse preEnrollResponse = validatePreEnrollResponse(operator, studyEnv, preEnrollResponseId, user.getId(), isSubject);
-        Enrollee enrollee;
 
-        enrollee = Enrollee.builder()
-                .studyEnvironmentId(studyEnv.getId())
-                .participantUserId(user.getId())
-                .profileId(ppUser.getProfileId())
-                .preEnrollmentResponseId(preEnrollResponseId)
-                .subject(isSubject)
-                .build();
-        enrollee = enrolleeService.create(enrollee);
+        // if the user is signed up, but not a subject, we can just return the existing enrollee,
+        // otherwise create a new one for them
+        Enrollee enrollee = enrolleeService
+                .findByParticipantUserIdAndStudyEnv(user.getId(), studyShortcode, envName)
+                .filter(e -> {
+                    System.out.println(e.getShortcode());
+                    System.out.println("e.isSubject() = " + e.isSubject());
+                    // if the user isn't a subject, but is now, update the enrollee
+                    if (isSubject && !e.isSubject()) {
+                        e.setSubject(true);
+                        e.setPreEnrollmentResponseId(preEnrollResponseId);
+                        enrolleeService.update(e);
+                        return true;
+                    }
+
+                    // all other cases are duplicate enrollment, which is an error
+                    throw new IllegalArgumentException("user already exists");
+                })
+                .orElseGet(() -> {
+                    Enrollee newEnrollee;
+                    newEnrollee = Enrollee.builder()
+                            .studyEnvironmentId(studyEnv.getId())
+                            .participantUserId(user.getId())
+                            .profileId(ppUser.getProfileId())
+                            .preEnrollmentResponseId(preEnrollResponseId)
+                            .subject(isSubject)
+                            .build();
+                    return enrolleeService.create(newEnrollee);
+                });
+
 
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
