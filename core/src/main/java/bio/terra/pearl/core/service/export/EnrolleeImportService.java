@@ -25,6 +25,9 @@ import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -74,13 +77,16 @@ public class EnrolleeImportService {
             .build();
 
     private final RegistrationService registrationService;
+    private final EnrolleeService enrolleeService;
+    private final EnrolleeExportService enrolleeExportService;
     private final EnrollmentService enrollmentService;
     private final ProfileService profileService;
-    private final EnrolleeExportService enrolleeExportService;
     private final SurveyResponseService surveyResponseService;
     private final SurveyTaskDispatcher surveyTaskDispatcher;
     private final ParticipantTaskService participantTaskService;
+    private final ParticipantUserService participantUserService;
     private final PortalService portalService;
+    private final PortalParticipantUserService portalParticipantUserService;
     private final TimeShiftPopulateDao timeShiftPopulateDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
@@ -91,7 +97,8 @@ public class EnrolleeImportService {
                                  ProfileService profileService, EnrolleeExportService enrolleeExportService,
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
-                                 TimeShiftPopulateDao timeShiftPopulateDao) {
+                                 TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
+                                 PortalParticipantUserService portalParticipantUserService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -103,6 +110,9 @@ public class EnrolleeImportService {
         this.importItemService = importItemService;
         this.surveyTaskDispatcher = surveyTaskDispatcher;
         this.timeShiftPopulateDao = timeShiftPopulateDao;
+        this.enrolleeService = enrolleeService;
+        this.participantUserService = participantUserService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     @Transactional
@@ -198,38 +208,58 @@ public class EnrolleeImportService {
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
         ).build();
 
-        /** first create the participant user */
-        ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
-        ParticipantUser participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        if (participantUser.getUsername() == null) {
-            throw new IllegalArgumentException("username must be provided for enrollee import");
+        //check if participant already exists.. if so use the existing participant
+        ParticipantUser participantUser = participantUserService.findOne(enrolleeMap.get("account.username"), studyEnv.getEnvironmentName()).orElse(null);
+        Enrollee enrollee = null;
+        Profile profile = null;
+        if (participantUser == null) {
+            /** first create the participant user if not exists*/
+            ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
+            participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+            if (participantUser.getUsername() == null) {
+                throw new IllegalArgumentException("username must be provided for enrollee import");
+            }
+        } else {
+            enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(participantUser.getId(), studyEnv.getId()).orElse(null);
         }
-        RegistrationService.RegistrationResult regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
-        /** temporarily update the profile to no emails since they'll receive a special welcome email */
-        regResult.profile().setDoNotEmail(true);
-        profileService.update(regResult.profile(), auditInfo);
+        RegistrationService.RegistrationResult regResult = null;
+        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(participantUser.getId(), portalShortcode).orElse(null);
+        if (portalParticipantUser == null) {
+            regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
+        }
+        if (enrollee == null) {
+            if (regResult == null) {
+                regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
+            }
+            /** temporarily update the profile to no emails since they'll receive a special welcome email */
+            regResult.profile().setDoNotEmail(true);
+            profile = profileService.update(regResult.profile(), auditInfo);
 
-        /** now create the enrollee */
-        EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
-        Enrollee enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
-        //update createdAt
-        if (enrollee.getCreatedAt() != null) {
-            timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
+            /** now create the enrollee */
+            EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
+            enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+            portalParticipantUser = regResult.portalParticipantUser();
+            HubResponse<Enrollee> response = enrollmentService.enroll(portalParticipantUser, studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
+            enrollee = response.getEnrollee();
+            //update createdAt
+            if (enrollee.getCreatedAt() != null) {
+                timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
+            }
+            if (participantUser.getCreatedAt() != null) {
+                timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
+            }
+        } else {
+            profile = profileService.find(enrollee.getProfileId()).orElseThrow();
         }
-        if (participantUser.getCreatedAt() != null) {
-            timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
-        }
-
         /** now update the profile */
-        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
+        profile = importProfile(enrolleeMap, profile, exportOptions, studyEnv, auditInfo);
 
-        List<SurveyResponse> surveyResponses = importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), response.getEnrollee(), auditInfo);
+        List<SurveyResponse> surveyResponses = importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, portalParticipantUser, enrollee, auditInfo);
 
         /** restore email */
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
-        return response.getEnrollee();
+        return enrollee;
     }
 
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
