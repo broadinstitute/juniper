@@ -42,6 +42,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,6 +218,22 @@ public class EnrolleeImportService {
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         final ParticipantUser participantUserInfo = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
 
+        final RegistrationService.RegistrationResult regResult = doPortalRegistration(portalShortcode, studyEnv, participantUserInfo);
+
+        Enrollee enrollee = getOrCreateEnrollee(studyShortcode, studyEnv, enrolleeMap, exportOptions, regResult, auditInfo, participantUserInfo);
+
+        /** now update the profile */
+        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
+
+        importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
+
+        /** restore email */
+        profile.setDoNotEmail(false);
+        profileService.update(profile, auditInfo);
+        return enrollee;
+    }
+
+    private RegistrationService.RegistrationResult doPortalRegistration(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
         final RegistrationService.RegistrationResult regResult = portalParticipantUserService.findOne(participantUserInfo.getUsername(), portalShortcode, studyEnv.getEnvironmentName())
                 .map((ppUser) -> new RegistrationService.RegistrationResult(
                         participantUserService.findOne(participantUserInfo.getUsername(),
@@ -226,7 +243,11 @@ public class EnrolleeImportService {
                 )).orElseGet(() ->
                         registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
                 );
+        return regResult;
+    }
 
+    private @NotNull Enrollee getOrCreateEnrollee(String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions,
+                                                  RegistrationService.RegistrationResult regResult, DataAuditInfo auditInfo, ParticipantUser participantUserInfo) {
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(regResult.participantUser().getId(), studyEnv.getId()).orElseGet(() -> {
             /** user is not enrolled in this study, so we need to create a new enrollee */
             EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
@@ -247,15 +268,6 @@ public class EnrolleeImportService {
             }
             return newEnrollee;
         });
-
-        /** now update the profile */
-        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
-
-        importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
-
-        /** restore email */
-        profile.setDoNotEmail(false);
-        profileService.update(profile, auditInfo);
         return enrollee;
     }
 
