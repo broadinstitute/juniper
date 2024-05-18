@@ -213,53 +213,45 @@ public class EnrolleeImportService {
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
         ).build();
 
-        //check if participant already exists.. if so use the existing participant
-        ParticipantUser participantUser = participantUserService.findOne(enrolleeMap.get("account.username"), studyEnv.getEnvironmentName()).orElse(null);
-        Enrollee enrollee = null;
-        Profile profile = null;
-        if (participantUser == null) {
-            /** first create the participant user if not exists*/
-            ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
-            participantUser = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-            if (participantUser.getUsername() == null) {
-                throw new IllegalArgumentException("username must be provided for enrollee import");
-            }
-        } else {
-            enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(participantUser.getId(), studyEnv.getId()).orElse(null);
-        }
-        RegistrationService.RegistrationResult regResult = null;
-        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findOne(participantUser.getId(), portalShortcode).orElse(null);
-        if (portalParticipantUser == null) {
-            regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
-        }
-        if (enrollee == null) {
-            if (regResult == null) {
-                regResult = registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUser.getUsername(), null, null);
-            }
+        //
+        ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
+        final ParticipantUser participantUserInfo = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+
+        final RegistrationService.RegistrationResult regResult = portalParticipantUserService.findOne(participantUserInfo.getUsername(), portalShortcode, studyEnv.getEnvironmentName())
+                .map((ppUser) -> new RegistrationService.RegistrationResult(
+                        participantUserService.findOne(participantUserInfo.getUsername(),
+                                studyEnv.getEnvironmentName()).orElseThrow(() -> new IllegalStateException("Participant User could not be found or for PPUser")),
+                        ppUser,
+                        profileService.find(ppUser.getProfileId()).orElseThrow(IllegalStateException::new)
+                )).orElseGet(() ->
+                        registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
+                );
+
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(regResult.participantUser().getId(), studyEnv.getId()).orElseGet(() -> {
+            /** user is not enrolled in this study, so we need to create a new enrollee */
+            EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
+            Enrollee enrolleeInfo = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
             /** temporarily update the profile to no emails since they'll receive a special welcome email */
             regResult.profile().setDoNotEmail(true);
-            profile = profileService.update(regResult.profile(), auditInfo);
+            profileService.update(regResult.profile(), auditInfo);
 
-            /** now create the enrollee */
-            EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
-            enrollee = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-            portalParticipantUser = regResult.portalParticipantUser();
-            HubResponse<Enrollee> response = enrollmentService.enroll(portalParticipantUser, studyEnv.getEnvironmentName(), studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrollee.isSubject());
+            HubResponse<Enrollee> response = enrollmentService.enroll(regResult.portalParticipantUser(), studyEnv.getEnvironmentName(),
+                    studyShortcode, regResult.participantUser(), regResult.portalParticipantUser(), null, enrolleeInfo.isSubject());
+            Enrollee newEnrollee = response.getEnrollee();
             //update createdAt
-            if (enrollee.getCreatedAt() != null) {
-                timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrollee.getCreatedAt());
+            if (newEnrollee.getCreatedAt() != null) {
+                timeShiftPopulateDao.changeEnrolleeCreationTime(response.getEnrollee().getId(), enrolleeInfo.getCreatedAt());
             }
-            if (participantUser.getCreatedAt() != null) {
-                timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUser.getCreatedAt());
+            if (regResult.participantUser().getCreatedAt() != null) {
+                timeShiftPopulateDao.changeParticipantAccountCreationTime(response.getEnrollee().getParticipantUserId(), participantUserInfo.getCreatedAt());
             }
-            enrollee = response.getEnrollee();
-        } else {
-            profile = profileService.find(enrollee.getProfileId()).orElseThrow();
-        }
-        /** now update the profile */
-        profile = importProfile(enrolleeMap, profile, exportOptions, studyEnv, auditInfo);
+            return newEnrollee;
+        });
 
-        importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, portalParticipantUser, enrollee, auditInfo);
+        /** now update the profile */
+        Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
+
+        importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
         /** restore email */
         profile.setDoNotEmail(false);
