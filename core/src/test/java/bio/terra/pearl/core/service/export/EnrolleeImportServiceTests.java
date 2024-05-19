@@ -93,21 +93,28 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
                 """;
 
-        Import dataImport = importAndVerify(bundle, savedAdmin, csvString, "1980-10-10");
-        ParticipantUser user = participantUserService.find(dataImport.getImportItems().get(0).getCreatedParticipantUserId()).orElseThrow();
+        Import dataImport = doImport(bundle, csvString, savedAdmin, ImportFileFormat.CSV);
+        List<ImportItem> imports = dataImport.getImportItems();
+        verifyImport(dataImport);
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
-        ParticipantUser user2 = participantUserService.find(dataImport.getImportItems().get(1).getCreatedParticipantUserId()).orElseThrow();
+        verifyParticipant(imports.get(0), user, enrollee, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1980-10-10");
+
+        ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        verifyParticipant(imports.get(1), user2, enrollee2, "userName2", "2024-05-11T10:00:00Z", "2024-05-11T10:00:00Z", null);
 
         //now try update
-        Import dataImportUpd = importAndVerify(bundle, savedAdmin, csvStringUpdate, "1982-10-10");
+        Import dataImportUpd = doImport(bundle, csvStringUpdate, savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpd);
         ImportItem importItem = dataImportUpd.getImportItems().get(0);
         ParticipantUser userUpdated = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpdated = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        verifyParticipant(importItem, userUpdated, enrolleeUpdated, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1982-10-10");
         //should be the same participant and enrollee and profile
         assertThat(userUpdated.getId(), equalTo(user.getId()));
-        assertThat(enrollee.getId(), equalTo(enrolleeUpdated.getId()));
-        assertThat(enrollee.getProfileId(), equalTo(enrolleeUpdated.getProfileId()));
+        assertThat(enrolleeUpdated.getId(), equalTo(enrollee.getId()));
+        assertThat(enrolleeUpdated.getProfileId(), equalTo(enrollee.getProfileId()));
         //load profile and verify that birthDate was updated
         Profile profileUpdated = profileService.find(enrolleeUpdated.getProfileId()).orElseThrow();
         assertThat(profileUpdated.getBirthDate(), equalTo(LocalDate.parse("1982-10-10")));
@@ -122,50 +129,17 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         //same participant, diff profile
-        Import dataImportUpd2 = importAndVerify(bundle2, savedAdmin, csvStringPortal2, "1990-10-10");
+        Import dataImportUpd2 = doImport(bundle2, csvStringPortal2, savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpd2);
         ImportItem importItem2 = dataImportUpd2.getImportItems().get(0);
         ParticipantUser userUpdated2 = participantUserService.find(importItem2.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpdated2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated2.getId(), bundle2.getStudyEnv().getId()).orElseThrow();
+        verifyParticipant(importItem2, userUpdated2, enrolleeUpdated2, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1990-10-10");
+
         //should be the same participant and enrollee and profile
         assertThat(userUpdated2.getId(), equalTo(user.getId()));
-        Assertions.assertNotEquals(enrollee.getId(), enrolleeUpdated2.getId());
-        Assertions.assertNotEquals(enrollee.getProfileId(), enrolleeUpdated2.getProfileId());
-
-    }
-
-    private Import importAndVerify(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, AdminUser admin, String csvString,
-                                   String birthDate) {
-        Import dataImport = enrolleeImportService.importEnrollees(
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv(),
-                new ByteArrayInputStream(csvString.getBytes()),
-                admin.getId(), ImportFileFormat.CSV);
-
-        Import dataImportQueried = importService.find(dataImport.getId()).get();
-        assertThat(dataImport, is(dataImportQueried));
-        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
-        importItemService.attachImportItems(dataImport);
-        List<ImportItem> imports = dataImport.getImportItems();
-        assertThat(imports, hasSize(2));
-        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
-        assertThat(enrollee.isSubject(), equalTo(true));
-        assertThat(user.getUsername(), equalTo("userName1"));
-        assertThat(user.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:37:00Z")));
-        assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse("2024-05-09T13:38:00Z")));
-
-        //load profile
-        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
-        assertThat(profile.getBirthDate(), equalTo(LocalDate.parse(birthDate)));
-
-        ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), bundle.getStudyEnv().getId()).orElseThrow();
-        assertThat(enrollee2.isSubject(), equalTo(true));
-        assertThat(user2.getUsername(), equalTo("userName2"));
-        assertThat(user2.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
-        assertThat(enrollee2.getCreatedAt(), equalTo(Instant.parse("2024-05-11T10:00:00Z")));
-        return dataImport;
+        Assertions.assertNotEquals(enrolleeUpdated2.getId(), enrollee.getId());
+        Assertions.assertNotEquals(enrolleeUpdated2.getProfileId(), enrollee.getProfileId());
     }
 
     @Test
@@ -182,12 +156,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 x\t\tz\tuserName2             
                 """;
 
-        Import dataImport = enrolleeImportService.importEnrollees(
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv(),
-                new ByteArrayInputStream(tsvString.getBytes()),
-                savedAdmin.getId(), ImportFileFormat.TSV);
+        Import dataImport = doImport(bundle, tsvString, savedAdmin, ImportFileFormat.TSV);
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
@@ -332,6 +301,44 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Answer favColor = answers.stream().filter(answer -> answer.getQuestionStableId().equals("importFavColors"))
                 .findFirst().get();
         assertThat(favColor.getObjectValue(), equalTo("[\"red\", \"blue\"]"));
+    }
+
+    //todo Matchers[]
+    private void verifyParticipant(ImportItem importItem, ParticipantUser user, Enrollee enrollee,
+                                   String userName, String accountCreatedAt, String enrolleeCreatedAt, String profileBirthDate) {
+
+        //ParticipantUser user = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        //Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        assertThat(enrollee.isSubject(), equalTo(true));
+        assertThat(user.getUsername(), equalTo(userName));
+        assertThat(user.getCreatedAt(), equalTo(Instant.parse(accountCreatedAt)));
+        assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse(enrolleeCreatedAt)));
+
+        //load profile
+        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        if (profileBirthDate != null) {
+            assertThat(profile.getBirthDate(), equalTo(LocalDate.parse(profileBirthDate)));
+        } else {
+            assertThat(profile.getBirthDate(), equalTo(null));
+        }
+    }
+
+    private void verifyImport(Import dataImport) {
+        Import dataImportQueried = importService.find(dataImport.getId()).get();
+        assertThat(dataImport, is(dataImportQueried));
+        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
+        importItemService.attachImportItems(dataImport);
+        List<ImportItem> imports = dataImport.getImportItems();
+        assertThat(imports, hasSize(2));
+    }
+
+    private Import doImport(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
+        return enrolleeImportService.importEnrollees(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                new ByteArrayInputStream(csvString.getBytes()),
+                admin.getId(), fileType);
     }
 
 }
