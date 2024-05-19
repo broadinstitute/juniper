@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -93,15 +94,16 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
                 """;
 
+        UUID studyEnvId = bundle.getStudyEnv().getId();
         Import dataImport = doImport(bundle, csvString, savedAdmin, ImportFileFormat.CSV);
         List<ImportItem> imports = dataImport.getImportItems();
         verifyImport(dataImport);
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
         verifyParticipant(imports.get(0), user, enrollee, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1980-10-10");
 
         ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), studyEnvId).orElseThrow();
         verifyParticipant(imports.get(1), user2, enrollee2, "userName2", "2024-05-11T10:00:00Z", "2024-05-11T10:00:00Z", null);
 
         //now try update
@@ -109,7 +111,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         verifyImport(dataImportUpd);
         ImportItem importItem = dataImportUpd.getImportItems().get(0);
         ParticipantUser userUpdated = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrolleeUpdated = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        Enrollee enrolleeUpdated = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated.getId(), studyEnvId).orElseThrow();
         verifyParticipant(importItem, userUpdated, enrolleeUpdated, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1982-10-10");
         //should be the same participant and enrollee and profile
         assertThat(userUpdated.getId(), equalTo(user.getId()));
@@ -307,8 +309,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private void verifyParticipant(ImportItem importItem, ParticipantUser user, Enrollee enrollee,
                                    String userName, String accountCreatedAt, String enrolleeCreatedAt, String profileBirthDate) {
 
-        //ParticipantUser user = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
-        //Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
+        ParticipantUser participantUser = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
         assertThat(user.getUsername(), equalTo(userName));
         assertThat(user.getCreatedAt(), equalTo(Instant.parse(accountCreatedAt)));
