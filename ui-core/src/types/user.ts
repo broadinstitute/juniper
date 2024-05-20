@@ -1,7 +1,7 @@
 import { KitRequest } from 'src/types/kits'
 import { ParticipantTask } from 'src/types/task'
 import { PreregistrationResponse, SurveyResponse } from 'src/types/forms'
-import { Profile } from 'src/types/address'
+import { MailingAddress } from 'src/types/address'
 
 export type ParticipantNote = {
     id: string
@@ -38,3 +38,18 @@ export type HubResponse = {
     response: SurveyResponse
     profile: Profile
 }
+
+export type Profile = {
+    id?: string
+    givenName?: string,
+    familyName?: string,
+    contactEmail?: string,
+    doNotEmail?: boolean,
+    doNotEmailSolicit?: boolean,
+    mailingAddress?: MailingAddress,
+    phoneNumber?: string,
+    birthDate?: number[],
+    sexAtBirth?: string,
+    preferredLanguage?: string,
+}
+

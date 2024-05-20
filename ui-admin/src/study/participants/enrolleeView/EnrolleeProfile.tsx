@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { MailingAddress, PortalEnvironment, Profile } from 'api/api'
+import Api, { MailingAddress, PortalEnvironment } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
@@ -9,7 +9,7 @@ import {
   findDifferencesBetweenObjects,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  PortalEnvironmentLanguage
+  PortalEnvironmentLanguage, Profile
 } from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

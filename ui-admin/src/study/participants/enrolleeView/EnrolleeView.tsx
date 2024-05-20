@@ -3,7 +3,7 @@ import { ParticipantTask, StudyEnvironmentSurvey, SurveyResponse } from 'api/api
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
+import SurveyResponseView from '../survey/SurveyResponseView'
 import PreEnrollmentView from '../survey/PreEnrollmentView'
 import EnrolleeTimeline from './EnrolleeTimeline'
 import DataChangeRecords from '../DataChangeRecords'
@@ -197,7 +197,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                     preEnrollResponse={enrollee.preEnrollmentResponse} studyEnvContext={studyEnvContext}/>
                 }/>}
                 <Route path="surveys">
-                  <Route path=":surveyStableId/*" element={<EnrolleeSurveyView enrollee={enrollee}
+                  <Route path=":surveyStableId/*" element={<SurveyResponseView enrollee={enrollee}
                     responseMap={responseMap} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>

@@ -9,7 +9,7 @@ import {
   ParticipantTaskType,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig,
+  PortalEnvironmentConfig, Profile,
   SiteContent,
   Study,
   StudyEnvironmentConfig,
@@ -91,18 +91,6 @@ export type EnrolleeRelation = {
   lastUpdatedAt: number
   beginDate: number
   endDate: number
-}
-
-export type Profile = {
-  givenName: string,
-  familyName: string,
-  contactEmail: string,
-  doNotEmail: boolean,
-  doNotEmailSolicit: boolean,
-  mailingAddress: MailingAddress,
-  preferredLanguage: string,
-  phoneNumber: string,
-  birthDate?: number[]
 }
 
 export type ProfileUpdateDto = {

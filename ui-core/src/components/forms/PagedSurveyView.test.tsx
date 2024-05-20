@@ -6,13 +6,13 @@ import { setupRouterTest } from 'src/test-utils/router-testing-utils'
 import { MockI18nProvider } from 'src/participant/i18n-testing-utils'
 import { PagedSurveyView } from 'src/components/forms/PagedSurveyView'
 import React from 'react'
-import { Profile } from 'src/types/address'
 import {
   generateThreePageSurvey, mockConfiguredSurvey, mockEnrollee, mockHubResponse, mockProfile,
   mockSurveyWithHiddenQuestion,
   mockSurveyWithHiddenQuestionClearOnHidden
 } from 'src/test-utils/mocking-utils'
 import { Survey } from 'src/types/forms'
+import { Profile } from 'src/types/user'
 
 jest.mock('src/autoSaveUtils', () => {
   return {

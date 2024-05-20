@@ -3,7 +3,7 @@ import { StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 
 import { useParams } from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
-import SurveyEditView from './SurveyEditView'
+import SurveyResponseEditor from './SurveyResponseEditor'
 import { ResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
 import { Enrollee, instantToDefaultString } from '@juniper/ui-core'
@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faX } from '@fortawesome/free-solid-svg-icons'
 
 /** Show responses for a survey based on url param */
-export default function EnrolleeSurveyView({ enrollee, responseMap, studyEnvContext, onUpdate }:
+export default function SurveyResponseView({ enrollee, responseMap, studyEnvContext, onUpdate }:
   {enrollee: Enrollee, responseMap: ResponseMapT, studyEnvContext: StudyEnvContextT, onUpdate: () => void}) {
   const params = useParams<EnrolleeParams>()
 
@@ -43,7 +43,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
   const { user } = useUser()
   // if this is a dedicated admin form, default to edit mode
   if (!configSurvey.survey.allowParticipantStart && configSurvey.survey.allowAdminEdit && user) {
-    return <SurveyEditView studyEnvContext={studyEnvContext} survey={configSurvey.survey}
+    return <SurveyResponseEditor studyEnvContext={studyEnvContext} survey={configSurvey.survey}
       adminUserId={user.id} response={response} enrollee={enrollee} onUpdate={onUpdate}/>
   }
 
@@ -76,7 +76,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
         }
         }>
         {isEditing ?
-          <div><FontAwesomeIcon icon={faX}/> Cancel</div> :
+          <div><FontAwesomeIcon icon={faX}/> Finish</div> :
           <div><FontAwesomeIcon icon={faPencil}/> Edit Response</div>
         }
       </button> }
@@ -87,7 +87,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
       {(!isEditing && response?.answers.length) && <SurveyFullDataView answers={response?.answers || []}
         survey={configSurvey.survey}
         userId={enrollee.participantUserId} studyEnvContext={studyEnvContext}/> }
-      {isEditing && user && <SurveyEditView studyEnvContext={studyEnvContext}
+      {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         survey={configSurvey.survey} response={response} adminUserId={user.id}
         enrollee={enrollee} onUpdate={onUpdate}/>}
     </div>

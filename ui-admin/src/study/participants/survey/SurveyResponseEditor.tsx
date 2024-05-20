@@ -10,7 +10,7 @@ import { failureNotification, successNotification } from 'util/notifications'
 import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
-export default function SurveyEditView({ studyEnvContext, response, survey, enrollee, adminUserId, onUpdate }: {
+export default function SurveyResponseEditor({ studyEnvContext, response, survey, enrollee, adminUserId, onUpdate }: {
   studyEnvContext: StudyEnvContextT, response?: SurveyResponse,
   survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void
 }) {
@@ -40,8 +40,8 @@ export default function SurveyEditView({ studyEnvContext, response, survey, enro
           Store.addNotification(successNotification('Response saved'))
         }}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
-        updateProfile={() => {}} //eslint-disable-line @typescript-eslint/no-empty-function
-        updateEnrollee={() => {}} //eslint-disable-line @typescript-eslint/no-empty-function
+        updateProfile={() => { /*no-op for admins*/ }}
+        updateEnrollee={() => { /*no-op for admins*/ }}
         taskId={taskId}
         showHeaders={true}/>
     </div>

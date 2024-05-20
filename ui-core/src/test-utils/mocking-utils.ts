@@ -1,7 +1,6 @@
 import { Survey, SurveyResponse } from 'src/types/forms'
-import { Enrollee, HubResponse } from 'src/types/user'
+import { Enrollee, HubResponse, Profile } from 'src/types/user'
 import { StudyEnvironmentSurvey } from 'src/types/study'
-import { Profile } from 'src/types/address'
 
 /** simplest survey.  one page, no interactive elements */
 export function generateSurvey(overrideObj?: any): Survey { // eslint-disable-line @typescript-eslint/no-explicit-any

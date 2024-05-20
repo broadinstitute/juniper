@@ -9,6 +9,8 @@ import {
   useI18n,
   useSurveyJSModel
 } from '@juniper/ui-core'
+import { useUser } from '../../providers/UserProvider'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -21,6 +23,9 @@ export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
   const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment } = enrollContext
   const { selectedLanguage } = useI18n()
+  const { profile } = useActiveUser()
+  const { user, enrollees } = useUser()
+  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
@@ -30,8 +35,8 @@ export default function PreEnrollView({ enrollContext, survey }:
     handleComplete,
     pager,
     studyEnv.environmentName,
-    undefined,
-    undefined,
+    profile || undefined,
+    proxyProfile,
     { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 

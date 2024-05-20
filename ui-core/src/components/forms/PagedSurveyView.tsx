@@ -16,8 +16,7 @@ import { useI18n } from '../../participant/I18nProvider'
 import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
 import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
-import { Enrollee } from 'src/types/user'
-import { Profile } from 'src/types/address'
+import { Enrollee, Profile } from 'src/types/user'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 

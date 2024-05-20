@@ -4,7 +4,6 @@ import { cloneDeep, get, set } from 'lodash'
 import { SurveyModel } from 'survey-core'
 
 import { Answer, FormContent, FormElement, Survey, VersionedForm } from './types/forms'
-import { Profile } from './types/address'
 import { useSearchParams } from 'react-router-dom'
 import React, { useEffect, useState } from 'react'
 import _union from 'lodash/union'
@@ -18,6 +17,7 @@ import { useI18n } from './participant/I18nProvider'
 import { createAddressValidator } from './surveyjs/address-validator'
 import { useApiContext } from './participant/ApiProvider'
 import { EnvironmentName } from './types/study'
+import { Profile } from 'src/types/user'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
