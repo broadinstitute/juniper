@@ -44,7 +44,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.nullValue;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -322,7 +322,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         if (profileBirthDate != null) {
             assertThat(profile.getBirthDate(), equalTo(LocalDate.parse(profileBirthDate)));
         } else {
-            assertNull(profile.getBirthDate());
+            assertThat(profile.getBirthDate(), nullValue());
         }
     }
 
