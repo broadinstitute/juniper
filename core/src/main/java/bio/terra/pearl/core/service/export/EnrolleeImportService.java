@@ -234,8 +234,8 @@ public class EnrolleeImportService {
     }
 
     private RegistrationService.RegistrationResult doPortalRegistration(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
-        final RegistrationService.RegistrationResult regResult = portalParticipantUserService.findOne(participantUserInfo.getUsername(), portalShortcode, studyEnv.getEnvironmentName())
-                .map((ppUser) -> new RegistrationService.RegistrationResult(
+        return portalParticipantUserService.findOne(participantUserInfo.getUsername(), portalShortcode, studyEnv.getEnvironmentName())
+                .map(ppUser -> new RegistrationService.RegistrationResult(
                         participantUserService.findOne(participantUserInfo.getUsername(),
                                 studyEnv.getEnvironmentName()).orElseThrow(() -> new IllegalStateException("Participant User could not be found or for PPUser")),
                         ppUser,
@@ -243,7 +243,6 @@ public class EnrolleeImportService {
                 )).orElseGet(() ->
                         registrationService.register(portalShortcode, studyEnv.getEnvironmentName(), participantUserInfo.getUsername(), null, null)
                 );
-        return regResult;
     }
 
     private @NotNull Enrollee getOrCreateEnrollee(String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions,
