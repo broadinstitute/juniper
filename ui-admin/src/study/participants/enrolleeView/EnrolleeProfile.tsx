@@ -114,8 +114,8 @@ function ReadOnlyProfile(
       ]}/>
     <InfoCardValue title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
-    <InfoCardValue title={'Email'} values={[profile.contactEmail]}/>
-    <InfoCardValue title={'Phone'} values={[profile.phoneNumber]}/>
+    <InfoCardValue title={'Email'} values={[profile.contactEmail || '']}/>
+    <InfoCardValue title={'Phone'} values={[profile.phoneNumber || '']}/>
     <InfoCardValue title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
     <InfoCardValue title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
     { supportedLanguages.length > 0 &&
