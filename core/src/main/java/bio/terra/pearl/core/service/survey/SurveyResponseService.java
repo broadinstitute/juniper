@@ -199,8 +199,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                     .complete(responseDto.isComplete())
                     .resumeData(responseDto.getResumeData())
                     .build();
-            Optional.ofNullable(operator.getParticipantUser()).ifPresent(pUser -> newResponse.setCreatingParticipantUserId(pUser.getId()));
-            Optional.ofNullable(operator.getAdminUser()).ifPresent(admin -> newResponse.setCreatingAdminUserId(admin.getId()));
+            newResponse.setResponsibleUser(operator);
             response = dao.create(newResponse);
         }
 
