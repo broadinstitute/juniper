@@ -101,11 +101,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         verifyImport(dataImport);
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(imports.get(0), user, enrollee, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1980-10-10");
+        verifyParticipant(imports.get(0), studyEnvId, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1980-10-10");
 
         ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(imports.get(1), user2, enrollee2, "userName2", "2024-05-11T10:00:00Z", "2024-05-11T10:00:00Z", null);
+        verifyParticipant(imports.get(1), studyEnvId, "userName2", "2024-05-11T10:00:00Z", "2024-05-11T10:00:00Z", null);
 
         //now try update
         Import dataImportUpd = doImport(bundle, csvStringUpdate, savedAdmin, ImportFileFormat.CSV);
@@ -113,7 +113,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ImportItem importItem = dataImportUpd.getImportItems().get(0);
         ParticipantUser userUpdated = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpdated = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(importItem, userUpdated, enrolleeUpdated, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1982-10-10");
+        verifyParticipant(importItem, studyEnvId, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1982-10-10");
         //should be the same participant and enrollee and profile
         assertThat(userUpdated.getId(), equalTo(user.getId()));
         assertThat(enrolleeUpdated.getId(), equalTo(enrollee.getId()));
@@ -125,7 +125,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         profileUpdated = profileService.find(enrollee2.getProfileId()).orElseThrow();
         assertThat(profileUpdated.getBirthDate(), equalTo(LocalDate.parse("1990-10-10")));
 
-        //same user different portal.. should create new profile
+        //same user different portal. should create new profile
         String csvStringPortal2 = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
@@ -137,7 +137,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ImportItem importItem2 = dataImportUpd2.getImportItems().get(0);
         ParticipantUser userUpdated2 = participantUserService.find(importItem2.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpdated2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated2.getId(), bundle2.getStudyEnv().getId()).orElseThrow();
-        verifyParticipant(importItem2, userUpdated2, enrolleeUpdated2, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1990-10-10");
+        verifyParticipant(importItem2, bundle2.getStudyEnv().getId(), "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1990-10-10");
 
         //should be the same participant and enrollee and profile
         assertThat(userUpdated2.getId(), equalTo(user.getId()));
@@ -307,10 +307,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     }
 
     //todo Matchers[]
-    private void verifyParticipant(ImportItem importItem, ParticipantUser user, Enrollee enrollee,
+    private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
                                    String userName, String accountCreatedAt, String enrolleeCreatedAt, String profileBirthDate) {
 
-        ParticipantUser participantUser = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        ParticipantUser user = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
         assertThat(user.getUsername(), equalTo(userName));
         assertThat(user.getCreatedAt(), equalTo(Instant.parse(accountCreatedAt)));

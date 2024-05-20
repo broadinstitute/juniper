@@ -218,9 +218,9 @@ public class EnrolleeImportService {
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         final ParticipantUser participantUserInfo = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
 
-        final RegistrationService.RegistrationResult regResult = doPortalRegistration(portalShortcode, studyEnv, participantUserInfo);
+        final RegistrationService.RegistrationResult regResult = registerIfNeeded(portalShortcode, studyEnv, participantUserInfo);
 
-        Enrollee enrollee = getOrCreateEnrollee(studyShortcode, studyEnv, enrolleeMap, exportOptions, regResult, auditInfo, participantUserInfo);
+        Enrollee enrollee = createEnrolleeIfNeeded(studyShortcode, studyEnv, enrolleeMap, exportOptions, regResult, auditInfo, participantUserInfo);
 
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
@@ -233,7 +233,7 @@ public class EnrolleeImportService {
         return enrollee;
     }
 
-    private RegistrationService.RegistrationResult doPortalRegistration(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
+    private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
         return portalParticipantUserService.findOne(participantUserInfo.getUsername(), portalShortcode, studyEnv.getEnvironmentName())
                 .map(ppUser -> new RegistrationService.RegistrationResult(
                         participantUserService.findOne(participantUserInfo.getUsername(),
@@ -245,8 +245,8 @@ public class EnrolleeImportService {
                 );
     }
 
-    private @NotNull Enrollee getOrCreateEnrollee(String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions,
-                                                  RegistrationService.RegistrationResult regResult, DataAuditInfo auditInfo, ParticipantUser participantUserInfo) {
+    private @NotNull Enrollee createEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions,
+                                                     RegistrationService.RegistrationResult regResult, DataAuditInfo auditInfo, ParticipantUser participantUserInfo) {
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(regResult.participantUser().getId(), studyEnv.getId()).orElseGet(() -> {
             /** user is not enrolled in this study, so we need to create a new enrollee */
             EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
