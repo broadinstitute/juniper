@@ -34,11 +34,12 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
       <div className="mb-3">
         <div className="mb-3">
           <TextInput
-            description='The unique stable identifier for the survey question'
+            description='The unique stable identifier for the survey question--
+            cannot contain spaces or special characters besides _ and -.'
             label='Question stable ID'
             value={questionName}
             onChange={value => {
-              setQuestion({ ...question, name: value })
+              setQuestion({ ...question, name: sanitizeStableId(value) })
             }}
           />
         </div>
@@ -163,4 +164,13 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
       </Button>
     </div>
   )
+}
+
+/**
+ * this is mor lenient than our form stableId requirements
+ * (juniperSurveyUtils.generateStableId) as we need to support legacy DATSTAT and
+ * Pepper questions that have all caps and special characters in their stableIds.
+ */
+export function sanitizeStableId(text: string) {
+  return text.replace(/[^a-zA-Z\-_\d]/g, '')
 }
