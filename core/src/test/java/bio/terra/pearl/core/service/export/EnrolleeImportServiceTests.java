@@ -91,7 +91,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testImportEnrolleesCSV(TestInfo info) {
-        //test new import
         String csvString = """
                 column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
@@ -104,7 +103,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         List<ImportItem> imports = dataImport.getImportItems();
         verifyImport(dataImport);
 
-        //create participantUser, enrollee, profile with expected data to assert
+        /*create participantUser, enrollee, profile with expected data to assert*/
         Enrollee enrolleeExpected = new Enrollee();
         enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
         ParticipantUser userExpected = new ParticipantUser();
@@ -137,9 +136,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         List<ImportItem> imports = dataImport.getImportItems();
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
-        //Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
 
-        //now try update
+        /*now try update*/
         String csvStringUpdate = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
@@ -147,7 +145,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 """;
         Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
         verifyImport(dataImportUpdate);
-        //create participantUser, enrollee, profile with expected data to assert
+        /*create participantUser, enrollee, profile with expected data to assert*/
         ParticipantUser userExpected = new ParticipantUser();
         userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
         userExpected.setUsername("userName1");
@@ -187,7 +185,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
 
-        //now try update of the same user, different portal
+        /*now try update of the same user, different portal*/
         String csvStringPortal2 = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
@@ -199,7 +197,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ImportItem importItem = dataImportUpdate.getImportItems().get(0);
         ParticipantUser userUpd = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpd = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpd.getId(), studyEnvId).orElseThrow();
-        //create participantUser, enrollee, profile with expected data to assert
+        /*create participantUser, enrollee, profile with expected data to assert*/
         ParticipantUser userExpected = new ParticipantUser();
         userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
         userExpected.setUsername("userName1");

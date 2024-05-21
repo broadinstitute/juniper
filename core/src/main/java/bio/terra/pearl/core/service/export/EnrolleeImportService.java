@@ -247,7 +247,7 @@ public class EnrolleeImportService {
 
     private @NotNull Enrollee createEnrolleeIfNeeded(String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions,
                                                      RegistrationService.RegistrationResult regResult, DataAuditInfo auditInfo, ParticipantUser participantUserInfo) {
-        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(regResult.participantUser().getId(), studyEnv.getId()).orElseGet(() -> {
+        return enrolleeService.findByParticipantUserIdAndStudyEnvId(regResult.participantUser().getId(), studyEnv.getId()).orElseGet(() -> {
             /** user is not enrolled in this study, so we need to create a new enrollee */
             EnrolleeFormatter enrolleeFormatter = new EnrolleeFormatter(exportOptions);
             Enrollee enrolleeInfo = enrolleeFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
@@ -267,7 +267,6 @@ public class EnrolleeImportService {
             }
             return newEnrollee;
         });
-        return enrollee;
     }
 
     protected Profile importProfile(Map<String, String> enrolleeMap, Profile registrationProfile,
