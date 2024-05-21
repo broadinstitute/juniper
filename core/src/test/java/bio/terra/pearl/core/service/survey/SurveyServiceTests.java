@@ -210,6 +210,23 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(4, actual2.size());
     }
 
+    @Test
+    @Transactional
+    public void testCreateSurveyQuestionDefinitionsWhitespace(TestInfo info) {
+        Survey survey = surveyFactory.builderWithDependencies(getTestName(info))
+                .content("""
+                        {              	      
+                            "pages": [{
+                            "elements": [{
+                                "name": "oh_oh_basic firstName",
+                                "type": "text",
+                                "title": "First name",
+                                "isRequired": true
+                            }""")
+                .build();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> surveyService.create(survey));
+    }
+
     private final String twoQuestionSurveyContent = """
                 {
                 	"title": "The Basics",

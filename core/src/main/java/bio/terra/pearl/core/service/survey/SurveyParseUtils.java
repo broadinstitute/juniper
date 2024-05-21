@@ -23,6 +23,8 @@ public class SurveyParseUtils {
     public static final String SURVEY_JS_NONE_TEXT_PROP = "noneText";
     public static final String DERIVED_QUESTION_TYPE = "derived";
     public static final Pattern EXPRESSION_DEPENDENCY = Pattern.compile(".*\\{(.+?)\\}.*");
+    /** should match sanitizeStableId in NewQuestionForm.tsx */
+    public static final Pattern INVALID_STABLE_ID = Pattern.compile("[^a-zA-Z\\-_\\d]");
 
     /**
      * recursively gets all questions from the given node
@@ -51,7 +53,6 @@ public class SurveyParseUtils {
                 .questionStableId(question.get("name").asText())
                 .exportOrder(globalOrder)
                 .build();
-
         //The following fields may either be specified in the question itself,
         //or as part of a question template. Resolve the remaining fields against
         //the template (if applicable), so we have the full question definition.
@@ -84,6 +85,22 @@ public class SurveyParseUtils {
         }
 
         return definition;
+    }
+
+    /** confirm the question definition meets our (currently very permissive) requirements */
+    public static void validateQuestionDefinition(SurveyQuestionDefinition surveyQuestionDefinition) {
+        /** we don't care about the stableIds for html questions, since those aren't answered and aren't included in data exports */
+        if (!List.of("html").contains(surveyQuestionDefinition.getQuestionType())) {
+            validateQuestionStableId(surveyQuestionDefinition.getQuestionStableId());
+        }
+    }
+    public static void validateQuestionStableId(String questionStableId) {
+        if (questionStableId == null || questionStableId.isBlank()) {
+            throw new IllegalArgumentException("Question stableId cannot be null or empty");
+        }
+        if (INVALID_STABLE_ID.matcher(questionStableId).matches()) {
+            throw new IllegalArgumentException("Question stableId must be alphanumeric, dashes or underscores: '" + questionStableId + "'");
+        }
     }
 
     public static String unmarshalSurveyQuestionChoices(JsonNode question) {

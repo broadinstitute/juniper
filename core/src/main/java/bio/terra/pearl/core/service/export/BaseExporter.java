@@ -44,7 +44,9 @@ public abstract class BaseExporter {
     protected List<String> getHeaderRow() {
         List<String> headers = new ArrayList<>();
         applyToEveryColumn((moduleFormatter, itemExportInfo, isOtherDescription, choice, moduleRepeatNum) -> {
-            headers.add(moduleFormatter.getColumnHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum));
+            headers.add(
+                    sanitizeValue(moduleFormatter.getColumnHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum), DEFAULT_EMPTY_STRING_VALUE)
+            );
         });
         return headers;
     }
@@ -53,7 +55,9 @@ public abstract class BaseExporter {
     protected List<String> getSubHeaderRow() {
         List<String> headers = new ArrayList<>();
         applyToEveryColumn((moduleFormatter, itemExportInfo, isOtherDescription, choice, moduleRepeatNum) -> {
-            headers.add(moduleFormatter.getColumnSubHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum));
+            headers.add(
+                    sanitizeValue(moduleFormatter.getColumnSubHeader(itemExportInfo, isOtherDescription, choice, moduleRepeatNum), DEFAULT_EMPTY_STRING_VALUE)
+            );
         });
         return headers;
     }

@@ -1,0 +1,51 @@
+{
+  "stableId": "hd_hd_lost_interest",
+  "version": 1,
+  "name": "Lost interest survey",
+  "assignToAllNewEnrollees": false,
+  "eligibilityRule": "{answer.hd_hd_mental.hd_hd_mental_phq9LostInterest} = '3'",
+  "jsonContent": {
+    "title": {
+      "default": "Lost interests survey",
+      "es": "Interes perdido",
+      "dev": "DEV_Lost interests survey"
+    },
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "lost_interest_header",
+                "type": "html",
+                "html": "<p>You indicated that you've lost interest in things</p>"
+              }
+            ]
+          },
+          {
+            "name": "lost_interest_question",
+            "type": "radiogroup",
+            "title": "Is there something you are currently looking forward to?",
+            "choices": [
+              {
+                "text": "Yes",
+                "value": "yes"
+              },
+              {
+                "text": "No",
+                "value": "no"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

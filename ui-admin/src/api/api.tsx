@@ -429,7 +429,6 @@ export type StudyCreationDto = {
 
 export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 
-
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
