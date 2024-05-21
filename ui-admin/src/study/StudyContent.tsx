@@ -9,7 +9,6 @@ import { faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import ArchiveSurveyModal from './surveys/ArchiveSurveyModal'
 import DeleteSurveyModal from './surveys/DeleteSurveyModal'
 import { StudyEnvironmentSurvey, StudyEnvironmentSurveyNamed, SurveyType } from '@juniper/ui-core'
-import CreateConsentModal from './consents/CreateConsentModal'
 import { Button, IconButton } from 'components/forms/Button'
 import CreatePreEnrollSurveyModal from './surveys/CreatePreEnrollSurveyModal'
 import { renderPageHeader } from 'util/pageUtils'
@@ -31,15 +30,11 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
   const preEnrollSurvey = currentEnv.preEnrollSurvey
   const isReadOnlyEnv = !(currentEnv.environmentName === 'sandbox')
   const [configuredSurveys, setConfiguredSurveys] = useState<StudyEnvironmentSurveyNamed[]>([])
-  const [showCreateConsentModal, setShowCreateConsentModal] = useState(false)
   const [showArchiveSurveyModal, setShowArchiveSurveyModal] = useState(false)
   const [showDeleteSurveyModal, setShowDeleteSurveyModal] = useState(false)
   const [showCreatePreEnrollSurveyModal, setShowCreatePreEnrollModal] = useState(false)
   const [selectedSurveyConfig, setSelectedSurveyConfig] = useState<StudyEnvironmentSurvey>()
   const [createSurveyType, setCreateSurveyType] = useState<SurveyType>()
-
-  currentEnv.configuredConsents
-    .sort((a, b) => a.consentOrder - b.consentOrder)
 
   const { isLoading, setIsLoading } = useLoadingEffect(async () => {
     const response = await Api.findConfiguredSurveys(
@@ -64,6 +59,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     .map(configSurvey => configSurvey.survey.stableId))
   const outreachSurveyStableIds =  _uniq(configuredSurveys
     .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
+    .sort((a, b) => a.surveyOrder - b.surveyOrder)
+    .map(configSurvey => configSurvey.survey.stableId))
+  const consentSurveyStableIds =  _uniq(configuredSurveys
+    .filter(configSurvey => configSurvey.survey.surveyType === 'CONSENT')
     .sort((a, b) => a.surveyOrder - b.surveyOrder)
     .map(configSurvey => configSurvey.survey.stableId))
 
@@ -110,23 +109,23 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h2 className="h6">Consent forms</h2>
             <div className="flex-grow-1 pt-3">
-              <ul className="list-unstyled">
-                { currentEnv.configuredConsents.map((config, index) => {
-                  const consentForm = config.consentForm
-                  return <li key={index}>
-                    <Link to={`consentForms/${consentForm.stableId}?readOnly=${isReadOnlyEnv}`}>
-                      {consentForm.name} <span className="detail">v{consentForm.version}</span>
-                    </Link>
-                  </li>
-                }) }
-                <li>
-                  { !isReadOnlyEnv && <button className="btn btn-secondary" data-testid={'addConsent'} onClick={() => {
-                    setShowCreateConsentModal(!showCreateConsentModal)
-                  }}>
-                    <FontAwesomeIcon icon={faPlus}/> Add
-                  </button> }
-                </li>
-              </ul>
+              <SurveyEnvironmentTable stableIds={consentSurveyStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                configuredSurveys={configuredSurveys}
+                setSelectedSurveyConfig={setSelectedSurveyConfig}
+                updateConfiguredSurvey={updateConfiguredSurvey}
+                setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                showArchiveSurveyModal={showArchiveSurveyModal}
+                showDeleteSurveyModal={showDeleteSurveyModal}
+              />
+              <div>
+                <Button variant="secondary" data-testid={'addConsentSurvey'} onClick={() => {
+                  setCreateSurveyType('CONSENT')
+                }}>
+                  <FontAwesomeIcon icon={faPlus}/> Add
+                </Button>
+              </div>
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
@@ -182,8 +181,6 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         { (showDeleteSurveyModal && selectedSurveyConfig) && <DeleteSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
           onDismiss={() => setShowDeleteSurveyModal(false)}/> }
-        { showCreateConsentModal && <CreateConsentModal studyEnvContext={studyEnvContext}
-          onDismiss={() => setShowCreateConsentModal(false)}/>}
         { showCreatePreEnrollSurveyModal && <CreatePreEnrollSurveyModal studyEnvContext={studyEnvContext}
           onDismiss={() => setShowCreatePreEnrollModal(false)}/> }
         { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }

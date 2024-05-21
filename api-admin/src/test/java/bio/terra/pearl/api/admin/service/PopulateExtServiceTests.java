@@ -21,7 +21,8 @@ public class PopulateExtServiceTests {
   public void portalRequiresAuth() {
     AdminUser user = new AdminUser();
     Assertions.assertThrows(
-        PermissionDeniedException.class, () -> emptyService.populatePortal("dfafd", user, false));
+        PermissionDeniedException.class,
+        () -> emptyService.populatePortal("dfafd", user, false, null));
   }
 
   @Test

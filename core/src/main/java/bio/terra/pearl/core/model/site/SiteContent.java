@@ -19,8 +19,6 @@ public class SiteContent extends BaseEntity implements Versioned {
     private Integer publishedVersion;
     @Builder.Default
     private List<LocalizedSiteContent> localizedSiteContents = new ArrayList<>();
-    @Builder.Default
-    private String defaultLanguage = "en";
 
     // used to keep siteContents attached to a portal even if they are not on an environment currently
     private UUID portalId;

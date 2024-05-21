@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
+import org.apache.commons.lang3.StringUtils;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
@@ -57,11 +59,10 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
                                                                       String language) {
         Optional<PortalEnvironment> portalEnvOpt = findOne(shortcode, environmentName);
         portalEnvOpt.ifPresent(portalEnv -> {
-            portalEnv.setPortalEnvironmentConfig(
-                    portalEnvironmentConfigDao.find(portalEnv.getPortalEnvironmentConfigId()).orElse(null)
-            );
-            portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), language)
-                    .orElse(null));
+            PortalEnvironmentConfig envConfig = portalEnvironmentConfigDao.find(portalEnv.getPortalEnvironmentConfigId()).orElse(null);
+            portalEnv.setPortalEnvironmentConfig(envConfig);
+            String languageToLoad = StringUtils.defaultIfBlank(language, envConfig.getDefaultLanguage());
+            portalEnv.setSiteContent(siteContentDao.findOneFull(portalEnv.getSiteContentId(), languageToLoad).orElse(null));
             if (portalEnv.getPreRegSurveyId() != null) {
                 portalEnv.setPreRegSurvey(surveyDao.find(portalEnv.getPreRegSurveyId()).get());
             }

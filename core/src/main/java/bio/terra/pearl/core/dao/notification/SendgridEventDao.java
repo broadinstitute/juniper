@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
@@ -29,6 +30,23 @@ public class SendgridEventDao extends BaseMutableJdbiDao<SendgridEvent> {
                 handle.createQuery("select * from " + tableName + " order by last_event_time desc limit 1")
                         .mapTo(clazz)
                         .findOne()
+        );
+    }
+
+    public void deleteByNotificationId(UUID notificationId) {
+        deleteByProperty("notification_id", notificationId);
+    }
+
+    public List<SendgridEvent> findByTriggerId(UUID triggerId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "select sge.* from " + tableName + " sge " +
+                                        " inner join notification n on n.id = sge.notification_id " +
+                                        " inner join trigger t on t.id = n.trigger_id " +
+                                        " where t.id = :triggerId")
+                        .bind("triggerId", triggerId)
+                        .mapTo(clazz)
+                        .list()
         );
     }
 }

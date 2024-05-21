@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -69,26 +70,30 @@ public class PopulateExtService {
     }
   }
 
-  public Portal populatePortal(MultipartFile zipFile, AdminUser user, boolean overwrite) {
+  public Portal populatePortal(
+      MultipartFile zipFile, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
     try {
       ZipInputStream zis = new ZipInputStream(zipFile.getInputStream());
-      return portalPopulator.populateFromZipFile(zis, overwrite);
+      return portalPopulator.populateFromZipFile(zis, overwrite, shortcodeOverride);
     } catch (IOException e) {
       throw new IllegalArgumentException("error reading/writing zip file", e);
     }
   }
 
-  public Portal populatePortal(String filePathName, AdminUser user, boolean overwrite) {
+  public Portal populatePortal(
+      String filePathName, AdminUser user, boolean overwrite, String shortcodeOverride) {
     authorizeUser(user);
-    return portalPopulator.populate(new FilePopulateContext(filePathName), overwrite);
+    return portalPopulator.populate(
+        new FilePopulateContext(filePathName, false, shortcodeOverride), overwrite);
   }
 
   public Survey populateSurvey(
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
+        new PortalPopulateContext(
+            filePathName, portalShortcode, null, new HashMap<>(), false, null);
     return surveyPopulator.populate(config, overwrite);
   }
 
@@ -96,7 +101,8 @@ public class PopulateExtService {
       String portalShortcode, String filePathName, AdminUser user, boolean overwrite) {
     authorizeUser(user);
     PortalPopulateContext config =
-        new PortalPopulateContext(filePathName, portalShortcode, null, new HashMap<>(), false);
+        new PortalPopulateContext(
+            filePathName, portalShortcode, null, new HashMap<>(), false, null);
     try {
       // first, repopulate images to cove any new/changed images.
       String portalFilePath = "portals/%s/portal.json".formatted(portalShortcode);
@@ -118,7 +124,7 @@ public class PopulateExtService {
     authorizeUser(user);
     StudyPopulateContext config =
         new StudyPopulateContext(
-            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false);
+            filePathName, portalShortcode, studyShortcode, envName, new HashMap<>(), false, null);
     return enrolleePopulator.populate(config, overwrite);
   }
 
@@ -141,6 +147,15 @@ public class PopulateExtService {
       throws IOException {
     authorizeUser(user);
     portalExtractService.extract(portalShortcode, os);
+  }
+
+  @Transactional
+  public Object populateCommand(String command, Object commandParams, AdminUser user) {
+    authorizeUser(user);
+    if ("CONVERT_CONSENTS".equals(command)) {
+      throw new IllegalArgumentException("that command is no longer supported");
+    }
+    throw new IllegalArgumentException("unknown command");
   }
 
   protected void authorizeUser(AdminUser user) {

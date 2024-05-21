@@ -15,7 +15,7 @@ export const RedirectFromOAuth = () => {
         alert(`Auth error: ${auth.error}`)
       }
 
-      if (auth.user && user.isAnonymous) {
+      if (auth.user && !user) {
         const accessToken = auth.user.access_token
         Api.setBearerToken(accessToken)
         // Record the login event, but since this is in a popup, we don't need to do anything with the resulting user.

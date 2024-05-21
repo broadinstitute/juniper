@@ -3,6 +3,11 @@
   "version": 3,
   "name": "Social Determinants of Health",
   "jsonContent": {
+    "title": {
+      "default": "Social Determinants of Health",
+      "es": "Determinantes Sociales de la Salud",
+      "dev": "DEV_Social Determinants of Health"
+    },
     "showProgressBar": "bottom",
     "showQuestionNumbers": "off",
     "pages": [

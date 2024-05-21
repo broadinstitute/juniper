@@ -11,7 +11,7 @@ import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import java.util.List;
@@ -92,13 +92,13 @@ public class TriggerExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       UUID actionId,
-      EnrolleeRuleData enrolleeRuleData) {
+      EnrolleeContext enrolleeContext) {
     /** find takes care of auth */
     Trigger action =
         find(operator, portalShortcode, studyShortcode, environmentName, actionId)
             .orElseThrow(() -> new NotFoundException("Could not find trigger"));
     /** for now, the only type of action this supports is sending email */
-    notificationDispatcher.dispatchTestNotification(action, enrolleeRuleData);
+    notificationDispatcher.dispatchTestNotification(action, enrolleeContext);
   }
 
   /**

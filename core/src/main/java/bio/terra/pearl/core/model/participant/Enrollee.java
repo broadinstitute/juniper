@@ -1,18 +1,19 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
 import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
-import java.util.*;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Enrollee is essentially a holder for any study-specific data for a user.   An Enrollee object is created as soon
@@ -36,11 +37,11 @@ public class Enrollee extends BaseEntity {
     @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default
-    private List<ConsentResponse> consentResponses = new ArrayList<>();
-    @Builder.Default
     private List<ParticipantTask> participantTasks = new ArrayList<>();
     @Builder.Default
     private List<ParticipantNote> participantNotes = new ArrayList<>();
     @Builder.Default
     private List<KitRequestDto> kitRequests = new ArrayList<>();
+    @Builder.Default
+    private List<EnrolleeRelation> relations = new ArrayList<>();
 }

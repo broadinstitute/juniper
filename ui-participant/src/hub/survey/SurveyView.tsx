@@ -13,7 +13,8 @@ import {
   useRoutablePageNumber,
   useSurveyJSModel
 } from 'util/surveyJsUtils'
-import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect } from '@juniper/ui-core'
+// eslint-disable-next-line max-len
+import { ApiProvider, makeSurveyJsData, Markdown, SurveyJsResumeData, useAutosaveEffect, useI18n } from '@juniper/ui-core'
 import { HubUpdate } from 'hub/hubUpdates'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -22,6 +23,8 @@ import { withErrorBoundary } from 'util/ErrorBoundary'
 import SurveyReviewModeButton from './ReviewModeButton'
 import { SurveyModel } from 'survey-core'
 import { DocumentTitle } from 'util/DocumentTitle'
+import SurveyAutoCompleteButton from './SurveyAutoCompleteButton'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 const TASK_ID_PARAM = 'taskId'
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
@@ -37,16 +40,24 @@ export const useTaskIdParam = (): string | null => {
  */
 export function RawSurveyView({
   form, enrollee, resumableData, pager, studyShortcode,
-  taskId, activeResponse, showHeaders=true
+  taskId, activeResponse, showHeaders = true
 }:
-{
-  form: Survey, enrollee: Enrollee, taskId: string, activeResponse?: SurveyResponse,
-  resumableData: SurveyJsResumeData | null, pager: PageNumberControl, studyShortcode: string, showHeaders?: boolean
-}) {
+                                {
+                                  form: Survey,
+                                  enrollee: Enrollee,
+                                  taskId: string,
+                                  activeResponse?: SurveyResponse,
+                                  resumableData: SurveyJsResumeData | null,
+                                  pager: PageNumberControl,
+                                  studyShortcode: string,
+                                  showHeaders?: boolean
+                                }) {
+  const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
-  const { selectedLanguage, updateEnrollee, profile, updateProfile } = useUser()
+  const { updateEnrollee, updateProfile } = useUser()
   const prevSave = useRef(resumableData?.data ?? {})
   const lastAutoSaveErrored = useRef(false)
+  const { i18n } = useI18n()
 
   /** Submit the response to the server */
   const onComplete = async () => {
@@ -71,7 +82,14 @@ export function RawSurveyView({
       response.enrollee.participantTasks = response.tasks
       const hubUpdate: HubUpdate = {
         message: {
-          title: `${form.name} completed`,
+          title: i18n(
+            'hubUpdateFormSubmittedTitle',
+            {
+              substitutions: {
+                formName: i18n(`${form.stableId}:${form.version}`)
+              },
+              defaultValue: form.name
+            }),
           type: 'SUCCESS'
         }
       }
@@ -84,13 +102,13 @@ export function RawSurveyView({
   }
 
   const { surveyModel, refreshSurvey } = useSurveyJSModel(form, resumableData,
-    onComplete, pager, profile)
+    onComplete, pager)
 
   /** if the survey has been updated, save the updated answers. */
   const saveDiff = () => {
     const currentModelValues = getDataWithCalculatedValues(surveyModel)
     const updatedAnswers = getUpdatedAnswers(
-        prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
+      prevSave.current as Record<string, object>, currentModelValues, selectedLanguage)
     if (updatedAnswers.length < 1) {
       // don't bother saving if there are no changes
       return
@@ -107,7 +125,7 @@ export function RawSurveyView({
       complete: activeResponse?.complete ?? false
     } as SurveyResponse
     // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
-    const alertErrors =  !lastAutoSaveErrored.current
+    const alertErrors = !lastAutoSaveErrored.current
     Api.updateSurveyResponse({
       studyShortcode, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version, response: responseDto, taskId, alertErrors
@@ -137,15 +155,18 @@ export function RawSurveyView({
 
   useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   return (
     <>
-      <DocumentTitle title={form.name} />
+      <DocumentTitle title={i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}/>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
-        { showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/> }
-        { showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">{form.name}</h1> }
+        {showHeaders && <SurveyReviewModeButton surveyModel={surveyModel}/>}
+        {showHeaders && <SurveyAutoCompleteButton surveyModel={surveyModel}/>}
+        {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
+          {i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}
+        </h1>}
         <SurveyComponent model={surveyModel}/>
         <SurveyFooter survey={form} surveyModel={surveyModel}/>
       </div>
@@ -169,25 +190,31 @@ export function SurveyFooter({ survey, surveyModel }: { survey: Survey, surveyMo
 
 /** handles paging the form */
 export function PagedSurveyView({
-  form, activeResponse, enrollee, studyShortcode, taskId, showHeaders=true
+  form, activeResponse, enrollee, studyShortcode, taskId, showHeaders = true
 }:
-{
-  form: StudyEnvironmentSurvey, activeResponse?: SurveyResponse, enrollee: Enrollee,
-  studyShortcode: string, taskId: string, autoSaveInterval?: number, showHeaders?: boolean
-}) {
+                                  {
+                                    form: StudyEnvironmentSurvey,
+                                    activeResponse?: SurveyResponse,
+                                    enrollee: Enrollee,
+                                    studyShortcode: string,
+                                    taskId: string,
+                                    autoSaveInterval?: number,
+                                    showHeaders?: boolean
+                                  }) {
   const resumableData = makeSurveyJsData(activeResponse?.resumeData,
     activeResponse?.answers, enrollee.participantUserId)
 
   const pager = useRoutablePageNumber()
 
   return <RawSurveyView enrollee={enrollee} form={form.survey} taskId={taskId} activeResponse={activeResponse}
-    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode} showHeaders={showHeaders}/>
+    resumableData={resumableData} pager={pager} studyShortcode={studyShortcode}
+    showHeaders={showHeaders}/>
 }
 
 /** handles loading the survey form and responses from the server */
-function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
+function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal } = usePortalEnv()
-  const { enrollees } = useUser()
+  const { enrollees } = useActiveUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const stableId = params.stableId
@@ -235,11 +262,14 @@ function SurveyView({ showHeaders=true }: {showHeaders?: boolean}) {
 export default withErrorBoundary(SurveyView)
 
 /** Gets the enrollee object matching the given study */
-function enrolleeForStudy(enrollees: Enrollee[], studyShortcode: string, portal: Portal): Enrollee {
+export function enrolleeForStudy(
+  enrollees: Enrollee[],
+  studyShortcode: string,
+  portal: Portal): Enrollee {
   const studyEnvId = portal.portalStudies.find(pStudy => pStudy.study.shortcode === studyShortcode)?.study
     .studyEnvironments[0].id
 
-  const enrollee = enrollees.find(enrollee => enrollee.studyEnvironmentId === studyEnvId)
+  const enrollee = enrollees.find(e => e.studyEnvironmentId === studyEnvId)
   if (!enrollee) {
     throw `enrollment not found for ${studyShortcode}`
   }

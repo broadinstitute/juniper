@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.dao.portal;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -20,14 +19,10 @@ public class PortalDaoTests extends BaseSpringBootTest {
     private PortalDao portalDao;
     @Autowired
     private PortalEnvironmentService portalEnvironmentService;
-    @Autowired
-    private EnvironmentFactory environmentFactory;
 
     @Test
     @Transactional
     public void testFindByShortcodeOrHostname(TestInfo info) {
-        environmentFactory.buildPersisted(getTestName(info), EnvironmentName.sandbox);
-        environmentFactory.buildPersisted(getTestName(info), EnvironmentName.live);
         Portal fooPortal = portalDao.create(Portal.builder().shortcode("foo").name("fooName").build());
         Portal barPortal =  portalDao.create(Portal.builder().shortcode("bar").name("barName").build());
 

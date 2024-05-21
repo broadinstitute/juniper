@@ -1,34 +1,35 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
-import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 
 @Component
 public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
   private ProfileDao profileDao;
   private SurveyResponseDao surveyResponseDao;
-  private ConsentResponseDao consentResponseDao;
   private ParticipantTaskDao participantTaskDao;
   private PreEnrollmentResponseDao preEnrollmentResponseDao;
+  private EnrolleeRelationDao enrolleeRelationDao;
 
-  public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao,
-                              ConsentResponseDao consentResponseDao, ParticipantTaskDao participantTaskDao,
-                              PreEnrollmentResponseDao preEnrollmentResponseDao) {
+  public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao, ParticipantTaskDao participantTaskDao,
+                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao) {
     super(jdbi);
     this.profileDao = profileDao;
     this.surveyResponseDao = surveyResponseDao;
-    this.consentResponseDao = consentResponseDao;
     this.participantTaskDao = participantTaskDao;
     this.preEnrollmentResponseDao = preEnrollmentResponseDao;
+    this.enrolleeRelationDao = enrolleeRelationDao;
   }
 
   @Override
@@ -56,7 +57,6 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
    * */
   public Enrollee loadForWithdrawalPreservation(Enrollee enrollee) {
     enrollee.getSurveyResponses().addAll(surveyResponseDao.findByEnrolleeIdWithAnswers(enrollee.getId()));
-    enrollee.getConsentResponses().addAll(consentResponseDao.findByEnrolleeId(enrollee.getId()));
     if (enrollee.getProfileId() != null) {
       enrollee.setProfile(profileDao.loadWithMailingAddress(enrollee.getProfileId()).get());
     }
@@ -64,6 +64,10 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
     }
+    List<EnrolleeRelation> relationsByEnrollee = enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId());
+    List<EnrolleeRelation> relationsByTargetEnrollee = enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId());
+    enrollee.getRelations().addAll(relationsByEnrollee);
+    enrollee.getRelations().addAll(relationsByTargetEnrollee);
     return enrollee;
   }
 }

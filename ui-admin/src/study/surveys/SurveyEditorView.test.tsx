@@ -1,20 +1,23 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
-import { VersionedForm } from '@juniper/ui-core'
+import { defaultSurvey, Survey } from '@juniper/ui-core'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from '../../test-utils/router-testing-utils'
+import { renderWithRouter } from '../../test-utils/router-testing-utils'
+import userEvent from '@testing-library/user-event'
 
 describe('SurveyEditorView', () => {
-  const mockForm: VersionedForm = {
+  const mockForm: Survey = {
+    ...defaultSurvey,
+    createdAt: 0,
+    lastUpdatedAt: 0,
     id: 'testForm',
     version: 12,
     content: '{}',
     stableId: 'testStableId',
-    name: '',
-    createdAt: 0,
-    lastUpdatedAt: 0
+    name: 'Test survey',
+    surveyType: 'RESEARCH'
   }
 
   test('shows the user a LoadedLocalDraftModal when a draft is loaded', async () => {
@@ -23,13 +26,12 @@ describe('SurveyEditorView', () => {
     localStorage.setItem(FORM_DRAFT_KEY, JSON.stringify({}))
 
     jest.spyOn(Storage.prototype, 'getItem')
-    const { RoutedComponent } = setupRouterTest(<SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm}
       onCancel={jest.fn()}
       onSave={jest.fn()}
     />)
-    render(RoutedComponent)
 
     //Assert
     const modalHeader = screen.getByText('Survey Draft Loaded')
@@ -42,16 +44,39 @@ describe('SurveyEditorView', () => {
 
     jest.spyOn(Storage.prototype, 'getItem')
 
-    const { RoutedComponent } = setupRouterTest(<SurveyEditorView
+    renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm}
       onCancel={jest.fn()}
       onSave={jest.fn()}
     />)
-    render(RoutedComponent)
 
     //Assert
     expect(localStorage.getItem).toHaveBeenCalledWith(FORM_DRAFT_KEY)
     expect(screen.queryByText('Survey Draft Loaded')).not.toBeInTheDocument()
+  })
+
+  test('shows a dropdown with options', async () => {
+    renderWithRouter(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
+    />)
+    expect(screen.getByLabelText('form options menu')).toBeInTheDocument()
+    await userEvent.click(screen.getByLabelText('form options menu'))
+    await userEvent.click(screen.getByText('Configuration'))
+    expect(screen.getByText(`${mockForm.name} - configuration`)).toBeInTheDocument()
+  })
+
+  test('allows the user to download the JSON file', async () => {
+    renderWithRouter(<SurveyEditorView
+      studyEnvContext={mockStudyEnvContext()}
+      currentForm={mockForm}
+      onCancel={jest.fn()}
+      onSave={jest.fn()}
+    />)
+    await userEvent.click(screen.getByLabelText('form options menu'))
+    expect(screen.getByText('Download form JSON')).toBeInTheDocument()
   })
 })

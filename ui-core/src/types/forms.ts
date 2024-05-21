@@ -1,3 +1,20 @@
+export const answerMappingTargetTypes = ['PROFILE', 'PROXY', 'PROXY_PROFILE'] as const
+export type AnswerMappingTargetType = typeof answerMappingTargetTypes[number];
+
+export const answerMappingMapTypes = ['STRING_TO_STRING', 'STRING_TO_LOCAL_DATE', 'STRING_TO_BOOLEAN'] as const
+export type AnswerMappingMapType = typeof answerMappingMapTypes[number];
+
+export type AnswerMapping = {
+  id: string
+  questionStableId: string
+  surveyId: string
+  targetType: AnswerMappingTargetType
+  targetField: string
+  mapType: AnswerMappingMapType
+  formatString: string
+  errorOnFail: boolean
+}
+
 export type VersionedForm = {
   id: string
   stableId: string
@@ -7,10 +24,11 @@ export type VersionedForm = {
   createdAt: number
   lastUpdatedAt: number
   content: string
+  answerMappings?: AnswerMapping[]
   footer?: string
 }
 
-export type SurveyType = 'RESEARCH' | 'OUTREACH'
+export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT'
 
 export type Survey = VersionedForm & {
   surveyType: SurveyType
@@ -26,6 +44,7 @@ export type Survey = VersionedForm & {
   allowParticipantStart: boolean
   allowParticipantReedit: boolean
   prepopulate: boolean
+  eligibilityRule?: string
 }
 
 export const defaultSurvey = {
@@ -40,8 +59,6 @@ export const defaultSurvey = {
   allowParticipantReedit: true,
   prepopulate: false
 }
-
-export type ConsentForm = VersionedForm
 
 export type Answer = {
   questionStableId: string
@@ -61,14 +78,6 @@ export type FormResponse = {
   resumeData: string
   createdAt?: number
   lastUpdatedAt?: number
-}
-
-export type ConsentResponse = FormResponse & {
-  consentFormId: string
-  enrolleeId: string
-  fullData: string
-  completed: boolean
-  consented: boolean
 }
 
 export type SurveyResponse = FormResponse & {
@@ -97,7 +106,7 @@ export type PreEnrollmentResponse = FormResponse & {
 
 /** Configuration passed to SurveyModel constructor. */
 export type FormContent = {
-  title: string
+  title: I18nSurveyElement
   pages: FormContentPage[]
   questionTemplates?: Question[]
 }
@@ -110,6 +119,19 @@ export type FormContentPage = BaseElement & {
   elements: FormElement[]
 }
 
+/**
+ *  Certain SurveyJS elements can take on multiple forms. For example, the "title" field
+ *  for a question could either be a string, or an object mapping language codes to strings.
+ *  "default" is always present; the other languages are arbitrary.
+ */
+export type I18nMap = {
+  default: string,
+  [language: string]: string
+}
+
+export type I18nSurveyElement = string | I18nMap
+
+
 export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
@@ -120,37 +142,37 @@ export type FormPanel = BaseElement & {
 export type HtmlElement = {
   name: string
   type: 'html'
-  html: string
+  html: I18nSurveyElement
 }
 
 type BaseQuestion = BaseElement & {
   name: string
-  description?: string
+  description?: I18nSurveyElement
   isRequired?: boolean
 }
 
 export type TitledQuestion = BaseQuestion & {
-    title: string
+  title: I18nSurveyElement
 }
 
 export type QuestionChoice = {
-  text: string
+  text: I18nSurveyElement
   value: string
 }
 
 type WithOtherOption<T> = T & {
   showOtherItem?: boolean
-  otherText?: string
-  otherPlaceholder?: string
-  otherErrorText?: string
+  otherText?: I18nSurveyElement
+  otherPlaceholder?: I18nSurveyElement
+  otherErrorText?: I18nSurveyElement
 }
 
 export type CheckboxQuestion = WithOtherOption<TitledQuestion & {
   type: 'checkbox'
   choices: QuestionChoice[]
   showNoneItem?: boolean
-  noneText?: string
-  noneValue?: string
+  noneText?: I18nSurveyElement
+  noneValue?: I18nSurveyElement
 }>
 
 export type DropdownQuestion = WithOtherOption<TitledQuestion & {
@@ -187,7 +209,7 @@ export type MedicationsQuestion = TitledQuestion & {
 
 export type HtmlQuestion = BaseQuestion & {
   type: 'html',
-  html: string
+  html: I18nSurveyElement
 }
 
 export type Question =

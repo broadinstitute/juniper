@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.EnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
@@ -34,7 +33,6 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
     public void testFetchKitStatus(TestInfo info) throws Exception {
         // Arrange
         Study study = studyFactory.buildPersisted(getTestName(info));
-        environmentFactory.buildPersisted(getTestName(info), EnvironmentName.sandbox);
         StudyEnvironment studyEnvironment = studyEnvironmentService.create(
                 studyEnvironmentFactory.builder(getTestName(info))
                         .studyId(study.getId())
@@ -45,7 +43,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kit = kitRequestFactory.buildPersisted(getTestName(info), enrollee);
 
         // Act
-        PepperKit kitStatus = stubPepperDSMClient.fetchKitStatus(kit.getId());
+        PepperKit kitStatus = stubPepperDSMClient.fetchKitStatus(new StudyEnvironmentConfig(), kit.getId());
 
         // Assert
         assertThat(kitStatus, hasProperty("currentStatus", equalTo("SENT")));
@@ -56,7 +54,6 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
     public void testFetchKitStatusByStudy(TestInfo testInfo) throws Exception {
         String testName = getTestName(testInfo);
         Study study = studyFactory.buildPersisted(testName);
-        environmentFactory.buildPersisted(testName, EnvironmentName.sandbox);
         StudyEnvironment studyEnvironment = studyEnvironmentService.create(
                 studyEnvironmentFactory.builder(testName)
                         .studyId(study.getId())
@@ -68,7 +65,7 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
         KitRequest kitRequest = kitRequestFactory.buildPersisted(testName, enrollee, PepperKitStatus.SENT);
 
         // Act
-        Collection<PepperKit> kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        Collection<PepperKit> kitStatuses = stubPepperDSMClient.fetchKitStatusByStudy(study.getShortcode(), new StudyEnvironmentConfig());
 
         // Assert
         assertThat(kitStatuses.size(), equalTo(1));
@@ -84,8 +81,6 @@ class StubPepperDSMClientTest extends BaseSpringBootTest {
 
     @Autowired
     private EnrolleeFactory enrolleeFactory;
-    @Autowired
-    private EnvironmentFactory environmentFactory;
     @Autowired
     private KitRequestFactory kitRequestFactory;
     @Autowired

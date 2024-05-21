@@ -5,7 +5,12 @@ import _groupBy from 'lodash/groupBy'
 import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
 import {
   ColumnDef,
-  getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, useReactTable, VisibilityState
+  getCoreRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+  VisibilityState
 } from '@tanstack/react-table'
 
 import Api, { KitRequest } from 'api/api'
@@ -22,6 +27,7 @@ import { faRefresh } from '@fortawesome/free-solid-svg-icons'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useUser } from '../../user/UserProvider'
+import { KitRequestDetails } from '../participants/KitRequests'
 
 type KitStatusTabConfig = {
   statuses: string[],
@@ -155,7 +161,7 @@ export default function KitList({ studyEnvContext }: { studyEnvContext: StudyEnv
           </NavLink>
         })}
         <div className="ms-auto">
-          {user.superuser && <Button variant="secondary" onClick={refreshStatuses}>
+          {user?.superuser && <Button variant="secondary" onClick={refreshStatuses}>
             {!isRefreshing && <span>Refresh <FontAwesomeIcon icon={faRefresh}/></span>}
             {isRefreshing && <LoadingSpinner/>}
           </Button> }
@@ -240,6 +246,11 @@ function KitListView({ studyEnvContext, tab, kits, initialColumnVisibility }: {
     header: 'Status',
     accessorKey: 'status',
     cell: data => <KitStatusCell kitRequest={data.row.original} infoPlacement='left'/>,
+    enableColumnFilter: false
+  }, {
+    header: 'Details',
+    accessorKey: 'details',
+    cell: ({ row }) => <KitRequestDetails kitRequest={row.original}/>,
     enableColumnFilter: false
   }]
 

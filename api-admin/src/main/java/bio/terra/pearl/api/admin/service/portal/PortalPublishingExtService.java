@@ -44,10 +44,6 @@ public class PortalPublishingExtService {
     if (!user.isSuperuser()) {
       throw new PermissionDeniedException("You do not have permission to update environments");
     }
-    try {
-      return portalPublishingService.applyChanges(portalShortcode, destEnv, change, user);
-    } catch (Exception e) {
-      throw new IllegalArgumentException(e);
-    }
+    return portalPublishingService.applyChanges(portalShortcode, destEnv, change, user);
   }
 }

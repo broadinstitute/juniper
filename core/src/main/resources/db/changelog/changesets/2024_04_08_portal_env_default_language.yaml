@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: portal_env_config_default_language
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: portal_environment_config
+            columns:
+              - column: { name: default_language, type: text, constraints: { nullable: false }, defaultValue: 'en' }
+        - dropColumn:
+            tableName: site_content
+            columnName: default_language

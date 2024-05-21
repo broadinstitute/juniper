@@ -13,7 +13,8 @@ test('renders a copy link', () => {
       initialized: true,
       acceptingRegistration: false,
       passwordProtected: false,
-      password: ''
+      password: '',
+      defaultLanguage: 'en'
     },
     supportedLanguages: []
   }
@@ -23,7 +24,8 @@ test('renders a copy link', () => {
       initialized: false,
       acceptingRegistration: false,
       passwordProtected: false,
-      password: ''
+      password: '',
+      defaultLanguage: 'en'
     },
     supportedLanguages: []
   }

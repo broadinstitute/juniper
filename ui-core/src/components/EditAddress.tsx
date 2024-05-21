@@ -3,28 +3,35 @@ import classNames from 'classnames'
 import { isNil, sortBy } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { getAllCountries } from '../i18nUtils'
-import { isAddressFieldValid } from '../addressUtils'
+import { getErrorsByField, isAddressFieldValid } from '../addressUtils'
 import CreatableSelect from 'react-select/creatable'
+import { useI18n } from '../participant/I18nProvider'
 
 /**
- *
+ * Editable address component. Displays errors if a validation result is provided,
+ * but does not have any modals for, e.g., suggest address or the full editing workflow.
  */
-export default function EditAddress(
+export function EditAddress(
   {
     mailingAddress,
     setMailingAddress,
     validationResult,
     showLabels = true,
-    language = 'en' // todo: accept internationalized labels, see JN-910 for implementation
+    showErrors = true
   }: {
     mailingAddress: MailingAddress,
     setMailingAddress: (updated: React.SetStateAction<MailingAddress>) => void,
     validationResult?: AddressValidationResult,
-    showLabels: boolean,
-    language: string
+    showLabels?: boolean,
+    showErrors?: boolean
   }
 ) {
   const [hasChangedSinceValidation, setHasChangedSinceValidation] = useState<string[]>([])
+
+  const {
+    selectedLanguage,
+    i18n
+  } = useI18n()
 
   const onFieldChange = (field: keyof MailingAddress, value: string) => {
     if (!hasChangedSinceValidation.includes(field)) {
@@ -43,7 +50,7 @@ export default function EditAddress(
     setHasChangedSinceValidation([])
   }, [validationResult])
 
-  const countryOptions = getAllCountries(language).map(
+  const countryOptions = getAllCountries(selectedLanguage).map(
     country => {
       return {
         value: country.code,
@@ -93,7 +100,7 @@ export default function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          Street 1
+          {i18n('street1')}
         </label>
         <input
           className={classNames(
@@ -104,7 +111,7 @@ export default function EditAddress(
           type="text"
           id="street1"
           value={mailingAddress.street1 || ''}
-          placeholder={'Street 1'}
+          placeholder={i18n('street1')}
           onChange={e => onFieldChange('street1', e.target.value)}/>
       </div>
     </div>
@@ -114,7 +121,7 @@ export default function EditAddress(
         className={'fs-6 fw-bold'}
         hidden={!showLabels}
       >
-        Street 2
+        {i18n('street2')}
       </label>
       <div className="col">
         <input
@@ -125,7 +132,7 @@ export default function EditAddress(
             })}
           type="text" value={mailingAddress.street2 || ''}
           id="street2"
-          placeholder={'Street 2'}
+          placeholder={i18n('street2')}
           onChange={e => onFieldChange('street2', e.target.value)}/>
       </div>
     </div>
@@ -136,7 +143,7 @@ export default function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          City
+          {i18n('city')}
         </label>
         <input
           className={classNames(
@@ -146,7 +153,7 @@ export default function EditAddress(
             })}
           type="text" value={mailingAddress.city || ''}
           id="city"
-          placeholder={'City'}
+          placeholder={i18n('city')}
           onChange={e => onFieldChange('city', e.target.value)}/>
       </div>
       <div className='col'>
@@ -155,7 +162,7 @@ export default function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          State
+          {i18n('state')}
         </label>
         <input
           className={classNames(
@@ -165,7 +172,7 @@ export default function EditAddress(
             })}
           type="text" value={mailingAddress.state || ''}
           id="state"
-          placeholder={'State/Province'}
+          placeholder={i18n('state')}
           onChange={e => onFieldChange('state', e.target.value)}/>
       </div>
     </div>
@@ -176,7 +183,7 @@ export default function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          Postal Code
+          {i18n('postalCode')}
         </label>
         <input
           className={classNames(
@@ -186,7 +193,7 @@ export default function EditAddress(
             })}
           type="text" value={mailingAddress.postalCode || ''}
           id="postalCode"
-          placeholder={'Postal Code'}
+          placeholder={i18n('postalCode')}
           onChange={e => onFieldChange('postalCode', e.target.value)}/>
       </div>
       <div className='col'>
@@ -195,7 +202,7 @@ export default function EditAddress(
           className={'fs-6 fw-bold'}
           hidden={!showLabels}
         >
-          Country
+          {i18n('country')}
         </label>
         <CreatableSelect
           styles={{
@@ -204,7 +211,7 @@ export default function EditAddress(
               borderColor: 'var(--bs-border-color)' // use same border color as all other components
             })
           }}
-          placeholder={'Country'}
+          placeholder={i18n('country')}
           id="country"
           options={sortBy(countryOptions, opt => opt.label)}
           value={{
@@ -215,6 +222,12 @@ export default function EditAddress(
           onChange={val => onFieldChange('country', val ? val.value : '')}
         />
       </div>
+
+      {
+        showErrors && Object.values(getErrorsByField(validationResult, i18n)).map(
+          errors => errors.map(error => <div key={error} className={'text-danger'}>{error}</div>)
+        )
+      }
     </div>
   </>
 }

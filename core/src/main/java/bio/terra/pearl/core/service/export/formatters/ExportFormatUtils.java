@@ -5,6 +5,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -29,7 +30,9 @@ public class ExportFormatUtils {
             Double.class, DataValueExportType.NUMBER,
             Integer.class, DataValueExportType.NUMBER,
             LocalDate.class, DataValueExportType.DATE,
-            Instant.class, DataValueExportType.DATE_TIME
+            Instant.class, DataValueExportType.DATE_TIME,
+            Boolean.class, DataValueExportType.BOOLEAN,
+            boolean.class, DataValueExportType.BOOLEAN
     );
     public static String formatBoolean(Boolean bool) {
         return bool.toString();
@@ -39,9 +42,27 @@ public class ExportFormatUtils {
         return localDate.format(DateTimeFormatter.ofPattern(ANALYSIS_DATE_FORMAT));
     }
 
+    public static LocalDate importLocalDate(String localDateString) {
+        if (StringUtils.isBlank(localDateString)) {
+            return null;
+        }
+        return LocalDate.parse(localDateString, DateTimeFormatter.ofPattern(ANALYSIS_DATE_FORMAT));
+    }
+
     public static String formatInstant(Instant instant) {
         return DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
                 .withZone(ZoneOffset.UTC).format(instant);
+    }
+
+    public static Instant importInstant(String instantString) {
+        if (StringUtils.isBlank(instantString)) {
+            return null;
+        }
+        return Instant.from(
+                DateTimeFormatter.ofPattern(ANALYSIS_DATE_TIME_FORMAT)
+                        .withZone(ZoneId.of("Z")) // for now do everything in UTC
+                        .parse(instantString)
+        );
     }
 
     /** simple property formatter -- just branches on the class of the thing to format */
@@ -77,6 +98,17 @@ public class ExportFormatUtils {
         String spacedString = camelCased.replace(".", " - ");
         return StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(
                         StringUtils.capitalize(spacedString)), " ");
+    }
+
+    public static Object getValueFromString(String exportString, DataValueExportType dataType) {
+        if (dataType.equals(DataValueExportType.DATE_TIME)) {
+            return ExportFormatUtils.importInstant(exportString);
+        } else if (dataType.equals(DataValueExportType.DATE)) {
+            return ExportFormatUtils.importLocalDate(exportString);
+        } else if (dataType.equals(DataValueExportType.BOOLEAN)) {
+            return Boolean.valueOf(exportString);
+        }
+        return exportString;
     }
 
 }

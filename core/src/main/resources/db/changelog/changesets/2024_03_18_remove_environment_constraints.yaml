@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: "remove_environment_constraints"
+      author: mbemis
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: participant_user
+            constraintName: fk_participant_user_environment
+        - dropForeignKeyConstraint:
+            baseTableName: portal_environment
+            constraintName: fk_portal_environment_environment
+        - dropForeignKeyConstraint:
+            baseTableName: study_environment
+            constraintName: fk_study_environment_environment
+        - dropTable:
+            tableName: environment

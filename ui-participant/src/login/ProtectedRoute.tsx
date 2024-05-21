@@ -12,7 +12,7 @@ export const ProtectedRoute = ({ children }: { children?: ReactNode }) => {
 
   const loginComponent = process.env.REACT_APP_UNAUTHED_LOGIN ? <LoginUnauthed/> : <Login/>
 
-  if (user.isAnonymous) {
+  if (!user) {
     return loginComponent
   }
 

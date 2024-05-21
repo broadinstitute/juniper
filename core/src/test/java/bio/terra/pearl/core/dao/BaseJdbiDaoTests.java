@@ -25,7 +25,10 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 
 public class BaseJdbiDaoTests extends BaseSpringBootTest {
     /** we use the portalDao to test base capability since it doesn't have any required foreign keys */
@@ -77,15 +80,15 @@ public class BaseJdbiDaoTests extends BaseSpringBootTest {
     @Transactional
     public void testFindAllByTwoPropertiesArray(TestInfo testInfo) {
         Survey surveyA1 = surveyFactory.buildPersisted(
-                surveyFactory.builder(getTestName(testInfo)).stableId("A").version(1));
+                surveyFactory.builderWithDependencies(getTestName(testInfo)).stableId("A").version(1));
         Survey surveyA2 = surveyFactory.buildPersisted(
-                surveyFactory.builder(getTestName(testInfo)).stableId("A").version(2));
+                surveyFactory.builderWithDependencies(getTestName(testInfo)).stableId("A").version(2));
         Survey surveyB1 = surveyFactory.buildPersisted(
-                surveyFactory.builder(getTestName(testInfo)).stableId("B").version(1));
+                surveyFactory.builderWithDependencies(getTestName(testInfo)).stableId("B").version(1));
         Survey surveyB2 = surveyFactory.buildPersisted(
-                surveyFactory.builder(getTestName(testInfo)).stableId("B").version(2));
+                surveyFactory.builderWithDependencies(getTestName(testInfo)).stableId("B").version(2));
         Survey surveyC1 = surveyFactory.buildPersisted(
-                surveyFactory.builder(getTestName(testInfo)).stableId("C").version(1));
+                surveyFactory.builderWithDependencies(getTestName(testInfo)).stableId("C").version(1));
 
         List<Survey> surveys = surveyDao.findAllByTwoProperties(
                 "stable_id", List.of("B", "A"), "version", List.of(1, 2));

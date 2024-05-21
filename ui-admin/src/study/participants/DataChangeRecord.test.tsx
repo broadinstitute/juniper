@@ -3,25 +3,10 @@ import React from 'react'
 import DataChangeRecords from './DataChangeRecords'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { render, screen, Screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import Api, { DataChangeRecord } from '../../api/api'
+import { assertRowContents, getRows } from 'test-utils/table-utils'
 
-
-const assertRowContents = (
-  row: Node, ...contains: string[]
-) => {
-  contains.forEach(shouldBePresent => {
-    expect(row).toHaveTextContent(shouldBePresent)
-  })
-}
-
-const getRows = (screen: Screen): Node[] => {
-  const table = screen.getByRole('table')
-
-  // first row group is header
-  const tbody = within(table).getAllByRole('rowgroup')[1]
-  return within(tbody).getAllByRole('row')
-}
 
 test('renders basic data change records', async () => {
   const enrollee = mockEnrollee()
@@ -48,7 +33,7 @@ test('renders basic data change records', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -79,7 +64,7 @@ test('basic object changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -111,7 +96,7 @@ test('object deletion changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -142,7 +127,7 @@ test('object creation changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -177,7 +162,7 @@ test('nested object changes', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -210,7 +195,7 @@ test('nested object creation', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)
@@ -244,7 +229,7 @@ test('nested object deletion', async () => {
     }
   ]
 
-  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockImplementation(() => Promise.resolve(dataChangeRecords))
+  jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue(dataChangeRecords)
 
   const { RoutedComponent } = setupRouterTest(
     <DataChangeRecords enrollee={enrollee} studyEnvContext={studyEnvContext} />)

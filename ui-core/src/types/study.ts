@@ -1,4 +1,4 @@
-import { ConsentForm, Survey } from './forms'
+import { Survey } from './forms'
 
 export type Study = {
   name: string
@@ -15,16 +15,18 @@ export type StudyEnvironment = {
   studyEnvironmentConfig: StudyEnvironmentConfig
   preEnrollSurvey?: Survey
   preEnrollSurveyId?: string
-  configuredConsents: StudyEnvironmentConsent[]
   configuredSurveys: StudyEnvironmentSurvey[]
   triggers: Trigger[]
 }
 
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
+  acceptingProxyEnrollment: boolean
   initialized: boolean
   passwordProtected: boolean
   password: string
+  useStubDsm: boolean
+  useDevDsmRealm: boolean
 }
 
 export type StudyEnvironmentSurvey = {
@@ -39,18 +41,6 @@ export type StudyEnvironmentSurvey = {
 
 export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
   envName: EnvironmentName
-}
-
-export type StudyEnvironmentConsent = {
-  id: string
-  consentForm: ConsentForm
-  consentFormId: string
-  studyEnvironmentId: string
-  consentOrder: number
-  allowAdminEdit: boolean
-  allowParticipantStart: boolean
-  allowParticipantReedit: boolean
-  prepopulate: boolean
 }
 
 export type Trigger = {
@@ -73,11 +63,17 @@ export type Trigger = {
 
 export type EmailTemplate = {
   id?: string  // id may not be present if the template is newly created client-side
+  stableId: string
+  name: string
+  version: number
+  localizedEmailTemplates: LocalizedEmailTemplate[]
+}
+
+export type LocalizedEmailTemplate = {
+  id?: string  // id may not be present if the template is newly created client-side
   subject: string
   body: string
-  name: string
-  stableId: string
-  version: number
+  language: string
 }
 
 export {}

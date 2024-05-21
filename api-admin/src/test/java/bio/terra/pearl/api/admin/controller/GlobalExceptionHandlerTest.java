@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import bio.terra.pearl.api.admin.controller.study.StudyController;
 import bio.terra.pearl.api.admin.model.ErrorReport;
+import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
 import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -18,6 +19,8 @@ import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.populate.service.FilePopulateService;
+import bio.terra.pearl.populate.service.StudyPopulator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -52,6 +55,8 @@ public class GlobalExceptionHandlerTest {
   @Autowired private StudyController studyController;
   @SpyBean private GlobalExceptionHandler globalExceptionHandler;
   @MockBean private PortalService portalService;
+  @MockBean private StudyPopulator studyPopulator;
+  @MockBean private FilePopulateService filePopulateService;
 
   @Test
   void testBuildErrorReport() {
@@ -84,8 +89,7 @@ public class GlobalExceptionHandlerTest {
         .create(any());
 
     String portalShortCode = "portal1";
-    StudyExtService.StudyCreationDto studyCreationDto =
-        new StudyExtService.StudyCreationDto("studyShortCode", "studyName");
+    StudyCreationDto studyCreationDto = new StudyCreationDto("studyShortCode", "studyName");
     MockHttpServletRequestBuilder request =
         post("/api/portals/v1/%s/studies".formatted(portalShortCode))
             .contentType(MediaType.APPLICATION_JSON)

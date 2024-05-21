@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react'
 import Api, { PreEnrollmentResponse, Survey } from 'api/api'
-import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils' // eslint-disable-line max-len
+import { getResumeData, getSurveyJsAnswerList, useSurveyJSModel } from 'util/surveyJsUtils'
 import { useNavigate } from 'react-router-dom'
 import { StudyEnrollContext } from './StudyEnrollRouter'
-import { useUser } from 'providers/UserProvider'
+import { useI18n } from '@juniper/ui-core'
+import SurveyReviewModeButton from 'hub/survey/ReviewModeButton'
+import SurveyAutoCompleteButton from 'hub/survey/SurveyAutoCompleteButton'
 
 /**
  * pre-enrollment surveys are expected to have a calculated value that indicates
@@ -14,8 +16,8 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
-  const { studyEnv, updatePreEnrollResponseId } = enrollContext
-  const { selectedLanguage } = useUser()
+  const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment } = enrollContext
+  const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
   // for now, we assume all pre-screeners are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
@@ -24,11 +26,10 @@ export default function PreEnrollView({ enrollContext, survey }:
     null,
     handleComplete,
     pager,
-    undefined,
-    { extraCssClasses: { container: 'my-0' } }
+    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
   )
 
-  surveyModel.locale = selectedLanguage
+  surveyModel.locale = selectedLanguage || 'default'
 
   /** submit the form */
   function handleComplete() {
@@ -63,11 +64,18 @@ export default function PreEnrollView({ enrollContext, survey }:
     })
   }
 
+
   useEffect(() => {
     // if we're on this page, make sure we clear out any saved response ids -- this handles cases where the user
     // uses the back button
     updatePreEnrollResponseId(null)
   }, [])
 
-  return <div className="d-flex flex-grow-1">{SurveyComponent}</div>
+  return (
+    <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
+      <SurveyReviewModeButton surveyModel={surveyModel}/>
+      <SurveyAutoCompleteButton surveyModel={surveyModel}/>
+      {SurveyComponent}
+    </div>
+  )
 }

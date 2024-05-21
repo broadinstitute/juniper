@@ -12,8 +12,7 @@ export const mockAdminUser = (superuser: boolean): AdminUser => {
     superuser,
     token: 'fakeToken',
     portalAdminUsers: [],
-    portalPermissions: {},
-    isAnonymous: false
+    portalPermissions: {}
   }
 }
 

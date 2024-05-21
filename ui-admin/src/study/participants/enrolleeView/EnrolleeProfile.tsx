@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, MailingAddress, Profile } from 'api/api'
+import Api, { Enrollee, MailingAddress, PortalEnvironment, Profile } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { dateToDefaultString, javaLocalDateToJsDate, jsDateToJavaLocalDate } from '@juniper/ui-core'
+import {
+  dateToDefaultString,
+  findDifferencesBetweenObjects,
+  javaLocalDateToJsDate,
+  jsDateToJavaLocalDate,
+  PortalEnvironmentLanguage
+} from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import JustifyChangesModal from '../JustifyChangesModal'
-import { findDifferencesBetweenObjects } from 'util/objectUtils'
 import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
+import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardRow, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -27,6 +33,9 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   const [isDirty, setIsDirty] = useState<boolean>(false)
   const [editedProfile, setEditedProfile] = useState<Profile>(cloneDeep(enrollee.profile))
   const [showJustifyAndSaveModal, setShowJustifyAndSaveModal] = useState<boolean>(false)
+  const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
+    env.environmentName === studyEnvContext.currentEnv.environmentName)
+  const supportedLanguages = portalEnv?.supportedLanguages || []
 
   const saveProfile = async (justification: string) => {
     await doApiLoad(async () => {
@@ -51,27 +60,27 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   }
 
   return <div>
-    <div className="card w-75 border shadow-sm mb-3">
-      <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
-        <div className="fw-bold lead">{editMode ? 'Edit Profile' : 'Profile'}</div>
+    <InfoCard>
+      <InfoCardHeader>
+        <InfoCardTitle title={editMode ? 'Edit Profile' : 'Profile'}/>
         {!editMode && <button className="mx-2 btn btn-light text-primary" onClick={() => setEditMode(true)}>
           <FontAwesomeIcon icon={faPencil} className={'me-2'}/>
-            Edit
+          Edit
         </button>}
         {editMode && <div className="flex-grow-1 d-flex justify-content-end">
           <button className="btn btn-primary mx-2 " disabled={!isDirty}
             onClick={() => setShowJustifyAndSaveModal(true)}>
-                Next: Add Justification
+            Next: Add Justification
           </button>
           <button className="btn btn-outline-primary" onClick={() => setEditMode(false)}>Cancel</button>
         </div>}
-      </div>
-      <div className="card-body d-flex flex-row flex-wrap">
+      </InfoCardHeader>
+      <InfoCardBody>
         {editMode
           ? <EditableProfile profile={editedProfile} setProfile={onProfileUpdate}/>
-          : <ReadOnlyProfile profile={enrollee.profile}/>}
-      </div>
-    </div>
+          : <ReadOnlyProfile profile={enrollee.profile} supportedLanguages={supportedLanguages}/>}
+      </InfoCardBody>
+    </InfoCard>
 
     {
       showJustifyAndSaveModal && (
@@ -92,23 +101,27 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
  * Read only view of the profile.
  */
 function ReadOnlyProfile(
-  { profile }: {
-    profile: Profile
+  { profile, supportedLanguages }: {
+    profile: Profile, supportedLanguages: PortalEnvironmentLanguage[]
   }
 ) {
   const mailingAddress = profile.mailingAddress
 
   return <>
-    <ReadOnlyRow title={'Name'}
+    <InfoCardValue title={'Name'}
       values={[
                    `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
       ]}/>
-    <ReadOnlyRow title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
+    <InfoCardValue title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
-    <ReadOnlyRow title={'Email'} values={[profile.contactEmail]}/>
-    <ReadOnlyRow title={'Phone'} values={[profile.phoneNumber]}/>
-    <ReadOnlyRow title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
-    <ReadOnlyRow title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
+    <InfoCardValue title={'Email'} values={[profile.contactEmail]}/>
+    <InfoCardValue title={'Phone'} values={[profile.phoneNumber]}/>
+    <InfoCardValue title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
+    <InfoCardValue title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
+    { supportedLanguages.length > 0 &&
+        <InfoCardValue title={'Preferred Language'} values={[supportedLanguages.find(lang =>
+          lang.languageCode === profile.preferredLanguage)?.languageName || '']}/>
+    }
   </>
 }
 
@@ -142,7 +155,7 @@ function EditableProfile(
   }
 
   return <>
-    <FormRow title={'Name'}>
+    <InfoCardRow title={'Name'}>
       <div className='row'>
         <div className='col'>
           <input className="form-control" type="text" value={profile.givenName || ''}
@@ -155,8 +168,8 @@ function EditableProfile(
             onChange={e => onFieldChange('familyName', e.target.value)}/>
         </div>
       </div>
-    </FormRow>
-    <FormRow title={'Birthdate'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Birthdate'}>
       <div className='row'>
         <div className="col">
           <input className="form-control" type="date"
@@ -166,22 +179,22 @@ function EditableProfile(
         </div>
         <div className="col"/>
       </div>
-    </FormRow>
+    </InfoCardRow>
     <EditMailingAddressRow
       title={'Primary Address'} mailingAddress={profile.mailingAddress}
       onFieldChange={onFieldChange}
     />
-    <FormRow title={'Email'}>
+    <InfoCardRow title={'Email'}>
       <input className="form-control" type="text" value={profile.contactEmail || ''}
         placeholder={'Contact Email'} aria-label={'Contact Email'}
         onChange={e => onFieldChange('contactEmail', e.target.value)}/>
-    </FormRow>
-    <FormRow title={'Phone'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Phone'}>
       <input className="form-control" type="text" value={profile.phoneNumber || ''}
         placeholder={'Phone Number'} aria-label={'Phone'}
         onChange={e => onFieldChange('phoneNumber', e.target.value)}/>
-    </FormRow>
-    <FormRow title={'Notifications'}>
+    </InfoCardRow>
+    <InfoCardRow title={'Notifications'}>
       <div className='row mt-2'>
         <div className="col-auto">
           <div className="form-check">
@@ -205,28 +218,10 @@ function EditableProfile(
           </div>
         </div>
       </div>
-    </FormRow>
+    </InfoCardRow>
   </>
 }
 
-/**
- * Row of readonly data, where the title takes the leftmost portion and the values are on the rightmost.
- */
-function ReadOnlyRow(
-  { title, values }: {
-    title: string,
-    values: string[]
-  }
-) {
-  return <FormRow title={title}>
-    {(isEmpty(values) || values.every(isEmpty)) && <p className="fst-italic mb-0 mt-2 text-muted">None provided</p>}
-    {
-      values.filter(val => !isEmpty(val)).map((val, idx) => (
-        <p key={idx} className={`mb-0 ${idx == 0 ? 'mt-2' : ''}`}>{val}</p>
-      ))
-    }
-  </FormRow>
-}
 
 /**
  * Displays the given mailing address as a row within the profile
@@ -256,31 +251,12 @@ export function ReadOnlyMailingAddress(
 
     return outPieces.join(' ').trim()
   }
-  return <ReadOnlyRow title={title} values={[
+  return <InfoCardValue title={title} values={[
     mailingAddress.street1 || '',
     mailingAddress.street2 || '',
     createCityStatePostalRow(),
     mailingAddress.country || ''
   ]}/>
-}
-
-/**
- * One row of the profile's data.
- */
-function FormRow(
-  { title, children }: {
-    title: string,
-    children: React.ReactNode
-  }
-) {
-  return <>
-    <div className="w-25 fw-bold mb-4 mt-2" aria-label={title}>
-      {title}
-    </div>
-    <div className="w-75 mb-4">
-      {children}
-    </div>
-  </>
 }
 
 
@@ -299,9 +275,9 @@ function EditMailingAddressRow(
     onFieldChange('mailingAddress', editableMailingAddress)
   }, [editableMailingAddress])
 
-  return <FormRow title={title}>
+  return <InfoCardRow title={title}>
     <EditMailingAddress
       mailingAddress={editableMailingAddress}
       setMailingAddress={setEditableMailingAddress}/>
-  </FormRow>
+  </InfoCardRow>
 }

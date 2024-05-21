@@ -68,16 +68,6 @@ public class SiteMediaServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAddsCleanFileName(TestInfo info) {
-        SiteMedia image = siteMediaFactory.builderWithDependencies(getTestName(info))
-                .cleanFileName(null)
-                .build();
-        SiteMedia savedImage = siteMediaService.create(image);
-        assertThat(savedImage.getCleanFileName(), equalTo(SiteMediaService.cleanFileName(image.getUploadFileName())));
-    }
-
-    @Test
-    @Transactional
     public void testSanitizesCleanFileName(TestInfo info) {
         String dirtyFileName = getTestName(info) + " with spaces.png";
         SiteMedia image = siteMediaFactory.builderWithDependencies(getTestName(info))

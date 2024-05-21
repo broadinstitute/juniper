@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.Environment;
 import bio.terra.pearl.core.model.EnvironmentName;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +27,6 @@ public class ParticipantUser extends BaseEntity {
     private boolean withdrawn = false;
 
     private EnvironmentName environmentName;
-    private Environment environment;
-
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-        this.environmentName = environment.getName();
-    }
 
     @Builder.Default
     private Set<PortalParticipantUser> portalParticipantUsers = new HashSet<>();
@@ -41,13 +34,10 @@ public class ParticipantUser extends BaseEntity {
     public static abstract class ParticipantUserBuilder<C extends ParticipantUser, B extends ParticipantUser.ParticipantUserBuilder<C, B>>
                 extends BaseEntity.BaseEntityBuilder<C, B> {
         @Getter
-        private Environment environment;
-        @Getter
         private EnvironmentName environmentName;
 
-        public ParticipantUserBuilder environment(Environment environment) {
-            this.environment = environment;
-            this.environmentName = environment.getName();
+        public ParticipantUserBuilder environmentName(EnvironmentName environment) {
+            this.environmentName = environment;
             return this;
         }
     }

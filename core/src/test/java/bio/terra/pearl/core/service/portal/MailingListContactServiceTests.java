@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.portal.MailingListContactFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,8 @@ public class MailingListContactServiceTests extends BaseSpringBootTest {
 
         MailingListContact contact = mailingListContactFactory.builder(getTestName(info))
                 .portalEnvironmentId(portalEnv.getId()).build();
-        MailingListContact savedContact = mailingListContactService.create(contact);
+        DataAuditInfo auditInfo = DataAuditInfo.builder().build();
+        MailingListContact savedContact = mailingListContactService.create(contact, auditInfo);
         DaoTestUtils.assertGeneratedProperties(savedContact);
 
         List<MailingListContact> foundContacts = mailingListContactService.findByPortalEnv(portalEnv.getId());

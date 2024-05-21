@@ -4,11 +4,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import LandingPage from './LandingPage'
 import { expectNever, setupRouterTest } from 'test-utils/router-testing-utils'
 import {
-  mockLocalSiteContent,
-  mockPortal,
-  mockPortalEnvironment
+  mockLocalSiteContent, mockUsePortalEnv
 } from 'test-utils/test-portal-factory'
-import { MockI18nProvider } from 'test-utils/i18n-testing-utils'
+import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => {
   return {
@@ -19,18 +17,13 @@ jest.mock('providers/PortalProvider', () => {
 
 describe('LandingPage', () => {
   beforeEach(() => {
-    // @ts-expect-error "TS doesn't know about mocks"
-    usePortalEnv.mockReturnValue({
-      portal: mockPortal(),
-      portalEnv: mockPortalEnvironment(),
-      localContent: mockLocalSiteContent()
-    })
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
   })
 
   it('handles trivial landing page', () => {
     const { RoutedComponent } =
             setupRouterTest(
-              <MockI18nProvider mockTexts={{}}>
+              <MockI18nProvider>
                 <LandingPage localContent={mockLocalSiteContent()}/>
               </MockI18nProvider>
             )
@@ -44,7 +37,7 @@ describe('LandingPage', () => {
   it('shows mailing list modal if url param is present', () => {
     const { RoutedComponent } =
             setupRouterTest(
-              <MockI18nProvider mockTexts={{}}>
+              <MockI18nProvider>
                 <LandingPage localContent={mockLocalSiteContent()}/>
               </MockI18nProvider>, ['?showJoinMailingList=true'])
     render(RoutedComponent)

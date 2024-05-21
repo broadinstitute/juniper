@@ -1,18 +1,13 @@
 package bio.terra.pearl.core.model.participant;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import bio.terra.pearl.core.model.BaseEntity;
-import bio.terra.pearl.core.model.consent.ConsentResponse;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
+import java.util.UUID;
 
 /** represents a relation between two enrollees.
  * this relationship is directional from the enrollee to the targetEnrollee
@@ -27,6 +22,7 @@ public class EnrolleeRelation extends BaseEntity {
     private UUID enrolleeId;
     private UUID targetEnrolleeId; // note the targetEnrollee does not necessary have to be a subject
     private Enrollee targetEnrollee;
+    private Enrollee enrollee;
     private RelationshipType relationshipType;
     private Instant beginDate;
     private Instant endDate;

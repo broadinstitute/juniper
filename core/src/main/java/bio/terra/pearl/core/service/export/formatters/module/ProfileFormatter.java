@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.ExportOptions;
@@ -33,5 +34,12 @@ public class ProfileFormatter extends BeanModuleFormatter<Profile> {
                 .toList());
         moduleName = PROFILE_MODULE_NAME;
         displayName = "Enrollee profile";
+    }
+
+    @Override
+    public Profile newBean() {
+        return Profile.builder()
+                .mailingAddress(new MailingAddress())
+                .build();
     }
 }

@@ -4,7 +4,7 @@ import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
 import { useTaskIdParam } from './survey/SurveyView'
-import { useI18n } from 'providers/I18nProvider'
+import { useI18n } from '@juniper/ui-core'
 
 type OutreachParams = {
     enrolleeShortcode?: string,
@@ -62,8 +62,11 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
   }
 
   useEffect(() => {
-    loadOutreachActivities()
-  }, [enrollees])
+    if (enrollees.length) {
+      // the component may get rendered with zero enrollees during login/logout, don't bother fetching tasks then
+      loadOutreachActivities()
+    }
+  }, [enrollees.map(enrollee => enrollee.shortcode).join(',')])
 
   useEffect(() => {
     const matchedTask = outreachTasks.find(({ task }) => task.id === outreachParams.taskId)?.task
@@ -84,7 +87,9 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
         return <div className="col-md-6 col-sm-12" key={task.id}>
           <div className="p-4 d-block rounded-3 shadow-sm"
             style={{ background: '#fff', minHeight: '6em' }} key={task.id}>
-            <h3 className="h5">{task.targetName}</h3>
+            <h3 className="h5">
+              {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+            </h3>
             <p className="text-muted">
               {survey.blurb}
             </p>
@@ -96,7 +101,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
           </div>
         </div>
       })}
-      {outreachParams.isOutreachPath && <SurveyModal onDismiss={() => navigate('/hub')}/> }
+      {outreachParams.isOutreachPath && <SurveyModal onDismiss={() => navigate('/hub')}/>}
     </div>
   </div>
 }

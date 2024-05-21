@@ -2,25 +2,39 @@ import React, { useState } from 'react'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import 'survey-core/survey.i18n'
 
-import { FormContent, PortalEnvironmentLanguage, surveyJSModelFromFormContent, useForceUpdate } from '@juniper/ui-core'
+import {
+  createAddressValidator,
+  FormContent,
+  PortalEnvironmentLanguage,
+  surveyJSModelFromFormContent,
+  useForceUpdate,
+  useI18n
+} from '@juniper/ui-core'
 
 import { FormPreviewOptions } from './FormPreviewOptions'
+import Api from 'api/api'
+import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 type FormPreviewProps = {
   formContent: FormContent
   supportedLanguages: PortalEnvironmentLanguage[]
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/**
+ * Renders a preview of a form/survey.
+ */
 export const FormPreview = (props: FormPreviewProps) => {
   const { formContent, supportedLanguages } = props
+  const { defaultLanguage } = usePortalLanguage()
+
+  const { i18n } = useI18n()
 
   const [surveyModel] = useState(() => {
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.ignoreValidation = true
-    model.locale = 'default'
+    model.locale = defaultLanguage.languageCode
+    model.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return model
   })
   const forceUpdate = useForceUpdate()

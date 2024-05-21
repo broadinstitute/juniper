@@ -1,21 +1,20 @@
 import {
-  ConsentResponse,
+  AddressValidationResult,
+  MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
 import { defaultApiErrorHandle } from 'util/error-utils'
+import queryString from 'query-string'
 
 export type {
   Answer,
-  ConsentForm,
-  ConsentResponse,
   HtmlPage,
   HtmlSection,
   LocalSiteContent,
@@ -39,27 +38,29 @@ export type {
   Study,
   StudyEnvironment,
   StudyEnvironmentConfig,
-  StudyEnvironmentConsent,
   StudyEnvironmentSurvey,
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
 
 export type ParticipantUser = {
+  id: string,
   username: string,
   token: string
 };
 
 export type LoginResult = {
   user: ParticipantUser,
-  ppUser: PortalParticipantUser,
+  ppUsers: PortalParticipantUser[],
   enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile: Profile
 }
 
 export type Enrollee = {
   id: string
   consented: boolean
+  subject: boolean
   consentResponses: []
   createdAt: number
   kitRequests: []
@@ -73,17 +74,17 @@ export type Enrollee = {
   studyEnvironmentId: string
   surveyResponses: []
 }
-
-export type MailingAddress = {
-  street1: string,
-  street2: string,
-  city: string,
-  state: string,
-  country: string,
-  postalCode: string
+export type EnrolleeRelation = {
+  id: string
+  relationshipType: string,
+  targetEnrolleeId: string,
+  createdAt: number
+  lastUpdatedAt: number
+  participantUserId: string
 }
 
 export type Profile = {
+  id?: string
   givenName?: string,
   familyName?: string,
   contactEmail?: string,
@@ -92,7 +93,8 @@ export type Profile = {
   mailingAddress?: MailingAddress,
   phoneNumber?: string,
   birthDate?: number[],
-  sexAtBirth?: string
+  sexAtBirth?: string,
+  preferredLanguage?: string,
 }
 
 export type KitRequest = {
@@ -116,11 +118,6 @@ export type RegistrationResponse = {
   participantUser: ParticipantUser,
   portalParticipantUser: PortalParticipantUser,
   profile: Profile
-}
-
-export type ConsentWithResponses = {
-  studyEnvironmentConsent: StudyEnvironmentConsent,
-  consentResponses: ConsentResponse[]
 }
 
 export type SurveyWithResponse = {
@@ -147,6 +144,7 @@ export type TaskWithSurvey = {
 export type PortalParticipantUser = {
   profile: Profile,
   profileId: string,
+  participantUserId: string,
   id: string
 }
 
@@ -209,17 +207,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getPortal(selectedLanguage: string): Promise<Portal> {
+  async getPortal(language?: string): Promise<Portal> {
     const { shortcodeOrHostname, envName } = currentEnvSpec
-    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?language=${selectedLanguage}`
+    const params = queryString.stringify({ language })
+    const url = `${API_ROOT}/public/portals/v1/${shortcodeOrHostname}/env/${envName}?${params}`
     const response = await fetch(url, this.getGetInit())
     const parsedResponse: Portal = await this.processJsonResponse(response)
     updateEnvSpec(parsedResponse.shortcode)
     return parsedResponse
   },
 
-  async getLanguageTexts(selectedLanguage?: string): Promise<Record<string, string>> {
-    const url = `${API_ROOT}/public/i18n/v1${selectedLanguage ? `?language=${selectedLanguage}` : ''}`
+  async getLanguageTexts(selectedLanguage: string, portalShortcode?: string): Promise<Record<string, string>> {
+    const params = queryString.stringify({ portalShortcode, language: selectedLanguage  })
+    const url = `${API_ROOT}/public/i18n/v1?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -295,59 +295,60 @@ export default {
     }
   },
 
-  async register({ preRegResponseId, email, accessToken, isProxy }: {
-    preRegResponseId: string | null, email: string, accessToken: string, isProxy : boolean
+  async register({ preRegResponseId, email, accessToken, preferredLanguage }: {
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
   }): Promise<LoginResult> {
     bearerToken = accessToken
-    let url = `${baseEnvUrl(false)}/register`
-    if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
-    }
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(false)}/register?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
-      body: JSON.stringify({ email, isProxy })
+      body: JSON.stringify({ email })
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  /** same as register, but won't fail if the user already exists */
+  async registerOrLogin({ preRegResponseId, email, accessToken, preferredLanguage }: {
+    preRegResponseId: string | null, email: string, accessToken: string, preferredLanguage: string | null
+  }): Promise<LoginResult> {
+    bearerToken = accessToken
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(false)}/registerOrLogin?${params}`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify({ email })
     })
     return await this.processJsonResponse(response)
   },
 
   /** submits registration data for a particular portal, from an anonymous user */
-  async internalRegister({ preRegResponseId, fullData }: { preRegResponseId: string, fullData: object }):
-    Promise<RegistrationResponse> {
-    let url = `${baseEnvUrl(true)}/internalRegister`
-    if (preRegResponseId) {
-      url += `?preRegResponseId=${preRegResponseId}`
-    }
+  async internalRegister({ preRegResponseId, fullData, preferredLanguage }: {
+    preRegResponseId: string, fullData: object, preferredLanguage: string
+  }):
+      Promise<LoginResult> {
+    const params = queryString.stringify({ preRegResponseId, preferredLanguage })
+    const url = `${baseEnvUrl(true)}/internalRegister?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(fullData)
     })
-    const registrationResponse = await this.processJsonResponse(response) as RegistrationResponse
-    if (registrationResponse?.participantUser?.token) {
-      bearerToken = registrationResponse.participantUser.token
+    const registrationResponse = await this.processJsonResponse(response) as LoginResult
+    if (registrationResponse?.user?.token) {
+      bearerToken = registrationResponse.user.token
     }
     return registrationResponse
   },
 
   /** creates an enrollee for the signed-in user and study.  */
-  async createEnrollee({ studyShortcode, preEnrollResponseId, isProxy }:
-                         { studyShortcode: string, preEnrollResponseId: string | null, isProxy : boolean | false }):
+  async createEnrollee({ studyShortcode, preEnrollResponseId }:
+                         { studyShortcode: string, preEnrollResponseId: string | null }):
     Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee`
-    const queryParams = []
-
-    if (preEnrollResponseId) {
-      queryParams.push(`preEnrollResponseId=${preEnrollResponseId}`)
-    }
-
-    // Adding isProxy to the query parameters
-    queryParams.push(`isProxy=${isProxy}`)
-
-    // Joining all parameters with '&' and appending to the url
-    if (queryParams.length > 0) {
-      url += `?${queryParams.join('&')}`
-    }
+    const params = queryString.stringify({ preEnrollResponseId })
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee?${params}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()
@@ -355,27 +356,17 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async fetchConsentAndResponses({ studyShortcode, stableId, version, enrolleeShortcode }: {
-    studyShortcode: string, enrolleeShortcode: string,
-    stableId: string, version: number
-  }): Promise<ConsentWithResponses> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
-      + `/consents/${stableId}/${version}`
-    const response = await fetch(url, { headers: this.getInitHeaders() })
-    return await this.processJsonResponse(response)
-  },
-
-  async submitConsentResponse({ studyShortcode, stableId, version, enrolleeShortcode, response }: {
-    studyShortcode: string, stableId: string, version: number, response: ConsentResponse, enrolleeShortcode: string
-  }): Promise<HubResponse> {
-    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
-      + `/consents/${stableId}/${version}`
-    const result = await fetch(url, {
+  async createGovernedEnrollee(
+    { studyShortcode, preEnrollResponseId, governedPpUserId }
+          : { studyShortcode: string, preEnrollResponseId: string | null, governedPpUserId: string | null }
+  ): Promise<HubResponse> {
+    const params = queryString.stringify({ preEnrollResponseId, governedPpUserId })
+    const url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee?${params}`
+    const response = await fetch(url, {
       method: 'POST',
-      headers: this.getInitHeaders(),
-      body: JSON.stringify(response)
+      headers: this.getInitHeaders()
     })
-    return await this.processJsonResponse(result)
+    return await this.processJsonResponse(response)
   },
 
   async fetchSurveyAndResponse({ studyShortcode, stableId, version, enrolleeShortcode, taskId }: {
@@ -439,6 +430,16 @@ export default {
       body: JSON.stringify(profile)
     })
     return await this.processJsonResponse(result, { alertErrors })
+  },
+
+  async validateAddress(address: MailingAddress): Promise<AddressValidationResult> {
+    const url = `${baseEnvUrl(false)}/address/validate`
+    const response = await fetch(url, {
+      method: 'PUT',
+      body: JSON.stringify(address),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
   },
 
   async submitMailingListContact(name: string, email: string) {

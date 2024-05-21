@@ -101,7 +101,7 @@ const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContext
       studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName)} className="mx-2">
       <FontAwesomeIcon icon={faArrowLeft}/> Back to dataset list
     </Link>
-    { user.superuser && datasetDetails?.status == 'CREATED' &&
+    {user?.superuser && datasetDetails?.status == 'CREATED' &&
         <button className="btn btn-secondary" onClick={() => setShowDeleteDatasetModal(!showDeleteDatasetModal)}
           aria-label="show or hide export modal">
           <FontAwesomeIcon icon={faTrash}/> Delete dataset

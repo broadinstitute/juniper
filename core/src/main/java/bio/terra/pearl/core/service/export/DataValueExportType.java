@@ -5,5 +5,6 @@ public enum DataValueExportType {
     BOOLEAN,
     NUMBER,
     DATE,
-    DATE_TIME
+    DATE_TIME,
+    OBJECT_STRING
 }

@@ -1,10 +1,9 @@
 import React from 'react'
-import { ConsentResponse, Enrollee, StudyEnvironmentConsent, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
+import { Enrollee, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import EnrolleeSurveyView from '../survey/EnrolleeSurveyView'
-import EnrolleeConsentView from '../consent/EnrolleeConsentView'
 import PreEnrollmentView from '../survey/PreEnrollmentView'
 import EnrolleeTimeline from './EnrolleeTimeline'
 import DataChangeRecords from '../DataChangeRecords'
@@ -29,13 +28,6 @@ export type SurveyWithResponsesT = {
   responses: SurveyResponse[]
 }
 export type ResponseMapT = { [stableId: string]: SurveyWithResponsesT }
-
-
-export type ConsentWithResponsesT = {
-  consent: StudyEnvironmentConsent,
-  responses: ConsentResponse[]
-}
-export type ConsentResponseMapT = { [stableId: string]: ConsentWithResponsesT }
 
 /** loads an enrollee and renders the view for it */
 export default function EnrolleeView({ studyEnvContext }: { studyEnvContext: StudyEnvContextT }) {
@@ -74,19 +66,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     .filter(survey => survey.survey.surveyType === 'RESEARCH')
   const outreachSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'OUTREACH')
-
-  const consents = currentEnv.configuredConsents
-  const consentMap: ConsentResponseMapT = {}
-  consents.forEach(configConsent => {
-    // to match responses to consents, filter using the tasks, since those have the stableIds
-    // this is valid since it's currently enforced that all consents are done as part of a task,
-    const matchedResponseIds = enrollee.participantTasks
-      .filter(task => task.targetStableId === configConsent.consentForm.stableId)
-      .map(task => task.consentResponseId)
-    const matchedResponses = enrollee.consentResponses
-      .filter(response => matchedResponseIds.includes(response.id))
-    consentMap[configConsent.consentForm.stableId] = { consent: configConsent, responses: matchedResponses }
-  })
+  const consentSurveys = surveys
+    .filter(survey => survey.survey.surveyType === 'CONSENT')
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
@@ -120,15 +101,14 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                             PreEnrollment
                       </NavLink>
                     </li>}
-                    {consents.map(consent => {
-                      const stableId = consent.consentForm.stableId
-                      return <li className="mb-2 d-flex justify-content-between align-items-center" key={stableId}>
-                        <NavLink to={`consents/${stableId}`} className={getLinkCssClasses}>
-                          {consent.consentForm.name}
+                    {consentSurveys.map(survey => {
+                      const stableId = survey.survey.stableId
+                      return <li className="mb-2 d-flex justify-content-between
+                        align-items-center" key={stableId}>
+                        <NavLink to={`surveys/${stableId}`} className={getLinkCssClasses}>
+                          {survey.survey.name}
                         </NavLink>
-                        {isConsented(consentMap[stableId].responses) &&
-                          statusDisplayMap['COMPLETE']
-                        }
+                        {badgeForResponses(responseMap[stableId].responses)}
                       </li>
                     })}
                   </ul>}/>
@@ -196,7 +176,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
               </li>
             </ul>
           </div>
-          <div className="participantTabContent flex-grow-1 bg-white p-3">
+          <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
                 <Route path="profile" element={<EnrolleeProfile enrollee={enrollee}
@@ -212,11 +192,6 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
-                <Route path="consents">
-                  <Route path=":consentStableId/*" element={<EnrolleeConsentView enrollee={enrollee}
-                    responseMap={consentMap} studyEnvContext={studyEnvContext}/>}/>
-                  <Route path="*" element={<div>Unknown participant survey page</div>}/>
-                </Route>
                 <Route path="timeline" element={
                   <EnrolleeTimeline enrollee={enrollee} studyEnvContext={studyEnvContext}/>
                 }/>
@@ -261,11 +236,6 @@ export const enrolleeKitRequestPath = (currentEnvPath: string, enrolleeShortcode
   return `${currentEnvPath}/participants/${enrolleeShortcode}/kitRequests`
 }
 
-/** TODO -- this should be computed server-side */
-function isConsented(responses: ConsentResponse[]) {
-  // for now, just check the most recent for consent
-  return responses.length > 0 && responses[responses.length - 1].consented
-}
 
 const statusDisplayMap: Record<ParticipantTaskStatus, React.ReactNode> = {
   'COMPLETE': <FontAwesomeIcon icon={faCircleCheck} style={{ color: '#888' }} title="Complete"/>,

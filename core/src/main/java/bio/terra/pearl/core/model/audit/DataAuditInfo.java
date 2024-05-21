@@ -27,6 +27,7 @@ public class DataAuditInfo {
     private UUID responsibleUserId;
     private UUID responsibleAdminUserId;
     private String systemProcess; // if the change was the result of an automatic process, store Class+method here
+    private Boolean anonymousUser;
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
@@ -46,6 +47,7 @@ public class DataAuditInfo {
         this.responsibleUserId = responsibleEntity.getParticipantUser() != null ? responsibleEntity.getParticipantUser().getId() : null;
         this.responsibleAdminUserId = responsibleEntity.getAdminUser() != null ? responsibleEntity.getAdminUser().getId() : null;
         this.systemProcess = responsibleEntity.getSystemProcess() != null ? responsibleEntity.getSystemProcess() : null;
+        this.anonymousUser = responsibleEntity.getAnonymousUser() != null ? responsibleEntity.getAnonymousUser() : null;
     }
 }
 

@@ -6,13 +6,7 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { instantToDefaultString } from '@juniper/ui-core'
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable
-} from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { Link } from 'react-router-dom'
 import { useUser } from 'user/UserProvider'
@@ -89,7 +83,7 @@ const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) =
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <h4>Datasets</h4>
-        { user.superuser &&
+        {user?.superuser &&
             <Button onClick={() => setShowCreateDatasetModal(!showCreateDatasetModal)}
               variant="light" className="border m-1"
               aria-label="show or export to tdr modal">

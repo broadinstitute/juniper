@@ -3,7 +3,7 @@ import './surveyjs'
 import { cloneDeep } from 'lodash'
 import { SurveyModel } from 'survey-core'
 
-import { FormContent, FormElement, VersionedForm, Answer } from './types/forms'
+import { Answer, FormContent, FormElement, VersionedForm } from './types/forms'
 
 export type SurveyJsResumeData = {
   currentPageNo: number,
@@ -58,7 +58,7 @@ export const surveyJSModelFromFormContent = (formContent: FormContent): SurveyMo
 }
 
 /** Get a VersionedForm's form content. */
-const getFormContent = (form: VersionedForm): FormContent => {
+export const getFormContent = (form: VersionedForm): FormContent => {
   return JSON.parse(form.content) as FormContent
 }
 

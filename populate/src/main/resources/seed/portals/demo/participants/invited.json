@@ -1,0 +1,19 @@
+{
+  "participantUser": {
+    "usernameKey": "invited",
+    "lastLoginHoursAgo": 5
+  },
+  "profile": {
+    "givenName": "Invited",
+    "familyName": "PriorUser",
+    "contactEmail": "invited@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "465 Spruce Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10009"
+    }
+  }
+}

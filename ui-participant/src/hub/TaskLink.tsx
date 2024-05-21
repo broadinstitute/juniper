@@ -5,7 +5,7 @@ import { faCheck, faCircleHalfStroke, faLock, faPrint } from '@fortawesome/free-
 import { faCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { hideVisually } from 'polished'
-import { useI18n } from 'providers/I18nProvider'
+import { useI18n } from '@juniper/ui-core'
 
 export type StatusDisplayInfo = {
   icon: React.ReactNode,
@@ -62,12 +62,14 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
       </div>
       <div className="flex-grow-1 ms-3">
         {isAccessible
-          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>{task.targetName}</Link>
-          : task.targetName}
+          ? <Link to={getTaskPath(task, enrollee.shortcode, studyShortcode)}>
+            {i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
+          </Link>
+          : i18n(`${task.targetStableId}:${task.targetAssignedVersion}`, { defaultValue: task.targetName })}
       </div>
       {task.taskType === 'CONSENT' && task.status === 'COMPLETE' && (
         <div className="ms-3">
-          <Link to={`${getTaskPath(task, enrollee.shortcode, studyShortcode)}/print`}>
+          <Link to={`${getTaskPath(task, enrollee.shortcode, studyShortcode, true)}`}>
             <FontAwesomeIcon icon={faPrint} />
             <span style={hideVisually()}>Print {task.targetName}</span>
           </Link>
@@ -83,18 +85,11 @@ export default function TaskLink({ task, studyShortcode, enrollee }:
 }
 
 /** returns a string for including in a <Link to={}> link to be navigated by the participant */
-export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string, studyShortcode: string): string {
-  if (task.taskType === 'CONSENT') {
-    return `study/${studyShortcode}/enrollee/${enrolleeShortcode}/consent/${task.targetStableId}`
-      + `/${task.targetAssignedVersion}`
-  } else if (task.taskType === 'SURVEY') {
-    return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/survey/${task.targetStableId}`
-      + `/${task.targetAssignedVersion}?taskId=${task.id}`
-  } else if (task.taskType === 'OUTREACH') {
-    return `/hub/study/${studyShortcode}/enrollee/${enrolleeShortcode}/outreach/${task.targetStableId}`
-        + `/${task.targetAssignedVersion}?taskId=${task.id}`
-  }
-  return ''
+export function getTaskPath(task: ParticipantTask, enrolleeShortcode: string,
+  studyShortcode: string, isPrint = false): string {
+  const url = `study/${studyShortcode}/enrollee/${enrolleeShortcode}/${task.taskType.toLowerCase()}`
+  +  `/${task.targetStableId}/${task.targetAssignedVersion}${isPrint ? '/print' : ''}?taskId=${task.id}`
+  return url
 }
 
 /** is the task actionable by the user? the rules are:

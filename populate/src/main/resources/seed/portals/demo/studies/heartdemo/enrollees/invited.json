@@ -1,0 +1,51 @@
+{
+  "linkedUsernameKey": "invited",
+  "shortcode": "HDINVI",
+  "simulateSubmissions": true,
+  "surveyResponseDtos": [
+    {
+      "surveyStableId": "hd_hd_basicInfo",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Invited"},
+        {"questionStableId": "hd_hd_basic_lastName", "stringValue": "PriorUser"},
+        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "465 Spruce Street"},
+        {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes"},
+        {"questionStableId": "hd_hd_basic_sexualOrientation", "stringValue": "preferNoAnswer"}
+      ],
+      "currentPageNo": 1,
+      "complete": true
+    }
+  ],
+  "kitRequestDtos": [
+    {
+      "creatingAdminUsername": "staff@heartdemo.org",
+      "kitTypeName": "SALIVA",
+      "status": "SENT",
+      "skipAddressValidation": true,
+      "externalKitJson": {
+        "kitId": "11111111-2222-3333-4444-555555555555",
+        "currentStatus": "kit without label",
+        "labelDate": "2023-05-24",
+        "scanDate": "2023-05-24",
+        "receiveDate": "2023-05-24",
+        "scannedByEmail": "",
+        "receivedByEmail": "",
+        "labeledByEmail": "",
+        "deactivationDate": "",
+        "deactivatedBy": "",
+        "deactivationReason": "",
+        "trackingNumbers": [],
+        "returnTrackingNumber": "",
+        "errors": [
+          {
+            "errorDate": "2023-05-24",
+            "errorMessage": ""
+          }
+        ],
+        "discardDate": "2023-05-24",
+        "discardReason": ""
+      }
+    }
+  ]
+}

@@ -6,7 +6,6 @@ import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
 import { LoadedPortalContextT, PortalContext, PortalParams } from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
-import ConsentView from './surveys/ConsentView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
 import KitsRouter from './kits/KitsRouter'
@@ -25,8 +24,11 @@ import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
+import { ApiProvider, EnvironmentName, I18nProvider } from '@juniper/ui-core'
 import DashboardSettings from 'dashboard/DashboardSettings'
-import { EnvironmentName } from '@juniper/ui-core'
+import { previewApi } from 'util/apiContextUtils'
+import DataImportView from '../portal/DataImportView'
+import DataImportList from '../portal/DataImportList'
 
 export type StudyEnvParams = {
   studyShortcode: string
@@ -36,7 +38,7 @@ export type StudyEnvParams = {
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */
-function StudyEnvironmentRouter({ study }: {study: Study}) {
+function StudyEnvironmentRouter({ study }: { study: Study }) {
   const params = useParams<StudyParams>()
   const envName: string | undefined = params.studyEnv
   const portalContext = useContext(PortalContext) as LoadedPortalContextT
@@ -87,53 +89,52 @@ function StudyEnvironmentRouter({ study }: {study: Study}) {
         onChange={opt => changeEnv(opt?.value)}
       />
     </NavBreadcrumb>
-    <Routes>
-      <Route path="notificationContent/*" element={<TriggerList studyEnvContext={studyEnvContext}
-        portalContext={portalContext}/>}/>
-      <Route path="alerts" element={<DashboardSettings studyEnvContext={studyEnvContext}
-        portalContext={portalContext}/>}/>
-      <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
-      <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
-      <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
-      <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
-      <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
-      <Route path="mailingList" element={<MailingListView portalContext={portalContext}
-        portalEnv={portalEnv}/>}/>
-      <Route path="settings" element={<StudySettings studyEnvContext={studyEnvContext}
-        portalContext={portalContext}/>}/>
-      <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
-      <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
-      <Route path="export/dataRepo/datasets/:datasetName"
-        element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
-      <Route path="forms">
-        <Route path="preReg" element={<PreRegView studyEnvContext={studyEnvContext}
-          portalEnvContext={portalEnvContext}/>}/>
-        <Route path="preEnroll">
-          <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
-          <Route path="*" element={<div>Unknown preEnroll page</div>}/>
-        </Route>
-        <Route path="surveys">
-          <Route path=":surveyStableId">
-            <Route path=":version" element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
-            <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
+    <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
+      <I18nProvider defaultLanguage={'en'} portalShortcode={portal.shortcode}>
+        <Routes>
+          <Route path="notificationContent/*" element={<TriggerList studyEnvContext={studyEnvContext}
+            portalContext={portalContext}/>}/>
+          <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
+          <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
+          <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
+          <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
+          <Route path="alerts" element={<DashboardSettings currentEnv={portalEnv}
+            portalContext={portalContext}/>}/>
+          <Route path="metrics" element={<StudyEnvMetricsView studyEnvContext={studyEnvContext}/>}/>
+          <Route path="mailingList" element={<MailingListView portalContext={portalContext}
+            portalEnv={portalEnv}/>}/>
+          <Route path="dataImports" element={<DataImportList studyEnvContext={studyEnvContext}/>}/>
+          <Route path="dataImports/:dataImportId" element={<DataImportView studyEnvContext={studyEnvContext}/>}/>
+          <Route path="settings" element={<StudySettings studyEnvContext={studyEnvContext}
+            portalContext={portalContext}/>}/>
+          <Route path="export/dataBrowser" element={<ExportDataBrowser studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/dataRepo/datasets" element={<DatasetList studyEnvContext={studyEnvContext}/>}/>
+          <Route path="export/dataRepo/datasets/:datasetName"
+            element={<DatasetDashboard studyEnvContext={studyEnvContext}/>}/>
+          <Route path="forms">
+            <Route path="preReg" element={<PreRegView studyEnvContext={studyEnvContext}
+              portalEnvContext={portalEnvContext}/>}/>
+            <Route path="preEnroll">
+              <Route path=":surveyStableId" element={<PreEnrollView studyEnvContext={studyEnvContext}/>}/>
+              <Route path="*" element={<div>Unknown preEnroll page</div>}/>
+            </Route>
+            <Route path="surveys">
+              <Route path=":surveyStableId">
+                <Route path=":version" element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
+                <Route index element={<SurveyView studyEnvContext={studyEnvContext}/>}/>
+              </Route>
+              <Route path="scratch" element={<QuestionScratchbox/>}/>
+              <Route path="*" element={<div>Unknown survey page</div>}/>
+            </Route>
+            <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
           </Route>
-          <Route path="scratch" element={<QuestionScratchbox/>}/>
-          <Route path="*" element={<div>Unknown survey page</div>}/>
-        </Route>
-        <Route path="consentForms">
-          <Route path=":consentStableId">
-            <Route path=":version" element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
-            <Route index element={<ConsentView studyEnvContext={studyEnvContext}/>}/>
+          <Route path="adminTasks">
+            <Route index element={<AdminTaskList studyEnvContext={studyEnvContext}/>}/>
           </Route>
-          <Route path="*" element={<div>Unknown consent page</div>}/>
-        </Route>
-        <Route index element={<StudyContent studyEnvContext={studyEnvContext}/>}/>
-      </Route>
-      <Route path="adminTasks">
-        <Route index element={<AdminTaskList studyEnvContext={studyEnvContext}/>}/>
-      </Route>
-      <Route path="*" element={<div>Unknown study environment page</div>}/>
-    </Routes>
+          <Route path="*" element={<div>Unknown study environment page</div>}/>
+        </Routes>
+      </I18nProvider>
+    </ApiProvider>
   </div>
 }
 
@@ -205,6 +206,13 @@ export const studyEnvMetricsPath = (portalShortcode: string, studyShortcode: str
  */
 export const studyEnvMailingListPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/mailingList`
+}
+
+/**
+ *
+ */
+export const studyEnvImportPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/dataImports`
 }
 
 /**

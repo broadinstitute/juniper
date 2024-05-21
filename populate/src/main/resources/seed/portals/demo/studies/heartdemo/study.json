@@ -13,9 +13,7 @@
     "surveys/socialHealth.json",
     "surveys/socialHealthV2.json",
     "surveys/socialHealthV3.json",
-    "surveys/sandboxSurvey.json"
-  ],
-  "consentFormFiles": [
+    "surveys/lostInterest.json",
     "surveys/ourHealthConsent.json"
   ],
   "emailTemplateFiles": [
@@ -23,6 +21,7 @@
     "emails/studyEnroll.json",
     "emails/consentReminder.json",
     "emails/surveyReminder.json",
+    "emails/invite.json",
     "emails/adHoc.json"
   ],
   "studyEnvironmentDtos": [
@@ -31,6 +30,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -39,8 +39,8 @@
         "populateFileName": "surveys/preEnroll.json"
       },
       "configuredSurveyDtos": [
-        {"populateFileName": "surveys/basic.json", "required": true},
-        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/basic.json"},
+        {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},
@@ -49,12 +49,8 @@
         {"populateFileName": "surveys/socialHealth.json", "active": false},
         {"populateFileName": "surveys/socialHealthV2.json", "active": false},
         {"populateFileName": "surveys/socialHealthV3.json"},
-        {"populateFileName": "surveys/sandboxSurvey.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/lostInterest.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",
@@ -77,6 +73,9 @@
       },{
         "triggerType": "AD_HOC",
         "populateFileName": "emails/adHoc.json"
+      },{
+        "triggerType": "AD_HOC",
+        "populateFileName": "emails/invite.json"
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",
@@ -84,7 +83,11 @@
         "enrollees/consentedEnrollee.json",
         "enrollees/basicsDone.json",
         "enrollees/withdrawn.json",
-        "enrollees/oldVersion.json"
+        "enrollees/oldVersion.json",
+        "enrollees/child1.json",
+        "enrollees/child1Family2.json",
+        "enrollees/child2Family2.json",
+        "enrollees/invited.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,
@@ -113,6 +116,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -121,20 +125,16 @@
         "populateFileName": "surveys/preEnroll.json"
       },
       "configuredSurveyDtos": [
-        {"populateFileName": "surveys/basic.json", "required": true},
-        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/basic.json"},
+        {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/socialHealthV2.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",
@@ -164,6 +164,7 @@
       "kitTypeNames": [ "SALIVA" ],
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
+        "acceptingProxyEnrollment": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -172,20 +173,16 @@
         "populateFileName": "surveys/preEnroll.json"
       },
       "configuredSurveyDtos": [
-        {"populateFileName": "surveys/basic.json", "required": true},
-        {"populateFileName": "surveys/cardioHistory.json", "required": true},
+        {"populateFileName": "surveys/basic.json"},
+        {"populateFileName": "surveys/cardioHistory.json"},
         {"populateFileName": "surveys/medicalHistory.json"},
         {"populateFileName": "surveys/familyHistory.json"},
         {"populateFileName": "surveys/medList.json"},
         {"populateFileName": "surveys/lifestyle.json"},
         {"populateFileName": "surveys/phq9gad7.json"},
         {"populateFileName": "surveys/socialHealth.json", "active": false},
-        {"populateFileName": "surveys/socialHealthV2.json"}
-      ],
-      "configuredConsentDtos": [
-        {
-          "populateFileName": "surveys/ourHealthConsent.json"
-        }
+        {"populateFileName": "surveys/socialHealthV2.json"},
+        {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
         "triggerType": "EVENT",

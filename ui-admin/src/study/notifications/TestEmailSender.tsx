@@ -32,7 +32,7 @@ export default function TestEmailSender({ studyEnvParams, trigger, onDismiss }:
     ...EXAMPLE_RULE_DATA,
     profile: {
       ...EXAMPLE_RULE_DATA.profile,
-      contactEmail: user.username
+      contactEmail: user?.username || ''
     }
   })
   /** sends a test email with the given (saved) notification.  does not currently reflect unsaved changes */

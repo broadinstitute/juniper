@@ -1,11 +1,10 @@
-import { SiteContent, LocalSiteContent, HtmlPage } from 'api/api'
+import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
 
 /** mock site content */
 export const mockSiteContent = (): SiteContent => {
   return {
     id: 'fakeId1',
-    defaultLanguage: 'en',
     stableId: 'fakeId1',
     version: 1,
     localizedSiteContents: [
@@ -36,6 +35,16 @@ export const mockHtmlPage = (): HtmlPage => {
   }
 }
 
+/** mock nav iteme */
+export const mockNavbarItem= (): NavbarItem => {
+  return {
+    text: 'example page',
+    itemType: 'EXTERNAL',
+    itemOrder: 1,
+    href: 'https://example.com'
+  }
+}
+
 /** mock single page section */
 export const mockHtmlSection = (): HtmlSection => {
   return {
@@ -51,5 +60,6 @@ export const mockHtmlSection = (): HtmlSection => {
 /** no-op apiContext for rendering preview participant content in tests */
 export const emptyApi = {
   getImageUrl: () => '',
-  submitMailingListContact: () => Promise.resolve({})
+  submitMailingListContact: () => Promise.resolve({}),
+  getLanguageTexts: () => Promise.resolve({})
 }

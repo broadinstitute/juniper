@@ -1,22 +1,34 @@
 import React, { useEffect, useState } from 'react'
-import { usePortalEnv } from '../providers/PortalProvider'
-import { useUser } from '../providers/UserProvider'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 import Api, { Enrollee, Portal, Study } from '../api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { ParticipantDashboardAlert, alertDefaults } from '@juniper/ui-core'
+import { ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
+import { useActiveUser } from 'providers/ActiveUserProvider'
+import { useUser } from 'providers/UserProvider'
+import ParticipantSelector from '../participant/ParticipantSelector'
 
 
 /** renders the logged-in hub page */
 export default function HubPage() {
   const { portal, portalEnv } = usePortalEnv()
-  const { enrollees } = useUser()
+
+  const {
+    enrollees
+  } = useActiveUser()
+
+  const {
+    relations
+  } = useUser()
+
+  const { i18n } = useI18n()
+
   const [noActivitiesAlert, setNoActivitiesAlert] = useState<ParticipantDashboardAlert>()
 
   useEffect(() => {
@@ -27,7 +39,11 @@ export default function HubPage() {
     if (!portalEnv) { return }
     const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
     setNoActivitiesAlert({
-      ...alertDefaults['NO_ACTIVITIES_REMAIN'],
+      ...{
+        title: i18n('hubUpdateNoActivitiesTitle'),
+        detail: i18n('hubUpdateNoActivitiesDetail'),
+        alertType: 'INFO'
+      } as ParticipantDashboardAlert,
       ...alerts.find(msg => msg.trigger === 'NO_ACTIVITIES_REMAIN')
     })
   }
@@ -38,21 +54,21 @@ export default function HubPage() {
 
   return (
     <>
-      <DocumentTitle title="Dashboard" />
+      <DocumentTitle title={i18n('navbarDashboard')} />
       <div
-        className="hub-dashboard-background flex-grow-1"
-        style={{ background: 'linear-gradient(270deg, #D5ADCC 0%, #E5D7C3 100%' }}
+        className="hub-dashboard-background flex-grow-1 mb-2"
+        style={{ background: 'var(--dashboard-background-color)' }}
       >
         {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,
-            type: noActivitiesAlert.type
+            type: noActivitiesAlert.alertType
           } as HubUpdateMessage}
           className="mx-1 mx-md-auto my-1 my-md-5 shadow-sm"
           role="alert"
           style={{ maxWidth: 768 }}
-        /> }
+        />}
         {!!hubUpdate?.message && showMessage && (
           <HubMessageAlert
             message={hubUpdate.message}
@@ -65,12 +81,19 @@ export default function HubPage() {
           />
         )}
 
-        <main
-          className="hub-dashboard py-4 px-2 px-md-5 my-md-4 mx-auto shadow-sm"
-          style={{ background: '#fff', maxWidth: 768 }}
-        >
-          {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal} />)}
-        </main>
+
+        <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
+          <div className="w-100 mt-2 mb-0 d-flex mb-2">
+            {relations.length > 0 && <ParticipantSelector/>}
+          </div>
+          <main
+            className="hub-dashboard py-4 px-2 px-md-5 shadow-sm"
+            style={{ background: '#fff' }}
+          >
+            {enrollees.map(enrollee => <StudySection key={enrollee.id} enrollee={enrollee} portal={portal}/>)}
+          </main>
+        </div>
+
         <div className="hub-dashboard mx-auto"
           style={{ maxWidth: 768 }}>
           <OutreachTasks enrollees={enrollees} studies={portal.portalStudies.map(pStudy => pStudy.study)}/>
@@ -81,12 +104,15 @@ export default function HubPage() {
 }
 
 type StudySectionProps = {
-  enrollee: Enrollee
-  portal: Portal
+  enrollee: Enrollee,
+  portal: Portal,
 }
 
 const StudySection = (props: StudySectionProps) => {
-  const { enrollee, portal } = props
+  const {
+    enrollee,
+    portal
+  } = props
 
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
@@ -100,4 +126,3 @@ const StudySection = (props: StudySectionProps) => {
     </>
   )
 }
-

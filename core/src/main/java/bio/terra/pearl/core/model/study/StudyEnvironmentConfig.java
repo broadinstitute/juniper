@@ -23,5 +23,19 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean acceptingEnrollment = true;
 
     @Builder.Default
+    private boolean acceptingProxyEnrollment = false;
+
+    @Builder.Default
     private boolean initialized = false;
+    /**
+     * if true, all kit requests will be directed to the stub DSM instead of the live client
+     */
+    @Builder.Default
+    private boolean useStubDsm = true;
+    /**
+     * if true, kit requests will all be routed to a centralized development realm in DSM, ensuring that
+     * the kit requests are not picked up by GP
+     */
+    @Builder.Default
+    private boolean useDevDsmRealm = true;
 }

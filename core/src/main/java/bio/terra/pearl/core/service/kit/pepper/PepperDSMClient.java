@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.kit.pepper;
 
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -17,7 +18,7 @@ public interface PepperDSMClient {
      * @return status result from Pepper
      * @throws PepperApiException on error from Pepper or failure to process the Pepper response
      */
-    PepperKit sendKitRequest(String studyShortcode, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException;
-    PepperKit fetchKitStatus(UUID kitRequestId) throws PepperApiException, PepperParseException;
-    Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode) throws PepperApiException, PepperParseException;
+    PepperKit sendKitRequest(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig, Enrollee enrollee, KitRequest kitRequest, PepperKitAddress address) throws PepperApiException, PepperParseException;
+    PepperKit fetchKitStatus(StudyEnvironmentConfig studyEnvironmentConfig, UUID kitRequestId) throws PepperApiException, PepperParseException;
+    Collection<PepperKit> fetchKitStatusByStudy(String studyShortcode, StudyEnvironmentConfig studyEnvironmentConfig) throws PepperApiException, PepperParseException;
 }

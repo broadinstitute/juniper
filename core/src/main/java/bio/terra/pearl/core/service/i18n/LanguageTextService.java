@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class LanguageTextService extends CrudService<LanguageText, LanguageTextDao> {
@@ -21,8 +22,8 @@ public class LanguageTextService extends CrudService<LanguageText, LanguageTextD
     }
 
     @Cacheable(value = "languageTexts", key = "#language")
-    public HashMap<String, String> getLanguageTextMapForLanguage(String language) {
-        List<LanguageText> languageTexts = languageTextDao.findByLanguage(language);
+    public HashMap<String, String> getLanguageTextMapForLanguage(UUID portalId, String language) {
+        List<LanguageText> languageTexts = languageTextDao.findByPortalIdOrNullPortalId(portalId, language);
 
         HashMap<String, String> languageTextMap = new HashMap<>();
         for (LanguageText languageText : languageTexts) {
@@ -30,6 +31,10 @@ public class LanguageTextService extends CrudService<LanguageText, LanguageTextD
         }
 
         return languageTextMap;
+    }
+
+    public void deleteByPortalId(UUID portalId) {
+        languageTextDao.deleteByPortalId(portalId);
     }
 
     public Optional<LanguageText> findByKeyNameAndLanguage(String keyName, String language) {

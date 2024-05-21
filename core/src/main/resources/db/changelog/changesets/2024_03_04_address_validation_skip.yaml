@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "address_validation_skip"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: kit_request
+            columns:
+              - column: { name: skip_address_validation, type: boolean, defaultValueBoolean: false,
+                          constraints: { nullable: false }
+              }

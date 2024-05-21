@@ -4,7 +4,7 @@ import EnrolleeProfile from './EnrolleeProfile'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
-import { dateToDefaultString } from '@juniper/ui-core'
+import { dateToDefaultString, MockI18nProvider } from '@juniper/ui-core'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -22,20 +22,27 @@ jest.mock('user/UserProvider', () => {
   }
 })
 
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  fetchEnrolleeAdminTasks: jest.fn().mockResolvedValue([]),
+  updateProfileForEnrollee: jest.fn().mockResolvedValue({}),
+  validateAddress: jest.fn().mockResolvedValue({})
+}))
+
 test('renders enrollee profile', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
     // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {}}/>)
   render(RoutedComponent)
 
   const profile = enrollee.profile
   const mailingAddress = profile.mailingAddress
+  await waitFor(() => expect(screen.getByText('Notes')).toBeInTheDocument())
 
   expect(screen.getByText(`${enrollee.profile.givenName} ${enrollee.profile.familyName}`)).toBeInTheDocument()
   expect(screen.getByText(dateToDefaultString(enrollee.profile.birthDate))).toBeInTheDocument()
@@ -48,14 +55,17 @@ test('renders enrollee profile', async () => {
 
 test('displays updates before submitting', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>
+  )
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -67,8 +77,8 @@ test('displays updates before submitting', async () => {
   await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
   await userEvent.clear(screen.getByPlaceholderText('Family Name'))
   await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
-  await userEvent.clear(screen.getByPlaceholderText('City'))
-  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+  await userEvent.clear(screen.getByPlaceholderText('{city}'))
+  await userEvent.type(screen.getByPlaceholderText('{city}'), 'London')
 
   await userEvent.click(screen.getByText('Next: Add Justification'))
 
@@ -81,16 +91,18 @@ test('displays updates before submitting', async () => {
 
 test('profile update is sent appropriately with justification', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
   jest.spyOn(Api, 'updateProfileForEnrollee')
   jest.spyOn(Store, 'addNotification').mockReturnValue('')
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -102,8 +114,8 @@ test('profile update is sent appropriately with justification', async () => {
   await userEvent.type(screen.getByPlaceholderText('Given Name'), 'James')
   await userEvent.clear(screen.getByPlaceholderText('Family Name'))
   await userEvent.type(screen.getByPlaceholderText('Family Name'), 'Bond')
-  await userEvent.clear(screen.getByPlaceholderText('City'))
-  await userEvent.type(screen.getByPlaceholderText('City'), 'London')
+  await userEvent.clear(screen.getByPlaceholderText('{city}'))
+  await userEvent.type(screen.getByPlaceholderText('{city}'), 'London')
 
   await userEvent.click(screen.getByText('Next: Add Justification'))
 
@@ -135,19 +147,21 @@ test('profile update is sent appropriately with justification', async () => {
 
 test('shows error message on address validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: false,
     invalidComponents: ['STREET_NAME']
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -158,21 +172,21 @@ test('shows error message on address validation', async () => {
   await userEvent.click(screen.getByText('Validate'))
 
   // starting part of the error
-  expect(screen.getByText('could not be verified', { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('{addressInvalidStreetName}')).toBeInTheDocument()
 
   // makes the field red
-  const streetClasses = screen.getByPlaceholderText('Street 1').className
+  const streetClasses = screen.getByPlaceholderText('{street1}').className
   expect(streetClasses).toContain('is-invalid')
 
-  const countryClasses = screen.getByPlaceholderText('City').className
+  const countryClasses = screen.getByPlaceholderText('{city}').className
   expect(countryClasses.includes('is-invalid')).toBeFalsy()
   expect(countryClasses.includes('is-valid')).toBeFalsy()
 })
 
 test('shows modal on improvable address validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: true,
     suggestedAddress: {
       street1: '415 Main St',
@@ -182,15 +196,17 @@ test('shows modal on improvable address validation', async () => {
       street2: '',
       state: 'MA'
     }
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -200,24 +216,25 @@ test('shows modal on improvable address validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  expect(screen.getByText('Please verify the improvements made to the address',
-    { exact: false })).toBeInTheDocument()
+  expect(screen.getByText('{suggestBetterAddressBody}')).toBeInTheDocument()
 })
 
 test('makes all fields green upon positive validation', async () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
-  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockImplementation(() => Promise.resolve([]))
-  jest.spyOn(Api, 'validateAddress').mockImplementation(() => Promise.resolve({
+  jest.spyOn(Api, 'fetchEnrolleeAdminTasks').mockResolvedValue([])
+  jest.spyOn(Api, 'validateAddress').mockResolvedValue({
     valid: true
-  }))
+  })
 
   const studyEnvContext = mockStudyEnvContext()
   const enrollee = mockEnrollee()
 
   const { RoutedComponent } = setupRouterTest(
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
-    }}/>)
+    <MockI18nProvider>
+      <EnrolleeProfile enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={() => {
+        // nothing
+      }}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Edit', { exact: false }))
@@ -227,6 +244,6 @@ test('makes all fields green upon positive validation', async () => {
 
   await userEvent.click(screen.getByText('Validate'))
 
-  const classes = screen.getByPlaceholderText('Street 1').className
+  const classes = screen.getByPlaceholderText('{street1}').className
   expect(classes).toContain('is-valid')
 })

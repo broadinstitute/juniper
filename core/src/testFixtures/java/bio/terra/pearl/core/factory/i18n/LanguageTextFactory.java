@@ -5,6 +5,8 @@ import bio.terra.pearl.core.service.i18n.LanguageTextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class LanguageTextFactory {
 
@@ -20,6 +22,10 @@ public class LanguageTextFactory {
 
     public LanguageText buildPersisted(String testName, String keyName, String language) {
         return languageTextService.create(builder(testName, keyName, language).build());
+    }
+
+    public LanguageText buildPersisted(String testName, String keyName, String language, UUID portalId) {
+        return languageTextService.create(builder(testName, keyName, language).portalId(portalId).build());
     }
 
 }

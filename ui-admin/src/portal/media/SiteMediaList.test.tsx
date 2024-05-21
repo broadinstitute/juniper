@@ -8,7 +8,7 @@ import Api from 'api/api'
 import userEvent from '@testing-library/user-event'
 
 test('renders empty table', async () => {
-  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([]))
+  jest.spyOn(Api, 'getPortalMedia').mockResolvedValue([])
   const { RoutedComponent } = setupRouterTest(
     <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)
@@ -18,12 +18,12 @@ test('renders empty table', async () => {
 
 
 test('renders table with a clickable image', async () => {
-  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([{
+  jest.spyOn(Api, 'getPortalMedia').mockResolvedValue([{
     id: 'fakeId',
     cleanFileName: 'testImage.png',
     version: 1,
     createdAt: Date.now()
-  }]))
+  }])
   const { RoutedComponent } = setupRouterTest(
     <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)
@@ -37,12 +37,12 @@ test('renders table with a clickable image', async () => {
 })
 
 test('does not render a preview for a non-image type', async () => {
-  jest.spyOn(Api, 'getPortalMedia').mockImplementation(() => Promise.resolve([{
+  jest.spyOn(Api, 'getPortalMedia').mockResolvedValue([{
     id: 'fakeId',
     cleanFileName: 'testDoc.pdf',
     version: 1,
     createdAt: Date.now()
-  }]))
+  }])
   const { RoutedComponent } = setupRouterTest(
     <SiteMediaList portalContext={mockPortalContext()}
       portalEnv={mockPortalEnvironment('sandbox')}/>)

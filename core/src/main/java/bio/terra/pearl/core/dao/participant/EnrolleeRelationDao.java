@@ -25,7 +25,11 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
 
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationshipType(UUID enrolleeId, RelationshipType type) {
-        return findAllByTwoProperties("enrollee_id", enrolleeId,"relationship_type", type);
+        return findAllByTwoProperties("enrollee_id", enrolleeId, "relationship_type", type);
+    }
+
+    public List<EnrolleeRelation> findByTargetEnrolleeIdAndRelationshipType(UUID enrolleeId, RelationshipType type) {
+        return findAllByTwoProperties("target_enrollee_id", enrolleeId, "relationship_type", type);
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdsAndRelationshipType(List<UUID> enrolleeIds, RelationshipType type) {
@@ -57,4 +61,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         }
     }
 
+    public List<EnrolleeRelation> findAllByEnrolleeId(UUID enrolleeId) {
+        return findAllByProperty("enrollee_id", enrolleeId);
+    }
 }

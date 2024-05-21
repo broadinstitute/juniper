@@ -33,7 +33,6 @@ export default function KitIntegrationDashboard() {
     <div className="mt-4">
       <h3 className="h5">Config</h3>
       {!isLoading && <dl>
-        <dt>useLiveDsm</dt><dd>{config?.pepperDsmConfig.useLiveDsm ? 'true' : 'false'}</dd>
         <dt>issuerClaim</dt><dd>{config?.pepperDsmConfig.issuerClaim}</dd>
         <dt>basePath</dt><dd>{config?.pepperDsmConfig.basePath}</dd>
         <dt>secret</dt><dd>{config?.pepperDsmConfig.secret}</dd>

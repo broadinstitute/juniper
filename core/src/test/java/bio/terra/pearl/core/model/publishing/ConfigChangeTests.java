@@ -68,14 +68,15 @@ public class ConfigChangeTests {
                 .emailSourceAddress("blah@blah.com").build();
         List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
-        assertThat(changeRecords, hasSize(6));
+        assertThat(changeRecords, hasSize(7));
         assertThat(changeRecords, hasItems(
                 new ConfigChange("emailSourceAddress", "blah@blah.com", (Object) null),
                 new ConfigChange("acceptingRegistration", false, (Object) null),
                 new ConfigChange("participantHostname", (Object) "bar", (Object) null),
                 new ConfigChange("initialized", false, (Object) null),
                 new ConfigChange("password", (Object) "broad_institute", (Object) null),
-                new ConfigChange("passwordProtected", true, (Object) null)
+                new ConfigChange("passwordProtected", true, (Object) null),
+                new ConfigChange("defaultLanguage", "en", (Object) null)
         ));
     }
 
@@ -88,14 +89,15 @@ public class ConfigChangeTests {
                 .emailSourceAddress("blah@blah.com").build();
         List<ConfigChange> changeRecords = ConfigChange.allChanges(sourceConfig, destConfig,
                 PortalDiffService.CONFIG_IGNORE_PROPS);
-        assertThat(changeRecords, hasSize(6));
+        assertThat(changeRecords, hasSize(7));
         assertThat(changeRecords, hasItems(
                 new ConfigChange("emailSourceAddress", (Object) null, (Object) "blah@blah.com"),
                 new ConfigChange("acceptingRegistration", (Object) null, false),
                 new ConfigChange("participantHostname", (Object) null, (Object) "bar"),
                 new ConfigChange("initialized", (Object) null, false),
                 new ConfigChange("password", (Object) null, (Object) "broad_institute"),
-                new ConfigChange("passwordProtected", (Object) null, true)
+                new ConfigChange("passwordProtected", (Object) null, true),
+                new ConfigChange("defaultLanguage", (Object) null, (Object) "en")
         ));
     }
 

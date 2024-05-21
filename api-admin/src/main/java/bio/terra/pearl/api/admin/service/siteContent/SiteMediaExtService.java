@@ -32,6 +32,10 @@ public class SiteMediaExtService {
     return siteMediaService.findOne(portalShortcode, cleanFileName, version);
   }
 
+  public Optional<SiteMedia> findLatest(String portalShortcode, String cleanFileName) {
+    return siteMediaService.findOneLatestVersion(portalShortcode, cleanFileName);
+  }
+
   public List<SiteMediaMetadata> list(String portalShortcode, AdminUser operator) {
     authUtilService.authUserToPortal(operator, portalShortcode);
     return siteMediaService.findMetadataByPortal(portalShortcode);
@@ -47,7 +51,6 @@ public class SiteMediaExtService {
             .portalShortcode(portalShortcode)
             .version(version)
             .data(imageData)
-            .uploadFileName(uploadFileName)
             .cleanFileName(cleanFileName)
             .build();
     // the create method handles cleaning and converting the uploadFileName to a cleanFileName

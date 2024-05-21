@@ -41,6 +41,8 @@ public abstract class ImmutableEntityService<M extends BaseEntity, D extends Bas
     public List<M> findAll() { return dao.findAll(); }
     public List<M> findAll(List<UUID> uuids) { return dao.findAll(uuids); }
 
+    public List<M> findAllPreserveOrder(List<UUID> ids) { return dao.findAllPreserveOrder(ids); }
+
     @Transactional
     public void delete(UUID id, Set<CascadeProperty> cascade) {
         dao.delete(id);

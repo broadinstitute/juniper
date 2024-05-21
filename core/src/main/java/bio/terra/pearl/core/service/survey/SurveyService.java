@@ -1,9 +1,11 @@
 package bio.terra.pearl.core.service.survey;
 
+import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.SurveyDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.dao.workflow.EventDao;
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.survey.AnswerMapping;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
@@ -17,35 +19,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Service
 public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
-    private AnswerMappingDao answerMappingDao;
-    private SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
-    private EventDao eventDao;
+    private final ObjectMapper objectMapper;
+    private final AnswerMappingDao answerMappingDao;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final LanguageTextDao languageTextDao;
+    private final EventDao eventDao;
+    private final SurveyDao surveyDao;
 
-    public SurveyService(SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, EventDao eventDao) {
+    public SurveyService(ObjectMapper objectMapper, SurveyDao surveyDao, AnswerMappingDao answerMappingDao, SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, LanguageTextDao languageTextDao, EventDao eventDao) {
         super(surveyDao);
+        this.objectMapper = objectMapper;
         this.answerMappingDao = answerMappingDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.languageTextDao = languageTextDao;
         this.eventDao = eventDao;
+        this.surveyDao = surveyDao;
     }
 
     public List<Survey> findByStableIdNoContent(String stableId) {
         return dao.findByStableIdNoContent(stableId);
     }
 
-    public Optional<Survey> findByStableIdWithMappings(String stableId, int version) {
-        return dao.findByStableIdWithMappings(stableId, version);
+    public Optional<Survey> findByStableIdWithMappings(String stableId, int version, UUID portalId) {
+        return dao.findByStableIdWithMappings(stableId, version, portalId);
+    }
+
+    public Optional<Survey> findByStableIdAndPortalShortcodeWithMappings(String stableId, int version, String shortcode) {
+        return dao.findByStableIdAndPortalShortcodeWithMappings(stableId, version, shortcode);
+    }
+
+    public List<Survey> findByStudyEnvironmentIdWithContent(UUID studyId) {
+        return dao.findByStudyEnvironmentIdWithContent(studyId);
     }
 
     @Transactional
@@ -66,10 +75,21 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         survey.setLastUpdatedAt(now);
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
+            answerMapping.setId(null);
             answerMapping.setSurveyId(savedSurvey.getId());
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
+
+        // parse the survey content to get the titles and create the language texts
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(savedSurvey.getContent(), savedSurvey.getName());
+        List<LanguageText> texts = SurveyParseUtils.titlesToLanguageTexts(
+                SurveyParseUtils.formToLanguageTextKey(savedSurvey.getStableId(),savedSurvey.getVersion()),
+                savedSurvey.getPortalId(),
+                parsedTitles);
+        languageTextDao.bulkCreate(texts);
+
+        // parse the survey content to get the questions and create the question definitions
         List<SurveyQuestionDefinition> questionDefs = getSurveyQuestionDefinitions(savedSurvey);
         surveyQuestionDefinitionDao.bulkCreate(questionDefs);
 
@@ -114,8 +134,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
-            questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i,false));
+            SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                    questionTemplates, i,false);
+            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+            questionDefinitions.add(questionDefinition);
         }
 
         // add any questions from calculatedValues
@@ -178,23 +200,15 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     @Transactional
     public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
-        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
+        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "publishedVersion");
         newSurvey.setPortalId(portalId);
-        int nextVersion = dao.getNextVersion(survey.getStableId());
+        int nextVersion = dao.getNextVersion(survey.getStableId(), portalId);
         newSurvey.setVersion(nextVersion);
-        newSurvey.getAnswerMappings().clear();
-        for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
-            // we need to clone the answer mappings and attach them to the new version
-            AnswerMapping newAnswerMapping = new AnswerMapping();
-            BeanUtils.copyProperties(answerMapping, newAnswerMapping, "id", "createdAt", "lastUpdatedAt");
-            newSurvey.getAnswerMappings().add(newAnswerMapping);
-        }
         return create(newSurvey);
     }
 
     public void attachAnswerMappings(Survey survey) {
         survey.setAnswerMappings(answerMappingDao.findBySurveyId(survey.getId()));
     }
-
 
 }

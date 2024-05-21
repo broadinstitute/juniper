@@ -8,6 +8,7 @@
     "familyName": "Salk",
     "contactEmail": "jsalk@test.com",
     "sexAtBirth": "male",
+    "preferredLanguage": "es",
     "mailingAddress": {
       "street1": "32 Elm Street",
       "city": "New York",

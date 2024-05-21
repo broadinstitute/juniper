@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "remove_sitemedia_uploadfilename"
+      author: sampath
+      changes:
+        - dropColumn:
+            tableName: site_media
+            columnName: upload_file_name

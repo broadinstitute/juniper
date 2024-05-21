@@ -18,16 +18,22 @@ import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
@@ -39,7 +45,6 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testPopulateOurHealth() throws Exception {
-        setUpEnvironments();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
         Assertions.assertEquals("ourhealth", portal.getShortcode());
 
@@ -52,7 +57,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
         Assertions.assertEquals(6, enrollees.size());
-        checkOurhealthSurveys(enrollees);
+        checkOurhealthSurveys(enrollees, portal.getId());
         checkParticipantNotes(enrollees);
         checkAdminTasks(sandboxEnvironmentId);
         checkOurhealthSiteContent(portal.getId());
@@ -64,12 +69,12 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
         portalPopulator.populate(new FilePopulateContext("portals/ourhealth/portal.json"), true);
     }
 
-    private void checkOurhealthSurveys(List<Enrollee> enrollees) {
+    private void checkOurhealthSurveys(List<Enrollee> enrollees, UUID portalId) {
         Enrollee jonas = getJonasSalk(enrollees);
-        Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1).get();
+        Survey cardioHistorySurvey = surveyService.findByStableId("oh_oh_cardioHx", 1, portalId).get();
 
         List<SurveyResponse> jonasResponses = surveyResponseService.findByEnrolleeId(jonas.getId());
-        Assertions.assertEquals(3, jonasResponses.size());
+        Assertions.assertEquals(5, jonasResponses.size());
         SurveyResponse cardioHistoryResp = jonasResponses.stream()
                 .filter(response -> cardioHistorySurvey.getId().equals(response.getSurveyId()))
                 .findFirst().get();
@@ -81,7 +86,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkOurhealthSiteContent(UUID portalId) {
         PortalEnvironment portalEnv = portalEnvironmentService
-                .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, "en").get();
+                .loadWithParticipantSiteContent("ourhealth", EnvironmentName.sandbox, null).get();
         Assertions.assertEquals(portalId, portalEnv.getPortalId());
         LocalizedSiteContent lsc = portalEnv.getSiteContent().getLocalizedSiteContents()
                 .stream().findFirst().get();
@@ -111,9 +116,16 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
 
     private void checkExportContent(UUID sandboxEnvironmentId) {
         // test the analysis-friendly export as that is the most important for data integrity, and the least visible via admin tool
-        ExportOptions options = new ExportOptions(true, true, true, ExportFileFormat.TSV, null);
+        ExportOptions options = ExportOptions
+                .builder()
+                .splitOptionsIntoColumns(true)
+                .stableIdsForOptions(true)
+                .onlyIncludeMostRecent(true)
+                .fileFormat(ExportFileFormat.TSV)
+                .limit(null)
+                .build();
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.limit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
 
         assertThat(exportData, hasSize(6));
         Map<String, String> jsalkMap = exportData.stream().filter(map -> "OHSALK".equals(map.get("enrollee.shortcode")))
@@ -127,7 +139,12 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     }
 
     private void checkDataDictionary(UUID portalId, UUID sandboxEnvironmentId) throws Exception {
-        ExportOptions options = new ExportOptions(false, false, true, ExportFileFormat.TSV, null);
+        ExportOptions options = ExportOptions
+                .builder()
+                .onlyIncludeMostRecent(true)
+                .fileFormat(ExportFileFormat.TSV)
+                .limit(null)
+                .build();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         dictionaryExportService.exportDictionary(options, portalId, sandboxEnvironmentId, baos);
         baos.flush();

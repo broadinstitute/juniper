@@ -39,9 +39,22 @@ public class SiteMediaController implements SiteMediaApi {
    */
   @Override
   public ResponseEntity<Resource> get(
-      String portalShortcode, String envName, String cleanFileName, Integer version) {
+      String portalShortcode, String envName, String cleanFileName, String version) {
+    if (version.equalsIgnoreCase("latest")) {
+      Optional<SiteMedia> siteMediaOpt =
+          siteMediaExtService.findLatest(portalShortcode, cleanFileName);
+      return convertToResourceResponse(siteMediaOpt);
+    }
+
+    int versionInt;
+    try {
+      versionInt = Integer.parseInt(version);
+    } catch (NumberFormatException e) {
+      throw new IllegalArgumentException("version must be an integer or 'latest'");
+    }
+
     Optional<SiteMedia> siteMediaOpt =
-        siteMediaExtService.findOne(portalShortcode, cleanFileName, version);
+        siteMediaExtService.findOne(portalShortcode, cleanFileName, versionInt);
     return convertToResourceResponse(siteMediaOpt);
   }
 

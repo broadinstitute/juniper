@@ -3,11 +3,12 @@ package bio.terra.pearl.core.service.study;
 import bio.terra.pearl.core.dao.study.PortalStudyDao;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.ImmutableEntityService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PortalStudyService extends ImmutableEntityService<PortalStudy, PortalStudyDao> {

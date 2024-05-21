@@ -9,23 +9,23 @@ import lombok.Getter;
 public class StudyPopulateContext extends PortalPopulateContext {
     private String studyShortcode;
     public StudyPopulateContext(String filePathName, String portalShortcode, String studyShortcode, EnvironmentName environmentName,
-                                Map<String, UUID> populatedFileEntities, boolean isFromTempDir) {
-        super(filePathName, portalShortcode, environmentName, populatedFileEntities, isFromTempDir);
+                                Map<String, UUID> populatedFileEntities, boolean isFromTempDir, String prefixOverride) {
+        super(filePathName, portalShortcode, environmentName, populatedFileEntities, isFromTempDir, prefixOverride);
         this.studyShortcode = studyShortcode;
     }
 
     public StudyPopulateContext(PortalPopulateContext context, String studyShortcode) {
         this(context.getCurrentFile(), context.getPortalShortcode(), studyShortcode, context.getEnvironmentName(),
-                context.populatedFileEntities, context.isFromTempDir);
+                context.populatedFileEntities, context.isFromTempDir, context.shortcodeOverride);
     }
 
     public StudyPopulateContext newFrom(String relativeFilePath) {
         return new StudyPopulateContext(applyRelativePath(relativeFilePath), getPortalShortcode(), studyShortcode,
-                getEnvironmentName(), populatedFileEntities, isFromTempDir);
+                getEnvironmentName(), populatedFileEntities, isFromTempDir, shortcodeOverride);
     }
 
     public StudyPopulateContext newFrom(EnvironmentName environmentName) {
         return new StudyPopulateContext(getCurrentFile(), getPortalShortcode(), getStudyShortcode(), environmentName,
-                populatedFileEntities, isFromTempDir);
+                populatedFileEntities, isFromTempDir, shortcodeOverride);
     }
 }

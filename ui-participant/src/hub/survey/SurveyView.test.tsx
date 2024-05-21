@@ -3,18 +3,21 @@ import React from 'react'
 import {
   generateThreePageSurvey,
   mockConfiguredSurvey,
-  mockSurveyWithHiddenQuestion, mockSurveyWithHiddenQuestionClearOnHidden
+  mockSurveyWithHiddenQuestion,
+  mockSurveyWithHiddenQuestionClearOnHidden
 } from 'test-utils/test-survey-factory'
 import { PageNumberControl, useSurveyJSModel } from 'util/surveyJsUtils'
 import { render, screen } from '@testing-library/react'
 import { PagedSurveyView, SurveyFooter } from './SurveyView'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
-import { Survey, useAutosaveEffect } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, Survey, useAutosaveEffect } from '@juniper/ui-core'
 import Api from 'api/api'
 import { mockEnrollee, mockHubResponse } from 'test-utils/test-participant-factory'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { mockUseActiveUser, mockUseUser } from '../../test-utils/user-mocking-utils'
+import { useActiveUser } from '../../providers/ActiveUserProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
 
@@ -43,23 +46,44 @@ beforeEach(() => {
   })
 })
 
+jest.mock('providers/ActiveUserProvider')
+
+
 const FooterTestComponent = ({ pageNum, survey }: {pageNum: number, survey: Survey}) => {
   const pager: PageNumberControl = { pageNumber: pageNum, updatePageNumber: () => 1 }
   const { surveyModel } = useSurveyJSModel(survey, null,
-    () => 1, pager, { sexAtBirth: 'male' })
+    () => 1, pager)
   return <SurveyFooter survey={survey} surveyModel={surveyModel}/>
 }
 
+
 describe('SurveyFooter', () => {
   it('does not render if not on the last page', () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={1}/>)
+    render(<MockI18nProvider>
+      <FooterTestComponent survey={survey} pageNum={1}/>
+    </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeNull()
   })
 
   it('renders if on the last page', () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const survey = generateThreePageSurvey({ footer: 'footer stuff' })
-    render(<FooterTestComponent survey={survey} pageNum={3}/>)
+    render(
+      <MockI18nProvider>
+        <FooterTestComponent survey={survey} pageNum={3}/>
+      </MockI18nProvider>)
     expect(screen.queryByText('footer stuff')).toBeTruthy()
   })
 })
@@ -67,6 +91,12 @@ describe('SurveyFooter', () => {
 
 describe('Renders a survey', () => {
   it('allows a user to complete the survey', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy } = setupSurveyTest(generateThreePageSurvey())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
@@ -78,9 +108,9 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'text1', stringValue: 'my Text' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }],
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
         complete: true,
         resumeData: '{"user1":{"currentPageNo":1}}'
       })
@@ -88,6 +118,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosaves question and page progress', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
 
     await userEvent.click(screen.getByText('Green'))
@@ -101,9 +137,9 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(1)
     expect(submitSpy).toHaveBeenCalledWith(expect.objectContaining({
       response: expect.objectContaining({
-        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' },
-          { questionStableId: 'text1', stringValue: 'my Text' }]),
+        answers: expect.arrayContaining([{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' },
+          { questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]),
         complete: false,
         resumeData: '{"user1":{"currentPageNo":3}}'
       })
@@ -111,6 +147,12 @@ describe('Renders a survey', () => {
   })
 
   it('autosaves question and page progress with diffs', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
 
     await userEvent.click(screen.getByText('Green'))
@@ -124,18 +166,24 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'text1', stringValue: 'my Text' }]
+        answers: [{ questionStableId: 'text1', stringValue: 'my Text', viewedLanguage: 'en' }]
       })
     }))
   })
 
   it('autosave handles updated questions', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('Next'))
@@ -147,19 +195,25 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(2)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' },
-          { questionStableId: 'colorCode', stringValue: '#00F' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#00F', viewedLanguage: 'en' }]
       })
     }))
   })
 
   it('autosave handles hidden questions with default clear-on-submit behavior', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(mockSurveyWithHiddenQuestion())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
@@ -171,23 +225,29 @@ describe('Renders a survey', () => {
     expect(submitSpy).toHaveBeenCalledTimes(3)
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'greenFollow' }]
+        answers: [{ questionStableId: 'greenFollow', viewedLanguage: 'en' }]
       })
     }))
   })
 
   it('autosave handles hidden questions with clear-on-hidden', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(mockSurveyWithHiddenQuestionClearOnHidden())
     await userEvent.click(screen.getByText('Green'))
     await userEvent.click(screen.getByText('forest green'))
@@ -198,13 +258,14 @@ describe('Renders a survey', () => {
 
     expect(submitSpy).toHaveBeenNthCalledWith(1, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { 'questionStableId': 'greenFollow', 'stringValue': 'forest' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { 'questionStableId': 'greenFollow', 'stringValue': 'forest', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(2, expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'blue' }, { questionStableId: 'greenFollow' }]
+        answers: [{ questionStableId: 'radio1', stringValue: 'blue', viewedLanguage: 'en' },
+          { questionStableId: 'greenFollow', viewedLanguage: 'en' }]
       })
     }))
     expect(submitSpy).toHaveBeenNthCalledWith(3, expect.objectContaining({
@@ -215,6 +276,12 @@ describe('Renders a survey', () => {
   })
 
   it('retries autosave if autosave fails', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(useActiveUser).mockReturnValue({
+      ...mockUseActiveUser(),
+      profile: { sexAtBirth: 'male' }
+    })
+
     const { submitSpy, triggerAutosave } = setupSurveyTest(generateThreePageSurvey())
     submitSpy.mockImplementation(() => Promise.reject({}))
 
@@ -227,8 +294,8 @@ describe('Renders a survey', () => {
     triggerAutosave()
     const expectedDiffResponse = expect.objectContaining({
       response: expect.objectContaining({
-        answers: [{ questionStableId: 'radio1', stringValue: 'green' },
-          { questionStableId: 'colorCode', stringValue: '#0F0' }],
+        answers: [{ questionStableId: 'radio1', stringValue: 'green', viewedLanguage: 'en' },
+          { questionStableId: 'colorCode', stringValue: '#0F0', viewedLanguage: 'en' }],
         complete: false,
         resumeData: '{"user1":{"currentPageNo":2}}'
       })
@@ -242,8 +309,7 @@ describe('Renders a survey', () => {
 })
 
 const setupSurveyTest = (survey: Survey) => {
-  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse')
-    .mockImplementation(() => Promise.resolve(mockHubResponse()))
+  const submitSpy = jest.spyOn(Api, 'updateSurveyResponse').mockResolvedValue(mockHubResponse())
   const autosaveManager = {
     trigger: (): void => { throw 'no autosave registered' }
   };
@@ -258,8 +324,10 @@ const setupSurveyTest = (survey: Survey) => {
     survey
   }
   const { RoutedComponent } = setupRouterTest(
-    <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
-      studyShortcode={'study'} taskId={'guid34'}/>)
+    <MockI18nProvider>
+      <PagedSurveyView enrollee={mockEnrollee()} form={configuredSurvey}
+        studyShortcode={'study'} taskId={'guid34'}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   return { submitSpy, RoutedComponent, triggerAutosave }

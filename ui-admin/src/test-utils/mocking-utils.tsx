@@ -2,24 +2,33 @@ import { StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
   Answer,
-  ConsentForm,
   DatasetDetails,
   Enrollee,
   EnrolleeSearchFacet,
   EnrolleeSearchResult,
   KitRequest,
   KitType,
+  Notification,
+  NotificationEventDetails,
   ParticipantNote,
   PepperKit,
   Portal,
   PortalStudy,
   SiteMediaMetadata,
   StudyEnvironment,
-  StudyEnvironmentConsent,
   SurveyResponse,
   Trigger
 } from 'api/api'
-import { defaultSurvey, ParticipantTask, ParticipantTaskStatus, ParticipantTaskType, Survey } from '@juniper/ui-core'
+import {
+  AlertTrigger,
+  defaultSurvey,
+  LocalizedEmailTemplate,
+  ParticipantDashboardAlert,
+  ParticipantTask,
+  ParticipantTaskStatus,
+  ParticipantTaskType,
+  Survey
+} from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
@@ -76,7 +85,8 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
     initialized: true,
     password: 'broad_institute',
     passwordProtected: false,
-    acceptingRegistration: true
+    acceptingRegistration: true,
+    defaultLanguage: 'en'
   },
   environmentName: envName,
   supportedLanguages: [
@@ -111,11 +121,12 @@ export const makeMockPortalStudy = (name: string, shortcode: string): PortalStud
 }
 
 /** returns a mock portal with the specified studies */
-export const makeMockPortal = (name: string, portalStudies: PortalStudy[]) => {
+export const makeMockPortal = (name: string, portalStudies: PortalStudy[], shortcode: string) => {
   return {
     ...mockPortal(),
     name,
-    portalStudies
+    portalStudies,
+    shortcode
   }
 }
 
@@ -140,14 +151,16 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
   const sandboxEnv: StudyEnvironment = {
     environmentName: 'sandbox',
     id: 'studyEnvId',
-    configuredConsents: [mockConfiguredConsent()],
     configuredSurveys: [mockConfiguredSurvey()],
     triggers: [],
     studyEnvironmentConfig: {
       initialized: true,
       password: 'blah',
       passwordProtected: false,
-      acceptingEnrollment: true
+      acceptingEnrollment: true,
+      acceptingProxyEnrollment: false,
+      useDevDsmRealm: false,
+      useStubDsm: false
     }
   }
   return {
@@ -184,34 +197,6 @@ export const mockConfiguredSurvey: () => StudyEnvironmentSurvey = () => {
     allowParticipantReedit: true,
     prepopulate: true,
     survey: mockSurvey()
-  }
-}
-
-/** Mock StudyEnvironmentConsent */
-export const mockConfiguredConsent = (): StudyEnvironmentConsent => {
-  return {
-    id: 'fakeGuid',
-    consentFormId: 'consentId1',
-    studyEnvironmentId: 'studyEnvId1',
-    consentOrder: 1,
-    consentForm: mockConsentForm(),
-    allowAdminEdit: false,
-    allowParticipantReedit: false,
-    allowParticipantStart: true,
-    prepopulate: false
-  }
-}
-
-/** fake ConsentForm */
-export const mockConsentForm = (): ConsentForm => {
-  return {
-    id: 'fakeGuid2',
-    content: '{"pages": []}',
-    stableId: 'form1',
-    version: 1,
-    name: 'Mock consent',
-    createdAt: 0,
-    lastUpdatedAt: 0
   }
 }
 
@@ -276,7 +261,8 @@ export const mockKitRequest: (args?: {
   sentAt: 1704393046,
   trackingNumber: 'ABC123',
   details: '{"shippingId": "1234"}',
-  enrolleeShortcode: enrolleeShortcode || 'JOSALK'
+  enrolleeShortcode: enrolleeShortcode || 'JOSALK',
+  skipAddressValidation: false
 })
 
 /** returns a simple mock enrollee loosely based on the jsalk.json synthetic enrollee */
@@ -298,6 +284,7 @@ export const mockEnrollee: () => Enrollee = () => {
       birthDate: [1994, 11, 20],
       doNotEmail: false,
       doNotEmailSolicit: false,
+      preferredLanguage: 'en',
       phoneNumber: '555.1212',
       mailingAddress: {
         street1: '123 fake street',
@@ -365,7 +352,7 @@ export const mockOptionsFacetValue: (facet: StringOptionsFacet, optionValue: str
   }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
-export const taskForForm = (form: Survey | ConsentForm, enrolleeId: string, taskType: ParticipantTaskType):
+export const taskForForm = (form: Survey, enrolleeId: string, taskType: ParticipantTaskType):
     ParticipantTask => {
   return {
     id: randomString(10),
@@ -416,14 +403,55 @@ export const mockTrigger = (): Trigger => {
   }
 }
 
+/**
+ * Returns a mock Notification
+ */
+export const mockNotification = (): Notification => {
+  return {
+    id: 'notificationId1',
+    triggerId: 'triggerId',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    deliveryStatus: 'SENT',
+    deliveryType: 'EMAIL',
+    sentTo: 'jsalk@test.com',
+    retries: 0
+  }
+}
+
+/**
+ * Returns a mock NotificationEventDetails
+ */
+export const mockEventDetails = (): NotificationEventDetails => {
+  return {
+    subject: 'This is a test email',
+    toEmail: 'jsalk@test.com',
+    fromEmail: 'info@juniper.terra.bio',
+    status: 'DELIVERED',
+    opensCount: 0,
+    clicksCount: 0,
+    lastEventTime: 0
+  }
+}
+
 /** Mock EmailTemplate */
 export const mockEmailTemplate = (): EmailTemplate => {
   return {
     id: 'emailTemplate1',
     name: 'Mock template',
-    subject: 'Mock subject',
     stableId: 'mock1',
     version: 1,
+    localizedEmailTemplates: [mockLocalizedEmailTemplate()]
+  }
+}
+
+/**
+ *
+ */
+export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
+  return {
+    language: 'en',
+    subject: 'Mock subject',
     body: 'Mock email message'
   }
 }
@@ -468,6 +496,17 @@ export const mockSiteMedia = (): SiteMediaMetadata => {
     createdAt: Date.now(),
     cleanFileName: 'fileName.png',
     version: 1
+  }
+}
+
+/** mock ParticipantDashboardAlert */
+export const mockDashboardAlert = (title: string, detail: string, trigger: AlertTrigger): ParticipantDashboardAlert => {
+  return {
+    id: randomId('alert'),
+    title,
+    detail,
+    alertType: 'INFO',
+    trigger
   }
 }
 

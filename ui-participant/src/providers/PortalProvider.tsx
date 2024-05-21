@@ -40,7 +40,8 @@ export default function PortalProvider({ children }: { children: React.ReactNode
   }, [])
 
   const reloadPortal = () => {
-    const selectedLanguage = localStorage.getItem('selectedLanguage') || 'en'
+    const savedLanguage = localStorage.getItem('selectedLanguage')
+    const selectedLanguage = savedLanguage === null ? undefined : savedLanguage
     setIsLoading(true)
     Api.getPortal(selectedLanguage).then(result => {
       setEnvState(result)

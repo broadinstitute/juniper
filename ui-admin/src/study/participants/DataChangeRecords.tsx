@@ -2,13 +2,12 @@ import React, { useState } from 'react'
 import Api, { DataChangeRecord, Enrollee } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { instantToDefaultString } from '@juniper/ui-core'
+import { findDifferencesBetweenObjects, instantToDefaultString, ObjectDiff } from '@juniper/ui-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
 import { useLoadingEffect } from '../../api/api-utils'
-import { findDifferencesBetweenObjects, ObjectDiff } from '../../util/objectUtils'
 import { isEmpty } from 'lodash'
 
 
@@ -109,6 +108,12 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
   }, [enrollee.shortcode])
   return <div>
     <h5>Audit history</h5>
+    <dl >
+      <dt className="fw-semibold">Enrollee internal ID</dt>
+      <dd>{enrollee.id}</dd>
+      <dt className="fw-semibold">Enrollee created</dt>
+      <dd>{instantToDefaultString(enrollee.createdAt)}</dd>
+    </dl>
     <LoadingSpinner isLoading={isLoading}>
       {basicTableLayout(table)}
     </LoadingSpinner>

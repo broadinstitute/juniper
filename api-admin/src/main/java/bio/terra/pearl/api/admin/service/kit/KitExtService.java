@@ -46,12 +46,14 @@ public class KitExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       List<String> enrolleeShortcodes,
-      String kitType) {
+      KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     KitRequestListResponse response = new KitRequestListResponse();
     for (String enrolleeShortcode : enrolleeShortcodes) {
       try {
-        response.addKitRequest(requestKit(adminUser, studyShortcode, enrolleeShortcode, kitType));
+        KitRequestDto kitDto =
+            requestKit(adminUser, studyShortcode, enrolleeShortcode, kitRequestCreationDto);
+        response.addKitRequest(kitDto);
       } catch (Exception e) {
         // add the enrollee shortcode to the message for disambiguation.  Once we refine the UX for
         // this,
@@ -92,9 +94,12 @@ public class KitExtService {
   }
 
   public KitRequestDto requestKit(
-      AdminUser adminUser, String studyShortcode, String enrolleeShortcode, String kitTypeName) {
+      AdminUser adminUser,
+      String studyShortcode,
+      String enrolleeShortcode,
+      KitRequestService.KitRequestCreationDto kitRequestCreationDto) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(adminUser, enrolleeShortcode);
-    return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitTypeName);
+    return kitRequestService.requestKit(adminUser, studyShortcode, enrollee, kitRequestCreationDto);
   }
 
   public Collection<KitRequestDto> getKitRequests(AdminUser adminUser, String enrolleeShortcode) {

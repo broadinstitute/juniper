@@ -1110,11 +1110,19 @@
           {
             "name": "oh_oh_basic_zip",
             "type": "text",
-            "title": "ZIP Code (5 digits)",
-            "maxLength": 5,
-            "size": "5",
+            "title": "ZIP Code",
             "inputType": "text",
             "isRequired": true
+          },
+          {
+            "name": "oh_oh_basic_address_validation",
+            "title": "We think there might be a better address.",
+            "visibleIf": "{oh_oh_basic_address_validation.addressValidationResult.suggestedAddress} notempty and !{oh_oh_basic_address_validation.modalDismissed}",
+            "type": "addressvalidation",
+            "street1": "oh_oh_basic_streetAddress",
+            "city": "oh_oh_basic_city",
+            "stateProvince": "oh_oh_basic_state",
+            "postalCode": "oh_oh_basic_zip"
           },
           {
             "name": "oh_oh_basic_phoneNumber",

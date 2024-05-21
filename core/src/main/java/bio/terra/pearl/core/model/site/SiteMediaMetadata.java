@@ -21,7 +21,6 @@ public class SiteMediaMetadata extends BaseEntity {
      */
     private String cleanFileName;
     private int version;
-    private String uploadFileName;
     // store these by portal shortcode to prioritize fast fetching based on urls that have the shortcode
     private String portalShortcode;
 }

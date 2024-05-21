@@ -9,10 +9,20 @@ import { useSearchParams } from 'react-router-dom'
 import { SurveyModel } from 'survey-core'
 import { Survey as SurveyJSComponent } from 'survey-react-ui'
 
-import { SURVEY_JS_OTHER_SUFFIX, surveyJSModelFromForm, SurveyJsResumeData } from '@juniper/ui-core'
+import {
+  createAddressValidator,
+  SURVEY_JS_OTHER_SUFFIX,
+  surveyJSModelFromForm,
+  SurveyJsResumeData,
+  useI18n
+} from '@juniper/ui-core'
 
-import { Answer, ConsentForm, Profile, Survey, UserResumeData } from 'api/api'
+import Api, { Answer, Survey, UserResumeData } from 'api/api'
 import { usePortalEnv } from 'providers/PortalProvider'
+
+import '../components/ThemedSurveyAddressValidation'
+import { useActiveUser } from '../providers/ActiveUserProvider'
+import { useUser } from '../providers/UserProvider'
 
 const PAGE_NUMBER_PARAM_NAME = 'page'
 
@@ -46,7 +56,8 @@ export function useRoutablePageNumber(): PageNumberControl {
 }
 
 type UseSurveyJsModelOpts = {
-  extraCssClasses?: Record<string, string>
+  extraCssClasses?: Record<string, string>,
+  extraVariables?: Record<string, unknown>
 }
 
 /**
@@ -63,24 +74,30 @@ type UseSurveyJsModelOpts = {
  * survey on completion and display a completion banner.  To continue displaying the form, use the
  * `refreshSurvey` function
  * @param pager the control object for paging the survey
- * @param profile
  * @param opts optional configuration for the survey
  * @param opts.extraCssClasses mapping of element to CSS classes to add to that element. See
  * https://surveyjs.io/form-library/examples/survey-customcss/reactjs#content-docs for a list of available elements.
+ * @param opts.extraVariables extra variables you might want to include for a specific survey type that would not
+ * be useful for all surveys (e.g., {isProxyEnrollment} for the pre-enroll survey)
  */
 export function useSurveyJSModel(
-  form: ConsentForm | Survey,
+  form: Survey,
   resumeData: SurveyJsResumeData | null,
   onComplete: () => void,
   pager: PageNumberControl,
-  profile?: Profile,
   opts: UseSurveyJsModelOpts = {}
 ) {
   const {
-    extraCssClasses = {}
+    extraCssClasses = {},
+    extraVariables = {}
   } = opts
 
   const { portalEnv } = usePortalEnv()
+  const { i18n } = useI18n()
+
+  const { profile } = useActiveUser()
+  const { user, enrollees } = useUser()
+  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
 
   const [surveyModel, setSurveyModel] = useState<SurveyModel>(newSurveyJSModel(resumeData, pager.pageNumber))
 
@@ -114,11 +131,16 @@ export function useSurveyJSModel(
     }
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
+    newSurveyModel.setVariable('proxyProfile', proxyProfile)
     newSurveyModel.setVariable('portalEnvironmentName', portalEnv.environmentName)
+    Object.keys(extraVariables).forEach(key => {
+      newSurveyModel.setVariable(key, extraVariables[key])
+    })
     newSurveyModel.onComplete.add(onComplete)
     newSurveyModel.onCurrentPageChanged.add(handlePageChanged)
     newSurveyModel.onTextMarkdown.add(applyMarkdown)
     newSurveyModel.completedHtml = '<div></div>'  // the application UX will handle showing any needed messages
+    newSurveyModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return newSurveyModel
   }
 

@@ -39,9 +39,9 @@ public class PortalExtService {
     this.authUtilService = authUtilService;
   }
 
-  public Portal fullLoad(AdminUser user, String portalShortcode) {
+  public Portal fullLoad(AdminUser user, String portalShortcode, String language) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    return portalService.fullLoad(portal, "en");
+    return portalService.fullLoad(portal, language);
   }
 
   /** gets all the portals the user has access to, and attaches the corresponding studies */

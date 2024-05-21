@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: "anonymous_user_responsible_entity"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column: { name: anonymous_user, type: boolean }

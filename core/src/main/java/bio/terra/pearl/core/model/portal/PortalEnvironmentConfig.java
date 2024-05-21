@@ -28,4 +28,6 @@ public class PortalEnvironmentConfig extends BaseEntity {
     private boolean initialized = false;
     private String participantHostname; // needs to be configured for email links to work
     private String emailSourceAddress; // what goes in the 'from' field of emails to participants from this portal
+    @Builder.Default
+    private String defaultLanguage = "en";
 }

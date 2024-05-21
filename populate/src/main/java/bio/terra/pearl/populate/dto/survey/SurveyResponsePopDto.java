@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter @Setter @NoArgsConstructor
 public class SurveyResponsePopDto extends SurveyResponse implements TimeShiftable {
     private String surveyStableId;
     private int surveyVersion;
-    private Set<AnswerPopDto> answerPopDtos;
+    private List<AnswerPopDto> answerPopDtos;
     private Integer currentPageNo;
     private Integer submittedHoursAgo;
 }

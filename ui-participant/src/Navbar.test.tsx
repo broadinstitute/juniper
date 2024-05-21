@@ -10,7 +10,22 @@ import {
 } from 'api/api'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
 
-import { CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import Navbar, { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
+import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import { UserManager } from 'oidc-client-ts'
+import { useUser } from './providers/UserProvider'
+import { usePortalEnv } from './providers/PortalProvider'
+import { mockUsePortalEnv } from './test-utils/test-portal-factory'
+import { mockUseUser } from './test-utils/user-mocking-utils'
+
+jest.mock('oidc-client-ts')
+jest.mock('providers/UserProvider')
+jest.mock('providers/PortalProvider', () => {
+  return {
+    ...jest.requireActual('providers/PortalProvider'),
+    usePortalEnv: jest.fn()
+  }
+})
 
 describe('CustomNavLink', () => {
   it('renders internal links', () => {
@@ -109,6 +124,7 @@ describe('joinPath', () => {
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
   })
+
   it('joins the portal if there are two studies', () => {
     const portalStudies = [{
       study: {
@@ -134,6 +150,7 @@ describe('joinPath', () => {
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/join')
   })
+
   it('joins the portal if only one study is accepting enrollment', () => {
     const portalStudies = [{
       study: {
@@ -158,6 +175,83 @@ describe('joinPath', () => {
     }] as PortalStudy[]
     const joinPath = getMainJoinLink(portalStudies)
     expect(joinPath).toBe('/studies/foo/join')
+  })
+})
+
+describe('Navbar', () => {
+  it('renders an account dropdown when the user is logged in', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
+    render(RoutedComponent)
+
+    const accountDropdown = await screen.findByLabelText('account options for testUser')
+    expect(accountDropdown).toBeInTheDocument()
+  })
+
+  it('does not render an account dropdown when the user is not logged in', () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(true))
+    asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
+
+    const { RoutedComponent } = setupRouterTest(<MockI18nProvider><Navbar/></MockI18nProvider>)
+    render(RoutedComponent)
+
+    const dropdownButton = screen.queryByLabelText('account options for anonymous')
+    expect(dropdownButton).not.toBeInTheDocument()
+  })
+})
+
+describe('AccountOptionsDropdown', () => {
+  it('displays user account options when clicked', async () => {
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider>
+        <AccountOptionsDropdown/>
+      </MockI18nProvider>
+    )
+
+    render(RoutedComponent)
+
+    const dropdownButton = screen.getByLabelText('account options for testUser')
+    dropdownButton.click()
+
+    const profileOption = screen.getByLabelText('edit profile')
+    const changePasswordOption = screen.getByLabelText('change password')
+    const logoutOption = screen.getByLabelText('log out')
+
+    expect(profileOption).toBeInTheDocument()
+    expect(changePasswordOption).toBeInTheDocument()
+    expect(logoutOption).toBeInTheDocument()
+  })
+
+  it('changePassword calls signinRedirect with the correct ui_locales param', async () => {
+    const mockSigninRedirect = jest.fn()
+    jest.spyOn(UserManager.prototype, 'signinRedirect').mockImplementation(mockSigninRedirect)
+    asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider selectedLanguage={'es'}>
+        <AccountOptionsDropdown/>
+      </MockI18nProvider>
+    )
+
+    render(RoutedComponent)
+
+    const dropdownButton = screen.getByLabelText('account options for testUser')
+    dropdownButton.click()
+    const changePasswordOption = screen.getByLabelText('change password')
+    changePasswordOption.click()
+
+    expect(mockSigninRedirect).toHaveBeenCalledWith({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        portalShortcode: undefined,
+        // eslint-disable-next-line camelcase
+        ui_locales: 'es'
+      }
+    })
   })
 })
 

@@ -16,14 +16,21 @@ describe('BrandingModal', () => {
       updateLocalContent={updateSpy}
       localContent={{
         ...mockLocalSiteContent(),
-        primaryBrandColor: '#ff0000'
+        primaryBrandColor: '#ff0000',
+        dashboardBackgroundColor: '#00ff00'
       }}/>)
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
     expect(screen.getByTitle('color preview')).toHaveStyle('background-color: #ff0000')
+    expect(screen.getByTitle('dashboard background preview')).toHaveStyle('background-color: #00ff00')
     await userEvent.clear(screen.getByLabelText('Primary Brand Color'))
     await userEvent.type(screen.getByLabelText('Primary Brand Color'), '#00ff00')
+    await userEvent.clear(screen.getByLabelText('Dashboard Background Color'))
+    await userEvent.type(screen.getByLabelText('Dashboard Background Color'), '#0000ff')
     await userEvent.click(screen.getByText('Ok'))
-    expect(updateSpy).toHaveBeenCalledWith(expect.objectContaining({ primaryBrandColor: '#00ff00' }))
+    expect(updateSpy).toHaveBeenCalledWith(expect.objectContaining({
+      primaryBrandColor: '#00ff00',
+      dashboardBackgroundColor: '#0000ff'
+    }))
   })
 
   test('nav logo is updatable', async () => {

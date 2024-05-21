@@ -1,18 +1,18 @@
 package bio.terra.pearl.populate.service.extract;
 
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
+import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.study.*;
 import bio.terra.pearl.core.service.study.exception.StudyEnvConfigMissing;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
-import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,21 +32,21 @@ public class StudyExtractor {
     private final StudyEnvironmentService studyEnvironmentService;
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
-    private final StudyEnvironmentConsentService studyEnvironmentConsentService;
     private final TriggerService triggerService;
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
     public StudyExtractor(@Qualifier("extractionObjectMapper") ObjectMapper objectMapper, StudyService studyService,
                           PortalStudyService portalStudyService, StudyEnvironmentService studyEnvironmentService,
                           StudyEnvironmentConfigService studyEnvironmentConfigService, StudyEnvironmentSurveyService studyEnvironmentSurveyService,
-                          StudyEnvironmentConsentService studyEnvironmentConsentService, TriggerService triggerService) {
+                          TriggerService triggerService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         this.studyService = studyService;
         this.portalStudyService = portalStudyService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.objectMapper = objectMapper;
-        this.studyEnvironmentConsentService = studyEnvironmentConsentService;
         this.triggerService = triggerService;
+        this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         objectMapper.addMixIn(Study.class, StudyMixin.class);
         objectMapper.addMixIn(StudyEnvironment.class, StudyEnvironmentMixin.class);
     }
@@ -98,14 +98,6 @@ public class StudyExtractor {
             studyEnvSurveyPopDto.setPopulateFileName("../../" + context.getFileNameForEntity(studyEnvSurvey.getSurveyId()));
             studyEnvPopDto.getConfiguredSurveyDtos().add(studyEnvSurveyPopDto);
         }
-        List<StudyEnvironmentConsent> studyEnvConsents = studyEnvironmentConsentService.findAllByStudyEnvironmentId(studyEnv.getId());
-        for (StudyEnvironmentConsent studyEnvConsent : studyEnvConsents) {;
-            StudyEnvironmentConsentPopDto consentPopDto = new StudyEnvironmentConsentPopDto();
-            BeanUtils.copyProperties(studyEnvConsent, consentPopDto, "id", "studyEnvironmentId", "consentFormId");
-            String filename = "../../" + context.getFileNameForEntity(studyEnvConsent.getConsentFormId());
-            consentPopDto.setPopulateFileName(filename);
-            studyEnvPopDto.getConfiguredConsentDtos().add(consentPopDto);
-        }
 
         List<Trigger> triggers = triggerService.findByStudyEnvironmentId(studyEnv.getId());
         for (Trigger config : triggers) {;
@@ -116,7 +108,8 @@ public class StudyExtractor {
             studyEnvPopDto.getTriggerDtos().add(configPopDto);
         }
 
-        // TODO extract dashboard configs
+        List<KitType> kitTypes = studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+        studyEnvPopDto.setKitTypeNames(kitTypes.stream().map(KitType::getName).toList());
         return studyEnvPopDto;
     }
 
@@ -131,8 +124,6 @@ public class StudyExtractor {
         public List<StudyEnvironmentSurvey> getStudyEnvironmentSurveys() { return null; }
         @JsonIgnore
         public List<Trigger> getNotificationConfigs() { return null; }
-        @JsonIgnore
-        public List<StudyEnvironmentConsent> getConfiguredConsents() { return null; }
         @JsonIgnore
         public List<StudyEnvironmentSurvey> getConfiguredSurveys() { return null; }
     }

@@ -11,7 +11,7 @@ import { BrandConfiguration, brandStyles } from '../util/brandUtils'
  * contents of the modal.
  */
 export default function ThemedModal(
-  props: ModalProps & { children : React.ReactNode }
+  props: ModalProps
 ) {
   const { localContent } = usePortalEnv()
 

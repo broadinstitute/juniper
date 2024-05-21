@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import _cloneDeep from 'lodash/cloneDeep'
-import { questionFromRawText, QuestionObj, panelObjsToJson, questionToJson, PanelObj } from 'util/pearlSurveyUtils'
+import {
+  questionFromRawText,
+  QuestionObj,
+  panelObjsToJson,
+  questionToJson,
+  PanelObj,
+  i18nSurveyText
+} from 'util/juniperSurveyUtils'
 
 /** Component for helping transform plaintext survey questions (such as from a word doc) to survey definition
  * json.
@@ -102,7 +109,7 @@ export default function QuestionScratchbox() {
           <div className="ms-3">
             { questionObj.choices && questionObj.choices.map((choice, index) => {
               return <div key={index} className="mt-1">
-                <label>{choice.text}:
+                <label>{i18nSurveyText(choice.text)}:
                   <input type="text" size={30} value={choice.value}
                     onChange={e => updateChoiceValue(index, e.target.value)}/>
                 </label>
@@ -135,7 +142,7 @@ function subPanelsForQuestion(questionObj: QuestionObj): PanelObj[] {
   return (questionObj.choices || []).map(choice => {
     return {
       type: 'panel',
-      title: choice.text,
+      title: i18nSurveyText(choice.text),
       visibleIf: `{${questionObj.namePrefix}${questionObj.nameSuffix}} contains '${choice.value}'`,
       elements: [
         {

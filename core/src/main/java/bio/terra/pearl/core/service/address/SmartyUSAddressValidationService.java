@@ -7,6 +7,8 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Components;
 import com.smartystreets.api.us_street.Lookup;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -30,8 +32,22 @@ public class SmartyUSAddressValidationService implements AddressValidationServic
         this.client = client;
     }
 
+    public static final List<String> POSSIBLE_US_SPELLINGS = List.of(
+            "US",
+            "USA",
+            "United States",
+            "U.S.A.",
+            "United States of America"
+    );
+
     @Override
     public AddressValidationResultDto validate(MailingAddress address) throws AddressValidationException {
+
+        if (!StringUtils.isEmpty(address.getCountry()) && !POSSIBLE_US_SPELLINGS.contains(address.getCountry())) {
+            throw new AddressValidationException(
+                    "SmartyUSAddressValidationService can only validate US addresses",
+                    HttpStatus.valueOf(400));
+        }
 
         Lookup lookup = mailingAddressToLookup(address);
 

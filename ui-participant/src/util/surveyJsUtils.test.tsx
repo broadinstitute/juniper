@@ -3,37 +3,31 @@ import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { ConsentForm, Profile, Survey } from 'api/api'
+import { Profile, Survey } from 'api/api'
 
-import {
-  getSurveyJsAnswerList,
-  getUpdatedAnswers,
-  useRoutablePageNumber,
-  useSurveyJSModel
-} from './surveyJsUtils'
+import { getSurveyJsAnswerList, getUpdatedAnswers, useRoutablePageNumber, useSurveyJSModel } from './surveyJsUtils'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import {
-  generateSurvey,
-  generateThreePageSurvey
-} from '../test-utils/test-survey-factory'
+import { generateSurvey, generateThreePageSurvey } from '../test-utils/test-survey-factory'
 import { Model } from 'survey-core'
 import { usePortalEnv } from 'providers/PortalProvider'
+import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import { mockUsePortalEnv } from '../test-utils/test-portal-factory'
+import { useUser } from '../providers/UserProvider'
+import { mockUseActiveUser, mockUseUser } from '../test-utils/user-mocking-utils'
+import { useActiveUser } from '../providers/ActiveUserProvider'
 
 jest.mock('providers/PortalProvider', () => ({ usePortalEnv: jest.fn() }))
+jest.mock('providers/UserProvider')
+jest.mock('providers/ActiveUserProvider')
 
 beforeEach(() => {
-  // @ts-expect-error TS doesn't realize this function is mocked
-  usePortalEnv.mockReturnValue({
-    portalEnv: {
-      environmentName: 'sandbox'
-    }
-  })
+  asMockedFn(usePortalEnv).mockReturnValue(mockUsePortalEnv())
 })
 
 /** does nothing except render a survey using the hooks from surveyJsUtils */
-function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm | Survey, profile?: Profile }) {
+function PlainSurveyComponent({ formModel }: { formModel: Survey }) {
   const pager = useRoutablePageNumber()
-  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager, profile)
+  const { surveyModel } = useSurveyJSModel(formModel, null, () => 1, pager)
 
   return <div>
     {surveyModel && <SurveyComponent model={surveyModel}/>}
@@ -41,21 +35,39 @@ function PlainSurveyComponent({ formModel, profile }: { formModel: ConsentForm |
 }
 
 test('it starts on the first page', () => {
-  const { RoutedComponent } = setupRouterTest(<PlainSurveyComponent formModel={generateThreePageSurvey()}/>)
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
+  const { RoutedComponent } = setupRouterTest(
+    <MockI18nProvider>
+      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
 })
 
 test('handles page numbers in initial url', () => {
-  const { RoutedComponent } = setupRouterTest(<PlainSurveyComponent formModel={generateThreePageSurvey()}/>,
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
+  const { RoutedComponent } = setupRouterTest(
+    <MockI18nProvider>
+      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+    </MockI18nProvider>,
     ['/foo?page=2'])
   render(RoutedComponent)
   expect(screen.getByText('You are on page2')).toBeInTheDocument()
 })
 
 test('updates urls on page navigation', async () => {
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue(mockUseActiveUser())
+
   const user = userEvent.setup()
-  const { RoutedComponent, router } = setupRouterTest(<PlainSurveyComponent formModel={generateThreePageSurvey()}/>)
+  const { RoutedComponent, router } = setupRouterTest(
+    <MockI18nProvider>
+      <PlainSurveyComponent formModel={generateThreePageSurvey()}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   await act(() => user.click(screen.getByText('Next')))
@@ -95,8 +107,16 @@ const dynamicSurvey = generateSurvey({
 
 test('enables hide on profile attributes', () => {
   const maleProfile: Profile = { sexAtBirth: 'male' }
-  const { RoutedComponent } = setupRouterTest(<PlainSurveyComponent formModel={dynamicSurvey}
-    profile={maleProfile}/>)
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue({
+    ...mockUseActiveUser(),
+    profile: maleProfile
+  })
+
+  const { RoutedComponent } = setupRouterTest(
+    <MockI18nProvider>
+      <PlainSurveyComponent formModel={dynamicSurvey}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   const dynamicText = screen.queryByText('You have a sex of female')
@@ -105,8 +125,16 @@ test('enables hide on profile attributes', () => {
 
 test('enables show on profile attributes', () => {
   const femaleProfile: Profile = { sexAtBirth: 'female' }
-  const { RoutedComponent } = setupRouterTest(<PlainSurveyComponent formModel={dynamicSurvey}
-    profile={femaleProfile}/>)
+  asMockedFn(useUser).mockReturnValue(mockUseUser(false))
+  asMockedFn(useActiveUser).mockReturnValue({
+    ...mockUseActiveUser(),
+    profile: femaleProfile
+  })
+
+  const { RoutedComponent } = setupRouterTest(
+    <MockI18nProvider>
+      <PlainSurveyComponent formModel={dynamicSurvey}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   expect(screen.getByText('You have a sex of female')).toBeInTheDocument()

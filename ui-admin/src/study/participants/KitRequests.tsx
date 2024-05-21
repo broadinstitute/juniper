@@ -39,8 +39,20 @@ const columns: ColumnDef<KitRequest, string>[] = [{
 }, {
   header: 'Details',
   accessorKey: 'details',
-  cell: ({ row }) => <InfoPopup content={row.original.details || ''} placement='left'/>
+  cell: ({ row }) => <KitRequestDetails kitRequest={row.original}/>
 }]
+
+/**
+ * Info popup for showing finer details of a kit request.
+ */
+export const KitRequestDetails = ({ kitRequest }: { kitRequest: KitRequest }) => {
+  return <InfoPopup content={
+    <div>
+      <div className="d=flex">Skip address validation: {kitRequest.skipAddressValidation ? 'yes' : 'no'}</div>
+      {kitRequest.details || ''}
+    </div>
+  } placement='left'/>
+}
 
 /** Shows a list of all kit requests for an enrollee. */
 export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
@@ -65,7 +77,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
 
   return <div>
     <h2 className="h4">Kit requests</h2>
-    { user.superuser &&
+    {user?.superuser &&
       <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
         <FontAwesomeIcon icon={faPlus}/> Create a kit request
       </button>

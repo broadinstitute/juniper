@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -53,6 +54,15 @@ public class NotificationsController implements NotificationsApi {
     authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
     Enrollee enrollee = enrolleeService.findOneByShortcode(enrolleeShortcode).get();
     List<Notification> notifications = notificationService.findByEnrolleeId(enrollee.getId());
+    return ResponseEntity.ok(notifications);
+  }
+
+  @Override
+  public ResponseEntity<Object> findAllByConfigId(
+      String portalShortcode, String studyShortcode, String envName, UUID triggerId) {
+    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    authUtilService.authUserToStudy(adminUser, portalShortcode, studyShortcode);
+    List<Notification> notifications = notificationService.findAllByConfigId(triggerId, true);
     return ResponseEntity.ok(notifications);
   }
 }

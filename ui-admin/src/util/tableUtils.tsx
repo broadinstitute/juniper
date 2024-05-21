@@ -375,7 +375,8 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
  */
 export type BasicTableConfig = {
   filterable?: boolean,
-  tableClass?: string
+  tableClass?: string,
+  tdClass?: string
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
@@ -398,7 +399,7 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
           <tr key={row.id}>
             {row.getVisibleCells().map(cell => {
               return (
-                <td key={cell.id}>
+                <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               )

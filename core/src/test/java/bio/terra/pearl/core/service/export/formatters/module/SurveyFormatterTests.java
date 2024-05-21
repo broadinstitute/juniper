@@ -10,23 +10,24 @@ import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.item.AnswerItemFormatter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class SurveyFormatterTests extends BaseSpringBootTest {
     @Autowired
     ObjectMapper objectMapper;
+
     @Test
     public void testToStringMap() {
-        Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
         SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
                 .questionStableId("oh_surveyA_q1")
                 .questionType("text")
@@ -42,8 +43,8 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .surveyResponseId(testResponse.getId())
                 .stringValue("easyValue")
                 .build();
-        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null,
-                List.of(answer), null, List.of(testResponse), null);
+        EnrolleeExportData enrolleeExportData = new EnrolleeExportData(null, null, null,
+                List.of(answer), null, List.of(testResponse), null, null);
         Map<String, String> valueMap = moduleFormatter.toStringMap(enrolleeExportData);
 
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("easyValue"));
@@ -58,10 +59,10 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .exportOrder(1)
                 .build();
         Answer answerToMissingSurvey = Answer.builder()
-                        .questionStableId("oh_surveyA_q1")
-                        .surveyStableId("oh_surveyA")
-                        .surveyVersion(18)
-                        .stringValue("test123").build();
+                .questionStableId("oh_surveyA_q1")
+                .surveyStableId("oh_surveyA")
+                .surveyVersion(18)
+                .stringValue("test123").build();
         Map<String, String> valueMap = generateAnswerMap(questionDef, answerToMissingSurvey, new ExportOptions());
         assertThat(valueMap.get("oh_surveyA.oh_surveyA_q1"), equalTo("test123"));
     }
@@ -74,8 +75,8 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .exportOrder(1)
                 .allowMultiple(false)
                 .choices("""
-                    [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
-                    """)
+                        [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
+                        """)
                 .build();
         Answer singleSelect = Answer.builder()
                 .questionStableId("oh_surveyA_q1")
@@ -99,8 +100,8 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .exportOrder(1)
                 .allowMultiple(true)
                 .choices("""
-                    [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
-                    """)
+                        [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
+                        """)
                 .build();
         Answer multiselectBoth = Answer.builder()
                 .questionStableId("oh_surveyA_q1")
@@ -131,8 +132,8 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
                 .exportOrder(1)
                 .allowMultiple(true)
                 .choices("""
-                    [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
-                    """)
+                        [{"stableId":"red","text":"Red label"},{"stableId":"blue","text":"Blue label"}]
+                        """)
                 .build();
         Answer multiselectBoth = Answer.builder()
                 .questionStableId("oh_surveyA_q1")
@@ -164,8 +165,16 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void testStripSurveyPrefix() {
+        assertThat(SurveyFormatter.stripSurveyPrefix("account.username"), equalTo("account.username"));
+        assertThat(SurveyFormatter.stripSurveyPrefix("hd_hd_consent.hd_hd_consent_lastUpdatedAt"), equalTo("hd_hd_consent.lastUpdatedAt"));
+        assertThat(SurveyFormatter.stripSurveyPrefix("hd_hd_basicInfo.hd_hd_basicInfo_streetAddress"), equalTo("hd_hd_basicInfo.streetAddress"));
+        assertThat(SurveyFormatter.stripSurveyPrefix("hd_hd_consent.hd_hd_consent_agree"), equalTo("hd_hd_consent.agree"));
+    }
+
+    @Test
     public void testParseUnrecognizedObjectValue() {
-        Survey testSurvey =  Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
+        Survey testSurvey = Survey.builder().id(UUID.randomUUID()).stableId("oh_surveyA").version(1).build();
         SurveyQuestionDefinition questionDef = SurveyQuestionDefinition.builder()
                 .questionStableId("oh_surveyA_q1")
                 .questionType("matrix")
@@ -176,17 +185,19 @@ public class SurveyFormatterTests extends BaseSpringBootTest {
         assertThat(value, equalTo("d[f}asdfja"));
     }
 
-    /** helper for testing generation of answer maps values for a single question-answer pair */
+    /**
+     * helper for testing generation of answer maps values for a single question-answer pair
+     */
     private Map<String, String> generateAnswerMap(SurveyQuestionDefinition question, Answer answer, ExportOptions exportOptions) throws JsonProcessingException {
         Map<String, String> valueMap = new HashMap<>();
-        Survey testSurvey =  Survey.builder()
+        Survey testSurvey = Survey.builder()
                 .id(UUID.randomUUID())
                 .stableId("oh_surveyA")
                 .version(1)
                 .build();
         SurveyFormatter moduleFormatter = new SurveyFormatter(exportOptions, "oh_surveyA", List.of(testSurvey), List.of(question), objectMapper);
         AnswerItemFormatter itemFormatter = (AnswerItemFormatter) moduleFormatter.getItemFormatters().stream().filter(
-                itemInfo -> itemInfo instanceof AnswerItemFormatter)
+                        itemInfo -> itemInfo instanceof AnswerItemFormatter)
                 .findFirst().orElseThrow(() -> new IllegalStateException("formatter did not produce an AnswerItemFormatter"));
         Map<String, List<Answer>> answerMap = Map.of(question.getQuestionStableId(), List.of(answer));
         moduleFormatter.addAnswersToMap(itemFormatter, answerMap, valueMap);

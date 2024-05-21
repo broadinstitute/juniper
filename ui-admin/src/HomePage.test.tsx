@@ -14,10 +14,10 @@ describe('HomePage', () => {
         makeMockPortalStudy('Z Study', 'studyZ'),
         makeMockPortalStudy('A Study', 'studyA'),
         makeMockPortalStudy('M Study 1', 'studyM1')
-      ]),
+      ], 'studyZ shortcode'),
       makeMockPortal('A Portal', [
         makeMockPortalStudy('M Study 2', 'studyM2')
-      ])
+      ], 'studyA shortcode')
     ]
 
     const mockContextValue = {

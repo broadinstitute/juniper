@@ -1,11 +1,10 @@
 package bio.terra.pearl.core.service.study;
 
-import bio.terra.pearl.core.dao.study.StudyEnvironmentConsentDao;
+import bio.terra.pearl.core.dao.participant.WithdrawnEnrolleeDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentSurveyDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -18,24 +17,25 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
-import java.util.*;
-
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class StudyEnvironmentService extends CrudService<StudyEnvironment, StudyEnvironmentDao> {
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private EnrolleeService enrolleeService;
-    private StudyEnvironmentConsentDao studyEnvironmentConsentDao;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private TriggerService triggerService;
     private DatasetService datasetService;
     private DataRepoJobService dataRepoJobService;
-    private WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private WithdrawnEnrolleeDao withdrawnEnrolleeDao;
     private AdminTaskService adminTaskService;
     private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
@@ -44,23 +44,21 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    StudyEnvironmentSurveyDao studyEnvironmentSurveyDao,
                                    StudyEnvironmentConfigService studyEnvironmentConfigService,
                                    EnrolleeService enrolleeService,
-                                   StudyEnvironmentConsentDao studyEnvironmentConsentDao,
                                    PreEnrollmentResponseDao preEnrollmentResponseDao,
                                    TriggerService triggerService,
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
-                                   WithdrawnEnrolleeService withdrawnEnrolleeService,
+                                   WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.enrolleeService = enrolleeService;
-        this.studyEnvironmentConsentDao = studyEnvironmentConsentDao;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.triggerService = triggerService;
         this.datasetService = datasetService;
         this.dataRepoJobService = dataRepoJobService;
-        this.withdrawnEnrolleeService = withdrawnEnrolleeService;
+        this.withdrawnEnrolleeDao = withdrawnEnrolleeDao;
         this.adminTaskService = adminTaskService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
     }
@@ -96,10 +94,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
             studyEnvironmentSurvey.setStudyEnvironmentId(newEnv.getId());
             studyEnvironmentSurveyDao.create(studyEnvironmentSurvey);
         }
-        for (StudyEnvironmentConsent studyEnvironmentConsent : studyEnv.getConfiguredConsents()) {
-            studyEnvironmentConsent.setStudyEnvironmentId(newEnv.getId());
-            studyEnvironmentConsentDao.create(studyEnvironmentConsent);
-        }
         for (Trigger config : studyEnv.getTriggers()) {
             config.setStudyEnvironmentId(newEnv.getId());
             triggerService.create(config);
@@ -114,12 +108,11 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        studyEnvironmentConsentDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
         preEnrollmentResponseDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
-        withdrawnEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         dao.delete(studyEnvironmentId);

@@ -1,6 +1,5 @@
 export type SiteContent = {
   id: string
-  defaultLanguage: string
   localizedSiteContents: LocalSiteContent[]
   stableId: string
   version: number
@@ -15,6 +14,7 @@ export type LocalSiteContent = {
   navLogoVersion: number
   footerSection?: HtmlSection
   primaryBrandColor?: string
+  dashboardBackgroundColor?: string
 }
 
 export type HtmlPage = {
@@ -52,9 +52,11 @@ export type NavbarItem =
   | NavbarItemMailingList
   | NavbarItemExternal
 
-type BaseNavBarItem = {
+export type NavBarItemType = 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
+
+export type BaseNavBarItem = {
   id?: string
-  itemType: 'INTERNAL' | 'INTERNAL_ANCHOR' | 'MAILING_LIST' | 'EXTERNAL'
+  itemType: NavBarItemType
   text: string
   itemOrder: number
 }

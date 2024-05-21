@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.publishing.VersionedEntityChange;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.VersionedEntityService;
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 import java.util.UUID;
@@ -20,18 +21,23 @@ public class PublishingUtils {
     C applyChangesToVersionedConfig(VersionedConfigChange<T> versionedConfigChange,
                                     CrudService<C, ?> configService,
                                     VersionedEntityService<T, ?> documentService,
-                                    EnvironmentName destEnvName) throws Exception {
+                                    EnvironmentName destEnvName, UUID portalId) {
         C destConfig = configService.find(versionedConfigChange.destId()).get();
-        for (ConfigChange change : versionedConfigChange.configChanges()) {
-            setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
+        try {
+            for (ConfigChange change : versionedConfigChange.configChanges()) {
+                setPropertyEnumSafe(destConfig, change.propertyName(), change.newValue());
+            }
+        } catch (Exception e) {
+            throw new InternalServerException("Error setting property during publish", e);
         }
+
         if (versionedConfigChange.documentChange().isChanged()) {
             VersionedEntityChange<T> docChange = versionedConfigChange.documentChange();
             UUID newDocumentId = null;
             if (docChange.newStableId() != null) {
-                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion()).get().getId();
+                newDocumentId = documentService.findByStableId(docChange.newStableId(), docChange.newVersion(), portalId).get().getId();
             }
-            assignPublishedVersionIfNeeded(destEnvName, docChange, documentService);
+            assignPublishedVersionIfNeeded(destEnvName, portalId, docChange, documentService);
             destConfig.updateVersionedEntityId(newDocumentId);
         }
         return configService.update(destConfig);
@@ -40,10 +46,11 @@ public class PublishingUtils {
 
     public static <T extends BaseEntity & Versioned, D extends BaseVersionedJdbiDao<T>> void assignPublishedVersionIfNeeded(
             EnvironmentName destEnvName,
+            UUID portalId,
             VersionedEntityChange<T> change,
             VersionedEntityService<T, D> service) {
         if (destEnvName.isLive() && change.newStableId() != null) {
-            T entity = service.findByStableId(change.newStableId(), change.newVersion()).get();
+            T entity = service.findByStableId(change.newStableId(), change.newVersion(), portalId).orElseThrow();
             service.assignPublishedVersion(entity.getId());
         }
     }

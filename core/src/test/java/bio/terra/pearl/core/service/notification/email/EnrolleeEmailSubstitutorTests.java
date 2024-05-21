@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -11,7 +12,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.substitutors.EnrolleeEmailSubstitutor;
-import bio.terra.pearl.core.service.rule.EnrolleeRuleData;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import org.apache.commons.text.StringSubstitutor;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
     public void profileVariablesAreReplaced() {
         Profile profile = Profile.builder().givenName("tester").build();
         Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(enrollee, profile, null);
 
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder().build();
         PortalEnvironment portalEnv = portalEnvironmentFactory.builder("profileVariablesAreReplaced")
@@ -45,9 +46,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void envConfigVariablesAreReplaced() {
-        Profile profile = Profile.builder().build();
-        Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -62,9 +61,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void studyNameVariablesAreReplaced(TestInfo info) {
-        Profile profile = Profile.builder().build();
-        Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("testHostName")
                 .build();
@@ -80,9 +77,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testDashLinkVariablesReplaced(TestInfo info) {
-        Profile profile = Profile.builder().build();
-        Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -105,9 +100,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testMailLinkVariablesReplaced(TestInfo info) {
-        Profile profile = Profile.builder().build();
-        Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .emailSourceAddress("info@test.edu")
                 .build();
@@ -123,9 +116,7 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
 
     @Test
     public void testImageVariablesReplaced(TestInfo info) {
-        Profile profile = Profile.builder().build();
-        Enrollee enrollee = Enrollee.builder().build();
-        EnrolleeRuleData ruleData = new EnrolleeRuleData(enrollee, profile);
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), null);
         PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
                 .participantHostname("newstudy.org")
                 .build();
@@ -137,5 +128,33 @@ public class EnrolleeEmailSubstitutorTests extends BaseSpringBootTest {
         StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
         assertThat(replacer.replace("here's an image: <img src=\"${siteMediaBaseUrl}/1/ourhealth-logo.png\"/>"),
                 equalTo("here's an image: <img src=\"https://irb.newstudy.org/api/public/portals/v1/foo/env/irb/siteMedia/1/ourhealth-logo.png\"/>"));
+    }
+
+    @Test
+    public void testParticipantUserVariablesReplaced(TestInfo info) {
+        ParticipantUser user = ParticipantUser.builder().username("test123@test.com").build();
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), user);
+        PortalEnvironment portalEnv = PortalEnvironment.builder().environmentName(EnvironmentName.irb).build();
+        NotificationContextInfo contextInfo = new NotificationContextInfo(new Portal(), portalEnv, new PortalEnvironmentConfig(), null, null);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        assertThat(replacer.replace("your username is ${participantUser.username}"),
+                equalTo("your username is test123@test.com"));
+    }
+
+    @Test
+    public void testInvitationLinkReplaced(TestInfo info) {
+        EnrolleeContext ruleData = new EnrolleeContext(new Enrollee(), new Profile(), ParticipantUser.builder().username("test123@test.com").build());
+        PortalEnvironmentConfig portalEnvironmentConfig = PortalEnvironmentConfig.builder()
+                .participantHostname("newstudy.org")
+                .build();
+        PortalEnvironment portalEnv = portalEnvironmentFactory.builder(getTestName(info))
+                .portalEnvironmentConfig(portalEnvironmentConfig).environmentName(EnvironmentName.irb).build();
+        Portal portal = Portal.builder().name("PortalA").build();
+
+        NotificationContextInfo contextInfo = new NotificationContextInfo(portal, portalEnv, portalEnvironmentConfig, null, null);
+        StringSubstitutor replacer = EnrolleeEmailSubstitutor.newSubstitutor(ruleData, contextInfo, routingPaths);
+        assertThat(replacer.replace("here's an invite: ${invitationLink}"),
+                equalTo("here's an invite: https://irb.newstudy.org/join/invitation?accountName=test123%40test.com"));
+
     }
 }

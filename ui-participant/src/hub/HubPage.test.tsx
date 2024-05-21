@@ -2,8 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
 import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { MockI18nProvider, mockTextsDefault } from 'test-utils/i18n-testing-utils'
-
+import { MockI18nProvider, mockTextsDefault } from '@juniper/ui-core'
 
 jest.mock('../providers/PortalProvider', () => {
   return {
@@ -33,11 +32,29 @@ jest.mock('../providers/PortalProvider', () => {
 jest.mock('../providers/UserProvider', () => {
   return {
     useUser: () => ({
+      relations: []
+    })
+  }
+})
+
+jest.mock('../providers/ActiveUserProvider', () => {
+  return {
+    useActiveUser: () => ({
+      ppUser: {
+        id: 'portal-participant-user-id',
+        profileId: 'profile-id'
+      },
       enrollees: [{
         id: 'enrollee-id',
         shortcode: 'ENSHORTCODE',
         consented: false,
+        subject: true,
+        profileId: 'profile-id',
         studyEnvironmentId: 'test-study-env-id',
+        profile: {
+          givenName: 'Test',
+          givenFamily: 'User'
+        },
         participantTasks: [{
           id: 'task-id',
           blocksHub: true,
@@ -61,7 +78,7 @@ jest.mock('../providers/UserProvider', () => {
 describe('HubPage', () => {
   it('is rendered with the study name', () => {
     const { RoutedComponent } = setupRouterTest(
-      <MockI18nProvider mockTexts={{}}>
+      <MockI18nProvider>
         <HubPage/>
       </MockI18nProvider>)
     render(RoutedComponent)

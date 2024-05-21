@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -34,10 +33,6 @@ public class SiteContentController implements SiteContentApi {
   @Override
   public ResponseEntity<Object> get(
       String portalShortcode, String stableId, Integer version, String language) {
-    if (StringUtils.isBlank(language)) {
-      // TODO (JN-863): Use the default language
-      language = "en";
-    }
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     Optional<SiteContent> siteContent =
         siteContentExtService.get(portalShortcode, stableId, version, language, adminUser);

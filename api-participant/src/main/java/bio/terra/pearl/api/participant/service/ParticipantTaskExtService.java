@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +56,8 @@ public class ParticipantTaskExtService {
     List<Survey> outreachSurveys =
         surveyService.findByStableIds(
             outreachTasks.stream().map(ParticipantTask::getTargetStableId).toList(),
-            outreachTasks.stream().map(ParticipantTask::getTargetAssignedVersion).toList());
+            outreachTasks.stream().map(ParticipantTask::getTargetAssignedVersion).toList(),
+            Collections.nCopies(outreachTasks.size(), portalUser.portal().getId()));
     List<TaskAndSurvey> tasksAndSurveys =
         IntStream.range(0, outreachTasks.size())
             .mapToObj(i -> new TaskAndSurvey(outreachSurveys.get(i), outreachTasks.get(i)))

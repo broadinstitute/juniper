@@ -2,16 +2,16 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.service.CascadeProperty;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.UUID;
@@ -48,6 +48,25 @@ public class MailingListExtService {
   }
 
   @Transactional
+  public List<MailingListContact> create(
+      String portalShortcode,
+      EnvironmentName envName,
+      List<MailingListContact> contacts,
+      AdminUser user) {
+    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    PortalEnvironment portalEnv =
+        portalEnvironmentService
+            .findOne(portal.getShortcode(), envName)
+            .orElseThrow(() -> new NotFoundException("Portal environment not found"));
+
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    List<MailingListContact> newContacts =
+        mailingListContactService.bulkCreate(portalEnv.getId(), contacts, auditInfo);
+
+    return newContacts;
+  }
+
+  @Transactional
   public void delete(
       String portalShortcode, EnvironmentName envName, UUID contactId, AdminUser user) {
     Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
@@ -57,19 +76,7 @@ public class MailingListExtService {
     if (!contact.getPortalEnvironmentId().equals(portalEnv.getId())) {
       throw new PermissionDeniedException("Contact does not belong to the given portal");
     }
-    try {
-      DataChangeRecord changeRecord =
-          DataChangeRecord.builder()
-              .modelName(MailingListContact.class.getSimpleName())
-              .responsibleAdminUserId(user.getId())
-              .portalEnvironmentId(portalEnv.getId())
-              .newValue(null)
-              .oldValue(objectMapper.writeValueAsString(contact))
-              .build();
-      dataChangeRecordService.create(changeRecord);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("could not create audit trail", e);
-    }
-    mailingListContactService.delete(contactId, CascadeProperty.EMPTY_SET);
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    mailingListContactService.delete(contactId, auditInfo, CascadeProperty.EMPTY_SET);
   }
 }

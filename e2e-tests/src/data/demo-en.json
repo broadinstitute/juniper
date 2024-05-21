@@ -1,0 +1,18 @@
+ {
+  "PreEnroll": {
+    "ProxyQuestion": "Who are you enrolling in the study?",
+    "ProxyAnswerYes": "I am enrolling on behalf of my child / my legal dependent.",
+    "ProxyGivenName": "Proxy User Given Name",
+    "ProxyFamilyName": "Proxy User Family Name",
+    "GivenName": "Given Name",
+    "FamilyName": "Family Name",
+    "IsAdult": "I am 18 years old or older.",
+    "LiveInUS": "I live in the United States.",
+    "UnderstandEnglish": "I am comfortable reading or speaking English.",
+    "SouthAsianAncestry": "I identify as having South Asian ancestry from one or more of these countries: Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, or Sri Lanka."
+  },
+ "Consent": {
+   "FullName": "Full legal name",
+   "Signature": "Signature of Subject"
+ }
+}

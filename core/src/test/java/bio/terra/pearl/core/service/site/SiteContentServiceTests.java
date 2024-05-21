@@ -109,7 +109,6 @@ public class SiteContentServiceTests extends BaseSpringBootTest {
         form = siteContentService.find(form.getId()).get();
         assertThat(form.getPublishedVersion(), equalTo(1));
 
-        form.setDefaultLanguage("zzz");
         SiteContent newForm = siteContentService.createNewVersion(form);
 
         Assertions.assertNotEquals(newForm.getId(), form.getId());

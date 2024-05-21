@@ -1,13 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import Api, { AdminTask, AdminTaskListDto } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable
-} from '@tanstack/react-table'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { instantToDateString, instantToDefaultString } from '@juniper/ui-core'
 import { paramsFromContext, StudyEnvContextT, StudyEnvParams } from '../StudyEnvironmentRouter'
@@ -114,7 +108,7 @@ taskData: AdminTaskListDto}) => {
     { id: 'createdAt', desc: true }
   ])
   const myTasks = useMemo(() => taskData.tasks.filter(task =>
-    task.assignedAdminUserId === user.id), [taskData.tasks.length])
+    task.assignedAdminUserId === user?.id || ''), [taskData.tasks.length])
 
   const columns: ColumnDef<AdminTask>[] = [{
     header: 'Task',

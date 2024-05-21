@@ -1,26 +1,24 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.dao.consent.ConsentResponseDao;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.dao.survey.SurveyResponseDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
-
-import java.util.*;
-import java.util.stream.Stream;
-
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.statement.Query;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 @Component
 public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
-    private final ConsentResponseDao consentResponseDao;
     private final KitRequestDao kitRequestDao;
     private final KitTypeDao kitTypeDao;
     private final ParticipantTaskDao participantTaskDao;
@@ -30,7 +28,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     private final ParticipantNoteDao participantNoteDao;
 
     public EnrolleeDao(Jdbi jdbi,
-                       ConsentResponseDao consentResponseDao,
                        KitRequestDao kitRequestDao,
                        KitTypeDao kitTypeDao,
                        ParticipantTaskDao participantTaskDao,
@@ -39,7 +36,6 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                        SurveyResponseDao surveyResponseDao,
                        ParticipantNoteDao participantNoteDao) {
         super(jdbi);
-        this.consentResponseDao = consentResponseDao;
         this.kitRequestDao = kitRequestDao;
         this.kitTypeDao = kitTypeDao;
         this.participantTaskDao = participantTaskDao;
@@ -98,7 +94,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
         return findByTwoProperties("participant_user_id", userId, "id", enrolleeId);
     }
 
-    public Optional<Enrollee> findByEnrolleeId(UUID userId, String enrolleeShortcode) {
+    public Optional<Enrollee> findByParticipantUserIdAndShortcode(UUID userId, String enrolleeShortcode) {
         return findByTwoProperties("participant_user_id", userId, "shortcode", enrolleeShortcode);
     }
 
@@ -145,5 +141,9 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
             }
             return query.mapTo(clazz).list();
         });
+    }
+
+    public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
+        return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);
     }
 }

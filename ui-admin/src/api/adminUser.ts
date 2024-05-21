@@ -7,7 +7,6 @@ export type AdminUser = {
   superuser: boolean,
   lastLogin: number,
   portalPermissions: Record<string, string[]>,
-  isAnonymous: boolean,
   portalAdminUsers?: PortalAdminUser[]
 };
 

@@ -1,15 +1,23 @@
 import React, { useEffect } from 'react'
 import { useAuth } from 'react-oidc-context'
 import { getEnvSpec } from 'api/api'
+import { useI18n } from '@juniper/ui-core'
 
 /** component for showing a login dialog that hides other content on the page */
 function Login() {
   const auth = useAuth()
+  const { selectedLanguage } = useI18n()
   const envSpec = getEnvSpec()
 
   const signIn = () => {
-    auth.signinRedirect(
-      { redirectMethod: 'replace', extraQueryParams: { portalShortcode: envSpec.shortcode as string } })
+    auth.signinRedirect({
+      redirectMethod: 'replace',
+      extraQueryParams: {
+        portalShortcode: envSpec.shortcode as string,
+        // eslint-disable-next-line camelcase
+        ui_locales: selectedLanguage
+      }
+    })
   }
 
   useEffect(() => {

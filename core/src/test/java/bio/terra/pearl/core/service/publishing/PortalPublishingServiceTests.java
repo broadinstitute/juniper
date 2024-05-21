@@ -54,11 +54,12 @@ public class PortalPublishingServiceTests extends BaseSpringBootTest {
     public void testPublishesSurveyPortalChanges(TestInfo info) throws Exception {
         AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
         Portal portal = portalFactory.buildPersisted(getTestName(info));
-        Survey survey = surveyFactory.buildPersisted(getTestName(info));
+        Survey survey = surveyFactory.buildPersisted(getTestName(info), portal.getId());
         PortalEnvironment irbEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb, portal.getId());
         PortalEnvironment liveEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.live, portal.getId());
         irbEnv.setPreRegSurveyId(survey.getId());
         portalEnvironmentService.update(irbEnv);
+        survey.setPortalId(portal.getId());
 
         PortalEnvironmentChange changes = portalDiffService.diffPortalEnvs(portal.getShortcode(), EnvironmentName.irb, EnvironmentName.live);
         portalPublishingService.applyChanges(portal.getShortcode(), EnvironmentName.live, changes, user);

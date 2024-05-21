@@ -15,8 +15,13 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "info@ourhealthstudy.org"
+        "emailSourceAddress": "info@ourhealthstudy.org",
+        "defaultLanguage": "en"
       },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }],
       "siteContentPopDto": {
         "populateFileName": "siteContent/siteContent.json"
       },
@@ -45,16 +50,26 @@
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
-      }
+        "initialized": false,
+        "defaultLanguage": "en"
+      },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }]
     },{
       "environmentName": "live",
       "portalEnvironmentConfig": {
         "acceptingRegistration": true,
         "passwordProtected": false,
         "password": "broad_institute",
-        "initialized": false
-      }
+        "initialized": false,
+        "defaultLanguage": "en"
+      },
+      "supportedLanguages": [{
+        "languageName": "English",
+        "languageCode": "en"
+      }]
     }
   ],
   "adminUsers": [

@@ -38,7 +38,7 @@ public class SmartyAddressValidationService implements AddressValidationService 
                     .build();
         }
 
-        if (POSSIBLE_US_SPELLINGS.contains(address.getCountry())) {
+        if (SmartyUSAddressValidationService.POSSIBLE_US_SPELLINGS.contains(address.getCountry())) {
             return this.usClient.validate(address);
         }
 
@@ -59,13 +59,5 @@ public class SmartyAddressValidationService implements AddressValidationService 
         return missing;
     }
 
-
-    private static final List<String> POSSIBLE_US_SPELLINGS = List.of(
-            "US",
-            "USA",
-            "United States",
-            "U.S.A.",
-            "United States of America"
-    );
 
 }

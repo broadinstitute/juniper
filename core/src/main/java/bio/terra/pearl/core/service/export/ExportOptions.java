@@ -1,15 +1,25 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.service.export.ExportFileFormat;
-import lombok.Builder;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
-public record ExportOptions (boolean splitOptionsIntoColumns, boolean stableIdsForOptions, boolean onlyIncludeMostRecent,
-                             ExportFileFormat fileFormat,
-                             Integer limit) {
+
+@SuperBuilder
+@Getter
+public final class ExportOptions {
+    private final boolean splitOptionsIntoColumns;
+    private final boolean stableIdsForOptions;
+    private final boolean onlyIncludeMostRecent;
+    private final boolean includeProxiesAsRows;
+    private final ExportFileFormat fileFormat;
+    private final Integer limit;
+
     public ExportOptions() {
-        this(false, false, true, ExportFileFormat.TSV, null);
+        this.splitOptionsIntoColumns = false;
+        this.stableIdsForOptions = false;
+        this.onlyIncludeMostRecent = true;
+        this.includeProxiesAsRows = false;
+        this.fileFormat = ExportFileFormat.TSV;
+        this.limit = null;
     }
-
-    @Builder
-    public ExportOptions {}
 }

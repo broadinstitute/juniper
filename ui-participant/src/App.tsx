@@ -19,12 +19,14 @@ import ConfigProvider, { ConfigConsumer } from 'providers/ConfigProvider'
 import { DocumentTitle } from 'util/DocumentTitle'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useCookiesAcknowledged } from './browserPersistentState'
-import { CookieAlert } from './CookieAlert'
 import { IdleStatusMonitor } from 'login/IdleStatusMonitor'
-import { ApiProvider } from '@juniper/ui-core'
+import { ApiProvider, I18nProvider } from '@juniper/ui-core'
 import { BrandConfiguration, brandStyles } from './util/brandUtils'
 import { isBrowserCompatible } from './util/browserCompatibilityUtils'
-import I18nProvider from './providers/I18nProvider'
+import InvitationPage from './landing/registration/InvitationPage'
+import AuthError from './login/AuthError'
+import ActiveUserProvider from './providers/ActiveUserProvider'
+import { CookieAlert } from './CookieAlert'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -45,11 +47,15 @@ const ScrollToTop = () => {
  */
 function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
-  const { localContent, portal } = usePortalEnv()
+  const { localContent, portal, portalEnv } = usePortalEnv()
 
   const brandConfig: BrandConfiguration = {}
   if (localContent.primaryBrandColor) {
     brandConfig.brandColor = localContent.primaryBrandColor
+  }
+
+  if (localContent.dashboardBackgroundColor) {
+    brandConfig.backgroundColor = localContent.dashboardBackgroundColor
   }
 
   useEffect(() => {
@@ -75,8 +81,11 @@ function App() {
       <Route index key="main" element={<HtmlPageView page={localContent.landingPage}/>}/>
     )
   }
-  // add routes for portal registration not tied to a specific study (e.g. 'join HeartHive')
-  landingRoutes.push(<Route key="portalReg" path="/join/*"
+  // add routes for portal registration and invitations not tied to a specific study (e.g. 'join HeartHive')
+  landingRoutes.push(<Route key="portalReg" path="/join/invitation"
+    element={<InvitationPage/>}>
+  </Route>)
+  landingRoutes.push(<Route key="portalRegInvite" path="/join/*"
     element={<PortalRegistrationRouter portal={portal} returnTo="/hub"/>}>
   </Route>)
 
@@ -98,34 +107,40 @@ function App() {
                     ...getAuthProviderProps(config.b2cTenantName, config.b2cClientId, config.b2cPolicyName)
                   }>
                     <UserProvider>
-                      <I18nProvider>
-                        <Suspense fallback={<PageLoadingIndicator/>}>
-                          <IdleStatusMonitor
-                            maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
-                          <Routes>
-                            <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
-                            <Route path="/studies/:studyShortcode">
-                              <Route path="join/*" element={<StudyEnrollRouter/>}/>
-                              <Route index element={<div>study specific page -- TBD</div>}/>
-                              <Route path="*" element={<div>unmatched study route</div>}/>
-                            </Route>
-                            <Route path="/" element={<LandingPage localContent={localContent}/>}>
-                              {landingRoutes}
-                            </Route>
-                            <Route path="/redirect-from-oauth" element={<RedirectFromOAuth/>}/>
-                            <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
-                            <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
-                            <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>
-                            <Route path="*" element={<div>unmatched route</div>}/>
-                          </Routes>
-                        </Suspense>
-                      </I18nProvider>
+                      <ActiveUserProvider>
+                        <I18nProvider defaultLanguage={portalEnv.portalEnvironmentConfig.defaultLanguage}
+                          portalShortcode={portal.shortcode}>
+                          <Suspense fallback={<PageLoadingIndicator/>}>
+                            <IdleStatusMonitor
+                              maxIdleSessionDuration={30 * 60 * 1000} idleWarningDuration={5 * 60 * 1000}/>
+                            <Routes>
+                              <Route path="/hub/*" element={<ProtectedRoute><HubRouter/></ProtectedRoute>}/>
+                              <Route path="/studies/:studyShortcode">
+                                <Route path="join/*" element={<StudyEnrollRouter/>}/>
+                                <Route index element={<div>study specific page -- TBD</div>}/>
+                                <Route path="*" element={<div>unmatched study route</div>}/>
+                              </Route>
+                              <Route path="/" element={<LandingPage localContent={localContent}/>}>
+                                {landingRoutes}
+                              </Route>
+                              <Route path="/redirect-from-oauth">
+                                <Route index element={<RedirectFromOAuth/>}/>
+                                <Route path="error" element={<AuthError/>}/>
+                              </Route>
+                              <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
+                              <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
+                              <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>
+                              <Route path="*" element={<div>unmatched route</div>}/>
+                            </Routes>
+                          </Suspense>
+                          {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
+                        </I18nProvider>
+                      </ActiveUserProvider>
                     </UserProvider>
                   </AuthProvider>
                 }
               </ConfigConsumer>
             </ConfigProvider>
-            {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
           </BrowserRouter>
         </div>
       </PortalPasswordGate>

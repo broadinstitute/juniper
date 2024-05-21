@@ -1,8 +1,12 @@
 package bio.terra.pearl.core.factory;
 
+import bio.terra.pearl.core.factory.portal.PortalFactory;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.core.service.study.StudyService;
+
+import java.util.List;
 import java.util.UUID;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +18,8 @@ public class StudyFactory {
     private StudyService studyService;
     @Autowired
     private PortalStudyService portalStudyService;
+    @Autowired
+    private PortalFactory portalFactory;
 
     public Study.StudyBuilder builder(String testName) {
         return Study.builder()
@@ -22,7 +28,8 @@ public class StudyFactory {
     }
 
     public Study.StudyBuilder builderWithDependencies(String testName) {
-        return builder(testName);
+        Portal portal = portalFactory.buildPersisted(testName);
+        return builder(testName).studyPortals(List.of(portal));
     }
 
     public Study buildPersisted(String testName) {

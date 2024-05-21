@@ -24,7 +24,6 @@ export const emptyStudyEnvChange: StudyEnvironmentChange = {
   studyShortcode: '',
   configChanges: [],
   preEnrollSurveyChanges: { changed: false },
-  consentChanges: { addedItems: [], removedItems: [], changedItems: [] },
   surveyChanges: { addedItems: [], removedItems: [], changedItems: [] },
   triggerChanges: { addedItems: [], removedItems: [], changedItems: [] }
 }

@@ -14,6 +14,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CreateTriggerModal from './CreateTriggerModal'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import CollapsableMenu from 'navbar/CollapsableMenu'
+import TriggerNotifications from './TriggerNotifications'
 
 const CONFIG_GROUPS = [
   { title: 'Events', type: 'EVENT' },
@@ -91,6 +92,8 @@ export default function TriggerList({ studyEnvContext, portalContext }:
           <Route path="configs/:configId"
             element={<TriggerView studyEnvContext={studyEnvContext}
               portalContext={portalContext} onDelete={onDelete}/>}/>
+          <Route path="configs/:configId/notifications" element={
+            <TriggerNotifications studyEnvContext={studyEnvContext}/>}/>
         </Routes>
         <Outlet/>
       </div>

@@ -1,0 +1,12 @@
+{
+  "createdAt" : 1707345723.386315000,
+  "lastUpdatedAt" : 1707345723.386315000,
+  "name" : "Kit Sent",
+  "stableId" : "kitSent",
+  "version" : 3,
+  "localizedEmailTemplateDtos": [{
+    "language" : "en",
+    "subject" : "Your ${study.name} sample kit is on its way!",
+    "bodyPopulateFile" : "en/kitSent.html"
+  }]
+}

@@ -13,7 +13,7 @@ function AdminNavbar() {
   const currentUser: UserContextT = useUser()
   const [showContactModal, setShowContactModal] = useState(false)
 
-  if (currentUser.user.isAnonymous) {
+  if (!currentUser.user) {
     return <div></div>
   }
   return <>
@@ -54,7 +54,7 @@ function AdminNavbar() {
               </ul>
             </div>
           </li>
-          {!currentUser.user.isAnonymous && <li className="nav-item dropdown">
+          {currentUser.user && <li className="nav-item dropdown">
             <a className="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <FontAwesomeIcon icon={faUserCircle} className="fa-2x nav-icon" title="user menu"/>
             </a>

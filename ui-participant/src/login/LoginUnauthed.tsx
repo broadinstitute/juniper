@@ -1,22 +1,40 @@
 import React, { SyntheticEvent, useState } from 'react'
-import Api, { LoginResult } from 'api/api'
+import Api from 'api/api'
 import { useUser } from 'providers/UserProvider'
+import { findDefaultEnrollmentStudy } from './RedirectFromOAuth'
+import { enrollCurrentUserInStudy } from '../util/enrolleeUtils'
+import { useNavigate } from 'react-router-dom'
+import { usePortalEnv } from '../providers/PortalProvider'
+import { useI18n } from '@juniper/ui-core'
 
 /** component for showing a login dialog that hides other content on the page */
 export default function LoginUnauthed() {
   const [emailAddress, setEmailAddress] = useState('')
   const [isError, setIsError] = useState(false)
-  const { loginUser } = useUser()
+  const { loginUser, refreshLoginState } = useUser()
+  const navigate = useNavigate()
+  const { portal } = usePortalEnv()
+  const { i18n } = useI18n()
+
+  const defaultEnrollStudy = findDefaultEnrollmentStudy(null, portal.portalStudies)
 
   /** log in with just an email, ignoring auth */
-  function unauthedLogin(event: SyntheticEvent) {
+  const unauthedLogin = async (event: SyntheticEvent) => {
     event.preventDefault()
     setIsError(false)
-    Api.unauthedLogin(emailAddress).then((result: LoginResult) => {
-      loginUser(result, result.user.token)
-    }).catch(() => {
+    try {
+      const loginResult = await Api.unauthedLogin(emailAddress)
+      loginUser(loginResult, loginResult.user.token)
+
+      // Enroll in the default study if not already enrolled in any study
+      if (defaultEnrollStudy && !loginResult.enrollees.length) {
+        const hubUpdate = await enrollCurrentUserInStudy(defaultEnrollStudy.shortcode,
+          defaultEnrollStudy.name, null, refreshLoginState, i18n)
+        navigate('/hub', { replace: true, state: hubUpdate })
+      }
+    } catch (e) {
       setIsError(true)
-    })
+    }
   }
 
   return <div className="Login">

@@ -3,7 +3,7 @@ package bio.terra.pearl.core.dao.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.participant.ParticipantUserFactory;
 import bio.terra.pearl.core.factory.participant.ProfileFactory;
-import bio.terra.pearl.core.model.Environment;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
 import org.junit.jupiter.api.Test;
@@ -40,13 +40,13 @@ public class ParticipantUserDaoTests extends BaseSpringBootTest {
     @Transactional
     public void testUserUniqueness(TestInfo info) {
         ParticipantUser user = participantUserFactory.builderWithDependencies(getTestName(info)).build();
-        Environment environment = user.getEnvironment();
+        EnvironmentName environment = user.getEnvironmentName();
         ParticipantUser createdUser = participantUserDao.create(user);
         assertNotNull(createdUser.getId(), "Id not attached to generated object");
 
         ParticipantUser dupeUser = participantUserFactory.builder(getTestName(info))
                 .username(user.getUsername())
-                .environment(environment).build();
+                .environmentName(environment).build();
         Exception e = assertThrows(UnableToExecuteStatementException.class, () -> {
             participantUserDao.create(dupeUser);
         });

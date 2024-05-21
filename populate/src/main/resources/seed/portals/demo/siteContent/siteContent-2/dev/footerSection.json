@@ -45,14 +45,14 @@
         "text": "617-724-1240",
         "href": "tel:617-724-1240"
       },{
-        "text": "info@ourhealthstudy.org",
-        "href": "mailto:info@ourhealthstudy.org"
+        "text": "support@juniper.terra.bio",
+        "href": "mailto:support@juniper.terra.bio"
       }]
     },{
       "title": "DEV_Donate",
       "items": [{
         "text": "Contribute funds",
-        "href": "mailto:info@ourhealthstudy.org"
+        "href": "mailto:support@juniper.terra.bio"
       }]
     },{
       "title": "DEV_For Participants",
@@ -62,8 +62,8 @@
         "href": "/hub"
       },{
         "type": "join",
-        "text": "DEV_Join OurHealth",
-        "studyShortcode": "ourheart"
+        "text": "DEV_Join Juniper Heart Demo",
+        "studyShortcode": "heartdemo"
       }]
     }]
   }

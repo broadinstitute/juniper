@@ -7,6 +7,7 @@ import PopulateAdminConfig from './PopulateAdminConfig'
 import ExtractPortal from './ExtractPortal'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import { renderPageHeader } from 'util/pageUtils'
+import PopulateCommand from './PopulateCommand'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
@@ -30,6 +31,9 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
           <li style={navListItemStyle} className="ps-3">
             <NavLink to="extractPortal" style={navLinkStyleFunc}>Extract portal</NavLink>
           </li>
+          <li style={navListItemStyle} className="ps-3">
+            <NavLink to="runCommand" style={navLinkStyleFunc}>Run command</NavLink>
+          </li>
         </ul>
       </div>
       <div className="flex-grow-1 bg-white p-3">
@@ -43,6 +47,8 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
             element={<PopulateAdminConfig/>}/>
           <Route path="extractPortal"
             element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
+          <Route path="runCommand"
+            element={<PopulateCommand/>}/>
           <Route path="*" element={<div>Choose a populate option</div>}/>
         </Routes>
         <Outlet/>

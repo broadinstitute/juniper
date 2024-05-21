@@ -4,7 +4,9 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
-  SiteContent, Study, StudyEnvironment
+  SiteContent,
+  Study,
+  StudyEnvironment
 } from '@juniper/ui-core'
 
 /** mock portal object with one environment */
@@ -34,12 +36,14 @@ export const mockStudyEnv = (): StudyEnvironment => {
     environmentName: 'sandbox',
     studyEnvironmentConfig: {
       acceptingEnrollment: true,
+      acceptingProxyEnrollment: false,
       initialized: true,
       passwordProtected: false,
-      password: 'password'
+      password: 'password',
+      useDevDsmRealm: true,
+      useStubDsm: true
     },
     configuredSurveys: [],
-    configuredConsents: [],
     triggers: []
   }
 }
@@ -61,7 +65,8 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
     acceptingRegistration: true,
     initialized: true,
     password: 'password',
-    passwordProtected: false
+    passwordProtected: false,
+    defaultLanguage: 'en'
   }
 }
 
@@ -69,7 +74,6 @@ export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
 export const mockSiteContent = (): SiteContent => {
   return {
     id: 'fakeID1',
-    defaultLanguage: 'en',
     localizedSiteContents: [mockLocalSiteContent()],
     stableId: 'mockContent',
     version: 1,
@@ -94,5 +98,17 @@ export const mockHtmlPage = (): HtmlPage => {
     title: 'mock home page',
     path: '/',
     sections: []
+  }
+}
+
+/**
+ * Returns a mock object that can be returned by the usePortalEnv hook
+ */
+export const mockUsePortalEnv = () => {
+  return {
+    portal: mockPortal(),
+    reloadPortal: jest.fn(),
+    portalEnv: mockPortalEnvironment(),
+    localContent: mockLocalSiteContent()
   }
 }

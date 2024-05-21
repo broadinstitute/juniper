@@ -44,7 +44,14 @@ public class SurveyResponseController implements SurveyResponseApi {
     ParticipantUser user = requestUtilService.requireUser(request);
     SurveyWithResponse result =
         surveyResponseExtService.findOrCreateWithActiveResponse(
-            studyShortcode, envName, stableId, version, enrolleeShortcode, user.getId(), taskId);
+            portalShortcode,
+            studyShortcode,
+            envName,
+            stableId,
+            version,
+            enrolleeShortcode,
+            user.getId(),
+            taskId);
     return ResponseEntity.ok(result);
   }
 

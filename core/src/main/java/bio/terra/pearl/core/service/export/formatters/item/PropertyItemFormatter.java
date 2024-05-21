@@ -10,6 +10,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.time.Instant;
 import java.util.Arrays;
 
 import static bio.terra.pearl.core.service.export.formatters.ExportFormatUtils.DATA_TYPE_MAP;
@@ -19,24 +20,35 @@ import static bio.terra.pearl.core.service.export.formatters.ExportFormatUtils.D
 public class PropertyItemFormatter<T> extends ItemFormatter<T> {
     @Getter
     private String propertyName;
+    @Getter
+    private Class<?> propertyClass;
 
     public PropertyItemFormatter(String propertyName, Class<T> beanClass) {
         this.propertyName = propertyName;
-        this.dataType = getDataValueExportType(beanClass, propertyName);
+        this.propertyClass = getPropertyClass(beanClass, propertyName);
+        this.dataType = DATA_TYPE_MAP.getOrDefault(propertyClass, DataValueExportType.STRING);
         this.baseColumnKey = propertyName;
     }
 
-    public <T> DataValueExportType getDataValueExportType(Class<T> beanClass, String propertyName) {
-        DataValueExportType dataType = DataValueExportType.STRING;
+    public Class<?> getPropertyClass(Class<?> beanClass, String propertyName) {
         try {
             BeanInfo info = Introspector.getBeanInfo(beanClass);
-            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(propertyName))
+            String simplePropertyName;
+            if (propertyName.contains(".")) {
+                simplePropertyName = propertyName.substring(0, propertyName.indexOf("."));
+            } else {
+                simplePropertyName = propertyName;
+            }
+            PropertyDescriptor descriptor = Arrays.stream(info.getPropertyDescriptors()).filter(pd -> pd.getName().equals(simplePropertyName))
                     .findFirst().get();
-            dataType = DATA_TYPE_MAP.getOrDefault(descriptor.getPropertyType(), DataValueExportType.STRING);
+            Class<?> clazz = descriptor.getPropertyType();
+            if (propertyName.contains(".")) {
+                return getPropertyClass(clazz, propertyName.substring(propertyName.indexOf(".") + 1));
+            }
+            return clazz;
         } catch (Exception e) {
-            // default is string
+            throw new IllegalStateException("Can't determine property class", e);
         }
-        return dataType;
     }
 
     public  Object getRawExportValue(T bean) {
@@ -56,5 +68,22 @@ public class PropertyItemFormatter<T> extends ItemFormatter<T> {
      */
     public String getExportString(T bean) {
         return ExportFormatUtils.formatForExport(getRawExportValue(bean));
+    }
+
+
+    @Override
+    public void importValueToBean(T bean, String exportString) {
+        /**
+         * don't attempt to set null values -- if the value was not in the import map, we want to use
+         * the application default
+         */
+        if (exportString != null) {
+            Object value = ExportFormatUtils.getValueFromString(exportString, dataType);
+            try {
+                PropertyUtils.setNestedProperty(bean, getPropertyName(), value);
+            } catch (Exception e) {
+                log.error("error setting property " + getPropertyName(), e);
+            }
+        }
     }
 }

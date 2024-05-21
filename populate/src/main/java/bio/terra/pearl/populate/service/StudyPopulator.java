@@ -4,7 +4,6 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.dao.kit.StudyEnvironmentKitTypeDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.consent.StudyEnvironmentConsent;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.notification.Trigger;
@@ -24,15 +23,15 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.populate.dto.StudyEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.StudyPopDto;
-import bio.terra.pearl.populate.dto.consent.StudyEnvironmentConsentPopDto;
 import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
 import bio.terra.pearl.populate.service.contexts.StudyPopulateContext;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.util.Optional;
-import org.springframework.stereotype.Service;
 
 @Service
 public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopulateContext> {
@@ -41,7 +40,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private EnrolleePopulator enrolleePopulator;
     private SurveyPopulator surveyPopulator;
     private SurveyService surveyService;
-    private ConsentFormPopulator consentFormPopulator;
     private EmailTemplatePopulator emailTemplatePopulator;
     private PreEnrollmentResponseDao preEnrollmentResponseDao;
     private PortalDiffService portalDiffService;
@@ -53,7 +51,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     public StudyPopulator(StudyService studyService,
                           StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
                           SurveyPopulator surveyPopulator, SurveyService surveyService,
-                          ConsentFormPopulator consentFormPopulator,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
                           PortalDiffService portalDiffService, StudyPublishingService studyPublishingService,
@@ -64,7 +61,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.enrolleePopulator = enrolleePopulator;
         this.surveyPopulator = surveyPopulator;
         this.surveyService = surveyService;
-        this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.portalDiffService = portalDiffService;
@@ -78,18 +74,13 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private void initializeStudyEnvironmentDto(StudyEnvironmentPopDto studyEnv, PortalPopulateContext context) {
         for (int i = 0; i < studyEnv.getConfiguredSurveyDtos().size(); i++) {
             StudyEnvironmentSurveyPopDto configSurveyDto = studyEnv.getConfiguredSurveyDtos().get(i);
-            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i, context);
+            StudyEnvironmentSurvey configSurvey = surveyPopulator.convertConfiguredSurvey(configSurveyDto, i, context, context.getPortalShortcode());
             studyEnv.getConfiguredSurveys().add(configSurvey);
         }
         if (studyEnv.getPreEnrollSurveyDto() != null) {
             Survey preEnrollSurvey = surveyPopulator.findFromDto(studyEnv.getPreEnrollSurveyDto(), context).get();
             studyEnv.setPreEnrollSurveyId(preEnrollSurvey.getId());
             studyEnv.setPreEnrollSurvey(preEnrollSurvey);
-        }
-        for (int i = 0; i < studyEnv.getConfiguredConsentDtos().size(); i++) {
-            StudyEnvironmentConsentPopDto configConsentDto = studyEnv.getConfiguredConsentDtos().get(i);
-            StudyEnvironmentConsent configConsent = consentFormPopulator.convertConfiguredConsent(configConsentDto, i, context);
-            studyEnv.getConfiguredConsents().add(configConsent);
         }
         for (TriggerPopDto configPopDto : studyEnv.getTriggerDtos()) {
             Trigger trigger = emailTemplatePopulator.convertTrigger(configPopDto, context);
@@ -104,8 +95,8 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
 
         // save any of the pre-enrollment responses that aren't associated with an enrollee
         for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
-            Survey survey = surveyService.findByStableId(responsePopDto.getSurveyStableId(),
-                    responsePopDto.getSurveyVersion()).get();
+            Survey survey = surveyService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+                    responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
             String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
             PreEnrollmentResponse response = PreEnrollmentResponse.builder()
                     .surveyId(survey.getId())
@@ -132,6 +123,12 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     @Override
     protected Class<StudyPopDto> getDtoClazz() {
         return StudyPopDto.class;
+    }
+
+    @Override
+    public void preProcessDto(StudyPopDto popDto, PortalPopulateContext context) {
+        popDto.setShortcode(context.applyShortcodeOverride(popDto.getShortcode()));
+        popDto.setName(context.applyShortcodeOverride(popDto.getName()));
     }
 
     @Override
@@ -179,7 +176,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
             try {
                 StudyEnvironmentChange studyEnvChange = portalDiffService.diffStudyEnvs(existingStudy.getShortcode(),
                         sourceEnv, destEnv);
-                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId());
+                studyPublishingService.applyChanges(destEnv, studyEnvChange, destPortalEnv.getId(), destPortalEnv.getPortalId());
             } catch (Exception e) {
                 // we probably want to move this to some sort of "PopulateException"
                 throw new IOException(e);
@@ -198,9 +195,6 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     protected void populateDocuments(StudyPopDto popDto, PortalPopulateContext context, boolean overwrite) throws IOException {
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(context.newFrom(surveyFile), overwrite);
-        }
-        for (String consentFile : popDto.getConsentFormFiles()) {
-            consentFormPopulator.populate(context.newFrom(consentFile), overwrite);
         }
         for (String template : popDto.getEmailTemplateFiles()) {
             emailTemplatePopulator.populate(context.newFrom(template), overwrite);

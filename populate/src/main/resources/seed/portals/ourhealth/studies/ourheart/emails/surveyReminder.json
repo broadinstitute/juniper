@@ -1,7 +1,10 @@
 {
   "name": "Survey reminder",
-  "bodyPopulateFile": "surveyReminder.html",
-  "subject": "Please come back to finish your study activities",
   "stableId": "oh_oh_reminderSurvey",
-  "version": 1
+  "version": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Please come back to finish your study activities",
+    "bodyPopulateFile": "en/surveyReminder.html"
+  }]
 }

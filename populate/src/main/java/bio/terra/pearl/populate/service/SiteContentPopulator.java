@@ -6,13 +6,18 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
-import bio.terra.pearl.populate.dto.site.*;
+import bio.terra.pearl.populate.dto.site.HtmlPagePopDto;
+import bio.terra.pearl.populate.dto.site.HtmlSectionPopDto;
+import bio.terra.pearl.populate.dto.site.LocalizedSiteContentPopDto;
+import bio.terra.pearl.populate.dto.site.NavbarItemPopDto;
+import bio.terra.pearl.populate.dto.site.SiteContentPopDto;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import bio.terra.pearl.populate.service.contexts.PortalPopulateContext;
-import java.io.IOException;
-import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Optional;
 
 @Service
 public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContentPopDto, PortalPopulateContext> {
@@ -83,6 +88,7 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
     protected void preProcessDto(SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
         Portal attachedPortal = portalService.findOneByShortcode(context.getPortalShortcode()).get();
         popDto.setPortalId(attachedPortal.getId());
+        popDto.setStableId(context.applyShortcodeOverride(popDto.getStableId()));
         for (LocalizedSiteContentPopDto lsc : popDto.getLocalizedSiteContentDtos()) {
             initializeLandingPage(lsc, context);
             for (NavbarItemPopDto navItem : lsc.getNavbarItemDtos()) {
@@ -102,7 +108,7 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
         if (popDto.getPopulateFileName() != null) {
             return context.fetchFromPopDto(popDto, siteContentService);
         }
-        return siteContentService.findByStableId(popDto.getStableId(), popDto.getVersion());
+        return siteContentService.findByStableId(popDto.getStableId(), popDto.getVersion(), popDto.getPortalId());
     }
 
     @Override
@@ -113,7 +119,7 @@ public class SiteContentPopulator extends BasePopulator<SiteContent, SiteContent
 
     @Override
     public SiteContent createPreserveExisting(SiteContent existingObj, SiteContentPopDto popDto, PortalPopulateContext context) throws IOException {
-        int newVersion = siteContentService.getNextVersion(popDto.getStableId());
+        int newVersion = siteContentService.getNextVersion(popDto.getStableId(), popDto.getPortalId());
         popDto.setVersion(newVersion);
         return createNew(popDto, context, false);
     }

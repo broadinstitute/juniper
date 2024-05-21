@@ -3,22 +3,20 @@ package bio.terra.pearl.api.participant.service;
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.pearl.core.dao.participant.ParticipantUserDao;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class CurrentUserService {
-  private ParticipantUserDao participantUserDao;
-  private PortalParticipantUserService portalParticipantUserService;
-  private EnrolleeService enrolleeService;
-  private EnrolleeRelationService enrolleeRelationService;
-  private ParticipantTaskService participantTaskService;
-  private ProfileService profileService;
+  private final ParticipantUserDao participantUserDao;
+  private final PortalParticipantUserService portalParticipantUserService;
+  private final EnrolleeService enrolleeService;
+  private final EnrolleeRelationService enrolleeRelationService;
+  private final ParticipantTaskService participantTaskService;
+  private final ProfileService profileService;
+  private final RegistrationService registrationService;
 
   public CurrentUserService(
       ParticipantUserDao participantUserDao,
@@ -39,13 +38,15 @@ public class CurrentUserService {
       EnrolleeService enrolleeService,
       EnrolleeRelationService enrolleeRelationService,
       ParticipantTaskService participantTaskService,
-      ProfileService profileService) {
+      ProfileService profileService,
+      RegistrationService registrationService) {
     this.participantUserDao = participantUserDao;
     this.portalParticipantUserService = portalParticipantUserService;
     this.enrolleeService = enrolleeService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.participantTaskService = participantTaskService;
     this.profileService = profileService;
+    this.registrationService = registrationService;
   }
 
   /**
@@ -59,6 +60,11 @@ public class CurrentUserService {
     user.user.setLastLogin(Instant.now());
     participantUserDao.update(user.user);
     return user;
+  }
+
+  public String getUsernameFromToken(String token) {
+    DecodedJWT decodedJWT = JWT.decode(token);
+    return decodedJWT.getClaim("email").asString();
   }
 
   @Transactional
@@ -91,32 +97,71 @@ public class CurrentUserService {
       throw new UnauthorizedException("User not found for portal " + portalShortcode);
     }
     PortalParticipantUser ppUser = portalParticipantUser.get();
-
-    Profile profile =
-        profileService
-            .loadWithMailingAddress(ppUser.getProfileId())
-            .orElseThrow(IllegalStateException::new);
     user.getPortalParticipantUsers().add(ppUser);
+
+    List<Enrollee> enrollees = loadEnrollees(ppUser);
+
+    List<EnrolleeRelation> relations = loadEnrolleeRelations(enrollees);
+    enrollees.addAll(relations.stream().map(EnrolleeRelation::getTargetEnrollee).toList());
+
+    List<PortalParticipantUser> ppUsers = new ArrayList<>();
+    ppUsers.add(ppUser);
+
+    // Load the main user's proxiable ppUsers
+    enrollees.forEach(
+        enrollee -> {
+          if (ppUsers.stream()
+              .anyMatch(ppu -> ppu.getProfileId().equals(enrollee.getProfileId()))) {
+            return;
+          }
+
+          Optional<PortalParticipantUser> proxyUser =
+              portalParticipantUserService.findByProfileId(enrollee.getProfileId());
+          proxyUser.ifPresent(ppUsers::add);
+        });
+
+    return new UserLoginDto(
+        user, profileService.loadProfile(ppUser), ppUsers, enrollees, relations);
+  }
+
+  private List<Enrollee> loadEnrollees(PortalParticipantUser ppUser) {
     List<Enrollee> enrollees = enrolleeService.findByPortalParticipantUser(ppUser);
     for (Enrollee enrollee : enrollees) {
       enrolleeService.loadForParticipantDashboard(enrollee);
     }
-    List<EnrolleeRelation> proxyRelations =
-        enrolleeRelationService.findByEnrolleeIdsAndRelationType(
-            enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
-    enrolleeRelationService.attachTargetEnrollees(proxyRelations);
-    for (EnrolleeRelation relation : proxyRelations) {
-      enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
-    }
-    return new UserLoginDto(user, ppUser, profile, enrollees, proxyRelations);
+    return enrollees;
   }
 
-  public record UserLoginDto(
-      ParticipantUser user,
-      PortalParticipantUser ppUser,
-      Profile profile,
-      List<Enrollee> enrollees,
-      List<EnrolleeRelation> relations) {}
+  private List<EnrolleeRelation> loadEnrolleeRelations(List<Enrollee> enrollees) {
+    List<EnrolleeRelation> relations = new ArrayList<>();
+    if (!enrollees.isEmpty()) {
+      relations =
+          enrolleeRelationService.findByEnrolleeIdsAndRelationType(
+              enrollees.stream().map(Enrollee::getId).toList(), RelationshipType.PROXY);
+      enrolleeRelationService.attachTargetEnrollees(relations);
+      for (EnrolleeRelation relation : relations) {
+        enrolleeService.loadForParticipantDashboard(relation.getTargetEnrollee());
+      }
+    }
+
+    return relations;
+  }
+
+  @Transactional
+  public CurrentUserService.UserLoginDto registerOrLogin(
+      String token,
+      String portalShortcode,
+      EnvironmentName environmentName,
+      UUID preRegResponseId,
+      String preferredLanguage) {
+
+    String email = getUsernameFromToken(token);
+    if (portalParticipantUserService.findOne(email, portalShortcode, environmentName).isEmpty()) {
+      registrationService.register(
+          portalShortcode, environmentName, email, preRegResponseId, preferredLanguage);
+    }
+    return tokenLogin(token, portalShortcode, environmentName);
+  }
 
   @Transactional
   public void logout(ParticipantUser user) {
@@ -128,4 +173,11 @@ public class CurrentUserService {
       String username, EnvironmentName environmentName) {
     return participantUserDao.findOne(username, environmentName);
   }
+
+  public record UserLoginDto(
+      ParticipantUser user,
+      Profile profile,
+      List<PortalParticipantUser> ppUsers, // includes proxied ppusers
+      List<Enrollee> enrollees,
+      List<EnrolleeRelation> relations) {}
 }

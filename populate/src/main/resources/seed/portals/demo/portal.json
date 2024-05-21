@@ -15,7 +15,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -36,7 +37,12 @@
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
         "participants/withdrawn.json",
-        "participants/oldVersion.json"
+        "participants/oldVersion.json",
+        "participants/proxy.json",
+        "participants/proxyFamily2.json",
+        "participants/invited.json",
+        "participants/unenrolled.json"
+
       ],
       "mailingListContacts": [
         {
@@ -47,7 +53,13 @@
           "name": "Alice Messager",
           "email": "alice@test.com"
         }
-      ]
+      ],
+      "participantDashboardAlerts": [{
+        "title": "Thanks!",
+        "detail": "You've completed your tasks. We'll reach out with updates to our research to keep you informed.",
+        "alertType": "SUCCESS",
+        "trigger": "NO_ACTIVITIES_REMAIN"
+      }]
     },{
       "environmentName": "irb",
       "portalEnvironmentConfig": {
@@ -55,7 +67,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",
@@ -71,7 +84,8 @@
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true,
-        "emailSourceAddress": "support@juniper.terra.bio"
+        "emailSourceAddress": "support@juniper.terra.bio",
+        "defaultLanguage": "en"
       },
       "supportedLanguages": [{
         "languageName": "English",

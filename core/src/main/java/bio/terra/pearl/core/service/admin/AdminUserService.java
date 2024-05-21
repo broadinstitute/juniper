@@ -34,7 +34,11 @@ public class AdminUserService extends CrudService<AdminUser, AdminUserDao> {
     @Transactional
     @Override
     public AdminUser create(AdminUser adminUser) {
-        AdminUser savedUser = dao.create(adminUser);
+        //An AdminUser could belong to more than one portal, so we need to check if the user already exists
+        //before creating. If the user exists, we'll just add the new portal to the existing user.
+        AdminUser savedUser = dao.findByUsername(adminUser.getUsername())
+                                 .orElseGet(() -> dao.create(adminUser));
+
         logger.info("Created AdminUser - id: {}, username: {}", savedUser.getId(), savedUser.getUsername());
         for (PortalAdminUser portalAdminUser : adminUser.getPortalAdminUsers()) {
             portalAdminUser.setAdminUserId(savedUser.getId());

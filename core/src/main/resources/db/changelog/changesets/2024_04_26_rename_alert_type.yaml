@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: participant_dashboard_alert_type
+      author: dbush
+      changes:
+        - renameColumn:
+            tableName: participant_dashboard_alert
+            newColumnName: alert_type
+            oldColumnName: type

@@ -2,11 +2,13 @@ package bio.terra.pearl.core.factory.participant;
 
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -16,6 +18,8 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
+import bio.terra.pearl.core.service.workflow.RegistrationService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +45,8 @@ public class EnrolleeFactory {
     private PortalParticipantUserService portalParticipantUserService;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private RegistrationService registrationService;
 
     public Enrollee.EnrolleeBuilder builder(String testName) {
         return Enrollee.builder();
@@ -112,20 +118,51 @@ public class EnrolleeFactory {
         ppUser = portalParticipantUserService.create(ppUser);
         Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId(), ppUser.getProfileId());
         enrollee.setProfile(ppUser.getProfile());
-        return new EnrolleeBundle(enrollee, ppUser, portalEnv.getPortalId());
+        return new EnrolleeBundle(enrollee, user, ppUser, portalEnv.getPortalId());
     }
 
-    public HubResponse buildProxyAndGovernedEnrollee(String testName, String proxyEmail){
+    public EnrolleeBundle buildWithPortalUser(String testName, PortalEnvironment portalEnv, StudyEnvironment studyEnv, Profile profile) {
+        ParticipantUser user = participantUserFactory.buildPersisted(studyEnv.getEnvironmentName(), testName);
+        PortalParticipantUser ppUser = PortalParticipantUser.builder()
+                .profile(profile)
+                .participantUserId(user.getId())
+                .portalEnvironmentId(portalEnv.getId()).build();
+        ppUser = portalParticipantUserService.create(ppUser);
+        Enrollee enrollee = buildPersisted(testName, studyEnv.getId(), user.getId(), ppUser.getProfileId());
+        enrollee.setProfile(ppUser.getProfile());
+        return new EnrolleeBundle(enrollee, user, ppUser, portalEnv.getPortalId());
+    }
+
+    public EnrolleeAndProxy buildProxyAndGovernedEnrollee(String testName, String proxyEmail){
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, testName);
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, testName, proxyEmail);
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
 
-        HubResponse hubResponse = enrollmentService.enrollAsProxy(portalShortcode,  studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
                 null);
-        return hubResponse;
+        return new EnrolleeAndProxy(hubResponse.getResponse(), hubResponse.getEnrollee(), userBundle.ppUser(), portalEnv);
     }
 
-    public record EnrolleeBundle(Enrollee enrollee, PortalParticipantUser portalParticipantUser, UUID portalId) {}
+    public EnrolleeAndProxy buildProxyAndGovernedEnrollee(String testName, PortalEnvironment portalEnv, StudyEnvironment studyEnv) {
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, testName, testName + "_" + RandomStringUtils.randomAlphabetic(10) + "@example.com");
+        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+
+        HubResponse<Enrollee> hubResponse = enrollmentService.enrollAsProxy(studyEnv.getEnvironmentName(), studyShortcode, userBundle.user(), userBundle.ppUser(),
+                null);
+        return new EnrolleeAndProxy(hubResponse.getResponse(), hubResponse.getEnrollee(), userBundle.ppUser(), portalEnv);
+    }
+
+    /** Enrolls a participant in a study and returns the created enrollee -- this also handles registration */
+    public EnrolleeBundle enroll(String email, String portalShortcode, String studyShortcode, EnvironmentName environmentName) {
+        RegistrationService.RegistrationResult result = registrationService.register(portalShortcode, environmentName, email, null, null);
+        Portal portal = portalService.findOneByShortcode(portalShortcode).orElseThrow();
+        HubResponse<Enrollee> response = enrollmentService.enroll(environmentName, studyShortcode, result.participantUser(), result.portalParticipantUser(), null);
+        return new EnrolleeBundle(response.getEnrollee(), result.participantUser(), result.portalParticipantUser(), portal.getId());
+    }
+
+
+    public record EnrolleeBundle(Enrollee enrollee, ParticipantUser participantUser, PortalParticipantUser portalParticipantUser, UUID portalId) {}
+
+    public record EnrolleeAndProxy(Enrollee governedEnrollee, Enrollee proxy, PortalParticipantUser proxyPpUser, PortalEnvironment portalEnv) {}
 }

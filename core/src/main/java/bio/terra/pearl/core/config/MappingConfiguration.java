@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class MappingConfiguration {
     @Bean("objectMapper")
+    @Primary
     public ObjectMapper populateObjectMapper() {
         return new ObjectMapper()
                 .registerModule(new ParameterNamesModule())

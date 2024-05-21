@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.participant;
 
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.address.MailingAddress;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,9 @@ public class Profile extends BaseEntity {
 
     private MailingAddress mailingAddress;
     private UUID mailingAddressId;
+
+    @Builder.Default
+    private String preferredLanguage = "en";
 
     private String contactEmail;
     private boolean doNotEmail; // do not send any emails to this user

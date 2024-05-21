@@ -106,7 +106,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
 
   const table = useReactTable({
     data: images,
-    columns: user.superuser ? columns.concat(deleteColumnDef) : columns,
+    columns: user?.superuser ? columns.concat(deleteColumnDef) : columns,
     state: {
       sorting
     },

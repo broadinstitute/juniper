@@ -218,6 +218,64 @@ databaseChangeLog:
   - include:
       file: changesets/2024_03_05_portal_user_constraints.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_04_address_validation_skip.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_18_remove_environment_constraints.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_18_add_preferred_language_profile.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_18_localized_email_templates.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_29_add_dashboard_color.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_24_sendgrid_api_request_id.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_03_29_portal_scoped_stable_ids.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_02_language_text_portal.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_03_anonymous_user_responsible_entity.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_08_portal_env_default_language.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_08_portal_env_supported_languages_backfill.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_12_remove_sitemedia_uploadfilename.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_19_add_proxy_enrollment_config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_16_data_import.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_04_26_rename_alert_type.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_05_03_kill_consents.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_05_08_dsm_env_config.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_05_15_question_def_constraint.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_05_15_answer_type_save.yaml
+      relativeToChangelogFile: true
+
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be

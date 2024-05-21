@@ -49,7 +49,7 @@ const CreateUserModal = ({ onDismiss, portals, userCreated }:
               <span className="form-text">Email must be a Microsoft- or Google-based account</span>
             </label>
           </div>
-          { user.superuser && <div className="mb-3">
+          {user?.superuser && <div className="mb-3">
             <span>Superuser</span><br/>
             <label className="me-3">
               <input type="radio" name="superuser" value="true" checked={newUser.superuser}

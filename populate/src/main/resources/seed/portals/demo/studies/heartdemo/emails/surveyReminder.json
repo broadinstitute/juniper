@@ -1,8 +1,19 @@
 {
-  "name": "Survey reminder",
-  "bodyPopulateFile": "surveyReminder.html",
-  "subject": "Please come back to finish your study activities",
   "stableId": "hd_hd_reminderSurvey",
+  "name": "Survey reminder",
   "version": 1,
-  "publishedVersion": 1
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "Please come back to finish your study activities",
+    "bodyPopulateFile": "en/surveyReminder.html"
+  },{
+    "language": "es",
+    "subject": "Por favor regresa para finalizar tus actividades de estudio",
+    "bodyPopulateFile": "es/surveyReminder.html"
+  },{
+    "language": "dev",
+    "subject": "DEV_Please come back to finish your study activities",
+    "bodyPopulateFile": "dev/surveyReminder.html"
+  }]
 }

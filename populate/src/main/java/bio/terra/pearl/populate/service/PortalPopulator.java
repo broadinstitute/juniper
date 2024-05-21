@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -10,6 +11,7 @@ import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
@@ -30,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.zip.ZipInputStream;
@@ -46,7 +49,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final PortalParticipantUserPopulator portalParticipantUserPopulator;
     private final MailingListContactService mailingListContactService;
     private final AdminUserPopulator adminUserPopulator;
-    private final ConsentFormPopulator consentFormPopulator;
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
     private final PortalLanguageService portalLanguageService;
@@ -62,7 +64,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            SiteMediaPopulator siteMediaPopulator, SurveyPopulator surveyPopulator,
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
-                           ConsentFormPopulator consentFormPopulator,
                            EmailTemplatePopulator emailTemplatePopulator,
                            PortalLanguageService portalLanguageService) {
         this.siteContentPopulator = siteContentPopulator;
@@ -76,7 +77,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.portalStudyService = portalStudyService;
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
-        this.consentFormPopulator = consentFormPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.portalLanguageService = portalLanguageService;
     }
@@ -136,11 +136,13 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
             // we don't support updating mailing lists in-place yet
             return;
         }
+        DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
+                DataAuditInfo.systemProcessName(getClass(), "populateMailingList")).build();
         for (MailingListContact contact : portalEnvPopDto.getMailingListContacts()) {
             contact.setPortalEnvironmentId(savedEnv.getId());
             contact.setEmail(contact.getEmail());
             contact.setName(contact.getName());
-            mailingListContactService.create(contact);
+            mailingListContactService.create(contact, auditInfo);
         }
     }
 
@@ -150,13 +152,24 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     }
 
     @Override
+    public void preProcessDto(PortalPopDto popDto, FilePopulateContext context) {
+        if (context.getShortcodeOverride() != null) {
+            popDto.setShortcode(context.getShortcodeOverride());
+            popDto.setName(context.getShortcodeOverride());
+        }
+    }
+
+    @Override
     public Optional<Portal> findFromDto(PortalPopDto popDto, FilePopulateContext context) {
         return portalService.findOneByShortcode(popDto.getShortcode());
     }
 
     @Override
     public Portal overwriteExisting(Portal existingObj, PortalPopDto popDto, FilePopulateContext context) throws IOException {
-        portalService.delete(existingObj.getId(), Set.of(PortalService.AllowedCascades.STUDY));
+        Set<CascadeProperty> set = new HashSet<>();
+        set.add(PortalService.AllowedCascades.STUDY);
+        set.add(PortalService.AllowedCascades.PARTICIPANT_USER);
+        portalService.delete(existingObj.getId(), set);
         return createNew(popDto, context, true);
     }
 
@@ -184,9 +197,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String surveyFile : popDto.getSurveyFiles()) {
             surveyPopulator.populate(portalPopContext.newFrom(surveyFile), overwrite);
-        }
-        for (String consentFile : popDto.getConsentFormFiles()) {
-            consentFormPopulator.populate(portalPopContext.newFrom(consentFile), overwrite);
         }
         for (String emailTemplateFile : popDto.getEmailTemplateFiles()) {
             emailTemplatePopulator.populate(portalPopContext.newFrom(emailTemplateFile), overwrite);
@@ -219,7 +229,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
     }
 
-    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite) throws IOException {
+    public Portal populateFromZipFile(ZipInputStream zipInputStream, boolean overwrite, String shortcodeOverride) throws IOException {
         String folderName =
                 "portal_%s_%s"
                         .formatted(
@@ -230,6 +240,6 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         tempDir.mkdirs();
         ZipUtils.unzipFile(tempDir, zipInputStream);
         return populate(
-                new FilePopulateContext(folderName + "/portal.json", true), overwrite);
+                new FilePopulateContext(folderName + "/portal.json", true, shortcodeOverride), overwrite);
     }
 }

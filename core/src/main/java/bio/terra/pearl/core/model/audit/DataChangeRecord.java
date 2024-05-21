@@ -23,6 +23,7 @@ public class DataChangeRecord extends BaseEntity {
     private UUID responsibleUserId; // id of the user making the change, if it was a participant
     private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
     private String systemProcess; // if the change was the result of an automatic process, store Class+method here
+    private Boolean anonymousUser; // if the change was made by an anonymous user
     private UUID enrolleeId; // id of impacted enrollee (may be null)
     private UUID portalParticipantUserId; // id of the impacted portal participant user
     private UUID operationId; // unique id to group operations
@@ -37,6 +38,7 @@ public class DataChangeRecord extends BaseEntity {
         return DataChangeRecord.builder()
                 .responsibleAdminUserId(auditInfo.getResponsibleAdminUserId())
                 .responsibleUserId(auditInfo.getResponsibleUserId())
+                .anonymousUser(auditInfo.getAnonymousUser())
                 .operationId(auditInfo.getOperationId())
                 .enrolleeId(auditInfo.getEnrolleeId())
                 .portalParticipantUserId(auditInfo.getPortalParticipantUserId())

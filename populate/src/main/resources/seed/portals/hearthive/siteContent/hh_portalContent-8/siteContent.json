@@ -2,7 +2,6 @@
   "stableId" : "hh_portalContent",
   "version" : 8,
   "localizedSiteContents" : [ ],
-  "defaultLanguage" : "en",
   "localizedSiteContentDtos" : [ {
     "language" : "en",
     "navbarItems" : [ ],

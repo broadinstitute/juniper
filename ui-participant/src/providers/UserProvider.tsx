@@ -1,41 +1,37 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
-import { useNavigate } from 'react-router-dom'
-import Api, { Enrollee, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 
-export type User = ParticipantUser & {
-  isAnonymous: boolean
-}
-
-const anonymousUser: User = {
-  token: '',
-  isAnonymous: true,
-  username: 'anonymous'
-}
+/**
+ * The user provide contains the _raw_ user context, which is more or less directly derived
+ * from the login state. If you are trying to access the currently active user, accounting
+ * for proxy, you should use the ActiveUserProvider.
+ */
 
 export type UserContextT = {
-  user: User,
-  enrollees: Enrollee[],  // this data is included to speed initial hub rendering.  it is NOT kept current
-  ppUser?: PortalParticipantUser,
+  user: ParticipantUser | null,
+  // these are the portal participant users and enrollees that you have access to,
+  // including proxied users. The user object is the person that is actually currently
+  // logged in.
+  ppUsers: PortalParticipantUser[]
+  enrollees: Enrollee[],
+  relations: EnrolleeRelation[],
   profile?: Profile,
-  selectedLanguage: string,
-  changeLanguage: (language: string) => void
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
   logoutUser: () => void,
-  updateEnrollee: (enrollee: Enrollee, updateWtihoutRerender?: boolean) => Promise<void>
+  updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => Promise<void>
   updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => Promise<void>
+  refreshLoginState: () => Promise<void>
 }
 
 /** current user object context */
 const UserContext = React.createContext<UserContextT>({
-  user: anonymousUser,
+  user: null,
+  ppUsers: [],
   enrollees: [],
-  selectedLanguage: 'en',
-  changeLanguage: () => {
-    throw new Error('context not yet initialized')
-  },
+  relations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -50,11 +46,13 @@ const UserContext = React.createContext<UserContextT>({
   },
   updateProfile: () => {
     throw new Error('context not yet initialized')
+  },
+  refreshLoginState: () => {
+    throw new Error('context not yet initialized')
   }
 })
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
-const OAUTH_ACCRESS_TOKEN_KEY = 'oauthAccessToken'
-const SELECTED_LANGUAGE_KEY = 'selectedLanguage'
+const OAUTH_ACCESS_TOKEN_KEY = 'oauthAccessToken'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -65,13 +63,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [loginState, setLoginState] = useState<LoginResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const auth = useAuth()
-  const navigate = useNavigate()
-  const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem(SELECTED_LANGUAGE_KEY) || 'en')
-
-  const changeLanguage = (language: string) => {
-    setSelectedLanguage(language)
-    localStorage.setItem(SELECTED_LANGUAGE_KEY, language)
-  }
 
   /**
    * Sign in to the UI based on the result of signing in to the API.
@@ -82,7 +73,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
    */
   const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
-    localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, accessToken)
+    localStorage.setItem(OAUTH_ACCESS_TOKEN_KEY, accessToken)
   }
 
   const loginUserInternal = (loginResult: LoginResult) => {
@@ -91,17 +82,15 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
-  const logoutUser = () => {
+  const logoutUser = async () => {
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-    localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-    if (process.env.REACT_APP_UNAUTHED_LOGIN) {
-      Api.logout().then(() => {
-        setLoginState(null)
-        navigate('/')
-      })
-    } else {
+    localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
+    await Api.logout()
+    if (!process.env.REACT_APP_UNAUTHED_LOGIN) {
       // eslint-disable-next-line camelcase
       auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
+    } else {
+      window.location.href = '/'
     }
   }
 
@@ -131,10 +120,21 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   function updateProfile(profile: Profile, updateWithoutRerender = false): Promise<void> {
+    const isPrimaryUser = (
+      loginState?.ppUsers.find(ppUser => ppUser.profileId === profile.id)?.participantUserId === loginState?.user?.id
+    )
+
     if (updateWithoutRerender && loginState) {
       // update the underlying value, but don't call setLoginState, so no refresh
       // this should obviously be used with great care
-      loginState.profile = profile
+      if (isPrimaryUser) {
+        loginState.profile = profile
+      }
+      loginState?.enrollees.forEach(enrollee => {
+        if (enrollee.profileId === profile.id) {
+          enrollee.profile = profile
+        }
+      })
     } else {
       setLoginState(oldState => {
         if (oldState == null) {
@@ -142,6 +142,12 @@ export default function UserProvider({ children }: { children: React.ReactNode }
         }
         return {
           ...oldState,
+          enrollees: oldState.enrollees.map(enrollee => {
+            if (enrollee.profileId === profile.id) {
+              enrollee.profile = profile
+            }
+            return enrollee
+          }),
           profile
         }
       })
@@ -151,48 +157,54 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     })
   }
 
+  const refreshLoginState = async () => {
+    const oauthAccessToken = localStorage.getItem(OAUTH_ACCESS_TOKEN_KEY)
+    const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
+    if (oauthAccessToken) {
+      try {
+        const loginResult = await Api.refreshLogin(oauthAccessToken)
+        loginUser(loginResult, oauthAccessToken)
+        setIsLoading(false)
+      } catch (e) {
+        setIsLoading(false)
+        localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
+      }
+    } else if (internalLogintoken) {
+      try {
+        const loginResult = await Api.unauthedRefreshLogin(internalLogintoken)
+        loginUserInternal(loginResult)
+        setIsLoading(false)
+      } catch (e) {
+        setIsLoading(false)
+        localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
+      }
+    } else {
+      setIsLoading(false)
+    }
+  }
+
   const userContext: UserContextT = {
-    user: loginState ? { ...loginState.user, isAnonymous: false } : anonymousUser,
+    user: loginState ? loginState.user : null,
     enrollees: loginState ? loginState.enrollees : [],
-    ppUser: loginState?.ppUser,
+    relations: loginState ? loginState.relations : [],
+    ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
     profile: loginState?.profile,
-    selectedLanguage,
-    changeLanguage,
     loginUser,
     loginUserInternal,
     logoutUser,
     updateEnrollee,
-    updateProfile
+    updateProfile,
+    refreshLoginState
   }
 
   useEffect(() => {
     auth.events.addUserLoaded(user => {
       Api.setBearerToken(user.access_token)
-      localStorage.setItem(OAUTH_ACCRESS_TOKEN_KEY, user.access_token)
+      localStorage.setItem(OAUTH_ACCESS_TOKEN_KEY, user.access_token)
     })
 
     // Recover state for a signed-in user (internal) that we might have lost due to a full page load
-    const oauthAccessToken = localStorage.getItem(OAUTH_ACCRESS_TOKEN_KEY)
-    const internalLogintoken = localStorage.getItem(INTERNAL_LOGIN_TOKEN_KEY)
-    if (oauthAccessToken) {
-      Api.refreshLogin(oauthAccessToken).then(loginResult => {
-        loginUser(loginResult, oauthAccessToken)
-        setIsLoading(false)
-      }).catch(() => {
-        setIsLoading(false)
-        localStorage.removeItem(OAUTH_ACCRESS_TOKEN_KEY)
-      })
-    } else if (internalLogintoken) {
-      Api.unauthedRefreshLogin(internalLogintoken).then(loginResult => {
-        loginUserInternal(loginResult)
-        setIsLoading(false)
-      }).catch(() => {
-        setIsLoading(false)
-        localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
-      })
-    } else {
-      setIsLoading(false)
-    }
+    refreshLoginState()
   }, [])
 
   return (

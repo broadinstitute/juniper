@@ -1,6 +1,6 @@
 import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import React, { useState } from 'react'
-import { useKitTypeSelect } from '../participants/RequestKitModal'
+import { useBadAddressOverride, useKitTypeSelect } from '../participants/RequestKitModal'
 import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
@@ -23,10 +23,11 @@ export default function RequestKitsModal({
   const [isLoading, setIsLoading] = useState(false)
 
   const { kitType, KitSelect } = useKitTypeSelect(paramsFromContext(studyEnvContext))
+  const { skipAddressValidation, OverrideControl } = useBadAddressOverride(false)
   const handleSubmit = async () => {
     doApiLoad(async () => {
       const response = await Api.requestKits(portal.shortcode, study.shortcode, currentEnv.environmentName,
-        enrolleeShortcodes, kitType)
+        enrolleeShortcodes, { kitType, skipAddressValidation })
       if (response.exceptions.length) {
         const errorMessage = response.exceptions
           .map(exception => exception.message).join('; ')
@@ -57,6 +58,7 @@ export default function RequestKitsModal({
                         Kit type
             {KitSelect}
           </label>
+          { OverrideControl}
         </div>
       </form>
     </Modal.Body>

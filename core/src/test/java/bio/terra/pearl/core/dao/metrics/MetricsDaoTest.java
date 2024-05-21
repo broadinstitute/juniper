@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.participant.PortalParticipantUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.BaseEntity;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.metrics.BasicMetricDatum;
 import bio.terra.pearl.core.model.metrics.TimeRange;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -15,7 +16,6 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
@@ -86,7 +86,7 @@ public class MetricsDaoTest extends BaseSpringBootTest {
     PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
     StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
 
-    Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info)).required(true));
+    Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(info)).required(true));
     StudyEnvironmentSurvey studyEnvSurvey = StudyEnvironmentSurvey.builder().surveyId(survey.getId()).studyEnvironmentId(studyEnv.getId())
         .survey(survey).build();
     studyEnvironmentSurveyService.create(studyEnvSurvey);

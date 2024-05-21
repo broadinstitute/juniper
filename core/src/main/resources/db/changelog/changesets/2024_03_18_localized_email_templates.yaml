@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: "localized_email_templates"
+      author: mbemis
+      changes:
+        - createTable:
+            tableName: localized_email_template
+            columns:
+              - column: { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column: { name: email_template_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: language, type: text, constraints: { nullable: false } }
+              - column: { name: subject, type: text, constraints: { nullable: false } }
+              - column: { name: body, type: text, constraints: { nullable: false } }
+              - column: { name: created_at, type: timestamp, constraints: { nullable: false } }
+              - column: { name: last_updated_at, type: timestamp, constraints: { nullable: false } }
+        - sql:
+            sql:
+              INSERT INTO localized_email_template (email_template_id, language, subject, body, created_at, last_updated_at)
+              SELECT id, 'en', subject, body, created_at, last_updated_at
+              FROM email_template;
+        - dropColumn:
+            tableName: email_template
+            columnName: subject
+        - dropColumn:
+            tableName: email_template
+            columnName: body

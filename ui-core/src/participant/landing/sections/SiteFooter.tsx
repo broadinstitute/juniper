@@ -3,12 +3,14 @@ import { HtmlSectionView } from './HtmlSectionView'
 import { Link } from 'react-router-dom'
 import React from 'react'
 import { HtmlSection } from 'src/types/landingPageConfig'
+import { useI18n } from '../../I18nProvider'
 
 /**
  * Returns a siteFooter section for use in the Participant UI and Admin UI site previews
  */
 export function SiteFooter({ footerSection }: { footerSection?: HtmlSection }) {
   const hasFooter = !!footerSection
+  const { i18n } = useI18n()
 
   return <footer>
     <div
@@ -26,8 +28,8 @@ export function SiteFooter({ footerSection }: { footerSection?: HtmlSection }) {
               marginTop: hasFooter ? '6rem' : 0
             }}
           >
-            <Link to="/privacy">Privacy Policy</Link>
-            <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>Terms of Use</Link>
+            <Link to="/privacy">{i18n('privacyPolicy')}</Link>
+            <Link to="/terms/participant" style={{ marginLeft: '2rem' }}>{i18n('termsOfUse')}</Link>
           </div>
         </div>
       </div>

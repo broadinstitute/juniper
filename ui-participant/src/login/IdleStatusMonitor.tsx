@@ -77,7 +77,7 @@ export const IdleStatusMonitor = ({ maxIdleSessionDuration, idleWarningDuration 
 }) => {
   const { user, logoutUser } = useUser()
 
-  return !user.isAnonymous
+  return user
     ? <InactivityTimer
       maxIdleSessionDuration={maxIdleSessionDuration}
       idleWarningDuration={idleWarningDuration}
