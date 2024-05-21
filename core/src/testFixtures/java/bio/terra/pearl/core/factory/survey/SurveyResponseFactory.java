@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.factory.survey;
 
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -70,7 +71,7 @@ public class SurveyResponseFactory {
                                         .stringValue(answerValue).build()))
                         .complete(complete)
                         .build(),
-                bundle.participantUser().getId(),
+                new ResponsibleEntity(bundle.participantUser()),
                 bundle.portalParticipantUser(),
                 bundle.enrollee(),
                 task.getId(),
