@@ -25,6 +25,9 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +47,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -73,76 +75,142 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private ImportItemService importItemService;
 
-    @Test
-    @Transactional
-    public void testImportEnrolleesCSV(TestInfo info) {
-        //tests new import and update import
+    public DataImportSetUp setup(TestInfo info, String csvString) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
         AdminUser savedAdmin = adminUserService.create(adminUser);
+        return new DataImportSetUp().builder()
+                .bundle(bundle)
+                .adminUser(adminUser)
+                .savedAdmin(savedAdmin)
+                .csvString(csvString)
+                .build();
+    }
 
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle2 = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
+    @Test
+    @Transactional
+    public void testImportEnrolleesCSV(TestInfo info) {
+        //test new import
         String csvString = """
                 column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
+        List<ImportItem> imports = dataImport.getImportItems();
+        verifyImport(dataImport);
+
+        //create participantUser, enrollee, profile with expected data to assert
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Profile profileExpected = new Profile();
+        profileExpected.setBirthDate(LocalDate.parse("1980-10-10"));
+        verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
+
+        Enrollee enrolleeExpected2 = new Enrollee();
+        enrolleeExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        ParticipantUser userExpected2 = new ParticipantUser();
+        userExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        userExpected2.setUsername("userName2");
+        Profile profileExpected2 = new Profile();
+        verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+    }
+
+    @Test
+    @Transactional
+    public void testImportEnrolleeUpdateCSV(TestInfo info) {
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
+        List<ImportItem> imports = dataImport.getImportItems();
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
+        //Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+
+        //now try update
         String csvStringUpdate = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
                 """;
+        Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpdate);
+        //List<ImportItem> importsUpdated = dataImportUpdate.getImportItems();
+        ImportItem importItem = dataImportUpdate.getImportItems().get(0);
+        //create participantUser, enrollee, profile with expected data to assert
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        Profile profileExpected = new Profile();
+        profileExpected.setId(enrollee.getProfileId()); //should be same profile
+        profileExpected.setBirthDate(LocalDate.parse("1982-10-10"));
+        verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
 
-        UUID studyEnvId = bundle.getStudyEnv().getId();
-        Import dataImport = doImport(bundle, csvString, savedAdmin, ImportFileFormat.CSV);
-        List<ImportItem> imports = dataImport.getImportItems();
-        verifyImport(dataImport);
-        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(imports.get(0), studyEnvId, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1980-10-10");
-
+        //enrollee2
         ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(imports.get(1), studyEnvId, "userName2", "2024-05-11T10:00:00Z", "2024-05-11T10:00:00Z", null);
+        Enrollee enrolleeExpected2 = new Enrollee();
+        enrolleeExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        ParticipantUser userExpected2 = new ParticipantUser();
+        userExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        userExpected2.setUsername("userName2");
+        Profile profileExpected2 = new Profile();
+        profileExpected2.setId(enrollee2.getProfileId()); //should be same profile
+        profileExpected2.setBirthDate(LocalDate.parse("1990-10-10"));
+        verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+    }
 
-        //now try update
-        Import dataImportUpd = doImport(bundle, csvStringUpdate, savedAdmin, ImportFileFormat.CSV);
-        verifyImport(dataImportUpd);
-        ImportItem importItem = dataImportUpd.getImportItems().get(0);
-        ParticipantUser userUpdated = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrolleeUpdated = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated.getId(), studyEnvId).orElseThrow();
-        verifyParticipant(importItem, studyEnvId, "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1982-10-10");
-        //should be the same participant and enrollee and profile
-        assertThat(userUpdated.getId(), equalTo(user.getId()));
-        assertThat(enrolleeUpdated.getId(), equalTo(enrollee.getId()));
-        assertThat(enrolleeUpdated.getProfileId(), equalTo(enrollee.getProfileId()));
-        //load profile and verify that birthDate was updated
-        Profile profileUpdated = profileService.find(enrolleeUpdated.getProfileId()).orElseThrow();
-        assertThat(profileUpdated.getBirthDate(), equalTo(LocalDate.parse("1982-10-10")));
-        //load and verify that new birthDate was inserted for user2
-        profileUpdated = profileService.find(enrollee2.getProfileId()).orElseThrow();
-        assertThat(profileUpdated.getBirthDate(), equalTo(LocalDate.parse("1990-10-10")));
+    @Test
+    @Transactional
+    public void testImportEnrolleeUpdateDiffPortalCSV(TestInfo info) {
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
+        List<ImportItem> imports = dataImport.getImportItems();
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
 
-        //same user different portal. should create new profile
+        //now try update of the same user, different portal
         String csvStringPortal2 = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate
                 userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
-        //same participant, diff profile
-        Import dataImportUpd2 = doImport(bundle2, csvStringPortal2, savedAdmin, ImportFileFormat.CSV);
-        verifyImport(dataImportUpd2);
-        ImportItem importItem2 = dataImportUpd2.getImportItems().get(0);
-        ParticipantUser userUpdated2 = participantUserService.find(importItem2.getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrolleeUpdated2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpdated2.getId(), bundle2.getStudyEnv().getId()).orElseThrow();
-        verifyParticipant(importItem2, bundle2.getStudyEnv().getId(), "userName1", "2024-05-09T13:37:00Z", "2024-05-09T13:38:00Z", "1990-10-10");
-
-        //should be the same participant and enrollee and profile
-        assertThat(userUpdated2.getId(), equalTo(user.getId()));
-        Assertions.assertNotEquals(enrolleeUpdated2.getId(), enrollee.getId());
-        Assertions.assertNotEquals(enrolleeUpdated2.getProfileId(), enrollee.getProfileId());
+        DataImportSetUp setupData2 = setup(info, csvStringPortal2);
+        Import dataImportUpdate = doImport(setupData2.bundle, csvStringPortal2, setupData2.savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpdate);
+        ImportItem importItem = dataImportUpdate.getImportItems().get(0);
+        ParticipantUser userUpd = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrolleeUpd = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpd.getId(), studyEnvId).orElseThrow();
+        //create participantUser, enrollee, profile with expected data to assert
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        Profile profileExpected = new Profile();
+        profileExpected.setBirthDate(LocalDate.parse("1990-10-10"));
+        verifyParticipant(importItem, setupData2.bundle.getStudyEnv().getId(), userExpected, enrolleeExpected, profileExpected);
+        Assertions.assertNotEquals(enrollee.getProfileId(), equalTo(enrolleeUpd.getProfileId()));
     }
 
     @Test
@@ -306,23 +374,21 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(favColor.getObjectValue(), equalTo("[\"red\", \"blue\"]"));
     }
 
-    //todo Matchers[]
     private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
-                                   String userName, String accountCreatedAt, String enrolleeCreatedAt, String profileBirthDate) {
+                                   ParticipantUser userExpected, Enrollee enrolleeExpected, Profile profileExpected) {
 
         ParticipantUser user = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
-        assertThat(user.getUsername(), equalTo(userName));
-        assertThat(user.getCreatedAt(), equalTo(Instant.parse(accountCreatedAt)));
-        assertThat(enrollee.getCreatedAt(), equalTo(Instant.parse(enrolleeCreatedAt)));
+        assertThat(user.getUsername(), equalTo(userExpected.getUsername()));
+        assertThat(user.getCreatedAt(), equalTo(userExpected.getCreatedAt()));
+        assertThat(enrollee.getCreatedAt(), equalTo(enrolleeExpected.getCreatedAt()));
 
         //load profile
         Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
-        if (profileBirthDate != null) {
-            assertThat(profile.getBirthDate(), equalTo(LocalDate.parse(profileBirthDate)));
-        } else {
-            assertThat(profile.getBirthDate(), nullValue());
+        assertThat(profile.getBirthDate(), equalTo(profileExpected.getBirthDate()));
+        if (profileExpected.getId() != null) {
+            assertThat(profile.getId(), equalTo(profileExpected.getId()));
         }
     }
 
@@ -344,4 +410,13 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 admin.getId(), fileType);
     }
 
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class DataImportSetUp {
+        private StudyEnvironmentFactory.StudyEnvironmentBundle bundle;
+        private AdminUser adminUser;
+        private AdminUser savedAdmin;
+        private String csvString;
+    }
 }
