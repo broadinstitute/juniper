@@ -147,8 +147,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 """;
         Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
         verifyImport(dataImportUpdate);
-        //List<ImportItem> importsUpdated = dataImportUpdate.getImportItems();
-        ImportItem importItem = dataImportUpdate.getImportItems().get(0);
         //create participantUser, enrollee, profile with expected data to assert
         ParticipantUser userExpected = new ParticipantUser();
         userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
@@ -210,7 +208,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Profile profileExpected = new Profile();
         profileExpected.setBirthDate(LocalDate.parse("1990-10-10"));
         verifyParticipant(importItem, setupData2.bundle.getStudyEnv().getId(), userExpected, enrolleeExpected, profileExpected);
-        Assertions.assertNotEquals(enrollee.getProfileId(), equalTo(enrolleeUpd.getProfileId()));
+        Assertions.assertNotEquals(enrollee.getProfileId(), equalTo(enrolleeUpd.getProfileId())); //should be diff profiles because different portals
     }
 
     @Test
