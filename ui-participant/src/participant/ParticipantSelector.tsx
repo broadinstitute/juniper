@@ -90,10 +90,9 @@ const ParticipantTaskCount = ({ enrollees }: { enrollees: Enrollee[] }) => {
 
   return <span
     className={classNames(
-      'float-end',
+      'alert-circle', 'float-end',
       numTasks === 0 ? 'bg-primary-subtle opacity-25' : 'bg-primary text-light'
     )}
-    style={{ borderRadius: '50%', height: '1.5rem', width: '1.5rem', textAlign: 'center' }}
   >
     {numTasks}
   </span>
