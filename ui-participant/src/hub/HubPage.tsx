@@ -13,6 +13,8 @@ import OutreachTasks from './OutreachTasks'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import ParticipantSelector from '../participant/ParticipantSelector'
+import { Link } from 'react-router-dom'
+import { getJoinLink } from '../Navbar'
 
 
 /** renders the logged-in hub page */
@@ -36,7 +38,9 @@ export default function HubPage() {
   }, [])
 
   const loadDashboardAlerts = async () => {
-    if (!portalEnv) { return }
+    if (!portalEnv) {
+      return
+    }
     const alerts = await Api.getPortalEnvDashboardAlerts(portal.shortcode, portalEnv.environmentName)
     setNoActivitiesAlert({
       ...{
@@ -51,15 +55,16 @@ export default function HubPage() {
   const hubUpdate = useHubUpdate()
   const [showMessage, setShowMessage] = useState(true)
   const hasActiveTasks = enrollees.some(enrollee => enrollee.participantTasks.some(task => isTaskActive(task)))
+  const hasSubjectEnrollee = enrollees.some(enrollee => enrollee.subject)
 
   return (
     <>
-      <DocumentTitle title={i18n('navbarDashboard')} />
+      <DocumentTitle title={i18n('navbarDashboard')}/>
       <div
         className="hub-dashboard-background flex-grow-1 mb-2"
         style={{ background: 'var(--dashboard-background-color)' }}
       >
-        {!hasActiveTasks && noActivitiesAlert && <HubMessageAlert
+        {!hasActiveTasks && hasSubjectEnrollee && noActivitiesAlert && <HubMessageAlert
           message={{
             title: noActivitiesAlert.title,
             detail: noActivitiesAlert.detail,
@@ -114,15 +119,30 @@ const StudySection = (props: StudySectionProps) => {
     portal
   } = props
 
+  const { ppUsers } = useUser()
+  const ppUser = ppUsers?.find(ppUser => ppUser.profileId === enrollee.profileId)
+
+  const { i18n } = useI18n()
+
   const matchedStudy = portal.portalStudies
     .find(pStudy => pStudy.study.studyEnvironments[0].id === enrollee.studyEnvironmentId)?.study as Study
 
   return (
     <>
       <h1 className="mb-4">{matchedStudy.name}</h1>
-      {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests} />}
-      <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
-        participantTasks={enrollee.participantTasks} />
+      {enrollee.kitRequests.length > 0 && <KitBanner kitRequests={enrollee.kitRequests}/>}
+      {enrollee.subject
+        ? <StudyResearchTasks enrollee={enrollee} studyShortcode={matchedStudy.shortcode}
+          participantTasks={enrollee.participantTasks}/>
+        : <div className="py-3 text-center mb-4" style={{ background: 'var(--brand-color-shift-90)' }}>
+          {/* if the user is not a subject, prompt them to enroll */}
+          <Link
+            className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
+            to={`${getJoinLink(matchedStudy, { ppUserId: ppUser?.id })}`}
+          >
+            {i18n('joinStudy')}
+          </Link>
+        </div>}
     </>
   )
 }
