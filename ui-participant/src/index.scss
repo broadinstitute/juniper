@@ -96,10 +96,11 @@ a {
   font-size: 0.9em;
   font-style: italic;
 }
-
+/* for most customer custom media, we want a sensible max size on mobile
+   so they don't have to manually scale their photos */
 @include media-breakpoint-down(lg) {
-  .configured-image {
-    max-height: max(33vh, 212px);
+  .cfg-image-confined {
+     max-height: max(33vh, 212px);
   }
 }
 

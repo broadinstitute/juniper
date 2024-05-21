@@ -127,7 +127,7 @@ export function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
           <ConfiguredMedia media={photoBio.image} className="img w-100" style={{
             borderTopLeftRadius: '5px',
             borderTopRightRadius: '5px'
-          }}/>
+          }} allowMobileFullSize={true}/>
         </div>
 
         <div className="my-2 fw-bold px-2">
@@ -147,8 +147,8 @@ export function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
 function PhotoBioDetailModal({ photoBio, onDismiss }: { photoBio: PhotoBio, onDismiss: () => void }) {
   return <Modal show={true} onHide={onDismiss} className="modal-lg" >
     <Modal.Body style={{ padding: '0px' }}>
-      <div className="d-flex w-100" style={{ borderBottom: '1px solid #ccc' }}>
-        <div style={{ maxWidth: '300px' }}>
+      <div className="d-flex w-100 pb-3 pb-lg-0" style={{ borderBottom: '1px solid #ccc' }}>
+        <div style={{ maxWidth: '300px' }} className="d-none d-lg-block">
           <ConfiguredMedia media={photoBio.image} className="img-fluid" style={{ borderTopLeftRadius: '5px' }}/>
         </div>
         <div className="flex-grow-1 pt-5 ps-5">
@@ -160,7 +160,7 @@ function PhotoBioDetailModal({ photoBio, onDismiss }: { photoBio: PhotoBio, onDi
           <button className="btn-close p-3" onClick={onDismiss}/>
         </div>
       </div>
-      {!!photoBio.detail && <div className="p-5">
+      {!!photoBio.detail && <div className="p-5 pt-4 pt-lg-5">
         <Markdown>{photoBio.detail}</Markdown>
       </div>}
     </Modal.Body>
