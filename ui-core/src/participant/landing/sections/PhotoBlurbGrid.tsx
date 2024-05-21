@@ -120,13 +120,16 @@ export function PhotoBioView({ photoBio }: { photoBio: PhotoBio }) {
 
   return <div className="col-sm-6 col-md-4 col-lg-3 gx-4 gx-lg-3 gy-3 text-center text-sm-start pb-2 hover-shadow">
     <button onClick={() => setShowDetail(!showDetail)}
-      className="btn h-100 p-0 pb-2 text-start"
+      className="btn h-100 w-100 p-0 pb-2 text-start"
       style={{ border: '1px solid #ddd' }} >
       <div className="h-100">
-        <ConfiguredMedia media={photoBio.image} className="img-fluid" style={{
-          borderTopLeftRadius: '5px',
-          borderTopRightRadius: '5px'
-        }}/>
+        <div className="ratio ratio-1x1">
+          <ConfiguredMedia media={photoBio.image} className="img w-100" style={{
+            borderTopLeftRadius: '5px',
+            borderTopRightRadius: '5px'
+          }}/>
+        </div>
+
         <div className="my-2 fw-bold px-2">
           {photoBio.name} {photoBio.title}
         </div>
