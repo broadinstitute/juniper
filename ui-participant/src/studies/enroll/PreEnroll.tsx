@@ -21,7 +21,7 @@ const ENROLLMENT_QUALIFIED_VARIABLE = 'qualified'
 /** Renders a pre-enrollment form, and handles submitting the user-inputted response */
 export default function PreEnrollView({ enrollContext, survey }:
                                         { enrollContext: StudyEnrollContext, survey: Survey }) {
-  const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment } = enrollContext
+  const { studyEnv, updatePreEnrollResponseId, isProxyEnrollment, isSubjectEnrollment } = enrollContext
   const { selectedLanguage } = useI18n()
   const { profile } = useActiveUser()
   const { user, enrollees } = useUser()
@@ -37,7 +37,7 @@ export default function PreEnrollView({ enrollContext, survey }:
     studyEnv.environmentName,
     profile || undefined,
     proxyProfile,
-    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment } }
+    { extraCssClasses: { container: 'my-0' }, extraVariables: { isProxyEnrollment, isSubjectEnrollment } }
   )
 
   surveyModel.locale = selectedLanguage || 'default'

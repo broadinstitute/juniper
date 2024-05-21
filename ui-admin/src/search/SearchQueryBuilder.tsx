@@ -43,6 +43,10 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
       ruleProcessor: ruleProcessorEnrolleeSearchExpression
     }) : ''
 
+    if (enrolleeSearchExpression === '') {
+      return // do nothing; not optimal, but it's a quick fix until we implement antlr for rule parsing in the frontend
+    }
+
     onSearchExpressionChange(enrolleeSearchExpression)
   }, [query])
 

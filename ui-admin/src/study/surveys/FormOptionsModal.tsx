@@ -116,9 +116,12 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                       })}/></div>}
 
             <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
-              onChange={e => updateWorkingForm({
-                ...workingForm, eligibilityRule: e.target.value
-              })}/>
+              onChange={e => {
+                updateWorkingForm({
+                  ...workingForm, eligibilityRule: e.target.value
+                })
+              }
+              }/>
           </div>
         </div>
     }

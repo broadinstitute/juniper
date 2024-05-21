@@ -37,6 +37,10 @@ public class AnswerTerm implements SearchTerm {
         if (Objects.isNull(answer)) {
             return new SearchValue();
         }
+        // answerType *shouldn't* be null, but we'll handle it just in case by assuming it's a string
+        if (Objects.isNull(answer.getAnswerType())) {
+            return new SearchValue(answer.getStringValue());
+        }
         return switch (answer.getAnswerType()) {
             case STRING -> new SearchValue(answer.getStringValue());
             case NUMBER -> new SearchValue(answer.getNumberValue());

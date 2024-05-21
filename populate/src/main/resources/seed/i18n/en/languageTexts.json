@@ -84,5 +84,6 @@
   {"keyName": "hubUpdateAlreadyEnrolledTitle", "text": "You are already enrolled in ${studyName}.", "language": "en"},
   {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "This user is already enrolled in ${studyName}.", "language": "en"},
   {"keyName": "cookieAlertTitle", "text": "Cookies", "language": "en"},
-  {"keyName": "cookieAlertDetail", "text": "This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "en"}
+  {"keyName": "cookieAlertDetail", "text": "This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "en"},
+  {"keyName": "joinStudy", "text": "Join Study", "language": "en"}
 ]

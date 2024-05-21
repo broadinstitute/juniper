@@ -147,7 +147,7 @@ export const mockEnrolleesWithProxies: Enrollee[] = [
       sexAtBirth: 'M'
     },
     consented: true,
-    subject: false,
+    subject: true,
     participantNotes: [],
     createdAt: 0,
     kitRequests: [],
@@ -196,7 +196,7 @@ export const mockEnrolleesWithProxies: Enrollee[] = [
       sexAtBirth: 'M'
     },
     consented: true,
-    subject: false,
+    subject: true,
     participantNotes: [],
     createdAt: 0,
     kitRequests: [],

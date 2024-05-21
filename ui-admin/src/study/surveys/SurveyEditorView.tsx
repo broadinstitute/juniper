@@ -222,7 +222,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           studyEnvContext={studyEnvContext}
           workingForm={{ ...currentForm, ...draft }}
           updateWorkingForm={(props: SaveableFormProps) => {
-            setDraft({ ...draft, ...props, date: Date.now() })
+            setDraft({ ...currentForm, ...draft, ...props, date: Date.now() })
           }}
           onDismiss={() => setShowAdvancedOptions(false)}/>
         }
@@ -237,7 +237,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           onFormContentChange={(newValidationErrors, newContent) => {
             if (isEmpty(newValidationErrors)) {
               setShowErrors(false)
-              setDraft({ ...draft, content: JSON.stringify(newContent), date: Date.now() })
+              setDraft({ ...currentForm, ...draft, content: JSON.stringify(newContent), date: Date.now() })
             }
             setValidationErrors(newValidationErrors)
           }}
