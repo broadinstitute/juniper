@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy } from 'api/api'
+import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy, Study } from 'api/api'
 import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -170,12 +170,24 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
   return <></>
 }
 
+/**
+ * Returns the join link for a specific study
+ */
+export const getJoinLink = (study: Study, opts?: { isProxyEnrollment?: boolean, ppUserId?: string }) => {
+  const { isProxyEnrollment, ppUserId } = opts || {}
+  const joinPath = `/studies/${study.shortcode}/join`
+  if (isProxyEnrollment || ppUserId) {
+    return `${joinPath}?${isProxyEnrollment ? 'isProxyEnrollment=true' : ''}${ppUserId ? `&ppUserId=${ppUserId}` : ''}`
+  }
+  return joinPath
+}
+
 /** the default join link -- will be rendered in the top right corner */
 export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
   const joinable = filterUnjoinableStudies(portalStudies)
   /** if there's only one joinable study, link directly to it */
   const joinPath = joinable.length === 1
-    ? `/studies/${joinable[0].study.shortcode}/join`
+    ? getJoinLink(joinable[0].study)
     : '/join'
   return joinPath
 }
