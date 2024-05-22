@@ -43,9 +43,9 @@ jobs:
       run: npm ci
     - name: Build applications
       run: |
-        REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-admin:jibDockerBuild -Djib.to.image=api-participant:ci
-        docker run -d -p 8081:8080 --net=host api-participant:ci
+        REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-participant:jibDockerBuild -Djib.to.image=api-participant:ci
         REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-admin:jibDockerBuild -Djib.to.image=api-admin:ci
+        docker run -d -p 8081:8080 --net=host api-participant:ci
         docker run -d -p 8080:8080 --net=host api-admin:ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
