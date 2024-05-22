@@ -3,7 +3,6 @@ import { errors, expect, Page, Response, test } from '@playwright/test'
 import StudyEligibilityOurHealth from 'pages/ourhealth/study-eligibility'
 import StudyEligibilityDemo from 'pages/demo/study-eligibility'
 import Navbar from 'src/page-components/navbar'
-import { EnvironmentName } from '@juniper/ui-core'
 
 export type Study = 'OurHealth';
 
@@ -20,26 +19,6 @@ interface NetworkResponse {
  */
 export const randomChars = (length: 6): string => {
   return faker.string.alphanumeric(length)
-}
-
-/**
- *
- * @param {"OurHealth"} study
- * @param {"local" | "dev"} deploymentZone
- * @returns {string} Participant URL of a specific study
- */
-export function getParticipantUrl(portalShortcode: string, deploymentZone: Environment = 'local',
-  envName: EnvironmentName = 'sandbox'): string {
-  let url: string
-  switch (deploymentZone) {
-    case 'local':
-      url = `https://${envName}.${portalShortcode}.localhost:3001`
-      break
-    case 'dev':
-      url = `https://${envName}.${portalShortcode}.ddp-dev.envs.broadinstitute.org`
-      break
-  }
-  return url
 }
 
 /**
