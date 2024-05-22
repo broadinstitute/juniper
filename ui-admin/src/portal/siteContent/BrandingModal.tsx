@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { LocalSiteContent } from '@juniper/ui-core'
 import Modal from 'react-bootstrap/Modal'
-import { useLoadingEffect } from 'api/api-utils'
+import { doApiLoad, useLoadingEffect } from 'api/api-utils'
 import Api, { getMediaUrl, SiteMediaMetadata } from 'api/api'
 import { filterPriorVersions } from '../media/SiteMediaList'
 import useReactSingleSelect from 'util/react-select-utils'
@@ -28,7 +28,9 @@ export default function BrandingModal({ onDismiss, localContent, updateLocalCont
   }, [portalShortcode])
 
   const updateFavicon = async (portalShortcode: string, siteMediaId: string) => {
-    await Api.renamePortalMedia(portalShortcode, siteMediaId, { newCleanFileName: 'favicon.ico' })
+    doApiLoad(async () => {
+      await Api.renamePortalMedia(portalShortcode, siteMediaId, { newCleanFileName: 'favicon.ico' })
+    })
   }
 
   const [primaryBrandColor, setPrimaryBrandColor] = useState(localContent.primaryBrandColor)
