@@ -319,24 +319,18 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             UUID adminUserId,
             Enrollee enrollee,
             KitRequestDto kitRequestDto) {
-        //KitType kt = kitTypeDao.findByName("SALIVA").get();
         KitType kt = kitTypeDao.findByName(kitRequestDto.getKitType().getName()).get();
-        log.info("---KT ID: {}", kt.getId());
         KitRequest kitRequest = KitRequest.builder()
-                //.id(daoUtils.generateUUID())
                 .creatingAdminUserId(adminUserId)
                 .enrolleeId(enrollee.getId())
-                //.kitType(kitRequestDto.getKitType())
                 .sentToAddress(kitRequestDto.getSentToAddress())
                 .status(kitRequestDto.getStatus())
                 .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
-                //.kitType(kt)
                 .kitTypeId(kt.getId())
                 .createdAt(kitRequestDto.getCreatedAt() == null ? Instant.now() : kitRequestDto.getCreatedAt())
                 .receivedAt(kitRequestDto.getReceivedAt())
                 .trackingNumber(kitRequestDto.getTrackingNumber())
                 .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
-                //.externalKit()
                 .build();
         return kitRequest;
     }
