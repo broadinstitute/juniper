@@ -119,7 +119,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
         <div className="d-flex flex-grow-1">
           <h5>{currentForm.name}
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
-              (v{currentForm.version}
+              (<span>{currentForm.stableId} v{currentForm.version}</span>
               { currentForm.publishedVersion && <span className="ms-1">
                 - published v{currentForm.publishedVersion}
               </span> }
