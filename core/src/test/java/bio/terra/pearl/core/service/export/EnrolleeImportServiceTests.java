@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -55,6 +56,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private AdminUserFactory adminUserFactory;
     @Autowired
+    private EnrolleeFactory enrolleeFactory;
+    @Autowired
     private EnrolleeImportService enrolleeImportService;
     @Autowired
     private StudyEnvironmentFactory studyEnvironmentFactory;
@@ -79,6 +82,15 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
         AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
         AdminUser savedAdmin = adminUserService.create(adminUser);
+
+        //create survey
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(info))
+                .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
+                .stableId("medical_history")
+                .portalId(bundle.getPortal().getId()));
+        ;
+        surveyFactory.attachToEnv(survey, bundle.getStudyEnv().getId(), true);
+
         return new DataImportSetUp().builder()
                 .bundle(bundle)
                 .adminUser(adminUser)
@@ -92,11 +104,10 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testImportEnrolleesCSV(TestInfo info) {
         String csvString = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:38PM","KITTRACKNUMBER12345","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA", "sick"
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
-
         DataImportSetUp setupData = setup(info, csvString);
         Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
         UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
@@ -120,15 +131,17 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         userExpected2.setUsername("userName2");
         Profile profileExpected2 = new Profile();
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+        verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
+
     }
 
     @Test
     @Transactional
     public void testImportEnrolleeUpdateCSV(TestInfo info) {
         String csvString = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
-                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA","sick"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
         Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
@@ -137,11 +150,14 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
 
+        //verify survey
+        verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
+
         /*now try update*/
         String csvStringUpdate = """
-                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
-                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,medical_history.diagnosis
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10","healthy"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10","not healthy"
                 """;
         Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
         verifyImport(dataImportUpdate);
@@ -155,6 +171,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         profileExpected.setId(enrollee.getProfileId()); //should be same profile
         profileExpected.setBirthDate(LocalDate.parse("1982-10-10"));
         verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
+        verifySurvey(dataImportUpdate.getImportItems().get(0), "medical_history", "diagnosis", "healthy");
 
         //enrollee2
         ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
@@ -168,6 +185,20 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         profileExpected2.setId(enrollee2.getProfileId()); //should be same profile
         profileExpected2.setBirthDate(LocalDate.parse("1990-10-10"));
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+        verifySurvey(dataImportUpdate.getImportItems().get(1), "medical_history", "diagnosis", "not healthy");
+    }
+
+    private void verifySurvey(ImportItem importItem, String surveyStableId, String questionStableId, String questionAnswer) {
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(importItem.getCreatedEnrolleeId());
+        // confirm the follow-up survey has not yet been assigned to the participant
+        assertThat(tasks, hasSize(1));
+        ParticipantTask medical_historyTask = tasks.get(0);
+
+        List<Answer> answers = answerService.findByEnrolleeAndSurvey(importItem.getCreatedEnrolleeId(), surveyStableId);
+        assertThat(answers, hasSize(1));
+        Answer diagnosis = answers.stream().filter(answer -> answer.getQuestionStableId().equals(questionStableId))
+                .findFirst().get();
+        assertThat(diagnosis.getStringValue(), equalTo(questionAnswer));
     }
 
     @Test
@@ -270,7 +301,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
                 enrolleeMap,
-                new ExportOptions());
+                new ExportOptions(), null);
         ParticipantUser user = participantUserService.findOne(username, bundle.getStudyEnv().getEnvironmentName()).orElseThrow();
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
         assertThat(enrollee.isSubject(), equalTo(true));
@@ -294,7 +325,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
                 enrolleeMap,
-                new ExportOptions());
+                new ExportOptions(), null);
         Profile profile = profileService.loadWithMailingAddress(enrolle.getProfileId()).orElseThrow();
         assertThat(profile.getGivenName(), equalTo("Alex"));
         assertThat(profile.getBirthDate(), equalTo(LocalDate.of(1998, 5, 14)));
@@ -354,7 +385,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 bundle.getStudy().getShortcode(),
                 bundle.getStudyEnv(),
                 enrolleeMap,
-                new ExportOptions());
+                new ExportOptions(), null);
         // confirm a task got created for the enrollee, and the task is complete
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(tasks, hasSize(1));

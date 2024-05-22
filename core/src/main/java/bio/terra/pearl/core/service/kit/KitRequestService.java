@@ -20,7 +20,12 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.kit.pepper.*;
+import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
+import bio.terra.pearl.core.service.kit.pepper.PepperDSMClientWrapper;
+import bio.terra.pearl.core.service.kit.pepper.PepperKit;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -83,7 +88,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      * Throws PepperApiException if the Pepper API request failed
      */
     public KitRequestDto requestKit(AdminUser adminUser, String studyShortcode, Enrollee enrollee, KitRequestCreationDto kitRequestCreationDto)
-    throws PepperApiException {
+            throws PepperApiException {
         // create and save kit request
         if (enrollee.getProfileId() == null) {
             throw new IllegalArgumentException("No profile for enrollee: " + enrollee.getShortcode());
@@ -113,7 +118,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
 
-    public record KitRequestCreationDto(String kitType, boolean skipAddressValidation) {}
+    public record KitRequestCreationDto(String kitType, boolean skipAddressValidation) {
+    }
 
     /**
      * Collect the address fields sent to Pepper with a kit request. This is not the full DSM request, just the address
@@ -147,15 +153,15 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
      */
     public Map<UUID, List<KitRequestDto>> findByEnrollees(Collection<Enrollee> enrollees) {
         Map<UUID, Enrollee> idToEnrollee =
-            enrollees.stream().collect(Collectors.toMap(Enrollee::getId, Function.identity()));
+                enrollees.stream().collect(Collectors.toMap(Enrollee::getId, Function.identity()));
         Map<UUID, List<KitRequest>> idToKitRequest = dao.findByEnrolleeIds(idToEnrollee.keySet());
 
         Map<UUID, KitType> kitTypeMap = getKitTypeMap();
         return idToKitRequest.entrySet().stream()
-            .collect(Collectors.toMap(
-                Map.Entry::getKey,
-                entry -> createKitRequestDto(entry.getValue(), kitTypeMap, idToEnrollee)
-            ));
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> createKitRequestDto(entry.getValue(), kitTypeMap, idToEnrollee)
+                ));
     }
 
     /**
@@ -167,22 +173,22 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     }
 
     protected List<KitRequestDto> createKitRequestDto(List<KitRequest> kitRequests,
-                                                          Map<UUID, KitType> kitTypeMap,
-                                                          Map<UUID, Enrollee> enrollees
+                                                      Map<UUID, KitType> kitTypeMap,
+                                                      Map<UUID, Enrollee> enrollees
     ) {
         List<KitRequestDto> kitRequestDto = new ArrayList<>();
         kitRequests.forEach(kit -> {
             String enrolleeShortcode = enrollees.get(kit.getEnrolleeId()).getShortcode();
             KitRequestDto requestDetails =
-                new KitRequestDto(kit, kitTypeMap.get(kit.getKitTypeId()), enrolleeShortcode, objectMapper);
+                    new KitRequestDto(kit, kitTypeMap.get(kit.getKitTypeId()), enrolleeShortcode, objectMapper);
             kitRequestDto.add(requestDetails);
         });
         return kitRequestDto;
     }
 
-    protected  Map<UUID, KitType> getKitTypeMap() {
+    protected Map<UUID, KitType> getKitTypeMap() {
         return kitTypeDao.findAll().stream()
-            .collect(Collectors.toMap(KitType::getId, Function.identity()));
+                .collect(Collectors.toMap(KitType::getId, Function.identity()));
     }
 
     /**
@@ -197,7 +203,7 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         PepperKit pepperKitStatus = pepperDSMClientWrapper.fetchKitStatus(studyEnvironmentConfig, kitId);
         saveKitStatus(kitRequest, pepperKitStatus, Instant.now());
-     }
+    }
 
     /**
      * Query Pepper for all in-progress kits and update the cached status in Juniper. This is intended to be called as a
@@ -225,8 +231,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
             StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
             Study study = studies.stream().filter(s -> s.getId().equals(studyEnv.getStudyId())).findFirst().orElseThrow();
             try {
-               Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
-               syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits);
+                Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
+                syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits);
             } catch (PepperParseException | PepperApiException e) {
                 // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
@@ -286,8 +292,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         }
     }
 
-    /** Just creates the object -- does not communicate with pepper or save to database.  The created
-     * object will have an id so that external requests will be sent on it.  */
+    /**
+     * Just creates the object -- does not communicate with pepper or save to database.  The created
+     * object will have an id so that external requests will be sent on it.
+     */
     public KitRequest assemble(
             AdminUser adminUser,
             Enrollee enrollee,
@@ -303,6 +311,32 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .status(KitRequestStatus.CREATED)
                 .skipAddressValidation(kitRequestCreationDto.skipAddressValidation)
                 .kitType(kitType)
+                .build();
+        return kitRequest;
+    }
+
+    public KitRequest fromKitRequestDto(
+            UUID adminUserId,
+            Enrollee enrollee,
+            KitRequestDto kitRequestDto) {
+        //KitType kt = kitTypeDao.findByName("SALIVA").get();
+        KitType kt = kitTypeDao.findByName(kitRequestDto.getKitType().getName()).get();
+        log.info("---KT ID: {}", kt.getId());
+        KitRequest kitRequest = KitRequest.builder()
+                //.id(daoUtils.generateUUID())
+                .creatingAdminUserId(adminUserId)
+                .enrolleeId(enrollee.getId())
+                //.kitType(kitRequestDto.getKitType())
+                .sentToAddress(kitRequestDto.getSentToAddress())
+                .status(kitRequestDto.getStatus())
+                .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
+                //.kitType(kt)
+                .kitTypeId(kt.getId())
+                .createdAt(kitRequestDto.getCreatedAt() == null ? Instant.now() : kitRequestDto.getCreatedAt())
+                .receivedAt(kitRequestDto.getReceivedAt())
+                .trackingNumber(kitRequestDto.getTrackingNumber())
+                .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
+                //.externalKit()
                 .build();
         return kitRequest;
     }
@@ -379,11 +413,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     protected Map<UUID, Enrollee> getEnrollees(List<KitRequest> kitRequests) {
         List<UUID> enrolleeIds = kitRequests.stream().map(KitRequest::getEnrolleeId).toList();
         return enrolleeService.findAll(enrolleeIds).stream()
-            .collect(Collectors.toMap(Enrollee::getId, Function.identity()));
+                .collect(Collectors.toMap(Enrollee::getId, Function.identity()));
     }
 
     /**
      * Parse a Pepper date-time string into an Instant. Returns null if the date string is null or empty.
+     *
      * @throws java.time.format.DateTimeParseException if the string is not a valid date-time
      */
     protected Instant parsePepperDateTime(String dateTimeString) {

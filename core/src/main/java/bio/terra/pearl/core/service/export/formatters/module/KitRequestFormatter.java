@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.item.KitRequestTypeFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
@@ -9,12 +11,14 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, PropertyItemFormatter<KitRequestDto>> {
     private static final String KIT_REQUEST_MODULE_NAME = "sample_kit";
     private static final List<String> KIT_REQUEST_INCLUDED_PROPERTIES =
-        List.of("status", "sentToAddress", "sentAt", "receivedAt");
+            List.of("status", "sentToAddress", "sentAt", "receivedAt", "createdAt", "labeledAt",
+                    "trackingNumber", "returnTrackingNumber", "skipAddressValidation");
 
     public KitRequestFormatter() {
         itemFormatters = KIT_REQUEST_INCLUDED_PROPERTIES.stream()
@@ -42,5 +46,28 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
         }
         maxNumRepeats = Math.max(maxNumRepeats, sortedKitRequests.size());
         return allKitMap;
+    }
+
+    public KitRequestDto fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
+        KitRequestDto kitRequestDto = null;
+        for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
+            String columnName = getColumnKey(itemFormatter, false, null, 1);
+            String stringVal = enrolleeMap.get(columnName);
+            if (stringVal != null && !stringVal.isEmpty()) {
+                if (kitRequestDto == null) {
+                    kitRequestDto = new KitRequestDto();
+                }
+                if (columnName.contains(".status")) {
+                    //enum lookup
+                    kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
+                } else if (itemFormatter.getPropertyName().equalsIgnoreCase("kitType")) {
+                    //set kitType:name and lookup UUID using the name later
+                    kitRequestDto.setKitType(KitType.builder().name(stringVal).build());
+                } else {
+                    itemFormatter.importValueToBean(kitRequestDto, stringVal);
+                }
+            }
+        }
+        return kitRequestDto;
     }
 }
