@@ -1,9 +1,9 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import AnswerMappingEditor from './AnswerMappingEditor'
 import { assertRowContents, assertRowDoesNotContain, getRows } from 'test-utils/table-utils'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AnswerMappingEditor', () => {
   test('renders mappings', async () => {

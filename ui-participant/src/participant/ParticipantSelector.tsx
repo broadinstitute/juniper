@@ -7,14 +7,16 @@ import { useName } from '../util/enrolleeUtils'
 import { Link } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
-import { useI18n } from '@juniper/ui-core'
+import { Enrollee, useI18n } from '@juniper/ui-core'
+import { sum } from 'lodash'
+import classNames from 'classnames'
 
 /**
  * Dropdown selector which globally changes the currently active participant. In addition, provides related options,
  * e.g. "Add new participant" and "Manage Profiles".
  */
 export default function ParticipantSelector() {
-  const { ppUsers } = useUser()
+  const { ppUsers, enrollees } = useUser()
   const { setActiveUser, ppUser } = useActiveUser()
 
   const { i18n } = useI18n()
@@ -37,14 +39,16 @@ export default function ParticipantSelector() {
         <span className='mx-2 fs-5'>
           {activeUserName}
         </span>
-        <div className='flex-grow-1 d-flex justify-content-end'>
-          <FontAwesomeIcon icon={faAngleDown} />
+        <div className='flex-grow-1 d-flex justify-content-end align-items-center'>
+          <FontAwesomeIcon icon={faAngleDown}/>
         </div>
       </button>
       <ul className="dropdown-menu participant-selector-dropdown mx-1 ms-md-0" id="participant-dropdown">
         {
           ppUsers.map(ppUser => {
             const name = useName(ppUser)
+            const ppUserEnrollees = enrollees.filter(e => e.profileId === ppUser.profileId)
+
             return (
               <li key={ppUser.id}>
                 <button className="dropdown-item" onClick={() => setActiveUser(ppUser.id)}>
@@ -52,6 +56,7 @@ export default function ParticipantSelector() {
                   <span className='ms-2'>
                     {name}
                   </span>
+                  <ParticipantTaskCount enrollees={ppUserEnrollees}/>
                 </button>
               </li>
             )
@@ -77,4 +82,17 @@ export default function ParticipantSelector() {
       </ul>
     </div>
   )
+}
+
+const ParticipantTaskCount = ({ enrollees }: { enrollees: Enrollee[] }) => {
+  const numTasks = sum(enrollees.map(e => e.participantTasks.length))
+
+  return <span
+    className={classNames(
+      'alert-circle', 'float-end',
+      numTasks === 0 ? 'bg-primary-subtle opacity-25' : 'bg-primary text-light'
+    )}
+  >
+    {numTasks}
+  </span>
 }

@@ -1,10 +1,10 @@
 import React from 'react'
 
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { render, screen } from '@testing-library/react'
 import { StudySidebar } from './StudySidebar'
 import { mockPortal, mockStudyEnvContext } from '../test-utils/mocking-utils'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders the study selector and sub menus', async () => {
   const { study } = mockStudyEnvContext()

@@ -2,11 +2,11 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import { mockTrigger, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import TriggerList from './TriggerList'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders routable config list', async () => {
   const studyEnvContext = mockStudyEnvContext()

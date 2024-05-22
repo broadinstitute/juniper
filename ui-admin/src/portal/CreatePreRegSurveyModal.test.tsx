@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import CreatePreRegSurveyModal from './CreatePreRegSurveyModal'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('CreatePreRegSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {

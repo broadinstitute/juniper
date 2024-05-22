@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { StudyParams } from '../../StudyRouter'
-import Api, { Enrollee } from 'api/api'
+import Api from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
+import { Enrollee } from '@juniper/ui-core'
 
 export type EnrolleeParams = StudyParams & {
   enrolleeShortcodeOrId: string,

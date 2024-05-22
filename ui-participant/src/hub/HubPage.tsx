@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { usePortalEnv } from 'providers/PortalProvider'
 
-import Api, { Enrollee, Portal, Study } from '../api/api'
+import Api, { Portal, Study } from 'api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
 import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
+import { Enrollee, ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'

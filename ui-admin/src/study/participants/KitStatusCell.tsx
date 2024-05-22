@@ -1,7 +1,7 @@
 import React from 'react'
-import { KitRequest } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import { Placement } from 'react-bootstrap/types'
+import { KitRequest } from '@juniper/ui-core'
 
 /**
  * Component to render the currentStatus as reported by Pepper, including some help text to explain what the statuses

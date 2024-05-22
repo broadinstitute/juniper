@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -320,6 +321,7 @@ public class EnrolleeImportService {
             relatedTask = tasks.get(0);
         }
         // we're not worrying about dating the response yet
-        return surveyResponseService.updateResponse(response, enrollee.getParticipantUserId(), ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+        return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
+                        ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }

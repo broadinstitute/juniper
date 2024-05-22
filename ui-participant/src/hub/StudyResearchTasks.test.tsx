@@ -1,9 +1,8 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import { mockEnrollee, mockParticipantTask } from 'test-utils/test-participant-factory'
 import StudyResearchTasks from './StudyResearchTasks'
-import { MockI18nProvider, mockTextsDefault } from '@juniper/ui-core'
+import { MockI18nProvider, mockTextsDefault, setupRouterTest } from '@juniper/ui-core'
 
 describe('HubPage', () => {
   it('renders tasks with consent and required surveys first', () => {

@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react'
 
 import PortalEnvPublishControl from './PortalEnvPublishControl'
 import { Portal, PortalEnvironment } from 'api/api'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { studyDiffPath } from '../../study/StudyRouter'
+import { studyDiffPath } from 'study/StudyRouter'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders a copy link', () => {
   const sandboxEnv :PortalEnvironment = {

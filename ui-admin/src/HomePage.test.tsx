@@ -3,7 +3,7 @@ import React from 'react'
 import HomePage from './HomePage'
 import { makeMockPortal, makeMockPortalStudy } from './test-utils/mocking-utils'
 import { useNavContext } from './navbar/NavContextProvider'
-import { setupRouterTest } from './test-utils/router-testing-utils'
+import { setupRouterTest } from '@juniper/ui-core'
 
 jest.mock('./navbar/NavContextProvider')
 

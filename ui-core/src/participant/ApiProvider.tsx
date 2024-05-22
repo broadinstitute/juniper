@@ -1,9 +1,22 @@
 import React, { useContext } from 'react'
+import { SurveyResponse } from 'src/types/forms'
+import { StudyEnvParams } from 'src/types/study'
+import { HubResponse } from 'src/types/user'
+import { AddressValidationResult, MailingAddress } from 'src/types/address'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
 export type GetLanguageTextsFunc = (selectedLanguage: string, portalShortcode?: string) =>
     Promise<Record<string, string>>
+export type UpdateSurveyResponseFunc = ({
+  studyEnvParams, stableId, version, enrolleeShortcode, response, taskId,
+  alertErrors
+}: {
+  studyEnvParams: StudyEnvParams, stableId: string, version: number,
+  response: SurveyResponse, enrolleeShortcode: string, taskId: string, alertErrors?: boolean
+}) => Promise<HubResponse>
+
+export type ValidateAddressFunc = (address: MailingAddress) => Promise<AddressValidationResult>
 
 /**
  * represents a minimal set of api functions needed to make the participant ui functional outside of the
@@ -12,13 +25,17 @@ export type GetLanguageTextsFunc = (selectedLanguage: string, portalShortcode?: 
 export type ApiContextT = {
   getImageUrl: ImageUrlFunc,
   submitMailingListContact: SubmitMailingListContactFunc,
-  getLanguageTexts: GetLanguageTextsFunc
+  getLanguageTexts: GetLanguageTextsFunc,
+  updateSurveyResponse: UpdateSurveyResponseFunc,
+  validateAddress: ValidateAddressFunc
 }
 
 export const emptyApi: ApiContextT = {
   getImageUrl: () => '',
   submitMailingListContact: () => Promise.resolve({}),
-  getLanguageTexts: () => Promise.resolve({})
+  getLanguageTexts: () => Promise.resolve({}),
+  updateSurveyResponse: () => Promise.resolve({} as HubResponse),
+  validateAddress: () => Promise.resolve({} as AddressValidationResult)
 }
 
 const ApiContext = React.createContext<ApiContextT>(emptyApi)

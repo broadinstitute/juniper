@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import Api, { Enrollee, ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api/api'
+import Api, { ParticipantTask, Study, SurveyResponse, TaskWithSurvey } from 'api/api'
 import { getTaskPath } from './TaskLink'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import SurveyModal from './SurveyModal'
-import { useTaskIdParam } from './survey/SurveyView'
-import { useI18n } from '@juniper/ui-core'
+import { Enrollee, EnvironmentName, useI18n, useTaskIdParam } from '@juniper/ui-core'
+import { usePortalEnv } from '../providers/PortalProvider'
 
 type OutreachParams = {
     enrolleeShortcode?: string,
@@ -29,6 +29,7 @@ const useOutreachParams = () => {
  * multiple studies and therefore enrollees */
 export default function OutreachTasks({ enrollees, studies }: {enrollees: Enrollee[], studies: Study[]}) {
   const { i18n } = useI18n()
+  const portalEnvContext = usePortalEnv()
   const navigate = useNavigate()
   const outreachParams = useOutreachParams()
   const [outreachTasks, setOutreachActivities] = useState<TaskWithSurvey[]>([])
@@ -37,6 +38,11 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
     return a.task.createdAt - b.task.createdAt
   })
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
+    const studyEnvParams = {
+      portalShortcode: portalEnvContext.portal.shortcode,
+      studyShortcode: study.shortcode,
+      envName: portalEnvContext.portalEnv.environmentName as EnvironmentName
+    }
     const responseDto = {
       resumeData: '{}',
       enrolleeId: enrollee.id,
@@ -46,7 +52,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       complete: false
     } as SurveyResponse
     await Api.updateSurveyResponse({
-      studyShortcode: study.shortcode,
+      studyEnvParams,
       enrolleeShortcode: enrollee.shortcode,
       stableId: task.targetStableId,
       version: task.targetAssignedVersion,

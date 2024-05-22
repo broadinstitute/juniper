@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react'
-import { StudyEnvParams } from '../StudyEnvironmentRouter'
-import { Trigger } from '@juniper/ui-core'
+import { StudyEnvParams, Trigger } from '@juniper/ui-core'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Button } from 'components/forms/Button'

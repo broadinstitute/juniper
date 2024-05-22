@@ -1,9 +1,8 @@
 import React, { useContext, useState } from 'react'
-import { StudyEnvParams } from 'study/StudyEnvironmentRouter'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 
-import { EnvironmentName, StudyEnvironmentSurvey } from '@juniper/ui-core'
+import { EnvironmentName, StudyEnvironmentSurvey, StudyEnvParams } from '@juniper/ui-core'
 import Api, { PortalEnvironmentChange } from 'api/api'
 import { emptyChangeSet, emptyStudyEnvChange } from 'portal/publish/PortalEnvDiffView'
 import { doApiLoad } from '../../api/api-utils'

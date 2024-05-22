@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
-import Api, { Enrollee } from 'api/api'
+import Api from 'api/api'
 import { participantListPath, StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { useNavigate } from 'react-router-dom'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
+import { Enrollee } from '@juniper/ui-core'
 
 /** shows not-commonly-used enrollee functionality */
 export default function AdvancedOptions({ enrollee, studyEnvContext }:

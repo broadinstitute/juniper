@@ -24,17 +24,12 @@ import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
-import { ApiProvider, EnvironmentName, I18nProvider } from '@juniper/ui-core'
+import { ApiProvider, I18nProvider, StudyEnvParams } from '@juniper/ui-core'
 import DashboardSettings from 'dashboard/DashboardSettings'
 import { previewApi } from 'util/apiContextUtils'
 import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
 
-export type StudyEnvParams = {
-  studyShortcode: string
-  envName: EnvironmentName
-  portalShortcode: string
-}
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
 /** Base page for configuring the content and integrations for a study environment */

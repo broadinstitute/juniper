@@ -2,11 +2,10 @@ import React from 'react'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { render, screen, waitFor } from '@testing-library/react'
 import LandingPage from './LandingPage'
-import { expectNever, setupRouterTest } from 'test-utils/router-testing-utils'
 import {
   mockLocalSiteContent, mockUsePortalEnv
 } from 'test-utils/test-portal-factory'
-import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import { asMockedFn, expectNever, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 
 jest.mock('providers/PortalProvider', () => {
   return {

@@ -1,5 +1,6 @@
 import {
   AddressValidationResult,
+  Enrollee, HubResponse,
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
@@ -7,6 +8,8 @@ import {
   PreEnrollmentResponse,
   PreregistrationResponse,
   StudyEnvironmentSurvey,
+  Profile,
+  StudyEnvParams,
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
@@ -57,23 +60,6 @@ export type LoginResult = {
   profile: Profile
 }
 
-export type Enrollee = {
-  id: string
-  consented: boolean
-  subject: boolean
-  consentResponses: []
-  createdAt: number
-  kitRequests: []
-  lastUpdatedAt: number
-  participantTasks: ParticipantTask[]
-  participantUserId: string
-  preEnrollmentResponseId?: string
-  profile: Profile
-  profileId: string
-  shortcode: string
-  studyEnvironmentId: string
-  surveyResponses: []
-}
 export type EnrolleeRelation = {
   id: string
   relationshipType: string,
@@ -81,20 +67,6 @@ export type EnrolleeRelation = {
   createdAt: number
   lastUpdatedAt: number
   participantUserId: string
-}
-
-export type Profile = {
-  id?: string
-  givenName?: string,
-  familyName?: string,
-  contactEmail?: string,
-  doNotEmail?: boolean,
-  doNotEmailSolicit?: boolean,
-  mailingAddress?: MailingAddress,
-  phoneNumber?: string,
-  birthDate?: number[],
-  sexAtBirth?: string,
-  preferredLanguage?: string,
 }
 
 export type KitRequest = {
@@ -123,17 +95,6 @@ export type RegistrationResponse = {
 export type SurveyWithResponse = {
   studyEnvironmentSurvey: StudyEnvironmentSurvey,
   surveyResponse?: SurveyResponse
-}
-
-export type UserResumeData = {
-  currentPageNo: number
-}
-
-export type HubResponse = {
-  enrollee: Enrollee,
-  tasks: ParticipantTask[],
-  response: object,
-  profile: Profile
 }
 
 export type TaskWithSurvey = {
@@ -383,13 +344,13 @@ export default {
   },
 
   async updateSurveyResponse({
-    studyShortcode, stableId, version, enrolleeShortcode, response, taskId,
+    studyEnvParams, stableId, version, enrolleeShortcode, response, taskId,
     alertErrors=true
   }: {
-    studyShortcode: string, stableId: string, version: number, response: SurveyResponse, enrolleeShortcode: string,
-    taskId: string, alertErrors: boolean
+    studyEnvParams: StudyEnvParams, stableId: string, version: number, response: SurveyResponse,
+    enrolleeShortcode: string, taskId: string, alertErrors?: boolean
   }): Promise<HubResponse> {
-    let url = `${baseStudyEnvUrl(false, studyShortcode)}/enrollee/${enrolleeShortcode}`
+    let url = `${baseStudyEnvUrl(false, studyEnvParams.studyShortcode)}/enrollee/${enrolleeShortcode}`
       + `/surveys/${stableId}/${version}`
     if (taskId) {
       url = `${url}?taskId=${taskId}`

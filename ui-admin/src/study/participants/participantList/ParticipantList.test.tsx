@@ -4,9 +4,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 import ParticipantList from './ParticipantList'
 import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
 import { mockTaskSearchFacet, mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { KEYWORD_FACET } from 'api/enrolleeSearch'
+import { setupRouterTest } from '@juniper/ui-core'
 
 const mockSearchApi = (numSearchResults: number) => {
   return jest.spyOn(Api, 'searchEnrollees')
