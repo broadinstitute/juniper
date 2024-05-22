@@ -1,16 +1,13 @@
 import {
-  Enrollee,
-  HubResponse,
   KitRequest,
   KitType,
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
   ParticipantUser,
-  Profile,
   Survey
 } from 'api/api'
-import { defaultSurvey } from '@juniper/ui-core'
+import { defaultSurvey, Enrollee, HubResponse, Profile } from '@juniper/ui-core'
 
 
 /** gets a mock ParticipantUser */
@@ -37,8 +34,10 @@ export const mockEnrollee: () => Enrollee = () => {
     kitRequests: [],
     surveyResponses: [],
     consentResponses: [],
-    preEnrollmentResponseId: undefined,
+    preRegResponse: undefined,
+    preEnrollmentResponse: undefined,
     participantTasks: [],
+    participantNotes: [],
     createdAt: 0,
     lastUpdatedAt: 0,
     studyEnvironmentId: 'studyEnv1'

@@ -1,9 +1,9 @@
 import React from 'react'
 import { mockConfiguredSurvey, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import  { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import DeleteSurveyModal from './DeleteSurveyModal'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('DeleteSurveyModal', () => {
   test('enables Delete button when confirmation prompt is filled out', async () => {

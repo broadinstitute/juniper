@@ -1,5 +1,5 @@
 import React, { useId, useState } from 'react'
-import Api, { AdminTask, Enrollee, ParticipantNote } from 'api/api'
+import Api, { AdminTask } from 'api/api'
 import { AdminUser } from 'api/adminUser'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,6 +10,7 @@ import { Store } from 'react-notifications-component'
 import { ParticipantNoteView } from './ParticipantNoteView'
 import AdminUserSelect from 'user/AdminUserSelect'
 import { useLoadingEffect } from 'api/api-utils'
+import { Enrollee, ParticipantNote } from '@juniper/ui-core'
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,

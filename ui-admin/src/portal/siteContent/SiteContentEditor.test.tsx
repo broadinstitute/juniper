@@ -1,12 +1,11 @@
 import React from 'react'
 
 import SiteContentEditor from './SiteContentEditor'
-import { renderWithRouter, setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
-import { MockI18nProvider, NavbarItemExternal } from '@juniper/ui-core'
+import { MockI18nProvider, NavbarItemExternal, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { select } from 'react-select-event'
 
 test('enables live-preview text editing', async () => {

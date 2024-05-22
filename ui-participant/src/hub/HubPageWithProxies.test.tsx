@@ -1,8 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import ProvideFullTestUserContext from 'test-utils/ProvideFullTestUserContext'
 import {
   mockEnrolleesWithProxies,

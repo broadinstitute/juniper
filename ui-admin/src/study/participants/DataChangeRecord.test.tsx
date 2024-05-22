@@ -1,12 +1,11 @@
 import React from 'react'
 
 import DataChangeRecords from './DataChangeRecords'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import Api, { DataChangeRecord } from '../../api/api'
 import { assertRowContents, getRows } from 'test-utils/table-utils'
-
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders basic data change records', async () => {
   const enrollee = mockEnrollee()

@@ -7,9 +7,8 @@ import { useName } from '../util/enrolleeUtils'
 import { Link } from 'react-router-dom'
 import { usePortalEnv } from '../providers/PortalProvider'
 import { findDefaultEnrollmentStudy } from '../login/RedirectFromOAuth'
-import { useI18n } from '@juniper/ui-core'
+import { Enrollee, useI18n } from '@juniper/ui-core'
 import { sum } from 'lodash'
-import { Enrollee } from '../api/api'
 import classNames from 'classnames'
 
 /**

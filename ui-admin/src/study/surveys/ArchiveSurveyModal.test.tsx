@@ -1,9 +1,9 @@
 import React from 'react'
 import { mockConfiguredSurvey, mockStudyEnvContext } from 'test-utils/mocking-utils'
-import  { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import ArchiveSurveyModal from './ArchiveSurveyModal'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('ArchiveSurveyModal', () => {
   test('enables Archive button when confirmation prompt is filled out', async () => {

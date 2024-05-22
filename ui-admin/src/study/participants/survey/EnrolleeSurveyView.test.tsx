@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { RawEnrolleeSurveyView } from './EnrolleeSurveyView'
+import { RawEnrolleeSurveyView } from './SurveyResponseView'
 import {
   mockAnswer,
   mockConfiguredSurvey,
@@ -8,7 +8,7 @@ import {
   mockStudyEnvContext,
   mockSurveyResponse
 } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('RawEnrolleeSurveyView', () => {
   it('renders the survey version from the answers', async () => {
@@ -22,7 +22,8 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
-        responses={[response]}/>)
+        onUpdate={jest.fn()}
+        response={response}/>)
     render(RoutedComponent)
     expect(screen.getByText('(version 2)')).toBeInTheDocument()
   })
@@ -39,7 +40,8 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
-        responses={[response]}/>)
+        onUpdate={jest.fn()}
+        response={response}/>)
     render(RoutedComponent)
     expect(screen.getByText('(versions 2, 3)')).toBeInTheDocument()
   })

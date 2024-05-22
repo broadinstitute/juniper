@@ -1,5 +1,4 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import {
   KEYWORD_FACET,
@@ -7,6 +6,7 @@ import {
 } from 'api/enrolleeSearch'
 import BasicSearch from './BasicSearch'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('BasicSearch', () => {
   test('can specify keyword facet value', async () => {

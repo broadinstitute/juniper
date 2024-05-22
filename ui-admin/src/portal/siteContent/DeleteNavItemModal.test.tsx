@@ -1,10 +1,9 @@
 import userEvent from '@testing-library/user-event'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import DeleteNavItemModal from './DeleteNavItemModal'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockNavbarItem } from 'test-utils/mock-site-content'
-import { NavbarItemInternal } from '@juniper/ui-core'
+import { NavbarItemInternal, setupRouterTest } from '@juniper/ui-core'
 
 describe('DeletePageModal', () => {
   test('Delete button calls delete with the text', async () => {

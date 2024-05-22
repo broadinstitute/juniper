@@ -1,10 +1,10 @@
 import React from 'react'
-import { renderWithRouter } from 'test-utils/router-testing-utils'
 import { screen, waitFor } from '@testing-library/react'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import Api from '../api/api'
 import { expectCellToHaveText } from 'test-utils/table-testing-utils'
 import { AdminUserDetailRaw } from './AdminUserDetail'
+import { renderWithRouter } from '@juniper/ui-core'
 
 const mockRoleManager = {
   ...mockAdminUser(false),

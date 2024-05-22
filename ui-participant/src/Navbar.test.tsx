@@ -8,10 +8,9 @@ import {
   NavbarItemInternalAnchor,
   NavbarItemMailingList, PortalStudy
 } from 'api/api'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 import Navbar, { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
-import { asMockedFn, MockI18nProvider } from '@juniper/ui-core'
+import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'

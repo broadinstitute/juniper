@@ -1,11 +1,11 @@
 import React from 'react'
 import { mockTaskSearchFacet, mockTaskFacetValue, mockOptionsFacetValue } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { EnrolleeSearchFacet } from 'api/api'
 import { FacetValue, SEX_FACET, EntityOptionsArrayFacet } from 'api/enrolleeSearch'
 import SearchCriteriaView from './SearchCriteriaView'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('SearchCriteriaView', () => {
   test('shows and deletes search criteria', async () => {
