@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
 import { Router as RemixRouter } from '@remix-run/router/dist/router'
-import { waitFor, render } from '@testing-library/react'
+import { waitFor, render, RenderResult } from '@testing-library/react'
 
 /**
  * return both the component wrapped in a router, and the router object itself,
@@ -46,7 +46,8 @@ export async function expectNever(callable: () => unknown): Promise<void> {
  * componentPath is the route to mount the component at.  Use this argument if you need to pass a routing param
  * to the component
  * */
-export function renderWithRouter(ComponentToRender: ReactElement, initialEntries=['/'], componentPath= '*') {
+export function renderWithRouter(ComponentToRender: ReactElement,
+  initialEntries=['/'], componentPath= '*'): RenderResult {
   const { RoutedComponent } = setupRouterTest(ComponentToRender, initialEntries, componentPath)
   return render(RoutedComponent)
 }
