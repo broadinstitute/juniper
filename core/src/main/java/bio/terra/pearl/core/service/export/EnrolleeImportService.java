@@ -241,15 +241,17 @@ public class EnrolleeImportService {
         return enrollee;
     }
 
-    protected KitRequest importKitRequestData(KitRequestFormatter formatter, Map<String, String> enrolleeMap,
-                                              StudyEnvironment studyEnv, Enrollee enrollee, UUID adminId) {
-        KitRequestDto kitRequestDto = formatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        if (kitRequestDto != null) {
-            KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
-            KitRequest kitRequestUpd = kitRequestService.create(kitRequest);
-            return kitRequestUpd;
+    protected List<KitRequest> importKitRequestData(KitRequestFormatter formatter, Map<String, String> enrolleeMap,
+                                                    StudyEnvironment studyEnv, Enrollee enrollee, UUID adminId) {
+        List<KitRequestDto> kitRequests = formatter.listFromStringMap(studyEnv.getId(), enrolleeMap);
+        List<KitRequest> kitRequestList = new ArrayList<>();
+        if (!kitRequests.isEmpty()) {
+            for (KitRequestDto kitRequestDto : kitRequests) {
+                KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
+                kitRequestList.add(kitRequestService.create(kitRequest));
+            }
         }
-        return null;
+        return kitRequestList;
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {

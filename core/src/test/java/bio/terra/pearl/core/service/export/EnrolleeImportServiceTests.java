@@ -21,6 +21,8 @@ import bio.terra.pearl.core.service.admin.AdminUserService;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -77,6 +79,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private ImportService importService;
     @Autowired
     private ImportItemService importItemService;
+    @Autowired
+    KitRequestService kitRequestService;
 
     public DataImportSetUp setup(TestInfo info, String csvString) {
         StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
@@ -104,8 +108,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testImportEnrolleesCSV(TestInfo info) {
         String csvString = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:38PM","KITTRACKNUMBER12345","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA", "sick"
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.sentAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:38PM","KITTRACKNUMBER12345","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA", "sick","SENT","2024-05-19 01:38PM","KITTRACKNUMBER_2","{"firstName":"SS2","street1":"320 Charles Street","city":"Cambridge"}","SALIVA"
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
@@ -132,6 +136,11 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Profile profileExpected2 = new Profile();
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
         verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
+
+        List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(imports.get(0).getCreatedEnrolleeId()).get());
+        assertThat(kitRequestDtos, hasSize(2));
+        assertThat(kitRequestDtos.get(0).getTrackingNumber(), equalTo("KITTRACKNUMBER12345"));
+        assertThat(kitRequestDtos.get(1).getTrackingNumber(), equalTo("KITTRACKNUMBER_2"));
 
     }
 

@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.export.formatters.item.KitRequestTypeFormatt
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -48,26 +49,35 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
         return allKitMap;
     }
 
-    public KitRequestDto fromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
-        KitRequestDto kitRequestDto = null;
-        for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
-            String columnName = getColumnKey(itemFormatter, false, null, 1);
-            String stringVal = enrolleeMap.get(columnName);
-            if (stringVal != null && !stringVal.isEmpty()) {
-                if (kitRequestDto == null) {
-                    kitRequestDto = new KitRequestDto();
-                }
-                if (columnName.contains(".status")) {
-                    //enum lookup
-                    kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
-                } else if (itemFormatter.getPropertyName().equalsIgnoreCase("kitType")) {
-                    //set kitType:name and lookup UUID using the name later
-                    kitRequestDto.setKitType(KitType.builder().name(stringVal).build());
-                } else {
-                    itemFormatter.importValueToBean(kitRequestDto, stringVal);
+    public List<KitRequestDto> listFromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
+        List<KitRequestDto> kitRequests = new ArrayList<>();
+        for (int itr = 1; itr < 10; itr++) {
+            KitRequestDto kitRequestDto = null;
+            for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
+                String columnName = getColumnKey(itemFormatter, false, null, itr);
+                String stringVal = enrolleeMap.get(columnName);
+                if (stringVal != null && !stringVal.isEmpty()) {
+                    if (kitRequestDto == null) {
+                        kitRequestDto = new KitRequestDto();
+                    }
+                    if (columnName.contains(".status")) {
+                        //enum lookup
+                        kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
+                    } else if (itemFormatter.getPropertyName().equalsIgnoreCase("kitType")) {
+                        //set kitType:name and lookup UUID using the name later
+                        kitRequestDto.setKitType(KitType.builder().name(stringVal).build());
+                    } else {
+                        itemFormatter.importValueToBean(kitRequestDto, stringVal);
+                    }
                 }
             }
+            if (kitRequestDto == null) {
+                return kitRequests;
+            } else {
+                kitRequests.add(kitRequestDto);
+            }
         }
-        return kitRequestDto;
+        return kitRequests;
     }
+
 }
