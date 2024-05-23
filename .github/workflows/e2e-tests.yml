@@ -3,10 +3,7 @@ name: End-to-end tests
 on:
   push:
     branches:
-      - mb-jn-1027-e2e-ci #TODO switch to development
-  pull_request:
-    branches:
-      - mb-jn-1027-e2e-ci #TODO probably turn this off
+      - development
 
 jobs:
   test:
