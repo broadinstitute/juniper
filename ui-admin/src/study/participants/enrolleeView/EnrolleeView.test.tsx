@@ -1,9 +1,9 @@
 import React from 'react'
 
 import { LoadedEnrolleeView } from './EnrolleeView'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext, taskForForm } from 'test-utils/mocking-utils'
 import { render, screen, within } from '@testing-library/react'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 test('renders survey links for configured surveys', async () => {

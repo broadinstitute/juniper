@@ -4,6 +4,8 @@ import bio.terra.pearl.core.model.BaseEntity;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,4 +30,16 @@ public class SurveyResponse extends BaseEntity {
     // a json map of userId -> an object with information about where that particular user left off
     // currently, the only property stored on that object is currentPageNo
     private String resumeData;
+
+    public void setResponsibleUser(ResponsibleEntity responsibleEntity) {
+        if (responsibleEntity == null) {
+            return;
+        }
+        if (responsibleEntity.getParticipantUser() != null) {
+            this.creatingParticipantUserId = responsibleEntity.getParticipantUser().getId();
+        }
+        if (responsibleEntity.getAdminUser() != null) {
+            this.creatingAdminUserId = responsibleEntity.getAdminUser().getId();
+        }
+    }
 }

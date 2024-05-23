@@ -4,14 +4,14 @@ import React from 'react'
 import SurveyFullDataView, { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 describe('getDisplayValue', () => {
   it('renders a plaintext value', async () => {
-    const question: Question = { isVisible: true } as Question
+    const question: Question = { isVisible: true, getType: () => 'text' } as Question
     const answer: Answer = { stringValue: 'test123', questionStableId: 'testQ' } as Answer
     render(<span>{getDisplayValue(answer, question)}</span>)
     expect(screen.getByText('test123')).toBeTruthy()
@@ -20,6 +20,7 @@ describe('getDisplayValue', () => {
   it('renders a choice value', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'radiogroup',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -34,6 +35,7 @@ describe('getDisplayValue', () => {
   it('renders a free text other description', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'radiogroup',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -51,6 +53,7 @@ describe('getDisplayValue', () => {
   it('renders a choice array value', async () => {
     const question: Question = {
       isVisible: true,
+      getType: () => 'checkbox',
       choices: [{
         text: 'option 1', value: 'option1Val'
       }, {
@@ -68,6 +71,18 @@ describe('getDisplayValue', () => {
     render(<span>{getDisplayValue(answer, question)}</span>)
     expect(screen.getByText('["option 2","option 4"]')).toBeTruthy()
   })
+
+  it('renders a signaturepad as an image', async () => {
+    const question = {
+      name: 'testQ', text: 'test question',
+      isVisible: true, type: 'signaturepad',
+      getType: () => 'signaturepad'
+    }
+    const answer: Answer = { stringValue: 'data:image/png;base64, test123', questionStableId: 'testQ' } as Answer
+    render(<span>{getDisplayValue(answer, question as unknown as Question)}</span>)
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64, test123')
+    expect(screen.queryByText('data:image/png;base64, test123')).not.toBeInTheDocument()
+  })
 })
 
 test('shows the download/print modal', async () => {
@@ -83,7 +98,7 @@ test('shows the download/print modal', async () => {
 
 describe('ItemDisplay', () => {
   it('renders the language used to answer a question', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',
@@ -103,7 +118,7 @@ describe('ItemDisplay', () => {
   })
 
   it('renders correctly if a viewedLanguage is not specified', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',
@@ -122,7 +137,7 @@ describe('ItemDisplay', () => {
   })
 
   it('does not render a language name if it doesnt match a supported language', async () => {
-    const question = { name: 'testQ', text: 'test question', isVisible: true }
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
     const answer: Answer = {
       stringValue: 'test123',
       questionStableId: 'testQ',

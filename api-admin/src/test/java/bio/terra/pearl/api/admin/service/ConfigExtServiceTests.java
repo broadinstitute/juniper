@@ -61,7 +61,6 @@ public class ConfigExtServiceTests {
     AdminUser user = AdminUser.builder().superuser(true).build();
     MockEnvironment mockEnvironment =
         new MockEnvironment()
-            .withProperty("env.dsm.useLiveDsm", "false")
             .withProperty("env.dsm.basePath", "basePath1")
             .withProperty("env.dsm.issuerClaim", "issuerClaim1")
             .withProperty("env.dsm.secret", "superSecret")
@@ -83,7 +82,6 @@ public class ConfigExtServiceTests {
     assertThat(dsmConfigMap.get("basePath"), equalTo("basePath1"));
     assertThat(dsmConfigMap.get("issuerClaim"), equalTo("issuerClaim1"));
     assertThat(dsmConfigMap.get("secret"), equalTo("su..."));
-    assertThat(dsmConfigMap.get("useLiveDsm"), equalTo(false));
 
     assertThat(addressValidationConfigMap.get("addrValidationServiceClass"), equalTo("someClass"));
     assertThat(addressValidationConfigMap.get("smartyAuthId"), equalTo("sm_id"));

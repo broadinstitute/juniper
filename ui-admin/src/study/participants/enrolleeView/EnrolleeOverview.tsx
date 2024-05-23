@@ -1,12 +1,12 @@
 import React from 'react'
-import Api, { Enrollee, EnrolleeRelation, Profile } from 'api/api'
+import Api, { EnrolleeRelation } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
-import { dateToDefaultString } from '@juniper/ui-core'
+import { dateToDefaultString, Enrollee, Profile } from '@juniper/ui-core'
 import KitRequests from '../KitRequests'
-import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardTitle, InfoCardValue } from '../../../components/InfoCard'
-import { useLoadingEffect } from '../../../api/api-utils'
-import LoadingSpinner from '../../../util/LoadingSpinner'
+import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
+import { useLoadingEffect } from 'api/api-utils'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:

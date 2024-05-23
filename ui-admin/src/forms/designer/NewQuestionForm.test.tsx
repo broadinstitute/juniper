@@ -5,13 +5,17 @@ import userEvent from '@testing-library/user-event'
 
 describe('NewQuestionForm', () => {
   test('renders the default view for a new question', () => {
-    //Arrange
     render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false} />)
 
-    //Assert
     screen.getByLabelText('Question stable ID')
     const questionTypeSelect = screen.getByLabelText('Question type')
     expect(questionTypeSelect).toHaveValue('Select a question type')
+  })
+
+  test('filters special characters in stableId', async () => {
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false} />)
+    await userEvent.type(screen.getByLabelText('Question stable ID'), 'blah d#_* blah1')
+    expect(screen.getByLabelText('Question stable ID')).toHaveValue('blahd_blah1')
   })
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', async () => {

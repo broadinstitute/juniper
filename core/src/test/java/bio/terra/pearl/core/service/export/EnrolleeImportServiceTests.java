@@ -25,22 +25,30 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+@Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private AdminUserService adminUserService;
@@ -67,42 +75,138 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Autowired
     private ImportItemService importItemService;
 
+    public DataImportSetUp setup(TestInfo info, String csvString) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
+        AdminUser savedAdmin = adminUserService.create(adminUser);
+        return new DataImportSetUp().builder()
+                .bundle(bundle)
+                .adminUser(adminUser)
+                .savedAdmin(savedAdmin)
+                .csvString(csvString)
+                .build();
+    }
+
+
     @Test
     @Transactional
     public void testImportEnrolleesCSV(TestInfo info) {
-        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
-
-        AdminUser adminUser = adminUserFactory.builder(getTestName(info)).build();
-        AdminUser savedAdmin = adminUserService.create(adminUser);
-
-        String tsvString = """
-                column1,column2,column3,account.username
-                a,b,c,userName1
-                x,y,z,userName2             
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
-        Import dataImport = enrolleeImportService.importEnrollees(
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv(),
-                new ByteArrayInputStream(tsvString.getBytes()),
-                savedAdmin.getId(), ImportFileFormat.CSV);
-
-        Import dataImportQueried = importService.find(dataImport.getId()).get();
-        assertThat(dataImport, is(dataImportQueried));
-        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
-        importItemService.attachImportItems(dataImport);
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
         List<ImportItem> imports = dataImport.getImportItems();
-        assertThat(imports, hasSize(2));
-        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
-        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
-        assertThat(enrollee.isSubject(), equalTo(true));
-        assertThat(user.getUsername(), equalTo("userName1"));
+        verifyImport(dataImport);
 
-        user = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
-        enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), bundle.getStudyEnv().getId()).orElseThrow();
-        assertThat(enrollee.isSubject(), equalTo(true));
-        assertThat(user.getUsername(), equalTo("userName2"));
+        /*create participantUser, enrollee, profile with expected data to assert*/
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Profile profileExpected = new Profile();
+        profileExpected.setBirthDate(LocalDate.parse("1980-10-10"));
+        verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
+
+        Enrollee enrolleeExpected2 = new Enrollee();
+        enrolleeExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        ParticipantUser userExpected2 = new ParticipantUser();
+        userExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        userExpected2.setUsername("userName2");
+        Profile profileExpected2 = new Profile();
+        verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+    }
+
+    @Test
+    @Transactional
+    public void testImportEnrolleeUpdateCSV(TestInfo info) {
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
+        List<ImportItem> imports = dataImport.getImportItems();
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
+
+        /*now try update*/
+        String csvStringUpdate = """
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1982-10-10"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10"
+                """;
+        Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpdate);
+        /*create participantUser, enrollee, profile with expected data to assert*/
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        Profile profileExpected = new Profile();
+        profileExpected.setId(enrollee.getProfileId()); //should be same profile
+        profileExpected.setBirthDate(LocalDate.parse("1982-10-10"));
+        verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
+
+        //enrollee2
+        ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee2 = enrolleeService.findByParticipantUserIdAndStudyEnvId(user2.getId(), studyEnvId).orElseThrow();
+        Enrollee enrolleeExpected2 = new Enrollee();
+        enrolleeExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        ParticipantUser userExpected2 = new ParticipantUser();
+        userExpected2.setCreatedAt(Instant.parse("2024-05-11T10:00:00Z"));
+        userExpected2.setUsername("userName2");
+        Profile profileExpected2 = new Profile();
+        profileExpected2.setId(enrollee2.getProfileId()); //should be same profile
+        profileExpected2.setBirthDate(LocalDate.parse("1990-10-10"));
+        verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
+    }
+
+    @Test
+    @Transactional
+    public void testImportEnrolleeUpdateDiffPortalCSV(TestInfo info) {
+        String csvString = """
+                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10"
+                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        DataImportSetUp setupData = setup(info, csvString);
+        Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
+        UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
+        List<ImportItem> imports = dataImport.getImportItems();
+        ParticipantUser user = participantUserService.find(imports.get(0).getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
+
+        /*now try update of the same user, different portal*/
+        String csvStringPortal2 = """
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1990-10-10"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+        DataImportSetUp setupData2 = setup(info, csvStringPortal2);
+        Import dataImportUpdate = doImport(setupData2.bundle, csvStringPortal2, setupData2.savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImportUpdate);
+        ImportItem importItem = dataImportUpdate.getImportItems().get(0);
+        ParticipantUser userUpd = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrolleeUpd = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpd.getId(), studyEnvId).orElseThrow();
+        /*create participantUser, enrollee, profile with expected data to assert*/
+        ParticipantUser userExpected = new ParticipantUser();
+        userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
+        userExpected.setUsername("userName1");
+        Enrollee enrolleeExpected = new Enrollee();
+        enrolleeExpected.setCreatedAt(Instant.parse("2024-05-09T13:38:00Z"));
+        Profile profileExpected = new Profile();
+        profileExpected.setBirthDate(LocalDate.parse("1990-10-10"));
+        verifyParticipant(importItem, setupData2.bundle.getStudyEnv().getId(), userExpected, enrolleeExpected, profileExpected);
+        Assertions.assertNotEquals(enrollee.getProfileId(), equalTo(enrolleeUpd.getProfileId())); //should be diff profiles because different portals
     }
 
     @Test
@@ -119,12 +223,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 x\t\tz\tuserName2             
                 """;
 
-        Import dataImport = enrolleeImportService.importEnrollees(
-                bundle.getPortal().getShortcode(),
-                bundle.getStudy().getShortcode(),
-                bundle.getStudyEnv(),
-                new ByteArrayInputStream(tsvString.getBytes()),
-                savedAdmin.getId(), ImportFileFormat.TSV);
+        Import dataImport = doImport(bundle, tsvString, savedAdmin, ImportFileFormat.TSV);
 
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
@@ -271,4 +370,49 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(favColor.getObjectValue(), equalTo("[\"red\", \"blue\"]"));
     }
 
+    private void verifyParticipant(ImportItem importItem, UUID studyEnvId,
+                                   ParticipantUser userExpected, Enrollee enrolleeExpected, Profile profileExpected) {
+
+        ParticipantUser user = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
+        Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
+        assertThat(enrollee.isSubject(), equalTo(true));
+        assertThat(user.getUsername(), equalTo(userExpected.getUsername()));
+        assertThat(user.getCreatedAt(), equalTo(userExpected.getCreatedAt()));
+        assertThat(enrollee.getCreatedAt(), equalTo(enrolleeExpected.getCreatedAt()));
+
+        //load profile
+        Profile profile = profileService.find(enrollee.getProfileId()).orElseThrow();
+        assertThat(profile.getBirthDate(), equalTo(profileExpected.getBirthDate()));
+        if (profileExpected.getId() != null) {
+            assertThat(profile.getId(), equalTo(profileExpected.getId()));
+        }
+    }
+
+    private void verifyImport(Import dataImport) {
+        Import dataImportQueried = importService.find(dataImport.getId()).get();
+        assertThat(dataImport, is(dataImportQueried));
+        assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
+        importItemService.attachImportItems(dataImport);
+        List<ImportItem> imports = dataImport.getImportItems();
+        assertThat(imports, hasSize(2));
+    }
+
+    private Import doImport(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
+        return enrolleeImportService.importEnrollees(
+                bundle.getPortal().getShortcode(),
+                bundle.getStudy().getShortcode(),
+                bundle.getStudyEnv(),
+                new ByteArrayInputStream(csvString.getBytes()),
+                admin.getId(), fileType);
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class DataImportSetUp {
+        private StudyEnvironmentFactory.StudyEnvironmentBundle bundle;
+        private AdminUser adminUser;
+        private AdminUser savedAdmin;
+        private String csvString;
+    }
 }

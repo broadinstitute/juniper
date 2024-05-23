@@ -68,8 +68,6 @@ public class ConfigExtService {
         Map.of(
             "pepperDsmConfig",
             Map.of(
-                "useLiveDsm",
-                pepperDSMConfig.useLiveDsm(),
                 "secret",
                 maskSecret(pepperDSMConfig.getSecret()),
                 "issuerClaim",

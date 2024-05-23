@@ -75,6 +75,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         survey.setLastUpdatedAt(now);
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
+            answerMapping.setId(null);
             answerMapping.setSurveyId(savedSurvey.getId());
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
@@ -133,8 +134,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         List<SurveyQuestionDefinition> questionDefinitions = new ArrayList<>();
         for (int i = 0; i < questions.size(); i++) {
             JsonNode question = questions.get(i);
-            questionDefinitions.add(SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
-                    questionTemplates, i,false));
+            SurveyQuestionDefinition questionDefinition = SurveyParseUtils.unmarshalSurveyQuestion(survey, question,
+                    questionTemplates, i,false);
+            SurveyParseUtils.validateQuestionDefinition(questionDefinition);
+            questionDefinitions.add(questionDefinition);
         }
 
         // add any questions from calculatedValues
@@ -197,17 +200,10 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
     @Transactional
     public Survey createNewVersion(UUID portalId, Survey survey) {
         Survey newSurvey = new Survey();
-        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "answerMappings", "publishedVersion");
+        BeanUtils.copyProperties(survey, newSurvey, "id", "createdAt", "lastUpdatedAt", "publishedVersion");
         newSurvey.setPortalId(portalId);
         int nextVersion = dao.getNextVersion(survey.getStableId(), portalId);
         newSurvey.setVersion(nextVersion);
-        newSurvey.getAnswerMappings().clear();
-        for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
-            // we need to clone the answer mappings and attach them to the new version
-            AnswerMapping newAnswerMapping = new AnswerMapping();
-            BeanUtils.copyProperties(answerMapping, newAnswerMapping, "id", "createdAt", "lastUpdatedAt");
-            newSurvey.getAnswerMappings().add(newAnswerMapping);
-        }
         return create(newSurvey);
     }
 

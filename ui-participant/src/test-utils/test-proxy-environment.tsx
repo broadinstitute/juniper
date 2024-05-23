@@ -1,5 +1,5 @@
-import { Portal } from '@juniper/ui-core'
-import { Enrollee, EnrolleeRelation, ParticipantUser, PortalParticipantUser } from '../api/api'
+import { Enrollee, Portal } from '@juniper/ui-core'
+import { EnrolleeRelation, ParticipantUser, PortalParticipantUser } from '../api/api'
 
 export const mockPortal: Portal = {
   id: 'portal-id',
@@ -49,7 +49,9 @@ export const mockPortal: Portal = {
           acceptingProxyEnrollment: true,
           initialized: true,
           passwordProtected: false,
-          password: ''
+          password: '',
+          useDevDsmRealm: true,
+          useStubDsm: true
         },
         environmentName: 'sandbox',
         configuredSurveys: [],
@@ -112,7 +114,7 @@ export const mockEnrolleesWithProxies: Enrollee[] = [
     },
     consented: true,
     subject: false,
-    consentResponses: [],
+    participantNotes: [],
     createdAt: 0,
     kitRequests: [],
     lastUpdatedAt: 0,
@@ -145,8 +147,8 @@ export const mockEnrolleesWithProxies: Enrollee[] = [
       sexAtBirth: 'M'
     },
     consented: true,
-    subject: false,
-    consentResponses: [],
+    subject: true,
+    participantNotes: [],
     createdAt: 0,
     kitRequests: [],
     lastUpdatedAt: 0,
@@ -194,8 +196,8 @@ export const mockEnrolleesWithProxies: Enrollee[] = [
       sexAtBirth: 'M'
     },
     consented: true,
-    subject: false,
-    consentResponses: [],
+    subject: true,
+    participantNotes: [],
     createdAt: 0,
     kitRequests: [],
     lastUpdatedAt: 0,

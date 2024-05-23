@@ -15,19 +15,16 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
-import bio.terra.pearl.core.service.kit.pepper.PepperApiException;
-import bio.terra.pearl.core.service.kit.pepper.PepperDSMClient;
-import bio.terra.pearl.core.service.kit.pepper.PepperKit;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitAddress;
-import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
-import bio.terra.pearl.core.service.kit.pepper.PepperParseException;
+import bio.terra.pearl.core.service.kit.pepper.*;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EventService;
@@ -58,11 +55,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                              StudyEnvironmentKitTypeService studyEnvironmentKitTypeService, @Lazy EnrolleeService enrolleeService,
                              EventService eventService,
                              KitTypeDao kitTypeDao,
-                             PepperDSMClient pepperDSMClient,
+                             PepperDSMClientWrapper pepperDSMClientWrapper,
                              ProfileService profileService,
                              PortalParticipantUserService portalParticipantUserService,
                              @Lazy StudyEnvironmentService studyEnvironmentService,
                              @Lazy StudyService studyService,
+                             StudyEnvironmentConfigService studyEnvironmentConfigService,
                              ObjectMapper objectMapper,
                              DaoUtils daoUtils) {
         super(dao);
@@ -70,11 +68,12 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         this.enrolleeService = enrolleeService;
         this.eventService = eventService;
         this.kitTypeDao = kitTypeDao;
-        this.pepperDSMClient = pepperDSMClient;
+        this.pepperDSMClientWrapper = pepperDSMClientWrapper;
         this.profileService = profileService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
+        this.studyEnvironmentConfigService = studyEnvironmentConfigService;
         this.objectMapper = objectMapper;
         this.daoUtils = daoUtils;
     }
@@ -92,10 +91,10 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         Profile profile = profileService.loadWithMailingAddress(enrollee.getProfileId()).get();
         PepperKitAddress pepperKitAddress = makePepperKitAddress(profile);
         KitRequest kitRequest = assemble(adminUser, enrollee, pepperKitAddress, kitRequestCreationDto);
-
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
         // send kit request to DSM
         try {
-            PepperKit pepperKit = pepperDSMClient.sendKitRequest(studyShortcode, enrollee, kitRequest, pepperKitAddress);
+            PepperKit pepperKit = pepperDSMClientWrapper.sendKitRequest(studyShortcode, studyEnvironmentConfig, enrollee, kitRequest, pepperKitAddress);
             // write out the PepperKitStatus as a string for storage
             String pepperRequestJson = objectMapper.writeValueAsString(pepperKit);
             kitRequest.setExternalKit(pepperRequestJson);
@@ -194,7 +193,9 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     @Transactional
     public void syncKitStatusFromPepper(UUID kitId) throws PepperParseException, PepperApiException {
         KitRequest kitRequest = dao.find(kitId).orElseThrow(() -> new NotFoundException("Kit request not found"));
-        PepperKit pepperKitStatus = pepperDSMClient.fetchKitStatus(kitId);
+        Enrollee enrollee = enrolleeService.find(kitRequest.getEnrolleeId()).orElseThrow(IllegalStateException::new);
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(enrollee.getStudyEnvironmentId());
+        PepperKit pepperKitStatus = pepperDSMClientWrapper.fetchKitStatus(studyEnvironmentConfig, kitId);
         saveKitStatus(kitRequest, pepperKitStatus, Instant.now());
      }
 
@@ -216,16 +217,16 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         // it doesn't actually matter what order we process the studies in, but it's nice for logging to have them
         // consistently alphabetical
         studies.sort(Comparator.comparing(Study::getShortcode));
-        for (Study study : studies) {
-            // for each study, grab all the statuses from Pepper
-            // (Pepper doesn't have a concept of study environments, so all kits from a study are under the same code)
-            // then update the statuses in Juniper for each environment
-           try {
-               Collection<PepperKit> pepperKits = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
-               // now find the environments for this study from the list of environments with kit types
-               studyEnvs.stream().filter(studyEnv -> studyEnv.getStudyId().equals(study.getId())).forEach(studyEnv ->
-                   syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits)
-               );
+        for (StudyEnvironment studyEnv : studyEnvs) {
+            // for each study environment, grab all the statuses from Pepper
+            // Note that this will result in some duplicate fetching, as Pepper doesn't know about study environments,
+            // and so the calls will get all kits for a study, regardless of environment. This is necessary, though,
+            // since the different environments may be configured to hit different DSM endpoints.
+            StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).orElseThrow();
+            Study study = studies.stream().filter(s -> s.getId().equals(studyEnv.getStudyId())).findFirst().orElseThrow();
+            try {
+               Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
+               syncKitStatusesForStudyEnv(study.getShortcode(), studyEnv.getEnvironmentName(), pepperKits);
             } catch (PepperParseException | PepperApiException e) {
                 // if one sync fails, keep trying others in case the failure is just isolated unexpected data
                 log.error("kit status sync failed for study %s".formatted(study.getShortcode()), e);
@@ -236,7 +237,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
     @Transactional
     public void syncKitStatusesForStudyEnv(Study study, EnvironmentName environmentName)
             throws PepperParseException, PepperApiException {
-        Collection<PepperKit> pepperKits = pepperDSMClient.fetchKitStatusByStudy(study.getShortcode());
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyShortcode(study.getShortcode(), environmentName);
+        Collection<PepperKit> pepperKits = pepperDSMClientWrapper.fetchKitStatusByStudy(study.getShortcode(), studyEnvironmentConfig);
         syncKitStatusesForStudyEnv(study.getShortcode(), environmentName, pepperKits);
     }
 
@@ -393,10 +395,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
 
     private final EnrolleeService enrolleeService;
     private final KitTypeDao kitTypeDao;
-    private final PepperDSMClient pepperDSMClient;
+    private final PepperDSMClientWrapper pepperDSMClientWrapper;
     private final ProfileService profileService;
     private final StudyService studyService;
     private final StudyEnvironmentService studyEnvironmentService;
+    private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final ObjectMapper objectMapper;
     private final EventService eventService;
     private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { faPencil } from '@fortawesome/free-solid-svg-icons'
 
-import Api, { Enrollee, MailingAddress, PortalEnvironment, Profile } from 'api/api'
+import Api, { MailingAddress, PortalEnvironment } from 'api/api'
 import ParticipantNotesView from './ParticipantNotesView'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
-  dateToDefaultString,
+  dateToDefaultString, Enrollee,
   findDifferencesBetweenObjects,
   javaLocalDateToJsDate,
   jsDateToJavaLocalDate,
-  PortalEnvironmentLanguage
+  PortalEnvironmentLanguage, Profile
 } from '@juniper/ui-core'
 import { cloneDeep, isEmpty } from 'lodash'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -114,8 +114,8 @@ function ReadOnlyProfile(
       ]}/>
     <InfoCardValue title={'Birthdate'} values={[dateToDefaultString(profile.birthDate)]}/>
     <ReadOnlyMailingAddress title={'Primary Address'} mailingAddress={mailingAddress}/>
-    <InfoCardValue title={'Email'} values={[profile.contactEmail]}/>
-    <InfoCardValue title={'Phone'} values={[profile.phoneNumber]}/>
+    <InfoCardValue title={'Email'} values={[profile.contactEmail || '']}/>
+    <InfoCardValue title={'Phone'} values={[profile.phoneNumber || '']}/>
     <InfoCardValue title={'Notifications'} values={[profile.doNotEmail ? 'Off' : 'On']}/>
     <InfoCardValue title={'Do Not Solicit'} values={[profile.doNotEmailSolicit ? 'On' : 'Off']}/>
     { supportedLanguages.length > 0 &&

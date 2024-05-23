@@ -6,16 +6,20 @@ import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
+import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,6 +48,9 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
     private SurveyTaskDispatcher surveyTaskDispatcher;
     @Autowired
     private AdminUserFactory adminUserFactory;
+    @Autowired
+    private SurveyResponseFactory surveyResponseFactory;
+
 
     @Test
     void testIsDuplicateTask() {
@@ -186,4 +194,64 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertTrue(participantTasks.stream().anyMatch(t -> t.getEnrolleeId().equals(normalEnrollee.enrollee().getId())));
         assertTrue(participantTasks.stream().noneMatch(t -> t.getEnrolleeId().equals(enrolleeAndProxy.proxy().getId())));
     }
+
+    @Test
+    @Transactional
+    public void testAssignOnSurveyEvent(TestInfo testInfo) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle sandboxBundle = studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+        AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+        Survey survey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
+                        .content("{\"pages\":[{\"elements\":[{\"type\":\"text\",\"name\":\"diagnosis\",\"title\":\"What is your diagnosis?\"}]}]}")
+                .stableId("medForm")
+                .portalId(sandboxBundle.getPortal().getId()));    ;
+        surveyFactory.attachToEnv(survey, sandboxBundle.getStudyEnv().getId(), true);
+
+        Survey followUpSurvey = surveyFactory.buildPersisted(surveyFactory.builderWithDependencies(getTestName(testInfo))
+                        .stableId("followUp")
+                .eligibilityRule("{answer.medForm.diagnosis} = 'sick'"));
+        surveyFactory.attachToEnv(followUpSurvey, sandboxBundle.getStudyEnv().getId(), true);
+
+        EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.enroll("healthy@test.com", sandboxBundle.getPortal().getShortcode(), sandboxBundle.getStudy().getShortcode(), sandboxBundle.getPortalEnv().getEnvironmentName());
+
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(bundle.enrollee().getId());
+        // confirm the follow-up survey has not yet been assigned to the participant
+        assertThat(tasks, hasSize(1));
+        ParticipantTask medFormTask = tasks.get(0);
+
+
+        surveyResponseFactory.submitStringAnswer(
+                medFormTask,
+                "diagnosis",
+                "sick",
+                false,
+                bundle,
+                sandboxBundle.getPortal());
+        // survey not complete, so no new task should be assigned
+        assertThat(participantTaskService.findByEnrolleeId(bundle.enrollee().getId()), hasSize(1));
+
+        surveyResponseFactory.submitStringAnswer(
+                medFormTask,
+                "diagnosis",
+                "fine",
+                true,
+                bundle,
+                sandboxBundle.getPortal());
+        // survey answer not a match -- no new task should be assigned
+        assertThat(participantTaskService.findByEnrolleeId(bundle.enrollee().getId()), hasSize(1));
+
+        surveyResponseFactory.submitStringAnswer(
+                medFormTask,
+                "diagnosis",
+                "sick",
+                true,
+                bundle,
+                sandboxBundle.getPortal());
+        // survey answer matches and is complete -- should assign new task
+        assertThat(participantTaskService.findByEnrolleeId(bundle.enrollee().getId()), hasSize(2));
+        tasks = participantTaskService.findByEnrolleeId(bundle.enrollee().getId());
+        // now the task should be added
+        assertThat(tasks.stream().map(ParticipantTask::getTargetStableId).toList(), contains("medForm", "followUp"));
+    }
+
+
 }

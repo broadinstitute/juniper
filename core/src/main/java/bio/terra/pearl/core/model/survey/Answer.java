@@ -40,6 +40,22 @@ public class Answer extends BaseEntity {
         setValue(value);
     }
 
+    /** infers the type based on what value was set */
+    public void inferTypeIfMissing() {
+        if (answerType != null) {
+            return;
+        }
+        if (stringValue != null) {
+            answerType = AnswerType.STRING;
+        } else if (numberValue != null) {
+            answerType = AnswerType.NUMBER;
+        } else if (booleanValue != null) {
+            answerType = AnswerType.BOOLEAN;
+        } else if (objectValue != null) {
+            answerType = AnswerType.OBJECT;
+        }
+    }
+
     protected void setValue(Object value) {
         if (answerType.equals(AnswerType.STRING)) {
             stringValue = (String) value;

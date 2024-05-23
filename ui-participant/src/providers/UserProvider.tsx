@@ -1,7 +1,8 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useAuth } from 'react-oidc-context'
-import Api, { Enrollee, EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser, Profile } from 'api/api'
+import Api, { EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
+import { Enrollee, Profile } from '@juniper/ui-core'
 
 /**
  * The user provide contains the _raw_ user context, which is more or less directly derived

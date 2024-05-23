@@ -3,9 +3,9 @@ import { render, screen, waitFor } from '@testing-library/react'
 
 import Api, { MailingListContact } from 'api/api'
 import { mockPortalContext } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import MailingListView from './MailingListView'
+import { setupRouterTest } from '@juniper/ui-core'
 
 const contacts: MailingListContact[] = [{
   id: 'id1',

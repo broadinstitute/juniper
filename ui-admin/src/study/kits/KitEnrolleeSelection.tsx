@@ -12,7 +12,7 @@ import {
   VisibilityState
 } from '@tanstack/react-table'
 
-import Api, { Enrollee } from 'api/api'
+import Api from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   basicTableLayout,
@@ -22,7 +22,7 @@ import {
   RowVisibilityCount
 } from 'util/tableUtils'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { instantToDateString } from '@juniper/ui-core'
+import { Enrollee, instantToDateString } from '@juniper/ui-core'
 import RequestKitsModal from './RequestKitsModal'
 import { useLoadingEffect } from 'api/api-utils'
 import { enrolleeKitRequestPath } from '../participants/enrolleeView/EnrolleeView'

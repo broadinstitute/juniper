@@ -1,8 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
-import { MockI18nProvider } from '@juniper/ui-core'
+import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import ProvideFullTestUserContext from 'test-utils/ProvideFullTestUserContext'
 import {
   mockEnrolleesWithProxies,
@@ -43,7 +42,7 @@ describe('HubPage with proxies', () => {
     await waitFor(
       async () => expect(
         await screen.findByLabelText('{selectParticipant}')
-      ).toHaveTextContent('Jonas Salk {youInParens}'))
+      ).toHaveTextContent('Peter Salk'))
   })
   it('switches between proxies', async () => {
     const { RoutedComponent } = setupRouterTest(
@@ -61,14 +60,15 @@ describe('HubPage with proxies', () => {
     )
     render(RoutedComponent)
 
+    expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Peter Salk')
+    expect(screen.queryByText('{test-demographics-survey:0}')).toBeInTheDocument()
+    expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
+    selectParticipant('Jonas Salk {youInParens}')
     await waitFor(() => expect(screen.getByText('Test Study')).toBeInTheDocument())
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonas Salk {youInParens}')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()
     expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
-    selectParticipant('Peter Salk')
-    expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Peter Salk')
-    expect(screen.queryByText('{test-demographics-survey:0}')).toBeInTheDocument()
-    expect(screen.queryByText('{test-consent-survey:0}')).toBeNull()
+    expect(screen.queryByText('{joinStudy}')).toBeInTheDocument() // should be a join study link
     selectParticipant('Jonathan Salk')
     expect(await screen.findByLabelText('{selectParticipant}')).toHaveTextContent('Jonathan Salk')
     expect(screen.queryByText('{test-demographics-survey:0}')).toBeNull()

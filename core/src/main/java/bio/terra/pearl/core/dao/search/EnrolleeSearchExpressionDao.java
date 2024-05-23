@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Handle;
@@ -88,6 +89,16 @@ public class EnrolleeSearchExpressionDao {
 
                     enrolleeSearchExpressionResult.getAnswers().add(
                             BeanMapper.of(Answer.class, "answer_" + questionStableId)
+                                    .map(rs, ctx)
+                    );
+                }
+
+                if (columnName.startsWith("task_") && columnName.endsWith("_created_at")) {
+                    String targetStableId = columnName.substring("task_".length(),
+                            columnName.length() - "_created_at".length());
+
+                    enrolleeSearchExpressionResult.getTasks().add(
+                            BeanMapper.of(ParticipantTask.class, "task_" + targetStableId)
                                     .map(rs, ctx)
                     );
                 }

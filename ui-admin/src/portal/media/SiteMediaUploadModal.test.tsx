@@ -1,12 +1,12 @@
 import React from 'react'
 
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import { mockPortalContext, mockSiteMedia } from 'test-utils/mocking-utils'
 import Api from 'api/api'
 import userEvent from '@testing-library/user-event'
 import SiteMediaUploadModal, { cleanFileName } from './SiteMediaUploadModal'
 import { Store } from 'react-notifications-component'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 test('upload is disabled until file chosen', async () => {

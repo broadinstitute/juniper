@@ -1,11 +1,11 @@
 import React from 'react'
 import { mockTaskSearchFacet, mockTaskFacetValue } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { getByText, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import { EnrolleeSearchFacet } from 'api/api'
 import { ALL_FACETS, Facet, FacetValue, EntityOptionsArrayFacet } from 'api/enrolleeSearch'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {

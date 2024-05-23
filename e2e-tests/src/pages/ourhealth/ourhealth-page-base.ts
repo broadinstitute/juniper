@@ -6,7 +6,6 @@ import Navbar from 'src/page-components/navbar'
 export default abstract class OurHealthPageBase extends RegistrationPageBase {
   title = 'OurHealth'
 
-  // navbar and footer are specific to OurHealth
   navbar: Navbar
 
   footer: Footer

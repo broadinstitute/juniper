@@ -1,5 +1,6 @@
-import { SiteContent, LocalSiteContent, HtmlPage } from 'api/api'
+import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem, AddressValidationResult } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
+import { HubResponse } from '@juniper/ui-core'
 
 /** mock site content */
 export const mockSiteContent = (): SiteContent => {
@@ -35,6 +36,16 @@ export const mockHtmlPage = (): HtmlPage => {
   }
 }
 
+/** mock nav iteme */
+export const mockNavbarItem= (): NavbarItem => {
+  return {
+    text: 'example page',
+    itemType: 'EXTERNAL',
+    itemOrder: 1,
+    href: 'https://example.com'
+  }
+}
+
 /** mock single page section */
 export const mockHtmlSection = (): HtmlSection => {
   return {
@@ -51,5 +62,7 @@ export const mockHtmlSection = (): HtmlSection => {
 export const emptyApi = {
   getImageUrl: () => '',
   submitMailingListContact: () => Promise.resolve({}),
-  getLanguageTexts: () => Promise.resolve({})
+  getLanguageTexts: () => Promise.resolve({}),
+  updateSurveyResponse: () => Promise.resolve({} as HubResponse),
+  validateAddress: () => Promise.resolve({} as AddressValidationResult)
 }

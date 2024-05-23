@@ -1,10 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockHtmlPage } from 'test-utils/mock-site-content'
 import HtmlPageEditView from './HtmlPageEditView'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()

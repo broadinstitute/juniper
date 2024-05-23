@@ -1,15 +1,15 @@
 import { expect, Locator, Page, Response } from '@playwright/test'
 import JuniperPageBase from 'src/models/juniper-page-base'
 import { RegistrationPageInterface } from 'src/models/registration-page-interface'
-import Question from 'src/page-components/question'
+import Question, { QuestionOpts } from 'src/page-components/question'
 
 export default abstract class RegistrationPageBase extends JuniperPageBase implements RegistrationPageInterface {
   protected constructor(protected readonly page: Page) {
     super(page)
   }
 
-  getQuestion(qText: string): Question {
-    return new Question(this.page, { qText })
+  getQuestion(qText: string, opts?: QuestionOpts): Question {
+    return new Question(this.page, { ...opts, qText })
   }
 
   /** Click +/- icon to expand or collapse hidden texts */

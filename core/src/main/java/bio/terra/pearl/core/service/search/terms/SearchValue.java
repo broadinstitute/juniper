@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import lombok.Getter;
+import org.apache.commons.beanutils.NestedNullException;
+import org.apache.commons.beanutils.PropertyUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -19,7 +21,6 @@ public class SearchValue {
     private Boolean booleanValue = null;
 
     private final SearchValueType searchValueType;
-
 
     public SearchValue(String stringValue) {
         this.stringValue = stringValue;
@@ -53,6 +54,32 @@ public class SearchValue {
 
     public SearchValue() {
         this.searchValueType = SearchValueType.NULL;
+    }
+
+    public static SearchValue of(Object objValue, SearchValueType type) {
+        try {
+            return switch (type) {
+                case STRING -> new SearchValue(objValue.toString());
+                case DATE -> new SearchValue((LocalDate) objValue);
+                case INTEGER -> new SearchValue((Integer) objValue);
+                case DOUBLE -> new SearchValue((Double) objValue);
+                case BOOLEAN -> new SearchValue((Boolean) objValue);
+                default -> throw new IllegalArgumentException("Invalid field type: " + type);
+            };
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Invalid field type: " + type);
+        }
+    }
+
+    public static SearchValue ofNestedProperty(Object object, String field, SearchValueType type) {
+        try {
+            Object objValue = PropertyUtils.getNestedProperty(object, field);
+            return of(objValue, type);
+        } catch (NestedNullException | NullPointerException e) {
+            return new SearchValue();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid field: " + field);
+        }
     }
 
     public boolean equals(SearchValue right) {
@@ -109,6 +136,14 @@ public class SearchValue {
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);
             default -> false;
         };
+    }
+
+    public boolean contains(SearchValue rightSearchValue) {
+        if (this.searchValueType != SearchValueType.STRING || rightSearchValue.searchValueType != SearchValueType.STRING) {
+            return false;
+        }
+
+        return this.stringValue.contains(rightSearchValue.stringValue);
     }
 
     public enum SearchValueType {

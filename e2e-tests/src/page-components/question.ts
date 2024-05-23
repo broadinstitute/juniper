@@ -1,7 +1,14 @@
-import { Page, expect, Locator } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import WebComponentBase from 'src/page-components/web-component-base'
 import Radiogroup from 'src/page-components/radiogroup'
 import Textbox from 'src/page-components/textbox'
+
+export type QuestionOpts = {
+  qText?: string | RegExp,
+  dataName?: string,
+  parent?: string,
+  exact?: boolean
+}
 
 export default class Question extends WebComponentBase {
   root: Locator
@@ -10,7 +17,7 @@ export default class Question extends WebComponentBase {
    * @param {Page} page
    * @param {{parent?: string, qText?: string | RegExp, dataName?: string}} opts
    */
-  constructor(page: Page, opts: { qText?: string | RegExp, dataName?: string, parent?: string } = {}) {
+  constructor(page: Page, opts: QuestionOpts = {}) {
     super(page)
 
     const { parent, qText, dataName } = opts
@@ -28,10 +35,13 @@ export default class Question extends WebComponentBase {
       : this.page.locator(defaultRoot)
 
     if (qText) {
+      const xpath = opts.exact
+        ? `//*[contains(@class, "sv-string-viewer") and normalize-space() = "${qText}"]`
+        : `//*[contains(@class, "sv-string-viewer") and contains(normalize-space(), "${qText}")]`
       this.root = typeof qText === 'string'
         ? this.root.filter({
           has: this.page.locator(
-            `xpath=//*[contains(@class, "sv-string-viewer") and contains(normalize-space(), "${qText}")]`)
+              `xpath=${xpath}`)
         })
         : this.root.filter({ has: this.page.locator('.sv-string-viewer', { hasText: qText }) })
     }

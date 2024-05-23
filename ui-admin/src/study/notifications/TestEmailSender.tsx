@@ -7,7 +7,7 @@ import { useUser } from 'user/UserProvider'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from '../../components/forms/Button'
 import LoadingSpinner from '../../util/LoadingSpinner'
-import { StudyEnvParams } from '../StudyEnvironmentRouter'
+import { StudyEnvParams } from '@juniper/ui-core'
 
 
 export const EXAMPLE_RULE_DATA = {

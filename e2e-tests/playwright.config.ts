@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test'
 import { config } from 'dotenv'
 
 const CI = !!process.env.CI
-const { SLOW_MO, OURHEALTH_PARTICIPANT_URL } = process.env
+const { SLOW_MO, OURHEALTH_PARTICIPANT_URL, HEARTDEMO_PARTICIPANT_URL } = process.env
 
 /**
  * Pass in `TEST_ENV` environment variable to read environment variables from .env.* file. Example: TEST_ENV=local
@@ -85,6 +85,23 @@ export default defineConfig({
           : CI
             ? 'http://sandbox.ourhealth.localhost:8081'
             : 'https://sandbox.ourhealth.localhost:3001'
+      }
+    },
+    {
+      name: 'HeartDemo-Chrome',
+      testDir: 'src/tests/studies/demo',
+      use: {
+        ...devices['Desktop Chrome'],
+        contextOptions: {
+          ignoreHTTPSErrors: true
+        },
+        ignoreHTTPSErrors: true,
+        // set HEARTDEMO_PARTICIPANT_URL environment variable to override default URLs
+        baseURL: HEARTDEMO_PARTICIPANT_URL
+          ? HEARTDEMO_PARTICIPANT_URL
+          : CI
+            ? 'http://sandbox.demo.localhost:8081'
+            : 'https://sandbox.demo.localhost:3001'
       }
     },
     /* Running all tests exclude any study tests */

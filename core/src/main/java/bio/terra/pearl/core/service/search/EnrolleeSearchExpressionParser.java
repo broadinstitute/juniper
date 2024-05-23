@@ -6,12 +6,13 @@ import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.ComparisonOperator;
 import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
+import bio.terra.pearl.core.service.search.expressions.SearchOperators;
 import bio.terra.pearl.core.service.search.terms.*;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -30,13 +31,15 @@ public class EnrolleeSearchExpressionParser {
     private final AnswerDao answerDao;
     private final ProfileDao profileDao;
     private final MailingAddressDao mailingAddressDao;
+    private final ParticipantTaskDao participantTaskDao;
 
 
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
         this.mailingAddressDao = mailingAddressDao;
+        this.participantTaskDao = participantTaskDao;
     }
 
 
@@ -93,19 +96,20 @@ public class EnrolleeSearchExpressionParser {
         }
     }
 
-    private ComparisonOperator expToComparisonOperator(CohortRuleParser.ExprContext ctx) {
+    private SearchOperators expToComparisonOperator(CohortRuleParser.ExprContext ctx) {
         return switch (ctx.OPERATOR().getText().trim()) {
-            case "=" -> ComparisonOperator.EQUALS;
-            case "!=" -> ComparisonOperator.NOT_EQUALS;
-            case ">" -> ComparisonOperator.GREATER_THAN;
-            case "<" -> ComparisonOperator.LESS_THAN;
-            case ">=" -> ComparisonOperator.GREATER_THAN_EQ;
-            case "<=" -> ComparisonOperator.LESS_THAN_EQ;
+            case "=" -> SearchOperators.EQUALS;
+            case "!=" -> SearchOperators.NOT_EQUALS;
+            case ">" -> SearchOperators.GREATER_THAN;
+            case "<" -> SearchOperators.LESS_THAN;
+            case ">=" -> SearchOperators.GREATER_THAN_EQ;
+            case "<=" -> SearchOperators.LESS_THAN_EQ;
+            case "contains" -> SearchOperators.CONTAINS;
             default -> throw new IllegalArgumentException("Unknown operator");
         };
     }
 
-    private EnrolleeTerm parseTerm(CohortRuleParser.TermContext ctx) {
+    private SearchTerm parseTerm(CohortRuleParser.TermContext ctx) {
         if (ctx.BOOLEAN() != null) {
             return new UserInputTerm(new SearchValue(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
         } else if (ctx.STRING() != null) {
@@ -120,28 +124,40 @@ public class EnrolleeSearchExpressionParser {
         }
     }
 
-    private EnrolleeTerm parseVariableTerm(String variable) {
+    private SearchTerm parseVariableTerm(String variable) {
         String trimmedVar = variable.substring(1, variable.length() - 1).trim();
         String model = parseModel(trimmedVar);
 
 
         switch (model) {
             case "profile":
-                String field = parseField(trimmedVar);
-                return parseProfileTerm(field);
+                String profileField = parseField(trimmedVar);
+                return parseProfileTerm(profileField);
             case "answer":
-                String[] fields = parseFields(trimmedVar);
-                if (fields.length != 2) {
+                String[] answerFields = parseFields(trimmedVar);
+                if (answerFields.length != 2) {
                     throw new IllegalArgumentException("Invalid answer variable");
                 }
 
-                return parseAnswerTerm(fields[0], fields[1]);
+                return parseAnswerTerm(answerFields[0], answerFields[1]);
             case "age":
                 if (!trimmedVar.equals(model)) {
                     throw new IllegalArgumentException("Invalid age variable");
                 }
 
                 return new AgeTerm(profileDao);
+            case "enrollee":
+                String enrolleeField = parseField(trimmedVar);
+
+                return parseEnrolleeTerm(enrolleeField);
+            case "task":
+                String[] taskFields = parseFields(trimmedVar);
+                if (taskFields.length != 2) {
+                    throw new IllegalArgumentException("Invalid answer variable");
+                }
+
+                return parseTaskTerm(taskFields[0], taskFields[1]);
+
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -170,6 +186,14 @@ public class EnrolleeSearchExpressionParser {
 
     private ProfileTerm parseProfileTerm(String field) {
         return new ProfileTerm(profileDao, mailingAddressDao, field);
+    }
+
+    private EnrolleeTerm parseEnrolleeTerm(String field) {
+        return new EnrolleeTerm(field);
+    }
+
+    private TaskTerm parseTaskTerm(String targetStableId, String field) {
+        return new TaskTerm(participantTaskDao, targetStableId, field);
     }
 
     private AnswerTerm parseAnswerTerm(String surveyStableId, String questionStableId) {

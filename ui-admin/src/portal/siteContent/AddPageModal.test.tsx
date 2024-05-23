@@ -1,16 +1,16 @@
 import userEvent from '@testing-library/user-event'
 import { mockPortalEnvironment } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
-import AddPageModal from './AddPageModal'
+import AddNavbarItemModal from './AddNavbarItemModal'
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AddPageModal', () => {
   test('disables Create button when title and path aren\'t filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddPageModal
+    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
       onDismiss={jest.fn()}
-      insertNewPage={jest.fn()}
+      insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -24,9 +24,9 @@ describe('AddPageModal', () => {
 
   test('enables Create button when title and path are filled out', async () => {
     //Arrange
-    const { RoutedComponent } = setupRouterTest(<AddPageModal
+    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
       onDismiss={jest.fn()}
-      insertNewPage={jest.fn()}
+      insertNewNavItem={jest.fn()}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -48,9 +48,9 @@ describe('AddPageModal', () => {
   test('Create button calls insertNewPage with a new page', async () => {
     //Arrange
     const mockInsertNewPageFn = jest.fn()
-    const { RoutedComponent } = setupRouterTest(<AddPageModal
+    const { RoutedComponent } = setupRouterTest(<AddNavbarItemModal
       onDismiss={jest.fn()}
-      insertNewPage={mockInsertNewPageFn}
+      insertNewNavItem={mockInsertNewPageFn}
       portalEnv={mockPortalEnvironment('sandbox')}
       portalShortcode={'test'}
     />)
@@ -68,9 +68,10 @@ describe('AddPageModal', () => {
 
     //Assert
     expect(mockInsertNewPageFn).toHaveBeenCalledWith({
-      title: 'My New Page',
-      path: 'newPage',
-      sections: []
+      href: 'newPage',
+      itemOrder: -1,
+      itemType: 'INTERNAL',
+      text: 'My New Page'
     })
   })
 })
