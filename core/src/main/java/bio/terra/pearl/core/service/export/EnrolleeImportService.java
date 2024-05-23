@@ -27,7 +27,6 @@ import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
-import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -220,7 +219,6 @@ public class EnrolleeImportService {
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
         ).build();
 
-        //
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         final ParticipantUser participantUserInfo = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
 
@@ -243,14 +241,11 @@ public class EnrolleeImportService {
 
     protected List<KitRequest> importKitRequestData(KitRequestFormatter formatter, Map<String, String> enrolleeMap,
                                                     StudyEnvironment studyEnv, Enrollee enrollee, UUID adminId) {
-        List<KitRequestDto> kitRequests = formatter.listFromStringMap(studyEnv.getId(), enrolleeMap);
         List<KitRequest> kitRequestList = new ArrayList<>();
-        if (!kitRequests.isEmpty()) {
-            for (KitRequestDto kitRequestDto : kitRequests) {
-                KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
-                kitRequestList.add(kitRequestService.create(kitRequest));
-            }
-        }
+        formatter.listFromStringMap(studyEnv.getId(), enrolleeMap).forEach(kitRequestDto -> {
+            KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
+            kitRequestList.add(kitRequestService.create(kitRequest));
+        });
         return kitRequestList;
     }
 

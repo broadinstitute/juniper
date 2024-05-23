@@ -328,6 +328,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
                 .kitTypeId(kt.getId())
                 .createdAt(kitRequestDto.getCreatedAt() == null ? Instant.now() : kitRequestDto.getCreatedAt())
+                .sentAt(kitRequestDto.getSentAt())
+                .labeledAt(kitRequestDto.getLabeledAt())
                 .receivedAt(kitRequestDto.getReceivedAt())
                 .trackingNumber(kitRequestDto.getTrackingNumber())
                 .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
