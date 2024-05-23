@@ -21,9 +21,7 @@ test.describe('POST /preEnroll request', () => {
 
       expect(submitResponse).not.toBeNull()
 
-      const respJson = await submitResponse?.json() as ApiPreenrollResponse
-      console.log(`createdAt: ${respJson.createdAt}`)
-      console.log(`fullData: ${JSON.stringify(JSON.parse(respJson.fullData), null, 2)}`)
+      await submitResponse?.json() as ApiPreenrollResponse
     })
   })
 })

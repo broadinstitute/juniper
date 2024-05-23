@@ -1,14 +1,9 @@
 name: End-to-end tests
 
-# TODO: Once tests are added, run on PRs and commits to development.
-on: workflow_dispatch
-# on:
-#   push:
-#     branches: [ development ]
-#     paths-ignore: [ '*.md']
-#   pull_request:
-#     branches: [ '**' ]
-#   merge_group:
+on:
+  push:
+    branches:
+      - development
 
 jobs:
   test:
@@ -45,11 +40,17 @@ jobs:
       run: npm ci
     - name: Build applications
       run: |
-        ./gradlew :api-admin:build -x test
-        ./gradlew :api-admin:copyWebApp
-        ./gradlew :api-participant:build -x test
-        ./gradlew :api-participant:copyWebApp
+        ./scripts/run_dockerized.sh participant
+        ./scripts/run_dockerized.sh admin
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
       run: npm -w e2e-tests test
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: |
+          e2e-tests/playwright-report/**
+          e2e-tests/test-results/**
