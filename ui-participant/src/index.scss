@@ -96,10 +96,11 @@ a {
   font-size: 0.9em;
   font-style: italic;
 }
-
+/* for most customer custom media, we want a sensible max size on mobile
+   so they don't have to manually scale their photos */
 @include media-breakpoint-down(lg) {
-  .configured-image {
-    max-height: max(33vh, 212px);
+  .cfg-image-confined {
+     max-height: max(33vh, 212px);
   }
 }
 
@@ -161,6 +162,21 @@ a {
 .survey-container-modal .modal-body {
   padding: 0px;
 }
+
+/* note the shadow is applied to the *child*.  This prevents jittering when the button is hovered */
+.hover-shadow > * {
+  box-shadow: 0 0px 10px rgba(0,0,0,.1);
+}
+
+.hover-shadow:hover > * {
+  box-shadow: 0 0px 40px rgba(0,0,0,.5);
+  -webkit-transform: translateY(-15px);
+  -moz-transform: translateY(-15px);
+  -ms-transform: translateY(-15px);
+  -o-transform: translateY(-15px);
+  transform: translateY(-15px);
+}
+
 
 @media print {
   .environment-alert {
