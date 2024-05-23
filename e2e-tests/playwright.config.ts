@@ -178,13 +178,13 @@ export default defineConfig({
       command: 'cd .. && ./gradlew :api-admin:bootRun',
       url: 'http://localhost:8080/status',
       timeout: 180 * 1000,
-      reuseExistingServer: CI
+      reuseExistingServer: true
     },
     {
       command: 'cd .. && ./gradlew :api-participant:bootRun',
       url: 'http://localhost:8081/status',
       timeout: 180 * 1000,
-      reuseExistingServer: CI
+      reuseExistingServer: true
     },
     // In CI, test against the UI bundled into the Java app.
     // Otherwise, test against the UI dev server.

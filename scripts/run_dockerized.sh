@@ -16,6 +16,7 @@ if [ "$1" != "participant" ]; then
     targetport="8081"
 fi
 
+REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-$1:jibDockerBuild
 
 tagname=$(./gradlew printVersion | grep "\d\.\d.\d")
 
