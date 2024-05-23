@@ -3,13 +3,14 @@ package bio.terra.pearl.core.service.export;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
-import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dataimport.Import;
 import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -50,6 +52,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
 public class EnrolleeImportServiceTests extends BaseSpringBootTest {
@@ -57,8 +60,6 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     private AdminUserService adminUserService;
     @Autowired
     private AdminUserFactory adminUserFactory;
-    @Autowired
-    private EnrolleeFactory enrolleeFactory;
     @Autowired
     private EnrolleeImportService enrolleeImportService;
     @Autowired
@@ -109,7 +110,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleesCSV(TestInfo info) {
         String csvString = """
                 column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.sentAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:38PM","KITTRACKNUMBER12345","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA", "sick","SENT","2024-05-19 01:38PM","KITTRACKNUMBER_2","{"firstName":"SS2","street1":"320 Charles Street","city":"Cambridge"}","SALIVA"
+                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-19 01:38PM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
                 x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
@@ -137,11 +138,21 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
         verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
 
-        List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(imports.get(0).getCreatedEnrolleeId()).get());
-        assertThat(kitRequestDtos, hasSize(2));
-        assertThat(kitRequestDtos.get(0).getTrackingNumber(), equalTo("KITTRACKNUMBER12345"));
-        assertThat(kitRequestDtos.get(1).getTrackingNumber(), equalTo("KITTRACKNUMBER_2"));
-
+        List<KitRequestDto> kitRequestDtoList = new ArrayList<>();
+        KitType salivaKit = KitType.builder().name("SALIVA").build();
+        KitRequestDto kitRequestDto = KitRequestDto.builder()
+                .kitType(salivaKit)
+                .status(KitRequestStatus.SENT)
+                .trackingNumber("KITTRACKNUMBER12345")
+                .build();
+        KitRequestDto kitRequestDto2 = KitRequestDto.builder()
+                .kitType(salivaKit)
+                .status(KitRequestStatus.RECEIVED)
+                .trackingNumber("KITTRACKNUMBER_2")
+                .build();
+        kitRequestDtoList.add(kitRequestDto);
+        kitRequestDtoList.add(kitRequestDto2);
+        verifyKitRequest(dataImport, kitRequestDtoList);
     }
 
     @Test
@@ -208,6 +219,22 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Answer diagnosis = answers.stream().filter(answer -> answer.getQuestionStableId().equals(questionStableId))
                 .findFirst().get();
         assertThat(diagnosis.getStringValue(), equalTo(questionAnswer));
+    }
+
+    private void verifyKitRequest(Import dataImport, List<KitRequestDto> expectedKitRequests) {
+
+        List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(dataImport.getImportItems().get(0).getCreatedEnrolleeId()).get());
+        assertThat(kitRequestDtos.size(), equalTo(expectedKitRequests.size()));
+        for (int i = 0; i < expectedKitRequests.size(); i++) {
+            KitRequestDto kitRequestDto = kitRequestDtos.get(i);
+            KitRequestDto expectedKit = expectedKitRequests.get(i);
+
+            assertThat(kitRequestDto.getKitType().getName(), equalTo(expectedKit.getKitType().getName()));
+            assertThat(kitRequestDto.getTrackingNumber(), equalTo(expectedKit.getTrackingNumber()));
+            assertThat(kitRequestDto.getStatus(), equalTo(expectedKit.getStatus()));
+            assertThat(kitRequestDto.getSentToAddress(), notNullValue());
+            assertThat(kitRequestDto.getCreatedAt(), notNullValue());
+        }
     }
 
     @Test
