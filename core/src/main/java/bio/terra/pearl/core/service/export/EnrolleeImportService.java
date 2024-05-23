@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
-import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -23,9 +23,12 @@ import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -92,6 +95,7 @@ public class EnrolleeImportService {
     private final TimeShiftPopulateDao timeShiftPopulateDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
+    private final KitRequestService kitRequestService;
     private final char CSV_DELIMITER = ',';
     private final char TSV_DELIMITER = '\t';
 
@@ -100,7 +104,7 @@ public class EnrolleeImportService {
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
                                  TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
-                                 PortalParticipantUserService portalParticipantUserService) {
+                                 PortalParticipantUserService portalParticipantUserService, KitRequestService kitRequestService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -115,6 +119,7 @@ public class EnrolleeImportService {
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.kitRequestService = kitRequestService;
     }
 
     @Transactional
@@ -144,7 +149,7 @@ public class EnrolleeImportService {
             Enrollee enrollee = null;
             ImportItem importItem;
             try {
-                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions);
+                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions, adminId);
                 importItem = ImportItem.builder()
                         .createdEnrolleeId(enrollee.getId())
                         .importId(dataImport.getId())
@@ -204,7 +209,7 @@ public class EnrolleeImportService {
         }
     }
 
-    public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions) {
+    public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, UUID adminId) {
         /** while importing handle update for existing import
          if same enrolle: update enrollee
          if same participant & same portal.. new enrollee & same profile
@@ -226,12 +231,27 @@ public class EnrolleeImportService {
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
+        importKitRequestData(new KitRequestFormatter(), enrolleeMap, studyEnv, enrollee, adminId);
+
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
         /** restore email */
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
+    }
+
+    protected List<KitRequest> importKitRequestData(KitRequestFormatter formatter, Map<String, String> enrolleeMap,
+                                                    StudyEnvironment studyEnv, Enrollee enrollee, UUID adminId) {
+        List<KitRequestDto> kitRequests = formatter.listFromStringMap(studyEnv.getId(), enrolleeMap);
+        List<KitRequest> kitRequestList = new ArrayList<>();
+        if (!kitRequests.isEmpty()) {
+            for (KitRequestDto kitRequestDto : kitRequests) {
+                KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
+                kitRequestList.add(kitRequestService.create(kitRequest));
+            }
+        }
+        return kitRequestList;
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
@@ -322,6 +342,6 @@ public class EnrolleeImportService {
         }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
-                        ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+                ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }
