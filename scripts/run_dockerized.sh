@@ -16,6 +16,9 @@ if [ "$1" != "participant" ]; then
     targetport="8081"
 fi
 
-REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-$1:jibDockerBuild -Djib.to.image=api-$1:ci
+APP_NAME=api-$1
+IMAGE_NAME=$APP_NAME:ci
 
-docker run -d -p $targetport:8080 --net=host api-$1:ci
+REACT_APP_UNAUTHED_LOGIN=true ./gradlew $APP_NAME:jibDockerBuild -Djib.to.image=$IMAGE_NAME
+
+docker run -d -p $targetport:8080 --net=host $IMAGE_NAME
