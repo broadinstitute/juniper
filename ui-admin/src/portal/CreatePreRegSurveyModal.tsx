@@ -9,9 +9,9 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { ApiErrorResponse, defaultApiErrorHandle, doApiLoad } from 'api/api-utils'
 import { PortalEnvContext } from './PortalRouter'
 import { useFormCreationNameFields } from 'study/surveys/useFormCreationNameFields'
-import { StudyEnvParams, studyEnvPreRegPath, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
+import { studyEnvPreRegPath, useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
 import { DocsKey, ZendeskLink } from '../util/zendeskUtils'
-import { defaultSurvey } from '@juniper/ui-core'
+import { defaultSurvey, StudyEnvParams } from '@juniper/ui-core'
 
 const EXAMPLE_PREREG_TEMPLATE = `
 {

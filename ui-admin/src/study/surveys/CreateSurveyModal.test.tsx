@@ -2,10 +2,9 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateSurveyModal from './CreateSurveyModal'
 import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import Api from 'api/api'
-import { defaultSurvey } from '@juniper/ui-core'
+import { defaultSurvey, setupRouterTest } from '@juniper/ui-core'
 
 describe('CreateSurveyModal', () => {
   test('disables Create button when survey name and stable ID are blank', () => {

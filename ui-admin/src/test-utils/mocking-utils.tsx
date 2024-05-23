@@ -1,16 +1,12 @@
-import { StudyEnvContextT, StudyEnvParams } from 'study/StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import {
   AdminTask,
   Answer,
   DatasetDetails,
-  Enrollee,
   EnrolleeSearchFacet,
   EnrolleeSearchResult,
-  KitRequest,
-  KitType,
   Notification,
   NotificationEventDetails,
-  ParticipantNote,
   PepperKit,
   Portal,
   PortalStudy,
@@ -22,11 +18,12 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
-  LocalizedEmailTemplate,
   ParticipantDashboardAlert,
+  Enrollee, KitRequest, KitType,
+  LocalizedEmailTemplate, ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType,
+  ParticipantTaskType, StudyEnvParams,
   Survey
 } from '@juniper/ui-core'
 
@@ -271,12 +268,16 @@ export const mockEnrollee: () => Enrollee = () => {
   return {
     id: enrolleeId,
     createdAt: 0,
+    lastUpdatedAt: 0,
     shortcode: 'JOSALK',
     participantUserId: 'userId1',
+    studyEnvironmentId: 'studyEnvId1',
     surveyResponses: [],
     consented: false,
+    subject: true,
     consentResponses: [],
     participantNotes: [],
+    profileId: 'profileId1',
     profile: {
       givenName: 'Jonas',
       familyName: 'Salk',

@@ -1,9 +1,10 @@
-import Api, { Enrollee, EnrolleeRelation, ParticipantUser, Portal, PortalParticipantUser, Profile } from '../api/api'
+import Api, { EnrolleeRelation, ParticipantUser, Portal, PortalParticipantUser } from '../api/api'
 import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
 import PortalProvider from '../providers/PortalProvider'
 import ActiveUserProvider from '../providers/ActiveUserProvider'
+import { Enrollee, Profile } from '@juniper/ui-core'
 
 
 type ProvideTestUserProps = {
@@ -118,11 +119,11 @@ const _ProvideTestUser = ({
         subject: true,
         consented: true,
         profile,
-        consentResponses: [],
         kitRequests: [],
         createdAt: 0,
         lastUpdatedAt: 0,
         participantTasks: [],
+        participantNotes: [],
         participantUserId: '',
         shortcode: 'AABBCC',
         studyEnvironmentId: '',

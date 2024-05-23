@@ -2,10 +2,10 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockPortalContext } from 'test-utils/mocking-utils'
 import PortalEnvDiffView, { emptyChangeSet } from './PortalEnvDiffView'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 
 import { PortalEnvironmentChange } from 'api/api'
 import userEvent from '@testing-library/user-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 describe('PortalEnvDiff', () => {

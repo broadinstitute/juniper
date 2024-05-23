@@ -1,8 +1,7 @@
 import React from 'react'
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { getByLabelText, render, screen, waitFor } from '@testing-library/react'
 import { FormDesigner } from './FormDesigner'
-import { renderWithRouter, setupRouterTest } from 'test-utils/router-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { baseQuestions } from './designer/questions/questionTypes'
 

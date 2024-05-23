@@ -1,8 +1,7 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { useAuth } from 'react-oidc-context'
-import { MockI18nProvider } from '@juniper/ui-core'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
+import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import Registration from './Registration'
 
 jest.mock('react-oidc-context')

@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
       - name: Get branch name
         id: branch-name
-        uses: tj-actions/branch-names@v5
+        uses: tj-actions/branch-names@v8
       - name: Set SonarCloud parameters
         id: set-sonar-params
         run: |

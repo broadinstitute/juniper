@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateTriggerModal from './CreateTriggerModal'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { select } from 'react-select-event'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('CreateTriggerModal', () => {
   test('renders type and event options', async () => {

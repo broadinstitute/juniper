@@ -1,9 +1,9 @@
 import React from 'react'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { render, screen } from '@testing-library/react'
 import { mockKitRequest } from 'test-utils/test-participant-factory'
 import KitBanner from './KitBanner'
 import { instantToDateString } from '../../util/timeUtils'
+import { setupRouterTest } from '@juniper/ui-core'
 
 describe('HubPageKits', () => {
   it('renders a sent kit banner', () => {

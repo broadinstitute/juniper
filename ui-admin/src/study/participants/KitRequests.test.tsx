@@ -1,9 +1,9 @@
 import React from 'react'
 
 import KitRequests from './KitRequests'
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
+import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders kit requests', async () => {
   const enrollee = mockEnrollee()

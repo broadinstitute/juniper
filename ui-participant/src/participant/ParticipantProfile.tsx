@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { dateToDefaultString, MailingAddress, useI18n } from '@juniper/ui-core'
-import Api, { Profile } from 'api/api'
+import { dateToDefaultString, MailingAddress, Profile, useI18n } from '@juniper/ui-core'
+import Api from 'api/api'
 import { isEmpty } from 'lodash'
 import {
   EditBirthDateModal,

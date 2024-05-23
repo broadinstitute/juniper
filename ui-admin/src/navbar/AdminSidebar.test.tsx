@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { setupRouterTest } from 'test-utils/router-testing-utils'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import AdminSidebar from './AdminSidebar'
 import userEvent from '@testing-library/user-event'
 import { Config } from '../api/api'
+import { setupRouterTest } from '@juniper/ui-core'
 
 
 const testConfig: Config = {

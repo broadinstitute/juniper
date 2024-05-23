@@ -1,25 +1,24 @@
 import {
   AddressValidationResult,
   AlertTrigger,
-  EnvironmentName,
+  Enrollee,
+  EnvironmentName, HubResponse, KitRequest, KitType,
   MailingAddress,
-  ParticipantDashboardAlert,
+  ParticipantDashboardAlert, ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig,
-  PreregistrationResponse,
+  PortalEnvironmentConfig, Profile,
   SiteContent,
   Study,
   StudyEnvironmentConfig,
-  StudyEnvironmentSurvey,
+  StudyEnvironmentSurvey, StudyEnvParams,
   Survey,
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
 import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
-import { StudyEnvParams } from '../study/StudyEnvironmentRouter'
 import queryString from 'query-string'
 import { AdminUser, NewAdminUser } from './adminUser'
 
@@ -79,21 +78,6 @@ export type EnrolleeSearchResult = {
   mostRecentKitStatus: string | null
 }
 
-export type Enrollee = {
-  id: string,
-  shortcode: string,
-  createdAt: number,
-  participantUserId: string,
-  surveyResponses: SurveyResponse[],
-  preRegResponse?: PreregistrationResponse,
-  preEnrollmentResponse?: PreregistrationResponse,
-  participantTasks: ParticipantTask[],
-  participantNotes: ParticipantNote[],
-  kitRequests: KitRequest[],
-  consented: boolean,
-  profile: Profile
-}
-
 type RelationshipType = 'PROXY'
 
 export type EnrolleeRelation = {
@@ -107,18 +91,6 @@ export type EnrolleeRelation = {
   lastUpdatedAt: number
   beginDate: number
   endDate: number
-}
-
-export type Profile = {
-  givenName: string,
-  familyName: string,
-  contactEmail: string,
-  doNotEmail: boolean,
-  doNotEmailSolicit: boolean,
-  mailingAddress: MailingAddress,
-  preferredLanguage: string,
-  phoneNumber: string,
-  birthDate?: number[]
 }
 
 export type ProfileUpdateDto = {
@@ -172,13 +144,6 @@ export type DataChangeRecord = {
   justification?: string
 }
 
-export type KitType = {
-  id: string,
-  name: string,
-  displayName: string,
-  description: string
-}
-
 export type PepperKit = {
   kitId: string,
   currentStatus: string,
@@ -217,23 +182,6 @@ export type SiteMediaMetadata = {
   createdAt: number,
   cleanFileName: string,
   version: number
-}
-
-export type KitRequest = {
-  id: string,
-  createdAt: number,
-  kitType: KitType,
-  status: string,
-  sentToAddress: string,
-  labeledAt?: number,
-  sentAt?: number,
-  receivedAt?: number,
-  trackingNumber?: string,
-  returnTrackingNumber?: string,
-  errorMessage?: string,
-  details?: string,
-  enrolleeShortcode?: string,
-  skipAddressValidation: boolean
 }
 
 export type Config = {
@@ -374,16 +322,6 @@ export type DatasetJobHistory = {
   datasetId: string,
   status: string
   jobType: string
-}
-
-export type ParticipantNote = {
-  id: string,
-  createdAt: number,
-  lastUpdatedAt: number,
-  enrolleeId: string,
-  text: string,
-  kitRequestId?: string,
-  creatingAdminUserId: string
 }
 
 export type KitRequestListResponse = {
@@ -644,6 +582,23 @@ export default {
       body: JSON.stringify(configuredSurvey)
     })
     return await this.processJsonResponse(response)
+  },
+
+  async updateSurveyResponse({ studyEnvParams, stableId, version, enrolleeShortcode, response, taskId }: {
+    studyEnvParams: StudyEnvParams, stableId: string, version: number,
+    response: SurveyResponse, enrolleeShortcode: string, taskId: string
+  }): Promise<HubResponse> {
+    let url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/${enrolleeShortcode}`
+      + `/surveys/${stableId}/${version}`
+    if (taskId) {
+      url = `${url}?taskId=${taskId}`
+    }
+    const result = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(response)
+    })
+    return await this.processJsonResponse(result)
   },
 
   async updateStudyEnvironment(portalShortcode: string, studyShortcode: string, envName: string,

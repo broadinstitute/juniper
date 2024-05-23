@@ -1,11 +1,11 @@
 import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { useSurveyJSModel } from 'util/surveyJsUtils'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
 import { useUser } from '../../providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
-import { defaultSurvey, useI18n } from '@juniper/ui-core'
+import { defaultSurvey, EnvironmentName, useI18n, useSurveyJSModel } from '@juniper/ui-core'
+import { usePortalEnv } from '../../providers/PortalProvider'
 
 /** This registration survey is a hardcoded survey--will be deprecated soon */
 const registrationSurvey = {
@@ -55,9 +55,10 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
   returnTo: string | null
 }) {
   const { preRegResponseId } = registrationContext
+  const { portalEnv } = usePortalEnv()
   // for now, assume registration surveys are a single page
   const pager = { pageNumber: 0, updatePageNumber: () => 0 }
-  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager)
+  const { surveyModel, refreshSurvey } = useSurveyJSModel(registrationSurveyModel, null, onComplete, pager, portalEnv.environmentName as EnvironmentName)
   const { loginUser } = useUser()
   const { selectedLanguage } = useI18n()
   const navigate = useNavigate()
