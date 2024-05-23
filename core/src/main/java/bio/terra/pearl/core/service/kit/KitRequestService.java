@@ -315,10 +315,11 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return kitRequest;
     }
 
-    public KitRequest fromKitRequestDto(
+    public KitRequest insertKitRequest(
             UUID adminUserId,
             Enrollee enrollee,
             KitRequestDto kitRequestDto) {
+
         KitType kt = kitTypeDao.findByName(kitRequestDto.getKitType().getName()).get();
         KitRequest kitRequest = KitRequest.builder()
                 .creatingAdminUserId(adminUserId)
@@ -334,7 +335,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
                 .trackingNumber(kitRequestDto.getTrackingNumber())
                 .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
                 .build();
-        return kitRequest;
+
+        return create(kitRequest);
     }
 
     protected String stringifyPepperAddress(PepperKitAddress kitAddress) {

@@ -8,7 +8,6 @@ import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
-import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -59,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -229,7 +229,9 @@ public class EnrolleeImportService {
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
-        importKitRequestData(new KitRequestFormatter(), enrolleeMap, studyEnv, enrollee, adminId);
+        /** populate kit_requests */
+        new KitRequestFormatter().listFromStringMap(studyEnv.getId(), enrolleeMap).stream().map(
+                kitRequestDto -> kitRequestService.insertKitRequest(adminId, enrollee, kitRequestDto)).collect(Collectors.toList());
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
@@ -237,16 +239,6 @@ public class EnrolleeImportService {
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
-    }
-
-    protected List<KitRequest> importKitRequestData(KitRequestFormatter formatter, Map<String, String> enrolleeMap,
-                                                    StudyEnvironment studyEnv, Enrollee enrollee, UUID adminId) {
-        List<KitRequest> kitRequestList = new ArrayList<>();
-        formatter.listFromStringMap(studyEnv.getId(), enrolleeMap).forEach(kitRequestDto -> {
-            KitRequest kitRequest = kitRequestService.fromKitRequestDto(adminId, enrollee, kitRequestDto);
-            kitRequestList.add(kitRequestService.create(kitRequest));
-        });
-        return kitRequestList;
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
