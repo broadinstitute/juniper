@@ -18,4 +18,4 @@ fi
 
 REACT_APP_UNAUTHED_LOGIN=true ./gradlew :api-$1:jibDockerBuild -Djib.to.image=api-$1:ci
 
-docker run -p $targetport:8080 --net=host api-$1:ci
+docker run -d -p $targetport:8080 --net=host api-$1:ci
