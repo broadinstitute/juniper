@@ -210,10 +210,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     private void verifySurvey(ImportItem importItem, String surveyStableId, String questionStableId, String questionAnswer) {
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(importItem.getCreatedEnrolleeId());
-        // confirm the follow-up survey has not yet been assigned to the participant
         assertThat(tasks, hasSize(1));
-        ParticipantTask medical_historyTask = tasks.get(0);
-
         List<Answer> answers = answerService.findByEnrolleeAndSurvey(importItem.getCreatedEnrolleeId(), surveyStableId);
         assertThat(answers, hasSize(1));
         Answer diagnosis = answers.stream().filter(answer -> answer.getQuestionStableId().equals(questionStableId))

@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -230,7 +231,7 @@ public class EnrolleeImportService {
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
         /** populate kit_requests */
-        new KitRequestFormatter().listFromStringMap(studyEnv.getId(), enrolleeMap).stream().map(
+        List<KitRequest> kitRequests = new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
                 kitRequestDto -> kitRequestService.insertKitRequest(adminId, enrollee, kitRequestDto)).collect(Collectors.toList());
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);

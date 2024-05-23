@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, PropertyItemFormatter<KitRequestDto>> {
@@ -49,7 +48,7 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
         return allKitMap;
     }
 
-    public List<KitRequestDto> listFromStringMap(UUID studyEnvironmentId, Map<String, String> enrolleeMap) {
+    public List<KitRequestDto> listFromStringMap(Map<String, String> enrolleeMap) {
         List<KitRequestDto> kitRequests = new ArrayList<>();
         for (int itr = 1; itr < 10; itr++) {
             KitRequestDto kitRequestDto = null;
