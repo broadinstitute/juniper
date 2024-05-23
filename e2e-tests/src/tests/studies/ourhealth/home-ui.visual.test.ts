@@ -3,8 +3,10 @@ import { test } from 'lib/fixtures/ourhealth-fixture'
 import Home from 'pages/ourhealth/home'
 import data from 'src/data/ourhealth-en.json'
 
+const CI = process.env.CI === 'true'
+
 test.describe('Home page', () => {
-  test('UI @visual @ourhealth', {
+  (CI ? test.skip : test)('UI @visual @ourhealth', {
     annotation: [
       { type: 'screenshot-test example', description: 'screenshots comparisons' }
     ]

@@ -53,17 +53,19 @@ type ConfiguredImageProps = {
   media: MediaConfig
   className?: string
   style?: CSSProperties
+  allowMobileFullSize?: boolean
 }
 
 /** renders an image that is part of a SiteContent spec */
 export default function ConfiguredMedia(props: ConfiguredImageProps) {
-  const { media, className, style } = props
+  const { media, className, style, allowMobileFullSize } = props
   const { getImageUrl } = useApiContext()
+  const imgClass = !allowMobileFullSize ? 'cfg-image-confined' : ''
   if ((media as VideoConfig).videoLink) {
     const videoLinkMedia = media as VideoConfig
     const videoAllowed = isVideoLinkAllowed(videoLinkMedia.videoLink)
     return <div style={{ width: '100%', height: '100%', ...style, ...media.style }}
-      className={classNames('configured-image', className, media.className)}>
+      className={classNames(imgClass, className, media.className)}>
       {videoAllowed && <iframe src={videoLinkMedia.videoLink} frameBorder="0" allowFullScreen={true}
         data-testid="media-iframe" style={{ width: '100%', height: '100%' }}></iframe> }
       {!videoAllowed && <span className="text-danger">Disallowed video source</span> }
@@ -72,7 +74,7 @@ export default function ConfiguredMedia(props: ConfiguredImageProps) {
   const image = <img
     src={getImageUrl((media as ImageConfig).cleanFileName, (media as ImageConfig).version)}
     alt={media.alt}
-    className={classNames('configured-image', className, media.className)}
+    className={classNames(imgClass, className, media.className)}
     loading="lazy"
     style={{ ...style, ...media.style }}
   />

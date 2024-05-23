@@ -75,7 +75,8 @@
             "photoBios": [{
               "name": "Anthony Philippakis",
               "title": "MD, PhD",
-              "blurb": "Director de Datos, Broad Institute\n\nCo-Director Schmidt Center, Broad Institute\n\nSocio de riesgo, GV",
+              "blurb": "Científico del Instituto, Broad Institute",
+              "detail": "Socio general, GV",
               "image": { "cleanFileName": "anthony_philippakis.jpg", "version": 1}
             }]
           }]
