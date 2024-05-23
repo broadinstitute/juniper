@@ -18,12 +18,6 @@ task bundleParticipantUI(type: NpmTask, dependsOn: [npmInstall, buildUICore]) {
     args = ['--workspace=ui-participant', 'run', 'build']
 }
 
-task printVersion {
-    doLast {
-        println gradle.ext.releaseVersion
-    }
-}
-
 sonar {
     properties {
         property 'sonar.projectName', "${rootProject.name}"
