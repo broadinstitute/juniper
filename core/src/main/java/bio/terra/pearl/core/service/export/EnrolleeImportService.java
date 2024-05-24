@@ -61,7 +61,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -244,8 +243,8 @@ public class EnrolleeImportService {
     }
 
     private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
-        List<KitRequest> kitRequests = new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
-                kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).collect(Collectors.toList());
+        new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
+                kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).toList();
     }
 
     private KitRequest convertKitRequestDto(
@@ -254,7 +253,7 @@ public class EnrolleeImportService {
             KitRequestDto kitRequestDto) {
 
         KitType kitType = kitRequestService.lookupKitTypeByName(kitRequestDto.getKitType().getName());
-        KitRequest kitRequest = KitRequest.builder()
+        return KitRequest.builder()
                 .creatingAdminUserId(adminUserId)
                 .enrolleeId(enrollee.getId())
                 .status(kitRequestDto.getStatus())
@@ -268,8 +267,6 @@ public class EnrolleeImportService {
                 .trackingNumber(kitRequestDto.getTrackingNumber())
                 .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
                 .build();
-
-        return kitRequest;
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
