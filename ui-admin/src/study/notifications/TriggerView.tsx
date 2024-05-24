@@ -22,7 +22,8 @@ const taskTypeOptions = [
   { label: 'Survey', value: 'SURVEY' },
   { label: 'Outreach', value: 'OUTREACH' },
   { label: 'Consent', value: 'CONSENT' },
-  { label: 'Kit request', value: 'KIT_REQUEST' }]
+  { label: 'Kit request', value: 'KIT_REQUEST' }
+]
 
 
 /** for viewing and editing a notification config.  saving not yet implemented */
