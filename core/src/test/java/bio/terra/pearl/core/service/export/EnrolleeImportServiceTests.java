@@ -143,8 +143,8 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     @Transactional
     public void testImportEnrolleeUpdateCSV(TestInfo info) {
         String csvString = """
-                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA","sick"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-19 01:10PM","{"firstName":"SS","lastName":"LN1","street1":"320 Charles Street","city":"Cambridge","state":"MA","postalCode":"02141","country":"US"}","SALIVA","sick"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
         DataImportSetUp setupData = setup(info, csvString);
