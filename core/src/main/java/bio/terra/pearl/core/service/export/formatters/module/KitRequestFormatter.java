@@ -54,16 +54,17 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
             for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
                 String columnName = getColumnKey(itemFormatter, false, null, itr);
                 String stringVal = enrolleeMap.get(columnName);
-                if (stringVal != null && !stringVal.isEmpty()) {
-                    if (kitRequestDto == null) {
-                        kitRequestDto = new KitRequestDto();
-                    }
-                    if (columnName.contains(".status")) {
-                        //enum lookup
-                        kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
-                    } else {
-                        itemFormatter.importValueToBean(kitRequestDto, stringVal);
-                    }
+                if (stringVal == null || stringVal.isEmpty()) {
+                    continue;
+                }
+                if (kitRequestDto == null) {
+                    kitRequestDto = new KitRequestDto();
+                }
+                if (columnName.contains(".status")) {
+                    //enum lookup
+                    kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
+                } else {
+                    itemFormatter.importValueToBean(kitRequestDto, stringVal);
                 }
             }
             if (kitRequestDto == null) {
