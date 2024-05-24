@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
 import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -27,6 +28,7 @@ import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
@@ -231,8 +233,7 @@ public class EnrolleeImportService {
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
         /** populate kit_requests */
-        List<KitRequest> kitRequests = new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
-                kitRequestDto -> kitRequestService.insertKitRequest(adminId, enrollee, kitRequestDto)).collect(Collectors.toList());
+        importKitRequests(enrolleeMap, adminId, enrollee);
 
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
@@ -240,6 +241,36 @@ public class EnrolleeImportService {
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
+    }
+
+    private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
+        List<KitRequest> kitRequests = new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
+                kitRequestDto -> insertKitRequest(adminId, enrollee, kitRequestDto)).collect(Collectors.toList());
+
+    }
+
+    public KitRequest insertKitRequest(
+            UUID adminUserId,
+            Enrollee enrollee,
+            KitRequestDto kitRequestDto) {
+
+        KitType kitType = kitRequestService.lookupKitTypeByName(kitRequestDto.getKitType().getName());
+        KitRequest kitRequest = KitRequest.builder()
+                .creatingAdminUserId(adminUserId)
+                .enrolleeId(enrollee.getId())
+                .status(kitRequestDto.getStatus())
+                .sentToAddress(kitRequestDto.getSentToAddress())
+                .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
+                .kitTypeId(kitType.getId())
+                .createdAt(kitRequestDto.getCreatedAt())
+                .labeledAt(kitRequestDto.getLabeledAt())
+                .sentAt(kitRequestDto.getSentAt())
+                .receivedAt(kitRequestDto.getReceivedAt())
+                .trackingNumber(kitRequestDto.getTrackingNumber())
+                .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
+                .build();
+
+        return kitRequestService.create(kitRequest);
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {

@@ -315,28 +315,8 @@ public class KitRequestService extends CrudService<KitRequest, KitRequestDao> {
         return kitRequest;
     }
 
-    public KitRequest insertKitRequest(
-            UUID adminUserId,
-            Enrollee enrollee,
-            KitRequestDto kitRequestDto) {
-
-        KitType kt = kitTypeDao.findByName(kitRequestDto.getKitType().getName()).get();
-        KitRequest kitRequest = KitRequest.builder()
-                .creatingAdminUserId(adminUserId)
-                .enrolleeId(enrollee.getId())
-                .sentToAddress(kitRequestDto.getSentToAddress())
-                .status(kitRequestDto.getStatus())
-                .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
-                .kitTypeId(kt.getId())
-                .createdAt(kitRequestDto.getCreatedAt() == null ? Instant.now() : kitRequestDto.getCreatedAt())
-                .sentAt(kitRequestDto.getSentAt())
-                .labeledAt(kitRequestDto.getLabeledAt())
-                .receivedAt(kitRequestDto.getReceivedAt())
-                .trackingNumber(kitRequestDto.getTrackingNumber())
-                .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
-                .build();
-
-        return create(kitRequest);
+    public KitType lookupKitTypeByName(String kitTypeName) {
+        return kitTypeDao.findByName(kitTypeName).orElseThrow(() -> new NotFoundException("KitType not found"));
     }
 
     protected String stringifyPepperAddress(PepperKitAddress kitAddress) {

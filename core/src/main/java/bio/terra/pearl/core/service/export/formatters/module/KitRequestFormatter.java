@@ -49,31 +49,35 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
 
     public List<KitRequestDto> listFromStringMap(Map<String, String> enrolleeMap) {
         List<KitRequestDto> kitRequests = new ArrayList<>();
-        for (int itr = 1; itr < 10; itr++) {
-            KitRequestDto kitRequestDto = null;
-            for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
-                String columnName = getColumnKey(itemFormatter, false, null, itr);
-                String stringVal = enrolleeMap.get(columnName);
-                if (stringVal == null || stringVal.isEmpty()) {
-                    continue;
-                }
-                if (kitRequestDto == null) {
-                    kitRequestDto = new KitRequestDto();
-                }
-                if (columnName.contains(".status")) {
-                    //enum lookup
-                    kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
-                } else {
-                    itemFormatter.importValueToBean(kitRequestDto, stringVal);
-                }
-            }
+        for (int requestNum = 1; requestNum < 10; requestNum++) {
+            KitRequestDto kitRequestDto = getKitRequestDto(enrolleeMap, requestNum);
             if (kitRequestDto == null) {
                 return kitRequests;
             }
             kitRequests.add(kitRequestDto);
         }
-
         return kitRequests;
+    }
+
+    private KitRequestDto getKitRequestDto(Map<String, String> enrolleeMap, int requestNum) {
+        KitRequestDto kitRequestDto = null;
+        for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
+            String columnName = getColumnKey(itemFormatter, false, null, requestNum);
+            String stringVal = enrolleeMap.get(columnName);
+            if (stringVal == null || stringVal.isEmpty()) {
+                continue;
+            }
+            if (kitRequestDto == null) {
+                kitRequestDto = new KitRequestDto();
+            }
+            if (columnName.contains(".status")) {
+                //enum lookup
+                kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
+            } else {
+                itemFormatter.importValueToBean(kitRequestDto, stringVal);
+            }
+        }
+        return kitRequestDto;
     }
 
 }
