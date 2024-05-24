@@ -1,7 +1,6 @@
 package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
-import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.item.KitRequestTypeFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
@@ -62,9 +61,6 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
                     if (columnName.contains(".status")) {
                         //enum lookup
                         kitRequestDto.setStatus(KitRequestStatus.valueOf(stringVal));
-                    } else if (itemFormatter.getPropertyName().equalsIgnoreCase("kitType")) {
-                        //set kitType:name and lookup UUID using the name later
-                        kitRequestDto.setKitType(KitType.builder().name(stringVal).build());
                     } else {
                         itemFormatter.importValueToBean(kitRequestDto, stringVal);
                     }
