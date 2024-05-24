@@ -464,15 +464,15 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         }
     }
 
-    private void verifyImport(Import dataImport, int itemsSize) {
+    private void verifyImport(Import dataImport, int importItemCount) {
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
         assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
         importItemService.attachImportItems(dataImport);
         List<ImportItem> imports = dataImport.getImportItems();
-        assertThat(imports, hasSize(itemsSize));
+        assertThat(imports, hasSize(importItemCount));
         long enrolleeCount = imports.stream().filter(importItem -> importItem.getCreatedEnrolleeId() != null).count();
-        assertThat(enrolleeCount, equalTo(Long.valueOf(itemsSize)));
+        assertThat(enrolleeCount, equalTo(Long.valueOf(importItemCount)));
     }
 
     private Import doImport(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
