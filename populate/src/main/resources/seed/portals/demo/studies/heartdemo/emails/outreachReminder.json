@@ -1,0 +1,19 @@
+{
+  "stableId": "hd_hd_reminderOutreach",
+  "name": "Outreach reminder",
+  "version": 1,
+  "publishedVersion": 1,
+  "localizedEmailTemplateDtos": [{
+    "language": "en",
+    "subject": "New research opportunities",
+    "bodyPopulateFile": "en/outreachReminder.html"
+  },{
+    "language": "es",
+    "subject": "Nuevas oportunidades de investigación",
+    "bodyPopulateFile": "es/outreachReminder.html"
+  },{
+    "language": "dev",
+    "subject": "DEV_New research opportunities",
+    "bodyPopulateFile": "dev/outreachReminder.html"
+  }]
+}
