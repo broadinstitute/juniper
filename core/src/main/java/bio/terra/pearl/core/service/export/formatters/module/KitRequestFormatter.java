@@ -69,10 +69,10 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
             }
             if (kitRequestDto == null) {
                 return kitRequests;
-            } else {
-                kitRequests.add(kitRequestDto);
             }
+            kitRequests.add(kitRequestDto);
         }
+
         return kitRequests;
     }
 
