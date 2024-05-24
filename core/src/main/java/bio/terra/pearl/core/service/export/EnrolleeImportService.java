@@ -245,11 +245,11 @@ public class EnrolleeImportService {
 
     private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
         List<KitRequest> kitRequests = new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
-                kitRequestDto -> insertKitRequest(adminId, enrollee, kitRequestDto)).collect(Collectors.toList());
-
+                kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).collect(Collectors.toList());
+        //kitRequests.stream().map(kitRequest -> kitRequestService.create(kitRequest)).collect(Collectors.toList());
     }
 
-    public KitRequest insertKitRequest(
+    private KitRequest convertKitRequestDto(
             UUID adminUserId,
             Enrollee enrollee,
             KitRequestDto kitRequestDto) {
@@ -270,7 +270,7 @@ public class EnrolleeImportService {
                 .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
                 .build();
 
-        return kitRequestService.create(kitRequest);
+        return kitRequest;
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {

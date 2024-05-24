@@ -117,7 +117,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Import dataImport = doImport(setupData.bundle, csvString, setupData.savedAdmin, ImportFileFormat.CSV);
         UUID studyEnvId = setupData.bundle.getStudyEnv().getId();
         List<ImportItem> imports = dataImport.getImportItems();
-        verifyImport(dataImport);
+        verifyImport(dataImport, 2);
 
         /*create participantUser, enrollee, profile with expected data to assert*/
         Enrollee enrolleeExpected = new Enrollee();
@@ -164,7 +164,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM","1990-10-10","not healthy"
                 """;
         Import dataImportUpdate = doImport(setupData.bundle, csvStringUpdate, setupData.savedAdmin, ImportFileFormat.CSV);
-        verifyImport(dataImportUpdate);
+        verifyImport(dataImportUpdate, 2);
         /*create participantUser, enrollee, profile with expected data to assert*/
         ParticipantUser userExpected = new ParticipantUser();
         userExpected.setCreatedAt(Instant.parse("2024-05-09T13:37:00Z"));
@@ -194,21 +194,16 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testImportEnrolleeKitRequestsCSV(TestInfo info) {
+    public void testImportEnrolleeSingleKitRequest(TestInfo info) {
         String csvStringSingleKit = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA"
-                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
-                """;
-        String csvStringMultipleKits = """
-                column1,column2,column3,account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.createdAt,sample_kit.2.sentAt,sample_kit.2.receivedAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
-                a,b,c,userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-09 01:10AM","2024-05-19 01:38PM","2024-05-20 01:10AM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
-                x,y,z,userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
         DataImportSetUp setupData = setup(info, csvStringSingleKit);
         Import dataImport = doImport(setupData.bundle, csvStringSingleKit, setupData.savedAdmin, ImportFileFormat.CSV);
-        verifyImport(dataImport);
+        verifyImport(dataImport, 2);
 
         List<KitRequestDto> kitRequestDtoList = new ArrayList<>();
         KitType salivaKit = KitType.builder().name("SALIVA").build();
@@ -218,23 +213,37 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .trackingNumber("KITTRACKNUMBER12345")
                 .build();
         kitRequestDtoList.add(kitRequestDto);
-        verifyKitRequest(dataImport, kitRequestDtoList);
+        verifyKitRequest(dataImport.getImportItems().get(0), kitRequestDtoList);
+    }
 
-        setupData = setup(info, csvStringMultipleKits);
-        kitRequestDto.setTrackingNumber("KITTRACKNUMBER_1");
+    @Test
+    @Transactional
+    public void testImportEnrolleeMultipleKitRequests(TestInfo info) {
+        String csvStringMultipleKits = """
+                account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.createdAt,sample_kit.2.sentAt,sample_kit.2.receivedAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-09 01:10AM","2024-05-19 01:38PM","2024-05-20 01:10AM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
+                userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
+                """;
+
+        DataImportSetUp setupData = setup(info, csvStringMultipleKits);
+        List<KitRequestDto> kitRequestDtoList = new ArrayList<>();
+        KitType salivaKit = KitType.builder().name("SALIVA").build();
+        KitRequestDto kitRequestDto = KitRequestDto.builder()
+                .kitType(salivaKit)
+                .status(KitRequestStatus.SENT)
+                .trackingNumber("KITTRACKNUMBER_1")
+                .build();
         KitRequestDto kitRequestDto2 = KitRequestDto.builder()
                 .kitType(salivaKit)
                 .status(KitRequestStatus.RECEIVED)
                 .trackingNumber("KITTRACKNUMBER_2")
                 .build();
-
-        kitRequestDtoList.clear();
         kitRequestDtoList.add(kitRequestDto);
         kitRequestDtoList.add(kitRequestDto2);
 
-        dataImport = doImport(setupData.bundle, csvStringMultipleKits, setupData.savedAdmin, ImportFileFormat.CSV);
-        verifyKitRequest(dataImport, kitRequestDtoList);
-
+        Import dataImport = doImport(setupData.bundle, csvStringMultipleKits, setupData.savedAdmin, ImportFileFormat.CSV);
+        verifyImport(dataImport, 2);
+        verifyKitRequest(dataImport.getImportItems().get(0), kitRequestDtoList);
     }
 
     @Test
@@ -260,7 +269,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 """;
         DataImportSetUp setupData2 = setup(info, csvStringPortal2);
         Import dataImportUpdate = doImport(setupData2.bundle, csvStringPortal2, setupData2.savedAdmin, ImportFileFormat.CSV);
-        verifyImport(dataImportUpdate);
+        verifyImport(dataImportUpdate, 2);
         ImportItem importItem = dataImportUpdate.getImportItems().get(0);
         ParticipantUser userUpd = participantUserService.find(importItem.getCreatedParticipantUserId()).orElseThrow();
         Enrollee enrolleeUpd = enrolleeService.findByParticipantUserIdAndStudyEnvId(userUpd.getId(), studyEnvId).orElseThrow();
@@ -455,13 +464,15 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         }
     }
 
-    private void verifyImport(Import dataImport) {
+    private void verifyImport(Import dataImport, int itemsSize) {
         Import dataImportQueried = importService.find(dataImport.getId()).get();
         assertThat(dataImport, is(dataImportQueried));
         assertThat(dataImport.getStatus(), is(ImportStatus.DONE));
         importItemService.attachImportItems(dataImport);
         List<ImportItem> imports = dataImport.getImportItems();
-        assertThat(imports, hasSize(2));
+        assertThat(imports, hasSize(itemsSize));
+        long enrolleeCount = imports.stream().filter(importItem -> importItem.getCreatedEnrolleeId() != null).count();
+        assertThat(enrolleeCount, equalTo(Long.valueOf(itemsSize)));
     }
 
     private Import doImport(StudyEnvironmentFactory.StudyEnvironmentBundle bundle, String csvString, AdminUser admin, ImportFileFormat fileType) {
@@ -483,9 +494,9 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(diagnosis.getStringValue(), equalTo(questionAnswer));
     }
 
-    private void verifyKitRequest(Import dataImport, List<KitRequestDto> expectedKitRequests) {
+    private void verifyKitRequest(ImportItem importItem, List<KitRequestDto> expectedKitRequests) {
 
-        List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(dataImport.getImportItems().get(0).getCreatedEnrolleeId()).get());
+        List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(importItem.getCreatedEnrolleeId()).get());
         assertThat(kitRequestDtos.size(), equalTo(expectedKitRequests.size()));
         for (int i = 0; i < expectedKitRequests.size(); i++) {
             KitRequestDto kitRequestDto = kitRequestDtos.get(i);
