@@ -7,8 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 
 @Slf4j
-public class KitRequestTypeFormatter extends PropertyItemFormatter<KitRequestDto> {
-    public KitRequestTypeFormatter() {
+public class KitTypeFormatter extends PropertyItemFormatter<KitRequestDto> {
+    public KitTypeFormatter() {
         super("kitType", KitRequestDto.class);
         this.baseColumnKey = "kitType";
         this.dataType = DataValueExportType.STRING;

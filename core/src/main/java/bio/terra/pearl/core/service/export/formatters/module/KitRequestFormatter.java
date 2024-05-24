@@ -2,7 +2,7 @@ package bio.terra.pearl.core.service.export.formatters.module;
 
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.service.export.EnrolleeExportData;
-import bio.terra.pearl.core.service.export.formatters.item.KitRequestTypeFormatter;
+import bio.terra.pearl.core.service.export.formatters.item.KitTypeFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 
@@ -24,7 +24,7 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
                 .map(propName -> new PropertyItemFormatter<KitRequestDto>(propName, KitRequestDto.class))
                 .collect(Collectors.toList());
         // we have to handle kitType separately because we'll need to match it to the kitType name
-        itemFormatters.add(new KitRequestTypeFormatter());
+        itemFormatters.add(new KitTypeFormatter());
         moduleName = KIT_REQUEST_MODULE_NAME;
         displayName = "Sample kit";
     }
