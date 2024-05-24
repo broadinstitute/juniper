@@ -5,6 +5,7 @@ import bio.terra.pearl.core.service.export.EnrolleeExportData;
 import bio.terra.pearl.core.service.export.formatters.item.KitTypeFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -64,7 +65,7 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
         for (PropertyItemFormatter<KitRequestDto> itemFormatter : itemFormatters) {
             String columnName = getColumnKey(itemFormatter, false, null, requestNum);
             String stringVal = enrolleeMap.get(columnName);
-            if (stringVal == null || stringVal.isEmpty()) {
+            if (StringUtils.isEmpty(stringVal)) {
                 continue;
             }
             if (kitRequestDto == null) {
