@@ -213,7 +213,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .trackingNumber("KITTRACKNUMBER12345")
                 .build();
         kitRequestDtoList.add(kitRequestDto);
-        verifyKitRequest(dataImport.getImportItems().get(0), kitRequestDtoList);
+        verifyKitRequests(dataImport.getImportItems().get(0), kitRequestDtoList);
     }
 
     @Test
@@ -243,7 +243,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
 
         Import dataImport = doImport(setupData.bundle, csvStringMultipleKits, setupData.savedAdmin, ImportFileFormat.CSV);
         verifyImport(dataImport, 2);
-        verifyKitRequest(dataImport.getImportItems().get(0), kitRequestDtoList);
+        verifyKitRequests(dataImport.getImportItems().get(0), kitRequestDtoList);
     }
 
     @Test
@@ -494,7 +494,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         assertThat(diagnosis.getStringValue(), equalTo(questionAnswer));
     }
 
-    private void verifyKitRequest(ImportItem importItem, List<KitRequestDto> expectedKitRequests) {
+    private void verifyKitRequests(ImportItem importItem, List<KitRequestDto> expectedKitRequests) {
 
         List<KitRequestDto> kitRequestDtos = kitRequestService.findByEnrollee(enrolleeService.find(importItem.getCreatedEnrolleeId()).get());
         assertThat(kitRequestDtos.size(), equalTo(expectedKitRequests.size()));
