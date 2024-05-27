@@ -197,7 +197,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleeSingleKitRequest(TestInfo info) {
         String csvStringSingleKit = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA"
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER12345","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
@@ -211,6 +211,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .kitType(salivaKit)
                 .status(KitRequestStatus.SENT)
                 .trackingNumber("KITTRACKNUMBER12345")
+                .createdAt(Instant.parse("2024-05-09T10:10:00Z"))
                 .build();
         kitRequestDtoList.add(kitRequestDto);
         verifyKitRequests(dataImport.getImportItems().get(0), kitRequestDtoList);
@@ -221,7 +222,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
     public void testImportEnrolleeMultipleKitRequests(TestInfo info) {
         String csvStringMultipleKits = """
                 account.username,account.createdAt,enrollee.createdAt,profile.birthDate,sample_kit.status,sample_kit.createdAt,sample_kit.sentAt,sample_kit.trackingNumber,sample_kit.sentToAddress,sample_kit.kitType,medical_history.diagnosis,sample_kit.2.status,sample_kit.2.createdAt,sample_kit.2.sentAt,sample_kit.2.receivedAt,sample_kit.2.trackingNumber,sample_kit.2.sentToAddress,sample_kit.2.kitType
-                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 01:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-09 01:10AM","2024-05-19 01:38PM","2024-05-20 01:10AM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
+                userName1,"2024-05-09 01:37PM","2024-05-09 01:38PM","1980-10-10","SENT","2024-05-09 10:10AM","2024-05-19 01:38PM","KITTRACKNUMBER_1","{\"firstName\":\"SS\",\"lastName\":\"LN1\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\",\"state\":\"MA\",\"postalCode\":\"02141\",\"country\":\"US\"}","SALIVA", "sick","RECEIVED","2024-05-21 11:10AM","2024-05-22 01:38PM","2024-05-25 01:10AM","KITTRACKNUMBER_2","{\"firstName\":\"SS2\",\"street1\":\"320 Charles Street\",\"city\":\"Cambridge\"}","SALIVA"
                 userName2,"2024-05-11 10:00AM","2024-05-11 10:00AM"
                 """;
 
@@ -232,11 +233,13 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 .kitType(salivaKit)
                 .status(KitRequestStatus.SENT)
                 .trackingNumber("KITTRACKNUMBER_1")
+                .createdAt(Instant.parse("2024-05-09T10:10:00Z"))
                 .build();
         KitRequestDto kitRequestDto2 = KitRequestDto.builder()
                 .kitType(salivaKit)
                 .status(KitRequestStatus.RECEIVED)
                 .trackingNumber("KITTRACKNUMBER_2")
+                .createdAt(Instant.parse("2024-05-21T11:10:00Z"))
                 .build();
         kitRequestDtoList.add(kitRequestDto);
         kitRequestDtoList.add(kitRequestDto2);
@@ -506,7 +509,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
             assertThat(kitRequestDto.getTrackingNumber(), equalTo(expectedKit.getTrackingNumber()));
             assertThat(kitRequestDto.getStatus(), equalTo(expectedKit.getStatus()));
             assertThat(kitRequestDto.getSentToAddress(), notNullValue());
-            assertThat(kitRequestDto.getCreatedAt(), notNullValue());
+            assertThat(kitRequestDto.getCreatedAt(), equalTo(expectedKit.getCreatedAt()));
         }
     }
 
