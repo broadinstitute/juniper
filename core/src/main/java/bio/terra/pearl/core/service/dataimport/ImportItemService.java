@@ -55,5 +55,8 @@ public class ImportItemService extends CrudService<ImportItem, ImportItemDao> {
         }
     }
 
+    public void deleteByImportId(UUID importId) {
+        dao.deleteByImportId(importId);
+    }
 
 }

@@ -26,5 +26,8 @@ public class ImportDao extends BaseMutableJdbiDao<Import> {
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
+    public void deleteByStudyEnvId(UUID studyEnvId) {
+        deleteByProperty("study_environment_id", studyEnvId);
+    }
 
 }
