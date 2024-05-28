@@ -136,7 +136,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         userExpected2.setUsername("userName2");
         Profile profileExpected2 = new Profile();
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
-        verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
+        verifySurveyQuestionAnswer(imports.get(0), "medical_history", "diagnosis", "sick");
     }
 
     @Test
@@ -155,7 +155,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee = enrolleeService.findByParticipantUserIdAndStudyEnvId(user.getId(), studyEnvId).orElseThrow();
 
         //verify survey
-        verifySurvey(imports.get(0), "medical_history", "diagnosis", "sick");
+        verifySurveyQuestionAnswer(imports.get(0), "medical_history", "diagnosis", "sick");
 
         /*now try update*/
         String csvStringUpdate = """
@@ -175,7 +175,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         profileExpected.setId(enrollee.getProfileId()); //should be same profile
         profileExpected.setBirthDate(LocalDate.parse("1982-10-10"));
         verifyParticipant(imports.get(0), studyEnvId, userExpected, enrolleeExpected, profileExpected);
-        verifySurvey(dataImportUpdate.getImportItems().get(0), "medical_history", "diagnosis", "healthy");
+        verifySurveyQuestionAnswer(dataImportUpdate.getImportItems().get(0), "medical_history", "diagnosis", "healthy");
 
         //enrollee2
         ParticipantUser user2 = participantUserService.find(imports.get(1).getCreatedParticipantUserId()).orElseThrow();
@@ -189,7 +189,7 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
         profileExpected2.setId(enrollee2.getProfileId()); //should be same profile
         profileExpected2.setBirthDate(LocalDate.parse("1990-10-10"));
         verifyParticipant(imports.get(1), studyEnvId, userExpected2, enrolleeExpected2, profileExpected2);
-        verifySurvey(dataImportUpdate.getImportItems().get(1), "medical_history", "diagnosis", "not healthy");
+        verifySurveyQuestionAnswer(dataImportUpdate.getImportItems().get(1), "medical_history", "diagnosis", "not healthy");
     }
 
     @Test
@@ -487,14 +487,14 @@ public class EnrolleeImportServiceTests extends BaseSpringBootTest {
                 admin.getId(), fileType);
     }
 
-    private void verifySurvey(ImportItem importItem, String surveyStableId, String questionStableId, String questionAnswer) {
+    private void verifySurveyQuestionAnswer(ImportItem importItem, String surveyStableId, String questionStableId, String questionAnswer) {
         List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(importItem.getCreatedEnrolleeId());
         assertThat(tasks, hasSize(1));
         List<Answer> answers = answerService.findByEnrolleeAndSurvey(importItem.getCreatedEnrolleeId(), surveyStableId);
         assertThat(answers, hasSize(1));
-        Answer diagnosis = answers.stream().filter(answer -> answer.getQuestionStableId().equals(questionStableId))
+        Answer thisAnswer = answers.stream().filter(answer -> answer.getQuestionStableId().equals(questionStableId))
                 .findFirst().get();
-        assertThat(diagnosis.getStringValue(), equalTo(questionAnswer));
+        assertThat(thisAnswer.getStringValue(), equalTo(questionAnswer));
     }
 
     private void verifyKitRequests(ImportItem importItem, List<KitRequestDto> expectedKitRequests) {

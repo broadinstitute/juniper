@@ -2,6 +2,7 @@ package bio.terra.pearl.core.dao.dataimport;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
 import bio.terra.pearl.core.model.dataimport.Import;
+import bio.terra.pearl.core.service.CascadeProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
@@ -26,5 +27,16 @@ public class ImportDao extends BaseMutableJdbiDao<Import> {
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
+    public void deleteByStudyEnvId(UUID studyEnvId) {
+        /*List<Import> imports = findAllByStudyEnv(studyEnvId);
+        imports.forEach(dataImport -> {
+            delete(dataImport.getId());
+        });*/
+        deleteByProperty("study_environment_id", studyEnvId);
+    }
+
+    public enum AllowedCascades implements CascadeProperty {
+        IMPORT_ITEM
+    }
 
 }

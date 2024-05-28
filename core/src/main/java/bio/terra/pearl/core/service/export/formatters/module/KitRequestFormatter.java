@@ -50,12 +50,12 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
 
     public List<KitRequestDto> listFromStringMap(Map<String, String> enrolleeMap) {
         List<KitRequestDto> kitRequests = new ArrayList<>();
-        for (int requestNum = 1; requestNum < 10; requestNum++) {
-            KitRequestDto kitRequestDto = getKitRequestDto(enrolleeMap, requestNum);
-            if (kitRequestDto == null) {
-                return kitRequests;
-            }
+        int requestNum = 1;
+        KitRequestDto kitRequestDto = getKitRequestDto(enrolleeMap, requestNum);
+        while (kitRequestDto != null) {
             kitRequests.add(kitRequestDto);
+            requestNum++;
+            kitRequestDto = getKitRequestDto(enrolleeMap, requestNum);
         }
         return kitRequests;
     }
