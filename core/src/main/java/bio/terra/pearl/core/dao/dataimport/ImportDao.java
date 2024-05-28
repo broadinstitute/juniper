@@ -28,10 +28,6 @@ public class ImportDao extends BaseMutableJdbiDao<Import> {
     }
 
     public void deleteByStudyEnvId(UUID studyEnvId) {
-        /*List<Import> imports = findAllByStudyEnv(studyEnvId);
-        imports.forEach(dataImport -> {
-            delete(dataImport.getId());
-        });*/
         deleteByProperty("study_environment_id", studyEnvId);
     }
 
