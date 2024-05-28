@@ -65,9 +65,7 @@ public class ImportService extends CrudService<Import, ImportDao> {
     @Transactional
     public void deleteByStudyEnvId(UUID studyEnvironmentId) {
         List<Import> imports = dao.findAllByStudyEnv(studyEnvironmentId);
-        imports.forEach(dataImport -> {
-            importItemService.deleteByImportId(dataImport.getId());
-        });
+        imports.forEach(dataImport -> importItemService.deleteByImportId(dataImport.getId()));
         dao.deleteByStudyEnvId(studyEnvironmentId);
     }
 
