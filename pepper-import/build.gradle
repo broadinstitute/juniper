@@ -18,14 +18,14 @@ repositories {
 dependencies {
     implementation project(':core')
     implementation project(':populate')
-    implementation 'org.springframework.boot:spring-boot-starter:3.1.2'
+    implementation 'org.springframework.boot:spring-boot-starter:3.2.5'
     implementation group: 'org.jdbi', name: 'jdbi3-spring5', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-sqlobject', version: '3.34.0'
     implementation group: 'org.jdbi', name: 'jdbi3-postgres', version: '3.34.0'
     implementation 'org.apache.commons:commons-text:1.10.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.1.2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.1.2'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.2.5'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc:3.2.5'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
     implementation 'org.yaml:snakeyaml:2.0'
     implementation 'com.typesafe:config:1.4.1'

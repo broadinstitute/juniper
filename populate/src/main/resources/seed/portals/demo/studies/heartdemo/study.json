@@ -14,13 +14,15 @@
     "surveys/socialHealthV2.json",
     "surveys/socialHealthV3.json",
     "surveys/lostInterest.json",
-    "surveys/ourHealthConsent.json"
+    "surveys/ourHealthConsent.json",
+    "surveys/depressionOutreach.json"
   ],
   "emailTemplateFiles": [
     "emails/studyConsent.json",
     "emails/studyEnroll.json",
     "emails/consentReminder.json",
     "emails/surveyReminder.json",
+    "emails/outreachReminder.json",
     "emails/invite.json",
     "emails/adHoc.json"
   ],
@@ -50,6 +52,7 @@
         {"populateFileName": "surveys/socialHealthV2.json", "active": false},
         {"populateFileName": "surveys/socialHealthV3.json"},
         {"populateFileName": "surveys/lostInterest.json"},
+        {"populateFileName": "surveys/depressionOutreach.json"},
         {"populateFileName": "surveys/ourHealthConsent.json"}
       ],
       "triggerDtos": [{
@@ -71,6 +74,13 @@
         "maxNumReminders": 2,
         "populateFileName": "emails/surveyReminder.json"
       },{
+        "triggerType": "TASK_REMINDER",
+        "taskType": "OUTREACH",
+        "afterMinutesIncomplete": 0,
+        "reminderIntervalMinutes": 10080,
+        "maxNumReminders": 2,
+        "populateFileName": "emails/outreachReminder.json"
+      },{
         "triggerType": "AD_HOC",
         "populateFileName": "emails/adHoc.json"
       },{
@@ -87,7 +97,8 @@
         "enrollees/child1.json",
         "enrollees/child1Family2.json",
         "enrollees/child2Family2.json",
-        "enrollees/invited.json"
+        "enrollees/invited.json",
+        "enrollees/lostInterest.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,

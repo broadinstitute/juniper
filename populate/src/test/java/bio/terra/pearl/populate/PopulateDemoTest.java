@@ -14,6 +14,8 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
@@ -54,12 +56,13 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(11, enrollees.size());
+        Assertions.assertEquals(12, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
         checkProxyWithOneGovernedEnrollee(enrollees);
         checkProxyWithTwoGovernedEnrollee(enrollees);
+        checkLostInterestEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
     }
 
@@ -87,6 +90,19 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         assertThat(user.getUsername().contains("+invited-"), equalTo(true));
         assertThat(user.getUsername(), endsWith("broadinstitute.org"));
+    }
+
+    private void checkLostInterestEnrollee(List<Enrollee> sandboxEnrollees) {
+        Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDLOST".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        // confirm the survey with an eligibility rule got assigned tot his participant
+        assertThat(tasks.stream().filter(task -> task.getTargetStableId().equals("hd_hd_lost_interest")).toList(), hasSize(1));
+
+        // confirm the outreach task got assigned
+        List<ParticipantTask> outreachTasks = tasks.stream().filter(task -> task.getTaskType().equals(TaskType.OUTREACH)).toList();
+        assertThat(outreachTasks, hasSize(1));
+        assertThat(outreachTasks.get(0).getTargetStableId(), equalTo("depressionOutreach"));
     }
 
     /** confirm the proxy enrollee with one governed user was enrolled appropriately */
@@ -162,7 +178,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
 
-        assertThat(exportData, hasSize(9));
+        assertThat(exportData, hasSize(10));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));
@@ -181,7 +197,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
         assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
-        assertThat(surveys, hasSize(13));
+        assertThat(surveys, hasSize(14));
         surveys.forEach(survey -> {
             assertThat(survey.getStableId(), Matchers.startsWith(newShortcode));
         });
@@ -191,7 +207,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
             assertThat(siteContent.getStableId(), Matchers.startsWith(newShortcode));
         });
         List<EmailTemplate> emailTemplates = emailTemplateService.findByPortalId(portal.getId());
-        assertThat(emailTemplates, hasSize(6));
+        assertThat(emailTemplates, hasSize(7));
         emailTemplates.forEach(emailTemplate -> {
             assertThat(emailTemplate.getStableId(), Matchers.startsWith(newShortcode));
         });
