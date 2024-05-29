@@ -1,32 +1,29 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import {
-  KEYWORD_FACET,
-  StringFacetValue
-} from 'api/enrolleeSearch'
 import BasicSearch from './BasicSearch'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('BasicSearch', () => {
   test('can specify keyword facet value', async () => {
-    const keywordFacetValue = new StringFacetValue(KEYWORD_FACET, { values: [] })
-
     const mockUpdateKeywordFacetValueFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(
-      <BasicSearch facetValue={keywordFacetValue}
-        updateValue={mockUpdateKeywordFacetValueFn} />)
+      <BasicSearch searchState={{
+        basicSearch: '',
+        sexAtBirth: [],
+        tasks: []
+      }}
+      updateSearchState={mockUpdateKeywordFacetValueFn}/>)
     render(RoutedComponent)
 
-    const searchBox = screen.getByPlaceholderText(KEYWORD_FACET.placeholder)
+    const searchBox = screen.getByPlaceholderText('Search by name, email, or shortcode')
     expect(searchBox).toBeInTheDocument()
     await userEvent.type(searchBox, 'test{enter}')
 
-    const updatedFacetValue = new StringFacetValue(KEYWORD_FACET, { values: ['test'] })
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith(updatedFacetValue)
+    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith('basicSearch', 'test')
 
     await userEvent.clear(searchBox)
     await userEvent.type(searchBox, '{enter}')
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith(keywordFacetValue)
+    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith('basicSearch', '')
   })
 })

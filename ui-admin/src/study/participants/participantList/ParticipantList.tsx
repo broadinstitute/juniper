@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react'
-import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
+import React, { useMemo, useState } from 'react'
+import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
@@ -17,27 +17,26 @@ import {
   basicTableLayout,
   ColumnVisibilityControl,
   DownloadControl,
-  IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount,
+  IndeterminateCheckbox,
+  renderEmptyMessage,
+  RowVisibilityCount,
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { ALL_FACETS, Facet, FacetValue, facetValuesFromString, facetValuesToString } from 'api/enrolleeSearch'
 import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-import _cloneDeep from 'lodash/cloneDeep'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
-  const [facets, setFacets] = useState<Facet[]>([])
+  const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
+  const [searchExpression, setSearchExpression] = useState<string>('')
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
@@ -49,18 +48,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'contactEmail': false
   })
 
-  const getFacetValuesFromParams = (facets: Facet[]) => {
-    return facetValuesFromString(searchParams.get('facets') ?? '{}', facets)
-  }
-
-  const updateFacetValues = (facetValues: FacetValue[]) => {
-    searchParams.set('facets', facetValuesToString(facetValues))
-    setSearchParams(searchParams)
-  }
-
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
-  const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
+  const columns = useMemo<ColumnDef<EnrolleeSearchExpressionResult, string>[]>(() => [{
     id: 'select',
     header: ({ table }) => <IndeterminateCheckbox
       checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
@@ -160,21 +150,11 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     onRowSelectionChange: setRowSelection
   })
 
-  const updateSearchCriteria = (searchFacets: EnrolleeSearchFacet[]) => {
-    const criteria: Facet[] = _cloneDeep(ALL_FACETS)
-    criteria.push(...searchFacets as Facet[])
-    setFacets(criteria)
-    return criteria
-  }
-
   const { isLoading } = useLoadingEffect(async () => {
-    const res = await Api.getSearchFacets(portal.shortcode,
-      study.shortcode, currentEnv.environmentName)
-    const criteria = updateSearchCriteria(res)
-    const response = await Api.searchEnrollees(portal.shortcode,
-      study.shortcode, currentEnv.environmentName, getFacetValuesFromParams(criteria))
-    setParticipantList(response)
-  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchParams.get('facets')])
+    const results = await Api.executeSearchExpression(portal.shortcode,
+      study.shortcode, currentEnv.environmentName, searchExpression)
+    setParticipantList(results)
+  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
   const numSelected = Object.keys(rowSelection).length
   const allowSendEmail = numSelected > 0
@@ -184,8 +164,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     { renderPageHeader('Participant List') }
-    <ParticipantSearch facets={facets} facetValues={getFacetValuesFromParams(facets)}
-      updateFacetValues={updateFacetValues}/>
+    <ParticipantSearch updateSearchExpression={setSearchExpression}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">

@@ -1,22 +1,24 @@
 import React from 'react'
-import { mockTaskSearchFacet, mockTaskFacetValue } from 'test-utils/mocking-utils'
+import { mockTaskSearchFacet } from 'test-utils/mocking-utils'
 import { getByText, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import { EnrolleeSearchFacet } from 'api/api'
-import { ALL_FACETS, Facet, FacetValue, EntityOptionsArrayFacet } from 'api/enrolleeSearch'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {
     const facet: EnrolleeSearchFacet = mockTaskSearchFacet()
-    const searchFacets: Facet[] = [...ALL_FACETS, facet as Facet]
-    const facetValues: FacetValue[] = [mockTaskFacetValue(facet as EntityOptionsArrayFacet, 'COMPLETE')]
 
-    const mockUpdateFacetValuesFn = jest.fn()
+    const mockSetSearchStateFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(
-      <AdvancedSearchModal onDismiss={jest.fn()} facetValues={facetValues}
-        updateFacetValues={mockUpdateFacetValuesFn} searchCriteria={searchFacets}/>)
+      <AdvancedSearchModal onDismiss={jest.fn()} searchState={{
+        basicSearch: '',
+        minAge: undefined,
+        maxAge: undefined,
+        sexAtBirth: [],
+        tasks: []
+      }} setSearchState={mockSetSearchStateFn}/>)
     render(RoutedComponent)
 
     await screen.findAllByText('Keyword')
@@ -38,6 +40,12 @@ describe('AdvanceSearchModal', () => {
     expect(screen.getByText('Female')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Search'))
-    expect(mockUpdateFacetValuesFn).toHaveBeenCalledWith(facetValues)
+    expect(mockSetSearchStateFn).toHaveBeenCalledWith({
+      basicSearch: '',
+      minAge: undefined,
+      maxAge: undefined,
+      sexAtBirth: [],
+      tasks: [{ task: 'consent', status: 'complete' }]
+    })
   })
 })

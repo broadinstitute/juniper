@@ -1,39 +1,98 @@
-import React, { useState } from 'react'
-import { getUpdatedFacetValues } from '../facets/EnrolleeSearchFacets'
-import {
-  Facet,
-  FacetValue,
-  StringFacetValue
-} from 'api/enrolleeSearch'
+import React, { useEffect, useState } from 'react'
 import { Button } from 'components/forms/Button'
 import AdvancedSearchModal from './AdvancedSearchModal'
-import SearchCriteriaView from './SearchCriteriaView'
 import BasicSearch from './BasicSearch'
+import { concatSearchExpressions } from '../../../../util/searchExpressionUtils'
+import SearchCriteriaView from './SearchCriteriaView'
+import { isEmpty } from 'lodash/fp'
+
+export type ParticipantSearchState = {
+  basicSearch: string,
+  minAge?: number,
+  maxAge?: number,
+  sexAtBirth: string[],
+  tasks: { task: string, status: string }[],
+}
+
+/**
+ * Converts the search state to a search expression.
+ */
+export const toExpression = (searchState: ParticipantSearchState) => {
+  const expressions: string[] = []
+  if (!isEmpty(searchState.basicSearch)) {
+    expressions.push(`({profile.name} contains '${searchState.basicSearch}' `
+      + `or {profile.contactEmail} contains '${searchState.basicSearch}' `
+      + `or {enrollee.shortcode} contains '${searchState.basicSearch}')`)
+  }
+
+  if (searchState.minAge) {
+    expressions.push(`{age} >= ${searchState.minAge}`)
+  }
+
+  if (searchState.maxAge) {
+    expressions.push(`{age} <= ${searchState.maxAge}`)
+  }
+
+  if (searchState.sexAtBirth.length > 0) {
+    const sexAtBirthExpression = `(${
+      concatSearchExpressions(
+        searchState.sexAtBirth.map((sexAtBirth: string) => {
+          return `{profile.sexAtBirth} = '${sexAtBirth}'`
+        }),
+        'or')
+    })`
+
+    expressions.push(sexAtBirthExpression)
+  }
+
+  if (searchState.tasks.length > 0) {
+    const taskExpressions = `(${
+      concatSearchExpressions(
+        searchState.tasks.map(({ task, status }) => {
+          return `{tasks.${task}.status} = '${status}'`
+        }))
+    })`
+
+    expressions.push(taskExpressions)
+  }
+
+  return concatSearchExpressions(expressions)
+}
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ facets, facetValues, updateFacetValues }: {
-                            facets: Facet[], facetValues: FacetValue[],
-                            updateFacetValues: (values: FacetValue[]) => void}) {
+function ParticipantSearch({ updateSearchExpression }: {
+  updateSearchExpression: (searchExp: string) => void
+}) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
-  const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
-  const keywordFacetValue = facetValues[keywordFacetIndex]
 
-  const updateKeywordFacetValue = (facetValue: StringFacetValue | null) => {
-    updateFacetValues(getUpdatedFacetValues(facetValue ?? null, keywordFacetIndex, facetValues))
+  const [searchState, setSearchState] = useState<ParticipantSearchState>({
+    basicSearch: '',
+    sexAtBirth: [],
+    tasks: []
+  })
+
+  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
+    setSearchState(oldState => {
+      return { ...oldState, [field]: value }
+    })
   }
 
-  const hasFacetValues = (): boolean => {
-    return facetValues.length > 0
-  }
+  useEffect(() => {
+    updateSearchExpression(toExpression(searchState))
+  }, [searchState])
 
   return <div>
     <div className="align-items-baseline d-flex mb-2">
-      {advancedSearch && <AdvancedSearchModal onDismiss={() => setAdvancedSearch(false)} facetValues={facetValues}
-        updateFacetValues={updateFacetValues} searchCriteria={facets}/>}
+      {advancedSearch && <AdvancedSearchModal
+        onDismiss={() => setAdvancedSearch(false)}
+        searchState={searchState}
+        setSearchState={setSearchState}/>}
       <div className="mb-2">
-        <BasicSearch facetValue={keywordFacetValue as StringFacetValue} updateValue={updateKeywordFacetValue}/>
+        <BasicSearch
+          searchState={searchState}
+          updateSearchState={updateSearchState}/>
       </div>
       <div className="ms-2">
         <Button variant="light" className="border btn-sm"
@@ -42,9 +101,10 @@ function ParticipantSearch({ facets, facetValues, updateFacetValues }: {
         </Button>
       </div>
     </div>
-    {hasFacetValues() && <div className="d-flex mb-4">
-      <SearchCriteriaView facetValues={facetValues} updateFacetValues={updateFacetValues}/>
-    </div>}
+    <SearchCriteriaView
+      searchState={searchState}
+      updateSearchState={updateSearchState}/>
+
   </div>
 }
 

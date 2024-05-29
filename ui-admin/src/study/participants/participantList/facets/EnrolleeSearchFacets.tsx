@@ -1,110 +1,96 @@
 import React from 'react'
 
 import { Accordion } from 'react-bootstrap'
-import _cloneDeep from 'lodash/cloneDeep'
-import {
-  checkExhaustiveFacetType,
-  Facet,
-  FacetValue, IntRangeFacetValue,
-  newFacetValue, EntityOptionsArrayFacetValue, StringFacetValue,
-  StringOptionsFacetValue
-} from 'api/enrolleeSearch'
-import IntRangeFacetView from './IntRangeFacetView'
-import StableIdStringFacetView from './StableIdStringFacetView'
-import StringOptionsFacetView from './StringOptionsFacetView'
-import StringFacetView from './StringFacetView'
-
-type EnrolleeSearchFacetsProps = {
-  facets: Facet[]
-  facetValues: FacetValue[]
-  updateFacetValues: (values: FacetValue[]) => void
-}
+import { toNumber } from 'lodash'
+import { ParticipantSearchState } from '../search/ParticipantSearch'
 
 /**
- *  returns a new array with updates to the value at the given index in the facetValues array.
- *  -1 as an index will add a new value to the array
- * if the facetValue is null, it has the effect of clearing the facetValue from the array (which will cause the
- * facet to revert to default values
+ * Renders a list of facets in an accordion.  todo
  */
-export const getUpdatedFacetValues = (facetValue: FacetValue | null, index: number, facetValues: FacetValue[]) => {
-  const newValues = _cloneDeep(facetValues)
-  if (facetValue === null) {
-    newValues.splice(index, 1)
-  } else {
-    if (index === -1) {
-      newValues.push(facetValue)
-    } else {
-      newValues[index] = facetValue
-    }
-  }
-  return newValues
-}
-
-/**
- * Renders a list of facets in an accordion.  Takes an array of facet values -- this array should represent only
- * those facets that have user-specified non-default values.
- */
-export default function EnrolleeSearchFacets({ facets, facetValues, updateFacetValues }: EnrolleeSearchFacetsProps) {
-  const updateFacetValue = (facetValue: FacetValue | null, index: number) => {
-    updateFacetValues(getUpdatedFacetValues(facetValue, index, facetValues))
-  }
-
-  /** clear all resets everything to defaults */
-  const clearAll = () => {
-    updateFacetValues(facets.map(facet => newFacetValue(facet)))
-  }
-
-  const defaultActiveFacets = facetValues.map(facetValue =>
-    facets.findIndex(facet => facetValue.facet.keyName === facet.keyName).toString())
-
+export default function EnrolleeSearchFacets({ searchState, updateSearchState, reset }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
+  reset: () => void
+}) {
   return <div>
-    <button className="btn btn-secondary float-end" onClick={clearAll}>Clear all</button>
-    <Accordion defaultActiveKey={defaultActiveFacets} alwaysOpen flush>
-      {facets.map((facet, index) => {
-        const matchedValIndex = facetValues.findIndex(facetValue => facetValue.facet.keyName === facet.keyName &&
-          facetValue.facet.category === facet.category)
-        // matchedVal will be undefined if there is no user-specified non-default value for the facet.
-        // The FacetComponent will then render it as the default value
-        const matchedVal = facetValues[matchedValIndex]
-        return <Accordion.Item eventKey={index.toString()} key={index}>
-          <Accordion.Header>{facet.label}</Accordion.Header>
-          <Accordion.Body>
-            <FacetView facet={facet} facetValue={matchedVal}
-              updateValue={facetValue => updateFacetValue(facetValue, matchedValIndex)}/>
-          </Accordion.Body>
-        </Accordion.Item>
-      })}
+    <button className="btn btn-secondary float-end" onClick={reset}>Clear all</button>
+    <Accordion alwaysOpen flush>
+      <Accordion.Item eventKey={'keyword'} key={'keyword'}>
+        <Accordion.Header>Keyword</Accordion.Header>
+        <Accordion.Body>
+          <KeywordFacet searchState={searchState} updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
+      <Accordion.Item eventKey={'age'} key={'age'}>
+        <Accordion.Header>Age</Accordion.Header>
+        <Accordion.Body>
+          <AgeFacet searchState={searchState} updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
+      <Accordion.Item eventKey={'sexAtBirth'} key={'sexAtBirth'}>
+        <Accordion.Header>Sex at birth</Accordion.Header>
+        <Accordion.Body>
+          <SexAssignedAtBirthFacet searchState={searchState} updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
     </Accordion>
   </div>
 }
 
-type FacetViewProps = {
-  facet: Facet,
-  facetValue?: FacetValue,
-  updateValue: (facetValue: FacetValue | null) => void
+const KeywordFacet = ({ searchState, updateSearchState }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  return <div>
+    <div>
+      <input className='form-control' type="text" value={searchState.basicSearch || ''}
+        onChange={e => updateSearchState('basicSearch', e.target.value)}/>
+    </div>
+  </div>
 }
 
-/**
- * Renders a facet with the appropriate component for the facet type.
- */
-export const FacetView = ({ facet, facetValue, updateValue }: FacetViewProps) => {
-  const facetType = facet.facetType
-  if (!facetValue) {
-    facetValue = newFacetValue(facet)
-  }
-  if (facetType === 'INT_RANGE') {
-    return <IntRangeFacetView facetValue={facetValue as IntRangeFacetValue}
-      updateValue={updateValue}/>
-  } else if (facetType === 'STRING') {
-    return <StringFacetView facetValue={facetValue as StringFacetValue}
-      updateValue={updateValue}/>
-  } else if (facetType === 'STRING_OPTIONS') {
-    return <StringOptionsFacetView facetValue={facetValue as StringOptionsFacetValue}
-      updateValue={updateValue}/>
-  } else if (facetType === 'ENTITY_OPTIONS') {
-    return <StableIdStringFacetView facetValue={facetValue as EntityOptionsArrayFacetValue}
-      updateValue={updateValue}/>
-  }
-  return checkExhaustiveFacetType(facetType, <></>)
+const AgeFacet = ({ searchState, updateSearchState }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  return <div>
+    <label>Age</label>
+    <div>
+      <input className='form-control' type="text" value={searchState.minAge || ''}
+        onChange={e => updateSearchState('minAge', toNumber(e.target.value))}/>
+      <span> to </span>
+      <input className='form-control' type="text" value={searchState.maxAge || ''}
+        onChange={e => updateSearchState('maxAge', toNumber(e.target.value))}/>
+    </div>
+  </div>
 }
 
+
+const SexAssignedAtBirthFacet = ({ searchState, updateSearchState }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  const toggleFacetForAssignedSex = (assignedSex: string) => {
+    if (isFilteredByAssignedSex(assignedSex)) {
+      updateSearchState('sexAtBirth', searchState.sexAtBirth.filter(s => s !== assignedSex))
+    } else {
+      updateSearchState('sexAtBirth', [...searchState.sexAtBirth, assignedSex])
+    }
+  }
+
+  const isFilteredByAssignedSex = (assignedSex: string) => {
+    return searchState.sexAtBirth.filter(s => s === assignedSex).length > 0
+  }
+
+  return <div>
+    <label
+      className='form-label'>
+      Female
+      <input
+        className='form-check-input'
+        type="checkbox"
+        checked={isFilteredByAssignedSex('F')}
+        onChange={() => toggleFacetForAssignedSex('F')}/>
+    </label>
+  </div>
+}

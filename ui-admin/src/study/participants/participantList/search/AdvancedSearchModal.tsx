@@ -1,26 +1,36 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import EnrolleeSearchFacets from '../facets/EnrolleeSearchFacets'
-import { Facet, FacetValue } from 'api/enrolleeSearch'
+import { ParticipantSearchState } from './ParticipantSearch'
 
 /**
  * Implements a modal dialog for specifying specific search criteria for the participant list.
  */
-const AdvancedSearchModal = ({ onDismiss, updateFacetValues, facetValues, searchCriteria }:
-                           { onDismiss: () => void,
-                             updateFacetValues: (values: FacetValue[]) => void,
-                             facetValues: FacetValue[],
-                             searchCriteria: Facet[]
-                           }) => {
-  const [localFacets, setLocalFacets] = useState(facetValues)
+const AdvancedSearchModal = ({ searchState, setSearchState, onDismiss }: {
+  searchState: ParticipantSearchState,
+  setSearchState: (searchState: ParticipantSearchState) => void,
+  onDismiss: () => void
+}) => {
+  const [localSearchState, setLocalSearchState] = useState<ParticipantSearchState>(searchState)
 
-  const updateLocalFacets = (facetValues: FacetValue[]) => {
-    setLocalFacets(facetValues)
-  }
 
   const searchOnClick = () => {
-    updateFacetValues(localFacets)
+    setSearchState(localSearchState)
     onDismiss()
+  }
+
+  const updateLocalSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
+    setLocalSearchState(oldState => {
+      return { ...oldState, [field]: value }
+    })
+  }
+
+  const reset = () => {
+    setLocalSearchState({
+      basicSearch: '',
+      sexAtBirth: [],
+      tasks: []
+    })
   }
 
   return <Modal show={true} onHide={onDismiss}>
@@ -29,8 +39,11 @@ const AdvancedSearchModal = ({ onDismiss, updateFacetValues, facetValues, search
     </Modal.Header>
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
-        <EnrolleeSearchFacets facets={searchCriteria} facetValues={localFacets}
-          updateFacetValues={updateLocalFacets}/>
+        <EnrolleeSearchFacets
+          searchState={localSearchState}
+          updateSearchState={updateLocalSearchState}
+          reset={reset}
+        />
       </form>
     </Modal.Body>
     <Modal.Footer>

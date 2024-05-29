@@ -2,18 +2,24 @@ import {
   AddressValidationResult,
   AlertTrigger,
   Enrollee,
-  EnvironmentName, HubResponse, KitRequest, KitType,
+  EnvironmentName,
+  HubResponse,
+  KitRequest,
+  KitType,
   MailingAddress,
-  ParticipantDashboardAlert, ParticipantNote,
+  ParticipantDashboardAlert,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig, Profile,
+  PortalEnvironmentConfig,
+  Profile,
   SiteContent,
   Study,
   StudyEnvironmentConfig,
-  StudyEnvironmentSurvey, StudyEnvParams,
+  StudyEnvironmentSurvey,
+  StudyEnvParams,
   Survey,
   SurveyResponse,
   Trigger
@@ -76,6 +82,11 @@ export type EnrolleeSearchResult = {
     username: string
   }
   mostRecentKitStatus: string | null
+}
+
+export type EnrolleeSearchExpressionResult = {
+  enrollee: Enrollee,
+  profile?: Profile
 }
 
 type RelationshipType = 'PROXY'
@@ -741,6 +752,15 @@ export default {
     Promise<EnrolleeSearchResult[]> {
     const facetString = encodeURIComponent(facetValuesToString(facetValues))
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async executeSearchExpression(portalShortcode: string, studyShortcode: string, envName: string, expression: string):
+    Promise<EnrolleeSearchExpressionResult[]> {
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollee/search/v2?expression=${encodeURIComponent(expression)}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
