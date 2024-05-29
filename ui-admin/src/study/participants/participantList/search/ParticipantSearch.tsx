@@ -13,6 +13,8 @@ export type ParticipantSearchState = {
   maxAge?: number,
   sexAtBirth: string[],
   tasks: { task: string, status: string }[],
+  latestKitStatus: string[],
+  custom: string
 }
 
 /**
@@ -57,6 +59,22 @@ export const toExpression = (searchState: ParticipantSearchState) => {
     expressions.push(taskExpressions)
   }
 
+  if (searchState.latestKitStatus.length > 0) {
+    const latestKitStatusExpression = `(${
+      concatSearchExpressions(
+        searchState.latestKitStatus.map((kitStatus: string) => {
+          return `{latestKit.status} = '${kitStatus}'`
+        }),
+        'or')
+    })`
+
+    expressions.push(latestKitStatusExpression)
+  }
+
+  if (!isEmpty(searchState.custom)) {
+    expressions.push(searchState.custom)
+  }
+
   return concatSearchExpressions(expressions)
 }
 
@@ -71,7 +89,9 @@ function ParticipantSearch({ studyEnvContext, updateSearchExpression }: {
   const [searchState, setSearchState] = useState<ParticipantSearchState>({
     basicSearch: '',
     sexAtBirth: [],
-    tasks: []
+    tasks: [],
+    latestKitStatus: [],
+    custom: ''
   })
 
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {

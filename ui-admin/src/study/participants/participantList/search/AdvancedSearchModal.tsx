@@ -31,7 +31,9 @@ const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onD
     setLocalSearchState({
       basicSearch: '',
       sexAtBirth: [],
-      tasks: []
+      tasks: [],
+      latestKitStatus: [],
+      custom: ''
     })
   }
 

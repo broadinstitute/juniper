@@ -11,7 +11,9 @@ describe('BasicSearch', () => {
       <BasicSearch searchState={{
         basicSearch: '',
         sexAtBirth: [],
-        tasks: []
+        tasks: [],
+        latestKitStatus: [],
+        custom: ''
       }}
       updateSearchState={mockUpdateKeywordFacetValueFn}/>)
     render(RoutedComponent)

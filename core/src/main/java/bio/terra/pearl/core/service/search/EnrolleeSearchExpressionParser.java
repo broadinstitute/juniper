@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
+import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
@@ -32,14 +33,15 @@ public class EnrolleeSearchExpressionParser {
     private final ProfileDao profileDao;
     private final MailingAddressDao mailingAddressDao;
     private final ParticipantTaskDao participantTaskDao;
+    private final KitRequestDao kitRequestDao;
 
-
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
         this.mailingAddressDao = mailingAddressDao;
         this.participantTaskDao = participantTaskDao;
+        this.kitRequestDao = kitRequestDao;
     }
 
 
@@ -157,7 +159,10 @@ public class EnrolleeSearchExpressionParser {
                 }
 
                 return parseTaskTerm(taskFields[0], taskFields[1]);
+            case "latestKit":
+                String latestKitField = parseField(trimmedVar);
 
+                return parseLatestKitTerm(latestKitField);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -198,5 +203,9 @@ public class EnrolleeSearchExpressionParser {
 
     private AnswerTerm parseAnswerTerm(String surveyStableId, String questionStableId) {
         return new AnswerTerm(answerDao, surveyStableId, questionStableId);
+    }
+
+    private LatestKitTerm parseLatestKitTerm(String field) {
+        return new LatestKitTerm(kitRequestDao, field);
     }
 }

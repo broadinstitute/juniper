@@ -20,7 +20,9 @@ describe('AdvanceSearchModal', () => {
           minAge: undefined,
           maxAge: undefined,
           sexAtBirth: [],
-          tasks: []
+          tasks: [],
+          latestKitStatus: [],
+          custom: ''
         }} setSearchState={mockSetSearchStateFn}/>)
     render(RoutedComponent)
 

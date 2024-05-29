@@ -49,6 +49,21 @@ export default function EnrolleeSearchFacets({
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
+      <Accordion.Item eventKey={'latestkit'} key={'latestkit'}>
+        <Accordion.Header>Latest Kit</Accordion.Header>
+        <Accordion.Body>
+          <LatestKitFacet searchState={searchState}
+            updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
+      <Accordion.Item eventKey={'custom'} key={'custom'}>
+        <Accordion.Header>Custom Search Expression</Accordion.Header>
+        <Accordion.Body>
+          <CustomFacet searchState={searchState}
+            updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
+
     </Accordion>
   </div>
 }
@@ -153,5 +168,45 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
         }
       )
     }
+  </div>
+}
+
+const LatestKitFacet = ({ searchState, updateSearchState }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  const statusOptions = [
+    { label: 'New', value: 'NEW' },
+    { label: 'Created', value: 'CREATED' },
+    { label: 'Queued', value: 'QUEUED' },
+    { label: 'Sent', value: 'SENT' },
+    { label: 'Received', value: 'RECEIVED' },
+    { label: 'Errored', value: 'ERRORED' },
+    { label: 'Deactivated', value: 'DEACTIVATED' },
+    { label: 'Unknown', value: 'UNKNOWN' }
+  ]
+  return <div>
+    <Select
+      isMulti={true}
+      options={statusOptions}
+      value={searchState.latestKitStatus.map(s => statusOptions.find(o => o.value === s) || { label: s, value: s })}
+      onChange={selectedOptions => {
+        updateSearchState('latestKitStatus', selectedOptions.map(o => o.value))
+      }}
+    />
+  </div>
+}
+
+const CustomFacet = ({ searchState, updateSearchState }: {
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  return <div>
+    <textarea
+      className='form-control'
+      value={searchState.custom || ''}
+      placeholder='Search expression'
+      onChange={e => updateSearchState('custom', e.target.value)}
+    />
   </div>
 }

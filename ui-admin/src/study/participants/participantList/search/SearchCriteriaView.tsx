@@ -25,6 +25,14 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
     if (searchState.tasks.findIndex(task => task.task === label) !== -1) {
       updateSearchState('tasks', searchState.tasks.filter(task => task.task !== label))
     }
+
+    if (label === 'Latest Kit') {
+      updateSearchState('latestKitStatus', [])
+    }
+
+    if (label === 'Expression') {
+      updateSearchState('custom', '')
+    }
   }
 
   const getFacets = (searchState: ParticipantSearchState): { label: string, value: string }[] => {
@@ -46,6 +54,14 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
       searchState.tasks.forEach(task => {
         facets.push({ label: task.task, value: task.status })
       })
+    }
+
+    if (searchState.latestKitStatus.length > 0) {
+      facets.push({ label: 'Latest Kit', value: searchState.latestKitStatus.join(', ') })
+    }
+
+    if (searchState.custom) {
+      facets.push({ label: 'Expression', value: searchState.custom })
     }
 
     return facets

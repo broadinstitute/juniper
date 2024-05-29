@@ -13,7 +13,9 @@ describe('SearchCriteriaView', () => {
         minAge: undefined,
         maxAge: undefined,
         sexAtBirth: ['F'],
-        tasks: [{ task: 'consent', status: 'complete' }]
+        tasks: [{ task: 'consent', status: 'complete' }],
+        latestKitStatus: [],
+        custom: ''
       }} updateSearchState={mockUpdateSearchStateFn}/>)
     render(RoutedComponent)
 
