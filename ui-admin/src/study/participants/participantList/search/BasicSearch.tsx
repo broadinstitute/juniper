@@ -18,6 +18,7 @@ const BasicSearch = ({ searchState, updateSearchState }: {
     </button>
     <input type="text" value={searchState.basicSearch} size={40}
       style={{ border: 'none', outline: 'none' }}
+      placeholder={'Search by name, email, or shortcode'}
       onChange={e => updateSearchState('basicSearch', e.target.value)}/>
   </form>
 }

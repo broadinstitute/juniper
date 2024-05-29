@@ -164,7 +164,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     { renderPageHeader('Participant List') }
-    <ParticipantSearch updateSearchExpression={setSearchExpression}/>
+    <ParticipantSearch
+      studyEnvContext={studyEnvContext}
+      updateSearchExpression={setSearchExpression}/>
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">

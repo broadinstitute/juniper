@@ -5,6 +5,7 @@ import BasicSearch from './BasicSearch'
 import { concatSearchExpressions } from '../../../../util/searchExpressionUtils'
 import SearchCriteriaView from './SearchCriteriaView'
 import { isEmpty } from 'lodash/fp'
+import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
 
 export type ParticipantSearchState = {
   basicSearch: string,
@@ -49,7 +50,7 @@ export const toExpression = (searchState: ParticipantSearchState) => {
     const taskExpressions = `(${
       concatSearchExpressions(
         searchState.tasks.map(({ task, status }) => {
-          return `{tasks.${task}.status} = '${status}'`
+          return `{task.${task}.status} = '${status}'`
         }))
     })`
 
@@ -61,8 +62,8 @@ export const toExpression = (searchState: ParticipantSearchState) => {
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ updateSearchExpression }: {
-  updateSearchExpression: (searchExp: string) => void
+function ParticipantSearch({ studyEnvContext, updateSearchExpression }: {
+  studyEnvContext: StudyEnvContextT, updateSearchExpression: (searchExp: string) => void
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
@@ -86,6 +87,7 @@ function ParticipantSearch({ updateSearchExpression }: {
   return <div>
     <div className="align-items-baseline d-flex mb-2">
       {advancedSearch && <AdvancedSearchModal
+        studyEnvContext={studyEnvContext}
         onDismiss={() => setAdvancedSearch(false)}
         searchState={searchState}
         setSearchState={setSearchState}/>}

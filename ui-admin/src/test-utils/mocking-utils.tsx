@@ -18,12 +18,16 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
+  Enrollee,
+  KitRequest,
+  KitType,
+  LocalizedEmailTemplate,
   ParticipantDashboardAlert,
-  Enrollee, KitRequest, KitType,
-  LocalizedEmailTemplate, ParticipantNote,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, StudyEnvParams,
+  ParticipantTaskType,
+  StudyEnvParams,
   Survey
 } from '@juniper/ui-core'
 

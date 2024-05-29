@@ -1,5 +1,5 @@
 import React from 'react'
-import { mockTaskSearchFacet } from 'test-utils/mocking-utils'
+import { mockStudyEnvContext, mockTaskSearchFacet } from 'test-utils/mocking-utils'
 import { getByText, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
@@ -12,13 +12,16 @@ describe('AdvanceSearchModal', () => {
 
     const mockSetSearchStateFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(
-      <AdvancedSearchModal onDismiss={jest.fn()} searchState={{
-        basicSearch: '',
-        minAge: undefined,
-        maxAge: undefined,
-        sexAtBirth: [],
-        tasks: []
-      }} setSearchState={mockSetSearchStateFn}/>)
+      <AdvancedSearchModal
+        studyEnvContext={mockStudyEnvContext()}
+        onDismiss={jest.fn()}
+        searchState={{
+          basicSearch: '',
+          minAge: undefined,
+          maxAge: undefined,
+          sexAtBirth: [],
+          tasks: []
+        }} setSearchState={mockSetSearchStateFn}/>)
     render(RoutedComponent)
 
     await screen.findAllByText('Keyword')
