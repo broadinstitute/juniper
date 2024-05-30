@@ -232,6 +232,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         } else if (updatedAnswers.size() > 0) {
             return TaskStatus.IN_PROGRESS;
         }
+        // nothing has changed, so keep the status the same
+        return task.getStatus();
     }
 
     /**
