@@ -1,12 +1,12 @@
-import { defaultParticipantSearchState, ParticipantSearchState, toExpression } from './participantSearchUtils'
+import { DefaultParticipantSearchState, ParticipantSearchState, toExpression } from './participantSearchUtils'
 
 describe('toExpression', () => {
   it('should return is subject on default', () => {
-    const result = toExpression(defaultParticipantSearchState)
+    const result = toExpression(DefaultParticipantSearchState)
     expect(result).toEqual('{enrollee.subject} = true')
   })
   it('filters basic search', () => {
-    const basicSearch = { ...defaultParticipantSearchState, basicSearch: 'test' }
+    const basicSearch = { ...DefaultParticipantSearchState, basicSearch: 'test' }
     const result = toExpression(basicSearch)
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
@@ -14,18 +14,18 @@ describe('toExpression', () => {
       + 'and {enrollee.subject} = true')
   })
   it('filters subject, consented', () => {
-    const searchState = { ...defaultParticipantSearchState, subject: false, consented: true }
+    const searchState = { ...DefaultParticipantSearchState, subject: false, consented: true }
     const result = toExpression(searchState)
     expect(result).toEqual('{enrollee.subject} = false and {enrollee.consented} = true')
   })
   it('filters all subjects', () => {
-    const searchState = { ...defaultParticipantSearchState, subject: undefined }
+    const searchState = { ...DefaultParticipantSearchState, subject: undefined }
     const result = toExpression(searchState)
     expect(result).toEqual('')
   })
   it('filters tasks', () => {
     const searchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       tasks: [{ task: 'my_task', status: 'COMPLETE' }, { task: 'my_other_task', status: 'CREATED' }]
     }
     const result = toExpression(searchState)
@@ -35,7 +35,7 @@ describe('toExpression', () => {
   })
   it('filters latestKitStatus', () => {
     const searchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       latestKitStatus: ['CREATED', 'ERRORED']
     }
     const result = toExpression(searchState)
@@ -44,7 +44,7 @@ describe('toExpression', () => {
   })
   it('filters sexAtBirth', () => {
     const searchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       sexAtBirth: ['female', 'preferNotToAnswer']
     }
 
@@ -56,7 +56,7 @@ describe('toExpression', () => {
   })
   it('filters minAge, maxAge', () => {
     const searchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       minAge: 10,
       maxAge: 20
     }
@@ -65,14 +65,14 @@ describe('toExpression', () => {
   })
   it('filters just minAge/maxAge', () => {
     const minAgeSearchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       minAge: 10
     }
     const minAgeResult = toExpression(minAgeSearchState)
     expect(minAgeResult).toEqual('{enrollee.subject} = true and {age} >= 10')
 
     const maxAgeSearchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       maxAge: 20
     }
     const maxAgeResult = toExpression(maxAgeSearchState)
@@ -80,7 +80,7 @@ describe('toExpression', () => {
   })
   it('filters custom', () => {
     const searchState: ParticipantSearchState = {
-      ...defaultParticipantSearchState,
+      ...DefaultParticipantSearchState,
       custom: '{answer.survey.question} contains \'asdf\''
     }
     const result = toExpression(searchState)

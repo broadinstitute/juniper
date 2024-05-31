@@ -1,7 +1,12 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { ParticipantSearchState } from 'util/participantSearchUtils'
+import {
+  DefaultParticipantSearchState,
+  getFacets,
+  ParticipantSearchState,
+  ParticipantSearchStateLabels
+} from 'util/participantSearchUtils'
 
 /**
  * Provides a view of the current search criteria showing the facets and values that have been selected,
@@ -12,77 +17,18 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
   const handleDelete = (label: string) => {
-    if (label === 'Age') {
-      updateSearchState('minAge', undefined)
-      updateSearchState('maxAge', undefined)
-    }
-
-    if (label === 'Sex at birth') {
-      updateSearchState('sexAtBirth', [])
-    }
-
     // technically, task names could conflict with another facet label (e.g., Age), but it's unlikely
     if (searchState.tasks.findIndex(task => task.task === label) !== -1) {
       updateSearchState('tasks', searchState.tasks.filter(task => task.task !== label))
+    } else {
+      for (const [key, value] of Object.entries(ParticipantSearchStateLabels)) {
+        if (value === label) {
+          updateSearchState(key as keyof ParticipantSearchState,
+            DefaultParticipantSearchState[key as keyof ParticipantSearchState])
+          return
+        }
+      }
     }
-
-    if (label === 'Latest Kit') {
-      updateSearchState('latestKitStatus', [])
-    }
-
-    if (label === 'Expression') {
-      updateSearchState('custom', '')
-    }
-
-    if (label === 'User type') {
-      updateSearchState('subject', true)
-    }
-
-    if (label === 'Consented') {
-      updateSearchState('consented', undefined)
-    }
-  }
-
-  const getFacets = (searchState: ParticipantSearchState): { label: string, value: string }[] => {
-    const facets = []
-
-    if (searchState.minAge && searchState.maxAge) {
-      facets.push({ label: 'Age', value: `${searchState.minAge} to ${searchState.maxAge}` })
-    } else if (searchState.minAge) {
-      facets.push({ label: 'Age', value: `>= ${searchState.minAge}` })
-    } else if (searchState.maxAge) {
-      facets.push({ label: 'Age', value: `<= ${searchState.maxAge}` })
-    }
-
-    if (searchState.subject === false) {
-      facets.push({ label: 'User type', value: 'Non-participant (e.g., proxy)' })
-    } else if (searchState.subject === undefined) {
-      facets.push({ label: 'User type', value: 'Any (subject or proxy)' })
-    }
-
-    if (searchState.consented !== undefined) {
-      facets.push({ label: 'Consented', value: searchState.consented ? 'Yes' : 'No' })
-    }
-
-    if (searchState.sexAtBirth.length > 0) {
-      facets.push({ label: 'Sex at birth', value: searchState.sexAtBirth.join(', ') })
-    }
-
-    if (searchState.tasks) {
-      searchState.tasks.forEach(task => {
-        facets.push({ label: task.task, value: task.status })
-      })
-    }
-
-    if (searchState.latestKitStatus.length > 0) {
-      facets.push({ label: 'Latest Kit', value: searchState.latestKitStatus.join(', ') })
-    }
-
-    if (searchState.custom) {
-      facets.push({ label: 'Expression', value: searchState.custom })
-    }
-
-    return facets
   }
 
   const advancedSearchFacets = getFacets(searchState)
