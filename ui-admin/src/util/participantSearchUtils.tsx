@@ -106,7 +106,7 @@ export const toExpression = (searchState: ParticipantSearchState) => {
   }
 
   if (!isEmpty(searchState.custom)) {
-    expressions.push(searchState.custom)
+    expressions.push(`(${searchState.custom})`)
   }
 
   return concatSearchExpressions(expressions)
