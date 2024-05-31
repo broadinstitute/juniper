@@ -62,7 +62,7 @@ export default function Navbar(props: NavbarProps) {
   return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
-        <img className="Navbar-logo" style={{ maxHeight: '30px' }}
+        <img className="Navbar-logo" style={{ height: '30px', maxHeight: '30px' }}
           src={getImageUrl(localContent.navLogoCleanFileName, localContent.navLogoVersion)} alt="logo"/>
       </NavLink>
       <button
