@@ -30,6 +30,7 @@ const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onD
   const reset = () => {
     setLocalSearchState({
       basicSearch: '',
+      subject: true,
       sexAtBirth: [],
       tasks: [],
       latestKitStatus: [],

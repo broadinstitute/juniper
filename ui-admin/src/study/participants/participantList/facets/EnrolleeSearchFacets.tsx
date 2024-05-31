@@ -6,9 +6,10 @@ import { ParticipantSearchState } from '../search/ParticipantSearch'
 import Creatable from 'react-select/creatable'
 import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
 import Select from 'react-select'
+import { DocsKey, ZendeskLink } from '../../../../util/zendeskUtils'
 
 /**
- * Renders a list of facets in an accordion.  todo
+ * Renders the facets that you can search upon in the participant list.
  */
 export default function EnrolleeSearchFacets({
   studyEnvContext,
@@ -28,6 +29,13 @@ export default function EnrolleeSearchFacets({
         <Accordion.Header>Keyword</Accordion.Header>
         <Accordion.Body>
           <KeywordFacet searchState={searchState} updateSearchState={updateSearchState}/>
+        </Accordion.Body>
+      </Accordion.Item>
+      <Accordion.Item eventKey={'enrollee'} key={'enrollee'}>
+        <Accordion.Header>Enrollee</Accordion.Header>
+        <Accordion.Body>
+          <EnrolleeFacet studyEnvContext={studyEnvContext} searchState={searchState}
+            updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey={'age'} key={'age'}>
@@ -84,6 +92,48 @@ const KeywordFacet = ({ searchState, updateSearchState }: {
   </div>
 }
 
+const EnrolleeFacet = ({ studyEnvContext, searchState, updateSearchState }: {
+  studyEnvContext: StudyEnvContextT,
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
+}) => {
+  const subjectOptions = [
+    { label: 'Participant', value: true },
+    { label: 'Non-participant (e.g., proxy)', value: false }
+  ]
+  const consentedOptions = [
+    { label: 'Consented', value: true },
+    { label: 'Not consented', value: false }
+  ]
+
+
+  const selectedSubjectOption = subjectOptions.find(o => o.value === searchState.subject)
+  const selectedConsentOption = consentedOptions.find(o => o.value === searchState.consented)
+  return <div>
+    {studyEnvContext.currentEnv.studyEnvironmentConfig.acceptingProxyEnrollment
+      && <>
+        <label>User type</label>
+        <Select
+          options={subjectOptions}
+          isClearable={true}
+          value={selectedSubjectOption ? selectedSubjectOption : null}
+          onChange={selectedOption => {
+            updateSearchState('subject', selectedOption?.value)
+          }}
+        />
+      </>}
+    <label className={'mt-2'}>Consented</label>
+    <Select
+      options={consentedOptions}
+      isClearable={true}
+      value={selectedConsentOption ? selectedConsentOption : null}
+      onChange={selectedOption => {
+        updateSearchState('consented', selectedOption?.value)
+      }}
+    />
+  </div>
+}
+
 const AgeFacet = ({ searchState, updateSearchState }: {
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
@@ -105,7 +155,6 @@ const AgeFacet = ({ searchState, updateSearchState }: {
       onChange={e => updateSearchState('maxAge', toNumber(e.target.value))}/>
   </div>
 }
-
 
 const SexAssignedAtBirthFacet = ({ searchState, updateSearchState }: {
   searchState: ParticipantSearchState,
@@ -147,7 +196,7 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
           const name = configuredSurvey.survey.name
           const selectedStatus = searchState.tasks.find(task => task.task === stableId)?.status
 
-          return <div className={'mb-2'} key={stableId}>
+          return <div className={'mb-2'} key={selectedStatus ? stableId + selectedStatus : stableId}>
             <label>{name}</label>
             <div data-testid={`select-${stableId}-task-status`}>
               <Select
@@ -206,10 +255,15 @@ const CustomFacet = ({ searchState, updateSearchState }: {
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
   return <div>
+    <p>
+      Create a filter using a custom <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
+      search expression
+      </ZendeskLink>.
+    </p>
     <textarea
       className='form-control'
       value={searchState.custom || ''}
-      placeholder='Search expression'
+      placeholder={'{profile.mailingAddress.country} = \'US\''}
       onChange={e => updateSearchState('custom', e.target.value)}
     />
   </div>

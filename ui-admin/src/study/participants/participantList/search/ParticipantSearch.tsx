@@ -9,6 +9,8 @@ import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
 
 export type ParticipantSearchState = {
   basicSearch: string,
+  subject?: boolean, // defaults to true, but is nullable in case you want to see everything
+  consented?: boolean,
   minAge?: number,
   maxAge?: number,
   sexAtBirth: string[],
@@ -26,6 +28,14 @@ export const toExpression = (searchState: ParticipantSearchState) => {
     expressions.push(`({profile.name} contains '${searchState.basicSearch}' `
       + `or {profile.contactEmail} contains '${searchState.basicSearch}' `
       + `or {enrollee.shortcode} contains '${searchState.basicSearch}')`)
+  }
+
+  if (searchState.subject !== undefined) {
+    expressions.push(`{enrollee.subject} = ${searchState.subject}`)
+  }
+
+  if (searchState.consented !== undefined) {
+    expressions.push(`{enrollee.subject} = ${searchState.subject}`)
   }
 
   if (searchState.minAge) {
@@ -88,6 +98,7 @@ function ParticipantSearch({ studyEnvContext, updateSearchExpression }: {
 
   const [searchState, setSearchState] = useState<ParticipantSearchState>({
     basicSearch: '',
+    subject: true, // defaults to true, but is nullable in case you want to see everything
     sexAtBirth: [],
     tasks: [],
     latestKitStatus: [],

@@ -217,7 +217,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
 
         Map<String, SearchValue.SearchValueType> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
 
-        Assertions.assertEquals(27, results.size());
+        Assertions.assertEquals(28, results.size());
         Map.ofEntries(
                 Map.entry("profile.givenName", SearchValue.SearchValueType.STRING),
                 Map.entry("profile.familyName", SearchValue.SearchValueType.STRING),
@@ -245,7 +245,8 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("enrollee.subject", SearchValue.SearchValueType.BOOLEAN),
                 Map.entry("enrollee.consented", SearchValue.SearchValueType.BOOLEAN),
                 Map.entry("enrollee.shortcode", SearchValue.SearchValueType.STRING),
-                Map.entry("age", SearchValue.SearchValueType.INTEGER)
+                Map.entry("age", SearchValue.SearchValueType.INTEGER),
+                Map.entry("latest_kit.status", SearchValue.SearchValueType.STRING)
         ).forEach((key, value) -> {
             Assertions.assertTrue(results.containsKey(key), "Key not found: " + key);
             Assertions.assertEquals(value, results.get(key), "Wrong value for key: " + key + ", expected: " + value + " got: " + results.get(key));

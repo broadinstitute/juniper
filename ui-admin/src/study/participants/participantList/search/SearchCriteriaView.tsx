@@ -33,6 +33,14 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
     if (label === 'Expression') {
       updateSearchState('custom', '')
     }
+
+    if (label === 'Subject') {
+      updateSearchState('subject', true)
+    }
+
+    if (label === 'Consented') {
+      updateSearchState('consented', undefined)
+    }
   }
 
   const getFacets = (searchState: ParticipantSearchState): { label: string, value: string }[] => {
@@ -44,6 +52,16 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
       facets.push({ label: 'Age', value: `>= ${searchState.minAge}` })
     } else if (searchState.maxAge) {
       facets.push({ label: 'Age', value: `<= ${searchState.maxAge}` })
+    }
+
+    if (searchState.subject === false) {
+      facets.push({ label: 'User type', value: 'Non-participant (e.g., proxy)' })
+    } else if (searchState.subject === undefined) {
+      facets.push({ label: 'User type', value: 'Any (subject or proxy)' })
+    }
+
+    if (searchState.consented !== undefined) {
+      facets.push({ label: 'Consented', value: searchState.consented ? 'Yes' : 'No' })
     }
 
     if (searchState.sexAtBirth.length > 0) {

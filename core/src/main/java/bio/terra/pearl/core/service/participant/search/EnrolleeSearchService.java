@@ -12,10 +12,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
-import bio.terra.pearl.core.service.search.terms.ProfileTerm;
-import bio.terra.pearl.core.service.search.terms.SearchValue;
-import bio.terra.pearl.core.service.search.terms.TaskTerm;
+import bio.terra.pearl.core.service.search.terms.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -84,6 +81,8 @@ public class EnrolleeSearchService {
         ProfileTerm.FIELDS.forEach((term, type) -> fields.put("profile." + term, type));
         // enrollee fields
         EnrolleeTerm.FIELDS.forEach((term, type) -> fields.put("enrollee." + term, type));
+        // latest kit fields
+        LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latest_kit." + term, type));
         // age
         fields.put("age", SearchValue.SearchValueType.INTEGER);
         // answers

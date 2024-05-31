@@ -70,6 +70,7 @@ public class LatestKitTerm implements SearchTerm {
     public List<Object> boundObjects() {
         return List.of();
     }
+
     public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
             Map.entry("status", SearchValue.SearchValueType.STRING)
     );
