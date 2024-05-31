@@ -31,7 +31,7 @@ import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-import { useParticipantSearchState } from '../../../util/participantSearchUtils'
+import { useParticipantSearchState } from 'util/participantSearchUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

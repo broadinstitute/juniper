@@ -586,7 +586,7 @@ paths:
         - { name: expression, in: query, required: true, schema: { type: string } }
       responses:
         '200':
-          description: List of valid search fields
+          description: List of results, including any linked objects that were searched upon
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

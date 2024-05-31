@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import SearchCriteriaView from './SearchCriteriaView'
 import { setupRouterTest } from '@juniper/ui-core'
-import { DefaultParticipantSearchState } from '../../../../util/participantSearchUtils'
+import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
 
 describe('SearchCriteriaView', () => {
   test('shows and deletes search criteria', async () => {

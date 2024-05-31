@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import BasicSearch from './BasicSearch'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
-import { DefaultParticipantSearchState } from '../../../../util/participantSearchUtils'
+import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
 
 describe('BasicSearch', () => {
   test('can specify keyword facet value', async () => {
