@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.dao.search;
 
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -103,9 +104,16 @@ public class EnrolleeSearchExpressionDao {
                     );
                 }
 
-                if (columnName.startsWith("mailing_address_")) {
+                if (columnName.startsWith("mailing_address_") && columnName.endsWith("_created_at")) {
                     enrolleeSearchExpressionResult.setMailingAddress(
                             BeanMapper.of(MailingAddress.class, "mailing_address")
+                                    .map(rs, ctx)
+                    );
+                }
+
+                if (columnName.startsWith("latest_kit_") && columnName.endsWith("_created_at")) {
+                    enrolleeSearchExpressionResult.setLatestKit(
+                            BeanMapper.of(KitRequest.class, "latest_kit_")
                                     .map(rs, ctx)
                     );
                 }

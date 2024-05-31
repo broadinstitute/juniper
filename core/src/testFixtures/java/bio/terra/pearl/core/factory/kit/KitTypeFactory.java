@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.kit.KitTypeDao;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ public class KitTypeFactory {
 
     public KitType.KitTypeBuilder builder(String testName) {
         return KitType.builder()
-                .name(testName)
+                .name(testName + "_" + RandomStringUtils.randomAlphanumeric(10))
                 .displayName(testName + " kit")
                 .description("Kit type for " + testName);
     }

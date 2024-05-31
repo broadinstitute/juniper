@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.jooq.impl.DSL.condition;
+
 /**
- * Todo
+ * This term fetches information about the latest kit request for an enrollee.
  */
 public class LatestKitTerm implements SearchTerm {
     private final String field;
@@ -42,7 +44,7 @@ public class LatestKitTerm implements SearchTerm {
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
         return List.of(new EnrolleeSearchQueryBuilder.JoinClause(
-                "(SELECT DISTINCT ON (kit_request.id) * FROM kit_request kit_request ORDER BY kit_request.id, kit_request.last_updated_at DESC)",
+                "kit_request",
                 "latest_kit",
                 "enrollee.id = latest_kit.enrollee_id"));
     }
@@ -56,7 +58,7 @@ public class LatestKitTerm implements SearchTerm {
 
     @Override
     public Optional<Condition> requiredConditions() {
-        return Optional.empty();
+        return Optional.of(condition("NOT EXISTS (SELECT other_kit_request.id FROM kit_request other_kit_request WHERE other_kit_request.enrollee_id = enrollee.id AND other_kit_request.last_updated_at > latest_kit.last_updated_at)"));
     }
 
     @Override

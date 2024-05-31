@@ -42,15 +42,15 @@ export default function EnrolleeSearchFacets({
           <SexAssignedAtBirthFacet searchState={searchState} updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
-      <Accordion.Item eventKey={'tasks'} key={'tasks'}>
-        <Accordion.Header>Tasks</Accordion.Header>
+      <Accordion.Item eventKey={'taskStatus'} key={'taskStatus'}>
+        <Accordion.Header>Task status</Accordion.Header>
         <Accordion.Body>
           <TaskStatusFacet studyEnvContext={studyEnvContext} searchState={searchState}
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
       <Accordion.Item eventKey={'latestkit'} key={'latestkit'}>
-        <Accordion.Header>Latest Kit</Accordion.Header>
+        <Accordion.Header>Latest kit</Accordion.Header>
         <Accordion.Body>
           <LatestKitFacet searchState={searchState}
             updateSearchState={updateSearchState}/>
@@ -149,7 +149,9 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
 
           return <div className={'mb-2'}>
             <label>{name}</label>
-            <Select key={stableId}
+            <Select
+              key={stableId}
+              aria-label={`Select status for ${  name}`}
               options={statusOptions}
               value={statusOptions.find(opt => opt.value == selectedStatus)}
               onChange={selectedOption => {

@@ -2,16 +2,17 @@ import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 
 import ParticipantList from './ParticipantList'
-import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
-import { mockTaskSearchFacet, mockEnrolleeSearchResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import Api, { EnrolleeSearchExpressionResult, EnrolleeSearchFacet } from 'api/api'
+import { mockEnrolleeSearchExpressionResult, mockStudyEnvContext, mockTaskSearchFacet } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
-import { KEYWORD_FACET } from 'api/enrolleeSearch'
 import { setupRouterTest } from '@juniper/ui-core'
 
 const mockSearchApi = (numSearchResults: number) => {
-  return jest.spyOn(Api, 'searchEnrollees')
+  return jest.spyOn(Api, 'executeSearchExpression')
     .mockImplementation(() => {
-      const enrolleeSearchResults: EnrolleeSearchResult[] = new Array(numSearchResults).fill(mockEnrolleeSearchResult())
+      const enrolleeSearchResults: EnrolleeSearchExpressionResult[] =
+        new Array(numSearchResults)
+          .fill(mockEnrolleeSearchExpressionResult())
       return Promise.resolve(enrolleeSearchResults)
     })
 }
@@ -92,12 +93,17 @@ test('keyword search sends search api request', async () => {
   await waitFor(() => {
     expect(screen.getByText('JOSALK')).toBeInTheDocument()
   })
-  await userEvent.type(screen.getByTitle('search name, email and shortcode'), 'foo')
+  await userEvent.type(screen.getByPlaceholderText('Search by name, email, or shortcode'), 'foo')
   await userEvent.click(screen.getByTitle('submit search'))
-  expect(searchSpy).toHaveBeenCalledTimes(2)
-  expect(searchSpy).toHaveBeenNthCalledWith(2, 'portalCode', 'fakeStudy', 'sandbox', [
-    { facet: KEYWORD_FACET, values: ['foo'] }
-  ])
+  expect(searchSpy).toHaveBeenCalledTimes(4)
+  expect(searchSpy).toHaveBeenNthCalledWith(4,
+    'portalCode',
+    'fakeStudy',
+    'sandbox',
+    '({profile.name} contains \'foo\' '
+    + 'or {profile.contactEmail} contains \'foo\''
+    + ' or {enrollee.shortcode} contains \'foo\')'
+  )
 })
 
 test('allows the user to cycle pages', async () => {

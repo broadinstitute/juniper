@@ -86,7 +86,8 @@ export type EnrolleeSearchResult = {
 
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
-  profile?: Profile
+  profile: Profile,
+  latestKit?: KitRequest
 }
 
 type RelationshipType = 'PROXY'
