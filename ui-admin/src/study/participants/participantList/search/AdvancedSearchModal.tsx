@@ -38,7 +38,7 @@ const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onD
     })
   }
 
-  return <Modal show={true} onHide={onDismiss}>
+  return <Modal show={true} onHide={onDismiss} size={'lg'}>
     <Modal.Header closeButton>
       <Modal.Title>Participant search</Modal.Title>
     </Modal.Header>

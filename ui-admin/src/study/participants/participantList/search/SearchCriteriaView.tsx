@@ -34,7 +34,7 @@ const SearchCriteriaView = ({ searchState, updateSearchState }: {
       updateSearchState('custom', '')
     }
 
-    if (label === 'Subject') {
+    if (label === 'User type') {
       updateSearchState('subject', true)
     }
 

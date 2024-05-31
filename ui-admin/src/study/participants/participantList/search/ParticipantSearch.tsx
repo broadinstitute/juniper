@@ -7,6 +7,9 @@ import SearchCriteriaView from './SearchCriteriaView'
 import { isEmpty } from 'lodash/fp'
 import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
 
+// reminder: if you add a new field to the search state,
+// make sure to update the toExpression function
+// and the SearchCriteriaView component
 export type ParticipantSearchState = {
   basicSearch: string,
   subject?: boolean, // defaults to true, but is nullable in case you want to see everything
@@ -35,7 +38,7 @@ export const toExpression = (searchState: ParticipantSearchState) => {
   }
 
   if (searchState.consented !== undefined) {
-    expressions.push(`{enrollee.subject} = ${searchState.subject}`)
+    expressions.push(`{enrollee.consented} = ${searchState.consented}`)
   }
 
   if (searchState.minAge) {
@@ -137,7 +140,6 @@ function ParticipantSearch({ studyEnvContext, updateSearchExpression }: {
     <SearchCriteriaView
       searchState={searchState}
       updateSearchState={updateSearchState}/>
-
   </div>
 }
 
