@@ -2,11 +2,11 @@ import React from 'react'
 
 import { Accordion } from 'react-bootstrap'
 import { toNumber } from 'lodash'
-import { ParticipantSearchState } from '../search/ParticipantSearch'
 import Creatable from 'react-select/creatable'
-import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
-import { DocsKey, ZendeskLink } from '../../../../util/zendeskUtils'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import { ParticipantSearchState } from 'util/participantSearchUtils'
 
 /**
  * Renders the facets that you can search upon in the participant list.

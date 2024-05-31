@@ -1,7 +1,7 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
-import { ParticipantSearchState } from './ParticipantSearch'
+import { ParticipantSearchState } from 'util/participantSearchUtils'
 
 /**
  * Provides a view of the current search criteria showing the facets and values that have been selected,

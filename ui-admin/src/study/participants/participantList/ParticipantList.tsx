@@ -31,12 +31,12 @@ import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
+import { useParticipantSearchState } from '../../../util/participantSearchUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
-  const [searchExpression, setSearchExpression] = useState<string>('')
   const [showEmailModal, setShowEmailModal] = useState(false)
   const [sorting, setSorting] = React.useState<SortingState>([
     { id: 'createdAt', desc: true }
@@ -47,6 +47,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
+
+  const {
+    searchState,
+    updateSearchState,
+    setSearchState,
+    searchExpression
+  } = useParticipantSearchState()
 
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
@@ -159,7 +166,10 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     { renderPageHeader('Participant List') }
     <ParticipantSearch
       studyEnvContext={studyEnvContext}
-      updateSearchExpression={setSearchExpression}/>
+      searchState={searchState}
+      updateSearchState={updateSearchState}
+      setSearchState={setSearchState}
+    />
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex align-items-center justify-content-between">
         <div className="d-flex">

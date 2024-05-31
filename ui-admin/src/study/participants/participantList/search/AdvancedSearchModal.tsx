@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import EnrolleeSearchFacets from '../facets/EnrolleeSearchFacets'
-import { ParticipantSearchState } from './ParticipantSearch'
-import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { ParticipantSearchState } from 'util/participantSearchUtils'
 
 /**
  * Implements a modal dialog for specifying specific search criteria for the participant list.

@@ -82,14 +82,16 @@ test('keyword search sends search api request', async () => {
   })
   await userEvent.type(screen.getByPlaceholderText('Search by name, email, or shortcode'), 'foo')
   await userEvent.click(screen.getByTitle('submit search'))
-  expect(searchSpy).toHaveBeenCalledTimes(2)
+  await waitFor(() => {
+    expect(searchSpy).toHaveBeenCalledTimes(2)
+  })
   expect(searchSpy).toHaveBeenNthCalledWith(2,
     'portalCode',
     'fakeStudy',
     'sandbox',
-    '({profile.name} contains \'foo\' '
-    + 'or {profile.contactEmail} contains \'foo\''
-    + ' or {enrollee.shortcode} contains \'foo\')'
+    '({profile.name} contains \'foo\' ' +
+    'or {profile.contactEmail} contains \'foo\' ' +
+    'or {enrollee.shortcode} contains \'foo\') and {enrollee.subject} = true'
   )
 })
 

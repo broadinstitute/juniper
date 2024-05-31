@@ -1,122 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import BasicSearch from './BasicSearch'
-import { concatSearchExpressions } from '../../../../util/searchExpressionUtils'
 import SearchCriteriaView from './SearchCriteriaView'
-import { isEmpty } from 'lodash/fp'
-import { StudyEnvContextT } from '../../../StudyEnvironmentRouter'
-
-// reminder: if you add a new field to the search state,
-// make sure to update the toExpression function
-// and the SearchCriteriaView component
-export type ParticipantSearchState = {
-  basicSearch: string,
-  subject?: boolean, // defaults to true, but is nullable in case you want to see everything
-  consented?: boolean,
-  minAge?: number,
-  maxAge?: number,
-  sexAtBirth: string[],
-  tasks: { task: string, status: string }[],
-  latestKitStatus: string[],
-  custom: string
-}
-
-/**
- * Converts the search state to a search expression.
- */
-export const toExpression = (searchState: ParticipantSearchState) => {
-  const expressions: string[] = []
-  if (!isEmpty(searchState.basicSearch)) {
-    expressions.push(`({profile.name} contains '${searchState.basicSearch}' `
-      + `or {profile.contactEmail} contains '${searchState.basicSearch}' `
-      + `or {enrollee.shortcode} contains '${searchState.basicSearch}')`)
-  }
-
-  if (searchState.subject !== undefined) {
-    expressions.push(`{enrollee.subject} = ${searchState.subject}`)
-  }
-
-  if (searchState.consented !== undefined) {
-    expressions.push(`{enrollee.consented} = ${searchState.consented}`)
-  }
-
-  if (searchState.minAge) {
-    expressions.push(`{age} >= ${searchState.minAge}`)
-  }
-
-  if (searchState.maxAge) {
-    expressions.push(`{age} <= ${searchState.maxAge}`)
-  }
-
-  if (searchState.sexAtBirth.length > 0) {
-    const sexAtBirthExpression = `(${
-      concatSearchExpressions(
-        searchState.sexAtBirth.map((sexAtBirth: string) => {
-          return `{profile.sexAtBirth} = '${sexAtBirth}'`
-        }),
-        'or')
-    })`
-
-    expressions.push(sexAtBirthExpression)
-  }
-
-  if (searchState.tasks.length > 0) {
-    const taskExpressions = `(${
-      concatSearchExpressions(
-        searchState.tasks.map(({ task, status }) => {
-          return `{task.${task}.status} = '${status}'`
-        }))
-    })`
-
-    expressions.push(taskExpressions)
-  }
-
-  if (searchState.latestKitStatus.length > 0) {
-    const latestKitStatusExpression = `(${
-      concatSearchExpressions(
-        searchState.latestKitStatus.map((kitStatus: string) => {
-          return `{latestKit.status} = '${kitStatus}'`
-        }),
-        'or')
-    })`
-
-    expressions.push(latestKitStatusExpression)
-  }
-
-  if (!isEmpty(searchState.custom)) {
-    expressions.push(searchState.custom)
-  }
-
-  return concatSearchExpressions(expressions)
-}
+import { ParticipantSearchState } from 'util/participantSearchUtils'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ studyEnvContext, updateSearchExpression }: {
-  studyEnvContext: StudyEnvContextT, updateSearchExpression: (searchExp: string) => void
+function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, setSearchState }: {
+  studyEnvContext: StudyEnvContextT,
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
+  setSearchState: (searchState: ParticipantSearchState) => void
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
-
-
-  const [searchState, setSearchState] = useState<ParticipantSearchState>({
-    basicSearch: '',
-    subject: true, // defaults to true, but is nullable in case you want to see everything
-    sexAtBirth: [],
-    tasks: [],
-    latestKitStatus: [],
-    custom: ''
-  })
-
-  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    setSearchState(oldState => {
-      return { ...oldState, [field]: value }
-    })
-  }
-
-  useEffect(() => {
-    updateSearchExpression(toExpression(searchState))
-  }, [searchState])
 
   return <div>
     <div className="align-items-baseline d-flex mb-2">
