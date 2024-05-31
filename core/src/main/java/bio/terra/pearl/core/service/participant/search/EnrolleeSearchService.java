@@ -82,7 +82,7 @@ public class EnrolleeSearchService {
         // enrollee fields
         EnrolleeTerm.FIELDS.forEach((term, type) -> fields.put("enrollee." + term, type));
         // latest kit fields
-        LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latest_kit." + term, type));
+        LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
         // age
         fields.put("age", SearchValue.SearchValueType.INTEGER);
         // answers

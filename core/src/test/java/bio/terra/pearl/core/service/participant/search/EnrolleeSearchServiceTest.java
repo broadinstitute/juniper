@@ -246,7 +246,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("enrollee.consented", SearchValue.SearchValueType.BOOLEAN),
                 Map.entry("enrollee.shortcode", SearchValue.SearchValueType.STRING),
                 Map.entry("age", SearchValue.SearchValueType.INTEGER),
-                Map.entry("latest_kit.status", SearchValue.SearchValueType.STRING)
+                Map.entry("latestKit.status", SearchValue.SearchValueType.STRING)
         ).forEach((key, value) -> {
             Assertions.assertTrue(results.containsKey(key), "Key not found: " + key);
             Assertions.assertEquals(value, results.get(key), "Wrong value for key: " + key + ", expected: " + value + " got: " + results.get(key));
