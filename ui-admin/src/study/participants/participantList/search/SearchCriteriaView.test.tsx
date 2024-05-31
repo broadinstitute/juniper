@@ -20,12 +20,12 @@ describe('SearchCriteriaView', () => {
     render(RoutedComponent)
 
     expect(screen.getByText('Sex at birth: F')).toBeInTheDocument()
-    expect(screen.getByText(content => content.startsWith('Task status'))).toBeInTheDocument()
+    expect(screen.getByText(content => content.startsWith('consent:'))).toBeInTheDocument()
 
     const deleteIcons = screen.getAllByTestId('CancelIcon')
     expect(deleteIcons).toHaveLength(2)
     await userEvent.click(deleteIcons[0])
 
-    expect(mockUpdateSearchStateFn).toHaveBeenCalledWith('age', undefined)
+    expect(mockUpdateSearchStateFn).toHaveBeenCalledWith('sexAtBirth', [])
   })
 })

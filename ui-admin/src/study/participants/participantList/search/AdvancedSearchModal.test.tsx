@@ -34,22 +34,24 @@ describe('AdvanceSearchModal', () => {
     await userEvent.click(screen.getByText('Task status'))
 
     expect(screen.getByText('Survey number one')).toBeInTheDocument()
-    const selectSection: HTMLElement = screen.getByLabelText('Select status for Survey number one')
+    const surveyStatusSelector: HTMLElement = screen.getByTestId('select-survey1-task-status')
 
-    await userEvent.click(selectSection)
-    await userEvent.click(getByText(selectSection, 'Complete'))
+    await selectOption(surveyStatusSelector, 'Complete')
 
     // expand accordion
     await userEvent.click(screen.getByText('Sex at birth'))
-    expect(screen.getByText('Female')).toBeInTheDocument()
+    const sexAtBirthSelector: HTMLElement = screen.getByTestId('select-sex-at-birth')
+    await selectOption(sexAtBirthSelector, 'female')
 
     await userEvent.click(screen.getByText('Search'))
     expect(mockSetSearchStateFn).toHaveBeenCalledWith({
       basicSearch: '',
+      custom: '',
+      latestKitStatus: [],
       minAge: undefined,
       maxAge: undefined,
-      sexAtBirth: [],
-      tasks: [{ task: 'consent', status: 'complete' }]
+      sexAtBirth: ['female'],
+      tasks: [{ task: 'survey1', status: 'COMPLETE' }]
     })
   })
 })

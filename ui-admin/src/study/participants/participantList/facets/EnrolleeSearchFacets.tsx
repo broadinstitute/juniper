@@ -111,7 +111,7 @@ const SexAssignedAtBirthFacet = ({ searchState, updateSearchState }: {
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
-  return <div>
+  return <div data-testid='select-sex-at-birth'>
     <Creatable
       isMulti={true}
       options={[
@@ -147,25 +147,27 @@ const TaskStatusFacet = ({ studyEnvContext, searchState, updateSearchState }: {
           const name = configuredSurvey.survey.name
           const selectedStatus = searchState.tasks.find(task => task.task === stableId)?.status
 
-          return <div className={'mb-2'}>
+          return <div className={'mb-2'} key={stableId}>
             <label>{name}</label>
-            <Select
-              key={stableId}
-              aria-label={`Select status for ${  name}`}
-              options={statusOptions}
-              value={statusOptions.find(opt => opt.value == selectedStatus)}
-              onChange={selectedOption => {
-                const newSelectedStatus = selectedOption?.value
-                if (newSelectedStatus) {
-                  updateSearchState('tasks', [
-                    ...searchState.tasks.filter(task => task.task !== stableId),
-                    { task: stableId, status: newSelectedStatus }
-                  ])
-                } else {
-                  updateSearchState('tasks', searchState.tasks.filter(task => task.task !== stableId))
-                }
-              }}
-            />
+            <div data-testid={`select-${stableId}-task-status`}>
+              <Select
+                key={stableId}
+                aria-label={`Select status for ${name}`}
+                options={statusOptions}
+                value={statusOptions.find(opt => opt.value == selectedStatus)}
+                onChange={selectedOption => {
+                  const newSelectedStatus = selectedOption?.value
+                  if (newSelectedStatus) {
+                    updateSearchState('tasks', [
+                      ...searchState.tasks.filter(task => task.task !== stableId),
+                      { task: stableId, status: newSelectedStatus }
+                    ])
+                  } else {
+                    updateSearchState('tasks', searchState.tasks.filter(task => task.task !== stableId))
+                  }
+                }}
+              />
+            </div>
           </div>
         }
       )

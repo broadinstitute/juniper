@@ -6,7 +6,7 @@ import { setupRouterTest } from '@juniper/ui-core'
 
 describe('BasicSearch', () => {
   test('can specify keyword facet value', async () => {
-    const mockUpdateKeywordFacetValueFn = jest.fn()
+    const updateSearchState = jest.fn()
     const { RoutedComponent } = setupRouterTest(
       <BasicSearch searchState={{
         basicSearch: '',
@@ -15,17 +15,17 @@ describe('BasicSearch', () => {
         latestKitStatus: [],
         custom: ''
       }}
-      updateSearchState={mockUpdateKeywordFacetValueFn}/>)
+      updateSearchState={updateSearchState}/>)
     render(RoutedComponent)
 
     const searchBox = screen.getByPlaceholderText('Search by name, email, or shortcode')
     expect(searchBox).toBeInTheDocument()
     await userEvent.type(searchBox, 'test{enter}')
 
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith('basicSearch', 'test')
+    expect(updateSearchState).toHaveBeenCalledWith('basicSearch', 'test')
 
     await userEvent.clear(searchBox)
     await userEvent.type(searchBox, '{enter}')
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith('basicSearch', '')
+    expect(updateSearchState).toHaveBeenLastCalledWith('basicSearch', '')
   })
 })
