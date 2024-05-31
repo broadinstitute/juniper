@@ -234,10 +234,10 @@ function getLinkCssClasses({ isActive }: { isActive: boolean }) {
 
 function createSurveyNavLink(stableId: string, responseMap: ResponseMapT, survey: StudyEnvironmentSurvey) {
   const taskId = responseMap[stableId]?.task?.id
-  const to = `surveys/${stableId}${taskId ? `?taskId=${taskId}` : ''}`
+  const surveyPath = `surveys/${stableId}${taskId ? `?taskId=${taskId}` : ''}`
 
   return (
-    <NavLink to={to} className={getLinkCssClasses}>
+    <NavLink to={surveyPath} className={getLinkCssClasses}>
       {survey.survey.name}
     </NavLink>
   )
