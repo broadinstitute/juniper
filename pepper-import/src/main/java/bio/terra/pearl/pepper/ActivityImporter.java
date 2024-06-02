@@ -30,8 +30,6 @@ import org.broadinstitute.ddp.model.activity.types.BlockType;
 import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
 import org.broadinstitute.ddp.model.activity.types.PicklistSelectMode;
 import org.broadinstitute.ddp.model.activity.types.QuestionType;
-import org.broadinstitute.ddp.studybuilder.translation.I18nReader;
-import org.broadinstitute.ddp.studybuilder.translation.TranslationsProcessingData;
 import org.broadinstitute.ddp.util.ConfigUtil;
 import org.broadinstitute.ddp.util.GsonUtil;
 import org.springframework.stereotype.Service;
@@ -64,9 +62,6 @@ public class ActivityImporter {
             throw new RuntimeException("Activity definition file is missing: " + file);
         }
 
-        I18nReader i18nReader = new I18nReader();
-        Map<String, TranslationsProcessingData.TranslationData> i18nTranslations = i18nReader.readTranslationsFromFilesInSpecifiedFolder(dirPath + "/i18n");
-
         FormActivityDef activityDef = buildActivity(file, FormActivityDef.class, varsConfig);
         Map<String, Map<String, Object>> languageTranslations = new HashMap<>();
         for (String language : languages) {
@@ -75,9 +70,7 @@ public class ActivityImporter {
             languageTranslations.put(language, langMap);
         }
 
-        Map<String, Object> langMap = varsConfig.getConfig("i18n.en").entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey(), entry -> entry.getValue()));
-        return convert(activityDef, langMap);
+        return convert(activityDef, languageTranslations);
     }
 
     public <T> T buildActivity(File file, Class<T> targetClass, Config varsConfig) {
@@ -94,7 +87,7 @@ public class ActivityImporter {
         return activityDef;
     }
 
-    public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Object> langMap) throws JsonProcessingException {
+    public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Map<String, Object>> allLangMap) throws JsonProcessingException {
         SurveyPopDto survey = SurveyPopDto.builder()
                 .stableId(activityDef.getActivityCode())
                 .version(1)
@@ -111,7 +104,7 @@ public class ActivityImporter {
             for (FormBlockDef blockDef : section.getBlocks()) {
                 //content blocks
                 if (blockDef.getBlockType().equals(BlockType.CONTENT)) {
-                    JsonNode contentNode = getJsonNodeForContentBlock(langMap, (ContentBlockDef) blockDef);
+                    JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef);
                     elements.add(contentNode);
                 }
 
@@ -120,7 +113,7 @@ public class ActivityImporter {
                     List<FormBlockDef> nestedBlockdefs = groupBlockDef.getNested();
                     for (FormBlockDef nestedBlockDef : nestedBlockdefs) {
                         if (nestedBlockDef.getBlockType().equals(BlockType.CONTENT)) {
-                            JsonNode contentNode = getJsonNodeForContentBlock(langMap, (ContentBlockDef) nestedBlockDef);
+                            JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) nestedBlockDef);
                             elements.add(contentNode);
                         }
                     }
@@ -129,15 +122,18 @@ public class ActivityImporter {
                 //todo .. add expressions / calculatedValues
                 //todo dynamic text.. conditional logic..
                 for (QuestionDef pepperQuestionDef : blockDef.getQuestions().toList()) {
-                    String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), langMap);
-                    if (StringUtils.isEmpty(questionText)) {
-                        if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
-                            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
-                            questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), langMap);
-                        }
-                    }
+                    //Map<String, String> questionTxtTrans = new HashMap<>();
                     Map<String, String> titleMap = new HashMap<>();
-                    titleMap.put("en", questionText);
+                    for (String lang : allLangMap.keySet()) {
+                        String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), allLangMap.get(lang));
+                        if (StringUtils.isEmpty(questionText)) {
+                            if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+                                TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+                                questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
+                            }
+                        }
+                        titleMap.put(lang, questionText);
+                    }
                     String questionType = pepperQuestionDef.getQuestionType().name();
                     String inputType = null;
                     if (questionType.equalsIgnoreCase("DATE")) {
@@ -161,7 +157,7 @@ public class ActivityImporter {
                         for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
                             ObjectNode choiceNode = objectMapper.createObjectNode();
                             choiceNode.put("value", option.getStableId());
-                            String optTxt = i18nContentRenderer.renderToString(option.getOptionLabelTemplate().getTemplateText(), langMap);
+                            String optTxt = i18nContentRenderer.renderToString(option.getOptionLabelTemplate().getTemplateText(), allLangMap.get("en"));
                             if (optTxt != null && optTxt.startsWith("$")) {
                                 optTxt = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation("en").get().getText();
                             }
@@ -201,15 +197,17 @@ public class ActivityImporter {
         return survey;
     }
 
-    private JsonNode getJsonNodeForContentBlock(Map<String, Object> langMap, ContentBlockDef blockDef) {
+    private JsonNode getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
         String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null;
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
         //log.info("Title template: {}", titleTemplateTxt); //todo title template ?
         //log.info("Body template: {}", bodyTemplateTxt);
-        String tmplText = i18nContentRenderer.renderToString(bodyTemplateTxt, langMap);
         Map<String, String> titleMap = new HashMap<>();
-        titleMap.put("en", tmplText);
+        for (String lang : allLangMap.keySet()) {
+            String tmplText = i18nContentRenderer.renderToString(bodyTemplateTxt, allLangMap.get(lang));
+            titleMap.put(lang, tmplText);
+        }
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
         SurveyJSContent surveyJSContent = SurveyJSContent.builder()
                 .name(name) //todo generate name
