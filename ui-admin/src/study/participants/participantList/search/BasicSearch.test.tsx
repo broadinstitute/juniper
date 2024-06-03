@@ -17,13 +17,13 @@ describe('BasicSearch', () => {
     expect(searchBox).toBeInTheDocument()
     await userEvent.type(searchBox, 'test{enter}')
     await waitFor(
-      () => expect(updateSearchState).toHaveBeenCalledWith('keywordSearch', 'test')
+      () => expect(updateSearchState).toHaveBeenCalledWith('basicSearch', 'test')
     )
 
     await userEvent.clear(searchBox)
     await userEvent.type(searchBox, '{enter}')
     await waitFor(
-      () => expect(updateSearchState).toHaveBeenCalledWith('keywordSearch', '')
+      () => expect(updateSearchState).toHaveBeenCalledWith('basicSearch', '')
     )
   })
 })

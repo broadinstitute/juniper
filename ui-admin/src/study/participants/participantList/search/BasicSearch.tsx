@@ -11,16 +11,16 @@ const BasicSearch = ({ searchState, updateSearchState }: {
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
-  const [search, setSearch] = useState(searchState.keywordSearch)
+  const [search, setSearch] = useState(searchState.basicSearch)
 
   useEffect(() => {
-    setSearch(searchState.keywordSearch)
-  }, [searchState.keywordSearch])
+    setSearch(searchState.basicSearch)
+  }, [searchState.basicSearch])
 
   // downloading all the participant data is expensive, so debounce the searchbar
   const debouncedUpdate = useCallback(
     debounce(value => {
-      updateSearchState('keywordSearch', value)
+      updateSearchState('basicSearch', value)
     }, 500), []
   )
 

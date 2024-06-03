@@ -85,9 +85,9 @@ const KeywordFacet = ({ searchState, updateSearchState }: {
       <input
         className='form-control'
         type="text"
-        value={searchState.keywordSearch || ''}
+        value={searchState.basicSearch || ''}
         placeholder='Search by name, email, or shortcode'
-        onChange={e => updateSearchState('keywordSearch', e.target.value)}/>
+        onChange={e => updateSearchState('basicSearch', e.target.value)}/>
     </div>
   </div>
 }
@@ -118,7 +118,7 @@ const EnrolleeFacet = ({ studyEnvContext, searchState, updateSearchState }: {
           isClearable={true}
           value={selectedSubjectOption ? selectedSubjectOption : null}
           onChange={selectedOption => {
-            updateSearchState('subject', selectedOption ? selectedOption.value : null)
+            updateSearchState('subject', selectedOption?.value)
           }}
         />
       </>}

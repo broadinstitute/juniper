@@ -1,14 +1,13 @@
 import { isEmpty } from 'lodash/fp'
 import { concatSearchExpressions } from './searchExpressionUtils'
-import { isArray, isNil } from 'lodash'
-import { useSearchParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { isArray } from 'lodash'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
 export type ParticipantSearchState = {
-  keywordSearch: string,
-  subject: boolean | null, // defaults to true, but is nullable in case you want to see everything
+  basicSearch: string,
+  subject?: boolean, // defaults to true, but is nullable in case you want to see everything
   consented?: boolean,
   minAge?: number,
   maxAge?: number,
@@ -19,7 +18,7 @@ export type ParticipantSearchState = {
 }
 
 export const DefaultParticipantSearchState: ParticipantSearchState = {
-  keywordSearch: '',
+  basicSearch: '',
   subject: true, // defaults to true, but is nullable in case you want to see everything
   sexAtBirth: [],
   tasks: [],
@@ -29,7 +28,7 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
 
 
 export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchState]: string } = {
-  keywordSearch: 'Keyword search',
+  basicSearch: 'Basic search',
   subject: 'User type',
   consented: 'Consented',
   minAge: 'Min age',
@@ -41,56 +40,34 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 }
 
 /**
- * Hook for managing the participant search state from the page URL.
+ * Hook for managing the participant search state.
  */
-export const useParticipantSearchState = (searchParamName = 'search') => {
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const getInitialState = () => {
-    const searchParam = searchParams.get(searchParamName)
-    return searchParam ? searchParamToSearchState(searchParam) : DefaultParticipantSearchState
-  }
-
-  const [searchState, setSearchState] = useState<ParticipantSearchState>(getInitialState())
+export const useParticipantSearchState = (initialState: ParticipantSearchState = DefaultParticipantSearchState) => {
+  const [searchState, setSearchState] = useState<ParticipantSearchState>(initialState)
 
   const searchExpression = toExpression(searchState)
 
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    setSearchState(old => {
-      return { ...old, [field]: value }
+    setSearchState(oldState => {
+      return { ...oldState, [field]: value }
     })
   }
 
-  const updateSearchParams = () => {
-    setSearchParams({
-      ...searchParams,
-      [searchParamName]: JSON.stringify(searchState)
-    })
-  }
-
-  useEffect(() => {
-    updateSearchParams()
-  }, [searchState, searchParams.get(searchParamName)])
-
-  return { searchState, searchExpression, updateSearchState, setSearchState }
+  return { searchState, setSearchState, searchExpression, updateSearchState }
 }
 
-const searchParamToSearchState = (searchParam: string): ParticipantSearchState => {
-  const searchState = JSON.parse(searchParam)
-  return { ...DefaultParticipantSearchState, ...searchState }
-}
 /**
  * Converts the search state to a search expression.
  */
 export const toExpression = (searchState: ParticipantSearchState) => {
   const expressions: string[] = []
-  if (!isEmpty(searchState.keywordSearch)) {
-    expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
-      + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
-      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}')`)
+  if (!isEmpty(searchState.basicSearch)) {
+    expressions.push(`({profile.name} contains '${searchState.basicSearch}' `
+      + `or {profile.contactEmail} contains '${searchState.basicSearch}' `
+      + `or {enrollee.shortcode} contains '${searchState.basicSearch}')`)
   }
 
-  if (searchState.subject !== null) {
+  if (searchState.subject !== undefined) {
     expressions.push(`{enrollee.subject} = ${searchState.subject}`)
   }
 
@@ -168,10 +145,6 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeB
           facets.push({ label: task.task, value: task.status })
         }
       } else {
-        if (isArray(value) && isEmpty(value)) {
-          continue
-        }
-
         facets.push({
           label: ParticipantSearchStateLabels[key as keyof ParticipantSearchState] || key,
           value: getValueAsString(key as keyof ParticipantSearchState, value)
@@ -186,9 +159,9 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeB
 const getValueAsString = (key: keyof ParticipantSearchState, value: string | number | boolean | {
   task: string,
   status: string
-}[] | string[] | null) => {
+}[] | string[]) => {
   if (key === 'subject') {
-    if (value === null) {
+    if (value === undefined || value === null) {
       return 'Any'
     } else {
       return value ? 'Participant' : 'Non-Participant (e.g., proxy)'
@@ -197,10 +170,6 @@ const getValueAsString = (key: keyof ParticipantSearchState, value: string | num
 
   if (isArray(value)) {
     return value.join(', ')
-  }
-
-  if (isNil(value)) {
-    return 'None'
   }
 
   return value.toString()
