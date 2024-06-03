@@ -85,9 +85,9 @@ const KeywordFacet = ({ searchState, updateSearchState }: {
       <input
         className='form-control'
         type="text"
-        value={searchState.basicSearch || ''}
+        value={searchState.keywordSearch || ''}
         placeholder='Search by name, email, or shortcode'
-        onChange={e => updateSearchState('basicSearch', e.target.value)}/>
+        onChange={e => updateSearchState('keywordSearch', e.target.value)}/>
     </div>
   </div>
 }

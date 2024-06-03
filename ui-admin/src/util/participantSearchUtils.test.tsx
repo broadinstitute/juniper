@@ -88,7 +88,7 @@ describe('toExpression', () => {
   })
   it('filters all fields', () => {
     const searchState: ParticipantSearchState = {
-      basicSearch: 'test',
+      keywordSearch: 'test',
       subject: false,
       consented: true,
       minAge: 10,

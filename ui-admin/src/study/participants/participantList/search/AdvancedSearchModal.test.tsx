@@ -13,7 +13,7 @@ describe('AdvanceSearchModal', () => {
         studyEnvContext={mockStudyEnvContext()}
         onDismiss={jest.fn()}
         searchState={{
-          basicSearch: '',
+          keywordSearch: '',
           minAge: undefined,
           maxAge: undefined,
           sexAtBirth: [],

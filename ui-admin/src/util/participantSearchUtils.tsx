@@ -1,12 +1,12 @@
 import { isEmpty } from 'lodash/fp'
 import { concatSearchExpressions } from './searchExpressionUtils'
-import { useState } from 'react'
-import { isArray } from 'lodash'
+import { isArray, isEqual } from 'lodash'
+import { useSearchParams } from 'react-router-dom'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
 export type ParticipantSearchState = {
-  basicSearch: string,
+  keywordSearch: string,
   subject?: boolean, // defaults to true, but is nullable in case you want to see everything
   consented?: boolean,
   minAge?: number,
@@ -18,7 +18,7 @@ export type ParticipantSearchState = {
 }
 
 export const DefaultParticipantSearchState: ParticipantSearchState = {
-  basicSearch: '',
+  keywordSearch: '',
   subject: true, // defaults to true, but is nullable in case you want to see everything
   sexAtBirth: [],
   tasks: [],
@@ -28,7 +28,7 @@ export const DefaultParticipantSearchState: ParticipantSearchState = {
 
 
 export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchState]: string } = {
-  basicSearch: 'Basic search',
+  keywordSearch: 'Keyword search',
   subject: 'User type',
   consented: 'Consented',
   minAge: 'Min age',
@@ -40,31 +40,59 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 }
 
 /**
- * Hook for managing the participant search state.
+ * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (initialState: ParticipantSearchState = DefaultParticipantSearchState) => {
-  const [searchState, setSearchState] = useState<ParticipantSearchState>(initialState)
+export const useParticipantSearchState = (searchParamName='search') => {
+  const [searchParams, setSearchParams] = useSearchParams()
 
+  const searchState = urlParamsToSearchState(searchParams, searchParamName)
   const searchExpression = toExpression(searchState)
 
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    setSearchState(oldState => {
-      return { ...oldState, [field]: value }
-    })
+    const newSearchState = { ...searchState, [field]: value }
+    setSearchState(newSearchState)
   }
 
-  return { searchState, setSearchState, searchExpression, updateSearchState }
+  const setSearchState = (newSearchState: ParticipantSearchState) => {
+    setSearchParams({ ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) })
+  }
+
+  return { searchState, searchExpression, updateSearchState, setSearchState }
 }
 
+/** maps search state to a url param excluding default params */
+const searchStateToUrlParam = (searchState: ParticipantSearchState) => {
+  const explicitSearchState: Partial<ParticipantSearchState> = {}
+  for (const [key, value] of Object.entries(searchState)) {
+    if (!isEqual(value, DefaultParticipantSearchState[key as keyof ParticipantSearchState])) {
+      // @ts-ignore
+      explicitSearchState[key as keyof ParticipantSearchState] = value
+    }
+  }
+  return JSON.stringify(explicitSearchState)
+}
+/** maps url params to a search state, using DefaultParticipantSearchState for any unspecified fields */
+const urlParamsToSearchState = (searchParams: URLSearchParams, searchParamName: string): ParticipantSearchState => {
+  let searchState = DefaultParticipantSearchState
+  if (searchParams.get(searchParamName)) {
+    try {
+      const explicitSearchState = JSON.parse(searchParams.get(searchParamName) as string)
+      searchState = { ...searchState, ...explicitSearchState }
+    } catch (e) {
+      // ignore, use default state
+    }
+  }
+  return searchState
+}
 /**
  * Converts the search state to a search expression.
  */
 export const toExpression = (searchState: ParticipantSearchState) => {
   const expressions: string[] = []
-  if (!isEmpty(searchState.basicSearch)) {
-    expressions.push(`({profile.name} contains '${searchState.basicSearch}' `
-      + `or {profile.contactEmail} contains '${searchState.basicSearch}' `
-      + `or {enrollee.shortcode} contains '${searchState.basicSearch}')`)
+  if (!isEmpty(searchState.keywordSearch)) {
+    expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
+      + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
+      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}')`)
   }
 
   if (searchState.subject !== undefined) {
