@@ -6,7 +6,7 @@ describe('toExpression', () => {
     expect(result).toEqual('{enrollee.subject} = true')
   })
   it('filters basic search', () => {
-    const basicSearch = { ...DefaultParticipantSearchState, basicSearch: 'test' }
+    const basicSearch = { ...DefaultParticipantSearchState, keywordSearch: 'test' }
     const result = toExpression(basicSearch)
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
@@ -19,7 +19,7 @@ describe('toExpression', () => {
     expect(result).toEqual('{enrollee.subject} = false and {enrollee.consented} = true')
   })
   it('filters all subjects', () => {
-    const searchState = { ...DefaultParticipantSearchState, subject: undefined }
+    const searchState = { ...DefaultParticipantSearchState, subject: null }
     const result = toExpression(searchState)
     expect(result).toEqual('')
   })
@@ -88,7 +88,7 @@ describe('toExpression', () => {
   })
   it('filters all fields', () => {
     const searchState: ParticipantSearchState = {
-      basicSearch: 'test',
+      keywordSearch: 'test',
       subject: false,
       consented: true,
       minAge: 10,

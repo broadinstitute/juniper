@@ -13,7 +13,8 @@ describe('AdvanceSearchModal', () => {
         studyEnvContext={mockStudyEnvContext()}
         onDismiss={jest.fn()}
         searchState={{
-          basicSearch: '',
+          keywordSearch: '',
+          subject: null,
           minAge: undefined,
           maxAge: undefined,
           sexAtBirth: [],
@@ -45,7 +46,8 @@ describe('AdvanceSearchModal', () => {
 
     await userEvent.click(screen.getByText('Search'))
     expect(mockSetSearchStateFn).toHaveBeenCalledWith({
-      basicSearch: '',
+      keywordSearch: '',
+      subject: null,
       custom: '',
       latestKitStatus: [],
       minAge: undefined,
