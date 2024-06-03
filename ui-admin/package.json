@@ -49,7 +49,7 @@
     "prestart": "npm run generate",
     "prebuild": "npm run generate",
     "generate": "npm-run-all -s gen-parser",
-    "gen-expression-parser": "(cd ../core/src/main/antlr/bio/terra/pearl/core/antlr; antlr -Dlanguage=TypeScript -o ../../../../../../../../../ui-admin/public/search-exp-parser CohortRule.g4 -visitor -no-listener)",
+    "gen-expression-parser": "(cd ../core/src/main/antlr/bio/terra/pearl/core/antlr; antlr -Dlanguage=TypeScript -o ../../../../../../../../../ui-admin/src/generated/search-exp-parser CohortRule.g4 -visitor -no-listener)",
     "tsc": "tsc"
   },
   "proxy": "http://localhost:8080",

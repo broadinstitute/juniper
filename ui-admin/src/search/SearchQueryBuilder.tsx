@@ -6,18 +6,29 @@ import Api, { SearchValueType } from '../api/api'
 import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import LoadingSpinner from '../util/LoadingSpinner'
-import { keys } from 'lodash'
+import { isEmpty, keys } from 'lodash'
+import { parseExpression } from '../util/searchExpressionParser'
+import { toReactQueryBuilderState } from '../util/searchExpressionUtils'
 
 /**
  * Frontend for building an enrollee search expression.
  */
-export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }: {
-  studyEnvContext: StudyEnvContextT, onSearchExpressionChange: (searchExpression: string) => void
+export const SearchQueryBuilder = ({
+  studyEnvContext,
+  onSearchExpressionChange,
+  initialSearchExpression
+}: {
+  studyEnvContext: StudyEnvContextT,
+  onSearchExpressionChange: (searchExpression: string) => void,
+  initialSearchExpression: string
 }) => {
-  const [query, setQuery] = React.useState<RuleGroupType>({
-    combinator: 'and',
-    rules: []
-  })
+  const [query, setQuery] = React.useState<RuleGroupType>(
+    !isEmpty(initialSearchExpression)
+      ? toReactQueryBuilderState(parseExpression(initialSearchExpression))
+      : {
+        combinator: 'and',
+        rules: []
+      })
 
   const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
@@ -79,7 +90,8 @@ const operators = [
   { name: '<', label: '<' },
   { name: '<=', label: '<=' },
   { name: '>', label: '>' },
-  { name: '>=', label: '>=' }
+  { name: '>=', label: '>=' },
+  { name: 'contains', label: 'contains' }
 ]
 
 
@@ -125,5 +137,3 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
     />
   </div>
 }
-
-

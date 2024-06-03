@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 bootrun.log
 
-ui-admin/public/search-exp-parser
+ui-admin/src/generated/**
 
 ### STS ###
 .apt_generated
