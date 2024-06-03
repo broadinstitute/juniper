@@ -101,9 +101,11 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
     header: 'Portal Name',
     accessorKey: 'name',
     cell: ({ row }) => (
-      <div className="d-flex align-items-center">
-        <img src={getMediaUrl(row.original.shortcode, 'favicon.ico', 'latest')}
-          style={{ maxHeight: '1.5em', maxWidth: '1.5rem' }} className="me-3" alt={row.original.name}/>
+      <div className="d-flex">
+        <div className='d-flex align-items-center justify-content-center' style={{ width: '1.5em', height: '1.5em' }}>
+          <img src={getMediaUrl(row.original.shortcode, 'favicon.ico', 'latest')}
+            style={{ maxHeight: '100%', maxWidth: '100%' }} className="me-3" alt={row.original.name}/>
+        </div>
         <Link to={portalHomePath(row.original.shortcode)}>
           {row.original.name}
         </Link>
@@ -112,8 +114,8 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
     header: 'Status',
     cell: ({ row }) => {
       const portal = row.original
-      return portal.portalEnvironments?.length === 3  &&
-        <><FontAwesomeIcon icon={faCircle} className={'fa-xs text-success'}/> Live</>
+      return portal.portalEnvironments?.length === 3 &&
+          <><FontAwesomeIcon icon={faCircle} className={'fa-xs text-success'}/> Live</>
     }
   }, {
     header: 'Website',
