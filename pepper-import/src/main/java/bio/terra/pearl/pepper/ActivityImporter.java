@@ -125,8 +125,7 @@ public class ActivityImporter {
                     }
                 }
 
-                //todo .. add expressions / calculatedValues
-                //todo dynamic text.. conditional logic..
+                //need to handle expressions / calculatedValues .. dynamic text.. conditional logic.
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
             }
         }
@@ -134,7 +133,7 @@ public class ActivityImporter {
             ObjectNode calcVal = objectMapper.createObjectNode();
             calcVal.put("name", cval.name);
             calcVal.put("expression", cval.expression);
-            calcVal.put("expression", cval.expression);
+            calcVal.put("includeIntoResult", cval.includeIntoResult);
             calculatedVals.add(calcVal);
         }
 
@@ -145,7 +144,6 @@ public class ActivityImporter {
     private List<JsonNode> convertBlockQuestions(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
         List<JsonNode> questionNodes = new ArrayList<>();
         for (QuestionDef pepperQuestionDef : blockDef.getQuestions().toList()) {
-            //Map<String, String> questionTxtTrans = new HashMap<>();
             Map<String, String> titleMap = new HashMap<>();
             for (String lang : allLangMap.keySet()) {
                 String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), allLangMap.get(lang));
@@ -195,10 +193,10 @@ public class ActivityImporter {
                 }
             }
 
-            //todo calculated values
+            //calculated values
             if (!StringUtils.isEmpty(blockDef.getShownExpr())) {
                 //populate calculated values
-                String name = pepperQuestionDef.getStableId(); //todo.. change as per SurveyJS
+                String name = pepperQuestionDef.getStableId(); //change as per SurveyJS
                 String expression = blockDef.getShownExpr();
                 //todo for now using pepper expressions. need to convert pepper expression into SurveyJS format
                 CalculatedValue calculatedValue = new CalculatedValue(name, expression, "true");
@@ -223,7 +221,7 @@ public class ActivityImporter {
 
     private JsonNode getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
-        String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null;
+        String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null; //where to set this title txt ?
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
         Map<String, String> titleMap = new HashMap<>();
         for (String lang : allLangMap.keySet()) {
@@ -232,7 +230,7 @@ public class ActivityImporter {
         }
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
         SurveyJSContent surveyJSContent = SurveyJSContent.builder()
-                .name(name) //todo generate name
+                .name(name)
                 .type("html")
                 .html(titleMap)
                 .build();
@@ -247,6 +245,5 @@ public class ActivityImporter {
         public String expression;
         public String includeIntoResult;
     }
-
 
 }

@@ -40,11 +40,10 @@ public class PepperImportCliApp implements CommandLineRunner {
     @Override
     public void run(String... args) throws JsonProcessingException {
         log.info("EXECUTING : command line importer");
-        // these two vars should be read from command line eventually
+        // these vars should be read from command line or a conf file eventually
         String studyDir = "atcp";
-        //String[] formFiles = {"registration.conf"};
         String[] formFiles = {"prequal.conf", "registration.conf", "self-consent.conf", "self-consent-edit.conf", "assent.conf",
-                "medical-history.conf", "contacting-physician.conf", "review-and-submission.conf", "genome-study.conf", "stay-informed.conf"};
+                "medical-history.conf", "contacting-physician.conf", "review-and-submission.conf", "genome-study.conf", "blood-type.conf", "stay-informed.conf"};
 
         Config varsCfg = ConfigFactory.parseFile(getFilePath("studies/%s/%s".formatted(studyDir, SUBSTITUTIONS_FILE), ABSOLUTE_SEED_ROOT).toFile());
 

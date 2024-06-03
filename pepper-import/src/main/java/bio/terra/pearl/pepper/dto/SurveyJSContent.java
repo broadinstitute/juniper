@@ -16,5 +16,4 @@ public class SurveyJSContent {
     public String name;
     public Map<String, String> html;
 
-
 }
