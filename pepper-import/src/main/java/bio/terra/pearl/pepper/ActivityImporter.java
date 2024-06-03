@@ -23,6 +23,7 @@ import org.broadinstitute.ddp.model.activity.definition.FormBlockDef;
 import org.broadinstitute.ddp.model.activity.definition.FormSectionDef;
 import org.broadinstitute.ddp.model.activity.definition.GroupBlockDef;
 import org.broadinstitute.ddp.model.activity.definition.i18n.Translation;
+import org.broadinstitute.ddp.model.activity.definition.question.BoolQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistOptionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.QuestionDef;
@@ -141,6 +142,21 @@ public class ActivityImporter {
                         questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
                     }
                 }
+                if (questionText.contains("$")) {
+                    //get txt from variable
+                    if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+                        TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+                        Translation translation = textQuestionDef.getPromptTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
+                        if (translation != null) {
+                            questionText = translation.getText();
+                        }
+                    }
+                    if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
+                        BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
+                        questionText = boolQuestionDef.getPromptTemplate().getVariables().stream().findFirst().get().getTranslation(lang).get().getText();
+                    }
+                }
+
                 titleMap.put(lang, questionText);
             }
             String questionType = pepperQuestionDef.getQuestionType().name();
