@@ -161,6 +161,9 @@ public class ActivityImporter {
                 questionType = "TEXT";
                 inputType = "DATE";
             }
+            if (questionType.equalsIgnoreCase("AGREEMENT")) {
+                questionType = "boolean";
+            }
             List<SurveyJSQuestion.Choice> choices = null;
             if (questionType.equalsIgnoreCase("PICKLIST")) {
                 choices = new ArrayList<>();
@@ -223,16 +226,22 @@ public class ActivityImporter {
         ContentBlockDef contentBlockDef = blockDef;
         String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null; //where to set this title txt ?
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
-        Map<String, String> titleMap = new HashMap<>();
+        Map<String, String> htmlTxtMap = new HashMap<>();
+        Map<String, String> titleTxtMap = new HashMap<>();
         for (String lang : allLangMap.keySet()) {
             String tmplText = i18nContentRenderer.renderToString(bodyTemplateTxt, allLangMap.get(lang));
-            titleMap.put(lang, tmplText);
+            htmlTxtMap.put(lang, tmplText);
+            if (!StringUtils.isEmpty(titleTemplateTxt)) {
+                String titleText = i18nContentRenderer.renderToString(titleTemplateTxt, allLangMap.get(lang));
+                titleTxtMap.put(lang, titleText);
+            }
         }
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
         SurveyJSContent surveyJSContent = SurveyJSContent.builder()
                 .name(name)
                 .type("html")
-                .html(titleMap)
+                .html(htmlTxtMap)
+                .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
                 .build();
         JsonNode contentNode = objectMapper.valueToTree(surveyJSContent);
         return contentNode;
