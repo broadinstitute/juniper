@@ -14,8 +14,6 @@ import com.google.gson.Gson;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigResolveOptions;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.broadinstitute.ddp.content.I18nContentRenderer;
@@ -53,7 +51,6 @@ public class ActivityImporter {
     private final I18nContentRenderer i18nContentRenderer = new I18nContentRenderer();
     private final RandomUtilService randomUtilService;
     private final String[] languages = {"en", "es", "de", "fr", "hi", "it", "ja", "pl", "pt", "ru", "tr", "zh"};
-    public List<CalculatedValue> calculatedValues = new ArrayList<>();
 
 
     public ActivityImporter(ObjectMapper objectMapper, RandomUtilService randomUtilService) {
@@ -101,7 +98,6 @@ public class ActivityImporter {
 
         ObjectNode root = objectMapper.createObjectNode();
         ArrayNode pages = root.putArray("pages");
-        ArrayNode calculatedVals = root.putArray("calculatedValues");
         for (FormSectionDef section : activityDef.getAllSections()) {
             ObjectNode page = objectMapper.createObjectNode();
             pages.add(page);
@@ -129,14 +125,6 @@ public class ActivityImporter {
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
             }
         }
-        for (CalculatedValue cval : calculatedValues) {
-            ObjectNode calcVal = objectMapper.createObjectNode();
-            calcVal.put("name", cval.name);
-            calcVal.put("expression", cval.expression);
-            calcVal.put("includeIntoResult", cval.includeIntoResult);
-            calculatedVals.add(calcVal);
-        }
-
         survey.setJsonContent(root);
         return survey;
     }
@@ -196,15 +184,12 @@ public class ActivityImporter {
                 }
             }
 
-            //calculated values
-            if (!StringUtils.isEmpty(blockDef.getShownExpr())) {
-                //populate calculated values
-                String name = pepperQuestionDef.getStableId(); //change as per SurveyJS
-                String expression = blockDef.getShownExpr();
-                //todo for now using pepper expressions. need to convert pepper expression into SurveyJS format
-                CalculatedValue calculatedValue = new CalculatedValue(name, expression, "true");
-                calculatedValues.add(calculatedValue);
-            }
+            //expression  revisit and try this
+            //parse the pepper expression for stableID and value/option and generate Juniper expression
+            //EX: user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
+            //parse value after questions[] and hasOption and generate
+            //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
+            //works only for picklist/choices though
 
             SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                     .name(pepperQuestionDef.getStableId())
@@ -214,6 +199,7 @@ public class ActivityImporter {
                     //.isRequired() //todo
                     .inputType(inputType)
                     .choices(choices)
+                    .visibleIf(blockDef.getShownExpr())
                     .build();
 
             JsonNode questionNode = objectMapper.valueToTree(surveyJSQuestion);
@@ -245,14 +231,6 @@ public class ActivityImporter {
                 .build();
         JsonNode contentNode = objectMapper.valueToTree(surveyJSContent);
         return contentNode;
-    }
-
-    @AllArgsConstructor
-    @Data
-    public static class CalculatedValue {
-        public String name;
-        public String expression;
-        public String includeIntoResult;
     }
 
 }

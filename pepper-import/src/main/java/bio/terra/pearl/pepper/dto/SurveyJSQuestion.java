@@ -20,6 +20,7 @@ public class SurveyJSQuestion {
     public boolean required;
     //public boolean isRequired;
     public List<Choice> choices;
+    public String visibleIf;
 
     @AllArgsConstructor
     @Data
