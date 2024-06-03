@@ -22,18 +22,18 @@ export const HtmlDesigner = (props: HtmlDesignerProps) => {
   return (
     <div className="d-flex flex-column h-100">
       <div className="d-flex align-items-center justify-content-between">
-        <h2>{element.name} (html)</h2>
+        <h2>{element.name}</h2>
         {addNextQuestion && <div>
           <Button variant="secondary" className="ms-auto" onClick={addNextQuestion}>
             <FontAwesomeIcon icon={faPlus}/> Add next question
           </Button>
         </div>}
       </div>
-      <label className="form-label fs-4 mb-0" htmlFor="html-element-html">HTML</label>
       <Textarea
         className="w-100 flex-grow-1 font-monospace"
         disabled={readOnly}
         id="html-element-html"
+        label={'HTML markup'}
         style={{
           overflowX: 'auto',
           resize: 'none',
