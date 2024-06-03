@@ -1798,6 +1798,7 @@ components:
         shortcode: { type: string }
         name: { type: string }
         portalStudies: { type: array }
+        portalEnvironments: { type: array }
     PortalDto:
       type: object
     CreateDataset:
