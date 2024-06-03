@@ -135,11 +135,13 @@ public class EnrollmentService {
         // otherwise create a new one for them
         Enrollee enrollee = findOrCreateEnrolleeForEnrollment(user, ppUser, studyEnv, studyShortcode, preEnrollResponseId, isSubject);
 
+        System.out.println("HUH?");
         if (preEnrollResponse != null) {
             preEnrollResponse.setCreatingParticipantUserId(user.getId());
             preEnrollResponse.setPortalParticipantUserId(ppUser.getId());
             preEnrollmentResponseDao.update(preEnrollResponse);
 
+            System.out.println("We boutta backfill");
             // backfill the enrollee with the pre-enrollment response data
             this.backfillPreEnrollResponse(operator, enrollee, preEnrollResponse);
         }
@@ -181,6 +183,8 @@ public class EnrollmentService {
 
     private void backfillPreEnrollResponse(PortalParticipantUser operator, Enrollee enrollee, PreEnrollmentResponse preEnrollResponse) {
         if (Objects.isNull(preEnrollResponse) || StringUtil.isEmpty(preEnrollResponse.getFullData())) {
+            System.out.println("Oh nooooo");
+            System.out.println(preEnrollResponse.getFullData());
             return;
         }
 
@@ -381,6 +385,7 @@ public class EnrollmentService {
         if (preEnrollResponseId != null && isProxyEnrollment(environmentName, studyShortcode, preEnrollResponseId)) {
             return enrollAsProxy(environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId);
         }
+        System.out.println("not proxy");
         return enroll(portalParticipantUser, environmentName, studyShortcode, user, portalParticipantUser, preEnrollResponseId, true);
     }
 }
