@@ -23,8 +23,6 @@ public class PortalParticipantUserFactory {
     StudyEnvironmentService studyEnvironmentService;
     @Autowired
     EnrolleeService enrolleeService;
-    @Autowired
-    ParticipantUserFactory participantUserFactory;
 
     /** creates a PortalParticipantUser for the given enrollee.  This will create a new portal and portal environment */
     public PortalParticipantUser buildPersisted(String testName, UUID enrolleeId) {
