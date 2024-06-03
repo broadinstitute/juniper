@@ -106,7 +106,7 @@ from the root project directory, run
 On OSX, you will need to install prerequisites:
 
   ```
-  brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman
+  brew install pkg-config cairo pango libpng jpeg giflib librsvg pixman antlr
   npm install
   ```
 

@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 bootrun.log
 
+ui-admin/public/search-exp-parser
+
 ### STS ###
 .apt_generated
 .classpath
