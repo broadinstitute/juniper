@@ -155,7 +155,9 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
     getSortedRowModel: getSortedRowModel()
   })
 
-  return basicTableLayout(table, { tableClass: 'table' })
+  return <div className="py-2 px-5 border rounded shadow-sm">
+    {basicTableLayout(table, { tableClass: 'table' })}
+  </div>
 }
 
 
