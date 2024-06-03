@@ -20,21 +20,12 @@ public class SurveyJSQuestion {
     public boolean required;
     //public boolean isRequired;
     public List<Choice> choices;
-    public List<CalculatedValue> calculatedValues;
 
     @AllArgsConstructor
     @Data
     public static class Choice {
-        public String text;
+        public Map<String, String> text;
         public String value;
-    }
-
-    @AllArgsConstructor
-    @Data
-    public static class CalculatedValue {
-        public String name;
-        public String expression;
-        public String includeIntoResult;
     }
 
 }
