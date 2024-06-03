@@ -33,7 +33,7 @@ export const HtmlDesigner = (props: HtmlDesignerProps) => {
         className="w-100 flex-grow-1 font-monospace"
         disabled={readOnly}
         id="html-element-html"
-        label={'HTML markup'}
+        label="HTML markup"
         style={{
           overflowX: 'auto',
           resize: 'none',

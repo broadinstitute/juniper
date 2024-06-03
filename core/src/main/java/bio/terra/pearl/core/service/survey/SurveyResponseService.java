@@ -30,13 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
@@ -209,24 +203,37 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,
                                                    List<Answer> updatedAnswers, DataAuditInfo auditInfo) {
         task.setSurveyResponseId(response.getId());
-        if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
-            if (response.isComplete()) {
-
-                if (task.getTaskType().equals(TaskType.CONSENT)) {
-                    // consent tasks are only marked as complete if they consented
-                    boolean isConsented = isConsented(response, answerService.findByResponse(response.getId()));
-                    task.setStatus(isConsented ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
-                } else {
-                    task.setStatus(TaskStatus.COMPLETE);
-                }
-            } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
-                // if the task is new and no answers we submitted, this is just indicating the survey was viewed
-                task.setStatus(TaskStatus.VIEWED);
-            } else if (updatedAnswers.size() > 0) {
-                task.setStatus(TaskStatus.IN_PROGRESS);
-            }
+        TaskStatus updatedStatus = computeNewStatus(task, response, updatedAnswers);
+        if (task.getStatus() != updatedStatus || task.getSurveyResponseId() != response.getId()) {
+            task.setStatus(updatedStatus);
+            task.setSurveyResponseId(response.getId());
+            task = participantTaskService.update(task, auditInfo);
         }
-        return participantTaskService.update(task, auditInfo);
+        return task;
+    }
+
+    protected static TaskStatus computeNewStatus(ParticipantTask task, SurveyResponse response, List<Answer> updatedAnswers) {
+        if (task.getStatus() == TaskStatus.COMPLETE) {
+            // task statuses shouldn't ever change from complete to not
+            return TaskStatus.COMPLETE;
+        }
+
+        if (response.isComplete()) {
+            if (task.getTaskType().equals(TaskType.CONSENT)) {
+                // consent tasks are only marked as complete if they are completed and consented
+                boolean isConsented = isConsented(response, updatedAnswers);
+                return isConsented ? TaskStatus.COMPLETE : TaskStatus.REJECTED;
+            } else {
+                return TaskStatus.COMPLETE;
+            }
+        } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
+            // if the task is new and no answers we submitted, this is just indicating the survey was viewed
+            return TaskStatus.VIEWED;
+        } else if (updatedAnswers.size() > 0) {
+            return TaskStatus.IN_PROGRESS;
+        }
+        // nothing has changed, so keep the status the same
+        return task.getStatus();
     }
 
     /**
@@ -321,10 +328,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * for surveys of type CONSENT, if the survey has an explicit computed property "consented", that determines
      * consent.  Otherwise, the form is consented if it is complete
      */
-    public boolean isConsented(SurveyResponse response, List<Answer> responseAnswers) {
+    public static boolean isConsented(SurveyResponse response, List<Answer> responseAnswers) {
         return responseAnswers.stream().filter(answer -> answer.getQuestionStableId().equals(CONSENTED_ANSWER_STABLE_ID))
                 .findFirst()
-                .map(answer -> answer.getBooleanValue())
+                .map(Answer::getBooleanValue)
                 .orElse(response.isComplete());
 
     }

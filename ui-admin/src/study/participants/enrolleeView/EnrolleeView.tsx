@@ -45,11 +45,6 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                                      { enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
   const { currentEnv, currentEnvPath } = studyEnvContext
 
-  /** gets classes to apply to nav links */
-  function getLinkCssClasses({ isActive }: { isActive: boolean }) {
-    return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
-  }
-
   const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
   const responseMap: ResponseMapT = {}
   surveys.forEach(configSurvey => {
@@ -112,10 +107,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId]?.task?.id}`}
-                          className={getLinkCssClasses}>
-                          {survey.survey.name}
-                        </NavLink>
+                        {createSurveyNavLink(stableId, responseMap, survey)}
                         {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
@@ -128,10 +120,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId]?.task?.id}`}
-                          className={getLinkCssClasses}>
-                          {survey.survey.name}
-                        </NavLink>
+                        {createSurveyNavLink(stableId, responseMap, survey)}
                         {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
@@ -145,11 +134,8 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
-                        <NavLink to={`surveys/${stableId}?taskId=${responseMap[stableId].task.id}`}
-                          className={getLinkCssClasses}>
-                          {survey.survey.name}
-                        </NavLink>
-                        {badgeForResponses(responseMap[stableId].response)}
+                        {createSurveyNavLink(stableId, responseMap, survey)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -239,6 +225,22 @@ const badgeForResponses = (response?: SurveyResponse) => {
       return statusDisplayMap['IN_PROGRESS']
     }
   }
+}
+
+/** gets classes to apply to nav links */
+function getLinkCssClasses({ isActive }: { isActive: boolean }) {
+  return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
+}
+
+function createSurveyNavLink(stableId: string, responseMap: ResponseMapT, survey: StudyEnvironmentSurvey) {
+  const taskId = responseMap[stableId]?.task?.id
+  const surveyPath = `surveys/${stableId}${taskId ? `?taskId=${taskId}` : ''}`
+
+  return (
+    <NavLink to={surveyPath} className={getLinkCssClasses}>
+      {survey.survey.name}
+    </NavLink>
+  )
 }
 
 /** path to kit request list for enrollee */

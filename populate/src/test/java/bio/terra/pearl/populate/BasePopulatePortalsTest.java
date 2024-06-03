@@ -18,6 +18,7 @@ import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,8 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected ParticipantNoteService participantNoteService;
     @Autowired
     protected AnswerService answerService;
+    @Autowired
+    protected ParticipantTaskService participantTaskService;
     @Autowired
     protected AdminTaskService adminTaskService;
     @Autowired
