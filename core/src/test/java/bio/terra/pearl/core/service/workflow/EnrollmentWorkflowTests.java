@@ -27,7 +27,11 @@ import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.study.*;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -42,6 +46,8 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
@@ -79,6 +85,8 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ProfileService profileService;
     @Autowired
     private StudyEnvironmentService studyEnvironmentService;
+    @Autowired
+    private AnswerService answerService;
 
     @Test
     @Transactional
@@ -170,6 +178,62 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(updateSurveyTasks.get(0).getStatus(), equalTo(TaskStatus.COMPLETE));
         assertThat(updateSurveyTasks.get(0).getCompletedAt(), greaterThan(Instant.now().minusSeconds(20)));
         assertThat(hubResponse.getProfile(), notNullValue());
+    }
+
+    @Test
+    @Transactional
+    public void testBackfillPreEnroll(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        EnvironmentName envName = studyEnv.getEnvironmentName();
+        Study study = studyEnvBundle.getStudy();
+
+        Survey preEnrollmentSurvey = surveyFactory.buildPersisted(getTestName(info));
+        StudyEnvironmentSurvey.builder()
+                .surveyId(preEnrollmentSurvey.getId())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+
+        studyEnv.setPreEnrollSurveyId(preEnrollmentSurvey.getId());
+        studyEnvironmentService.update(
+                studyEnv
+        );
+
+        String preEnrollmentSurveyResponseData = """
+                [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
+                {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        PreEnrollmentResponse preEnrollmentResponse = preEnrollmentSurveyFactory.buildPersisted(
+                getTestName(info),
+                preEnrollmentSurvey.getId(),
+                true,
+                preEnrollmentSurveyResponseData,
+                userBundle.ppUser().getId(),
+                userBundle.user().getId(),
+                studyEnv.getId());
+
+        HubResponse<Enrollee> hubResponse = enrollmentService.enroll(
+                envName,
+                study.getShortcode(),
+                userBundle.user(),
+                userBundle.ppUser(),
+                preEnrollmentResponse.getId());
+        // confirm that two enrollees were created, and only one is a subject
+        assertThat(hubResponse.getEnrollee().isSubject(), equalTo(true));
+
+
+        List<Answer> answers = answerService.findByEnrolleeAndSurvey(hubResponse.getEnrollee().getId(), preEnrollmentSurvey.getStableId());
+        assertEquals(2, answers.size());
+        assertTrue(answers.stream().anyMatch(
+                answer -> answer.getQuestionStableId().equals("proxyQuestion")
+                        && answer.getAnswerType().equals(AnswerType.STRING)
+                        && answer.getStringValue().equals("false")));
+        assertTrue(answers.stream().anyMatch(
+                answer -> answer.getQuestionStableId().equals("qualified")
+                        && answer.getAnswerType().equals(AnswerType.BOOLEAN)
+                        && answer.getBooleanValue()));
+
     }
 
 
@@ -287,7 +351,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
         ParticipantUserFactory.ParticipantUserAndPortalUser userProxyBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         PreEnrollmentResponse preEnrollmentResponseProxy = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForProxy, userProxyBundle.ppUser().getId(), userProxyBundle.user().getId(), studyEnv.getId());
-        Assertions.assertTrue(enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
+        assertTrue(enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
 
         String preEnrollmentSurveyResponseForRegularUser = """
                 [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
@@ -334,7 +398,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         // stops proxy enrollment even though question exists
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
-
     }
 
     @Test
