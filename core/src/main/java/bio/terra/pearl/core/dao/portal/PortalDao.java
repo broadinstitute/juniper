@@ -96,8 +96,7 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
         for(Portal portal : portals) {
             UUID portalId = portal.getId();
             List<PortalEnvironment> portalEnvironments = portalEnvironmentDao.findByPortal(portalId);
-            List<PortalEnvironment> matches = portalEnvironments.stream().filter(portalEnv -> portalEnv.getPortalId().equals(portal.getId())).toList();
-            portal.getPortalEnvironments().addAll(matches);
+            portal.getPortalEnvironments().addAll(portalEnvironments);
         }
     }
 

@@ -85,7 +85,7 @@ paths:
       responses:
         '200':
           description: list of portal objects
-          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}:
@@ -1791,14 +1791,6 @@ components:
           type: string
         statusCode:
           type: integer
-    PortalShallowDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        shortcode: { type: string }
-        name: { type: string }
-        portalStudies: { type: array }
-        portalEnvironments: { type: array }
     PortalDto:
       type: object
     CreateDataset:

@@ -114,8 +114,12 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
     header: 'Status',
     cell: ({ row }) => {
       const portal = row.original
-      return portal.portalEnvironments?.length === 3 &&
-          <><FontAwesomeIcon icon={faCircle} className={'fa-xs text-success'}/> Live</>
+      const livePortalEnv = portal.portalEnvironments?.find(pe => pe.environmentName === 'live')
+      return livePortalEnv && <>
+        {livePortalEnv.portalEnvironmentConfig?.acceptingRegistration ?
+          <><FontAwesomeIcon icon={faCircle} className={'fa-xs text-success'}/> Live</> :
+          <><FontAwesomeIcon icon={faCircle} className={'fa-xs text-muted'}/> Closed</>}
+      </>
     }
   }, {
     header: 'Website',
