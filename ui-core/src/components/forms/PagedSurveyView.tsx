@@ -20,7 +20,7 @@ import { Enrollee, Profile } from 'src/types/user'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
-export type AutosaveStatus = 'saving' | 'saved' | 'error'
+export type AutosaveStatus = 'SAVING' | 'SAVED' | 'ERROR'
 
 /** handles paging the form */
 export function PagedSurveyView({
@@ -90,7 +90,7 @@ export function PagedSurveyView({
       // don't bother saving if there are no changes
       return
     }
-    setAutosaveStatus('saving')
+    setAutosaveStatus('SAVING')
     const prevPrevSave = prevSave.current
     prevSave.current = currentModelValues
 
@@ -124,11 +124,11 @@ export function PagedSurveyView({
        */
       updateEnrollee(updatedEnrollee, true)
       lastAutoSaveErrored.current = false
-      setAutosaveStatus('saved')
+      setAutosaveStatus('SAVED')
     }).catch(() => {
       // if the operation fails, restore the state from before so the next diff operation will capture the changes
       // that failed to save this time
-      setAutosaveStatus('error')
+      setAutosaveStatus('ERROR')
       prevSave.current = prevPrevSave
       lastAutoSaveErrored.current = true
     })

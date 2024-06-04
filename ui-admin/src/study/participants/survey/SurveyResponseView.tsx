@@ -19,7 +19,7 @@ import {
   faEye,
   faPencil,
   faPrint,
-  faSave
+  faSave, faWarning
 } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -57,17 +57,6 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
   // Admin-only forms should default to edit mode
   const [isEditing, setIsEditing] = useState(configSurvey.survey.surveyType === 'ADMIN')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
-  const [displayStatus, setDisplayStatus] = useState<AutosaveStatus | undefined>()
-
-  useEffect(() => {
-    if (autosaveStatus === 'saving') {
-      setDisplayStatus('saving')
-      setTimeout(() => setDisplayStatus(undefined), 1000)
-    } else if (autosaveStatus === 'saved') {
-      setDisplayStatus('saved')
-      setTimeout(() => setDisplayStatus(undefined), 3000)
-    }
-  }, [autosaveStatus])
 
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
@@ -76,10 +65,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
       <div className="d-flex align-items-center justify-content-between">
         <div>{surveyTaskStatus(response)}</div>
         <div className="d-flex align-items-center">
-          {(displayStatus === 'saving') && <span className="text-muted me-2">
-            <FontAwesomeIcon icon={faSave}/> Autosaving...</span>}
-          {(displayStatus === 'saved') && <span className="text-muted me-2">
-            <FontAwesomeIcon icon={faCheck} className={'text-success'}/> Response saved</span>}
+          <AutosaveStatusIndicator status={autosaveStatus}/>
           <div className="dropdown">
             <Button
               data-bs-toggle='dropdown'
@@ -186,4 +172,28 @@ const DropdownButton = (props: DropdownButtonProps) => {
       </div>
     </button>
   )
+}
+
+const AutosaveStatusIndicator = ({ status }: { status?: AutosaveStatus }) => {
+  const [displayStatus, setDisplayStatus] = useState<AutosaveStatus | undefined>(status)
+
+  useEffect(() => {
+    if (status) {
+      setDisplayStatus(status)
+    }
+    if (status === 'SAVING') {
+      setTimeout(() => setDisplayStatus(undefined), 1000)
+    } else if (status === 'SAVED') {
+      setTimeout(() => setDisplayStatus(undefined), 3000)
+    }
+  }, [status])
+
+  return <>
+    {(displayStatus === 'SAVING') && <span className="text-muted me-2">
+      <FontAwesomeIcon icon={faSave}/> Autosaving...</span>}
+    {(displayStatus === 'SAVED') && <span className="text-muted me-2">
+      <FontAwesomeIcon icon={faCheck} className={'text-success'}/> Response saved</span>}
+    {(displayStatus === 'ERROR') && <span className="text-muted me-2">
+      <FontAwesomeIcon icon={faWarning} className={'text-danger'}/> Error saving response</span>}
+  </>
 }
