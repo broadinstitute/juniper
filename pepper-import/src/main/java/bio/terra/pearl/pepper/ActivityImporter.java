@@ -111,16 +111,7 @@ public class ActivityImporter {
                     elements.add(contentNode);
                 }
 
-                if (blockDef.getBlockType().equals(BlockType.GROUP)) {
-                    GroupBlockDef groupBlockDef = ((GroupBlockDef) blockDef);
-                    List<FormBlockDef> nestedBlockdefs = groupBlockDef.getNested();
-                    for (FormBlockDef nestedBlockDef : nestedBlockdefs) {
-                        if (nestedBlockDef.getBlockType().equals(BlockType.CONTENT)) {
-                            JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) nestedBlockDef);
-                            elements.add(contentNode);
-                        }
-                    }
-                }
+                elements.addAll(getNestedContent(allLangMap, blockDef));
 
                 //need to handle expressions / calculatedValues .. dynamic text.. conditional logic.
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
@@ -130,74 +121,33 @@ public class ActivityImporter {
         return survey;
     }
 
+    private List<JsonNode> getNestedContent(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+        List<JsonNode> contentNodes = new ArrayList<>();
+        if (blockDef.getBlockType().equals(BlockType.GROUP)) {
+            GroupBlockDef groupBlockDef = ((GroupBlockDef) blockDef);
+            List<FormBlockDef> nestedBlockdefs = groupBlockDef.getNested();
+            for (FormBlockDef nestedBlockDef : nestedBlockdefs) {
+                if (nestedBlockDef.getBlockType().equals(BlockType.CONTENT)) {
+                    JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) nestedBlockDef);
+                    contentNodes.add(contentNode);
+                }
+            }
+        }
+        return contentNodes;
+    }
+
     private List<JsonNode> convertBlockQuestions(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
         List<JsonNode> questionNodes = new ArrayList<>();
         for (QuestionDef pepperQuestionDef : blockDef.getQuestions().toList()) {
-            Map<String, String> titleMap = new HashMap<>();
-            for (String lang : allLangMap.keySet()) {
-                String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), allLangMap.get(lang));
-                if (StringUtils.isEmpty(questionText)) {
-                    if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
-                        TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
-                        questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
-                    }
-                }
-                if (questionText.contains("$")) {
-                    //get txt from variable
-                    if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
-                        TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
-                        Translation translation = textQuestionDef.getPromptTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
-                        if (translation != null) {
-                            questionText = translation.getText();
-                        }
-                    }
-                    if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
-                        BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
-                        questionText = boolQuestionDef.getPromptTemplate().getVariables().stream().findFirst().get().getTranslation(lang).get().getText();
-                    }
-                }
-
-                titleMap.put(lang, questionText);
-            }
-            String questionType = pepperQuestionDef.getQuestionType().name();
+            Map<String, String> titleMap = getTitleMap(allLangMap, pepperQuestionDef);
+            String questionType = getQuestionType(pepperQuestionDef);
             String inputType = null;
             if (questionType.equalsIgnoreCase("DATE")) {
-                questionType = "TEXT";
                 inputType = "DATE";
-            }
-            if (questionType.equalsIgnoreCase("AGREEMENT")) {
-                questionType = "boolean";
             }
             List<SurveyJSQuestion.Choice> choices = null;
             if (questionType.equalsIgnoreCase("PICKLIST")) {
-                choices = new ArrayList<>();
-                questionType = "dropdown";
-                inputType = null;
-                PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
-                if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST
-                        && picklistQuestionDef.getSelectMode() == PicklistSelectMode.SINGLE
-                        && picklistQuestionDef.getRenderMode() != PicklistRenderMode.DROPDOWN) {
-                    questionType = "radiogroup";
-                }
-                if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST && picklistQuestionDef.getSelectMode() == PicklistSelectMode.MULTIPLE) {
-                    questionType = "checkbox";
-                }
-                for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
-                    ObjectNode choiceNode = objectMapper.createObjectNode();
-                    choiceNode.put("value", option.getStableId());
-                    Map<String, String> choiceTranslations = new HashMap<>();
-                    for (String lang : allLangMap.keySet()) {
-                        String optTxt = i18nContentRenderer.renderToString(option.getOptionLabelTemplate().getTemplateText(), allLangMap.get(lang));
-                        if (optTxt != null && optTxt.startsWith("$")) {
-                            Translation translation = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
-                            if (translation != null) {
-                                optTxt = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).get().getText();
-                                choiceTranslations.put(lang, optTxt);
-                            }
-                        }
-                    }
-                    choices.add(new SurveyJSQuestion.Choice(choiceTranslations, option.getStableId()));
-                }
+                choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
             }
 
             //expression  revisit and try this
@@ -223,6 +173,90 @@ public class ActivityImporter {
         }
         return questionNodes;
     }
+
+    private String getQuestionType(QuestionDef pepperQuestionDef) {
+        String questionType = pepperQuestionDef.getQuestionType().name();
+        if (questionType.equalsIgnoreCase("DATE")) {
+            questionType = "TEXT";
+            //inputType = "DATE";
+        }
+        if (questionType.equalsIgnoreCase("AGREEMENT")) {
+            questionType = "boolean";
+        }
+        List<SurveyJSQuestion.Choice> choices = null;
+        if (questionType.equalsIgnoreCase("PICKLIST")) {
+            questionType = "dropdown";
+            //inputType = null;
+            PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
+            if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST
+                    && picklistQuestionDef.getSelectMode() == PicklistSelectMode.SINGLE
+                    && picklistQuestionDef.getRenderMode() != PicklistRenderMode.DROPDOWN) {
+                questionType = "radiogroup";
+            }
+            if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST && picklistQuestionDef.getSelectMode() == PicklistSelectMode.MULTIPLE) {
+                questionType = "checkbox";
+            }
+        }
+
+        return questionType;
+
+    }
+
+    private Map<String, String> getTitleMap(Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
+        Map<String, String> titleMap = new HashMap<>();
+        for (String lang : allLangMap.keySet()) {
+            String questionText = getQuestionTxt(allLangMap, pepperQuestionDef, lang);
+            titleMap.put(lang, questionText);
+        }
+        return titleMap;
+    }
+
+    private String getQuestionTxt(Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef, String lang) {
+        String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), allLangMap.get(lang));
+        if (StringUtils.isEmpty(questionText)) {
+            if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+                TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+                questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
+            }
+        }
+        if (questionText.contains("$")) {
+            //get txt from variable
+            if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+                TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+                Translation translation = textQuestionDef.getPromptTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
+                if (translation != null) {
+                    questionText = translation.getText();
+                }
+            }
+            if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
+                BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
+                questionText = boolQuestionDef.getPromptTemplate().getVariables().stream().findFirst().get().getTranslation(lang).get().getText();
+            }
+        }
+        return questionText;
+    }
+
+    private List<SurveyJSQuestion.Choice> getPicklistChoices(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap) {
+        List<SurveyJSQuestion.Choice> choices = new ArrayList<>();
+        for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
+            ObjectNode choiceNode = objectMapper.createObjectNode();
+            choiceNode.put("value", option.getStableId());
+            Map<String, String> choiceTranslations = new HashMap<>();
+            for (String lang : allLangMap.keySet()) {
+                String optTxt = i18nContentRenderer.renderToString(option.getOptionLabelTemplate().getTemplateText(), allLangMap.get(lang));
+                if (optTxt != null && optTxt.startsWith("$")) {
+                    Translation translation = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
+                    if (translation != null) {
+                        optTxt = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).get().getText();
+                        choiceTranslations.put(lang, optTxt);
+                    }
+                }
+            }
+            choices.add(new SurveyJSQuestion.Choice(choiceTranslations, option.getStableId()));
+        }
+        return choices;
+    }
+
 
     private JsonNode getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
