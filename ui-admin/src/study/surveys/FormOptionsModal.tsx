@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Survey, VersionedForm } from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faUser } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SaveableFormProps } from './SurveyView'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
@@ -10,6 +10,7 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { SearchQueryBuilder } from '../../search/SearchQueryBuilder'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { userHasPermission, useUser } from '../../user/UserProvider'
+import { faUsers } from '@fortawesome/free-solid-svg-icons/faUsers'
 
 /** component for selecting versions of a form */
 export default function FormOptionsModal({
@@ -35,7 +36,8 @@ export default function FormOptionsModal({
       </div>
     </Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={onDismiss}>
+      <Button variant="secondary" onClick={onDismiss}
+        disabled={!(workingForm as Survey).allowAdminEdit && !(workingForm as Survey).allowParticipantStart}>
         Done
       </Button>
     </Modal.Footer>
@@ -52,6 +54,34 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                                 updateWorkingForm: (props: SaveableFormProps) => void
                               }) => {
   const isSurvey = !!(workingForm as Survey).surveyType
+
+  const calculateFormMode = () => {
+    if ((workingForm as Survey).surveyType === 'ADMIN') {
+      return 'ADMIN'
+    } else if ((workingForm as Survey).allowParticipantStart) {
+      return 'PARTICIPANT'
+    } else {
+      return 'ALL'
+    }
+  }
+
+  const [selectedFormMode, setSelectedFormMode] = useState(calculateFormMode())
+
+  useEffect(() => {
+    if (selectedFormMode === 'ADMIN') {
+      updateWorkingForm({
+        ...workingForm, allowAdminEdit: true, allowParticipantStart: false
+      })
+    } else if (selectedFormMode === 'PARTICIPANT') {
+      updateWorkingForm({
+        ...workingForm, allowAdminEdit: false, allowParticipantStart: true
+      })
+    } else {
+      updateWorkingForm({
+        ...workingForm, allowAdminEdit: true, allowParticipantStart: true
+      })
+    }
+  }, [selectedFormMode])
 
   const { user } = useUser()
 
@@ -93,21 +123,23 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).allowAdminEdit}
-                onChange={e => updateWorkingForm({
-                  ...workingForm, allowAdminEdit: e.target.checked
-                })}
-              /> Allow admin completion
-            </label>
-            <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).allowParticipantStart}
-                onChange={e => updateWorkingForm({
-                  ...workingForm, allowParticipantStart: e.target.checked
-                })}
-              /> Allow participant completion
-            </label>
-                    Eligibility Rule
+            { (selectedFormMode !== 'ADMIN') && <>
+              <div className='pt-2'>Who can complete and edit responses for this form?</div>
+              <div className="btn-group border disabled mb-2" role="group">
+                <button type="button" className={`btn ${selectedFormMode === 'PARTICIPANT' ? 'btn-dark' : 'btn-light'}`}
+                  onClick={() => {
+                    setSelectedFormMode('PARTICIPANT')
+                  }}>
+                  <FontAwesomeIcon icon={faUser}/> Participants Only
+                </button>
+                <button type="button" className={`btn ${selectedFormMode === 'ALL' ? 'btn-dark' : 'btn-light'}`}
+                  onClick={() => {
+                    setSelectedFormMode('ALL')
+                  }}>
+                  <FontAwesomeIcon icon={faUsers}/> Participants & Study Staff
+                </button>
+              </div></> }
+            <div className='pt-2'>Eligibility Rule</div>
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
                     && <div className="my-2"><SearchQueryBuilder
                       studyEnvContext={studyEnvContext}

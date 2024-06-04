@@ -35,8 +35,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
   const [form, setForm] = useState<Survey>({
     ...defaultSurvey,
     autoUpdateTaskAssignments: type === 'OUTREACH',
-    assignToExistingEnrollees: type === 'OUTREACH',
-    allowParticipantReedit: type !== 'CONSENT',
+    assignToExistingEnrollees: type === 'OUTREACH' || type === 'ADMIN',
+    allowParticipantReedit: type !== 'CONSENT' && type !== 'ADMIN',
+    allowParticipantStart: type !== 'ADMIN',
     allowAdminEdit: type !== 'CONSENT',
     required: type === 'CONSENT',
     stableId: '',
@@ -139,7 +140,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       <LoadingSpinner isLoading={isLoading}>
         <button
           className="btn btn-primary"
-          disabled={!form.name || !form.stableId}
+          disabled={!form.name || !form.stableId || (!form.allowAdminEdit && !form.allowParticipantStart)}
           onClick={createSurvey}
         >Create</button>
         <button className="btn btn-secondary" onClick={() => {

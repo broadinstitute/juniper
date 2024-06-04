@@ -10,10 +10,8 @@ import {
 } from '@juniper/ui-core'
 import Api, { Answer, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
@@ -64,11 +62,6 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
           Show full question text
         </label>
         <InfoPopup content="Show full question text vs. truncated to first 100 characters"/>
-      </div>
-      <div className="ms-auto">
-        <Link to="print">
-          <FontAwesomeIcon icon={faDownload}/> print/download
-        </Link>
       </div>
     </div>
     <hr/>

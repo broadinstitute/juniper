@@ -93,6 +93,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         proxyProfile={proxyProfile}
         response={formAndResponses.surveyResponse}
         selectedLanguage={selectedLanguage}
+        setAutosaveStatus={() => { /* no-op */ }}
         adminUserId={null}
         onSuccess={onSuccess}
         onFailure={onFailure}

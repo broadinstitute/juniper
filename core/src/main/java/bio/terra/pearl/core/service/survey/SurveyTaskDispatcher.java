@@ -185,7 +185,7 @@ public class SurveyTaskDispatcher {
         }
         if (event.getSurvey().isAssignToExistingEnrollees()) {
             ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
-                    TaskType.SURVEY,
+                    taskTypeForSurveyType.get(event.getSurvey().getSurveyType()),
                     event.getSurvey().getStableId(),
                     event.getSurvey().getVersion(),
                 null,
@@ -248,7 +248,8 @@ public class SurveyTaskDispatcher {
     private final Map<SurveyType, TaskType> taskTypeForSurveyType = Map.of(
             SurveyType.CONSENT, TaskType.CONSENT,
             SurveyType.RESEARCH, TaskType.SURVEY,
-            SurveyType.OUTREACH, TaskType.OUTREACH
+            SurveyType.OUTREACH, TaskType.OUTREACH,
+            SurveyType.ADMIN, TaskType.ADMIN
     );
 
     /**

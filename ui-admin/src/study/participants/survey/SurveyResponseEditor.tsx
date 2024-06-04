@@ -3,15 +3,17 @@ import { Survey, SurveyResponse } from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 
 import _cloneDeep from 'lodash/cloneDeep'
-import { Enrollee, PagedSurveyView, useTaskIdParam } from '@juniper/ui-core'
+import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam } from '@juniper/ui-core'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
 import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
-export default function SurveyResponseEditor({ studyEnvContext, response, survey, enrollee, adminUserId, onUpdate }: {
-  studyEnvContext: StudyEnvContextT, response?: SurveyResponse,
+export default function SurveyResponseEditor({
+  studyEnvContext, response, survey, enrollee, adminUserId, onUpdate, setAutosaveStatus
+}: {
+  studyEnvContext: StudyEnvContextT, response?: SurveyResponse, setAutosaveStatus: (status: AutosaveStatus) => void,
   survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void
 }) {
   const { defaultLanguage } = usePortalLanguage()
@@ -25,6 +27,7 @@ export default function SurveyResponseEditor({ studyEnvContext, response, survey
     envName: studyEnvContext.currentEnv.environmentName,
     portalShortcode: studyEnvContext.portal.shortcode
   }
+
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
     <div>
@@ -39,11 +42,12 @@ export default function SurveyResponseEditor({ studyEnvContext, response, survey
           onUpdate()
           Store.addNotification(successNotification('Response saved'))
         }}
+        setAutosaveStatus={setAutosaveStatus}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
         updateProfile={() => { /*no-op for admins*/ }}
         updateEnrollee={() => { /*no-op for admins*/ }}
         taskId={taskId}
-        showHeaders={true}/>
+        showHeaders={false}/>
     </div>
   </div>
 }
