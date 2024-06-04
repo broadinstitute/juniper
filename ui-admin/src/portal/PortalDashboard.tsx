@@ -58,7 +58,7 @@ export default function PortalDashboard({ portal }: {portal: Portal}) {
 }
 
 /**
- *
+ * Dropdown menu for study options
  */
 export function StudyOptions({ study, portal }: { study: Study, portal: Portal }) {
   const [showDeleteStudyModal, setShowDeleteStudyModal] = useState(false)

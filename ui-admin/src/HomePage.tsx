@@ -127,11 +127,11 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
     header: 'Website',
     cell: ({ row }) => {
       const portal = row.original
-      const portalEnv = portal.portalEnvironments?.find(pe => pe.environmentName === 'live')
+      const livePortalEnv = portal.portalEnvironments?.find(pe => pe.environmentName === 'live')
       return (
-        portalEnv ?
-          <a href={Api.getParticipantLink(portalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
-            portal.shortcode, portalEnv.environmentName)} target="_blank">
+        livePortalEnv ?
+          <a href={Api.getParticipantLink(livePortalEnv.portalEnvironmentConfig, zoneConfig.participantUiHostname,
+            portal.shortcode, livePortalEnv.environmentName)} target="_blank">
                 Participant website <FontAwesomeIcon icon={faExternalLink}/>
           </a> :
           <span className="text-muted">Website not initialized</span>)
@@ -142,8 +142,8 @@ function PortalList({ portalList }: { portalList: Portal[] }) {
   }, {
     header: 'Created',
     accessorFn: portal => {
-      //Sandbox was the very first environment created, so we'll run with that.
-      //'Date Launched' could potentially be a better field to use, though
+      // Sandbox was the very first environment created, so we'll use that to determine createdDate.
+      //'Date Launched' could potentially be a better field to display, though
       const createdDate = portal.portalEnvironments?.find(pe =>
         pe.environmentName === 'sandbox')?.createdAt
       return instantToDateString(createdDate)
