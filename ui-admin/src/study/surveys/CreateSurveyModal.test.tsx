@@ -96,7 +96,6 @@ describe('CreateSurveyModal', () => {
     expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       {
         ...defaultSurvey,
-        allowAdminEdit: false,
         autoUpdateTaskAssignments: true,
         assignToExistingEnrollees: true,
         blurb: 'Testing out the marketing blurb...',
@@ -138,7 +137,6 @@ describe('CreateSurveyModal', () => {
     expect(Api.createNewSurvey).toHaveBeenCalledWith(studyEnvContext.portal.shortcode,
       {
         ...defaultSurvey,
-        allowAdminEdit: false,
         autoUpdateTaskAssignments: true,
         blurb: 'Testing out the screener blurb...',
         assignToExistingEnrollees: true,

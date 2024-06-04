@@ -52,5 +52,3 @@ describe('RawEnrolleeSurveyView', () => {
     await waitFor(() => expect(screen.queryByText('Show all questions')).not.toBeInTheDocument())
   })
 })
-
-//configSurvey={{ ...mockConfiguredSurvey(), survey: { ...mockSurvey(), surveyType: 'ADMIN'}}} onUpdate={jest.fn()}/>)
