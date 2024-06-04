@@ -11,10 +11,9 @@ import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.search.terms.SearchValue;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeSearchExtService {
@@ -47,7 +46,7 @@ public class EnrolleeSearchExtService {
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, envName)
-                .orElseThrow(() -> new IllegalStateException("Study environment not found"));
+            .orElseThrow(() -> new IllegalStateException("Study environment not found"));
 
     return this.enrolleeSearchService.getExpressionSearchFacetsForStudyEnv(
         studyEnvironment.getId());
@@ -65,7 +64,7 @@ public class EnrolleeSearchExtService {
     StudyEnvironment studyEnvironment =
         studyEnvironmentService
             .findByStudy(studyShortcode, envName)
-                .orElseThrow(() -> new IllegalStateException("Study environment not found"));
+            .orElseThrow(() -> new IllegalStateException("Study environment not found"));
 
     return this.enrolleeSearchService.executeSearchExpression(studyEnvironment.getId(), expression);
   }
