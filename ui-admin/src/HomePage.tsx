@@ -19,7 +19,9 @@ function HomePage() {
   const filteredPortalList = useMemo(() => portalList.filter(portal =>
     portal.name.toLowerCase().includes(portalSearch.toLowerCase()) ||
     portal.portalStudies.some(portalStudy => portalStudy.study.name.toLowerCase().includes(portalSearch.toLowerCase()))
-  ), [portalList, portalSearch])
+  )
+    .sort((a, b) => a.name.localeCompare(b.name)),
+  [portalList, portalSearch])
 
   return <div className="container" style={{ minHeight: '100vh' }}>
     <h1 className="h2 d-flex justify-content-center pb-2">Select a portal</h1>
