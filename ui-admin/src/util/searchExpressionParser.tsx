@@ -2,7 +2,6 @@ import {
   CharStream,
   CommonTokenStream,
   ErrorListener,
-  RecognitionException,
   Recognizer
 } from 'antlr4'
 import CohortRuleParser, {
@@ -163,8 +162,7 @@ class ThrowErrorListener extends ErrorListener<unknown> {
     offendingSymbol: unknown,
     line: number,
     column: number,
-    msg: string,
-    e: RecognitionException) {
+    msg: string) {
     throw new Error(`unknown token ${offendingSymbol}: ${msg}`)
   }
 }

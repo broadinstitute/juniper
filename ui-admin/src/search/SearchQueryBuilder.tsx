@@ -1,4 +1,7 @@
-import React, { useMemo } from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import {
   Field,
   FieldSelectorProps,
@@ -32,21 +35,20 @@ export const SearchQueryBuilder = ({
   onSearchExpressionChange: (searchExpression: string) => void,
   searchExpression: string
 }) => {
-  const [errored, setErrored] = React.useState(false)
-
   const tryParseExpression = (expression: string): RuleGroupType | undefined => {
     try {
       return toReactQueryBuilderState(parseExpression(expression))
-    } catch (e) {
-      setErrored(true)
+    } catch (_) {
       return undefined
     }
   }
 
-  const query = useMemo(() => !isEmpty(searchExpression) ? tryParseExpression(searchExpression) : {
+  const initialQuery = useMemo(() => !isEmpty(searchExpression) ? tryParseExpression(searchExpression) : {
     combinator: 'and',
     rules: []
-  }, [searchExpression])
+  }, [])
+
+  const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
 
 
   const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
@@ -68,9 +70,11 @@ export const SearchQueryBuilder = ({
 
 
   const updateQuery = (query: RuleGroupTypeAny) => {
+    setQuery(query)
     const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
       format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
-      ruleProcessor: ruleProcessorEnrolleeSearchExpression
+      ruleProcessor: ruleProcessorEnrolleeSearchExpression,
+      fallbackExpression: '{enrollee.subject} = true'
     }) : ''
 
     if (enrolleeSearchExpression === '') {

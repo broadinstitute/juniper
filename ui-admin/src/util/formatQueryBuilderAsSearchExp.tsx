@@ -16,7 +16,6 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
   { escapeQuotes, parseNumbers } = {}
 ) => {
   const valueIsField = valueSource === 'field'
-  const operatorTL = operator.replace(/^=$/, '==')
   const useBareValue =
     typeof value === 'number' ||
     typeof value === 'boolean' ||
@@ -26,16 +25,13 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
     value === 'false'
 
 
-  switch (operatorTL) {
+  switch (operator) {
     case '<':
     case '<=':
-    case '==':
+    case '=':
     case '!=':
     case '>':
     case '>=': {
-      // i do not know why it forces equality to be ==
-      const operator = operatorTL === '==' ? '=' : operatorTL
-
       let processedValue
 
       if (valueIsField) {
@@ -56,7 +52,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
             ? trimIfString(value)
             : `'${escapeSingleQuotes(value, escapeQuotes)}'`
         }`,
-        shouldNegate(operatorTL)
+        shouldNegate(operator)
       )
 
     case 'beginsWith':
@@ -66,7 +62,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
         : `'${
           (typeof value === 'string' && !value.startsWith('^')) || useBareValue ? '^' : ''
         }${escapeSingleQuotes(value, escapeQuotes)}'`
-      return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operatorTL))
+      return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operator))
     }
 
     case 'endsWith':
@@ -76,24 +72,24 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
         : `'${escapeSingleQuotes(value, escapeQuotes)}${
           (typeof value === 'string' && !value.endsWith('$')) || useBareValue ? '$' : ''
         }'`
-      return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operatorTL))
+      return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operator))
     }
 
     case 'null':
-      return `${field} == null`
+      return `${field} = null`
 
     case 'notNull':
       return `${field} != null`
 
     case 'in':
     case 'notIn': {
-      const negate = shouldNegate(operatorTL) ? '!' : ''
+      const negate = shouldNegate(operator) ? '!' : ''
       const valueAsArray = toArray(value)
       if (valueAsArray.length > 0) {
         return `${negate}(${valueAsArray
           .map(
             val =>
-              `${field} == ${
+              `${field} = ${
                 valueIsField || shouldRenderAsNumber(val, parseNumbers)
                   ? `${trimIfString(val)}`
                   : `'${escapeSingleQuotes(val, escapeQuotes)}'`

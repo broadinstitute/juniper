@@ -1,11 +1,15 @@
 import {
+  BooleanOperator,
   isBooleanSearchExpression,
   isComparisonSearchFacet,
   isSearchVariable,
   SearchExpression,
   Term
 } from './searchExpressionParser'
-import { RuleGroupArray, RuleGroupType } from 'react-querybuilder'
+import {
+  RuleGroupArray,
+  RuleGroupType
+} from 'react-querybuilder'
 
 /**
  * Converts a SearchExpression object into a RuleGroupType object,
@@ -15,16 +19,22 @@ export const toReactQueryBuilderState = (searchExpression: SearchExpression): Ru
   return {
     id: '1',
     combinator: 'and',
-    rules: _toReactQueryBuilderState(searchExpression)
+    rules: _toReactQueryBuilderState('and', searchExpression)
   }
 }
 
-const _toReactQueryBuilderState = (expression: SearchExpression): RuleGroupArray => {
+const _toReactQueryBuilderState = (operator: BooleanOperator, expression: SearchExpression): RuleGroupArray => {
   if (isBooleanSearchExpression(expression)) {
-    return [{
-      combinator: expression.booleanOperator,
-      rules: _toReactQueryBuilderState(expression.left).concat(_toReactQueryBuilderState(expression.right))
-    }]
+    // only create a new group if the operator changes
+    if (expression.booleanOperator !== operator) {
+      return [{
+        combinator: expression.booleanOperator,
+        rules: _toReactQueryBuilderState(expression.booleanOperator, expression.left)
+          .concat(_toReactQueryBuilderState(expression.booleanOperator, expression.right))
+      }]
+    }
+    return _toReactQueryBuilderState(operator, expression.left)
+      .concat(_toReactQueryBuilderState(operator, expression.right))
   }
 
   if (isComparisonSearchFacet(expression)) {
