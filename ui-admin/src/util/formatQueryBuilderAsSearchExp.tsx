@@ -1,4 +1,10 @@
-import { numericRegex, parseNumber, RuleProcessor, toArray, trimIfString } from 'react-querybuilder'
+import {
+  numericRegex,
+  parseNumber,
+  RuleProcessor,
+  toArray,
+  trimIfString
+} from 'react-querybuilder'
 
 /**
  * Heavily lifted from react-querybuilder's SpEL rule processor, but with some modifications
@@ -45,7 +51,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
     case 'contains':
     case 'doesNotContain':
       return wrapInNegation(
-        `${field} matches ${
+        `{${field}} contains ${
           valueIsField || useBareValue
             ? trimIfString(value)
             : `'${escapeSingleQuotes(value, escapeQuotes)}'`

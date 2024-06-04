@@ -7,9 +7,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SaveableFormProps } from './SurveyView'
 import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
-import { SearchQueryBuilder } from '../../search/SearchQueryBuilder'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { userHasPermission, useUser } from '../../user/UserProvider'
+import { LazySearchQueryBuilder } from '../../search/LazySearchQueryBuilder'
+
 
 /** component for selecting versions of a form */
 export default function FormOptionsModal({
@@ -109,11 +110,14 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
             </label>
                     Eligibility Rule
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
-                    && <div className="my-2"><SearchQueryBuilder
-                      studyEnvContext={studyEnvContext}
-                      onSearchExpressionChange={exp => updateWorkingForm({
-                        ...workingForm, eligibilityRule: exp
-                      })}/></div>}
+              && <div className="my-2">
+                <LazySearchQueryBuilder
+                  studyEnvContext={studyEnvContext}
+                  onSearchExpressionChange={exp => updateWorkingForm({
+                    ...workingForm, eligibilityRule: exp
+                  })}
+                  searchExpression={(workingForm as Survey).eligibilityRule || ''}/>
+              </div>}
 
             <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
               onChange={e => {

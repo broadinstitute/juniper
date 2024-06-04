@@ -1,6 +1,6 @@
 import {
   isBooleanSearchExpression,
-  isComparisonSearchExpression,
+  isComparisonSearchFacet,
   isSearchVariable,
   SearchExpression,
   Term
@@ -8,7 +8,8 @@ import {
 import { RuleGroupArray, RuleGroupType } from 'react-querybuilder'
 
 /**
- *
+ * Converts a SearchExpression object into a RuleGroupType object,
+ * which can be used by the react-querybuilder component.
  */
 export const toReactQueryBuilderState = (searchExpression: SearchExpression): RuleGroupType => {
   return {
@@ -26,9 +27,9 @@ const _toReactQueryBuilderState = (expression: SearchExpression): RuleGroupArray
     }]
   }
 
-  if (isComparisonSearchExpression(expression)) {
+  if (isComparisonSearchFacet(expression)) {
     return [{
-      field: termToString(expression.left),
+      field: termToString(expression.left) || '',
       value: termToString(expression.right),
       operator: expression.comparisonOperator
     }]
@@ -36,9 +37,12 @@ const _toReactQueryBuilderState = (expression: SearchExpression): RuleGroupArray
   throw new Error('')
 }
 
-const termToString = (term: Term): string => {
+const termToString = (term: Term): string | null => {
   if (isSearchVariable(term)) {
-    return `{${term.model}.${term.field.join('.')}}`
+    if (term.field.length === 0) {
+      return term.model
+    }
+    return `${term.model}.${term.field.join('.')}`
   }
-  return term.toString()
+  return term ? term.toString() : null
 }
