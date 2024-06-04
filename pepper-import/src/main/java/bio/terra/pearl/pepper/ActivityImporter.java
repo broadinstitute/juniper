@@ -160,8 +160,8 @@ public class ActivityImporter {
                     .name(pepperQuestionDef.getStableId())
                     .type(questionType)
                     .title(titleMap)
-                    .required(false) //todo
-                    //.isRequired() //todo
+                    .required(false)
+                    //.isRequired() //revisit
                     .inputType(inputType)
                     .choices(choices)
                     .visibleIf(blockDef.getShownExpr())
@@ -177,7 +177,6 @@ public class ActivityImporter {
         String questionType = pepperQuestionDef.getQuestionType().name();
         if (questionType.equalsIgnoreCase("DATE")) {
             questionType = "TEXT";
-            //inputType = "DATE";
         }
         if (questionType.equalsIgnoreCase("AGREEMENT")) {
             questionType = "boolean";
@@ -185,7 +184,6 @@ public class ActivityImporter {
         List<SurveyJSQuestion.Choice> choices = null;
         if (questionType.equalsIgnoreCase("PICKLIST")) {
             questionType = "dropdown";
-            //inputType = null;
             PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
             if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST
                     && picklistQuestionDef.getSelectMode() == PicklistSelectMode.SINGLE
