@@ -27,7 +27,8 @@ export default function FormOptionsModal({
     </Modal.Header>
     <Modal.Body>
       <form>
-        <FormOptions studyEnvContext={studyEnvContext} workingForm={workingForm} updateWorkingForm={updateWorkingForm}/>
+        <FormOptions studyEnvContext={studyEnvContext}
+          initialWorkingForm={workingForm} updateWorkingForm={updateWorkingForm}/>
       </form>
       <div className="fw-light fst-italic mt-4">
         Note: you must  &quot;Save&quot; the form
@@ -46,18 +47,18 @@ export default function FormOptionsModal({
 /**
  * Renders the 'options' for a form, e.g. who is allowed to take it, if it's required, how it's assigned, etc...
  */
-export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
+export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorkingForm }:
                               {
                                 studyEnvContext: StudyEnvContextT,
-                                workingForm: VersionedForm,
+                                initialWorkingForm: VersionedForm,
                                 updateWorkingForm: (props: SaveableFormProps) => void
                               }) => {
-  const isSurvey = !!(workingForm as Survey).surveyType
+  const workingForm = initialWorkingForm as Survey
 
   const { user } = useUser()
 
   return <>
-    {isSurvey &&
+    {(workingForm && workingForm.surveyType) &&
         <div>
           <div className="d-flex mt-3">Survey options <InfoPopup placement="right" content={<div>
               See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
@@ -67,36 +68,36 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
           </div>
           <div className="p-2">
             <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).required}
+              <input type="checkbox" checked={workingForm.required}
                 onChange={e => updateWorkingForm({
                   ...workingForm, required: e.target.checked
                 })}
               /> Required
             </label>
             <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).assignToAllNewEnrollees}
+              <input type="checkbox" checked={workingForm.assignToAllNewEnrollees}
                 onChange={e => updateWorkingForm({
                   ...workingForm, assignToAllNewEnrollees: e.target.checked
                 })}
               /> Auto-assign to new participants
             </label>
             <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).assignToExistingEnrollees}
+              <input type="checkbox" checked={workingForm.assignToExistingEnrollees}
                 onChange={e => updateWorkingForm({
                   ...workingForm, assignToExistingEnrollees: e.target.checked
                 })}
               /> Auto-assign to existing participants
             </label>
             <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).autoUpdateTaskAssignments}
+              <input type="checkbox" checked={workingForm.autoUpdateTaskAssignments}
                 onChange={e => updateWorkingForm({
                   ...workingForm, autoUpdateTaskAssignments: e.target.checked
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            { ((workingForm as Survey).surveyType !== 'ADMIN') &&
+            { (workingForm.surveyType !== 'ADMIN' && workingForm.surveyType !== 'OUTREACH') &&
             <label className="form-label d-block">
-              <input type="checkbox" checked={(workingForm as Survey).allowAdminEdit}
+              <input type="checkbox" checked={workingForm.allowAdminEdit}
                 onChange={e => updateWorkingForm({
                   ...workingForm, allowAdminEdit: e.target.checked
                 })}
@@ -110,7 +111,7 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                     ...workingForm, eligibilityRule: exp
                   })}/></div>}
 
-            <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
+            <input type="text" className="form-control" value={workingForm.eligibilityRule || ''}
               onChange={e => {
                 updateWorkingForm({
                   ...workingForm, eligibilityRule: e.target.value
@@ -120,7 +121,7 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
           </div>
         </div>
     }
-    {!isSurvey && <>
+    {!!workingForm.surveyType && <>
         This form has no configurable options
     </>}
   </>

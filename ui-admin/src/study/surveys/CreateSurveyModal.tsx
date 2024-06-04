@@ -95,7 +95,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
         {StableIdInput}
         <FormOptions
           studyEnvContext={studyEnvContext}
-          workingForm={form}
+          initialWorkingForm={form}
           updateWorkingForm={(updates => {
             setForm({ ...form, ...updates })
           })}
@@ -140,7 +140,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
       <LoadingSpinner isLoading={isLoading}>
         <button
           className="btn btn-primary"
-          disabled={!form.name || !form.stableId || (!form.allowAdminEdit && !form.allowParticipantStart)}
+          disabled={!form.name || !form.stableId}
           onClick={createSurvey}
         >Create</button>
         <button className="btn btn-secondary" onClick={() => {
