@@ -51,10 +51,11 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
   enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey,
   response?: SurveyResponse, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
-  const [isEditing, setIsEditing] = useState(configSurvey.survey.surveyType === 'ADMIN')
   const { user } = useUser()
   const navigate = useNavigate()
   const location = useLocation()
+  // Admin-only forms should default to edit mode
+  const [isEditing, setIsEditing] = useState(configSurvey.survey.surveyType === 'ADMIN')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
   const [displayStatus, setDisplayStatus] = useState<AutosaveStatus | undefined>()
 
@@ -116,6 +117,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
                   setIsEditing(false)
                   navigate(`print${location.search}`)
                 }}
+                disabled={!response?.answers.length}
                 icon={faPrint}
                 label="Printing"
                 description="Print or download the form"
