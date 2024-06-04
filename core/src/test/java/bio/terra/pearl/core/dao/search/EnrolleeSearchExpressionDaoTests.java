@@ -122,7 +122,12 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
-        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(salk.getId())));
+        EnrolleeSearchExpressionResult result = results.get(0);
+        Assertions.assertEquals(salk.getId(), result.getEnrollee().getId());
+        Assertions.assertEquals(
+                "answer",
+                result.getAnswers().get(0).getStringValue()
+        );
     }
 
     @Test
@@ -476,8 +481,8 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testLatestKit(TestInfo info) throws JsonProcessingException {
-        Enrollee e = enrolleeFactory.buildPersisted(getTestName(info));
-        kitRequestFactory.buildPersisted(getTestName(info), e, PepperKitStatus.CREATED);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.CREATED);
 
         EnrolleeSearchExpression createdExp = enrolleeSearchExpressionParser.parseRule(
                 "{latestKit.status} = 'CREATED'"
@@ -490,34 +495,34 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         List<EnrolleeSearchExpressionResult> resultsCreated =
                 enrolleeSearchExpressionDao.executeSearch(
                         createdExp,
-                        e.getStudyEnvironmentId());
+                        enrollee.getStudyEnvironmentId());
 
         assertEquals(1, resultsCreated.size());
-        assertEquals(e.getId(), resultsCreated.get(0).getEnrollee().getId());
+        assertEquals(enrollee.getId(), resultsCreated.get(0).getEnrollee().getId());
         assertEquals(KitRequestStatus.CREATED, resultsCreated.get(0).getLatestKit().getStatus());
 
         List<EnrolleeSearchExpressionResult> resultsErrored =
                 enrolleeSearchExpressionDao.executeSearch(
                         erroredExp,
-                        e.getStudyEnvironmentId());
+                        enrollee.getStudyEnvironmentId());
 
         assertEquals(0, resultsErrored.size());
 
-        kitRequestFactory.buildPersisted(getTestName(info), e, PepperKitStatus.ERRORED);
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.ERRORED);
 
         resultsErrored =
                 enrolleeSearchExpressionDao.executeSearch(
                         erroredExp,
-                        e.getStudyEnvironmentId());
+                        enrollee.getStudyEnvironmentId());
 
         assertEquals(1, resultsErrored.size());
-        assertEquals(e.getId(), resultsErrored.get(0).getEnrollee().getId());
+        assertEquals(enrollee.getId(), resultsErrored.get(0).getEnrollee().getId());
         assertEquals(KitRequestStatus.ERRORED, resultsErrored.get(0).getLatestKit().getStatus());
 
         resultsCreated =
                 enrolleeSearchExpressionDao.executeSearch(
                         createdExp,
-                        e.getStudyEnvironmentId());
+                        enrollee.getStudyEnvironmentId());
 
         assertEquals(0, resultsCreated.size());
 

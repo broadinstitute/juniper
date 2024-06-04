@@ -45,7 +45,7 @@ describe('AdvanceSearchModal', () => {
 
     await userEvent.click(screen.getByText('Search'))
     expect(mockSetSearchStateFn).toHaveBeenCalledWith({
-      basicSearch: '',
+      keywordSearch: '',
       custom: '',
       latestKitStatus: [],
       minAge: undefined,

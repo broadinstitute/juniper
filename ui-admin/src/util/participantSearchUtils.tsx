@@ -156,7 +156,7 @@ export const toExpression = (searchState: ParticipantSearchState) => {
 /**
  * Returns the search expression state as a list of human-readable facets.
  */
-export const getFacets = (searchState: ParticipantSearchState, opts?: { includeBasicSearch: boolean }): {
+export const getFacets = (searchState: ParticipantSearchState, opts?: { includeKeywordSearch: boolean }): {
   label: string,
   value: string
 }[] => {
@@ -164,7 +164,7 @@ export const getFacets = (searchState: ParticipantSearchState, opts?: { includeB
 
   for (const [key, value] of Object.entries(searchState)) {
     if (value !== DefaultParticipantSearchState[key as keyof ParticipantSearchState]) {
-      if (key === 'basicSearch' && !opts?.includeBasicSearch) {
+      if (key === 'keywordSearch' && !opts?.includeKeywordSearch) {
         continue
       }
 

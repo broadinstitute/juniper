@@ -26,10 +26,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Component
 public class EnrolleeSearchExpressionDao {
     private final Jdbi jdbi;
+
     public EnrolleeSearchExpressionDao(Jdbi jdbi) {
         this.jdbi = jdbi;
     }
@@ -77,51 +79,78 @@ public class EnrolleeSearchExpressionDao {
                             .map(rs, ctx)
             );
 
-            // Loop through all the columns to see if any of the possible extra objects
-            // are present. We cannot check on their existence without throwing and catching
-            // SQL exceptions, so it is better to loop through columns to check presence.
-            // (the column count starts from 1)
-            for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
-                String columnName = rs.getMetaData().getColumnName(i);
+            // anything that starts with "task" will be added to the tasks list
+            mapAllBeans(
+                    rs,
+                    ctx,
+                    ParticipantTask.class,
+                    "task",
+                    enrolleeSearchExpressionResult.getTasks()::add
+            );
 
-                if (columnName.startsWith("answer_") && columnName.endsWith("_created_at")) {
-                    String questionStableId = columnName.substring("answer_".length(),
-                            columnName.length() - "_created_at".length());
+            mapAllBeans(
+                    rs,
+                    ctx,
+                    Answer.class,
+                    "answer",
+                    enrolleeSearchExpressionResult.getAnswers()::add
+            );
 
-                    enrolleeSearchExpressionResult.getAnswers().add(
-                            BeanMapper.of(Answer.class, "answer_" + questionStableId)
-                                    .map(rs, ctx)
-                    );
-                }
+            mapBean(rs,
+                    ctx,
+                    MailingAddress.class,
+                    "mailing_address",
+                    enrolleeSearchExpressionResult::setMailingAddress);
 
-                if (columnName.startsWith("task_") && columnName.endsWith("_created_at")) {
-                    String targetStableId = columnName.substring("task_".length(),
-                            columnName.length() - "_created_at".length());
-
-                    enrolleeSearchExpressionResult.getTasks().add(
-                            BeanMapper.of(ParticipantTask.class, "task_" + targetStableId)
-                                    .map(rs, ctx)
-                    );
-                }
-
-                if (columnName.startsWith("mailing_address_") && columnName.endsWith("_created_at")) {
-                    enrolleeSearchExpressionResult.setMailingAddress(
-                            BeanMapper.of(MailingAddress.class, "mailing_address")
-                                    .map(rs, ctx)
-                    );
-                }
-
-                if (columnName.startsWith("latest_kit_") && columnName.endsWith("_created_at")) {
-                    enrolleeSearchExpressionResult.setLatestKit(
-                            BeanMapper.of(KitRequest.class, "latest_kit_")
-                                    .map(rs, ctx)
-                    );
-                }
-            }
+            mapBean(rs,
+                    ctx,
+                    KitRequest.class,
+                    "latest_kit",
+                    enrolleeSearchExpressionResult::setLatestKit);
 
             return enrolleeSearchExpressionResult;
         }
 
+        private boolean isColumnPresent(ResultSet rs, String columnName) {
+            try {
+                rs.findColumn(columnName);
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+
+
+        private <T> void mapBean(
+                ResultSet rs,
+                StatementContext ctx,
+                Class<T> clazz,
+                String prefix,
+                Consumer<T> callback) throws SQLException {
+            if (isColumnPresent(rs, prefix + "_id")) {
+                callback.accept(BeanMapper.of(clazz, prefix).map(rs, ctx));
+            }
+        }
+
+        private <T> void mapAllBeans(
+                ResultSet rs,
+                StatementContext ctx,
+                Class<T> clazz,
+                String prefix,
+                Consumer<T> callback) throws SQLException {
+            // Loop through all the columns to see if any of the possible extra objects
+            // are present.
+            // (the column count starts from 1)
+            for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
+                String columnName = rs.getMetaData().getColumnName(i);
+                if (columnName.startsWith(prefix) && columnName.endsWith("_created_at")) {
+                    String modelName = columnName.substring(
+                            0,
+                            columnName.length() - "_created_at".length());
+                    callback.accept(BeanMapper.of(clazz, modelName).map(rs, ctx));
+                }
+            }
+        }
     }
 
     /**

@@ -58,6 +58,9 @@ public class LatestKitTerm implements SearchTerm {
 
     @Override
     public Optional<Condition> requiredConditions() {
+        // creates a subquery to ensure that the latest kit request is the only one returned
+        // could also be done with and order by/limit, but this fits into the existing search
+        // query infra better
         return Optional.of(condition("NOT EXISTS (SELECT other_kit_request.id FROM kit_request other_kit_request WHERE other_kit_request.enrollee_id = enrollee.id AND other_kit_request.last_updated_at > latest_kit.last_updated_at)"));
     }
 

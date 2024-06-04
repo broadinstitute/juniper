@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
 
-describe('BasicSearch', () => {
+describe('keywordSearch', () => {
   test('can specify keyword facet value', async () => {
     const updateSearchState = jest.fn()
     const { RoutedComponent } = setupRouterTest(
@@ -17,13 +17,13 @@ describe('BasicSearch', () => {
     expect(searchBox).toBeInTheDocument()
     await userEvent.type(searchBox, 'test{enter}')
     await waitFor(
-      () => expect(updateSearchState).toHaveBeenCalledWith('basicSearch', 'test')
+      () => expect(updateSearchState).toHaveBeenCalledWith('keywordSearch', 'test')
     )
 
     await userEvent.clear(searchBox)
     await userEvent.type(searchBox, '{enter}')
     await waitFor(
-      () => expect(updateSearchState).toHaveBeenCalledWith('basicSearch', '')
+      () => expect(updateSearchState).toHaveBeenCalledWith('keywordSearch', '')
     )
   })
 })

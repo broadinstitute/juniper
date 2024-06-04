@@ -6,8 +6,8 @@ describe('toExpression', () => {
     expect(result).toEqual('{enrollee.subject} = true')
   })
   it('filters basic search', () => {
-    const basicSearch = { ...DefaultParticipantSearchState, basicSearch: 'test' }
-    const result = toExpression(basicSearch)
+    const keywordSearch = { ...DefaultParticipantSearchState, keywordSearch: 'test' }
+    const result = toExpression(keywordSearch)
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
       + 'or {enrollee.shortcode} contains \'test\') '
