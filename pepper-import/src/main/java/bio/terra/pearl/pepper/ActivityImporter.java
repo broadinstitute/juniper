@@ -1,7 +1,6 @@
 package bio.terra.pearl.pepper;
 
 import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.pepper.dto.SurveyJSContent;
 import bio.terra.pearl.pepper.dto.SurveyJSQuestion;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
@@ -49,13 +48,11 @@ public class ActivityImporter {
     private final Gson gson = GsonUtil.standardGson();
     private final ObjectMapper objectMapper;
     private final I18nContentRenderer i18nContentRenderer = new I18nContentRenderer();
-    private final RandomUtilService randomUtilService;
     private final String[] languages = {"en", "es", "de", "fr", "hi", "it", "ja", "pl", "pt", "ru", "tr", "zh"};
 
 
-    public ActivityImporter(ObjectMapper objectMapper, RandomUtilService randomUtilService) {
+    public ActivityImporter(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.randomUtilService = randomUtilService;
     }
 
     public Survey parsePepperForm(Config varsConfig, Path dirPath, Path path) {
@@ -210,12 +207,11 @@ public class ActivityImporter {
 
     private String getQuestionTxt(Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef, String lang) {
         String questionText = i18nContentRenderer.renderToString(pepperQuestionDef.getPromptTemplate().getTemplateText(), allLangMap.get(lang));
-        if (StringUtils.isEmpty(questionText)) {
-            if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
-                TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
-                questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
-            }
+        if (StringUtils.isEmpty(questionText) && pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+            questionText = i18nContentRenderer.renderToString(textQuestionDef.getPlaceholderTemplate().getTemplateText(), allLangMap.get(lang));
         }
+
         if (questionText.contains("$")) {
             //get txt from variable
             if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
@@ -276,8 +272,7 @@ public class ActivityImporter {
                 .html(htmlTxtMap)
                 .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
                 .build();
-        JsonNode contentNode = objectMapper.valueToTree(surveyJSContent);
-        return contentNode;
+        return objectMapper.valueToTree(surveyJSContent);
     }
 
 }
