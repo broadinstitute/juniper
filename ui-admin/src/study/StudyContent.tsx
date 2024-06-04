@@ -53,17 +53,17 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     }, { setIsLoading })
   }
 
-  function getUniqueStableIds(configuredSurveys: StudyEnvironmentSurveyNamed[], surveyType: string) {
+  function getUniqueStableIdsForType(configuredSurveys: StudyEnvironmentSurveyNamed[], surveyType: string) {
     return _uniq(configuredSurveys
       .filter(configSurvey => configSurvey.survey.surveyType === surveyType)
       .sort((a, b) => a.surveyOrder - b.surveyOrder)
       .map(configSurvey => configSurvey.survey.stableId))
   }
 
-  const researchSurveyStableIds = getUniqueStableIds(configuredSurveys, 'RESEARCH')
-  const outreachSurveyStableIds = getUniqueStableIds(configuredSurveys, 'OUTREACH')
-  const consentSurveyStableIds = getUniqueStableIds(configuredSurveys, 'CONSENT')
-  const adminFormStableIds = getUniqueStableIds(configuredSurveys, 'ADMIN')
+  const researchSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'RESEARCH')
+  const outreachSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'OUTREACH')
+  const consentSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'CONSENT')
+  const adminFormStableIds = getUniqueStableIdsForType(configuredSurveys, 'ADMIN')
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Forms & Surveys') }
