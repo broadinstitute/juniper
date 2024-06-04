@@ -58,7 +58,7 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
   const { user } = useUser()
 
   return <>
-    {(workingForm && workingForm.surveyType) &&
+    {(workingForm && !!workingForm.surveyType) &&
         <div>
           <div className="d-flex mt-3">Survey options <InfoPopup placement="right" content={<div>
               See the Options <FontAwesomeIcon icon={faArrowRight}/> Configuration section in
@@ -121,7 +121,7 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
           </div>
         </div>
     }
-    {!!workingForm.surveyType && <>
+    {!workingForm.surveyType && <>
         This form has no configurable options
     </>}
   </>
