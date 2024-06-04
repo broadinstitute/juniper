@@ -5,7 +5,6 @@ import bio.terra.pearl.core.service.participant.RandomUtilService;
 import bio.terra.pearl.pepper.dto.SurveyJSContent;
 import bio.terra.pearl.pepper.dto.SurveyJSQuestion;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -59,7 +58,7 @@ public class ActivityImporter {
         this.randomUtilService = randomUtilService;
     }
 
-    public Survey parsePepperForm(Config varsConfig, Path dirPath, Path path) throws JsonProcessingException {
+    public Survey parsePepperForm(Config varsConfig, Path dirPath, Path path) {
         File file = dirPath.resolve(path).toFile();
         if (!file.exists()) {
             throw new RuntimeException("Activity definition file is missing: " + file);
@@ -90,7 +89,7 @@ public class ActivityImporter {
         return activityDef;
     }
 
-    public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Map<String, Object>> allLangMap) throws JsonProcessingException {
+    public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Map<String, Object>> allLangMap) {
         SurveyPopDto survey = SurveyPopDto.builder()
                 .stableId(activityDef.getActivityCode())
                 .version(1)

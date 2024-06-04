@@ -2,7 +2,6 @@ package bio.terra.pearl.pepper;
 
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.internal.IOInternalException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -38,7 +37,7 @@ public class PepperImportCliApp implements CommandLineRunner {
     private ObjectMapper objectMapper;
 
     @Override
-    public void run(String... args) throws JsonProcessingException {
+    public void run(String... args) {
         log.info("EXECUTING : command line importer");
         // these vars should be read from command line or a conf file eventually
         String studyDir = "atcp";
