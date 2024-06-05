@@ -11,8 +11,25 @@ import CohortRuleParser, {
 import CohortRuleLexer from '../generated/search-exp-parser/CohortRuleLexer'
 
 /**
+ * Parses a search expression string into a SearchExpression object.
+ */
+export const parseExpression = (expression: string): SearchExpression => {
+  const chars = new CharStream(expression)
+  const lexer = new CohortRuleLexer(chars)
+  lexer.removeErrorListeners()
+  lexer.addErrorListener(new ThrowErrorListener())
+  const tokens = new CommonTokenStream(lexer)
+  const parser = new CohortRuleParser(tokens)
+  parser.removeErrorListeners()
+  parser.addErrorListener(new ThrowErrorListener())
+  const tree = parser.expr()
+
+  return _parseExpression(tree)
+}
+
+/**
  * Represents the overall search expression, which can either be a BooleanSearchExpression
- * or a ComparisonSearchExpression. This is a recursive data structure.
+ * or a ComparisonSearchFacet. This is a recursive data structure.
  */
 export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet
 
@@ -66,23 +83,6 @@ export type SearchVariable = {
  */
 export const isSearchVariable = (term: Term): term is SearchVariable => {
   return (term as SearchVariable).model !== undefined
-}
-
-/**
- * Parses a search expression string into a SearchExpression object.
- */
-export const parseExpression = (expression: string): SearchExpression => {
-  const chars = new CharStream(expression)
-  const lexer = new CohortRuleLexer(chars)
-  lexer.removeErrorListeners()
-  lexer.addErrorListener(new ThrowErrorListener())
-  const tokens = new CommonTokenStream(lexer)
-  const parser = new CohortRuleParser(tokens)
-  parser.removeErrorListeners()
-  parser.addErrorListener(new ThrowErrorListener())
-  const tree = parser.expr()
-
-  return _parseExpression(tree)
 }
 
 // Helpers for parsing the ANTLR parse tree
