@@ -142,7 +142,7 @@ public class ActivityImporter {
                 inputType = "DATE";
             }
             List<SurveyJSQuestion.Choice> choices = null;
-            if (questionType.equalsIgnoreCase("PICKLIST")) {
+            if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
                 choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
             }
 
