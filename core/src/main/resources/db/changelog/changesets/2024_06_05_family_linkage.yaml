@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
-      id: "question_def_constraint"
-      author: dbush
+      id: "family_linkage_models"
+      author: connorlbark
       changes:
         - createTable:
             tableName: family
