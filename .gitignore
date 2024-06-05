@@ -6,8 +6,6 @@ build/
 !**/src/test/**/build/
 bootrun.log
 
-ui-admin/src/generated/**
-
 ### STS ###
 .apt_generated
 .classpath

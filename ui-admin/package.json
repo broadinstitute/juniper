@@ -46,10 +46,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prestart": "npm run generate",
-    "prebuild": "npm run generate",
-    "generate": "npm run gen-expression-parser",
-    "gen-expression-parser": "(cd ../core/src/main/antlr/bio/terra/pearl/core/antlr; antlr -Dlanguage=TypeScript -o ../../../../../../../../../ui-admin/src/generated/search-exp-parser CohortRule.g4 -visitor -no-listener)",
     "tsc": "tsc"
   },
   "proxy": "http://localhost:8080",
