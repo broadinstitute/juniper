@@ -11,10 +11,11 @@ import { usePortalLanguage } from 'portal/usePortalLanguage'
 
 /** allows editing of a survey response */
 export default function SurveyResponseEditor({
-  studyEnvContext, response, survey, enrollee, adminUserId, onUpdate, setAutosaveStatus
+  studyEnvContext, response, survey, enrollee, adminUserId, onUpdate, setAutosaveStatus, updateResponseMap
 }: {
   studyEnvContext: StudyEnvContextT, response?: SurveyResponse, setAutosaveStatus: (status: AutosaveStatus) => void,
-  survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void
+  survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void,
+  updateResponseMap: (stableId: string, response: SurveyResponse) => void
 }) {
   const { defaultLanguage } = usePortalLanguage()
   const taskId = useTaskIdParam()
@@ -42,6 +43,7 @@ export default function SurveyResponseEditor({
           onUpdate()
           Store.addNotification(successNotification('Response saved'))
         }}
+        updateResponseMap={updateResponseMap}
         setAutosaveStatus={setAutosaveStatus}
         onFailure={() => Store.addNotification(failureNotification('Response could not be saved'))}
         updateProfile={() => { /*no-op for admins*/ }}

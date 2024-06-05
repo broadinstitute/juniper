@@ -90,6 +90,7 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         studyEnvParams={studyEnvParams}
         form={formAndResponses.studyEnvironmentSurvey.survey}
         enrollee={enrollee}
+        updateResponseMap={() => { /* no-op */ }}
         proxyProfile={proxyProfile}
         response={formAndResponses.surveyResponse}
         selectedLanguage={selectedLanguage}

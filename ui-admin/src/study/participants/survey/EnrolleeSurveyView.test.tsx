@@ -22,6 +22,7 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
+        updateResponseMap={jest.fn()}
         onUpdate={jest.fn()}
         response={response}/>)
     render(RoutedComponent)
@@ -39,6 +40,7 @@ describe('RawEnrolleeSurveyView', () => {
     const { RoutedComponent } = setupRouterTest(
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
+        updateResponseMap={jest.fn()}
         configSurvey={mockConfiguredSurvey()}
         onUpdate={jest.fn()}
         response={response}/>)

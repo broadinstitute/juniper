@@ -27,8 +27,10 @@ import classNames from 'classnames'
 import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons'
 
 /** Show responses for a survey based on url param */
-export default function SurveyResponseView({ enrollee, responseMap, studyEnvContext, onUpdate }: {
-  enrollee: Enrollee, responseMap: ResponseMapT, studyEnvContext: StudyEnvContextT, onUpdate: () => void
+export default function SurveyResponseView({ enrollee, responseMap, updateResponseMap, studyEnvContext, onUpdate }: {
+  enrollee: Enrollee, responseMap: ResponseMapT,
+  updateResponseMap: (stableId: string, response: SurveyResponse) => void,
+  studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const params = useParams<EnrolleeParams>()
 
@@ -43,12 +45,17 @@ export default function SurveyResponseView({ enrollee, responseMap, studyEnvCont
   }
   // key forces the component to be destroyed/remounted when different survey selected
   return <RawEnrolleeSurveyView key={surveyStableId} enrollee={enrollee} studyEnvContext={studyEnvContext}
+    updateResponseMap={updateResponseMap}
     configSurvey={surveyAndResponses.survey} response={surveyAndResponses.response} onUpdate={onUpdate}/>
 }
 
 /** show responses for a survey */
-export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyEnvContext, onUpdate }: {
+export function RawEnrolleeSurveyView({
+  enrollee, configSurvey, response, studyEnvContext, onUpdate,
+  updateResponseMap
+}: {
   enrollee: Enrollee, configSurvey: StudyEnvironmentSurvey,
+  updateResponseMap: (stableId: string, response: SurveyResponse) => void,
   response?: SurveyResponse, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { user } = useUser()
@@ -119,6 +126,7 @@ export function RawEnrolleeSurveyView({ enrollee, configSurvey, response, studyE
         userId={enrollee.participantUserId}
         studyEnvContext={studyEnvContext}/>}
       {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
+        updateResponseMap={updateResponseMap}
         setAutosaveStatus={setAutosaveStatus}
         survey={configSurvey.survey} response={response} adminUserId={user.id}
         enrollee={enrollee} onUpdate={onUpdate}/>}

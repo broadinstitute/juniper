@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ParticipantTask, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
@@ -18,7 +18,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import { faCircleCheck, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
 import { faCircle as faEmptyCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
-import { Enrollee, ParticipantTaskStatus } from '@juniper/ui-core'
+import { Enrollee, ParticipantTaskStatus, SurveyType } from '@juniper/ui-core'
 import EnrolleeOverview from './EnrolleeOverview'
 import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 
@@ -45,25 +45,9 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
   enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { currentEnv, currentEnvPath } = studyEnvContext
+  const [responseMap, setResponseMap] = React.useState<ResponseMapT>({})
 
   const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
-  const responseMap: ResponseMapT = {}
-  surveys.forEach(configSurvey => {
-    // to match responses to surveys, filter using the tasks, since those have the stableIds
-    // this is valid since it's currently enforced that all survey responses are done as part of a task,
-    const matchedTask = enrollee.participantTasks
-      .find(task => task.targetStableId === configSurvey.survey.stableId)
-    if (!matchedTask) {
-      return
-    }
-    const matchedResponse = enrollee.surveyResponses
-      .find(response => matchedTask.surveyResponseId === response.id)
-    responseMap[configSurvey.survey.stableId] = {
-      survey: configSurvey,
-      response: matchedResponse,
-      task: matchedTask
-    }
-  })
 
   const researchSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'RESEARCH')
@@ -73,6 +57,38 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
     .filter(survey => survey.survey.surveyType === 'CONSENT')
   const adminSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'ADMIN')
+
+  const updateResponseMap = (stableId: string, response: SurveyResponse) => {
+    console.log('updating response map', stableId, response)
+    setResponseMap({
+      ...responseMap,
+      [stableId]: {
+        ...responseMap[stableId],
+        response
+      }
+    })
+  }
+
+  useEffect(() => {
+    const updatedResponseMap: ResponseMapT = {}
+    surveys.forEach(configSurvey => {
+      // to match responses to surveys, filter using the tasks, since those have the stableIds
+      // this is valid since it's currently enforced that all survey responses are done as part of a task,
+      const matchedTask = enrollee.participantTasks
+        .find(task => task.targetStableId === configSurvey.survey.stableId)
+      if (!matchedTask) {
+        return
+      }
+      const matchedResponse = enrollee.surveyResponses
+        .find(response => matchedTask.surveyResponseId === response.id)
+      updatedResponseMap[configSurvey.survey.stableId] = {
+        survey: configSurvey,
+        response: matchedResponse,
+        task: matchedTask
+      }
+    })
+    setResponseMap(updatedResponseMap)
+  }, [enrollee])
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
@@ -111,7 +127,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(responseMap[stableId]?.response)}
+                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}/>
@@ -124,7 +140,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(responseMap[stableId]?.response)}
+                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -141,7 +157,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(responseMap[stableId]?.response)}
+                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -158,7 +174,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(responseMap[stableId]?.response)}
+                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -208,6 +224,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                 <Route path="surveys">
                   <Route path=":surveyStableId/*" element={<SurveyResponseView enrollee={enrollee}
                     responseMap={responseMap}
+                    updateResponseMap={updateResponseMap}
                     studyEnvContext={studyEnvContext}
                     onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
@@ -238,13 +255,13 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
 }
 
 /** returns an icon based on the enrollee's responses.  Note this does not handle multi-responses yet */
-const badgeForResponses = (response?: SurveyResponse) => {
+const badgeForResponses = (surveyType: SurveyType, response?: SurveyResponse) => {
   if (!response) {
     return statusDisplayMap['NEW']
   } else {
     if (response.complete) {
       return statusDisplayMap['COMPLETE']
-    } else if (response.answers.length === 0) {
+    } else if (surveyType === 'OUTREACH') {
       return statusDisplayMap['VIEWED']
     } else {
       return statusDisplayMap['IN_PROGRESS']

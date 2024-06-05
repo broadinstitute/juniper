@@ -24,8 +24,9 @@ type SurveyFullDataViewProps = {
 }
 
 /** renders every item in a survey response */
-export default function SurveyFullDataView({ answers, resumeData, survey, userId, studyEnvContext }:
-  SurveyFullDataViewProps) {
+export default function SurveyFullDataView({
+  answers, resumeData, survey, userId, studyEnvContext
+}: SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
   const surveyJsData = makeSurveyJsData(resumeData, answers, userId)

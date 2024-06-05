@@ -138,6 +138,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
 
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
+        List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
+        List<Answer> existingAnswers = answerService.findByResponse(response.getId()); //TODO
+        allAnswers.addAll(existingAnswers);
+        response.setAnswers(allAnswers);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())

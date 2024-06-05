@@ -24,10 +24,12 @@ export type AutosaveStatus = 'SAVING' | 'SAVED' | 'ERROR'
 
 /** handles paging the form */
 export function PagedSurveyView({
+  updateResponseMap,
   studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage,
   setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
 }: {
     studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse,
+    updateResponseMap: (stableId: string, response: SurveyResponse) => void
     onSuccess: () => void, onFailure: () => void,
     selectedLanguage: string,
     setAutosaveStatus: (status: AutosaveStatus) => void,
@@ -125,6 +127,7 @@ export function PagedSurveyView({
       updateEnrollee(updatedEnrollee, true)
       lastAutoSaveErrored.current = false
       setAutosaveStatus('SAVED')
+      updateResponseMap(form.stableId, response.response)
     }).catch(() => {
       // if the operation fails, restore the state from before so the next diff operation will capture the changes
       // that failed to save this time
