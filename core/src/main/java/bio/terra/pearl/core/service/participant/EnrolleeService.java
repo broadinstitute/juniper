@@ -38,21 +38,22 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final ParticipantTaskDao participantTaskDao;
     private final SurveyResponseDao surveyResponseDao;
     private final ProfileService profileService;
-    private SurveyResponseService surveyResponseService;
-    private ParticipantTaskService participantTaskService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private NotificationService notificationService;
-    private DataChangeRecordService dataChangeRecordService;
-    private WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private ParticipantNoteService participantNoteService;
-    private KitRequestService kitRequestService;
-    private AdminTaskService adminTaskService;
-    private SecureRandom secureRandom;
-    private RandomUtilService randomUtilService;
-    private EnrolleeRelationService enrolleeRelationService;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final NotificationService notificationService;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final ParticipantNoteService participantNoteService;
+    private final KitRequestService kitRequestService;
+    private final AdminTaskService adminTaskService;
+    private final SecureRandom secureRandom;
+    private final RandomUtilService randomUtilService;
+    private final EnrolleeRelationService enrolleeRelationService;
+    private final FamilyService familyService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -71,7 +72,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            AdminTaskService adminTaskService, SecureRandom secureRandom,
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
-                           PortalParticipantUserService portalParticipantUserService) {
+                           PortalParticipantUserService portalParticipantUserService,
+                           FamilyService familyService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -91,6 +93,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.randomUtilService = randomUtilService;
         this.enrolleeRelationService = enrolleeRelationService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.familyService = familyService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -136,6 +139,9 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
+        if (enrollee.getFamilyId() != null) {
+            enrollee.setFamily(familyService.find(enrollee.getFamilyId()).orElseThrow(() -> new IllegalStateException("family not found for enrollee")));
+        }
         return enrollee;
     }
 

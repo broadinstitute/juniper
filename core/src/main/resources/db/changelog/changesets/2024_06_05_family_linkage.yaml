@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: "question_def_constraint"
+      author: dbush
+      changes:
+        - createTable:
+            tableName: family
+            columns:
+              - column:
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column:
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: proband_enrollee_id, type: uuid, constraints: { foreignKeyName: fk_family_proband, references: enrollee(id), nullable: false } }
+              - column:
+                  { name: shortcode, type: text, constraints: { nullable: false } }
+              - column:
+                  { name: study_environment_id, type: uuid, constraints: { foreignKeyName: fk_family_study_env, references: study_environment(id), nullable: false } }
+        - addColumn:
+            tableName: enrollee_relation
+            columns:
+              - column:
+                  { name: family_relationship, type: text, constraints: { nullable: true } }
+        - addColumn:
+            tableName: enrollee
+            columns:
+              - column:
+                  { name: family_id, type: uuid, constraints: { foreignKeyName: fk_enrollee_family, references: family(id), nullable: true } }
+
