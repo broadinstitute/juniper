@@ -17,11 +17,13 @@ import org.springframework.stereotype.Service;
  * */
 @Service
 public class BaseSeedPopulator {
-    private AdminUserPopulator adminUserPopulator;
-    private AdminConfigPopulator adminConfigPopulator;
-    private AdminUserService adminUserService;
-    private LanguageTextPopulator languageTextPopulator;
-    private KitTypePopulator kitTypePopulator;
+    private final AdminUserPopulator adminUserPopulator;
+    private final AdminConfigPopulator adminConfigPopulator;
+    private final AdminUserService adminUserService;
+    private final LanguageTextPopulator languageTextPopulator;
+    private final KitTypePopulator kitTypePopulator;
+    private final RolePopulator rolePopulator;
+    private final PermissionPopulator permissionPopulator;
 
     public static final List<String> ADMIN_USERS_TO_POPULATE =
             Arrays.asList("adminUsers/dbush.json", "adminUsers/myanaman.json",
@@ -34,12 +36,15 @@ public class BaseSeedPopulator {
 
     public BaseSeedPopulator(AdminUserPopulator adminUserPopulator, AdminConfigPopulator adminConfigPopulator,
                              AdminUserService adminUserService, KitTypePopulator kitTypePopulator,
-                             LanguageTextPopulator languageTextPopulator) {
+                             LanguageTextPopulator languageTextPopulator, PermissionPopulator permissionPopulator,
+                             RolePopulator rolePopulator) {
         this.adminUserPopulator = adminUserPopulator;
         this.adminConfigPopulator = adminConfigPopulator;
         this.adminUserService = adminUserService;
         this.kitTypePopulator = kitTypePopulator;
         this.languageTextPopulator = languageTextPopulator;
+        this.permissionPopulator = permissionPopulator;
+        this.rolePopulator = rolePopulator;
     }
 
     public SetupStats populate(String filePathName) throws IOException {
@@ -58,6 +63,11 @@ public class BaseSeedPopulator {
         for (String file : LANGUAGE_TEXTS_TO_POPULATE) {
             languageTextPopulator.populateList(new FilePopulateContext(file), false);
         }
+    }
+
+    public void populateRolesAndPermissions() {
+        permissionPopulator.populateList(new FilePopulateContext("iam/permissions.json"), false);
+//        rolePopulator.populateList(new FilePopulateContext("iam/roles.json"), false);
     }
 
     /** This class is NOT persisted, despite extending BaseEntity */
