@@ -3,8 +3,8 @@
   "sectionDtos": [{
     "sectionType": "HERO_WITH_IMAGE",
     "sectionConfigJson": {
-      "title": "Help us understand cardiovascular disease risk among South Asian populations.",
-      "blurb": "The demo Heart Study studies health and genetic information of South Asians living in the United States to better prevent and manage cardiovascular disease risk.",
+      "title": "Help us understand cardiovascular disease risk.",
+      "blurb": "The Demo Heart Study studies health and genetic information to better prevent and manage cardiovascular disease risk.",
       "fullWidth": true,
       "image": { "cleanFileName": "family.png", "version": 1, "alt": "" },
       "imagePosition": "right",
@@ -38,7 +38,7 @@
     "sectionConfigJson": {
       "background": "#F2F2F2",
       "title": "Why is this needed?",
-      "blurb": "Although South Asians represent 23% of the global population and have twice the risk of cardiovascular disease compared to Europeans, they are **significantly underrepresented in genetic studies and research**. Available datasets are limited in size, cultural diversity, and diasporic representation.",
+      "blurb": "Cardiovascular disease is a significant cause of death in the United States and worldwide. Current genetic studies and research may be limited in size, cultural diversity.",
       "fullWidth": true,
       "buttons": [
         {"text": "Scientific Background",
@@ -54,7 +54,7 @@
     "sectionType": "HERO_WITH_IMAGE",
     "sectionConfigJson": {
       "title": "Who can join?",
-      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English\n * Of South Asian Ancestry*\n\n&nbsp;\n\n*Self-identified ancestry from one of the South Asian countries defined by the American Heart Association as Bangladesh, Bhutan, India, the Maldives, Nepal, Pakistan, and Sri Lanka.",
+      "blurb": "Anyone who is:\n\n* Living in the United States\n * Older than 18 years old\n * Comfortable filling out surveys in English or Spanish\n.",
       "fullWidth": true,
       "buttons": [
         {"text": "Get Started",
@@ -104,15 +104,15 @@
       "questions": [
         {
           "question": "What is the Juniper Heart Demo study?",
-          "answer": "Juniper Heart Demo is a nonprofit research initiative that enables South Asian-identifying individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
+          "answer": "Juniper Heart Demo is a nonprofit research initiative that enables individuals to contribute to cardiovascular research by sharing their samples, their clinical information, and their voices."
         },
         {
           "question": "Why are we doing this study?",
-          "answer": "Individuals of South Asian ancestry are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. However, they have historically been underrepresented in genetic studies. In the United States, South Asian ancestry is now considered a risk-enhancing factor for cardiovascular disease, highlighting an awareness but distinct knowledge gap. Juniper Heart Demo aims to address this gap by creating a cohort of South Asian individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk within this population."
+          "answer": "Individuals are disproportionately affected by cardiometabolic diseases, including heart disease, stroke, and diabetes. Risk-enhancing factors for cardiovascular disease are still being developed, highlighting an awareness but distinct knowledge gap. Juniper Heart Demo aims to address this gap by creating a cohort of individuals, from whom survey and genomic data will be analyzed to further our understanding of cardiovascular disease risk."
         },
         {
           "question": "How can I participate?",
-          "answer": "If you are over 18 years of age, live in the United States, and identify as South Asian, you can sign up by clicking [“Join”](/studies/heartdemo/join)."
+          "answer": "If you are over 18 years of age, live in the United States, you can sign up by clicking [“Join”](/studies/heartdemo/join)."
         },
         {
           "question": "What does Juniper Heart Demo do with the data?",
