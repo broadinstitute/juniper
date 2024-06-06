@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -9,6 +10,8 @@ import org.jooq.Condition;
 import java.util.*;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.DATE;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
 
 /**
  * This term can be used to search for any of the profile or mailing address fields within a search expression.
@@ -42,7 +45,7 @@ public class ProfileTerm implements SearchTerm {
             return new SearchValue((givenName + " " + familyName).trim());
         }
 
-        return SearchValue.ofNestedProperty(context.getProfile(), field, FIELDS.get(field));
+        return SearchValue.ofNestedProperty(context.getProfile(), field, FIELDS.get(field).getType());
     }
 
     @Override
@@ -86,19 +89,19 @@ public class ProfileTerm implements SearchTerm {
         return List.of();
     }
 
-    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
-            Map.entry("givenName", SearchValue.SearchValueType.STRING),
-            Map.entry("familyName", SearchValue.SearchValueType.STRING),
-            Map.entry("name", SearchValue.SearchValueType.STRING),
-            Map.entry("contactEmail", SearchValue.SearchValueType.STRING),
-            Map.entry("phoneNumber", SearchValue.SearchValueType.STRING),
-            Map.entry("birthDate", SearchValue.SearchValueType.DATE),
-            Map.entry("sexAtBirth", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.state", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.city", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.postalCode", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.street1", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.street2", SearchValue.SearchValueType.STRING),
-            Map.entry("mailingAddress.country", SearchValue.SearchValueType.STRING)
+    public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
+            Map.entry("givenName", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("familyName", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("name", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("contactEmail", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("phoneNumber", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("birthDate", SearchValueTypeDefinition.ofType(DATE)),
+            Map.entry("sexAtBirth", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.state", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.city", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.postalCode", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.street1", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.street2", SearchValueTypeDefinition.ofType(STRING)),
+            Map.entry("mailingAddress.country", SearchValueTypeDefinition.ofType(STRING))
     );
 }

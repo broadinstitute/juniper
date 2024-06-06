@@ -4,11 +4,11 @@ import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
-import bio.terra.pearl.core.service.search.terms.SearchValue;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
@@ -39,7 +39,7 @@ public class EnrolleeSearchExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public Map<String, SearchValue.SearchValueType> getExpressionSearchFacets(
+  public Map<String, SearchValueTypeDefinition> getExpressionSearchFacets(
       AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
     authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
 

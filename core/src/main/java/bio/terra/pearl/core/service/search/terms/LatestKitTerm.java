@@ -2,14 +2,19 @@ package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
+import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
 import static org.jooq.impl.DSL.condition;
 
 /**
@@ -38,7 +43,7 @@ public class LatestKitTerm implements SearchTerm {
         requests.sort((r1, r2) -> r2.getLastUpdatedAt().compareTo(r1.getLastUpdatedAt()));
         KitRequest latestKit = requests.get(0);
 
-        return SearchValue.ofNestedProperty(latestKit, field, FIELDS.get(field));
+        return SearchValue.ofNestedProperty(latestKit, field, FIELDS.get(field).getType());
     }
 
     @Override
@@ -74,7 +79,16 @@ public class LatestKitTerm implements SearchTerm {
         return List.of();
     }
 
-    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
-            Map.entry("status", SearchValue.SearchValueType.STRING)
+    public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
+            Map.entry(
+                    "status",
+                    SearchValueTypeDefinition
+                            .ofType(STRING)
+                            .withChoices(
+                                    Arrays.asList(KitRequestStatus.values())
+                                            .stream()
+                                            .map(val -> new QuestionChoice(val.name(), val.name()))
+                                            .toList()
+                            ))
     );
 }
