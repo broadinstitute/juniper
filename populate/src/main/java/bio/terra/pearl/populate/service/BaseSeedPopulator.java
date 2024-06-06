@@ -60,13 +60,13 @@ public class BaseSeedPopulator {
     }
 
     public void populateLanguageTexts() {
-//        for (String file : LANGUAGE_TEXTS_TO_POPULATE) {
-//            languageTextPopulator.populateList(new FilePopulateContext(file), false);
-//        }
+        for (String file : LANGUAGE_TEXTS_TO_POPULATE) {
+            languageTextPopulator.populateList(new FilePopulateContext(file), false);
+        }
     }
 
     public void populateRolesAndPermissions() {
-//        permissionPopulator.populateList(new FilePopulateContext("iam/permissions.json"), false);
+        permissionPopulator.populateList(new FilePopulateContext("iam/permissions.json"), false);
         rolePopulator.populateList(new FilePopulateContext("iam/roles.json"), false);
     }
 

@@ -21,17 +21,12 @@
   },
   {
     "name": "team_roles_edit",
-    "displayName": "Team role management NEW",
+    "displayName": "Team role management",
     "description": "View and edit roles assigned to team members"
   },
   {
-    "name": "team_roles_edit_new",
-    "displayName": "Team role management ALSO NEW - test update",
-    "description": "View and edit roles assigned to team members"
-  },
-  {
-    "name": "some_new_permission",
-    "displayName": "A NEW PERMISSION!!!",
-    "description": "This is a new permission"
+    "name": "tdr_export",
+    "displayName": "TDR snapshot management",
+    "description": "Allows user to export study data to Terra Data Repo"
   }
 ]
