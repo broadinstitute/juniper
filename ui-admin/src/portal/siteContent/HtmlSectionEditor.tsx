@@ -5,14 +5,15 @@ import {
   validateStepOverviewTemplateConfig
 } from '@juniper/ui-core'
 import Select from 'react-select'
-import { IconButton } from 'components/forms/Button'
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { Button, IconButton } from 'components/forms/Button'
+import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
 import { ImageConfig } from '@juniper/ui-core/build/participant/landing/ConfiguredMedia'
 import { TextInput } from '../../components/forms/TextInput'
 import { Textarea } from '../../components/forms/Textarea'
 import { Checkbox } from '../../components/forms/Checkbox'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
@@ -157,7 +158,7 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
           const parsed = JSON.parse(section.sectionConfig || '{}')
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
         }}/>
-        <Checkbox label={'Show Step Numbers'}
+        <Checkbox className="mb-2" label={'Show Step Numbers'}
           checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
             const parsed = JSON.parse(section.sectionConfig || '{}')
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, showStepNumbers: value }) })
@@ -165,35 +166,46 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
         <div>
           {config.steps.map((step, i) => {
             return <div key={i} style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
-              <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
-                onChange={value => {
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="h5">Step {i+1}</span>
+                <div role="button" className="d-flex justify-content-end">
+                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
+                    const parsed = JSON.parse(section.sectionConfig!)
+                    const newSteps = [...config.steps]
+                    newSteps.splice(i, 1)
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                  }}/></div>
+              </div>
+              <div>
+                <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
+                  onChange={value => {
+                    const parsed = JSON.parse(section.sectionConfig!)
+                    const newSteps = [...config.steps]
+                    newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                  }}/>
+                <TextInput label="Duration" value={step.duration} onChange={value => {
                   const parsed = JSON.parse(section.sectionConfig!)
                   const newSteps = [...config.steps]
-                  newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
+                  newSteps[i].duration = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
                 }}/>
-              <TextInput label="Duration" value={step.duration} onChange={value => {
-                const parsed = JSON.parse(section.sectionConfig!)
-                const newSteps = [...config.steps]
-                newSteps[i].duration = value
-                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-              }}/>
-              <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
-                const parsed = JSON.parse(section.sectionConfig!)
-                const newSteps = [...config.steps]
-                newSteps[i].blurb = value
-                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-              }}/>
+                <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig!)
+                  const newSteps = [...config.steps]
+                  newSteps[i].blurb = value
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                }}/>
+              </div>
             </div>
           })}
         </div>
-        Add step
-        <button onClick={() => {
+        <Button onClick={() => {
           const parsed = JSON.parse(section.sectionConfig!)
           const newSteps = [...config.steps]
           newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-        }}>+</button>
+        }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>
       </div>
     </div>
   )
