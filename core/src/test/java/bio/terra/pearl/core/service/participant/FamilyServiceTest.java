@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FamilyServiceTest extends BaseSpringBootTest {
 
@@ -35,8 +36,10 @@ class FamilyServiceTest extends BaseSpringBootTest {
                 Family.builder()
                         .studyEnvironmentId(studyEnvironment.getId())
                         .probandEnrolleeId(proband.getId())
-                        .build());
+                        .build(),
+                getAuditInfo(info));
 
         assertNotNull(created.getShortcode());
+        assertTrue(created.getShortcode().startsWith("F_"));
     }
 }
