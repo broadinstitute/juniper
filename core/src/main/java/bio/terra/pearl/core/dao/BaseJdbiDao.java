@@ -242,6 +242,10 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    /* fetches all the entities with a child attached.  For example, if the parent table has a column "portal_environment_config_id" and
+     * a field portalEnvironmentConfig, this method could be used to fetch the portal environments with the configs already hydrated
+     * and do so in a single SQL query instead of performing n queries to attach children to n parents
+     */
     protected List<T> findAllByPropertyWithChildren(String columnName, Object columnValue, String childIdPropertyName,
                                                     String childPropertyName, BaseJdbiDao childDao) {
         List<String> parentCols = getQueryColumns.stream().map(col -> "a." + col + " a_" + col)

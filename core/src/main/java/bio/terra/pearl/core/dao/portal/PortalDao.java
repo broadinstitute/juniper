@@ -77,7 +77,7 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
      * This isn't terribly optimized yet
      * */
     public Portal fullLoad(Portal portal, String language) {
-        List<PortalEnvironment> portalEnvs = portalEnvironmentDao.findByPortal(portal.getId());
+        List<PortalEnvironment> portalEnvs = portalEnvironmentDao.findByPortalWithConfigs(portal.getId());
         for (PortalEnvironment portalEnv : portalEnvs) {
             portal.getPortalEnvironments().add(
                     portalEnvironmentDao.loadWithSiteContent(portal.getShortcode(),
@@ -95,7 +95,7 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
     public void attachPortalEnvironments(List<Portal> portals) {
         for(Portal portal : portals) {
             UUID portalId = portal.getId();
-            List<PortalEnvironment> portalEnvironments = portalEnvironmentDao.findByPortal(portalId);
+            List<PortalEnvironment> portalEnvironments = portalEnvironmentDao.findByPortalWithConfigs(portalId);
             portal.getPortalEnvironments().addAll(portalEnvironments);
         }
     }
