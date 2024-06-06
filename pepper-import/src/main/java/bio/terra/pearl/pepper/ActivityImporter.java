@@ -24,6 +24,7 @@ import org.broadinstitute.ddp.model.activity.definition.i18n.Translation;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistOptionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.QuestionDef;
+import org.broadinstitute.ddp.model.activity.definition.question.TextQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.template.TemplateVariable;
 import org.broadinstitute.ddp.model.activity.types.BlockType;
 import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
@@ -201,7 +202,14 @@ public class ActivityImporter {
     }
 
     private Map<String, String> getQuestionTxt(QuestionDef pepperQuestionDef) {
-        return getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getVariables());
+        Map<String, String> txtMap = getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getVariables());
+        if (txtMap.isEmpty() && pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("TEXT")) {
+            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+            //try placeholder template
+            txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getVariables());
+        }
+
+        return txtMap;
     }
 
     private Map<String, String> getVariableTranslationsTxt(Collection<TemplateVariable> templateVariables) {
