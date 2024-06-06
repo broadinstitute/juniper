@@ -15,26 +15,23 @@ import com.typesafe.config.ConfigResolveOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.broadinstitute.ddp.content.I18nContentRenderer;
-import org.broadinstitute.ddp.model.activity.definition.ContentBlockDef;
-import org.broadinstitute.ddp.model.activity.definition.FormActivityDef;
-import org.broadinstitute.ddp.model.activity.definition.FormBlockDef;
-import org.broadinstitute.ddp.model.activity.definition.FormSectionDef;
-import org.broadinstitute.ddp.model.activity.definition.GroupBlockDef;
+import org.broadinstitute.ddp.model.activity.definition.*;
 import org.broadinstitute.ddp.model.activity.definition.i18n.Translation;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistOptionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.QuestionDef;
+import org.broadinstitute.ddp.model.activity.definition.question.TextQuestionDef;
+import org.broadinstitute.ddp.model.activity.definition.template.TemplateVariable;
+import org.broadinstitute.ddp.model.activity.types.BlockType;
+import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
+import org.broadinstitute.ddp.model.activity.types.PicklistSelectMode;
 import org.broadinstitute.ddp.util.ConfigUtil;
 import org.broadinstitute.ddp.util.GsonUtil;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
