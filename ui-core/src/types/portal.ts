@@ -25,7 +25,8 @@ export type PortalEnvironment = {
   supportedLanguages: PortalEnvironmentLanguage[]
   siteContent?: SiteContent
   preRegSurvey?: Survey
-  preRegSurveyId?: string
+  preRegSurveyId?: string,
+  createdAt: number
 }
 
 export type PortalEnvironmentConfig = {

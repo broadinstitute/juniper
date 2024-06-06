@@ -7,6 +7,7 @@ export const mockPortal: Portal = {
   shortcode: 'TESTPORTAL',
   portalEnvironments: [
     {
+      createdAt: 0,
       environmentName: 'sandbox',
       portalEnvironmentConfig: {
         initialized: true,

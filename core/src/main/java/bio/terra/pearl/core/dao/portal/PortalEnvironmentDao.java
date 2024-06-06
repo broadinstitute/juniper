@@ -37,8 +37,9 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         return PortalEnvironment.class;
     }
 
-    public List<PortalEnvironment> findByPortal(UUID portalId) {
-        return findAllByProperty("portal_id", portalId);
+    public List<PortalEnvironment> findByPortalWithConfigs(UUID portalId) {
+        return findAllByPropertyWithChildren("portal_id", portalId, "portalEnvironmentConfigId",
+                "portalEnvironmentConfig", portalEnvironmentConfigDao);
     }
 
     public Optional<PortalEnvironment> findOne(String shortcode, EnvironmentName environmentName) {
