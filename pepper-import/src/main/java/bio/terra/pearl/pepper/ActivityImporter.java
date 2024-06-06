@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -200,19 +201,24 @@ public class ActivityImporter {
     }
 
     private Map<String, String> getQuestionTxt(QuestionDef pepperQuestionDef) {
-        Map<String, String> titleMap = new HashMap<>();
-        for (TemplateVariable var : pepperQuestionDef.getPromptTemplate().getVariables()) {
+        return getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getVariables());
+    }
+
+    private Map<String, String> getVariableTranslationsTxt(Collection<TemplateVariable> templateVariables) {
+        Map<String, String> txtMap = new HashMap<>();
+        for (TemplateVariable var : templateVariables) {
             List<Translation> translations = var.getTranslations();
             translations.forEach(t -> {
-                if (titleMap.containsKey(t.getLanguageCode())) {
-                    titleMap.put(t.getLanguageCode(), titleMap.get(t.getLanguageCode()) + "\n" + t.getText());
+                if (txtMap.containsKey(t.getLanguageCode())) {
+                    txtMap.put(t.getLanguageCode(), txtMap.get(t.getLanguageCode()) + "\n" + t.getText());
                 } else {
-                    titleMap.put(t.getLanguageCode(), t.getText());
+                    txtMap.put(t.getLanguageCode(), t.getText());
                 }
             });
         }
-        return titleMap;
+        return txtMap;
     }
+
 
     private List<SurveyJSQuestion.Choice> getPicklistChoices(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap) {
         List<SurveyJSQuestion.Choice> choices = new ArrayList<>();
@@ -244,30 +250,11 @@ public class ActivityImporter {
         Map<String, String> titleTxtMap = new HashMap<>();
         if (!StringUtils.isEmpty(bodyTemplateTxt) && bodyTemplateTxt.contains("$")) {
             //get txt from variables
-            for (TemplateVariable var : contentBlockDef.getBodyTemplate().getVariables()) {
-                List<Translation> translations = var.getTranslations();
-                translations.forEach(t -> {
-                    if (htmlTxtMap.containsKey(t.getLanguageCode())) {
-                        htmlTxtMap.put(t.getLanguageCode(), htmlTxtMap.get(t.getLanguageCode()) + "\n" + t.getText());
-                    } else {
-                        htmlTxtMap.put(t.getLanguageCode(), t.getText());
-                    }
-                });
-            }
+            htmlTxtMap = getVariableTranslationsTxt(contentBlockDef.getBodyTemplate().getVariables());
         }
 
         if (!StringUtils.isEmpty(titleTemplateTxt) && titleTemplateTxt.contains("$")) {
-            //get txt from variables
-            for (TemplateVariable var : contentBlockDef.getTitleTemplate().getVariables()) {
-                List<Translation> translations = var.getTranslations();
-                for (Translation t : translations) {
-                    if (titleTxtMap.containsKey(t.getLanguageCode())) {
-                        titleTxtMap.put(t.getLanguageCode(), titleTxtMap.get(t.getLanguageCode()) + "\n" + t.getText());
-                    } else {
-                        titleTxtMap.put(t.getLanguageCode(), t.getText());
-                    }
-                }
-            }
+            titleTxtMap = getVariableTranslationsTxt(contentBlockDef.getTitleTemplate().getVariables());
         }
 
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
