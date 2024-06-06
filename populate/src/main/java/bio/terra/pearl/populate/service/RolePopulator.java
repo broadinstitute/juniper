@@ -34,7 +34,6 @@ public class RolePopulator extends BasePopulator<Role, RoleDto, FilePopulateCont
     @Override
     public Role createNew(RoleDto popDto, FilePopulateContext context, boolean overwrite) {
         popDto.getPermissionNames().forEach(permissionName -> {
-            System.out.println("Permission name: " + permissionName);
             Optional<Permission> permission = permissionService.findByName(permissionName);
             if (permission.isEmpty()) {
                 throw new IllegalArgumentException("Permission " + permissionName + " not found");

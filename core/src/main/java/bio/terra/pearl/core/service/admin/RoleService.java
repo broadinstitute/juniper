@@ -48,7 +48,6 @@ public class RoleService extends CrudService<Role, RoleDao> {
     }
 
     public Role update(Role role) {
-        //deletes all permissions associated with the role
         rolePermissionService.deleteByRoleId(role.getId());
 
         role.getPermissions().forEach(permission -> {
