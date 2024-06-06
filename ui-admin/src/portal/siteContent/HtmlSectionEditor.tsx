@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import {
   HtmlSection, SectionConfig,
-  SectionType,
+  SectionType, socialMediaSites, validateFrequentlyAskedQuestionsConfig,
   validateStepOverviewTemplateConfig
 } from '@juniper/ui-core'
 import Select from 'react-select'
@@ -136,14 +136,18 @@ const HtmlSectionEditor = ({
     </div>
     {section.sectionType === 'STEP_OVERVIEW' ?
       <StepOverviewSectionEditor section={section} updateSection={updateSection}/>
-
-      : <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-        disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
-        className={classNames('w-100 flex-grow-1 form-control font-monospace',
-          { 'is-invalid': sectionContainsErrors })}
-        onChange={e => {
-          handleEditorChange(e.target.value)
-        }}/>}
+      : section.sectionType === 'SOCIAL_MEDIA' ?
+        <SocialMediaSectionEditor section={section} updateSection={updateSection}/>
+        : section.sectionType === 'FAQ' ?
+          <FrequentlyAskedQuestionsSectionEditor section={section} updateSection={updateSection}/>
+          : <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
+            disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
+            className={classNames('w-100 flex-grow-1 form-control font-monospace',
+              { 'is-invalid': sectionContainsErrors })}
+            onChange={e => {
+              handleEditorChange(e.target.value)
+            }}/>
+    }
   </>
 }
 
@@ -158,6 +162,7 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
           const parsed = JSON.parse(section.sectionConfig || '{}')
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
         }}/>
+        {/*<TextInput label="Background Color" value={config.background} onChange={value => {*/}
         <Checkbox className="mb-2" label={'Show Step Numbers'}
           checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
             const parsed = JSON.parse(section.sectionConfig || '{}')
@@ -207,6 +212,75 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>
       </div>
+    </div>
+  )
+}
+
+const FrequentlyAskedQuestionsSectionEditor = ({ section, updateSection }: {
+    section: HtmlSection, updateSection: (section: HtmlSection) => void
+    }) => {
+  const config = validateFrequentlyAskedQuestionsConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
+  return (
+    <div className="d-flex row g-0">
+      <TextInput className="mb-2" label="Title" value={config.title} onChange={value => {
+        const parsed = JSON.parse(section.sectionConfig || '{}')
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+      }}/>
+      <Textarea className="mb-2" label="Blurb" value={config.blurb} onChange={value => {
+        const parsed = JSON.parse(section.sectionConfig || '{}')
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
+      }}/>
+      {config.questions.map((question, i) => {
+        return <div key={i} style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
+          <div role="button" className="d-flex justify-content-end">
+            <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
+              const parsed = JSON.parse(section.sectionConfig!)
+              const newQuestions = [...config.questions]
+              newQuestions.splice(i, 1)
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+            }}/></div>
+          <TextInput label="Question" value={question.question} onChange={value => {
+            const parsed = JSON.parse(section.sectionConfig!)
+            const newQuestions = [...config.questions]
+            newQuestions[i].question = value
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+          }}/>
+          <Textarea rows={2} label="Answer" value={question.answer} onChange={value => {
+            const parsed = JSON.parse(section.sectionConfig!)
+            const newQuestions = [...config.questions]
+            newQuestions[i].answer = value
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+          }}/>
+        </div>
+      })}
+      <Button onClick={() => {
+        const parsed = JSON.parse(section.sectionConfig!)
+        const newQuestions = [...config.questions]
+        newQuestions.push({ question: '', answer: '' })
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+      }}><FontAwesomeIcon icon={faPlus}/> Add Question</Button>
+    </div>
+  )
+}
+
+const SocialMediaSectionEditor = ({ section, updateSection }: {
+    section: HtmlSection, updateSection: (section: HtmlSection) => void
+    }) => {
+  const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+  return (
+    <div>
+      {socialMediaSites.map(site => {
+        const handleKey = `${site.label.toLowerCase()}Handle`
+        const handle = config[handleKey]
+        return (
+          <div key={site.label} className="d-flex justify-content-between align-items-center">
+            <span>{site.label}</span>
+            <TextInput value={'handle'} onChange={value => {
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, [handleKey]: value }) })
+            }}/>
+          </div>
+        )
+      })}
     </div>
   )
 }

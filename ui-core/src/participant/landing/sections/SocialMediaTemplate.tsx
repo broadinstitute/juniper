@@ -94,7 +94,7 @@ type SocialMediaTemplateConfig = {
 }
 
 /** Validate that a section configuration object conforms to SocialMediaTemplateConfig */
-const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTemplateConfig => {
+export const validateSocialMediaTemplateConfig = (config: SectionConfig): SocialMediaTemplateConfig => {
   const message = 'Invalid SocialMediaTemplateConfig'
   return socialMediaSites.reduce(
     (acc, { label }) => {
