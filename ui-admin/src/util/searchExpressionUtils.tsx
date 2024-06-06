@@ -23,6 +23,11 @@ export const toReactQueryBuilderState = (searchExpression: SearchExpression): Ru
   }
 }
 
+/**
+ * Recursive helper function for converting search expressions into the react-querybuilder format.
+ * Returns an array of rules - these are combined with either 'and' or 'or' depending on the operator
+ * parameter. Each element could either be a facet comparison or new group of rules.
+ */
 const _toReactQueryBuilderState = (operator: BooleanOperator, expression: SearchExpression): RuleGroupArray => {
   if (isBooleanSearchExpression(expression)) {
     // only create a new group if the operator changes
@@ -47,6 +52,7 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
   throw new Error('')
 }
 
+// Converts a Term object into a string representation.
 const termToString = (term: Term): string | null => {
   if (isSearchVariable(term)) {
     if (term.field.length === 0) {
