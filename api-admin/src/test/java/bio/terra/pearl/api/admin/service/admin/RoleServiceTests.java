@@ -4,7 +4,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.core.factory.admin.PermissionFactory;
 import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.service.admin.RoleService;
@@ -16,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RoleServiceTests extends BaseSpringBootTest {
 
   @Autowired private RoleService roleService;
-  @Autowired private PermissionFactory permissionFactory;
   @Autowired private RoleFactory roleFactory;
 
   @Test
