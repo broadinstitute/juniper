@@ -32,6 +32,7 @@ export default function ProvideFullTestUserContext(
       shortcode: '',
       portalEnvironments: [
         {
+          createdAt: 0,
           environmentName: 'sandbox',
           portalEnvironmentConfig: {
             initialized: true,

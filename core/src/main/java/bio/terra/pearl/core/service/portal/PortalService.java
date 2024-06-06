@@ -132,6 +132,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findByAdminUserId(user.getId());
     }
 
+    public void attachPortalEnvironments(List<Portal> portals) {
+        dao.attachPortalEnvironments(portals);
+    }
+
     public void attachStudies(List<Portal> portals) {
         dao.attachStudies(portals);
     }
