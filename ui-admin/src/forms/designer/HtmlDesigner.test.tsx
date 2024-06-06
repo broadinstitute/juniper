@@ -17,7 +17,7 @@ describe('HtmlDesigner', () => {
     render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} addNextQuestion={jest.fn()} />)
 
     // Assert
-    const htmlTextarea = screen.getByLabelText('HTML')
+    const htmlTextarea = screen.getByLabelText('HTML markup')
     expect(htmlTextarea.textContent).toBe('<h2>Section heading</h2><p>This is a section.</p>')
   })
 
@@ -27,7 +27,7 @@ describe('HtmlDesigner', () => {
     render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} addNextQuestion={jest.fn()}/>)
 
     // Act
-    const htmlTextarea = screen.getByLabelText('HTML')
+    const htmlTextarea = screen.getByLabelText('HTML markup')
     fireEvent.change(htmlTextarea, {
       target: {
         value: '<h2>New section heading</h2><p>This is a section.</p>'

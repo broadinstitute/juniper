@@ -107,14 +107,18 @@ export const FormOptions = ({ studyEnvContext, workingForm, updateWorkingForm }:
                 })}
               /> Allow participant completion
             </label>
-                    Eligibility Rule
+              Eligibility Rule
+            <p className={'mt-1 mb-0'}>
+                  Use a <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
+                  search expression
+              </ZendeskLink> to conditionally assign the survey.
+            </p>
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
-                    && <div className="my-2"><SearchQueryBuilder
-                      studyEnvContext={studyEnvContext}
-                      onSearchExpressionChange={exp => updateWorkingForm({
-                        ...workingForm, eligibilityRule: exp
-                      })}/></div>}
-
+              && <div className="my-2"><SearchQueryBuilder
+                studyEnvContext={studyEnvContext}
+                onSearchExpressionChange={exp => updateWorkingForm({
+                  ...workingForm, eligibilityRule: exp
+                })}/></div>}
             <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
               onChange={e => {
                 updateWorkingForm({

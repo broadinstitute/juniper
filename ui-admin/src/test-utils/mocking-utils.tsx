@@ -3,6 +3,7 @@ import {
   AdminTask,
   Answer,
   DatasetDetails,
+  EnrolleeSearchExpressionResult,
   EnrolleeSearchFacet,
   EnrolleeSearchResult,
   Notification,
@@ -18,12 +19,16 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
+  Enrollee,
+  KitRequest,
+  KitType,
+  LocalizedEmailTemplate,
   ParticipantDashboardAlert,
-  Enrollee, KitRequest, KitType,
-  LocalizedEmailTemplate, ParticipantNote,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, StudyEnvParams,
+  ParticipantTaskType,
+  StudyEnvParams,
   Survey
 } from '@juniper/ui-core'
 
@@ -311,6 +316,16 @@ export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
       lastLogin: 50405345,
       username: `${randomString(10)}@test.com`
     }
+  }
+}
+
+/**
+ * Mocks most basic enrollee search expression result response.
+ */
+export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
+  return {
+    enrollee: mockEnrollee(),
+    profile: mockEnrollee().profile
   }
 }
 
