@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.search.expressions;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -14,6 +15,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
@@ -46,6 +48,9 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     @Autowired
     ParticipantTaskFactory participantTaskFactory;
+
+    @Autowired
+    KitRequestFactory kitRequestFactory;
 
     @Test
     @Transactional
@@ -185,6 +190,34 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 .enrollee(Enrollee.builder().build())
                 .profile(Profile.builder().mailingAddress(MailingAddress.builder().state("NY").build()).build())
                 .build()));
+    }
+
+    @Test
+    @Transactional
+    public void testEvaluateLatestKit(TestInfo info) throws Exception {
+        String latestKitCreated = "{latestKit.status} = 'CREATED'";
+        String latestKitErrored = "{latestKit.status} = 'ERRORED'";
+
+        EnrolleeSearchExpression latestKitCreatedExp = enrolleeSearchExpressionParser.parseRule(latestKitCreated);
+        EnrolleeSearchExpression latestKitErroredExp = enrolleeSearchExpressionParser.parseRule(latestKitErrored);
+
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        kitRequestFactory.buildPersisted(
+                getTestName(info),
+                enrollee,
+                PepperKitStatus.CREATED);
+
+        assertTrue(latestKitCreatedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+        assertFalse(latestKitErroredExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+
+        kitRequestFactory.buildPersisted(
+                getTestName(info),
+                enrollee,
+                PepperKitStatus.ERRORED);
+
+        assertFalse(latestKitCreatedExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+        assertTrue(latestKitErroredExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
     }
 
     @Test

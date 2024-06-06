@@ -52,6 +52,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
 /** mock environment with a siteContent */
 export const mockPortalEnvironment = (): PortalEnvironment => {
   return {
+    createdAt: 0,
     environmentName: 'sandbox',
     portalEnvironmentConfig: mockPortalEnvironmentConfig(),
     siteContent: mockSiteContent(),
