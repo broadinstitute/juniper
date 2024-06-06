@@ -1,22 +1,30 @@
 import React, { useEffect, useState } from 'react'
-import { HtmlSection, SectionType } from '@juniper/ui-core'
+import {
+  HtmlSection, SectionConfig,
+  SectionType,
+  validateStepOverviewTemplateConfig
+} from '@juniper/ui-core'
 import Select from 'react-select'
 import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
+import { ImageConfig } from '@juniper/ui-core/build/participant/landing/ConfiguredMedia'
+import { TextInput } from '../../components/forms/TextInput'
+import { Textarea } from '../../components/forms/Textarea'
+import { Checkbox } from '../../components/forms/Checkbox'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
-  { label: 'HERO_CENTERED', value: 'HERO_CENTERED' },
-  { label: 'HERO_WITH_IMAGE', value: 'HERO_WITH_IMAGE' },
-  { label: 'SOCIAL_MEDIA', value: 'SOCIAL_MEDIA' },
-  { label: 'STEP_OVERVIEW', value: 'STEP_OVERVIEW' },
-  { label: 'PHOTO_BLURB_GRID', value: 'PHOTO_BLURB_GRID' },
-  { label: 'PARTICIPATION_DETAIL', value: 'PARTICIPATION_DETAIL' },
-  { label: 'RAW_HTML', value: 'RAW_HTML' },
-  { label: 'LINK_SECTIONS_FOOTER', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'BANNER_IMAGE', value: 'BANNER_IMAGE' }
+  { label: 'Hero (centered)', value: 'HERO_CENTERED' },
+  { label: 'Hero (with image)', value: 'HERO_WITH_IMAGE' },
+  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
+  { label: 'Step Overview', value: 'STEP_OVERVIEW' },
+  { label: 'Photo Blurb Grid', value: 'PHOTO_BLURB_GRID' },
+  { label: 'Participation Detail', value: 'PARTICIPATION_DETAIL' },
+  { label: 'Raw HTML', value: 'RAW_HTML' },
+  { label: 'Link Sections Footer', value: 'LINK_SECTIONS_FOOTER' },
+  { label: 'Banner Image', value: 'BANNER_IMAGE' }
 ]
 
 /**
@@ -125,14 +133,83 @@ const HtmlSectionEditor = ({
         onClick={() => removeSection()}
       /> }
     </div>
-    <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-      disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
-      className={classNames('w-100 flex-grow-1 form-control font-monospace',
-        { 'is-invalid': sectionContainsErrors })}
-      onChange={e => {
-        handleEditorChange(e.target.value)
-      }}/>
+    {section.sectionType === 'STEP_OVERVIEW' ?
+      <StepOverviewSectionEditor section={section} updateSection={updateSection}/>
+
+      : <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
+        disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
+        className={classNames('w-100 flex-grow-1 form-control font-monospace',
+          { 'is-invalid': sectionContainsErrors })}
+        onChange={e => {
+          handleEditorChange(e.target.value)
+        }}/>}
   </>
+}
+
+const StepOverviewSectionEditor = ({ section, updateSection }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const config = validateStepOverviewTemplateConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
+  return (
+    <div>
+      <div className="d-flex row g-0">
+        <TextInput className="mb-2" label="Title" value={config.title} onChange={value => {
+          const parsed = JSON.parse(section.sectionConfig || '{}')
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+        }}/>
+        <Checkbox label={'Show Step Numbers'}
+          checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
+            const parsed = JSON.parse(section.sectionConfig || '{}')
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, showStepNumbers: value }) })
+          }}/>
+        <div>
+          {config.steps.map((step, i) => {
+            return <div key={i} style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
+              <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
+                onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig!)
+                  const newSteps = [...config.steps]
+                  newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                }}/>
+              <TextInput label="Duration" value={step.duration} onChange={value => {
+                const parsed = JSON.parse(section.sectionConfig!)
+                const newSteps = [...config.steps]
+                newSteps[i].duration = value
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+              }}/>
+              <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
+                const parsed = JSON.parse(section.sectionConfig!)
+                const newSteps = [...config.steps]
+                newSteps[i].blurb = value
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+              }}/>
+            </div>
+          })}
+        </div>
+        Add step
+        <button onClick={() => {
+          const parsed = JSON.parse(section.sectionConfig!)
+          const newSteps = [...config.steps]
+          newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+        }}>+</button>
+      </div>
+    </div>
+  )
+}
+
+const ImageSelector = ({ image, onChange }: { image: ImageConfig, onChange: (image: ImageConfig) => void }) => {
+  return (
+    <div>
+      <TextInput label="Image" value={image.cleanFileName} onChange={value => {
+        onChange({ ...image, cleanFileName: value })
+      }}/>
+      <TextInput label="Version" value={image.version} onChange={value => {
+        onChange({ ...image, version: parseInt(value) })
+      }}/>
+    </div>
+  )
 }
 
 export default HtmlSectionEditor

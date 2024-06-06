@@ -24,7 +24,7 @@ export const TextInput = (props: TextInputProps) => {
   return (
     <>
       {label && <label
-        className={classNames('form-label', 'fw-semibold', labelClassname)}
+        className={classNames('form-label', 'fw-semibold', 'mb-0', labelClassname)}
         htmlFor={inputId}
       >
         {label}

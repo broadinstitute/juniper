@@ -21,7 +21,7 @@ type StepConfig = {
   blurb: string
 }
 
-type StepOverviewTemplateConfig = {
+export type StepOverviewTemplateConfig = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   steps: StepConfig[]
   showStepNumbers?: boolean, // whether to show step numbers, default true
@@ -38,7 +38,7 @@ const validateStepConfig = (config: unknown): StepConfig => {
 }
 
 /** Validate that a section configuration object conforms to StepOverviewTemplateConfig */
-const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverviewTemplateConfig => {
+export const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverviewTemplateConfig => {
   const message = 'Invalid StepOverviewTemplateConfig'
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const title = requireOptionalString(config, 'title', message)
