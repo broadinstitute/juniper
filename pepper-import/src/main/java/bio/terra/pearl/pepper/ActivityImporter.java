@@ -26,6 +26,7 @@ import org.broadinstitute.ddp.model.activity.definition.question.PicklistOptionD
 import org.broadinstitute.ddp.model.activity.definition.question.PicklistQuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.QuestionDef;
 import org.broadinstitute.ddp.model.activity.definition.question.TextQuestionDef;
+import org.broadinstitute.ddp.model.activity.definition.template.TemplateVariable;
 import org.broadinstitute.ddp.model.activity.types.BlockType;
 import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
 import org.broadinstitute.ddp.model.activity.types.PicklistSelectMode;
@@ -213,7 +214,7 @@ public class ActivityImporter {
         }
 
         if (questionText.contains("$")) {
-            //get txt from variable
+            //get txt from variables
             if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
                 TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
                 Translation translation = textQuestionDef.getPromptTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
@@ -257,9 +258,20 @@ public class ActivityImporter {
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
         Map<String, String> htmlTxtMap = new HashMap<>();
         Map<String, String> titleTxtMap = new HashMap<>();
+        if (!StringUtils.isEmpty(bodyTemplateTxt) && bodyTemplateTxt.contains("$")) {
+            //get txt from variables
+            for (TemplateVariable var : contentBlockDef.getBodyTemplate().getVariables()) {
+                List<Translation> translations = var.getTranslations();
+                for (Translation t : translations) {
+                    htmlTxtMap.put(t.getLanguageCode(), t.getText());
+                }
+            }
+        }
         for (String lang : allLangMap.keySet()) {
             String tmplText = i18nContentRenderer.renderToString(bodyTemplateTxt, allLangMap.get(lang));
-            htmlTxtMap.put(lang, tmplText);
+            if (!StringUtils.isEmpty(tmplText) && !tmplText.contains("$")) {
+                htmlTxtMap.put(lang, tmplText);
+            }
             if (!StringUtils.isEmpty(titleTemplateTxt)) {
                 String titleText = i18nContentRenderer.renderToString(titleTemplateTxt, allLangMap.get(lang));
                 titleTxtMap.put(lang, titleText);
