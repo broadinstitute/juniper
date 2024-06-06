@@ -1,14 +1,8 @@
 [
   {
-    "name": "study_admin",
-    "displayName": "Study admin",
-    "description": "View and edit all aspects of a study",
-    "permissions": ["study_settings_edit", "survey_edit", "consent_form_edit", "site_content_edit"]
-  },
-  {
     "name": "prototype_tester",
     "displayName": "Prototype access",
     "description": "Use features being prototyped",
-    "permissions": ["team_roles_edit"]
+    "permissionNames": ["team_roles_edit", "study_settings_edit"]
   }
 ]

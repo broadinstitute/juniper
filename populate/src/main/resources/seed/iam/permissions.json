@@ -26,7 +26,12 @@
   },
   {
     "name": "team_roles_edit_new",
-    "displayName": "Team role management ALSO NEW",
+    "displayName": "Team role management ALSO NEW - test update",
     "description": "View and edit roles assigned to team members"
+  },
+  {
+    "name": "some_new_permission",
+    "displayName": "A NEW PERMISSION!!!",
+    "description": "This is a new permission"
   }
 ]

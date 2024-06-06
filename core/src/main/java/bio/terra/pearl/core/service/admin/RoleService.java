@@ -47,6 +47,20 @@ public class RoleService extends CrudService<Role, RoleDao> {
         return savedRole;
     }
 
+    public Role update(Role role) {
+        //deletes all permissions associated with the role
+        rolePermissionService.deleteByRoleId(role.getId());
+
+        role.getPermissions().forEach(permission -> {
+            rolePermissionService.create(RolePermission.builder()
+                    .roleId(role.getId())
+                    .permissionId(permission.getId())
+                    .build());
+        });
+
+        return dao.update(role);
+    }
+
     public Optional<Role> findOne(UUID roleId) { return dao.find(roleId); }
 
     public Optional<Role> findByName(String roleName) {
