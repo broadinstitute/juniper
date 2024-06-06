@@ -1,6 +1,9 @@
 import { isEmpty } from 'lodash/fp'
 import { concatSearchExpressions } from './searchExpressionUtils'
-import { isArray, isEqual } from 'lodash'
+import {
+  isArray,
+  isEqual
+} from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 
 // reminder: if you add a new field to the search state,
@@ -49,12 +52,13 @@ export const useParticipantSearchState = (searchParamName='search') => {
   const searchExpression = toExpression(searchState)
 
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    const newSearchState = { ...searchState, [field]: value }
-    setSearchState(newSearchState)
+    setSearchState({ ...searchState, [field]: value })
   }
 
   const setSearchState = (newSearchState: ParticipantSearchState) => {
-    setSearchParams({ ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) })
+    setSearchParams(searchParams => {
+      return { ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) }
+    })
   }
 
   return { searchState, searchExpression, updateSearchState, setSearchState }

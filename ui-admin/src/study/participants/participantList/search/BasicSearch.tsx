@@ -1,4 +1,8 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useState
+} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
@@ -24,10 +28,8 @@ const BasicSearch = ({ searchState, updateSearchState }: {
     }, 500), []
   )
 
-  return <form className="rounded-5" onSubmit={e => {
-    e.preventDefault()
-    debouncedUpdate(search)
-  }} style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
+  return <form className="rounded-5"
+    style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
     <button type="submit" title="submit search" className="btn btn-secondary">
       <FontAwesomeIcon icon={faSearch}/>
     </button>
