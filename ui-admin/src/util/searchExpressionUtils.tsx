@@ -10,6 +10,15 @@ import {
   RuleGroupArray,
   RuleGroupType
 } from 'react-querybuilder'
+import { isEmpty } from 'lodash/fp'
+
+/**
+ * Concatenates search expressions with an 'and' by default.
+ */
+export const concatSearchExpressions =
+  (searchExp: string[], booleanOperator: BooleanOperator = 'and') =>
+    searchExp.filter(e => !isEmpty(e)).join(` ${booleanOperator} `)
+
 
 /**
  * Converts a SearchExpression object into a RuleGroupType object,

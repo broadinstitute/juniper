@@ -74,7 +74,7 @@ export const SearchQueryBuilder = ({
     const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
       format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
       ruleProcessor: ruleProcessorEnrolleeSearchExpression,
-      fallbackExpression: '{enrollee.subject} = true'
+      fallbackExpression: '1 = 1'
     }) : ''
 
     if (enrolleeSearchExpression === '') {
