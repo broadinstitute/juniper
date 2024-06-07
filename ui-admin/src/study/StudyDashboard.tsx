@@ -1,6 +1,9 @@
 import React from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Study, StudyEnvironment } from 'api/api'
+import {
+  Study,
+  StudyEnvironment
+} from 'api/api'
 import { Link } from 'react-router-dom'
 import { faCogs } from '@fortawesome/free-solid-svg-icons/faCogs'
 import { faClipboardCheck } from '@fortawesome/free-solid-svg-icons/faClipboardCheck'
@@ -86,7 +89,7 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
 }
 
 /** indicates that an environment is not yet initialized */
-function EnvironmentEmptyMessage({studyEnv }: {studyEnv: StudyEnvironment}) {
+function EnvironmentEmptyMessage({ studyEnv }: { studyEnv: StudyEnvironment }) {
   if (studyEnv.environmentName === 'irb') {
     return <div>
       <h6 className="mt-2"><i>Not yet configured</i></h6>  <br/>
