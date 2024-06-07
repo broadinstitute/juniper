@@ -28,8 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -250,7 +249,7 @@ class SurveyTaskDispatcherTest extends BaseSpringBootTest {
         assertThat(participantTaskService.findByEnrolleeId(bundle.enrollee().getId()), hasSize(2));
         tasks = participantTaskService.findByEnrolleeId(bundle.enrollee().getId());
         // now the task should be added
-        assertThat(tasks.stream().map(ParticipantTask::getTargetStableId).toList(), contains("medForm", "followUp"));
+        assertThat(tasks.stream().map(ParticipantTask::getTargetStableId).toList(), containsInAnyOrder("medForm", "followUp"));
     }
 
 

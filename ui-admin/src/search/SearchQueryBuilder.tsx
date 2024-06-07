@@ -1,5 +1,4 @@
 import React, {
-  useCallback,
   useMemo,
   useState
 } from 'react'
@@ -13,141 +12,21 @@ import {
 } from 'react-querybuilder'
 import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
 import { useLoadingEffect } from '../api/api-utils'
-import Api, {
-  EnrolleeSearchExpressionResult,
-  SearchValueTypeDefinition
-} from '../api/api'
+import Api, { SearchValueType } from '../api/api'
 import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import LoadingSpinner from '../util/LoadingSpinner'
 import {
-  debounce,
   isEmpty,
   keys
 } from 'lodash'
 import { parseExpression } from '../util/searchExpressionParser'
 import { toReactQueryBuilderState } from '../util/searchExpressionUtils'
-import 'react-querybuilder/dist/query-builder.scss'
-import {
-  DocsKey,
-  ZendeskLink
-} from '../util/zendeskUtils'
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 
 /**
  * Frontend for building an enrollee search expression.
  */
 export const SearchQueryBuilder = ({
-  studyEnvContext,
-  onSearchExpressionChange,
-  searchExpression
-}: {
-  studyEnvContext: StudyEnvContextT,
-  onSearchExpressionChange: (searchExpression: string) => void,
-  searchExpression: string
-}) => {
-  const [advancedMode, setAdvancedMode] = useState(false)
-
-
-  const parseSearchExpError = useMemo(() => {
-    try {
-      if (isEmpty(searchExpression)) {
-        return undefined
-      }
-      parseExpression(searchExpression)
-    } catch (e) {
-      return e as Error
-    }
-  }, [searchExpression])
-
-
-  const [searchResults, setSearchResults] = useState<EnrolleeSearchExpressionResult[]>([])
-
-  const {
-    isLoading: isLoadingSearchResults
-  } = useLoadingEffect(async () => {
-    try {
-      const newResults = await Api.executeSearchExpression(
-        studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName,
-        searchExpression)
-
-      setSearchResults(newResults)
-    } catch (_) {
-      setSearchResults([])
-    }
-  }, [searchExpression])
-
-  return <div>
-    <div className="mb-2 d-flex flex-row align-items-center justify-content-between">
-      <div>
-        Create a <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
-          <FontAwesomeIcon icon={faInfoCircle} className={'me-1'}/>
-        search expression
-        </ZendeskLink> that filters to enrollees that meet a specific criteria.
-      </div>
-      <button
-        className="btn btn-link"
-        onClick={() => setAdvancedMode(!advancedMode)}>
-        {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
-      </button>
-    </div>
-    {parseSearchExpError && <div className="alert alert-danger mb-2">
-      {parseSearchExpError.message}
-    </div>}
-    <div className="mb-2">
-      {
-        advancedMode
-          ? <AdvancedQueryBuilder
-            onSearchExpressionChange={onSearchExpressionChange}
-            searchExpression={searchExpression}/>
-          : <BasicQueryBuilder
-            studyEnvContext={studyEnvContext}
-            onSearchExpressionChange={onSearchExpressionChange}
-            searchExpression={searchExpression}
-          />
-      }
-    </div>
-
-    <LoadingSpinner isLoading={isLoadingSearchResults}>
-      <span>
-        {searchResults.length} matching enrollee{searchResults.length !== 1 ? 's' : ''}
-      </span>
-    </LoadingSpinner>
-  </div>
-}
-
-const AdvancedQueryBuilder = ({
-  onSearchExpressionChange,
-  searchExpression
-}: {
-  onSearchExpressionChange: (searchExpression: string) => void,
-  searchExpression: string
-}) => {
-  const [localExpression, setLocalExpression] = useState(searchExpression)
-
-  const debouncedSetSearchExpression = useCallback(debounce(val => {
-    if (val === searchExpression) {
-      return
-    }
-    onSearchExpressionChange(val)
-  }, 500), [])
-
-  return <div className="">
-    <textarea
-      className="form-control w-100"
-      value={localExpression}
-      onChange={e => {
-        setLocalExpression(e.target.value)
-        debouncedSetSearchExpression(e.target.value)
-      }}
-    />
-  </div>
-}
-
-const BasicQueryBuilder = ({
   studyEnvContext,
   onSearchExpressionChange,
   searchExpression
@@ -172,7 +51,7 @@ const BasicQueryBuilder = ({
   const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
 
 
-  const [facets, setFacets] = React.useState<{ facet: string, typeDef: SearchValueTypeDefinition }[]>([])
+  const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
   const { isLoading } = useLoadingEffect(async () => {
     const facets = await Api.getExpressionSearchFacets(
@@ -182,7 +61,7 @@ const BasicQueryBuilder = ({
     const facetArr = keys(facets).map(facet => {
       return {
         facet,
-        typeDef: facets[facet]
+        type: facets[facet]
       }
     })
 
@@ -207,26 +86,24 @@ const BasicQueryBuilder = ({
 
 
   return <LoadingSpinner isLoading={isLoading}>
-    <div>
-      <QueryBuilder
-        controlClassnames={{
-          fields: 'form-select',
-          value: 'form-control',
-          operators: 'form-select',
-          removeRule: 'btn btn-outline-dark',
-          removeGroup: 'btn btn-outline-dark',
-          addRule: 'btn btn-outline-dark',
-          addGroup: 'btn btn-outline-dark',
-          combinators: 'form-select w-25'
-        }}
-        fields={facets.map(facet => facetToReactQueryField(facet.facet, facet.typeDef))}
-        controlElements={{
-          fieldSelector: CustomFieldSelector
-        }}
-        operators={operators}
-        query={query || { combinator: 'and', rules: [] }}
-        onQueryChange={q => updateQuery(q)}/>
-    </div>
+    <QueryBuilder
+      controlClassnames={{
+        fields: 'form-select',
+        value: 'form-control',
+        operators: 'form-select',
+        removeRule: 'btn btn-outline-dark',
+        removeGroup: 'btn btn-outline-dark',
+        addRule: 'btn btn-outline-dark',
+        addGroup: 'btn btn-outline-dark',
+        combinators: 'form-select w-25'
+      }}
+      fields={facets.map(facet => facetToReactQueryField(facet.facet, facet.type))}
+      controlElements={{
+        fieldSelector: CustomFieldSelector
+      }}
+      operators={operators}
+      query={query || { combinator: 'and', rules: [] }}
+      onQueryChange={q => updateQuery(q)}/>
   </LoadingSpinner>
 }
 
@@ -241,21 +118,12 @@ const operators = [
 ]
 
 
-const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinition): Field => {
+const facetToReactQueryField = (facet: string, searchValueType: SearchValueType): Field => {
   const field: Field = {
     name: facet,
     label: facet
   }
-  if (!isEmpty(typeDef.choices)) {
-    field.inputType = 'select'
-    field.options = typeDef.choices?.map(choice => {
-      return { name: choice.stableId, label: choice.text }
-    })
-
-    return field
-  }
-
-  switch (typeDef.type) {
+  switch (searchValueType) {
     case 'STRING':
       field.valueEditorType = 'text'
       break
@@ -292,6 +160,5 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
     />
   </div>
 }
-
 
 export default SearchQueryBuilder
