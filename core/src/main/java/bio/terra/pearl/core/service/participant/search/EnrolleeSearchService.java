@@ -132,6 +132,15 @@ public class EnrolleeSearchService {
                 choices = objectMapper.readValue(def.getChoices(), new TypeReference<List<QuestionChoice>>() {
                         })
                         .stream()
+                        .map(choice -> {
+                            if (Objects.isNull(choice.stableId()) || choice.stableId().isEmpty()) {
+                                return new QuestionChoice(choice.text(), choice.text());
+                            }
+                            if (Objects.isNull(choice.text()) || choice.text().isEmpty()) {
+                                return new QuestionChoice(choice.stableId(), choice.stableId());
+                            }
+                            return choice;
+                        })
                         .toList();
             } catch (Exception e) {
                 // ignore

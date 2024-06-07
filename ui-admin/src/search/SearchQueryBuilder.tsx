@@ -53,7 +53,6 @@ export const SearchQueryBuilder = ({
 }) => {
   const [advancedMode, setAdvancedMode] = useState(false)
 
-
   const parseSearchExpError = useMemo(() => {
     try {
       if (isEmpty(searchExpression)) {
@@ -202,10 +201,6 @@ const BasicQueryBuilder = ({
       fallbackExpression: '1 = 1'
     }) : ''
 
-    if (enrolleeSearchExpression === '') {
-      return // do nothing; not optimal, but it's a quick fix until we implement antlr for rule parsing in the frontend
-    }
-
     onSearchExpressionChange(enrolleeSearchExpression)
   }
 
@@ -258,7 +253,6 @@ const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinitio
       return { name: choice.stableId, label: choice.text }
     })
 
-    console.log(field)
     return field
   }
 
@@ -311,6 +305,10 @@ export const CustomValueEditor = (props: ValueEditorProps) => {
 
     return (
       <div className="w-100">
+        {/*
+          * Creatable in case there is an 'other' value or a value we're missing. No need for multiselect,
+          * as 'or'ing values can be accomplished with a group.
+          */}
         <Creatable
           value={options.find(o => o.value === props.value) || { label: props.value, value: props.value }}
           onChange={v => props.handleOnChange(v?.value)}

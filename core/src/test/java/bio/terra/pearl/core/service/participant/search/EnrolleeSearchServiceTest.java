@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -215,7 +216,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
         surveyFactory.attachToEnv(survey3, se2.getId(), true);
 
 
-        Map<String, SearchValue.SearchValueType> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
+        Map<String, SearchValueTypeDefinition> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
 
         Assertions.assertEquals(28, results.size());
         Map.ofEntries(
