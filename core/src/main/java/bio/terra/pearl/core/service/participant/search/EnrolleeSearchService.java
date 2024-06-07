@@ -126,7 +126,7 @@ public class EnrolleeSearchService {
     private SearchValueTypeDefinition fromQuestionDefinition(SurveyQuestionDefinition def) {
         SearchValueTypeDefinition.SearchValueTypeDefinitionBuilder<?, ?> builder = SearchValueTypeDefinition.builder();
 
-        if (!def.getChoices().isEmpty()) {
+        if (Objects.nonNull(def.getChoices()) && !def.getChoices().isEmpty()) {
             List<QuestionChoice> choices = new ArrayList<>();
             try {
                 choices = objectMapper.readValue(def.getChoices(), new TypeReference<List<QuestionChoice>>() {
