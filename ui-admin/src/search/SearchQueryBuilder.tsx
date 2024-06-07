@@ -1,23 +1,55 @@
-import React, { useEffect } from 'react'
-import { Field, FieldSelectorProps, formatQuery, QueryBuilder, RuleGroupType } from 'react-querybuilder'
+import React, {
+  useMemo,
+  useState
+} from 'react'
+import {
+  Field,
+  FieldSelectorProps,
+  formatQuery,
+  QueryBuilder,
+  RuleGroupType,
+  RuleGroupTypeAny
+} from 'react-querybuilder'
 import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
 import { useLoadingEffect } from '../api/api-utils'
 import Api, { SearchValueType } from '../api/api'
 import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import LoadingSpinner from '../util/LoadingSpinner'
-import { keys } from 'lodash'
+import {
+  isEmpty,
+  keys
+} from 'lodash'
+import { parseExpression } from '../util/searchExpressionParser'
+import { toReactQueryBuilderState } from '../util/searchExpressionUtils'
 
 /**
  * Frontend for building an enrollee search expression.
  */
-export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }: {
-  studyEnvContext: StudyEnvContextT, onSearchExpressionChange: (searchExpression: string) => void
+export const SearchQueryBuilder = ({
+  studyEnvContext,
+  onSearchExpressionChange,
+  searchExpression
+}: {
+  studyEnvContext: StudyEnvContextT,
+  onSearchExpressionChange: (searchExpression: string) => void,
+  searchExpression: string
 }) => {
-  const [query, setQuery] = React.useState<RuleGroupType>({
+  const tryParseExpression = (expression: string): RuleGroupType | undefined => {
+    try {
+      return toReactQueryBuilderState(parseExpression(expression))
+    } catch (_) {
+      return undefined
+    }
+  }
+
+  const initialQuery = useMemo(() => !isEmpty(searchExpression) ? tryParseExpression(searchExpression) : {
     combinator: 'and',
     rules: []
-  })
+  }, [])
+
+  const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
+
 
   const [facets, setFacets] = React.useState<{ facet: string, type: SearchValueType }[]>([])
 
@@ -37,10 +69,12 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
   }, [], 'Failed to load cohort criteria options')
 
 
-  useEffect(() => {
+  const updateQuery = (query: RuleGroupTypeAny) => {
+    setQuery(query)
     const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
       format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
-      ruleProcessor: ruleProcessorEnrolleeSearchExpression
+      ruleProcessor: ruleProcessorEnrolleeSearchExpression,
+      fallbackExpression: '1 = 1'
     }) : ''
 
     if (enrolleeSearchExpression === '') {
@@ -48,7 +82,7 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
     }
 
     onSearchExpressionChange(enrolleeSearchExpression)
-  }, [query])
+  }
 
 
   return <LoadingSpinner isLoading={isLoading}>
@@ -68,8 +102,8 @@ export const SearchQueryBuilder = ({ studyEnvContext, onSearchExpressionChange }
         fieldSelector: CustomFieldSelector
       }}
       operators={operators}
-      query={query}
-      onQueryChange={q => setQuery(q)}/>
+      query={query || { combinator: 'and', rules: [] }}
+      onQueryChange={q => updateQuery(q)}/>
   </LoadingSpinner>
 }
 
@@ -79,7 +113,8 @@ const operators = [
   { name: '<', label: '<' },
   { name: '<=', label: '<=' },
   { name: '>', label: '>' },
-  { name: '>=', label: '>=' }
+  { name: '>=', label: '>=' },
+  { name: 'contains', label: 'contains' }
 ]
 
 
@@ -126,4 +161,4 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
   </div>
 }
 
-
+export default SearchQueryBuilder
