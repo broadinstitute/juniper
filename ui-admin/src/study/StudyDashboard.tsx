@@ -72,6 +72,7 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
     <br/>
     <label>Accepting enrollment:</label> {config.acceptingEnrollment ? 'Yes' : 'No'}<br/>
     <label>Accepting proxy enrollment:</label> {config.acceptingProxyEnrollment ? 'Yes' : 'No'}<br/>
+    <label>Family linkage enabled:</label> {config.enableFamilyLinkage ? 'Yes' : 'No'}<br/>
     <p>
       <Link to={`env/${studyEnv.environmentName}`}>View / Configure</Link>
     </p>
@@ -85,7 +86,7 @@ function EnvironmentSummary({ studyEnv }: {studyEnv: StudyEnvironment}) {
 }
 
 /** indicates that an environment is not yet initialized */
-function EnvironmentEmptyMessage({ studyEnv }: {studyEnv: StudyEnvironment}) {
+function EnvironmentEmptyMessage({studyEnv }: {studyEnv: StudyEnvironment}) {
   if (studyEnv.environmentName === 'irb') {
     return <div>
       <h6 className="mt-2"><i>Not yet configured</i></h6>  <br/>

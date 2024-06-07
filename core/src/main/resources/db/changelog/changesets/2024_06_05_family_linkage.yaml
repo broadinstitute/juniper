@@ -28,4 +28,12 @@ databaseChangeLog:
             columns:
               - column:
                   { name: family_id, type: uuid, constraints: { foreignKeyName: fk_enrollee_family, references: family(id), nullable: true } }
-
+        - addColumn:
+            tableName: study_environment_config
+            columns:
+              - column: {
+                name: enable_family_linkage,
+                type: boolean,
+                defaultValueBoolean: false,
+                constraints: { nullable: false }
+              }
