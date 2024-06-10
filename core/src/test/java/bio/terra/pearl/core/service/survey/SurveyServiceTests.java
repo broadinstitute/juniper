@@ -7,12 +7,7 @@ import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.AnswerMapping;
-import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
-import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import bio.terra.pearl.core.model.survey.SurveyType;
+import bio.terra.pearl.core.model.survey.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,10 +23,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.springframework.test.util.AssertionErrors.fail;
@@ -377,6 +369,29 @@ public class SurveyServiceTests extends BaseSpringBootTest {
 
         Boolean result = SurveyParseUtils.getAnswerByStableId(jsonInput, "proxy_enrollment", Boolean.class, new ObjectMapper(), "stringValue");
         assertEquals(true, result);
+    }
+
+    @Test
+    void createStripsWhitespace(TestInfo info) {
+
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+
+        Survey survey = Survey
+                .builder()
+                .stableId("   \t\t   survey_1      ")
+                .content("""
+                        {
+                          "title": "The Basics",
+                          "pages": []
+                        }
+                        """)
+                .portalId(portal.getId())
+                .eligibilityRule("")
+                .build();
+
+        Survey savedSurvey = surveyService.create(survey);
+
+        assertEquals("survey_1", savedSurvey.getStableId());
     }
 
 }
