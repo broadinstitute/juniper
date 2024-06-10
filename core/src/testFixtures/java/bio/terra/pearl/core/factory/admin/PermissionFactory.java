@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class PermissionFactory {
 
     @Autowired
-    private PermissionService permissionService;
+    PermissionService permissionService;
 
     private Permission.PermissionBuilder<?, ?> builder(String testName) { return Permission.builder().name(testName); }
 
