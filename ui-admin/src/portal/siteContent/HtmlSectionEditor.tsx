@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useId, useState } from 'react'
 import {
   HtmlSection, SectionConfig,
   SectionType, socialMediaSites, validateFrequentlyAskedQuestionsConfig,
@@ -155,6 +155,8 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
   section: HtmlSection, updateSection: (section: HtmlSection) => void
 }) => {
   const config = validateStepOverviewTemplateConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
+  const stepContentId = useId()
+  const stepTargetSelector = `#${stepContentId}`
   return (
     <div>
       <div className="d-flex row g-0">
@@ -163,62 +165,125 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
         }}/>
         {/*<TextInput label="Background Color" value={config.background} onChange={value => {*/}
-        <Checkbox className="mb-2" label={'Show Step Numbers'}
-          checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
-            const parsed = JSON.parse(section.sectionConfig || '{}')
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, showStepNumbers: value }) })
-          }}/>
+        <StyleOptions section={section} updateSection={updateSection}/>
         <div>
-          {config.steps.map((step, i) => {
-            return <div key={i} style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
-              <div className="d-flex justify-content-between align-items-center">
-                <span className="h5">Step {i+1}</span>
-                <div role="button" className="d-flex justify-content-end">
-                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-                    const parsed = JSON.parse(section.sectionConfig!)
-                    const newSteps = [...config.steps]
-                    newSteps.splice(i, 1)
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-                  }}/></div>
-              </div>
-              <div>
-                <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
-                  onChange={value => {
-                    const parsed = JSON.parse(section.sectionConfig!)
-                    const newSteps = [...config.steps]
-                    newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-                  }}/>
-                <TextInput label="Duration" value={step.duration} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig!)
-                  const newSteps = [...config.steps]
-                  newSteps[i].duration = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-                }}/>
-                <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig!)
-                  const newSteps = [...config.steps]
-                  newSteps[i].blurb = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-                }}/>
-              </div>
+          <div className="pb-1">
+            <button
+              aria-controls={stepTargetSelector}
+              aria-expanded="true"
+              className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
+              data-bs-target={stepTargetSelector}
+              data-bs-toggle="collapse"
+            >
+              <span className={'form-label fw-semibold mb-0'}>Steps</span>
+              <span className="text-center px-2">
+                <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+                <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+              </span>
+            </button>
+          </div>
+          <div className="collapse show rounded-3 mb-2" id={stepContentId}
+            style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
+            <Checkbox className="mb-2" label={'Show Step Numbers'}
+              checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
+                const parsed = JSON.parse(section.sectionConfig || '{}')
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, showStepNumbers: value }) })
+              }}/>
+            <div>
+              {config.steps.map((step, i) => {
+                return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
+                  <div className="d-flex justify-content-between align-items-center">
+                    <span className="h5">Step {i + 1}</span>
+                    <div role="button" className="d-flex justify-content-end">
+                      <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
+                        const parsed = JSON.parse(section.sectionConfig!)
+                        const newSteps = [...config.steps]
+                        newSteps.splice(i, 1)
+                        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                      }}/></div>
+                  </div>
+                  <div>
+                    <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
+                      onChange={value => {
+                        const parsed = JSON.parse(section.sectionConfig!)
+                        const newSteps = [...config.steps]
+                        newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
+                        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                      }}/>
+                    <TextInput label="Duration" value={step.duration} onChange={value => {
+                      const parsed = JSON.parse(section.sectionConfig!)
+                      const newSteps = [...config.steps]
+                      newSteps[i].duration = value
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                    }}/>
+                    <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
+                      const parsed = JSON.parse(section.sectionConfig!)
+                      const newSteps = [...config.steps]
+                      newSteps[i].blurb = value
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                    }}/>
+                  </div>
+                </div>
+              })}
             </div>
-          })}
+            <Button onClick={() => {
+              const parsed = JSON.parse(section.sectionConfig!)
+              const newSteps = [...config.steps]
+              newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+            }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>
+          </div>
         </div>
-        <Button onClick={() => {
-          const parsed = JSON.parse(section.sectionConfig!)
-          const newSteps = [...config.steps]
-          newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
-          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-        }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>
+      </div>
+    </div>
+  )
+}
+
+const StyleOptions = ({ section, updateSection }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+  console.log(config)
+  const contentId = useId()
+  const targetSelector = `#${contentId}`
+  // @ts-ignore
+  return (
+    <div>
+      <div className="pb-1">
+        <button
+          aria-controls={targetSelector}
+          aria-expanded="true"
+          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
+          data-bs-target={targetSelector}
+          data-bs-toggle="collapse"
+        >
+          <span className={'form-label fw-semibold mb-0'}>Style Options</span>
+          <span className="text-center px-2">
+            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+          </span>
+        </button>
+      </div>
+      <div className="collapse show rounded-3 mb-2" id={contentId}
+        style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
+        <TextInput label="Background Color" value={config.background as string}
+          placeholder={'Enter a value to override default'}
+          onChange={value => {
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, background: value }) })
+          }}/>
+        <TextInput label="Text Color" value={config.color as string}
+          placeholder={'Enter a value to override default'}
+          onChange={value => {
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, color: value }) })
+          }}/>
       </div>
     </div>
   )
 }
 
 const FrequentlyAskedQuestionsSectionEditor = ({ section, updateSection }: {
-    section: HtmlSection, updateSection: (section: HtmlSection) => void
-    }) => {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
   const config = validateFrequentlyAskedQuestionsConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
   return (
     <div className="d-flex row g-0">
