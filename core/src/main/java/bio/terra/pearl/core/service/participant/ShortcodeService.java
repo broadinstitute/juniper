@@ -8,13 +8,13 @@ import java.util.Optional;
 import java.util.function.Function;
 
 @Service
-public class ShortcodeUtilService {
+public class ShortcodeService {
     public static final String SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int SHORTCODE_LENGTH = 6;
 
     private final RandomUtilService randomUtilService;
 
-    public ShortcodeUtilService(RandomUtilService randomUtilService) {
+    public ShortcodeService(RandomUtilService randomUtilService) {
         this.randomUtilService = randomUtilService;
     }
 

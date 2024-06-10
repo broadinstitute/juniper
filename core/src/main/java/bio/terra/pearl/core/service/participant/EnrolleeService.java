@@ -51,7 +51,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final RandomUtilService randomUtilService;
     private final EnrolleeRelationService enrolleeRelationService;
     private final FamilyService familyService;
-    private final ShortcodeUtilService shortcodeUtilService;
+    private final ShortcodeService shortcodeService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -71,7 +71,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
                            PortalParticipantUserService portalParticipantUserService,
-                           FamilyService familyService, ShortcodeUtilService shortcodeUtilService) {
+                           FamilyService familyService, ShortcodeService shortcodeService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -92,7 +92,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.enrolleeRelationService = enrolleeRelationService;
         this.portalParticipantUserService = portalParticipantUserService;
         this.familyService = familyService;
-        this.shortcodeUtilService = shortcodeUtilService;
+        this.shortcodeService = shortcodeService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -241,7 +241,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public Enrollee create(Enrollee enrollee) {
         if (enrollee.getShortcode() == null) {
-            enrollee.setShortcode(shortcodeUtilService.generateShortcode(null, dao::findOneByShortcode));
+            enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),

@@ -7,12 +7,12 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ShortcodeUtilServiceTest {
+class ShortcodeServiceTest {
 
     @Test
     void testGenerateShortcodeWithPrefix() {
-        ShortcodeUtilService shortcodeUtilService = new ShortcodeUtilService(new RandomUtilService());
-        String shortcode = shortcodeUtilService.generateShortcode("F", (s) -> Optional.empty());
+        ShortcodeService shortcodeService = new ShortcodeService(new RandomUtilService());
+        String shortcode = shortcodeService.generateShortcode("F", (s) -> Optional.empty());
         assertNotNull(shortcode);
         assertTrue(shortcode.startsWith("F_"));
         assertEquals(8, shortcode.length());
@@ -21,8 +21,8 @@ class ShortcodeUtilServiceTest {
 
     @Test
     void testGenerateShortcodeNoPrefix() {
-        ShortcodeUtilService shortcodeUtilService = new ShortcodeUtilService(new RandomUtilService());
-        String shortcode = shortcodeUtilService.generateShortcode(null, (s) -> Optional.empty());
+        ShortcodeService shortcodeService = new ShortcodeService(new RandomUtilService());
+        String shortcode = shortcodeService.generateShortcode(null, (s) -> Optional.empty());
         assertNotNull(shortcode);
         assertEquals(6, shortcode.length());
         assertTrue(shortcode.matches("[A-Z]{6}"));
@@ -30,10 +30,10 @@ class ShortcodeUtilServiceTest {
 
     @Test
     void testFailsToGenerateShortcode() {
-        ShortcodeUtilService shortcodeUtilService = new ShortcodeUtilService(new RandomUtilService());
+        ShortcodeService shortcodeService = new ShortcodeService(new RandomUtilService());
 
         assertThrows(InternalServerException.class,
-                () -> shortcodeUtilService.generateShortcode(null, (s) -> Optional.of(true)));
+                () -> shortcodeService.generateShortcode(null, (s) -> Optional.of(true)));
 
     }
 }

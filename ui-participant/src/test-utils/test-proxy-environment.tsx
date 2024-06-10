@@ -6,7 +6,7 @@ import {
   EnrolleeRelation,
   ParticipantUser,
   PortalParticipantUser
-} from '../api/api'
+} from 'api/api'
 
 export const mockPortal: Portal = {
   id: 'portal-id',

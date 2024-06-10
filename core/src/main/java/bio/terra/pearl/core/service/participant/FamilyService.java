@@ -11,20 +11,20 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
-    private final ShortcodeUtilService shortcodeUtilService;
+    private final ShortcodeService shortcodeService;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
                          ObjectMapper objectMapper,
-                         ShortcodeUtilService shortcodeUtilService) {
+                         ShortcodeService shortcodeService) {
         super(familyDao, dataChangeRecordService, objectMapper);
-        this.shortcodeUtilService = shortcodeUtilService;
+        this.shortcodeService = shortcodeService;
     }
 
     @Transactional
     public Family create(Family family, DataAuditInfo info) {
         if (family.getShortcode() == null) {
-            family.setShortcode(shortcodeUtilService.generateShortcode("F", dao::findOneByShortcode));
+            family.setShortcode(shortcodeService.generateShortcode("F", dao::findOneByShortcode));
         }
         return super.create(family, info);
     }
