@@ -13,7 +13,11 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import useUpdateEffect from 'util/useUpdateEffect'
-import { userHasPermission, useUser } from 'user/UserProvider'
+import { useUser } from 'user/UserProvider'
+import {
+  DocsKey,
+  ZendeskLink
+} from '../util/zendeskUtils'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -80,20 +84,19 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       </label>
     </div>
 
-    {
-      // TODO: JN-1017 - Create zendesk article for proxy enrollment, link in info popup
-      userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
-        <div>
-          <label className="form-label">
+    <div>
+      <label className="form-label">
                 accepting proxy enrollment <InfoPopup content={
-                `Enables enrolling as a proxy on behalf of a dependent. Note that you will need to make edits to 
-          your pre-enrollment survey to fully enable proxy enrollment.`}/>
-            <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
-              onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
-          </label>
-        </div>
-      )
-    }
+          <span>
+            Enables enrolling as a proxy on behalf of a dependent.
+            Requires extensive changes to your pre-enroll; see the
+            <ZendeskLink doc={DocsKey.PROXY_ENROLLMENT}> proxy enrollment documentation </ZendeskLink>
+            for more details.
+          </span>}/>
+        <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
+          onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
+      </label>
+    </div>
     { user?.superuser &&
       <><div>
         <label className="form-label">
