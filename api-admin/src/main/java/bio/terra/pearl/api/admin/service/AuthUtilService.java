@@ -19,9 +19,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import org.springframework.stereotype.Service;
 
 /** Utility service for common auth-related methods */
@@ -74,6 +72,28 @@ public class AuthUtilService {
       }
     }
     throw new NotFoundException("Portal %s not found".formatted(portalShortcode));
+  }
+
+  public Portal authUserToPortalWithPermission(
+      AdminUser user, String portalShortcode, String permission) {
+    Portal portal = authUserToPortal(user, portalShortcode);
+    if (user.isSuperuser()) {
+      return portal;
+    }
+    adminUserService
+        .findByUsernameWithPermissions(user.getUsername())
+        .ifPresent(
+            adminUserWithPermissions -> {
+              if (!adminUserWithPermissions
+                  .portalPermissions()
+                  .getOrDefault(portal.getId(), new HashSet<>())
+                  .contains(permission)) {
+                throw new PermissionDeniedException(
+                    "User %s does not have permission %s on portal %s"
+                        .formatted(user.getUsername(), permission, portalShortcode));
+              }
+            });
+    return portal;
   }
 
   public PortalStudy authUserToStudy(
