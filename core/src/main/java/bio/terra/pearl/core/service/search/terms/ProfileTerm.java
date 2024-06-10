@@ -90,18 +90,18 @@ public class ProfileTerm implements SearchTerm {
     }
 
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
-            Map.entry("givenName", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("familyName", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("name", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("contactEmail", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("phoneNumber", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("birthDate", SearchValueTypeDefinition.ofType(DATE)),
-            Map.entry("sexAtBirth", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.state", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.city", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.postalCode", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.street1", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.street2", SearchValueTypeDefinition.ofType(STRING)),
-            Map.entry("mailingAddress.country", SearchValueTypeDefinition.ofType(STRING))
+            Map.entry("givenName", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("familyName", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("name", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("contactEmail", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("phoneNumber", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("birthDate", SearchValueTypeDefinition.builder().type(DATE).build()),
+            Map.entry("sexAtBirth", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.state", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.city", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.postalCode", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.street1", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.street2", SearchValueTypeDefinition.builder().type(STRING).build()),
+            Map.entry("mailingAddress.country", SearchValueTypeDefinition.builder().type(STRING).build())
     );
 }

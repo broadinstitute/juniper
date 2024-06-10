@@ -102,12 +102,12 @@ public class TaskTerm implements SearchTerm {
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry("status",
                     SearchValueTypeDefinition
-                            .ofType(STRING)
-                            .withChoices(
+                            .builder().type(STRING)
+                            .choices(
                                     Arrays.asList(TaskStatus.values())
                                             .stream()
                                             .map(val -> new QuestionChoice(val.name(), val.name()))
                                             .toList()
-                            )),
-            Map.entry("assigned", SearchValueTypeDefinition.ofType(BOOLEAN)));
+                            ).build()),
+            Map.entry("assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()));
 }

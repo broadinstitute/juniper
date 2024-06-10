@@ -83,12 +83,13 @@ public class LatestKitTerm implements SearchTerm {
             Map.entry(
                     "status",
                     SearchValueTypeDefinition
-                            .ofType(STRING)
-                            .withChoices(
+                            .builder()
+                            .type(STRING)
+                            .choices(
                                     Arrays.asList(KitRequestStatus.values())
                                             .stream()
                                             .map(val -> new QuestionChoice(val.name(), val.name()))
                                             .toList()
-                            ))
+                            ).build())
     );
 }

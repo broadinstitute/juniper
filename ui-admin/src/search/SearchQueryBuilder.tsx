@@ -40,7 +40,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'
 
 /**
- * Frontend for building an enrollee search expression.
+ * Frontend for building an enrollee search expression; can either
+ * use react-querybuilder for a more user-friendly experience, or
+ * a simple text area to directly input a search expression.
  */
 export const SearchQueryBuilder = ({
   studyEnvContext,
@@ -122,6 +124,9 @@ export const SearchQueryBuilder = ({
   </div>
 }
 
+/**
+ * Allows the user to directly input a search expression.
+ */
 const AdvancedQueryBuilder = ({
   onSearchExpressionChange,
   searchExpression
@@ -141,6 +146,7 @@ const AdvancedQueryBuilder = ({
   return <div className="">
     <textarea
       className="form-control w-100"
+      aria-label={'Search expression'}
       value={localExpression}
       onChange={e => {
         setLocalExpression(e.target.value)
@@ -150,6 +156,9 @@ const AdvancedQueryBuilder = ({
   </div>
 }
 
+/**
+ * Uses react-querybuilder to build a search expression.
+ */
 const BasicQueryBuilder = ({
   studyEnvContext,
   onSearchExpressionChange,
@@ -204,7 +213,6 @@ const BasicQueryBuilder = ({
     onSearchExpressionChange(enrolleeSearchExpression)
   }
 
-
   return <LoadingSpinner isLoading={isLoading}>
     <div>
       <QueryBuilder
@@ -241,7 +249,9 @@ const operators = [
   { name: 'contains', label: 'contains' }
 ]
 
-
+// Converts our facet type to a react-querybuilder field definition. Works in
+// tandem with CustomFieldSelector and CustomValueEditor to render our custom
+// query builder.
 const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinition): Field => {
   const field: Field = {
     name: facet,
@@ -294,10 +304,7 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
   </div>
 }
 
-/**
- *
- */
-export const CustomValueEditor = (props: ValueEditorProps) => {
+const CustomValueEditor = (props: ValueEditorProps) => {
   if (props.fieldData.valueEditorType === 'select') {
     const options = props.fieldData.values?.map(option => {
       return { label: option.label, value: (option as { name: string }).name || option.label }

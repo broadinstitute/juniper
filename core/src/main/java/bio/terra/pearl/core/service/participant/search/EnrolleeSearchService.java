@@ -97,7 +97,7 @@ public class EnrolleeSearchService {
         // latest kit fields
         LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
         // age
-        fields.put("age", SearchValueTypeDefinition.ofType(INTEGER));
+        fields.put("age", SearchValueTypeDefinition.builder().type(INTEGER).build());
         // answers
         List<Survey> surveys = surveyService.findByStudyEnvironmentIdWithContent(studyEnvId);
         for (Survey survey : surveys) {

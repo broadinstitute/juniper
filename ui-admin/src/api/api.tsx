@@ -391,7 +391,6 @@ export type SearchValueTypeDefinition = {
   choices?: { stableId: string, text: string }[]
   isMultiValued: boolean
   hasOtherQuestion: boolean
-
 }
 
 let bearerToken: string | null = null
