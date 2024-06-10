@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import PortalEnvConfigView from 'portal/PortalEnvConfigView'
-import { PortalEnvironment } from '@juniper/ui-core'
+import {
+  PortalEnvironment,
+  StudyEnvironmentConfig
+} from '@juniper/ui-core'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { set } from 'lodash/fp'
@@ -13,7 +16,10 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import useUpdateEffect from 'util/useUpdateEffect'
-import { useUser } from 'user/UserProvider'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
 import {
   DocsKey,
   ZendeskLink
@@ -42,7 +48,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   const { user } = useUser()
 
   /** update a given field in the config */
-  const updateConfig = (propName: string, value: string | boolean) => {
+  const updateConfig = (propName: keyof StudyEnvironmentConfig, value: string | boolean) => {
     setConfig(set(propName, value))
   }
 
@@ -97,6 +103,17 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
           onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
       </label>
     </div>
+    {
+      userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
+        <div>
+          <label className="form-label">
+            enable family linkage <InfoPopup content={'If checked, allows participants to be grouped by families.'}/>
+            <input type="checkbox" checked={config.enableFamilyLinkage} className="ms-2"
+              onChange={e => updateConfig('enableFamilyLinkage', e.target.checked)}/>
+          </label>
+        </div>
+      )
+    }
     { user?.superuser &&
       <><div>
         <label className="form-label">
