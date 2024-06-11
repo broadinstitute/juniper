@@ -35,22 +35,22 @@ import java.util.Optional;
 
 @Service
 public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopulateContext> {
-    private StudyService studyService;
-    private StudyEnvironmentService studyEnvService;
-    private EnrolleePopulator enrolleePopulator;
-    private FamilyPopulator familyPopulator;
-    private SurveyPopulator surveyPopulator;
-    private SurveyService surveyService;
-    private EmailTemplatePopulator emailTemplatePopulator;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private PortalDiffService portalDiffService;
-    private StudyPublishingService studyPublishingService;
-    private PortalEnvironmentService portalEnvironmentService;
-    private KitTypeDao kitTypeDao;
-    private StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao;
+    private final StudyService studyService;
+    private final StudyEnvironmentService studyEnvService;
+    private final EnrolleePopulator enrolleePopulator;
+    private final FamilyPopulator familyPopulator;
+    private final SurveyPopulator surveyPopulator;
+    private final SurveyService surveyService;
+    private final EmailTemplatePopulator emailTemplatePopulator;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final PortalDiffService portalDiffService;
+    private final StudyPublishingService studyPublishingService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final KitTypeDao kitTypeDao;
+    private final StudyEnvironmentKitTypeDao studyEnvironmentKitTypeDao;
 
     public StudyPopulator(StudyService studyService,
-                          StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator,
+                          StudyEnvironmentService studyEnvService, EnrolleePopulator enrolleePopulator, FamilyPopulator familyPopulator,
                           SurveyPopulator surveyPopulator, SurveyService surveyService,
                           EmailTemplatePopulator emailTemplatePopulator,
                           PreEnrollmentResponseDao preEnrollmentResponseDao,
@@ -60,6 +60,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         this.studyService = studyService;
         this.studyEnvService = studyEnvService;
         this.enrolleePopulator = enrolleePopulator;
+        this.familyPopulator = familyPopulator;
         this.surveyPopulator = surveyPopulator;
         this.surveyService = surveyService;
         this.emailTemplatePopulator = emailTemplatePopulator;

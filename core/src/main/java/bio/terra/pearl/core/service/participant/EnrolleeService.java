@@ -201,8 +201,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
         Enrollee enrollee = dao.find(enrolleeId).get();
-        StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
-        /**
+                StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
+/**
          * For production environments, we only allow deletion if a withdrawal record has already been preserved
          */
         if (studyEnv.getEnvironmentName().equals(EnvironmentName.live) &&

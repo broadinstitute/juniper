@@ -1,0 +1,20 @@
+{
+  "participantUser": {
+    "username": "psalk@test.com",
+    "lastLoginHoursAgo": 5
+  },
+  "profile": {
+    "givenName": "Peter",
+    "familyName": "Salk",
+    "contactEmail": "psalk@test.com",
+    "sexAtBirth": "male",
+    "preferredLanguage": "es",
+    "mailingAddress": {
+      "street1": "32 Elm Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10005"
+    }
+  }
+}

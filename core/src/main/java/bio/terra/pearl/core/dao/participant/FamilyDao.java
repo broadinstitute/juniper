@@ -28,4 +28,12 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
     public List<Family> findByStudyEnvironmentId(UUID studyEnvironmentId) {
         return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
+
+    public Optional<Family> findByProbandId(UUID enrolleeId) {
+        return findByProperty("proband_enrollee_id", enrolleeId);
+    }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        deleteByProperty("study_environment_id", studyEnvironmentId);
+    }
 }

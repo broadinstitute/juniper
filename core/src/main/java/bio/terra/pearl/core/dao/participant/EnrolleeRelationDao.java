@@ -72,7 +72,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
                                         "INNER JOIN enrollee e ON e.id = er.enrollee_id AND e.family_id = :familyId " +
                                         "INNER JOIN enrollee te ON te.id = er.target_enrollee_id AND te.family_id = :familyId " +
                                         "WHERE relationship_type = 'FAMILY'")
-                        .bind("family_id", familyId)
+                        .bind("familyId", familyId)
                         .mapTo(clazz)
                         .list()
         );

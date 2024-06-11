@@ -48,7 +48,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(12, enrollees.size());
+        Assertions.assertEquals(14, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
@@ -190,7 +190,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
 
-        assertThat(exportData, hasSize(10));
+        assertThat(exportData, hasSize(12));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));

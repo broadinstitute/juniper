@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Family;
@@ -16,13 +17,16 @@ import java.util.UUID;
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
+    private final EnrolleeDao enrolleeDao;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
                          ObjectMapper objectMapper,
-                         ShortcodeService shortcodeService) {
+                         ShortcodeService shortcodeService,
+                         EnrolleeDao enrolleeDao) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
+        this.enrolleeDao = enrolleeDao;
     }
 
     @Transactional
@@ -39,5 +43,21 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
     public List<Family> findByStudyEnvironmentId(UUID studyEnvironmentId) {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    public Optional<Family> findByProbandId(UUID enrolleeId) {
+        return dao.findByProbandId(enrolleeId);
+    }
+
+    @Override
+    public void delete(UUID familyId, DataAuditInfo info) {
+        enrolleeDao.removeAllEnrolleesFromFamily(familyId);
+
+        super.delete(familyId, info);
+    }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        enrolleeDao.removeAllEnrolleesFromFamiliesInStudyEnv(studyEnvironmentId);
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 }

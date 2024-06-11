@@ -18,6 +18,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import java.util.UUID;
 
 @Service
 public class StudyEnvironmentService extends CrudService<StudyEnvironment, StudyEnvironmentDao> {
+    private final FamilyService familyService;
     private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
     private EnrolleeService enrolleeService;
@@ -52,7 +54,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
-                                   ImportService importService) {
+                                   ImportService importService, FamilyService familyService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -65,6 +67,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.adminTaskService = adminTaskService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.importService = importService;
+        this.familyService = familyService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -110,6 +113,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
+        familyService.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
