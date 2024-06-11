@@ -127,4 +127,8 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return enrolleeRelations.stream().filter(this::isRelationshipValid).collect(Collectors.toList());
     }
 
+    public List<EnrolleeRelation> findRelationsForFamily(UUID familyId) {
+        return filterValid(dao.findRelationsForFamily(familyId));
+    }
+
 }

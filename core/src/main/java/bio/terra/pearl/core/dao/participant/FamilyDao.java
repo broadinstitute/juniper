@@ -5,7 +5,9 @@ import bio.terra.pearl.core.model.participant.Family;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class FamilyDao extends BaseMutableJdbiDao<Family> {
@@ -21,5 +23,9 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
 
     public Optional<Family> findOneByShortcode(String shortcode) {
         return findByProperty("shortcode", shortcode);
+    }
+
+    public List<Family> findByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return findAllByProperty("study_environment_id", studyEnvironmentId);
     }
 }

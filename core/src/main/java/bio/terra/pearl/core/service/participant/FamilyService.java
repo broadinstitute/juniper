@@ -9,6 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
@@ -29,4 +33,11 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return super.create(family, info);
     }
 
+    public Optional<Family> findOneByShortcode(String shortcode) {
+        return dao.findOneByShortcode(shortcode);
+    }
+
+    public List<Family> findByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironmentId(studyEnvironmentId);
+    }
 }
