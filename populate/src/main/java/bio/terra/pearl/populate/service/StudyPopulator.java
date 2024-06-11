@@ -38,6 +38,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
     private StudyService studyService;
     private StudyEnvironmentService studyEnvService;
     private EnrolleePopulator enrolleePopulator;
+    private FamilyPopulator familyPopulator;
     private SurveyPopulator surveyPopulator;
     private SurveyService surveyService;
     private EmailTemplatePopulator emailTemplatePopulator;
@@ -116,6 +117,10 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
         // now populate enrollees
         for (String enrolleeFile : studyPopEnv.getEnrolleeFiles()) {
             enrolleePopulator.populate(context.newFrom(enrolleeFile), overwrite);
+        }
+
+        for (String familyFile : studyPopEnv.getFamilyFiles()) {
+            familyPopulator.populate(context.newFrom(familyFile), overwrite);
         }
     }
 

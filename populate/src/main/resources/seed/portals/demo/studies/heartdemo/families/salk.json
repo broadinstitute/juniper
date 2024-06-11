@@ -1,0 +1,21 @@
+{
+  "shortcode": "F_HDSLKF",
+  "probandShortcode": "HDSALK",
+  "memberShortcodes": [
+    "HDSALK",
+    "HDPSLK",
+    "HDJSLK"
+  ],
+  "relations": [
+    {
+      "targetShortcode": "HDPSLK",
+      "shortcode": "HDSALK",
+      "relationship": "father"
+    },
+    {
+      "targetShortcode": "HDJSLK",
+      "shortcode": "HDSALK",
+      "relationship": "father"
+    }
+  ]
+}
