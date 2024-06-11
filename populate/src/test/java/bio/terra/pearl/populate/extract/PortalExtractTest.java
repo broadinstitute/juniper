@@ -31,6 +31,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testExtractDemoPortal() throws Exception {
+        baseSeedPopulator.populateRolesAndPermissions();
         // populate a portal, then see if we can extract it, delete it, and repopulate it
 
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
