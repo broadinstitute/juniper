@@ -56,6 +56,14 @@ public class SiteMediaService extends ImmutableEntityService<SiteMedia, SiteMedi
         return dao.create(image);
     }
 
+    public SiteMedia rename(SiteMedia image, String newCleanFileName) {
+        int nextVersion = getNextVersion(newCleanFileName, image.getPortalShortcode());
+        image.cleanForCopying();
+        image.setCleanFileName(newCleanFileName);
+        image.setVersion(nextVersion);
+        return dao.create(image);
+    }
+
     public boolean isAllowedFileName(String uploadFileName) {
         Optional<String> ext =  getExtension(uploadFileName);
         return ext.isPresent() && ALLOWED_EXTENSIONS.contains(ext.get().toLowerCase());

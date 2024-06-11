@@ -1,10 +1,12 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.SiteMediaApi;
+import bio.terra.pearl.api.admin.models.dto.MediaRenameDto;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteMediaExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteMedia;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URLConnection;
@@ -19,15 +21,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
-  private AuthUtilService authUtilService;
-  private HttpServletRequest request;
-  private SiteMediaExtService siteMediaExtService;
+  private final AuthUtilService authUtilService;
+  private final ObjectMapper objectMapper;
+  private final HttpServletRequest request;
+  private final SiteMediaExtService siteMediaExtService;
 
   public SiteMediaController(
       AuthUtilService authUtilService,
+      ObjectMapper objectMapper,
       HttpServletRequest request,
       SiteMediaExtService siteMediaExtService) {
     this.authUtilService = authUtilService;
+    this.objectMapper = objectMapper;
     this.request = request;
     this.siteMediaExtService = siteMediaExtService;
   }
@@ -75,6 +80,14 @@ public class SiteMediaController implements SiteMediaApi {
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read image data");
     }
+  }
+
+  @Override
+  public ResponseEntity<Object> rename(String portalShortcode, UUID id, Object body) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    MediaRenameDto renameDto = objectMapper.convertValue(body, MediaRenameDto.class);
+    return ResponseEntity.ok(
+        siteMediaExtService.rename(portalShortcode, id, renameDto.getNewCleanFileName(), operator));
   }
 
   @Override
