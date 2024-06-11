@@ -29,7 +29,15 @@ public class RoleService extends CrudService<Role, RoleDao> {
 
     @Transactional
     public Role create(Role role) {
-        return dao.create(role);
+        Role createdRole = dao.create(role);
+        role.getPermissions().forEach(permission -> {
+            rolePermissionService.create(RolePermission.builder()
+                    .roleId(createdRole.getId())
+                    .permissionId(permission.getId())
+                    .build());
+        });
+
+        return createdRole;
     }
 
     /** Creates the role and attaches the given permissions. If any of the names don't exist, an error will be thrown */
