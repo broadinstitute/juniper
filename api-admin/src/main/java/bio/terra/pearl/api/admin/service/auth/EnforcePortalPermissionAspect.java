@@ -13,17 +13,18 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 /**
- * Aspect to enforce portal permissions on methods. Inspired by
+ * Aspect to enforce portal permissions on methods annotated with EnforcePortalPermission.
+ * Inspired by
  * https://stackoverflow.com/questions/50882444/can-spring-annotation-access-method-parameters
  */
-public class PortalPermissionEnforcer {
+public class EnforcePortalPermissionAspect {
   private static final String ADMIN_USER_USAGE_ERROR =
       "EnforcePortalPermission annotation must be used on a method whose last argument is the AdminUser";
   private static final String SHORTCODE_USAGE_ERROR =
       "EnforcePortalPermission annotation must be used on a method whose first argument is the Portal shortcode";
   private final AuthUtilService authUtilService;
 
-  public PortalPermissionEnforcer(AuthUtilService authUtilService) {
+  public EnforcePortalPermissionAspect(AuthUtilService authUtilService) {
     this.authUtilService = authUtilService;
   }
 
@@ -42,7 +43,7 @@ public class PortalPermissionEnforcer {
 
   /**
    * this gets the operator by assuming it's the last argument to the method. It's probably good to
-   * enforce that the AdminUser is always the list arg for consistency's sake. However, we could
+   * enforce that the AdminUser is always the last arg for consistency's sake. However, we could
    * eventually get fancy and use a parameter annotation to detect it.
    */
   protected AdminUser extractAdminUserOperator(ProceedingJoinPoint joinPoint) {
