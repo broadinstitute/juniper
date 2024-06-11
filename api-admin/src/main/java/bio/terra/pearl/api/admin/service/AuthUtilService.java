@@ -82,7 +82,7 @@ public class AuthUtilService {
     }
     adminUserService
         .findByUsernameWithPermissions(user.getUsername())
-        .ifPresent(
+        .ifPresentOrElse(
             adminUserWithPermissions -> {
               if (!adminUserWithPermissions
                   .portalPermissions()
@@ -92,6 +92,11 @@ public class AuthUtilService {
                     "User %s does not have permission %s on portal %s"
                         .formatted(user.getUsername(), permission, portalShortcode));
               }
+            },
+            () -> {
+              throw new PermissionDeniedException(
+                  "User %s does not have permission %s on portal %s"
+                      .formatted(user.getUsername(), permission, portalShortcode));
             });
     return portal;
   }
