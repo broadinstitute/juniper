@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service;
+package bio.terra.pearl.api.admin.service.auth;
 
 import bio.terra.common.exception.UnauthorizedException;
 import bio.terra.common.iam.BearerTokenFactory;

@@ -2,8 +2,8 @@ package bio.terra.pearl.api.admin.controller.datarepo;
 
 import bio.terra.pearl.api.admin.api.DatarepoApi;
 import bio.terra.pearl.api.admin.model.CreateDataset;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.DataRepoExportExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;

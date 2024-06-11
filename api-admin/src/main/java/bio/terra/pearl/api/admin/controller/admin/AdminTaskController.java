@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.admin.controller.admin;
 
 import bio.terra.pearl.api.admin.api.AdminTaskApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.admin.AdminTaskExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.AdminTask;

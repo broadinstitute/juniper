@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service.forms;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -51,7 +52,8 @@ public class SurveyExtService {
     this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
   }
 
-  public Survey get(String portalShortcode, String stableId, int version, AdminUser operator) {
+  @EnforcePortalPermission(permission = "survey_edit")
+  public Survey get(AdminUser operator, String portalShortcode, String stableId, int version) {
     Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     Survey survey = authUtilService.authSurveyToPortal(portal, stableId, version);
     surveyService.attachAnswerMappings(survey);

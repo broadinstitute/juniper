@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -31,7 +31,7 @@ public class SurveyController implements SurveyApi {
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    Survey survey = surveyExtService.get(portalShortcode, stableId, version, adminUser);
+    Survey survey = surveyExtService.get(adminUser, portalShortcode, stableId, version);
     return ResponseEntity.ok(survey);
   }
 
