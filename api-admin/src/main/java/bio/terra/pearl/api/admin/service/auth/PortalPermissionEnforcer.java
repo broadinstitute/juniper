@@ -67,7 +67,7 @@ public class PortalPermissionEnforcer {
     if (methodArgs.length < 1) {
       throw new UnsupportedOperationException(SHORTCODE_USAGE_ERROR);
     }
-    Object shortcode = methodArgs[1];
+    Object shortcode = methodArgs[0];
     if (shortcode == null) {
       throw new IllegalArgumentException("Portal shortcode not specified");
     }
