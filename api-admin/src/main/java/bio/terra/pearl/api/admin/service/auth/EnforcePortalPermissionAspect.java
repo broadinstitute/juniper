@@ -13,9 +13,8 @@ import org.springframework.stereotype.Component;
 @Aspect
 @Slf4j
 /**
- * Aspect to enforce portal permissions on methods annotated with EnforcePortalPermission.
- * Inspired by
- * https://stackoverflow.com/questions/50882444/can-spring-annotation-access-method-parameters
+ * Aspect to enforce portal permissions on methods annotated with EnforcePortalPermission. Inspired
+ * by https://stackoverflow.com/questions/50882444/can-spring-annotation-access-method-parameters
  */
 public class EnforcePortalPermissionAspect {
   private static final String ADMIN_USER_USAGE_ERROR =
