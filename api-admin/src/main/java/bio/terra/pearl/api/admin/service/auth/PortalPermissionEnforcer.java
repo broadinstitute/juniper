@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
  */
 public class PortalPermissionEnforcer {
   private static final String ADMIN_USER_USAGE_ERROR =
-      "EnforcePortalPermission annotation must be used on a method whose first argument is the AdminUser";
+      "EnforcePortalPermission annotation must be used on a method whose last argument is the AdminUser";
   private static final String SHORTCODE_USAGE_ERROR =
-      "EnforcePortalPermission annotation must be used on a method whose second argument is the Portal shortcode";
+      "EnforcePortalPermission annotation must be used on a method whose first argument is the Portal shortcode";
   private final AuthUtilService authUtilService;
 
   public PortalPermissionEnforcer(AuthUtilService authUtilService) {
@@ -41,8 +41,8 @@ public class PortalPermissionEnforcer {
   }
 
   /**
-   * this gets the operator by assuming it's the first argument to the method that's probably good
-   * to enforce that the AdminUser is always the first arg for consistency's sake. However, we could
+   * this gets the operator by assuming it's the last argument to the method. It's probably good to
+   * enforce that the AdminUser is always the list arg for consistency's sake. However, we could
    * eventually get fancy and use a parameter annotation to detect it.
    */
   protected AdminUser extractAdminUserOperator(ProceedingJoinPoint joinPoint) {
@@ -50,7 +50,7 @@ public class PortalPermissionEnforcer {
     if (methodArgs.length == 0) {
       throw new UnsupportedOperationException(ADMIN_USER_USAGE_ERROR);
     }
-    Object adminUser = methodArgs[0];
+    Object adminUser = methodArgs[methodArgs.length - 1];
     if (adminUser == null) {
       throw new PermissionDeniedException("User not found");
     }
@@ -61,10 +61,10 @@ public class PortalPermissionEnforcer {
     }
   }
 
-  /** gets the portal shortcode by assuming it's the second argument  */
+  /** gets the portal shortcode by assuming it's the first argument */
   protected String extractPortalShortcode(ProceedingJoinPoint joinPoint) {
     Object[] methodArgs = joinPoint.getArgs();
-    if (methodArgs.length < 2) {
+    if (methodArgs.length < 1) {
       throw new UnsupportedOperationException(SHORTCODE_USAGE_ERROR);
     }
     Object shortcode = methodArgs[1];

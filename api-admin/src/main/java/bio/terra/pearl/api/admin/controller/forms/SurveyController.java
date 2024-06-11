@@ -31,7 +31,7 @@ public class SurveyController implements SurveyApi {
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
-    Survey survey = surveyExtService.get(adminUser, portalShortcode, stableId, version);
+    Survey survey = surveyExtService.get(portalShortcode, stableId, version, adminUser);
     return ResponseEntity.ok(survey);
   }
 

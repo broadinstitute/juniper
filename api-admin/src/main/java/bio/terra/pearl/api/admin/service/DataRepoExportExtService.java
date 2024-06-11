@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
@@ -28,12 +29,12 @@ public class DataRepoExportExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
+  @EnforcePortalPermission(permission = "tdr_export")
   public List<Dataset> listDatasetsForStudyEnvironment(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       AdminUser user) {
-    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
@@ -42,13 +43,13 @@ public class DataRepoExportExtService {
     return dataRepoExportService.listDatasetsForStudyEnvironment(studyEnv.getId());
   }
 
+  @EnforcePortalPermission(permission = "tdr_export")
   public List<DataRepoJob> getJobHistoryForDataset(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       String datasetName,
       AdminUser user) {
-    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
@@ -56,13 +57,13 @@ public class DataRepoExportExtService {
     return dataRepoExportService.getJobHistoryForDataset(dataset.getId());
   }
 
+  @EnforcePortalPermission(permission = "tdr_export")
   public void createDataset(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       CreateDataset createDataset,
       AdminUser user) {
-    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
@@ -72,13 +73,13 @@ public class DataRepoExportExtService {
         studyEnv, createDataset.getName(), createDataset.getDescription(), user);
   }
 
+  @EnforcePortalPermission(permission = "tdr_export")
   public void deleteDataset(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,
       String datasetName,
       AdminUser user) {
-    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
