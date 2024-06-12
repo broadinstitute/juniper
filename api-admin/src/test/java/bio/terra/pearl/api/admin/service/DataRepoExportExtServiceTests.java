@@ -1,59 +1,63 @@
 package bio.terra.pearl.api.admin.service;
 
-import bio.terra.pearl.api.admin.MockAuthServiceAlwaysRejects;
+import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.model.CreateDataset;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-public class DataRepoExportExtServiceTests {
+public class DataRepoExportExtServiceTests extends BaseSpringBootTest {
+  private PortalStudyEnvAuthContext emptyAuthContext =
+      PortalStudyEnvAuthContext.of(
+          new AdminUser(), "someportal", "somestudy", EnvironmentName.sandbox);
 
-  private DataRepoExportExtService emptyService =
-      new DataRepoExportExtService(new MockAuthServiceAlwaysRejects(), null, null);
+  @Autowired private DataRepoExportExtService dataRepoExportExtService;
+  @MockBean private AuthUtilService authUtilService;
 
   @Test
   public void listDatasetsForStudyEnvironmentRequiresAuth() {
-    AdminUser user = new AdminUser();
     Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            emptyService.listDatasetsForStudyEnvironment(
-                "someportal", "somestudy", EnvironmentName.sandbox, user));
+        NotFoundException.class,
+        () -> dataRepoExportExtService.listDatasetsForStudyEnvironment(emptyAuthContext));
+    Mockito.verify(authUtilService)
+        .authUserToPortalWithPermission(
+            emptyAuthContext.getOperator(), emptyAuthContext.getPortalShortcode(), "tdr_export");
   }
 
   @Test
   public void getJobHistoryForDatasetRequiresAuth() {
-    AdminUser user = new AdminUser();
     Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            emptyService.getJobHistoryForDataset(
-                "someportal", "somestudy", EnvironmentName.sandbox, "somedataset", user));
+        NotFoundException.class,
+        () -> dataRepoExportExtService.getJobHistoryForDataset(emptyAuthContext, "somedataset"));
+    Mockito.verify(authUtilService)
+        .authUserToPortalWithPermission(
+            emptyAuthContext.getOperator(), emptyAuthContext.getPortalShortcode(), "tdr_export");
   }
 
   @Test
-  public void createDatasetRequiresSuperUser() {
-    AdminUser user = new AdminUser();
+  public void createDatasetRequiresAuth() {
     Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            emptyService.createDataset(
-                "someportal",
-                "somestudy",
-                EnvironmentName.sandbox,
-                new CreateDataset().name("somedataset").description("a dataset"),
-                user));
+        NotFoundException.class,
+        () -> dataRepoExportExtService.createDataset(emptyAuthContext, new CreateDataset()));
+    Mockito.verify(authUtilService)
+        .authUserToPortalWithPermission(
+            emptyAuthContext.getOperator(), emptyAuthContext.getPortalShortcode(), "tdr_export");
   }
 
   @Test
   public void deleteDatasetRequiresSuperUser() {
-    AdminUser user = new AdminUser();
     Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            emptyService.deleteDataset(
-                "someportal", "somestudy", EnvironmentName.sandbox, "somedataset", user));
+        NotFoundException.class,
+        () -> dataRepoExportExtService.deleteDataset(emptyAuthContext, "somedataset"));
+    Mockito.verify(authUtilService)
+        .authUserToPortalWithPermission(
+            emptyAuthContext.getOperator(), emptyAuthContext.getPortalShortcode(), "tdr_export");
   }
 }

@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service;
 
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.dao.metrics.MetricName;
 import bio.terra.pearl.core.dao.metrics.MetricsDao;
 import bio.terra.pearl.core.model.EnvironmentName;

@@ -27,9 +27,8 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType,
-  StudyEnvParams,
-  Survey
+  ParticipantTaskType, StudyEnvParams,
+  Survey, SurveyType
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
@@ -103,7 +102,7 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
 
 
 /** returns a simple survey object for use/extension in tests */
-export const mockSurvey: () => Survey = () => ({
+export const mockSurvey: (surveyType?: SurveyType) => Survey = (surveyType = 'RESEARCH') => ({
   ...defaultSurvey,
   id: 'surveyId1',
   stableId: 'survey1',
@@ -112,7 +111,7 @@ export const mockSurvey: () => Survey = () => ({
   name: 'Survey number one',
   lastUpdatedAt: 0,
   createdAt: 0,
-  surveyType: 'RESEARCH'
+  surveyType
 })
 
 /** returns a mock portal study */

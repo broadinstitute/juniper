@@ -29,10 +29,11 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
     private final EnrollmentService enrollmentService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final StudyService studyService;
+    private final FamilyMemberService familyMemberService;
 
     public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
                                     PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
-                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
+                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService, FamilyMemberService familyMemberService) {
         super(dao);
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
@@ -42,6 +43,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
         this.enrollmentService = enrollmentService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
+        this.familyMemberService = familyMemberService;
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -82,6 +84,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
+            familyMemberService.deleteByEnrolleeId(enrollee.getId()); // delete all family relationships
 
             //now withdraw all the proxied users
             for (Enrollee proxy : proxiesOnlyProxyingForThisUser) {

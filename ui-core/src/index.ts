@@ -4,7 +4,7 @@ export { PrivacyPolicy } from './terms/PrivacyPolicy'
 
 export { SuggestBetterAddressModal } from './components/SuggestBetterAddressModal'
 export { EditAddress } from './components/EditAddress'
-export { PagedSurveyView } from './components/forms/PagedSurveyView'
+export * from './components/forms/PagedSurveyView'
 export { SurveyAutoCompleteButton } from './components/forms/SurveyAutoCompleteButton'
 export { SurveyReviewModeButton } from './components/forms/ReviewModeButton'
 export { createAddressValidator } from './surveyjs/address-validator'

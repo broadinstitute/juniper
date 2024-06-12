@@ -97,14 +97,14 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     id: 'familyName',
     header: 'Family name',
-    accessorKey: 'profile.familyName',
+    accessorFn: row => row.profile?.familyName,
     meta: {
       columnType: 'string'
     }
   }, {
     id: 'givenName',
     header: 'Given name',
-    accessorKey: 'profile.givenName',
+    accessorFn: row => row.profile?.givenName,
     meta: {
       columnType: 'string'
     }

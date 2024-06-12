@@ -34,7 +34,8 @@ const PrintFormModal = ({ survey, answers, resumeData }: DownloadFormViewProps) 
   return <Modal show={true} fullscreen={true}>
     <Modal.Body className="m-0 p-0">
       <div className="d-print-none d-flex justify-content-center py-2">
-        <Link className="btn btn-secondary" to="..">Done</Link>
+        {/* @ts-ignore Link to type also supports numbers for back operations */}
+        <Link className="btn btn-secondary" to={-1}>Done</Link>
         <hr/>
       </div>
       <SurveyComponent model={surveyJsModel} />

@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.service.notifications;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
