@@ -16,20 +16,22 @@ import java.util.UUID;
 
 @Component
 public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
-  private ProfileDao profileDao;
-  private SurveyResponseDao surveyResponseDao;
-  private ParticipantTaskDao participantTaskDao;
-  private PreEnrollmentResponseDao preEnrollmentResponseDao;
-  private EnrolleeRelationDao enrolleeRelationDao;
+  private final ProfileDao profileDao;
+  private final SurveyResponseDao surveyResponseDao;
+  private final ParticipantTaskDao participantTaskDao;
+  private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+  private final EnrolleeRelationDao enrolleeRelationDao;
+  private final FamilyDao familyDao;
 
   public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao, ParticipantTaskDao participantTaskDao,
-                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao) {
+                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao, FamilyDao familyDao) {
     super(jdbi);
     this.profileDao = profileDao;
     this.surveyResponseDao = surveyResponseDao;
     this.participantTaskDao = participantTaskDao;
     this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     this.enrolleeRelationDao = enrolleeRelationDao;
+    this.familyDao = familyDao;
   }
 
   @Override
@@ -63,6 +65,9 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     enrollee.getParticipantTasks().addAll(participantTaskDao.findByEnrolleeId(enrollee.getId()));
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
+    }
+    if (enrollee.getFamilyId() != null) {
+      enrollee.setFamily(familyDao.find(enrollee.getFamilyId()).get());
     }
     List<EnrolleeRelation> relationsByEnrollee = enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId());
     List<EnrolleeRelation> relationsByTargetEnrollee = enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId());

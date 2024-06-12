@@ -1,18 +1,18 @@
 package bio.terra.pearl.core.service.participant.search;
 
 import bio.terra.pearl.core.dao.participant.EnrolleeSearchDao;
+import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
-import bio.terra.pearl.core.service.search.terms.ProfileTerm;
-import bio.terra.pearl.core.service.search.terms.SearchValue;
-import bio.terra.pearl.core.service.search.terms.TaskTerm;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.search.terms.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -23,17 +23,19 @@ import java.util.*;
 @Service
 public class EnrolleeSearchService {
     private final EnrolleeSearchDao enrolleeSearchDao;
+    private final EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
     private final ParticipantTaskDao participantTaskDao;
     private final StudyEnvironmentService studyEnvironmentService;
-    private final PortalService portalService;
     private final SurveyService surveyService;
+    private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
-    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService, PortalService portalService, SurveyService surveyService) {
+    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService, PortalService portalService, SurveyService surveyService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
         this.enrolleeSearchDao = enrolleeSearchDao;
+        this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
         this.participantTaskDao = participantTaskDao;
         this.studyEnvironmentService = studyEnvironmentService;
-        this.portalService = portalService;
         this.surveyService = surveyService;
+        this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
     }
 
 
@@ -79,6 +81,8 @@ public class EnrolleeSearchService {
         ProfileTerm.FIELDS.forEach((term, type) -> fields.put("profile." + term, type));
         // enrollee fields
         EnrolleeTerm.FIELDS.forEach((term, type) -> fields.put("enrollee." + term, type));
+        // latest kit fields
+        LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
         // age
         fields.put("age", SearchValue.SearchValueType.INTEGER);
         // answers
@@ -95,5 +99,12 @@ public class EnrolleeSearchService {
         }
 
         return fields;
+    }
+
+    public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
+        return enrolleeSearchExpressionDao.executeSearch(
+                enrolleeSearchExpressionParser.parseRule(expression),
+                studyEnvId
+        );
     }
 }

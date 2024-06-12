@@ -16,7 +16,8 @@ test('renders a copy link', () => {
       password: '',
       defaultLanguage: 'en'
     },
-    supportedLanguages: []
+    supportedLanguages: [],
+    createdAt: 0
   }
   const irbEnv :PortalEnvironment = {
     environmentName: 'irb',
@@ -27,7 +28,8 @@ test('renders a copy link', () => {
       password: '',
       defaultLanguage: 'en'
     },
-    supportedLanguages: []
+    supportedLanguages: [],
+    createdAt: 0
   }
   const portal: Portal = {
     id: '11111111-1111-1111-1111-111111111111',

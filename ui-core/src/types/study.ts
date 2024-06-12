@@ -28,6 +28,7 @@ export type StudyEnvironment = {
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
   acceptingProxyEnrollment: boolean
+  enableFamilyLinkage: boolean
   initialized: boolean
   passwordProtected: boolean
   password: string

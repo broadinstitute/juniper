@@ -18,4 +18,8 @@ public class RolePermissionService extends ImmutableEntityService<RolePermission
     public List<RolePermission> findByRole(UUID roleId) {
         return dao.findByRole(roleId);
     }
+
+    public void deleteByRoleId(UUID roleId) {
+        dao.deleteByRoleId(roleId);
+    }
 }

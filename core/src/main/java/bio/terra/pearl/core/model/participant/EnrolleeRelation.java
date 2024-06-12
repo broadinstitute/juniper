@@ -26,4 +26,5 @@ public class EnrolleeRelation extends BaseEntity {
     private RelationshipType relationshipType;
     private Instant beginDate;
     private Instant endDate;
+    private String familyRelationship;
 }

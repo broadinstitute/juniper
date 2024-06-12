@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ScheduledDataRepoExportService {
-  private DataRepoExportService dataRepoExportService;
-  private Environment env;
+  private final DataRepoExportService dataRepoExportService;
+  private final Environment env;
 
   /* NOTE: Scheduled dataset creation and ingest was removed in https://github.com/broadinstitute/pearl/pull/367
     If you'd like to restore that functionality, reference that PR so you don't have to re-write the code.
@@ -31,8 +31,7 @@ public class ScheduledDataRepoExportService {
     if (isTdrConfigured()) {
       log.info("Pinging Terra Data Repo. Up: " + dataRepoExportService.getServiceStatus());
     } else {
-      log.warn(
-          "Error: Skipping TDR status ping, as TDR has not been configured for this environment.");
+      log.info("Skipping TDR status ping, as TDR has not been configured for this environment.");
     }
   }
 
@@ -46,8 +45,7 @@ public class ScheduledDataRepoExportService {
       log.info("Polling running TDR jobs...");
       dataRepoExportService.pollRunningJobs();
     } else {
-      log.warn(
-          "Error: Skipping TDR job polling, as TDR has not been configured for this environment.");
+      log.info("Skipping TDR job polling, as TDR has not been configured for this environment.");
     }
   }
 

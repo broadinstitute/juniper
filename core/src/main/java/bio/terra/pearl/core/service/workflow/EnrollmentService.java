@@ -192,6 +192,8 @@ public class EnrollmentService {
             throw new IllegalStateException("Invalid pre-enrollment response data: " + e.getMessage());
         }
 
+        answers.forEach(Answer::inferTypeIfMissing);
+
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
 
         SurveyResponse surveyResponse =

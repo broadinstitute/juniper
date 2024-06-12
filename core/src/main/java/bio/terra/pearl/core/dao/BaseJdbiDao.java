@@ -242,6 +242,38 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
+    /* fetches all the entities with a child attached.  For example, if the parent table has a column "portal_environment_config_id" and
+     * a field portalEnvironmentConfig, this method could be used to fetch the portal environments with the configs already hydrated
+     * and do so in a single SQL query instead of performing n queries to attach children to n parents
+     */
+    protected List<T> findAllByPropertyWithChildren(String columnName, Object columnValue, String childIdPropertyName,
+                                                    String childPropertyName, BaseJdbiDao childDao) {
+        List<String> parentCols = getQueryColumns.stream().map(col -> "a." + col + " a_" + col)
+                .collect(Collectors.toList());
+        List<String> childCols = ((List<String>) childDao.getQueryColumns).stream().map(col -> "b." + col + " b_" + col)
+                .collect(Collectors.toList());
+        return jdbi.withHandle(handle ->
+                handle.createQuery("select " + String.join(", ", parentCols) + ", "
+                        + String.join(", ", childCols)
+                        + " from " + tableName + " a left join " + childDao.tableName
+                        + " b on a." + toSnakeCase(childIdPropertyName) + " = b.id"
+                        + " where a." + toSnakeCase(columnName) + " = :columnValue")
+                        .bind("columnValue", columnValue)
+                        .registerRowMapper(clazz, getRowMapper("a"))
+                        .registerRowMapper(childDao.clazz, childDao.getRowMapper("b"))
+                        .reduceRows((Map<UUID, T> map, RowView rowView) -> {
+                            T parent = map.computeIfAbsent(
+                                    rowView.getColumn("a_id", UUID.class),
+                                    rowId -> rowView.getRow(clazz));
+                            if (rowView.getColumn("b_id", UUID.class) != null) {
+                                PropertyAccessor accessor = PropertyAccessorFactory.forBeanPropertyAccess(parent);
+                                accessor.setPropertyValue(childPropertyName, rowView.getRow(childDao.getClazz()));
+                            }
+                        })
+                        .toList()
+        );
+    }
+
     public Optional<T> findByProperty(String columnName, Object columnValue) {
         return jdbi.withHandle(handle ->
                 handle.createQuery("select * from " + tableName + " where " + columnName + " = :columnValue;")

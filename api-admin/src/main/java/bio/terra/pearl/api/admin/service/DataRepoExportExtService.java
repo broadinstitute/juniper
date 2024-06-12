@@ -5,10 +5,8 @@ import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -16,9 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataRepoExportExtService {
 
-  private AuthUtilService authUtilService;
-  private DataRepoExportService dataRepoExportService;
-  private StudyEnvironmentService studyEnvironmentService;
+  private final AuthUtilService authUtilService;
+  private final DataRepoExportService dataRepoExportService;
+  private final StudyEnvironmentService studyEnvironmentService;
 
   public DataRepoExportExtService(
       AuthUtilService authUtilService,
@@ -34,7 +32,7 @@ public class DataRepoExportExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
@@ -49,7 +47,7 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       String datasetName,
       AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
@@ -63,10 +61,7 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       CreateDataset createDataset,
       AdminUser user) {
-    if (!user.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =
@@ -82,10 +77,7 @@ public class DataRepoExportExtService {
       EnvironmentName environmentName,
       String datasetName,
       AdminUser user) {
-    if (!user.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortalWithPermission(user, portalShortcode, "tdr_export");
     authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
 
     StudyEnvironment studyEnv =

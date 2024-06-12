@@ -29,7 +29,6 @@ export const HtmlDesigner = (props: HtmlDesignerProps) => {
           </Button>
         </div>}
       </div>
-      <label className="form-label fs-4 mb-0" htmlFor="html-element-html">HTML</label>
       <Textarea
         className="w-100 flex-grow-1 font-monospace"
         disabled={readOnly}

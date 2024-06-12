@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.admin.RoleDao;
 import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.Role;
 
+import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RoleService extends ImmutableEntityService<Role, RoleDao> {
-    private PermissionService permissionService;
-    private RolePermissionService rolePermissionService;
+public class RoleService extends CrudService<Role, RoleDao> {
+    private final PermissionService permissionService;
+    private final RolePermissionService rolePermissionService;
 
     public RoleService(RoleDao roleDao, PermissionService permissionService, RolePermissionService rolePermissionService) {
         super(roleDao);
@@ -28,7 +29,15 @@ public class RoleService extends ImmutableEntityService<Role, RoleDao> {
 
     @Transactional
     public Role create(Role role) {
-        return dao.create(role);
+        Role createdRole = dao.create(role);
+        role.getPermissions().forEach(permission -> {
+            rolePermissionService.create(RolePermission.builder()
+                    .roleId(createdRole.getId())
+                    .permissionId(permission.getId())
+                    .build());
+        });
+
+        return createdRole;
     }
 
     /** Creates the role and attaches the given permissions. If any of the names don't exist, an error will be thrown */
@@ -44,6 +53,19 @@ public class RoleService extends ImmutableEntityService<Role, RoleDao> {
             savedRole.getPermissions().add(perm);
         }
         return savedRole;
+    }
+
+    public Role update(Role role) {
+        rolePermissionService.deleteByRoleId(role.getId());
+
+        role.getPermissions().forEach(permission -> {
+            rolePermissionService.create(RolePermission.builder()
+                    .roleId(role.getId())
+                    .permissionId(permission.getId())
+                    .build());
+        });
+
+        return dao.update(role);
     }
 
     public Optional<Role> findOne(UUID roleId) { return dao.find(roleId); }

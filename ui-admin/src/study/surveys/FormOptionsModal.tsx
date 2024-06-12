@@ -1,15 +1,25 @@
 import React from 'react'
-import { Survey, VersionedForm } from 'api/api'
+import {
+  Survey,
+  VersionedForm
+} from 'api/api'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { SaveableFormProps } from './SurveyView'
-import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import {
+  DocsKey,
+  ZendeskLink
+} from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
-import { SearchQueryBuilder } from '../../search/SearchQueryBuilder'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { userHasPermission, useUser } from '../../user/UserProvider'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
+import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
+
 
 /** component for selecting versions of a form */
 export default function FormOptionsModal({
