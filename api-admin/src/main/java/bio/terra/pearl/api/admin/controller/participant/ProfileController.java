@@ -15,10 +15,10 @@ import org.springframework.stereotype.Controller;
 @Controller
 @Slf4j
 public class ProfileController implements ProfileApi {
-  private AuthUtilService authUtilService;
-  private ProfileExtService profileExtService;
-  private HttpServletRequest request;
-  private ObjectMapper objectMapper;
+  private final AuthUtilService authUtilService;
+  private final ProfileExtService profileExtService;
+  private final HttpServletRequest request;
+  private final ObjectMapper objectMapper;
 
   public ProfileController(
       AuthUtilService authUtilService,

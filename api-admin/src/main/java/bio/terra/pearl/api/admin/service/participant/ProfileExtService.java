@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProfileExtService {
-  private AuthUtilService authUtilService;
-  private ProfileService profileService;
+  private final AuthUtilService authUtilService;
+  private final ProfileService profileService;
 
   public ProfileExtService(AuthUtilService authUtilService, ProfileService profileService) {
     this.authUtilService = authUtilService;

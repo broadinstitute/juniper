@@ -24,7 +24,7 @@ export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: Stud
 }
 
 /** helper to get participant list page path */
-export const studyEnvParticipantPath = (studyEnvParams: StudyEnvParams, enrolleeShortcode: string) => {
+export const studyEnvFamilyPath = (studyEnvParams: StudyEnvParams, shortcode: string) => {
   const { portalShortcode, studyShortcode, envName } = studyEnvParams
-  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/participants/${enrolleeShortcode}`
+  return `/${portalShortcode}/studies/${studyShortcode}/env/${envName}/families/${shortcode}`
 }
