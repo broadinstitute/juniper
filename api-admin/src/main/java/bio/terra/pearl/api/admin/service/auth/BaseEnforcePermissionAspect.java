@@ -4,7 +4,7 @@ import java.lang.annotation.Annotation;
 import org.apache.commons.lang3.NotImplementedException;
 import org.aspectj.lang.ProceedingJoinPoint;
 
-/** base class for annotations enforcing permissions around methods.  */
+/** base class for annotations enforcing permissions around methods. */
 public abstract class BaseEnforcePermissionAspect<
     T extends PortalAuthContext, A extends Annotation> {
   private static final String AUTH_CONTEXT_USAGE_ERROR =
