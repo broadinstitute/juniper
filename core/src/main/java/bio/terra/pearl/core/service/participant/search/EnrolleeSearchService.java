@@ -117,10 +117,15 @@ public class EnrolleeSearchService {
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
-        return enrolleeSearchExpressionDao.executeSearch(
-                enrolleeSearchExpressionParser.parseRule(expression),
-                studyEnvId
-        );
+        try {
+            return enrolleeSearchExpressionDao.executeSearch(
+                    enrolleeSearchExpressionParser.parseRule(expression),
+                    studyEnvId
+            );
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid search expression: " + e.getMessage());
+        }
+
     }
 
     private SearchValueTypeDefinition fromQuestionDefinition(SurveyQuestionDefinition def) {
