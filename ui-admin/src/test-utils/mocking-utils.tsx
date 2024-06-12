@@ -34,7 +34,10 @@ import {
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import {
+  EmailTemplate,
+  StudyEnvironmentSurvey
+} from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
@@ -161,6 +164,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
       password: 'blah',
       passwordProtected: false,
       acceptingEnrollment: true,
+      enableFamilyLinkage: false,
       acceptingProxyEnrollment: false,
       useDevDsmRealm: false,
       useStubDsm: false

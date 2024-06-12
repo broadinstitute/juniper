@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.service.dashboard;
 import static bio.terra.pearl.core.model.dashboard.AlertTrigger.NO_ACTIVITIES_REMAIN;
 import static org.mockito.Mockito.when;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;

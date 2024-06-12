@@ -26,6 +26,9 @@ public class StudyEnvironmentConfig extends BaseEntity {
     private boolean acceptingProxyEnrollment = false;
 
     @Builder.Default
+    private boolean enableFamilyLinkage = false;
+
+    @Builder.Default
     private boolean initialized = false;
     /**
      * if true, all kit requests will be directed to the stub DSM instead of the live client

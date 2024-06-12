@@ -31,6 +31,8 @@ public class Enrollee extends BaseEntity {
     private UUID preEnrollmentResponseId;
     private PreEnrollmentResponse preEnrollmentResponse;
     private String shortcode;
+    private UUID familyId;
+    private Family family;
     @Builder.Default
     private boolean subject = true; // whether this Enrollee is a primary subject of the study (as opposed to just a proxy or family member)
     private boolean consented;

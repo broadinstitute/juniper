@@ -19,6 +19,10 @@ public class RolePermissionDao extends BaseJdbiDao<RolePermission> {
         return findAllByProperty("role_id", roleId);
     }
 
+    public void deleteByRoleId(UUID roleId) {
+        deleteByProperty("role_id", roleId);
+    }
+
     @Override
     protected Class<RolePermission> getClazz() { return RolePermission.class; }
 }

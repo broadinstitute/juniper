@@ -44,6 +44,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testPopulateDemo() throws Exception {
+        baseSeedPopulator.populateRolesAndPermissions();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
         Assertions.assertEquals("demo", portal.getShortcode());
         PortalEnvironment sandbox = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).get();
@@ -192,6 +193,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
     @Transactional
     public void testPopulateWithShortcodeOverride() {
         String newShortcode = RandomStringUtils.randomAlphabetic(6);
+        baseSeedPopulator.populateRolesAndPermissions();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, newShortcode), true);
         assertThat(portal.getShortcode(), equalTo(newShortcode));
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();

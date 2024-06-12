@@ -2,8 +2,8 @@ package bio.terra.pearl.api.admin.controller.internal;
 
 import bio.terra.common.exception.InternalServerErrorException;
 import bio.terra.pearl.api.admin.api.PopulateApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.PopulateExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;

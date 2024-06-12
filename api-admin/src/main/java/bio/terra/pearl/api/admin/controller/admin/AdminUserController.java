@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.admin.controller.admin;
 
 import bio.terra.pearl.api.admin.api.AdminUserApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.admin.AdminUserExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.exception.ValidationException;

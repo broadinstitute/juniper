@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller.study;
 
 import bio.terra.pearl.api.admin.api.StudyApi;
 import bio.terra.pearl.api.admin.models.dto.StudyCreationDto;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.study.StudyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.study.Study;

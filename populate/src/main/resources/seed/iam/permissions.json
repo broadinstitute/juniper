@@ -1,0 +1,32 @@
+[
+  {
+    "name": "study_settings_edit",
+    "displayName": "Study settings",
+    "description": "Configure study settings password protection and enrollment"
+  },
+  {
+    "name": "survey_edit",
+    "displayName": "Survey form management",
+    "description": "View, edit and configure surveys"
+  },
+  {
+    "name": "consent_form_edit",
+    "displayName": "Consent form management",
+    "description": "View, edit and configure consent forms"
+  },
+  {
+    "name": "site_content_edit",
+    "displayName": "Site content management",
+    "description": "View, edit and configure the portal website"
+  },
+  {
+    "name": "team_roles_edit",
+    "displayName": "Team role management",
+    "description": "View and edit roles assigned to team members"
+  },
+  {
+    "name": "tdr_export",
+    "displayName": "TDR snapshot management",
+    "description": "Allows user to export study data to Terra Data Repo"
+  }
+]

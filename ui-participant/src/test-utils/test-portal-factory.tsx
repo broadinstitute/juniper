@@ -36,6 +36,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
     environmentName: 'sandbox',
     studyEnvironmentConfig: {
       acceptingEnrollment: true,
+      enableFamilyLinkage: false,
       acceptingProxyEnrollment: false,
       initialized: true,
       passwordProtected: false,
