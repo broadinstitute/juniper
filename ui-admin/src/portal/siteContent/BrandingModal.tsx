@@ -8,8 +8,6 @@ import useReactSingleSelect from 'util/react-select-utils'
 import Select from 'react-select'
 import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { faUpload } from '@fortawesome/free-solid-svg-icons'
-import { IconButton } from '../../components/forms/Button'
 
 /** controls for primary color and nav logo */
 export default function BrandingModal({ onDismiss, localContent, updateLocalContent, portalShortcode }: {
@@ -143,12 +141,10 @@ const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => 
 /**
  * A dropdown selector for images
  */
-export function ImageSelector({ portalShortcode, images, selectedImage, setSelectedImage, enableUpload = true }: {
+export function ImageSelector({ portalShortcode, images, selectedImage, setSelectedImage }: {
   portalShortcode: string, images: SiteMediaMetadata[], selectedImage?: SiteMediaMetadata,
-  setSelectedImage: React.Dispatch<React.SetStateAction<SiteMediaMetadata | undefined>>, enableUpload?: boolean
+  setSelectedImage: React.Dispatch<React.SetStateAction<SiteMediaMetadata | undefined>>
 }) {
-  const [showImageUploadModal, setShowImageUploadModal] = useState(false)
-
   const {
     selectInputId, selectedOption,
     options, onChange
@@ -157,18 +153,8 @@ export function ImageSelector({ portalShortcode, images, selectedImage, setSelec
     image => ({ label: imageOptionLabel(image, portalShortcode), value: image }),
     setSelectedImage, selectedImage)
 
-  return <div className='d-flex'>
-    <Select className='flex-grow-1' inputId={selectInputId} options={options} value={selectedOption}
-      isSearchable={false} onChange={onChange}/>
-    {enableUpload && <IconButton aria-label='Upload a new image' icon={faUpload} onClick={() => {
-      setShowImageUploadModal(true)
-    }}/>}
-    {/*{showImageUploadModal && <SiteMediaUploadModal portalShortcode={portalShortcode}*/}
-    {/*  onDismiss={() => {*/}
-    {/*    setShowImageUploadModal(false)*/}
-    {/*  }}*/}
-    {/*  onSubmit={() => console.log('foo')}/>}*/}
-  </div>
+  return <Select className='flex-grow-1' inputId={selectInputId} options={options} value={selectedOption}
+    isSearchable={false} onChange={onChange}/>
 }
 
 
