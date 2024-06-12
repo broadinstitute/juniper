@@ -3,6 +3,7 @@ import {
   AlertTrigger,
   Enrollee,
   EnvironmentName,
+  Family,
   HubResponse,
   KitRequest,
   KitType,
@@ -24,9 +25,17 @@ import {
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
-import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
+import {
+  FacetOption,
+  FacetType,
+  FacetValue,
+  facetValuesToString
+} from './enrolleeSearch'
 import queryString from 'query-string'
-import { AdminUser, NewAdminUser } from './adminUser'
+import {
+  AdminUser,
+  NewAdminUser
+} from './adminUser'
 
 export type {
   Answer,
@@ -1273,6 +1282,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcode: string
+  ): Promise<Family> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
@@ -1388,6 +1405,7 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+
 }
 
 /** gets an image url for SiteMedia */
