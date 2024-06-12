@@ -113,15 +113,22 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Allow study staff to edit participant responses
             </label>}
-            <div className='pt-2'>Eligibility Rule</div>
+              Eligibility Rule
+            <p className={'mt-1 mb-0'}>
+                  Use a <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
+                  search expression
+              </ZendeskLink> to conditionally assign the survey.
+            </p>
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
-                && <div className="my-2"><SearchQueryBuilder
-                  studyEnvContext={studyEnvContext}
-                  onSearchExpressionChange={exp => updateWorkingForm({
-                    ...workingForm, eligibilityRule: exp
-                  })}/></div>}
-
-            <input type="text" className="form-control" value={workingForm.eligibilityRule || ''}
+                && <div className="my-2">
+                  <LazySearchQueryBuilder
+                    studyEnvContext={studyEnvContext}
+                    onSearchExpressionChange={exp => updateWorkingForm({
+                      ...workingForm, eligibilityRule: exp
+                    })}
+                    searchExpression={(workingForm as Survey).eligibilityRule || ''}/>
+                </div>}
+            <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
               onChange={e => {
                 updateWorkingForm({
                   ...workingForm, eligibilityRule: e.target.value

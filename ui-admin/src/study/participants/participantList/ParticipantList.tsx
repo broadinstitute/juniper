@@ -88,7 +88,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     id: 'lastLogin',
     header: 'Last login',
-    accessorFn: row => row.participantUser?.lastLogin,
+    accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
     meta: {
       columnType: 'instant'
