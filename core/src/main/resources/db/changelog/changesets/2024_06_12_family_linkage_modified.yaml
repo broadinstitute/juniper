@@ -7,7 +7,7 @@ databaseChangeLog:
             tableName: enrollee
             columnName: family_id
         - createTable:
-            tableName: family_members
+            tableName: family_member
             columns:
               - column:
                   { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }

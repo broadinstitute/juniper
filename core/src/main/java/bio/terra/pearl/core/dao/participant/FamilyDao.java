@@ -26,7 +26,7 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
     }
 
     public List<Family> findByEnrolleeId(UUID enrolleeId) {
-        return jdbi.withHandle(handle -> handle.createQuery("SELECT f.* FROM family f INNER JOIN family_members fm ON fm.family_id = f.id WHERE fm.enrollee_id = :enrolleeId")
+        return jdbi.withHandle(handle -> handle.createQuery("SELECT f.* FROM family f INNER JOIN family_member fm ON fm.family_id = f.id WHERE fm.enrollee_id = :enrolleeId")
                 .bind("enrolleeId", enrolleeId)
                 .mapToBean(Family.class)
                 .list());
