@@ -17,6 +17,6 @@ public class SearchValueTypeDefinition {
     private SearchValue.SearchValueType type;
     @Builder.Default
     private List<QuestionChoice> choices = new ArrayList<>();
-    private boolean isMultiValued;
-    private boolean hasOtherQuestion;
+    private boolean allowMultiple;
+    private boolean allowOtherDescription;
 }

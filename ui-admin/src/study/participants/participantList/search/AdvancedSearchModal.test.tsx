@@ -11,8 +11,8 @@ import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import { setupRouterTest } from '@juniper/ui-core'
 
-jest.mock('../../../../api/api', () => ({
-  ...jest.requireActual('../../../../api/api'),
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
   getExpressionSearchFacets: jest.fn().mockResolvedValue([])
 }))
 

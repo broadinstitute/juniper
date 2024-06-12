@@ -149,9 +149,9 @@ public class EnrolleeSearchService {
         }
 
         return builder
-                .hasOtherQuestion(def.isAllowOtherDescription())
+                .allowOtherDescription(def.isAllowOtherDescription())
                 .type(STRING)
-                .isMultiValued(def.isAllowMultiple())
+                .allowMultiple(def.isAllowMultiple())
                 .build();
     }
 }

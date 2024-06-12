@@ -389,8 +389,8 @@ export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEA
 export type SearchValueTypeDefinition = {
   type: SearchValueType
   choices?: { stableId: string, text: string }[]
-  isMultiValued: boolean
-  hasOtherQuestion: boolean
+  allowMultiple: boolean
+  allowOtherDescription: boolean
 }
 
 let bearerToken: string | null = null
