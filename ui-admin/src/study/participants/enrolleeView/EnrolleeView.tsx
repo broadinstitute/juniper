@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ParticipantTask, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
@@ -18,7 +18,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import { faCircleCheck, faCircleHalfStroke } from '@fortawesome/free-solid-svg-icons'
 import { faCircle as faEmptyCircle, faCircleXmark } from '@fortawesome/free-regular-svg-icons'
-import { Enrollee, ParticipantTaskStatus, SurveyType } from '@juniper/ui-core'
+import { Enrollee, ParticipantTaskStatus } from '@juniper/ui-core'
 import EnrolleeOverview from './EnrolleeOverview'
 import { navDivStyle, navListItemStyle } from 'util/subNavStyles'
 
@@ -45,7 +45,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
   enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
 }) {
   const { currentEnv, currentEnvPath } = studyEnvContext
-  const [responseMap, setResponseMap] = React.useState<ResponseMapT>({})
+  const [responseMap, setResponseMap] = useState<ResponseMapT>({})
 
   const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
 
@@ -59,7 +59,6 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
     .filter(survey => survey.survey.surveyType === 'ADMIN')
 
   const updateResponseMap = (stableId: string, response: SurveyResponse) => {
-    console.log('updating response map', stableId, response)
     setResponseMap({
       ...responseMap,
       [stableId]: {
@@ -127,7 +126,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}/>
@@ -140,7 +139,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -157,7 +156,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -174,7 +173,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
                       return <li className="mb-2 d-flex justify-content-between
                         align-items-center" key={stableId}>
                         {createSurveyNavLink(stableId, responseMap, survey)}
-                        {badgeForResponses(survey.survey.surveyType, responseMap[stableId]?.response)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
                       </li>
                     })}
                   </ul>}
@@ -255,13 +254,13 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
 }
 
 /** returns an icon based on the enrollee's responses.  Note this does not handle multi-responses yet */
-const badgeForResponses = (surveyType: SurveyType, response?: SurveyResponse) => {
+const badgeForResponses = (response?: SurveyResponse) => {
   if (!response) {
     return statusDisplayMap['NEW']
   } else {
     if (response.complete) {
       return statusDisplayMap['COMPLETE']
-    } else if (surveyType === 'OUTREACH') {
+    } else if (response.answers.length === 0) {
       return statusDisplayMap['VIEWED']
     } else {
       return statusDisplayMap['IN_PROGRESS']
