@@ -22,6 +22,7 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
+import { usePortalLanguage } from '../usePortalLanguage'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -55,7 +56,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const zoneConfig = useConfig()
   const [searchParams, setSearchParams] = useSearchParams()
-  const selectedLanguageCode = searchParams.get('lang') ?? workingContent.localizedSiteContents[0]?.language
+  const { defaultLanguage } = usePortalLanguage()
+  const selectedLanguageCode = searchParams.get('lang') ?? defaultLanguage.languageCode
   const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
     portalLang.languageCode === selectedLanguageCode)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
