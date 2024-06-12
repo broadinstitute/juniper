@@ -50,12 +50,14 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     }
 
     @Override
+    @Transactional
     public void delete(UUID familyId, DataAuditInfo info) {
         enrolleeDao.removeAllEnrolleesFromFamily(familyId);
 
         super.delete(familyId, info);
     }
 
+    @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         enrolleeDao.removeAllEnrolleesFromFamiliesInStudyEnv(studyEnvironmentId);
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
