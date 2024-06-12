@@ -155,7 +155,7 @@ export default function SiteMediaList({ portalContext, portalEnv }:
         previewImage.cleanFileName,
         previewImage.version)} alt={`full-size preview of ${previewImage.cleanFileName}`}/>
     </Modal> }
-    {showUploadModal && <SiteMediaUploadModal portalShortcode={portalContext.portal.shortcode}
+    {showUploadModal && <SiteMediaUploadModal portalContext={portalContext}
       onDismiss={() => {
         setShowUploadModal(false)
         setUpdatingMedia(undefined)

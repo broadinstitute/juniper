@@ -6,6 +6,7 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { Button } from 'components/forms/Button'
+import { LoadedPortalContextT } from '../PortalProvider'
 import { useFileUploadButton } from 'util/uploadUtils'
 
 
@@ -17,11 +18,11 @@ const FILE_TYPE_REGEX = new RegExp(`\\.(${allowedFileTypes.join('|')})$`)
 
 /** Renders a modal for an admin to submit a sample collection kit request. */
 export default function SiteMediaUploadModal({
-  portalShortcode,
+  portalContext,
   onDismiss, onSubmit,
   existingMedia
 }: {
-  portalShortcode: string,
+  portalContext: LoadedPortalContextT,
   onDismiss: () => void,
   existingMedia?: SiteMediaMetadata,
   onSubmit: () => void
@@ -44,7 +45,7 @@ export default function SiteMediaUploadModal({
     }
     const version = existingMedia?.version ? existingMedia.version + 1 : 1
     doApiLoad(async () => {
-      await Api.uploadPortalMedia(portalShortcode, fileName, version, file)
+      await Api.uploadPortalMedia(portalContext.portal.shortcode, fileName, version, file)
       Store.addNotification(successNotification('file uploaded'))
       onSubmit()
     }, { setIsLoading })
