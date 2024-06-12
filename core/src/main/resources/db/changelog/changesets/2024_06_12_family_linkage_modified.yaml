@@ -7,7 +7,7 @@ databaseChangeLog:
             tableName: enrollee
             columnName: family_id
         - createTable:
-            tableName: family_member
+            tableName: family_enrollee
             columns:
               - column:
                   { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
@@ -16,9 +16,9 @@ databaseChangeLog:
               - column:
                   { name: last_updated_at, type: datetime, constraints: { nullable: false } }
               - column:
-                  { name: family_id, type: uuid, constraints: { foreignKeyName: fk_family_member_family_id, references: family(id), nullable: false } }
+                  { name: family_id, type: uuid, constraints: { foreignKeyName: fk_family_enrollee_family_id, references: family(id), nullable: false } }
               - column:
-                  { name: enrollee_id, type: uuid, constraints: { foreignKeyName: fk_family_member_enrollee_id, references: enrollee(id), nullable: false } }
+                  { name: enrollee_id, type: uuid, constraints: { foreignKeyName: fk_family_enrollee_enrollee_id, references: enrollee(id), nullable: false } }
         - addColumn:
             tableName: enrollee_relation
             columns:

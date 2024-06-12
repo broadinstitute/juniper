@@ -1,22 +1,22 @@
 package bio.terra.pearl.core.dao.participant;
 
 import bio.terra.pearl.core.dao.BaseMutableJdbiDao;
-import bio.terra.pearl.core.model.participant.FamilyMember;
+import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
-public class FamilyMemberDao extends BaseMutableJdbiDao<FamilyMember> {
+public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
 
-    public FamilyMemberDao(Jdbi jdbi) {
+    public FamilyEnrolleeDao(Jdbi jdbi) {
         super(jdbi);
     }
 
     @Override
-    protected Class<FamilyMember> getClazz() {
-        return FamilyMember.class;
+    protected Class<FamilyEnrollee> getClazz() {
+        return FamilyEnrollee.class;
     }
 
 

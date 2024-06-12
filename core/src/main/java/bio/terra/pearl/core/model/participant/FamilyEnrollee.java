@@ -12,7 +12,7 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class FamilyMember extends BaseEntity {
+public class FamilyEnrollee extends BaseEntity {
     private UUID familyId;
     private UUID enrolleeId;
 }

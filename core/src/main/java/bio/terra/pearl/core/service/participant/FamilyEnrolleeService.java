@@ -1,7 +1,7 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.participant.FamilyMemberDao;
-import bio.terra.pearl.core.model.participant.FamilyMember;
+import bio.terra.pearl.core.dao.participant.FamilyEnrolleeDao;
+import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class FamilyMemberService extends DataAuditedService<FamilyMember, FamilyMemberDao> {
+public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, FamilyEnrolleeDao> {
 
-    public FamilyMemberService(FamilyMemberDao familyMemberDao,
-                               DataChangeRecordService dataChangeRecordService,
-                               ObjectMapper objectMapper) {
-        super(familyMemberDao, dataChangeRecordService, objectMapper);
+    public FamilyEnrolleeService(FamilyEnrolleeDao familyEnrolleeDao,
+                                 DataChangeRecordService dataChangeRecordService,
+                                 ObjectMapper objectMapper) {
+        super(familyEnrolleeDao, dataChangeRecordService, objectMapper);
     }
 
     @Transactional
