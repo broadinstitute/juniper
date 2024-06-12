@@ -35,8 +35,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
   const [form, setForm] = useState<Survey>({
     ...defaultSurvey,
     autoUpdateTaskAssignments: type === 'OUTREACH',
-    assignToExistingEnrollees: type === 'OUTREACH',
-    allowParticipantReedit: type !== 'CONSENT',
+    assignToExistingEnrollees: type === 'OUTREACH' || type === 'ADMIN',
+    allowParticipantReedit: type !== 'CONSENT' && type !== 'ADMIN',
+    allowParticipantStart: type !== 'ADMIN',
     allowAdminEdit: type !== 'CONSENT',
     required: type === 'CONSENT',
     stableId: '',
@@ -94,7 +95,7 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
         {StableIdInput}
         <FormOptions
           studyEnvContext={studyEnvContext}
-          workingForm={form}
+          initialWorkingForm={form}
           updateWorkingForm={(updates => {
             setForm({ ...form, ...updates })
           })}

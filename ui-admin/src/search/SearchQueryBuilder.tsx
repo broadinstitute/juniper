@@ -15,13 +15,13 @@ import {
   ValueEditorProps
 } from 'react-querybuilder'
 import 'react-querybuilder/dist/query-builder.scss'
-import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
-import { useLoadingEffect } from '../api/api-utils'
+import { ruleProcessorEnrolleeSearchExpression } from 'util/formatQueryBuilderAsSearchExp'
+import { useLoadingEffect } from 'api/api-utils'
 import Api, {
   EnrolleeSearchExpressionResult,
   SearchValueTypeDefinition
 } from '../api/api'
-import { StudyEnvContextT } from '../study/StudyEnvironmentRouter'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import LoadingSpinner from '../util/LoadingSpinner'
 import {
@@ -29,13 +29,12 @@ import {
   isEmpty,
   keys
 } from 'lodash'
-import { parseExpression } from '../util/searchExpressionParser'
-import { toReactQueryBuilderState } from '../util/searchExpressionUtils'
-import 'react-querybuilder/dist/query-builder.scss'
+import { parseExpression } from 'util/searchExpressionParser'
+import { toReactQueryBuilderState } from 'util/searchExpressionUtils'
 import {
   DocsKey,
   ZendeskLink
-} from '../util/zendeskUtils'
+} from 'util/zendeskUtils'
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'

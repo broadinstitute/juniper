@@ -32,5 +32,6 @@ export type ParticipantTaskType =
   | 'SURVEY'
   | 'OUTREACH'
   | 'KIT_REQUEST'
+  | 'ADMIN_FORM'
 
 export {}

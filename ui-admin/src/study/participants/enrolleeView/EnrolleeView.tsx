@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { ParticipantTask, StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Link, NavLink, Route, Routes } from 'react-router-dom'
@@ -35,34 +35,19 @@ export default function EnrolleeView({ studyEnvContext }: { studyEnvContext: Stu
   const { isLoading, enrollee, reload } = useRoutedEnrollee(studyEnvContext)
   return <>
     {isLoading && <LoadingSpinner/>}
-    {!isLoading && enrollee && <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext}
-      onUpdate={reload}/>}
+    {!isLoading && enrollee &&
+        <LoadedEnrolleeView enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={reload}/>}
   </>
 }
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
-                                     { enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
+export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }: {
+  enrollee: Enrollee, studyEnvContext: StudyEnvContextT, onUpdate: () => void
+}) {
   const { currentEnv, currentEnvPath } = studyEnvContext
+  const [responseMap, setResponseMap] = useState<ResponseMapT>({})
 
   const surveys: StudyEnvironmentSurvey[] = currentEnv.configuredSurveys
-  const responseMap: ResponseMapT = {}
-  surveys.forEach(configSurvey => {
-    // to match responses to surveys, filter using the tasks, since those have the stableIds
-    // this is valid since it's currently enforced that all survey responses are done as part of a task,
-    const matchedTask = enrollee.participantTasks
-      .find(task => task.targetStableId === configSurvey.survey.stableId)
-    if (!matchedTask) {
-      return
-    }
-    const matchedResponse = enrollee.surveyResponses
-      .find(response => matchedTask.surveyResponseId === response.id)
-    responseMap[configSurvey.survey.stableId] = {
-      survey: configSurvey,
-      response: matchedResponse,
-      task: matchedTask
-    }
-  })
 
   const researchSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'RESEARCH')
@@ -70,6 +55,39 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
     .filter(survey => survey.survey.surveyType === 'OUTREACH')
   const consentSurveys = surveys
     .filter(survey => survey.survey.surveyType === 'CONSENT')
+  const adminSurveys = surveys
+    .filter(survey => survey.survey.surveyType === 'ADMIN')
+
+  const updateResponseMap = (stableId: string, response: SurveyResponse) => {
+    setResponseMap({
+      ...responseMap,
+      [stableId]: {
+        ...responseMap[stableId],
+        response
+      }
+    })
+  }
+
+  useEffect(() => {
+    const updatedResponseMap: ResponseMapT = {}
+    surveys.forEach(configSurvey => {
+      // to match responses to surveys, filter using the tasks, since those have the stableIds
+      // this is valid since it's currently enforced that all survey responses are done as part of a task,
+      const matchedTask = enrollee.participantTasks
+        .find(task => task.targetStableId === configSurvey.survey.stableId)
+      if (!matchedTask) {
+        return
+      }
+      const matchedResponse = enrollee.surveyResponses
+        .find(response => matchedTask.surveyResponseId === response.id)
+      updatedResponseMap[configSurvey.survey.stableId] = {
+        survey: configSurvey,
+        response: matchedResponse,
+        task: matchedTask
+      }
+    })
+    setResponseMap(updatedResponseMap)
+  }, [enrollee])
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={enrollee?.shortcode || ''}>
@@ -90,7 +108,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
           <div style={navDivStyle}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
-                <NavLink to="." className={getLinkCssClasses}>Overview</NavLink>
+                <NavLink end to="." className={getLinkCssClasses}>Overview</NavLink>
               </li>
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="profile" className={getLinkCssClasses}>Profile</NavLink>
@@ -100,7 +118,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   <ul className="list-unstyled">
                     {currentEnv.preEnrollSurvey && <li className="mb-2">
                       <NavLink to="preRegistration" className={getLinkCssClasses}>
-                            PreEnrollment
+                        PreEnrollment
                       </NavLink>
                     </li>}
                     {consentSurveys.map(survey => {
@@ -114,7 +132,7 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   </ul>}/>
               </li>
               <li style={navListItemStyle}>
-                <CollapsableMenu header={'Surveys'} headerClass="text-black" content={
+                <CollapsableMenu header={'Research Surveys'} headerClass="text-black" content={
                   <ul className="list-unstyled">
                     {researchSurveys.map(survey => {
                       const stableId = survey.survey.stableId
@@ -128,8 +146,28 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                 />
               </li>
               <li style={navListItemStyle}>
+                <CollapsableMenu header={'Study Staff Forms'} headerClass="text-black" content={
+                  <ul className="list-unstyled">
+                    {adminSurveys.length === 0 && <li className="mb-2">
+                      <span className="text-muted fst-italic">No study staff forms</span>
+                    </li>}
+                    {adminSurveys.map(survey => {
+                      const stableId = survey.survey.stableId
+                      return <li className="mb-2 d-flex justify-content-between
+                        align-items-center" key={stableId}>
+                        {createSurveyNavLink(stableId, responseMap, survey)}
+                        {badgeForResponses(responseMap[stableId]?.response)}
+                      </li>
+                    })}
+                  </ul>}
+                />
+              </li>
+              <li style={navListItemStyle}>
                 <CollapsableMenu header={'Outreach'} headerClass="text-black" content={
                   <ul className="list-unstyled">
+                    {outreachSurveys.length === 0 && <li className="mb-2">
+                      <span className="text-muted fst-italic">No outreach opportunities</span>
+                    </li>}
                     {outreachSurveys.map(survey => {
                       const stableId = survey.survey.stableId
                       return <li className="mb-2 d-flex justify-content-between
@@ -146,10 +184,9 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   Kit requests
                 </NavLink>
                 {
-                  enrollee.kitRequests.length > 0 &&
-                    <span className="badge align-middle bg-secondary ms-1 mb-1">
-                      {enrollee.kitRequests.length}
-                    </span>
+                  <span className="badge align-middle bg-secondary ms-1 mb-1">
+                    {enrollee.kitRequests.length}
+                  </span>
                 }
               </li>
               <li style={navListItemStyle}>
@@ -180,11 +217,15 @@ export function LoadedEnrolleeView({ enrollee, studyEnvContext, onUpdate }:
                   onUpdate={onUpdate}/>}/>
                 {currentEnv.preEnrollSurvey && <Route path="preRegistration/*" element={
                   <PreEnrollmentView preEnrollSurvey={currentEnv.preEnrollSurvey}
-                    preEnrollResponse={enrollee.preEnrollmentResponse} studyEnvContext={studyEnvContext}/>
+                    preEnrollResponse={enrollee.preEnrollmentResponse}
+                    studyEnvContext={studyEnvContext}/>
                 }/>}
                 <Route path="surveys">
                   <Route path=":surveyStableId/*" element={<SurveyResponseView enrollee={enrollee}
-                    responseMap={responseMap} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>}/>
+                    responseMap={responseMap}
+                    updateResponseMap={updateResponseMap}
+                    studyEnvContext={studyEnvContext}
+                    onUpdate={onUpdate}/>}/>
                   <Route path="*" element={<div>Unknown participant survey page</div>}/>
                 </Route>
                 <Route path="tasks" element={<ParticipantTaskView enrollee={enrollee}/>}/>
