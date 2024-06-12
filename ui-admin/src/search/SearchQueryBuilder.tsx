@@ -10,6 +10,7 @@ import {
   RuleGroupType,
   RuleGroupTypeAny
 } from 'react-querybuilder'
+import 'react-querybuilder/dist/query-builder.scss'
 import { ruleProcessorEnrolleeSearchExpression } from '../util/formatQueryBuilderAsSearchExp'
 import { useLoadingEffect } from '../api/api-utils'
 import Api, { SearchValueType } from '../api/api'

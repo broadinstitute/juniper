@@ -19,10 +19,8 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
+import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
@@ -43,6 +41,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -58,21 +58,15 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Autowired
     private StudyService studyService;
     @Autowired
-    private PortalService portalService;
-    @Autowired
     private EnrolleeService enrolleeService;
     @Autowired
     private EnrollmentService enrollmentService;
     @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
-    private PortalEnvironmentFactory portalEnvironmentFactory;
-    @Autowired
     private SurveyFactory surveyFactory;
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    @Autowired
-    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
@@ -87,15 +81,18 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private StudyEnvironmentService studyEnvironmentService;
     @Autowired
     private AnswerService answerService;
+    @Autowired
+    private EventService eventService;
 
     @Test
     @Transactional
     public void testEnroll(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
-        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = bundle.getPortalEnv();
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+        String studyShortcode =  bundle.getStudy().getShortcode();
 
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .surveyType(SurveyType.CONSENT)
                 .portalId(portalEnv.getPortalId()));
@@ -119,8 +116,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testParticipantWorkflow(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = bundle.getPortalEnv();
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+        String studyShortcode = bundle.getStudy().getShortcode();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
 
         Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
@@ -131,9 +130,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info)).portalId(portalEnv.getPortalId()));
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-
-        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
@@ -147,11 +143,23 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         SurveyResponse consentResponseDto = SurveyResponse.builder()
                 .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
-                .complete(true)
-                .resumeData("stuff")
+                .complete(false)
+                .resumeData("")
                 .build();
         surveyResponseService.updateResponse(consentResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
                 enrollee, consentTask.getId(), consent.getPortalId());
+        // since the response is incomplete, no consent event should be fired
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), nullValue());
+
+        consentResponseDto = SurveyResponse.builder()
+                .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foobar")))
+                .complete(true)
+                .resumeData("")
+                .build();
+        surveyResponseService.updateResponse(consentResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+                enrollee, consentTask.getId(), consent.getPortalId());
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), hasSize(1));
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_SURVEY_EVENT), hasSize(2));
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
@@ -240,8 +248,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testGovernedUserEnrollment(TestInfo info){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
@@ -280,8 +289,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProxyEnrollingMultipleChild(TestInfo info){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
@@ -403,8 +413,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testMappingProxyAndGovernedUserProfileFromPreEnroll(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
         config.setAcceptingProxyEnrollment(true);
         studyEnvironmentConfigService.update(config);
@@ -499,6 +510,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         Assertions.assertFalse(enrollmentService.isProxyEnrollment(envName, studyShortcode, null));
         Assertions.assertFalse(enrollmentService.isProxyEnrollment(envName, studyShortcode, UUID.randomUUID()));
+    }
+
+    public Map<EventClass, List<Event>> getEventsByType(UUID enrolleeId) {
+        return eventService.findAllEventsByEnrolleeId(enrolleeId).stream()
+                .collect(Collectors.toMap(Event::getEventClass, List::of, (a, b) -> Stream.of(a, b).flatMap(List::stream).toList()));
     }
 
 
