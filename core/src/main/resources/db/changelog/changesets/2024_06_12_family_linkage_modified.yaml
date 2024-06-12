@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: "multiple_family_linkage"
+      author: connorlbark
+      changes:
+        - dropColumn:
+            tableName: enrollee
+            columnName: family_id
+        - createTable:
+            tableName: family_members
+            columns:
+              - column:
+                  { name: id, type: uuid, defaultValueComputed: gen_random_uuid(), constraints: { nullable: false, primaryKey: true } }
+              - column:
+                  { name: created_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: last_updated_at, type: datetime, constraints: { nullable: false } }
+              - column:
+                  { name: family_id, type: uuid, constraints: { foreignKeyName: fk_family_member_family_id, references: family(id), nullable: false } }
+              - column:
+                  { name: enrollee_id, type: uuid, constraints: { foreignKeyName: fk_family_member_enrollee_id, references: enrollee(id), nullable: false } }
+        - addColumn:
+            tableName: enrollee_relation
+            columns:
+              - column:
+                  { name: family_id, type: uuid, constraints: { foreignKeyName: fk_enrollee_relation_family_id, references: family(id), nullable: true } }

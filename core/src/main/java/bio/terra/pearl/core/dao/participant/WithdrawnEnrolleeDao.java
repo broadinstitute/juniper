@@ -66,9 +66,7 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
     }
-    if (enrollee.getFamilyId() != null) {
-      enrollee.setFamily(familyDao.find(enrollee.getFamilyId()).get());
-    }
+    enrollee.setFamilies(familyDao.findByEnrolleeId(enrollee.getId()));
     List<EnrolleeRelation> relationsByEnrollee = enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId());
     List<EnrolleeRelation> relationsByTargetEnrollee = enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId());
     enrollee.getRelations().addAll(relationsByEnrollee);
