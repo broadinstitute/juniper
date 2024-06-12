@@ -703,11 +703,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSiteContent(portalShortcode: string, stableId: string, version: number, language?: string) {
+  async getSiteContent(portalShortcode: string, stableId: string, version: number) {
     const baseUrl = `${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`
-    const response = await fetch(language ? `${baseUrl}?language=${language}` : baseUrl, this.getGetInit())
+    const response = await fetch(baseUrl, this.getGetInit())
     return await this.processJsonResponse(response)
   },
+
+  async getCurrentSiteContent(portalShortcode: string, environmentName: string) {
+    const baseUrl = `${basePortalEnvUrl(portalShortcode, environmentName)}/siteContent`
+    const response =await fetch(baseUrl, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
 
   async assignParticipantTasksToEnrollees(studyEnvParams: StudyEnvParams,
     assignDto: ParticipantTaskAssignDto): Promise<ParticipantTask[]> {
