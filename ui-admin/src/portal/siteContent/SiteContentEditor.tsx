@@ -8,7 +8,7 @@ import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
   ApiContextT, HtmlSectionView, SiteFooter, PortalEnvironmentLanguage
 } from '@juniper/ui-core'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
 import AddNavbarItemModal, { NavItemProps } from './AddNavbarItemModal'
@@ -21,7 +21,7 @@ import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
-import useReactSingleSelect from 'util/react-select-utils'
+import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -53,26 +53,32 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
-    portalEnvContext.portalEnv.supportedLanguages.find(f =>
-      workingContent.localizedSiteContents[0]?.language === f.languageCode))
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
+
   const zoneConfig = useConfig()
-  if (!localContent) {
-    return <div>no content for language {selectedLanguage?.languageName}</div>
+  const [searchParams, setSearchParams] = useSearchParams()
+  const selectedLanguageCode = searchParams.get('lang') ?? workingContent.localizedSiteContents[0]?.language
+  const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
+    portalLang.languageCode === selectedLanguageCode)
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
+
+  const navBarItems = localContent?.navbarItems ?? []
+  const setSelectedLanguage = (language: PortalEnvironmentLanguage | undefined) => {
+    if (!language) {
+      return
+    }
+    setSearchParams({ ...searchParams, lang: language.languageCode })
   }
-  const navBarItems = localContent.navbarItems
 
   const {
     onChange: languageOnChange, options: languageOptions,
     selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
   } =
-      useReactSingleSelect(
-        portalEnvContext.portalEnv.supportedLanguages,
-        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
+    useNonNullReactSingleSelect(
+        portalEnvContext.portalEnv.supportedLanguages as PortalEnvironmentLanguage[],
+        language => ({ label: language?.languageName, value: language }),
         setSelectedLanguage,
         selectedLanguage
-      )
+    )
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -197,7 +203,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const currentNavBarItem = selectedNavOpt.value ? navBarItems
     .find(navItem => navItem.text === selectedNavOpt.value) : null
-  const pageToRender = currentNavBarItem ? (currentNavBarItem as NavbarItemInternal).htmlPage : localContent.landingPage
+  const pageToRender = currentNavBarItem ?
+    (currentNavBarItem as NavbarItemInternal).htmlPage : localContent?.landingPage
 
   const pageOpts: {label: string, value: string}[] = navBarItems
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
@@ -260,8 +267,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={e => {
-                languageOnChange(e)
-                loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
+                if (e?.value) {
+                  languageOnChange(e)
+                  loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
+                }
               }}/>
           </div> }
           <Button className="btn btn-secondary"
@@ -298,7 +307,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         </div>
 
       </div>
-      <div className="d-flex flex-column flex-grow-1 mt-2">
+      { !localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
+        <div className="alert alert-warning" role="alert">
+          No content has been configured for this language.
+        </div>
+      </div>}
+      {localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
         { pageToRender &&
           <Tabs
             activeKey={activeTab ?? undefined}
@@ -357,46 +371,48 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           </form>
         </div>
         }
+        { showVersionSelector &&
+          <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode}
+            stableId={siteContent.stableId} current={siteContent}
+            loadSiteContent={loadSiteContent} portalEnv={portalEnv}
+            switchToVersion={switchToVersion}
+            onDismiss={() => setShowVersionSelector(false)}/>
+        }
+        { showAddPageModal &&
+          <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+            insertNewNavItem={insertNewNavItem}
+            onDismiss={() => setShowAddPageModal(false)}/>
+        }
+        { (showDeletePageModal && currentNavBarItem) &&
+          <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
+            onDismiss={() => setShowDeletePageModal(false)}/>
+        }
+        { showAddPreRegModal &&
+          <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>
+        }
+        { showBrandingModal &&
+          <BrandingModal onDismiss={() => setShowBrandingModal(false)} localContent={localContent}
+            updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
+        }
+        { showUnsavedPreviewModal &&
+          <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
+            <Modal.Body>
+              Please note that your unsaved changes will not appear in the participant view until you save them.
+            </Modal.Body>
+            <Modal.Footer>
+              <button className="btn btn-primary" onClick={() => {
+                showParticipantView()
+                setShowUnsavedPreviewModal(false)
+              }}>
+                Launch participant view in new tab
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowUnsavedPreviewModal(false)}>Cancel</button>
+            </Modal.Footer>
+          </Modal>
+        }
       </div>
+      }
     </div>
-    { showVersionSelector &&
-        <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode} stableId={siteContent.stableId}
-          current={siteContent} loadSiteContent={loadSiteContent} portalEnv={portalEnv}
-          switchToVersion={switchToVersion}
-          onDismiss={() => setShowVersionSelector(false)}/>
-    }
-    { showAddPageModal &&
-        <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
-          insertNewNavItem={insertNewNavItem}
-          onDismiss={() => setShowAddPageModal(false)}/>
-    }
-    { (showDeletePageModal && currentNavBarItem) &&
-        <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
-          onDismiss={() => setShowDeletePageModal(false)}/>
-    }
-    { showAddPreRegModal &&
-        <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>
-    }
-    { showBrandingModal &&
-        <BrandingModal onDismiss={() => setShowBrandingModal(false)} localContent={localContent}
-          updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
-    }
-    { showUnsavedPreviewModal &&
-        <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
-          <Modal.Body>
-            Please note that your unsaved changes will not appear in the participant view until you save them.
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-primary" onClick={() => {
-              showParticipantView()
-              setShowUnsavedPreviewModal(false)
-            }}>
-              Launch participant view in new tab
-            </button>
-            <button className="btn btn-secondary" onClick={() => setShowUnsavedPreviewModal(false)}>Cancel</button>
-          </Modal.Footer>
-        </Modal>
-    }
   </div>
 }
 

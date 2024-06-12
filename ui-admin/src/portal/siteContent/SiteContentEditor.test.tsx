@@ -141,14 +141,35 @@ test('delete page button is disabled when Landing page is selected', async () =>
 test('renders a language selector when there are multiple languages', async () => {
   const siteContent = mockSiteContent()
   const portalEnvContext = mockPortalEnvContext('sandbox')
-  const { RoutedComponent } = setupRouterTest(
+  renderWithRouter(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={portalEnvContext}/>)
-  render(RoutedComponent)
 
   const languageSelector = screen.getByLabelText('Select a language')
   expect(languageSelector).toBeInTheDocument()
+})
+
+test('shows no content if nothing for a selected language', async () => {
+  const siteContent = mockSiteContent()
+  const portalEnvContext = mockPortalEnvContext('sandbox')
+  renderWithRouter(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={portalEnvContext}/>)
+  expect(screen.queryByText('No content has been configured for this language.')).not.toBeInTheDocument()
+  await select(screen.getByLabelText('Select a language'), 'Spanish')
+  expect(screen.getByText('No content has been configured for this language.')).toBeInTheDocument()
+})
+
+test('selected language routes from url', async () => {
+  const siteContent = mockSiteContent()
+  const portalEnvContext = mockPortalEnvContext('sandbox')
+  renderWithRouter(
+    <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
+      loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
+      portalEnvContext={portalEnvContext}/>, ['/?lang=es'])
+  expect(screen.getByText('No content has been configured for this language.')).toBeInTheDocument()
 })
 
 test('does not render a language selector when there is only one language', async () => {
@@ -161,11 +182,10 @@ test('does not render a language selector when there is only one language', asyn
       supportedLanguages: []
     }
   }
-  const { RoutedComponent } = setupRouterTest(
+  renderWithRouter(
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={mockContextOnlyEnglish}/>)
-  render(RoutedComponent)
 
   expect(screen.queryByLabelText('Select a language')).not.toBeInTheDocument()
 })
