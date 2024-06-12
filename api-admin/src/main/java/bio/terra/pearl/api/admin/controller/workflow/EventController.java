@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.workflow;
 
 import bio.terra.pearl.api.admin.api.EventApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.workflow.Event;

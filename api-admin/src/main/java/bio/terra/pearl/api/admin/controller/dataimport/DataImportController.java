@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.dataimport;
 
 import bio.terra.pearl.api.admin.api.DataImportApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;

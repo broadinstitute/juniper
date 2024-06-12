@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.SiteMediaApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteMediaExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteMedia;

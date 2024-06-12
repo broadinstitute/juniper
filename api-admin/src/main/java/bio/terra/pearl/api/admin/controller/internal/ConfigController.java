@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.admin.controller.internal;
 
 import bio.terra.pearl.api.admin.api.ConfigApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.ConfigExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
