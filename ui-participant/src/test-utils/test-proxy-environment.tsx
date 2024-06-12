@@ -1,5 +1,12 @@
-import { Enrollee, Portal } from '@juniper/ui-core'
-import { EnrolleeRelation, ParticipantUser, PortalParticipantUser } from '../api/api'
+import {
+  Enrollee,
+  Portal
+} from '@juniper/ui-core'
+import {
+  EnrolleeRelation,
+  ParticipantUser,
+  PortalParticipantUser
+} from 'api/api'
 
 export const mockPortal: Portal = {
   id: 'portal-id',
@@ -7,6 +14,7 @@ export const mockPortal: Portal = {
   shortcode: 'TESTPORTAL',
   portalEnvironments: [
     {
+      createdAt: 0,
       environmentName: 'sandbox',
       portalEnvironmentConfig: {
         initialized: true,
@@ -47,6 +55,7 @@ export const mockPortal: Portal = {
         studyEnvironmentConfig: {
           acceptingEnrollment: true,
           acceptingProxyEnrollment: true,
+          enableFamilyLinkage: false,
           initialized: true,
           passwordProtected: false,
           password: '',

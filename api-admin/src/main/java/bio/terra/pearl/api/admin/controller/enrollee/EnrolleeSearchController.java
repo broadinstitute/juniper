@@ -115,4 +115,13 @@ public class EnrolleeSearchController implements EnrolleeSearchApi {
         this.enrolleeSearchExtService.getExpressionSearchFacets(
             user, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName)));
   }
+
+  @Override
+  public ResponseEntity<Object> executeSearchExpression(
+      String portalShortcode, String studyShortcode, String envName, String expression) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        this.enrolleeSearchExtService.executeSearchExpression(
+            user, portalShortcode, studyShortcode, EnvironmentName.valueOf(envName), expression));
+  }
 }

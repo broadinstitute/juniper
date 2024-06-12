@@ -49,6 +49,7 @@ public class PortalExtService {
     // no additional auth checks needed -- the underlying service filters out portals the user does
     // not have access to
     List<Portal> portals = portalService.findByAdminUser(user);
+    portalService.attachPortalEnvironments(portals);
     portalService.attachStudies(portals);
     return portals;
   }

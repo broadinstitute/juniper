@@ -65,7 +65,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
-        return dao.findByPortal(portalId);
+        return dao.findByPortalWithConfigs(portalId);
     }
 
     public Optional<PortalEnvironment> findOne(String portalShortcode, EnvironmentName environmentName) {

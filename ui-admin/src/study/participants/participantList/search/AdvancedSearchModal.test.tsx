@@ -1,22 +1,27 @@
 import React from 'react'
-import { mockTaskSearchFacet, mockTaskFacetValue } from 'test-utils/mocking-utils'
-import { getByText, render, screen } from '@testing-library/react'
+import { mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { findByText, fireEvent, getByText, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
-import { EnrolleeSearchFacet } from 'api/api'
-import { ALL_FACETS, Facet, FacetValue, EntityOptionsArrayFacet } from 'api/enrolleeSearch'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {
-    const facet: EnrolleeSearchFacet = mockTaskSearchFacet()
-    const searchFacets: Facet[] = [...ALL_FACETS, facet as Facet]
-    const facetValues: FacetValue[] = [mockTaskFacetValue(facet as EntityOptionsArrayFacet, 'COMPLETE')]
-
-    const mockUpdateFacetValuesFn = jest.fn()
+    const mockSetSearchStateFn = jest.fn()
     const { RoutedComponent } = setupRouterTest(
-      <AdvancedSearchModal onDismiss={jest.fn()} facetValues={facetValues}
-        updateFacetValues={mockUpdateFacetValuesFn} searchCriteria={searchFacets}/>)
+      <AdvancedSearchModal
+        studyEnvContext={mockStudyEnvContext()}
+        onDismiss={jest.fn()}
+        searchState={{
+          keywordSearch: '',
+          minAge: undefined,
+          maxAge: undefined,
+          sexAtBirth: [],
+          tasks: [],
+          latestKitStatus: [],
+          custom: ''
+        }}
+        setSearchState={mockSetSearchStateFn}/>)
     render(RoutedComponent)
 
     await screen.findAllByText('Keyword')
@@ -28,16 +33,36 @@ describe('AdvanceSearchModal', () => {
     // expand accordion
     await userEvent.click(screen.getByText('Task status'))
 
-    expect(screen.getByText('Consent')).toBeInTheDocument()
-    const selectSection: HTMLElement  = screen.getByTestId('select-consent')
+    expect(screen.getByText('Survey number one')).toBeInTheDocument()
+    const surveyStatusSelector: HTMLElement = screen.getByTestId('select-survey1-task-status')
 
-    await userEvent.click(getByText(selectSection, 'Complete'))
+    await selectOption(surveyStatusSelector, 'Complete')
 
     // expand accordion
     await userEvent.click(screen.getByText('Sex at birth'))
-    expect(screen.getByText('Female')).toBeInTheDocument()
+    const sexAtBirthSelector: HTMLElement = screen.getByTestId('select-sex-at-birth')
+    await selectOption(sexAtBirthSelector, 'female')
 
     await userEvent.click(screen.getByText('Search'))
-    expect(mockUpdateFacetValuesFn).toHaveBeenCalledWith(facetValues)
+    expect(mockSetSearchStateFn).toHaveBeenCalledWith({
+      keywordSearch: '',
+      custom: '',
+      latestKitStatus: [],
+      minAge: undefined,
+      maxAge: undefined,
+      sexAtBirth: ['female'],
+      tasks: [{ task: 'survey1', status: 'COMPLETE' }]
+    })
   })
 })
+
+const keyDownEvent = {
+  key: 'ArrowDown'
+}
+
+const selectOption = async (container: HTMLElement, optionText: string) => {
+  const placeholder = getByText(container, 'Select...')
+  fireEvent.keyDown(placeholder, keyDownEvent)
+  await findByText(container, optionText)
+  fireEvent.click(getByText(container, optionText))
+}

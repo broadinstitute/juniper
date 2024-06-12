@@ -1,0 +1,20 @@
+[
+  {
+    "name": "study_admin",
+    "displayName": "Study admin",
+    "description": "View and edit all aspects of a study",
+    "permissionNames": ["study_settings_edit", "survey_edit", "consent_form_edit", "site_content_edit"]
+  },
+  {
+    "name": "prototype_tester",
+    "displayName": "Prototype access",
+    "description": "Use features being prototyped",
+    "permissionNames": ["team_roles_edit"]
+  },
+  {
+    "name": "power_user",
+    "displayName": "Power user",
+    "description": "Use advanced Juniper features",
+    "permissionNames": ["tdr_export"]
+  }
+]

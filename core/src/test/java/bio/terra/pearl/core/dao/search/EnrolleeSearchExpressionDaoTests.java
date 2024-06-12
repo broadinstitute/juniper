@@ -2,11 +2,13 @@ package bio.terra.pearl.core.dao.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -15,8 +17,10 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
@@ -53,6 +58,9 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Autowired
     ParticipantTaskFactory participantTaskFactory;
+
+    @Autowired
+    KitRequestFactory kitRequestFactory;
 
 
     @Test
@@ -114,7 +122,12 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
-        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(salk.getId())));
+        EnrolleeSearchExpressionResult result = results.get(0);
+        Assertions.assertEquals(salk.getId(), result.getEnrollee().getId());
+        Assertions.assertEquals(
+                "answer",
+                result.getAnswers().get(0).getStringValue()
+        );
     }
 
     @Test
@@ -463,6 +476,55 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         Assertions.assertEquals(1, resultsName.size());
         assertTrue(resultsName.stream().anyMatch(r -> r.getEnrollee().getId().equals(jsalkBundle.enrollee().getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testLatestKit(TestInfo info) throws JsonProcessingException {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.CREATED);
+
+        EnrolleeSearchExpression createdExp = enrolleeSearchExpressionParser.parseRule(
+                "{latestKit.status} = 'CREATED'"
+        );
+
+        EnrolleeSearchExpression erroredExp = enrolleeSearchExpressionParser.parseRule(
+                "{latestKit.status} = 'ERRORED'"
+        );
+
+        List<EnrolleeSearchExpressionResult> resultsCreated =
+                enrolleeSearchExpressionDao.executeSearch(
+                        createdExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, resultsCreated.size());
+        assertEquals(enrollee.getId(), resultsCreated.get(0).getEnrollee().getId());
+        assertEquals(KitRequestStatus.CREATED, resultsCreated.get(0).getLatestKit().getStatus());
+
+        List<EnrolleeSearchExpressionResult> resultsErrored =
+                enrolleeSearchExpressionDao.executeSearch(
+                        erroredExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(0, resultsErrored.size());
+
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.ERRORED);
+
+        resultsErrored =
+                enrolleeSearchExpressionDao.executeSearch(
+                        erroredExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, resultsErrored.size());
+        assertEquals(enrollee.getId(), resultsErrored.get(0).getEnrollee().getId());
+        assertEquals(KitRequestStatus.ERRORED, resultsErrored.get(0).getLatestKit().getStatus());
+
+        resultsCreated =
+                enrolleeSearchExpressionDao.executeSearch(
+                        createdExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(0, resultsCreated.size());
 
     }
 }

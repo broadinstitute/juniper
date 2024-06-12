@@ -3,7 +3,6 @@ import Modal from 'react-bootstrap/Modal'
 import { useNavContext } from '../navbar/NavContextProvider'
 import Select from 'react-select'
 import { Portal } from '@juniper/ui-core'
-import useReactSingleSelect from 'util/react-select-utils'
 import LoadingSpinner from '../util/LoadingSpinner'
 import Api, { StudyTemplate } from '../api/api'
 import { doApiLoad } from '../api/api-utils'
@@ -13,8 +12,8 @@ import InfoPopup from 'components/forms/InfoPopup'
 import { Button } from 'components/forms/Button'
 
 /** allows users to select a portal and then create a study within that portal */
-export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => void}) {
-  const { portalList, reload } = useNavContext()
+export default function CreateNewStudyModal({ portal, onDismiss }: { portal: Portal, onDismiss: () => void }) {
+  const { reload } = useNavContext()
   const [studyName, setStudyName] = useState('')
   const [studyShortcode, setStudyShortcode] = useState('')
   const [template, setTemplate] = useState<{ value: string, label: string } | undefined>(
@@ -23,19 +22,11 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
   const templateOptions = [
     { value: 'BASIC', label: 'Basic' }
   ]
-  const [selectedPortal, setSelectedPortal] = useState<Portal | undefined>(portalList[0])
-  const { onChange, options, selectedOption, selectInputId } =
-        useReactSingleSelect(
-          portalList,
-          (portal: Portal) => ({ label: portal.name, value: portal }),
-          setSelectedPortal,
-          selectedPortal)
 
   const [isLoading, setIsLoading] = useState(false)
   const createStudy = async () => {
-    if (!selectedPortal) { return }
     doApiLoad(async () => {
-      await Api.createStudy(selectedPortal.shortcode, {
+      await Api.createStudy(portal.shortcode, {
         shortcode: studyShortcode, name: studyName, template: template?.value as StudyTemplate
       })
       Store.addNotification(successNotification('Study created'))
@@ -48,18 +39,14 @@ export default function CreateNewStudyModal({ onDismiss }: {onDismiss: () => voi
       <Modal.Title>Create study</Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <form onSubmit={e => e.preventDefault()} className="py-3">
-        <label htmlFor={selectInputId}>
-                    Portal:
-        </label>
-        <Select inputId={selectInputId} options={options} value={selectedOption} onChange={onChange}/>
-        <label className="form-label mt-3" htmlFor="studyName">
-                    Study name
+      <form onSubmit={e => e.preventDefault()}>
+        <label className="form-label" htmlFor="studyName">
+          Study Name
         </label>
         <input type="text" size={20} id="studyName" className="form-control" value={studyName}
           onChange={e => setStudyName(e.target.value)}/>
         <label className="form-label mt-3" htmlFor="studyShortcode">
-                    Study shortcode
+          Study Shortcode
         </label>
         <InfoPopup content={`Unique identifier that will be used in urls and data exports to 
                     indicate this study.  Must be all lowercase with no spaces`}/>

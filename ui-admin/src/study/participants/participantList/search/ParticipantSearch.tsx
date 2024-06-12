@@ -1,39 +1,32 @@
 import React, { useState } from 'react'
-import { getUpdatedFacetValues } from '../facets/EnrolleeSearchFacets'
-import {
-  Facet,
-  FacetValue,
-  StringFacetValue
-} from 'api/enrolleeSearch'
 import { Button } from 'components/forms/Button'
 import AdvancedSearchModal from './AdvancedSearchModal'
-import SearchCriteriaView from './SearchCriteriaView'
 import BasicSearch from './BasicSearch'
+import SearchCriteriaView from './SearchCriteriaView'
+import { ParticipantSearchState } from 'util/participantSearchUtils'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 
 
 /** Participant search component for participant list page */
-function ParticipantSearch({ facets, facetValues, updateFacetValues }: {
-                            facets: Facet[], facetValues: FacetValue[],
-                            updateFacetValues: (values: FacetValue[]) => void}) {
+function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, setSearchState }: {
+  studyEnvContext: StudyEnvContextT,
+  searchState: ParticipantSearchState,
+  updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void,
+  setSearchState: (searchState: ParticipantSearchState) => void
+}) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
-
-  const keywordFacetIndex = facetValues.findIndex(facet => facet.facet.category === 'keyword')
-  const keywordFacetValue = facetValues[keywordFacetIndex]
-
-  const updateKeywordFacetValue = (facetValue: StringFacetValue | null) => {
-    updateFacetValues(getUpdatedFacetValues(facetValue ?? null, keywordFacetIndex, facetValues))
-  }
-
-  const hasFacetValues = (): boolean => {
-    return facetValues.length > 0
-  }
 
   return <div>
     <div className="align-items-baseline d-flex mb-2">
-      {advancedSearch && <AdvancedSearchModal onDismiss={() => setAdvancedSearch(false)} facetValues={facetValues}
-        updateFacetValues={updateFacetValues} searchCriteria={facets}/>}
+      {advancedSearch && <AdvancedSearchModal
+        studyEnvContext={studyEnvContext}
+        onDismiss={() => setAdvancedSearch(false)}
+        searchState={searchState}
+        setSearchState={setSearchState}/>}
       <div className="mb-2">
-        <BasicSearch facetValue={keywordFacetValue as StringFacetValue} updateValue={updateKeywordFacetValue}/>
+        <BasicSearch
+          searchState={searchState}
+          updateSearchState={updateSearchState}/>
       </div>
       <div className="ms-2">
         <Button variant="light" className="border btn-sm"
@@ -42,9 +35,9 @@ function ParticipantSearch({ facets, facetValues, updateFacetValues }: {
         </Button>
       </div>
     </div>
-    {hasFacetValues() && <div className="d-flex mb-4">
-      <SearchCriteriaView facetValues={facetValues} updateFacetValues={updateFacetValues}/>
-    </div>}
+    <SearchCriteriaView
+      searchState={searchState}
+      updateSearchState={updateSearchState}/>
   </div>
 }
 
