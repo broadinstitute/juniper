@@ -4,6 +4,7 @@ import bio.terra.pearl.api.admin.api.DatarepoApi;
 import bio.terra.pearl.api.admin.model.CreateDataset;
 import bio.terra.pearl.api.admin.service.DataRepoExportExtService;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
@@ -34,11 +35,9 @@ public class DataRepoExportController implements DatarepoApi {
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    List<Dataset> datasets =
-        dataRepoExportExtService.listDatasetsForStudyEnvironment(
-            portalShortcode, studyShortcode, environmentName, user);
-
+    PortalStudyEnvAuthContext authContext =
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
+    List<Dataset> datasets = dataRepoExportExtService.listDatasetsForStudyEnvironment(authContext);
     return ResponseEntity.ok().body(datasets);
   }
 
@@ -47,10 +46,10 @@ public class DataRepoExportController implements DatarepoApi {
       String portalShortcode, String studyShortcode, String envName, String datasetName) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
+    PortalStudyEnvAuthContext authContext =
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
     List<DataRepoJob> jobHistory =
-        dataRepoExportExtService.getJobHistoryForDataset(
-            portalShortcode, studyShortcode, environmentName, datasetName, user);
+        dataRepoExportExtService.getJobHistoryForDataset(authContext, datasetName);
 
     return ResponseEntity.ok().body(jobHistory);
   }
@@ -60,9 +59,9 @@ public class DataRepoExportController implements DatarepoApi {
       String portalShortcode, String studyShortcode, String envName, CreateDataset createDataset) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    dataRepoExportExtService.createDataset(
-        portalShortcode, studyShortcode, environmentName, createDataset, user);
+    PortalStudyEnvAuthContext authContext =
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
+    dataRepoExportExtService.createDataset(authContext, createDataset);
 
     return ResponseEntity.accepted().build();
   }
@@ -72,9 +71,9 @@ public class DataRepoExportController implements DatarepoApi {
       String portalShortcode, String studyShortcode, String envName, String datasetName) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-
-    dataRepoExportExtService.deleteDataset(
-        portalShortcode, studyShortcode, environmentName, datasetName, user);
+    PortalStudyEnvAuthContext authContext =
+        PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
+    dataRepoExportExtService.deleteDataset(authContext, datasetName);
 
     return ResponseEntity.accepted().build();
   }
