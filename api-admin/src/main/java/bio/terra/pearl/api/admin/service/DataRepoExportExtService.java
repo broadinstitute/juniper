@@ -33,8 +33,7 @@ public class DataRepoExportExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "tdr_export")
-  public List<DataRepoJob> getJobHistoryForDataset(
-      PortalStudyEnvAuthContext authContext, String datasetName) {
+  public List<DataRepoJob> getJobHistoryForDataset(PortalStudyEnvAuthContext authContext, String datasetName) {
     Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
     if (dataset.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
       throw new PermissionDeniedException("User does not have permission to view this dataset");

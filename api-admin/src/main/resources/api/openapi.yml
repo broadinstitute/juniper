@@ -85,7 +85,7 @@ paths:
       responses:
         '200':
           description: list of portal objects
-          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}:
@@ -571,6 +571,22 @@ paths:
       responses:
         '200':
           description: List of valid search fields
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2:
+    get:
+      summary: Searches using a search expression.
+      tags: [ enrolleeSearch ]
+      operationId: executeSearchExpression
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: expression, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: List of results, including any linked objects that were searched upon
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -1791,13 +1807,6 @@ components:
           type: string
         statusCode:
           type: integer
-    PortalShallowDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        shortcode: { type: string }
-        name: { type: string }
-        portalStudies: { type: array }
     PortalDto:
       type: object
     CreateDataset:

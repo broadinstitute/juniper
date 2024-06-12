@@ -73,6 +73,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         Instant now = Instant.now();
         survey.setCreatedAt(now);
         survey.setLastUpdatedAt(now);
+        survey.setStableId(survey.getStableId().trim());
         Survey savedSurvey = dao.create(survey);
         for (AnswerMapping answerMapping : survey.getAnswerMappings()) {
             answerMapping.setId(null);

@@ -3,6 +3,7 @@ import {
   AdminTask,
   Answer,
   DatasetDetails,
+  EnrolleeSearchExpressionResult,
   EnrolleeSearchFacet,
   EnrolleeSearchResult,
   Notification,
@@ -18,18 +19,25 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
+  Enrollee,
+  KitRequest,
+  KitType,
+  LocalizedEmailTemplate,
   ParticipantDashboardAlert,
-  Enrollee, KitRequest, KitType,
-  LocalizedEmailTemplate, ParticipantNote,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, StudyEnvParams,
+  ParticipantTaskType,
+  StudyEnvParams,
   Survey
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import {
+  EmailTemplate,
+  StudyEnvironmentSurvey
+} from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
@@ -89,7 +97,8 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
   supportedLanguages: [
     { languageCode: 'en', languageName: 'English' },
     { languageCode: 'es', languageName: 'Spanish' }
-  ]
+  ],
+  createdAt: 0
 })
 
 
@@ -155,6 +164,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
       password: 'blah',
       passwordProtected: false,
       acceptingEnrollment: true,
+      enableFamilyLinkage: false,
       acceptingProxyEnrollment: false,
       useDevDsmRealm: false,
       useStubDsm: false
@@ -311,6 +321,16 @@ export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
       lastLogin: 50405345,
       username: `${randomString(10)}@test.com`
     }
+  }
+}
+
+/**
+ * Mocks most basic enrollee search expression result response.
+ */
+export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
+  return {
+    enrollee: mockEnrollee(),
+    profile: mockEnrollee().profile
   }
 }
 

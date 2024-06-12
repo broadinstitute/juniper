@@ -6,14 +6,20 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.admin.PermissionFactory;
+import bio.terra.pearl.core.factory.admin.RoleFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.admin.Permission;
 import bio.terra.pearl.core.model.admin.PortalAdminUser;
+import bio.terra.pearl.core.model.admin.Role;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.service.admin.PortalAdminUserRoleService;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalService;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -28,6 +34,9 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
   @Autowired private PortalAdminUserService portalAdminUserService;
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private PortalFactory portalFactory;
+  @Autowired private RoleFactory roleFactory;
+  @Autowired private PermissionFactory permissionFactory;
+  @Autowired private PortalAdminUserRoleService portalAdminUserRoleService;
 
   @Test
   @Transactional
@@ -77,6 +86,46 @@ public class AuthUtilServiceTests extends BaseSpringBootTest {
             adminUserFactory.builder(getTestName(info)).superuser(true));
     Portal portal = portalFactory.buildPersisted(getTestName(info));
     assertThat(authUtilService.authUserToPortal(user, portal.getShortcode()), notNullValue());
+  }
+
+  @Test
+  @Transactional
+  public void authUserToPortalWithPermissionRejects(TestInfo info) {
+    AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () -> {
+          authUtilService.authUserToPortalWithPermission(user, portal.getShortcode(), "tdr_export");
+        });
+  }
+
+  @Test
+  @Transactional
+  public void authUserToPortalWithPermissionAllows(TestInfo info) {
+    AdminUser user = adminUserFactory.buildPersisted(getTestName(info));
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    Permission deletePortalPermission = permissionFactory.buildPersisted("delete_portal");
+    Role portalDeleterRole =
+        roleFactory.buildPersisted("portal_deleter", List.of(deletePortalPermission.getName()));
+
+    PortalAdminUser portalAdminUser =
+        portalAdminUserService.create(
+            PortalAdminUser.builder()
+                .adminUserId(user.getId())
+                .portalId(portal.getId())
+                .roles(List.of(portalDeleterRole))
+                .roleIds(List.of(portalDeleterRole.getId()))
+                .build());
+
+    portalAdminUserRoleService.setRoles(
+        portalAdminUser.getId(), List.of(portalDeleterRole.getName()));
+
+    assertThat(
+        authUtilService
+            .authUserToPortalWithPermission(user, portal.getShortcode(), "delete_portal")
+            .getShortcode(),
+        equalTo(portal.getShortcode()));
   }
 
   @Test

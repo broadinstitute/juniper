@@ -36,6 +36,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
     environmentName: 'sandbox',
     studyEnvironmentConfig: {
       acceptingEnrollment: true,
+      enableFamilyLinkage: false,
       acceptingProxyEnrollment: false,
       initialized: true,
       passwordProtected: false,
@@ -52,6 +53,7 @@ export const mockStudyEnv = (): StudyEnvironment => {
 /** mock environment with a siteContent */
 export const mockPortalEnvironment = (): PortalEnvironment => {
   return {
+    createdAt: 0,
     environmentName: 'sandbox',
     portalEnvironmentConfig: mockPortalEnvironmentConfig(),
     siteContent: mockSiteContent(),
