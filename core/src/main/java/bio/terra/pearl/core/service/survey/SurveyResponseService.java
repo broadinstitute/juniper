@@ -135,7 +135,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
         List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
-        List<Answer> existingAnswers = answerService.findByResponse(response.getId()); //TODO
+        List<Answer> existingAnswers = answerService.findByResponse(response.getId());
         allAnswers.addAll(existingAnswers);
         response.setAnswers(allAnswers);
 
