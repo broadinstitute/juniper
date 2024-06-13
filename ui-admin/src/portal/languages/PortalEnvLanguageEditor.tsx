@@ -162,7 +162,10 @@ export default function PortalEnvLanguageEditor({ items, setItems } : {
               disabled={
                 isEmpty(row.original.languageName)
                 || isEmpty(row.original.languageCode)}
-              onClick={() => updateItem(row.original)}>
+              onClick={() => updateItem({
+                languageCode: row.original.languageCode,
+                languageName: row.original.languageName
+              })}>
               <FontAwesomeIcon icon={faCheck} aria-label={'Accept'}/>
             </Button>
             <Button className='btn btn-danger' onClick={() => setNewItem(makeEmptyNewItem())}>

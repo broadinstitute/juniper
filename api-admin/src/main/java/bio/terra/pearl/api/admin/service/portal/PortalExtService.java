@@ -22,23 +22,25 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PortalExtService {
-  private PortalService portalService;
-  private PortalEnvironmentService portalEnvironmentService;
-  private PortalEnvironmentConfigService portalEnvironmentConfigService;
-  private PortalAdminUserService portalAdminUserService;
-  private PortalLanguageService portalLanguageService;
-  private AuthUtilService authUtilService;
+  private final PortalService portalService;
+  private final PortalEnvironmentService portalEnvironmentService;
+  private final PortalEnvironmentConfigService portalEnvironmentConfigService;
+  private final PortalAdminUserService portalAdminUserService;
+  private final PortalLanguageService portalLanguageService;
+  private final AuthUtilService authUtilService;
 
   public PortalExtService(
       PortalService portalService,
       PortalEnvironmentService portalEnvironmentService,
       PortalEnvironmentConfigService portalEnvironmentConfigService,
       PortalAdminUserService portalAdminUserService,
+      PortalLanguageService portalLanguageService,
       AuthUtilService authUtilService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalEnvironmentConfigService = portalEnvironmentConfigService;
     this.portalAdminUserService = portalAdminUserService;
+    this.portalLanguageService = portalLanguageService;
     this.authUtilService = authUtilService;
   }
 
@@ -105,9 +107,12 @@ public class PortalExtService {
     portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());
     portalEnv = portalEnvironmentService.update(portalEnv);
     if (updatedEnv.getSupportedLanguages().size() > 0) {
-      List<PortalEnvironmentLanguage> updatedLangs = portalLanguageService.setPortalEnvLanguages(portalEnv.getId(), updatedEnv.getSupportedLanguages());
+      List<PortalEnvironmentLanguage> updatedLangs =
+          portalLanguageService.setPortalEnvLanguages(
+              portalEnv.getId(), updatedEnv.getSupportedLanguages());
       portalEnv.setSupportedLanguages(updatedLangs);
     }
+    return portalEnv;
   }
 
   public void removeUserFromPortal(UUID adminUserId, String portalShortcode, AdminUser operator) {

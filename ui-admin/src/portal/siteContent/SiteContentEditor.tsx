@@ -21,9 +21,10 @@ import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
+
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { usePortalLanguage } from '../languages/usePortalLanguage'
-
+import _cloneDeep from 'lodash/cloneDeep'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -54,13 +55,13 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-
   const zoneConfig = useConfig()
   const [searchParams, setSearchParams] = useSearchParams()
   const { defaultLanguage } = usePortalLanguage()
   const selectedLanguageCode = searchParams.get('lang') ?? defaultLanguage.languageCode
   const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
     portalLang.languageCode === selectedLanguageCode)
+
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
 
   const navBarItems = localContent?.navbarItems ?? []
@@ -76,10 +77,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
   } =
     useNonNullReactSingleSelect(
-        portalEnvContext.portalEnv.supportedLanguages as PortalEnvironmentLanguage[],
-        language => ({ label: language?.languageName, value: language }),
-        setSelectedLanguage,
-        selectedLanguage
+      portalEnvContext.portalEnv.supportedLanguages,
+      language => ({ label: language?.languageName, value: language }),
+      setSelectedLanguage,
+      selectedLanguage
     )
 
   /** updates the global SiteContent object with the given LocalSiteContent */
@@ -88,6 +89,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     const matchedIndex = workingContent.localizedSiteContents
       .findIndex(lsc => lsc.language === localContent.language)
     updatedLocalContents[matchedIndex] = localContent
+    const newWorkingContent: SiteContent = {
+      ...workingContent,
+      localizedSiteContents: updatedLocalContents
+    }
+    setWorkingContent(newWorkingContent)
+  }
+
+  /** updates the global SiteContent object with the given LocalSiteContent */
+  const addLocalContent = () => {
+    const defaultContent = workingContent.localizedSiteContents
+      .find(lsc => lsc.language === defaultLanguage.languageCode)
+    if (!selectedLanguage || !defaultContent) {
+      return
+    }
+    const newLocalContent: LocalSiteContent = {
+      ..._cloneDeep(defaultContent),
+      language: selectedLanguage!.languageCode
+    }
+    const updatedLocalContents = [...workingContent.localizedSiteContents, newLocalContent]
     const newWorkingContent: SiteContent = {
       ...workingContent,
       localizedSiteContents: updatedLocalContents
@@ -268,11 +288,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           { portalEnvContext.portalEnv.supportedLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
-              onChange={e => {
-                if (e?.value) {
-                  languageOnChange(e)
-                }
-              }}/>
+              onChange={languageOnChange}/>
           </div> }
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
@@ -311,6 +327,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
       { !localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
         <div className="alert alert-warning" role="alert">
           No content has been configured for this language.
+          <Button className="btn btn-secondary ms-3" onClick={addLocalContent}>
+            Clone from default
+          </Button>
         </div>
       </div>}
       {localContent && <div className="d-flex flex-column flex-grow-1 mt-2">

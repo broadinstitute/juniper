@@ -25,7 +25,7 @@ public class PortalLanguageService extends ImmutableEntityService<PortalEnvironm
         dao.deleteByPortalEnvId(portalEnvId);
         return languages.stream().map(language -> {
             language.setPortalEnvironmentId(portalEnvId);
-            return dao.create(language);
+            return dao.create(language.cleanForCopying());
         }).toList();
     }
 
