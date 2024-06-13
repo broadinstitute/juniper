@@ -7,10 +7,13 @@ import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.search.terms.SearchValue;
@@ -24,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -114,11 +118,13 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                                                 "isRequired": true
                                               },
                                               {
-                                                "name": "oh_oh_basic_middleInitial",
+                                                "name": "oh_oh_basic_country",
                                                 "type": "text",
                                                 "title": "Middle initial",
-                                                "maxLength": 1,
-                                                "size": 1
+                                                "choices": [
+                                                   {"value": "US", "text": "United States"},
+                                                   {"value": "CA", "text": "Canada"}
+                                                ]
                                               }
                                             ]
                                           }
@@ -215,38 +221,50 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
         surveyFactory.attachToEnv(survey3, se2.getId(), true);
 
 
-        Map<String, SearchValue.SearchValueType> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
+        Map<String, SearchValueTypeDefinition> results = searchService.getExpressionSearchFacetsForStudyEnv(bundle1.getStudyEnv().getId());
+
+        List<QuestionChoice> taskStatusChoices = Arrays.stream(TaskStatus.values())
+                .map(val -> new QuestionChoice(val.name(), val.name()))
+                .collect(Collectors.toList());
+        List<QuestionChoice> kitStatusChoices = Arrays.stream(KitRequestStatus.values())
+                .map(val -> new QuestionChoice(val.name(), val.name()))
+                .collect(Collectors.toList());
 
         Assertions.assertEquals(28, results.size());
         Map.ofEntries(
-                Map.entry("profile.givenName", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.familyName", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.name", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.contactEmail", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.phoneNumber", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.birthDate", SearchValue.SearchValueType.DATE),
-                Map.entry("profile.sexAtBirth", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.street1", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.street2", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.city", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.state", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.postalCode", SearchValue.SearchValueType.STRING),
-                Map.entry("profile.mailingAddress.country", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.another_survey.question_1", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.another_survey.question_2", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.another_survey.question_3", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.test_survey_1.oh_oh_basic_firstName", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.test_survey_1.oh_oh_basic_lastName", SearchValue.SearchValueType.STRING),
-                Map.entry("answer.test_survey_1.oh_oh_basic_middleInitial", SearchValue.SearchValueType.STRING),
-                Map.entry("task.another_survey.status", SearchValue.SearchValueType.STRING),
-                Map.entry("task.another_survey.assigned", SearchValue.SearchValueType.BOOLEAN),
-                Map.entry("task.test_survey_1.assigned", SearchValue.SearchValueType.BOOLEAN),
-                Map.entry("task.test_survey_1.status", SearchValue.SearchValueType.STRING),
-                Map.entry("enrollee.subject", SearchValue.SearchValueType.BOOLEAN),
-                Map.entry("enrollee.consented", SearchValue.SearchValueType.BOOLEAN),
-                Map.entry("enrollee.shortcode", SearchValue.SearchValueType.STRING),
-                Map.entry("age", SearchValue.SearchValueType.INTEGER),
-                Map.entry("latestKit.status", SearchValue.SearchValueType.STRING)
+                Map.entry("profile.givenName", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.familyName", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.name", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.contactEmail", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.phoneNumber", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.birthDate", SearchValueTypeDefinition.builder().type(DATE).build()),
+                Map.entry("profile.sexAtBirth", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.street1", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.street2", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.city", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.state", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.postalCode", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("profile.mailingAddress.country", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.another_survey.question_1", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.another_survey.question_2", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.another_survey.question_3", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.test_survey_1.oh_oh_basic_firstName", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.test_survey_1.oh_oh_basic_lastName", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("answer.test_survey_1.oh_oh_basic_country",
+                        SearchValueTypeDefinition.builder().type(STRING)
+                                .choices(
+                                        List.of(new QuestionChoice("US", "United States"),
+                                                new QuestionChoice("CA", "Canada"))
+                                ).build()),
+                Map.entry("task.another_survey.status", SearchValueTypeDefinition.builder().type(STRING).choices(taskStatusChoices).build()),
+                Map.entry("task.another_survey.assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+                Map.entry("task.test_survey_1.assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+                Map.entry("task.test_survey_1.status", SearchValueTypeDefinition.builder().type(STRING).choices(taskStatusChoices).build()),
+                Map.entry("enrollee.subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+                Map.entry("enrollee.consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
+                Map.entry("enrollee.shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
+                Map.entry("age", SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.INTEGER).build()),
+                Map.entry("latestKit.status", SearchValueTypeDefinition.builder().type(STRING).choices(kitStatusChoices).build())
         ).forEach((key, value) -> {
             Assertions.assertTrue(results.containsKey(key), "Key not found: " + key);
             Assertions.assertEquals(value, results.get(key), "Wrong value for key: " + key + ", expected: " + value + " got: " + results.get(key));

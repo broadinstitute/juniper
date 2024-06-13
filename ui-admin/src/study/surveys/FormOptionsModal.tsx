@@ -105,7 +105,7 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Auto-update participant tasks to the latest version of this survey after publishing
             </label>
-            { (workingForm.surveyType !== 'ADMIN' && workingForm.surveyType !== 'OUTREACH') &&
+            {(workingForm.surveyType !== 'ADMIN' && workingForm.surveyType !== 'OUTREACH') &&
             <label className="form-label d-block">
               <input type="checkbox" checked={workingForm.allowAdminEdit}
                 onChange={e => updateWorkingForm({
@@ -114,27 +114,15 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
               /> Allow study staff to edit participant responses
             </label>}
               Eligibility Rule
-            <p className={'mt-1 mb-0'}>
-                  Use a <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
-                  search expression
-              </ZendeskLink> to conditionally assign the survey.
-            </p>
             {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
-                && <div className="my-2">
-                  <LazySearchQueryBuilder
-                    studyEnvContext={studyEnvContext}
-                    onSearchExpressionChange={exp => updateWorkingForm({
-                      ...workingForm, eligibilityRule: exp
-                    })}
-                    searchExpression={(workingForm as Survey).eligibilityRule || ''}/>
-                </div>}
-            <input type="text" className="form-control" value={(workingForm as Survey).eligibilityRule || ''}
-              onChange={e => {
-                updateWorkingForm({
-                  ...workingForm, eligibilityRule: e.target.value
-                })
-              }
-              }/>
+              && <div className="my-2">
+                <LazySearchQueryBuilder
+                  studyEnvContext={studyEnvContext}
+                  onSearchExpressionChange={exp => updateWorkingForm({
+                    ...workingForm, eligibilityRule: exp
+                  })}
+                  searchExpression={workingForm.eligibilityRule || ''}/>
+              </div>}
           </div>
         </div>
     }
