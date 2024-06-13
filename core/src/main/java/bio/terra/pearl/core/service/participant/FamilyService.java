@@ -1,8 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
-import bio.terra.pearl.core.dao.participant.FamilyMemberDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.service.DataAuditedService;
@@ -18,18 +16,16 @@ import java.util.UUID;
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
-    private final EnrolleeDao enrolleeDao;
-    private final FamilyMemberDao familyMemberDao;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
-                         EnrolleeDao enrolleeDao, FamilyMemberDao familyMemberDao) {
+                         FamilyEnrolleeService familyEnrolleeService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
-        this.enrolleeDao = enrolleeDao;
-        this.familyMemberDao = familyMemberDao;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     @Transactional
@@ -51,7 +47,7 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     @Override
     @Transactional
     public void delete(UUID familyId, DataAuditInfo info) {
-        familyMemberDao.deleteByFamilyId(familyId);
+        familyEnrolleeService.deleteByFamilyId(familyId, info);
 
         super.delete(familyId, info);
     }
@@ -59,5 +55,11 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
     public List<Family> findByEnrolleeId(UUID enrolleeId) {
         return dao.findByEnrolleeId(enrolleeId);
+    }
+
+    @Transactional
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
+        List<Family> families = findByStudyEnvironmentId(studyEnvironmentId);
+        bulkDelete(families, info);
     }
 }

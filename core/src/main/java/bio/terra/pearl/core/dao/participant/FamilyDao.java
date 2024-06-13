@@ -31,6 +31,7 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         deleteByProperty("study_environment_id", studyEnvironmentId);
+    }
 
     public List<Family> findByEnrolleeId(UUID enrolleeId) {
         return jdbi.withHandle(handle -> handle.createQuery("SELECT family.* FROM family family INNER JOIN family_enrollee family_enrollee ON family_enrollee.family_id = family.id WHERE family_enrollee.enrollee_id = :enrolleeId")
