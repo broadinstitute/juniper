@@ -23,4 +23,8 @@ public class PortalLanguageDao extends BaseJdbiDao<PortalEnvironmentLanguage> {
     public List<PortalEnvironmentLanguage> findByPortalEnvId(UUID portalId) {
         return findAllByProperty("portal_environment_id", portalId);
     }
+
+    public void deleteByPortalEnvId(UUID portalId) {
+        deleteByProperty("portal_environment_id", portalId);
+    }
 }

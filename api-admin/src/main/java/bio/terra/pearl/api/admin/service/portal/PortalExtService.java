@@ -6,10 +6,12 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
@@ -24,6 +26,7 @@ public class PortalExtService {
   private PortalEnvironmentService portalEnvironmentService;
   private PortalEnvironmentConfigService portalEnvironmentConfigService;
   private PortalAdminUserService portalAdminUserService;
+  private PortalLanguageService portalLanguageService;
   private AuthUtilService authUtilService;
 
   public PortalExtService(
@@ -100,7 +103,11 @@ public class PortalExtService {
             .orElseThrow(PortalEnvironmentMissing::new);
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());
-    return portalEnvironmentService.update(portalEnv);
+    portalEnv = portalEnvironmentService.update(portalEnv);
+    if (updatedEnv.getSupportedLanguages().size() > 0) {
+      List<PortalEnvironmentLanguage> updatedLangs = portalLanguageService.setPortalEnvLanguages(portalEnv.getId(), updatedEnv.getSupportedLanguages());
+      portalEnv.setSupportedLanguages(updatedLangs);
+    }
   }
 
   public void removeUserFromPortal(UUID adminUserId, String portalShortcode, AdminUser operator) {

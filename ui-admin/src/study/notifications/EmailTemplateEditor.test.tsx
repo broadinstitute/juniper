@@ -3,7 +3,7 @@ import EmailTemplateEditor from './EmailTemplateEditor'
 import { screen, render } from '@testing-library/react'
 import { mockEmailTemplate } from 'test-utils/mocking-utils'
 import { asMockedFn } from '@juniper/ui-core'
-import { usePortalLanguage } from 'portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 
 jest.mock('portal/usePortalLanguage', () => ({
   usePortalLanguage: jest.fn()

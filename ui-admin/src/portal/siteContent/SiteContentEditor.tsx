@@ -22,7 +22,7 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
-import { usePortalLanguage } from '../usePortalLanguage'
+import { usePortalLanguage } from '../languages/usePortalLanguage'
 
 
 type NavbarOption = {label: string, value: string}

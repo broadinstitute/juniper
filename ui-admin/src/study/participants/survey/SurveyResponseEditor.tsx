@@ -7,7 +7,7 @@ import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam } from '@juni
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
-import { usePortalLanguage } from 'portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 
 /** allows editing of a survey response */
 export default function SurveyResponseEditor({
