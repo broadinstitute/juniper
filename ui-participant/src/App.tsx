@@ -62,7 +62,7 @@ function App() {
   if (!localContent) {
     return <div className="alert alert-warning">
       No content has been configured for this language.
-      <button onClick={
+      <button className='btn btn-outline-secondary ms-2' onClick={
         () => { localStorage.removeItem('selectedLanguage'); window.location.reload() }
       }>Reload with default language</button>
     </div>
