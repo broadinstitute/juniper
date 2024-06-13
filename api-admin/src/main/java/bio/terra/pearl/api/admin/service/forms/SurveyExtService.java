@@ -1,6 +1,6 @@
 package bio.terra.pearl.api.admin.service.forms;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;

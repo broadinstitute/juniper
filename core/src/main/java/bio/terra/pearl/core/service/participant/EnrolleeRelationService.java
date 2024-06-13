@@ -11,6 +11,7 @@ import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -131,4 +132,15 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return filterValid(dao.findRelationsForFamily(familyId));
     }
 
+    @Transactional
+    public void deleteByFamilyId(UUID id, DataAuditInfo info) {
+        List<EnrolleeRelation> relations = findRelationsForFamily(id);
+        bulkDelete(relations, info);
+    }
+
+    @Transactional
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
+        List<EnrolleeRelation> relations = dao.findByStudyEnvironmentId(studyEnvironmentId);
+        bulkDelete(relations, info);
+    }
 }

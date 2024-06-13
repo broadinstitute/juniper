@@ -387,6 +387,12 @@ export type StudyCreationDto = {
 }
 
 export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueTypeDefinition = {
+  type: SearchValueType
+  choices?: { stableId: string, text: string }[]
+  allowMultiple: boolean
+  allowOtherDescription: boolean
+}
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -752,7 +758,7 @@ export default {
   },
 
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<{ [index: string]: SearchValueType }> {
+    Promise<{ [index: string]: SearchValueTypeDefinition }> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

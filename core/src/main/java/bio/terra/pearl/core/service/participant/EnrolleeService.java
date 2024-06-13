@@ -138,9 +138,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
-        if (enrollee.getFamilyId() != null) {
-            enrollee.setFamily(familyService.find(enrollee.getFamilyId()).orElseThrow(() -> new IllegalStateException("family not found for enrollee")));
-        }
+        enrollee.setFamilies(familyService.findByEnrolleeId(enrollee.getId()));
         return enrollee;
     }
 
@@ -201,8 +199,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public void delete(UUID enrolleeId, Set<CascadeProperty> cascades) {
         Enrollee enrollee = dao.find(enrolleeId).get();
-                StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
-/**
+        StudyEnvironment studyEnv = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
+        /**
          * For production environments, we only allow deletion if a withdrawal record has already been preserved
          */
         if (studyEnv.getEnvironmentName().equals(EnvironmentName.live) &&

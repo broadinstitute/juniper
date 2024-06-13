@@ -148,22 +148,14 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     }
 
     public List<Enrollee> findAllByFamilyId(UUID id) {
-        return findAllByProperty("family_id", id);
+        return jdbi.withHandle(handle -> handle.createQuery("""
+                        SELECT enrollee.* FROM enrollee enrollee
+                        INNER JOIN family_enrollee family_enrollee ON enrollee.id = family_enrollee.enrollee_id
+                        WHERE family_enrollee.family_id = :id
+                        """)
+                .bind("id", id)
+                .mapTo(clazz)
+                .list());
     }
 
-    public void removeAllEnrolleesFromFamily(UUID familyId) {
-        jdbi.useHandle(handle -> {
-            handle.createUpdate("update enrollee set family_id = null where family_id = :familyId")
-                    .bind("familyId", familyId)
-                    .execute();
-        });
-    }
-
-    public void removeAllEnrolleesFromFamiliesInStudyEnv(UUID studyEnvId) {
-        jdbi.useHandle(handle -> {
-            handle.createUpdate("update enrollee set family_id = null where study_environment_id = :studyEnvId")
-                    .bind("studyEnvId", studyEnvId)
-                    .execute();
-        });
-    }
 }

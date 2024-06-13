@@ -1,12 +1,9 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import SurveyFullDataView, { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
+import { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
-import { mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
-import { setupRouterTest } from '@juniper/ui-core'
 
 
 describe('getDisplayValue', () => {
@@ -83,17 +80,6 @@ describe('getDisplayValue', () => {
     expect(screen.getByRole('img')).toHaveAttribute('src', 'data:image/png;base64, test123')
     expect(screen.queryByText('data:image/png;base64, test123')).not.toBeInTheDocument()
   })
-})
-
-test('shows the download/print modal', async () => {
-  const printSpy = jest.spyOn(window, 'print').mockImplementation(() => 1)
-  const { RoutedComponent } = setupRouterTest(
-    <SurveyFullDataView answers={[]} survey={mockSurvey()} studyEnvContext={mockStudyEnvContext()}/>)
-  render(RoutedComponent)
-  expect(screen.queryByText('Done')).not.toBeInTheDocument()
-  await userEvent.click(screen.getByText('print/download'))
-  expect(screen.getByText('Done')).toBeVisible()
-  await waitFor(() => expect(printSpy).toHaveBeenCalledTimes(1))
 })
 
 describe('ItemDisplay', () => {

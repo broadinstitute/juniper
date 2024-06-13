@@ -53,18 +53,17 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
     }, { setIsLoading })
   }
 
-  const researchSurveyStableIds =  _uniq(configuredSurveys
-    .filter(configSurvey => configSurvey.survey.surveyType === 'RESEARCH')
-    .sort((a, b) => a.surveyOrder - b.surveyOrder)
-    .map(configSurvey => configSurvey.survey.stableId))
-  const outreachSurveyStableIds =  _uniq(configuredSurveys
-    .filter(configSurvey => configSurvey.survey.surveyType === 'OUTREACH')
-    .sort((a, b) => a.surveyOrder - b.surveyOrder)
-    .map(configSurvey => configSurvey.survey.stableId))
-  const consentSurveyStableIds =  _uniq(configuredSurveys
-    .filter(configSurvey => configSurvey.survey.surveyType === 'CONSENT')
-    .sort((a, b) => a.surveyOrder - b.surveyOrder)
-    .map(configSurvey => configSurvey.survey.stableId))
+  function getUniqueStableIdsForType(configuredSurveys: StudyEnvironmentSurveyNamed[], surveyType: string) {
+    return _uniq(configuredSurveys
+      .filter(configSurvey => configSurvey.survey.surveyType === surveyType)
+      .sort((a, b) => a.surveyOrder - b.surveyOrder)
+      .map(configSurvey => configSurvey.survey.stableId))
+  }
+
+  const researchSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'RESEARCH')
+  const outreachSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'OUTREACH')
+  const consentSurveyStableIds = getUniqueStableIdsForType(configuredSurveys, 'CONSENT')
+  const adminFormStableIds = getUniqueStableIdsForType(configuredSurveys, 'ADMIN')
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Forms & Surveys') }
@@ -72,31 +71,31 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
       <div className="col-12">
         { currentEnv.studyEnvironmentConfig.initialized && <ul className="list-unstyled">
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
-            <h6>Pre-enrollment questionnaire</h6>
+            <h6>Pre-enrollment Questionnaire</h6>
             <div className="flex-grow-1 pt-3">
-              { preEnrollSurvey && <ul className="list-unstyled">
+              {preEnrollSurvey && <ul className="list-unstyled">
                 <li className="d-flex align-items-center">
                   <Link to={`preEnroll/${preEnrollSurvey.stableId}?readOnly=${isReadOnlyEnv}`}>
                     {preEnrollSurvey.name} <span className="detail">v{preEnrollSurvey.version}</span>
                   </Link>
 
-                  { !isReadOnlyEnv && <div className="nav-item dropdown ms-1">
-                    <IconButton icon={faEllipsisH}  data-bs-toggle="dropdown"
+                  {!isReadOnlyEnv && <div className="nav-item dropdown ms-1">
+                    <IconButton icon={faEllipsisH} data-bs-toggle="dropdown"
                       aria-expanded="false" aria-label="configure pre-enroll menu"/>
                     <div className="dropdown-menu">
                       <ul className="list-unstyled">
                         <li>
                           <button className="dropdown-item"
                             onClick={() => alert('To remove a pre-enroll survey, contact support')}>
-                          Remove
+                            Remove
                           </button>
                         </li>
                       </ul>
                     </div>
-                  </div> }
+                  </div>}
                 </li>
               </ul>}
-              { (!preEnrollSurvey && !isReadOnlyEnv) && <Button variant="secondary"
+              {(!preEnrollSurvey && !isReadOnlyEnv) && <Button variant="secondary"
                 data-testid={'addPreEnroll'}
                 onClick={() => {
                   setShowCreatePreEnrollModal(!showCreatePreEnrollSurveyModal)
@@ -107,7 +106,7 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
-            <h2 className="h6">Consent forms</h2>
+            <h2 className="h6">Consent Forms</h2>
             <div className="flex-grow-1 pt-3">
               <SurveyEnvironmentTable stableIds={consentSurveyStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
@@ -151,6 +150,28 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
             </div>
           </li>
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
+            <h6>Study Staff Forms</h6>
+            <div className="flex-grow-1 pt-3">
+              <SurveyEnvironmentTable stableIds={adminFormStableIds}
+                studyEnvParams={paramsFromContext(studyEnvContext)}
+                configuredSurveys={configuredSurveys}
+                setSelectedSurveyConfig={setSelectedSurveyConfig}
+                updateConfiguredSurvey={updateConfiguredSurvey}
+                setShowDeleteSurveyModal={setShowDeleteSurveyModal}
+                setShowArchiveSurveyModal={setShowArchiveSurveyModal}
+                showArchiveSurveyModal={showArchiveSurveyModal}
+                showDeleteSurveyModal={showDeleteSurveyModal}
+              />
+              <div>
+                <Button variant="secondary" data-testid={'addAdminForm'} onClick={() => {
+                  setCreateSurveyType('ADMIN')
+                }}>
+                  <FontAwesomeIcon icon={faPlus}/> Add
+                </Button>
+              </div>
+            </div>
+          </li>
+          <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Outreach</h6>
             <div className="flex-grow-1 pt-3">
               <SurveyEnvironmentTable stableIds={outreachSurveyStableIds}
@@ -172,18 +193,18 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
               </div>
             </div>
           </li>
-        </ul> }
-        { createSurveyType && <CreateSurveyModal studyEnvContext={studyEnvContext} type={createSurveyType}
-          onDismiss={() => setCreateSurveyType(undefined)}/> }
-        { (showArchiveSurveyModal && selectedSurveyConfig) && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
+        </ul>}
+        {createSurveyType && <CreateSurveyModal studyEnvContext={studyEnvContext} type={createSurveyType}
+          onDismiss={() => setCreateSurveyType(undefined)}/>}
+        {(showArchiveSurveyModal && selectedSurveyConfig) && <ArchiveSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
-          onDismiss={() => setShowArchiveSurveyModal(false)}/> }
-        { (showDeleteSurveyModal && selectedSurveyConfig) && <DeleteSurveyModal studyEnvContext={studyEnvContext}
+          onDismiss={() => setShowArchiveSurveyModal(false)}/>}
+        {(showDeleteSurveyModal && selectedSurveyConfig) && <DeleteSurveyModal studyEnvContext={studyEnvContext}
           selectedSurveyConfig={selectedSurveyConfig}
-          onDismiss={() => setShowDeleteSurveyModal(false)}/> }
-        { showCreatePreEnrollSurveyModal && <CreatePreEnrollSurveyModal studyEnvContext={studyEnvContext}
-          onDismiss={() => setShowCreatePreEnrollModal(false)}/> }
-        { !currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div> }
+          onDismiss={() => setShowDeleteSurveyModal(false)}/>}
+        {showCreatePreEnrollSurveyModal && <CreatePreEnrollSurveyModal studyEnvContext={studyEnvContext}
+          onDismiss={() => setShowCreatePreEnrollModal(false)}/>}
+        {!currentEnv.studyEnvironmentConfig.initialized && <div>Not yet initialized</div>}
       </div>
     </LoadingSpinner>
   </div>

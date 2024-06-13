@@ -24,7 +24,7 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
         assertEquals("select enrollee.consented as enrollee_consented, " +
-                        "enrollee.created_at as enrollee_created_at, enrollee.family_id as enrollee_family_id, " +
+                        "enrollee.created_at as enrollee_created_at, " +
                         "enrollee.id as enrollee_id, " +
                         "enrollee.last_updated_at as enrollee_last_updated_at, " +
                         "enrollee.participant_user_id as enrollee_participant_user_id, " +

@@ -20,14 +20,19 @@ import { Enrollee, Profile } from 'src/types/user'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
+export type AutosaveStatus = 'SAVING' | 'SAVED' | 'ERROR'
+
 /** handles paging the form */
 export function PagedSurveyView({
+  updateResponseMap,
   studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage,
-  enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
+  setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
 }: {
     studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse,
+    updateResponseMap: (stableId: string, response: SurveyResponse) => void
     onSuccess: () => void, onFailure: () => void,
     selectedLanguage: string,
+    setAutosaveStatus: (status: AutosaveStatus) => void,
     updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
     updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
     proxyProfile?: Profile,
@@ -87,6 +92,7 @@ export function PagedSurveyView({
       // don't bother saving if there are no changes
       return
     }
+    setAutosaveStatus('SAVING')
     const prevPrevSave = prevSave.current
     prevSave.current = currentModelValues
 
@@ -120,9 +126,12 @@ export function PagedSurveyView({
        */
       updateEnrollee(updatedEnrollee, true)
       lastAutoSaveErrored.current = false
+      setAutosaveStatus('SAVED')
+      updateResponseMap(form.stableId, response.response)
     }).catch(() => {
       // if the operation fails, restore the state from before so the next diff operation will capture the changes
       // that failed to save this time
+      setAutosaveStatus('ERROR')
       prevSave.current = prevPrevSave
       lastAutoSaveErrored.current = true
     })
@@ -134,8 +143,8 @@ export function PagedSurveyView({
     <>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
       <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
-        {showHeaders && <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>}
-        {showHeaders && <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>}
+        <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
+        <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
           {i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })}
         </h1>}

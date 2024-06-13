@@ -68,11 +68,22 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
     public List<EnrolleeRelation> findRelationsForFamily(UUID familyId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery(
-                                "SELECT er.* FROM enrollee_relation er " +
-                                        "INNER JOIN enrollee e ON e.id = er.enrollee_id AND e.family_id = :familyId " +
-                                        "INNER JOIN enrollee te ON te.id = er.target_enrollee_id AND te.family_id = :familyId " +
-                                        "WHERE relationship_type = 'FAMILY'")
+                                "SELECT * FROM enrollee_relation " +
+                                        "WHERE relationship_type = 'FAMILY'" +
+                                        "AND family_id = :familyId")
                         .bind("familyId", familyId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    public List<EnrolleeRelation> findByStudyEnvironmentId(UUID studyEnvironmentId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "SELECT relation.* FROM enrollee_relation relation " +
+                                        "INNER JOIN enrollee enrollee ON relation.enrollee_id = enrollee.id " +
+                                        "WHERE enrollee.study_environment_id = :studyEnvironmentId")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
                         .mapTo(clazz)
                         .list()
         );

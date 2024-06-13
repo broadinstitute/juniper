@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.Survey;

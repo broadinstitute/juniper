@@ -22,6 +22,7 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final EnrolleeDao enrolleeDao;
     private final EnrolleeRelationDao enrolleeRelationDao;
     private final ProfileDao profileDao;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
@@ -29,12 +30,14 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                          ShortcodeService shortcodeService,
                          EnrolleeDao enrolleeDao,
                          EnrolleeRelationDao enrolleeRelationDao,
-                         ProfileDao profileDao) {
+                         ProfileDao profileDao,
+                         FamilyEnrolleeService familyEnrolleeService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.enrolleeDao = enrolleeDao;
         this.enrolleeRelationDao = enrolleeRelationDao;
         this.profileDao = profileDao;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     @Transactional
@@ -66,21 +69,22 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public Optional<Family> findByProbandId(UUID enrolleeId) {
-        return dao.findByProbandId(enrolleeId);
-    }
-
     @Override
     @Transactional
     public void delete(UUID familyId, DataAuditInfo info) {
-        enrolleeDao.removeAllEnrolleesFromFamily(familyId);
+        familyEnrolleeService.deleteByFamilyId(familyId, info);
 
         super.delete(familyId, info);
     }
 
+
+    public List<Family> findByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrolleeId(enrolleeId);
+    }
+
     @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        enrolleeDao.removeAllEnrolleesFromFamiliesInStudyEnv(studyEnvironmentId);
-        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
+        List<Family> families = findByStudyEnvironmentId(studyEnvironmentId);
+        bulkDelete(families, info);
     }
 }

@@ -5,8 +5,8 @@ import { toNumber } from 'lodash'
 import Creatable from 'react-select/creatable'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
-import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
+import { LazySearchQueryBuilder } from '../../../../search/LazySearchQueryBuilder'
 
 /**
  * Renders the facets that you can search upon in the participant list.
@@ -67,7 +67,9 @@ export default function EnrolleeSearchFacets({
       <Accordion.Item eventKey={'custom'} key={'custom'}>
         <Accordion.Header>Custom Search Expression</Accordion.Header>
         <Accordion.Body>
-          <CustomFacet searchState={searchState}
+          <CustomFacet
+            studyEnvContext={studyEnvContext}
+            searchState={searchState}
             updateSearchState={updateSearchState}/>
         </Accordion.Body>
       </Accordion.Item>
@@ -250,21 +252,15 @@ const LatestKitFacet = ({ searchState, updateSearchState }: {
   </div>
 }
 
-const CustomFacet = ({ searchState, updateSearchState }: {
+const CustomFacet = ({ studyEnvContext, searchState, updateSearchState }: {
+  studyEnvContext: StudyEnvContextT,
   searchState: ParticipantSearchState,
   updateSearchState: (field: keyof ParticipantSearchState, value: unknown) => void
 }) => {
   return <div>
-    <p>
-      Create a filter using a custom <ZendeskLink doc={DocsKey.SEARCH_EXPRESSIONS}>
-      search expression
-      </ZendeskLink>.
-    </p>
-    <textarea
-      className='form-control'
-      value={searchState.custom || ''}
-      placeholder={'{profile.mailingAddress.country} = \'US\''}
-      onChange={e => updateSearchState('custom', e.target.value)}
-    />
+    <LazySearchQueryBuilder
+      studyEnvContext={studyEnvContext}
+      onSearchExpressionChange={val => updateSearchState('custom', val)}
+      searchExpression={searchState.custom}/>
   </div>
 }

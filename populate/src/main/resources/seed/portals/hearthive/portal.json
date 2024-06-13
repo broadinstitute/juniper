@@ -56,7 +56,6 @@
       "password" : "broad_institute",
       "acceptingRegistration" : true,
       "initialized" : true,
-      "participantHostname" : "thehearthive.org",
       "emailSourceAddress" : "info@thehearthive.org"
     },
     "supportedLanguages": [{
