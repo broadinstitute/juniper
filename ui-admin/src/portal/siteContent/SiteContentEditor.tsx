@@ -22,6 +22,8 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
+import { usePortalLanguage } from '../usePortalLanguage'
+
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -42,10 +44,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
   const { portalEnv } = portalEnvContext
-  const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
-  const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
+  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
@@ -56,7 +57,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   const zoneConfig = useConfig()
   const [searchParams, setSearchParams] = useSearchParams()
-  const selectedLanguageCode = searchParams.get('lang') ?? workingContent.localizedSiteContents[0]?.language
+  const { defaultLanguage } = usePortalLanguage()
+  const selectedLanguageCode = searchParams.get('lang') ?? defaultLanguage.languageCode
   const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
     portalLang.languageCode === selectedLanguageCode)
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
@@ -185,7 +187,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
   const participantViewClick = () => {
-    if (hasInvalidSection || (initialContent !== workingContent)) {
+    if (hasInvalidSection || (siteContent !== workingContent)) {
       setShowUnsavedPreviewModal(true)
     } else {
       showParticipantView()
@@ -232,10 +234,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         {
           isEditable && <div className="d-flex flex-grow-1">
             <Button className="ms-auto me-md-2" variant="primary"
-              disabled={readOnly || hasInvalidSection || (initialContent === workingContent)}
+              disabled={readOnly || hasInvalidSection || (siteContent === workingContent)}
               tooltipPlacement={'left'}
               tooltip={(() => {
-                if (initialContent === workingContent) {
+                if (siteContent === workingContent) {
                   return 'Site is unchanged. Make changes to save.'
                 }
                 if (hasInvalidSection) {
@@ -269,7 +271,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               onChange={e => {
                 if (e?.value) {
                   languageOnChange(e)
-                  loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
                 }
               }}/>
           </div> }
