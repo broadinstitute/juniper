@@ -55,16 +55,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-  const [showAddLanguageModal, setShowAddLanguageModal] = useState(false)
   const zoneConfig = useConfig()
   const [searchParams, setSearchParams] = useSearchParams()
   const { defaultLanguage } = usePortalLanguage()
   const selectedLanguageCode = searchParams.get('lang') ?? defaultLanguage.languageCode
   const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
     portalLang.languageCode === selectedLanguageCode)
-  const contentLanguageCodes = workingContent.localizedSiteContents.map(lsc => lsc.language)
-  const unsupportedLanguages = portalEnv.supportedLanguages.filter(
-    lang => !contentLanguageCodes.includes(lang.languageCode))
 
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
 
