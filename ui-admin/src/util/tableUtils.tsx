@@ -238,11 +238,9 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
         <div className="border-b border-black">
           <label>
             <input
-              {...{
-                type: 'checkbox',
-                checked: table.getIsAllColumnsVisible(),
-                onChange: table.getToggleAllColumnsVisibilityHandler()
-              }}
+              type='checkbox'
+              checked={table.getIsAllColumnsVisible()}
+              onChange={table.getToggleAllColumnsVisibilityHandler()}
             />
             <span className="ps-2">Toggle All</span>
           </label>
@@ -253,11 +251,9 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
             <div key={column.id} className="pb-1">
               <label>
                 <input
-                  {...{
-                    type: 'checkbox',
-                    checked: column.getIsVisible(),
-                    onChange: column.getToggleVisibilityHandler()
-                  }}
+                  type='checkbox'
+                  checked={column.getIsVisible()}
+                  onChange={column.getToggleVisibilityHandler()}
                 />
                 <span className="ps-2">{ column.columnDef.header as string ?? column.columnDef.id }</span>
               </label>

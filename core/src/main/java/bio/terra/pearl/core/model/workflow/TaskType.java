@@ -4,5 +4,6 @@ public enum TaskType {
     CONSENT,
     SURVEY, // a research survey
     OUTREACH, // an outreach activity -- not essential for research
-    KIT_REQUEST
+    KIT_REQUEST,
+    ADMIN_FORM // a task for study staff to complete -- not visible to participants
 }
