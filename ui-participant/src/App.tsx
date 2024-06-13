@@ -49,7 +49,24 @@ function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
 
+  useEffect(() => {
+    const isCompatible = isBrowserCompatible()
+    if (!isCompatible) {
+      alert('Your browser does not support this page. ' +
+        'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
+    }
+  }, [])
+
+
   const brandConfig: BrandConfiguration = {}
+  if (!localContent) {
+    return <div className="alert alert-warning">
+      No content has been configured for this language.
+      <button onClick={
+        () => { localStorage.removeItem('selectedLanguage'); window.location.reload() }
+      }>Reload with default language</button>
+    </div>
+  }
   if (localContent.primaryBrandColor) {
     brandConfig.brandColor = localContent.primaryBrandColor
   }
@@ -58,13 +75,6 @@ function App() {
     brandConfig.backgroundColor = localContent.dashboardBackgroundColor
   }
 
-  useEffect(() => {
-    const isCompatible = isBrowserCompatible()
-    if (!isCompatible) {
-      alert('Your browser does not support this page. ' +
-          'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
-    }
-  }, [])
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
