@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
@@ -29,4 +32,8 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return super.create(family, info);
     }
 
+
+    public List<Family> findByEnrolleeId(UUID enrolleeId) {
+        return dao.findByEnrolleeId(enrolleeId);
+    }
 }

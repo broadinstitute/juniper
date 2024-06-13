@@ -1,9 +1,20 @@
 import React from 'react'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import { findByText, fireEvent, getByText, render, screen } from '@testing-library/react'
+import {
+  findByText,
+  fireEvent,
+  getByText,
+  render,
+  screen
+} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import AdvancedSearchModal from './AdvancedSearchModal'
 import { setupRouterTest } from '@juniper/ui-core'
+
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  getExpressionSearchFacets: jest.fn().mockResolvedValue([])
+}))
 
 describe('AdvanceSearchModal', () => {
   test('displays search facets', async () => {
