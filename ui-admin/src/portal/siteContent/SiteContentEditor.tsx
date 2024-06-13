@@ -24,6 +24,7 @@ import Modal from 'react-bootstrap/Modal'
 
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { usePortalLanguage } from '../usePortalLanguage'
+import _cloneDeep from 'lodash/cloneDeep'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
