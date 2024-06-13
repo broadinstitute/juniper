@@ -29,11 +29,19 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
     private final EnrollmentService enrollmentService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final StudyService studyService;
+<<<<<<< HEAD
     private final FamilyMemberService familyMemberService;
 
     public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
                                     PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
                                     EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService, FamilyMemberService familyMemberService) {
+=======
+    private final FamilyEnrolleeService familyEnrolleeService;
+
+    public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
+                                    PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
+                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService, FamilyEnrolleeService familyEnrolleeService) {
+>>>>>>> development
         super(dao);
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
@@ -43,7 +51,11 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
         this.enrollmentService = enrollmentService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
+<<<<<<< HEAD
         this.familyMemberService = familyMemberService;
+=======
+        this.familyEnrolleeService = familyEnrolleeService;
+>>>>>>> development
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -84,7 +96,11 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
+<<<<<<< HEAD
             familyMemberService.deleteByEnrolleeId(enrollee.getId()); // delete all family relationships
+=======
+            familyEnrolleeService.deleteByEnrolleeId(enrollee.getId()); // delete all family relationships
+>>>>>>> development
 
             //now withdraw all the proxied users
             for (Enrollee proxy : proxiesOnlyProxyingForThisUser) {

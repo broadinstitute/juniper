@@ -48,10 +48,6 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return dao.findByStudyEnvironmentId(studyEnvironmentId);
     }
 
-    public Optional<Family> findByProbandId(UUID enrolleeId) {
-        return dao.findByProbandId(enrolleeId);
-    }
-
     @Override
     @Transactional
     public void delete(UUID familyId, DataAuditInfo info) {
@@ -60,10 +56,6 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         super.delete(familyId, info);
     }
 
-    @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        enrolleeDao.removeAllEnrolleesFromFamiliesInStudyEnv(studyEnvironmentId);
-        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
 
     public List<Family> findByEnrolleeId(UUID enrolleeId) {
         return dao.findByEnrolleeId(enrolleeId);

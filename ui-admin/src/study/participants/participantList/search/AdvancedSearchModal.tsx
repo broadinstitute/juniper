@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { Modal } from 'react-bootstrap'
 import EnrolleeSearchFacets from '../facets/EnrolleeSearchFacets'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { DefaultParticipantSearchState, ParticipantSearchState } from 'util/participantSearchUtils'
+import {
+  DefaultParticipantSearchState,
+  ParticipantSearchState
+} from 'util/participantSearchUtils'
 
 /**
  * Implements a modal dialog for specifying specific search criteria for the participant list.
@@ -31,7 +34,7 @@ const AdvancedSearchModal = ({ studyEnvContext, searchState, setSearchState, onD
     setLocalSearchState(DefaultParticipantSearchState)
   }
 
-  return <Modal show={true} onHide={onDismiss} size={'lg'}>
+  return <Modal show={true} onHide={onDismiss} size={'xl'}>
     <Modal.Header closeButton>
       <Modal.Title>Participant search</Modal.Title>
     </Modal.Header>

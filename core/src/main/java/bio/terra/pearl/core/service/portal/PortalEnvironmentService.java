@@ -137,11 +137,11 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         portalParticipantUserService.deleteByPortalEnvironmentId(id);
         // clean up any preregistration responses not associated with a user
         preregistrationResponseDao.deleteByPortalEnvironmentId(id);
+        mailingListContactService.deleteByPortalEnvId(id);
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
         triggerService.deleteByPortalEnvironmentId(id);
-        mailingListContactService.deleteByPortalEnvId(id);
         dataChangeRecordService.deleteByPortalEnvironmentId(id);
         portalDashboardConfigService.deleteAlertsByPortalEnvId(id);
         dao.delete(id);
