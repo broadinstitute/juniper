@@ -160,6 +160,9 @@ test('shows no content if nothing for a selected language', async () => {
   expect(screen.queryByText('No content has been configured for this language.')).not.toBeInTheDocument()
   await select(screen.getByLabelText('Select a language'), 'Spanish')
   expect(screen.getByText('No content has been configured for this language.')).toBeInTheDocument()
+
+  await userEvent.click(screen.getByText('Clone from default'))
+  expect(screen.queryByText('No content has been configured for this language.')).not.toBeInTheDocument()
 })
 
 test('selected language routes from url', async () => {
