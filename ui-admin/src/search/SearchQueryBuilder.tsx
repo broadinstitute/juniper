@@ -38,6 +38,7 @@ import {
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'
+import pluralize from 'pluralize'
 
 /**
  * Frontend for building an enrollee search expression; can either
@@ -118,7 +119,7 @@ export const SearchQueryBuilder = ({
 
     <LoadingSpinner isLoading={isLoadingSearchResults}>
       <span>
-        {searchResults.length} matching enrollee{searchResults.length !== 1 ? 's' : ''}
+        {searchResults.length} matching {pluralize('enrollee', searchResults.length)}
       </span>
     </LoadingSpinner>
   </div>

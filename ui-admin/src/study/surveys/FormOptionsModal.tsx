@@ -121,7 +121,7 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                   onSearchExpressionChange={exp => updateWorkingForm({
                     ...workingForm, eligibilityRule: exp
                   })}
-                  searchExpression={(workingForm as Survey).eligibilityRule || ''}/>
+                  searchExpression={workingForm.eligibilityRule || ''}/>
               </div>}
           </div>
         </div>
