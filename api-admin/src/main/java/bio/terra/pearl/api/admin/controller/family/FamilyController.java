@@ -1,7 +1,8 @@
 package bio.terra.pearl.api.admin.controller.family;
 
 import bio.terra.pearl.api.admin.api.FamilyApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.family.FamilyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -36,10 +37,11 @@ public class FamilyController implements FamilyApi {
 
     Family family =
         familyExtService.find(
-            operator,
-            portalShortcode,
-            studyShortcode,
-            EnvironmentName.valueOfCaseInsensitive(environmentName),
+            PortalStudyEnvAuthContext.of(
+                operator,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(environmentName)),
             familyShortcode);
 
     return ResponseEntity.ok(family);

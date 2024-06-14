@@ -1,6 +1,9 @@
 import { KitRequest } from 'src/types/kits'
 import { ParticipantTask } from 'src/types/task'
-import { PreregistrationResponse, SurveyResponse } from 'src/types/forms'
+import {
+  PreregistrationResponse,
+  SurveyResponse
+} from 'src/types/forms'
 import { MailingAddress } from 'src/types/address'
 
 export type ParticipantNote = {
@@ -51,5 +54,22 @@ export type Profile = {
     birthDate?: number[],
     sexAtBirth?: string,
     preferredLanguage?: string,
+}
+
+type RelationshipType = 'PROXY' | 'FAMILY'
+
+export type EnrolleeRelation = {
+    id: string
+    relationshipType: RelationshipType,
+    targetEnrolleeId: string,
+    targetEnrollee: Enrollee
+    enrolleeId: string
+    enrollee: Enrollee
+    createdAt: number
+    lastUpdatedAt: number
+    beginDate: number
+    endDate: number
+    familyId: string
+    familyRelationship: string
 }
 

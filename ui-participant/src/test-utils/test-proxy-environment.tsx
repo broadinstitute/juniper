@@ -1,9 +1,9 @@
 import {
   Enrollee,
+  EnrolleeRelation,
   Portal
 } from '@juniper/ui-core'
 import {
-  EnrolleeRelation,
   ParticipantUser,
   PortalParticipantUser
 } from 'api/api'

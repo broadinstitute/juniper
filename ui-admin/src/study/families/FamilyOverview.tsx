@@ -13,6 +13,7 @@ import {
 } from 'components/InfoCard'
 import { Link } from 'react-router-dom'
 import { isEmpty } from 'lodash'
+import { FamilyMembersList } from 'study/families/FamilyMembersList'
 
 /**
  * Overall information about a family.
@@ -31,23 +32,27 @@ export const FamilyOverview = (
       </InfoCardHeader>
       <InfoCardBody>
         {family.proband && <InfoCardRow title={'Proband'}>
-          <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={family.proband}/>
+          <div className='row mt-2'>
+            <div className="col">
+              <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={family.proband}/>
+            </div>
+          </div>
         </InfoCardRow>}
         {family.members && <InfoCardRow title={'Members'}>
-          {family.members.map((enrollee, index) => <div className="w-100">
-            <EnrolleeLink
-              key={index}
-              enrollee={enrollee}
-              studyEnvContext={studyEnvContext}
-            />
-          </div>)}
+          <FamilyMembersList family={family} studyEnvContext={studyEnvContext}/>
         </InfoCardRow>}
       </InfoCardBody>
     </InfoCard>
   </div>
 }
 
-const EnrolleeLink = ({ studyEnvContext, enrollee }: { studyEnvContext: StudyEnvContextT, enrollee: Enrollee }) => {
+/**
+ *
+ */
+export const EnrolleeLink = ({ studyEnvContext, enrollee }: {
+  studyEnvContext: StudyEnvContextT,
+  enrollee: Enrollee
+}) => {
   const name = `${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`.trim()
   const path = `${studyEnvContext.currentEnvPath}/participants/${enrollee.shortcode}`
   if (isEmpty(name)) {
@@ -56,7 +61,7 @@ const EnrolleeLink = ({ studyEnvContext, enrollee }: { studyEnvContext: StudyEnv
   return <span>
     {name} <Link
       to={path}>
-      ({enrollee.shortcode})
+      <span className=" fst-italic">({enrollee.shortcode})</span>
     </Link>
   </span>
 }

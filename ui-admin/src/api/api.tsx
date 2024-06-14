@@ -2,6 +2,7 @@ import {
   AddressValidationResult,
   AlertTrigger,
   Enrollee,
+  EnrolleeRelation,
   EnvironmentName,
   Family,
   HubResponse,
@@ -97,21 +98,6 @@ export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
   latestKit?: KitRequest
-}
-
-type RelationshipType = 'PROXY'
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: RelationshipType,
-  targetEnrolleeId: string,
-  targetEnrollee: Enrollee
-  enrolleeId: string
-  enrollee: Enrollee
-  createdAt: number
-  lastUpdatedAt: number
-  beginDate: number
-  endDate: number
 }
 
 export type ProfileUpdateDto = {

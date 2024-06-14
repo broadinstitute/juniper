@@ -1,4 +1,7 @@
-import { Enrollee } from 'src/types/user'
+import {
+  Enrollee,
+  EnrolleeRelation
+} from 'src/types/user'
 
 export type Family = {
     id: string
@@ -9,5 +12,5 @@ export type Family = {
     studyEnvironmentId: string
     members?: Enrollee[]
     proband?: Enrollee
-    familyMembers?: Enrollee[]
+    relations?: EnrolleeRelation[]
 }
