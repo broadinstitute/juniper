@@ -33,7 +33,7 @@ public class AgeTerm implements SearchTerm {
 
         Period period = Period.between(context.getProfile().getBirthDate(), LocalDate.now());
         return new SearchValue(
-                Math.abs(period.getYears())
+                (double) Math.abs(period.getYears())
         );
     }
 
@@ -68,7 +68,7 @@ public class AgeTerm implements SearchTerm {
     public SearchValueTypeDefinition type() {
         return SearchValueTypeDefinition
                 .builder()
-                .type(SearchValue.SearchValueType.INTEGER)
+                .type(SearchValue.SearchValueType.NUMBER)
                 .build();
     }
 }

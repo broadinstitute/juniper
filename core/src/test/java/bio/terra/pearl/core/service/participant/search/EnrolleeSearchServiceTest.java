@@ -16,7 +16,6 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.service.search.terms.SearchValue;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -263,7 +262,7 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
                 Map.entry("enrollee.subject", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.consented", SearchValueTypeDefinition.builder().type(BOOLEAN).build()),
                 Map.entry("enrollee.shortcode", SearchValueTypeDefinition.builder().type(STRING).build()),
-                Map.entry("age", SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.INTEGER).build()),
+                Map.entry("age", SearchValueTypeDefinition.builder().type(NUMBER).build()),
                 Map.entry("latestKit.status", SearchValueTypeDefinition.builder().type(STRING).choices(kitStatusChoices).build())
         ).forEach((key, value) -> {
             Assertions.assertTrue(results.containsKey(key), "Key not found: " + key);

@@ -14,8 +14,7 @@ import java.time.LocalDate;
 @Getter
 public class SearchValue {
     private String stringValue = null;
-    private Integer integerValue = null;
-    private Double doubleValue = null;
+    private Double numberValue = null;
     private Instant instantValue = null;
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
@@ -27,14 +26,9 @@ public class SearchValue {
         this.searchValueType = SearchValueType.STRING;
     }
 
-    public SearchValue(Integer integerValue) {
-        this.integerValue = integerValue;
-        this.searchValueType = SearchValueType.INTEGER;
-    }
-
-    public SearchValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
-        this.searchValueType = SearchValueType.DOUBLE;
+    public SearchValue(Double numberValue) {
+        this.numberValue = numberValue;
+        this.searchValueType = SearchValueType.NUMBER;
     }
 
     public SearchValue(Instant instantValue) {
@@ -61,8 +55,7 @@ public class SearchValue {
             return switch (type) {
                 case STRING -> new SearchValue(objValue.toString());
                 case DATE -> new SearchValue((LocalDate) objValue);
-                case INTEGER -> new SearchValue((Integer) objValue);
-                case DOUBLE -> new SearchValue((Double) objValue);
+                case NUMBER -> new SearchValue((Double) objValue);
                 case BOOLEAN -> new SearchValue((Boolean) objValue);
                 default -> throw new IllegalArgumentException("Invalid field type: " + type);
             };
@@ -85,16 +78,8 @@ public class SearchValue {
     public boolean equals(SearchValue right) {
         return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue).equals(right.doubleValue);
-                yield this.integerValue.equals(right.integerValue);
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue.equals(Double.valueOf(right.integerValue));
-                }
-                yield this.doubleValue.equals(right.doubleValue);
+            case NUMBER -> {
+                yield this.numberValue.equals(right.numberValue);
             }
             case INSTANT -> this.instantValue.equals(right.instantValue);
             case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
@@ -104,16 +89,8 @@ public class SearchValue {
 
     public boolean greaterThan(SearchValue right) {
         return switch (this.searchValueType) {
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue) > right.doubleValue;
-                yield this.integerValue > right.integerValue;
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue > Double.valueOf(right.integerValue);
-                }
-                yield this.doubleValue > right.doubleValue;
+            case NUMBER -> {
+                yield this.numberValue > right.numberValue;
             }
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
             default -> false;
@@ -122,16 +99,8 @@ public class SearchValue {
 
     public boolean greaterThanOrEqualTo(SearchValue right) {
         return switch (this.searchValueType) {
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue) >= right.doubleValue;
-                yield this.integerValue >= right.integerValue;
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue >= Double.valueOf(right.integerValue);
-                }
-                yield this.doubleValue >= right.doubleValue;
+            case NUMBER -> {
+                yield this.numberValue >= right.numberValue;
             }
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);
             default -> false;
@@ -148,8 +117,7 @@ public class SearchValue {
 
     public enum SearchValueType {
         STRING,
-        INTEGER,
-        DOUBLE,
+        NUMBER,
         INSTANT,
         DATE,
         BOOLEAN,

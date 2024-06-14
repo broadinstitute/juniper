@@ -11,47 +11,47 @@ import java.util.Optional;
 
 public abstract class VarArgFunction implements SearchTerm {
 
-    private final List<SearchTerm> terms;
+    protected final List<SearchTerm> terms;
 
-    public VarArgFunction(SearchTerm term) {
+    public VarArgFunction(List<SearchTerm> terms, SearchValue.SearchValueType valueType) {
+        if (terms.stream().anyMatch(term -> term.type().getType() != valueType))
+            throw new IllegalArgumentException("All arguments must be of type " + valueType);
         this.terms = terms;
     }
 
     @Override
     public SearchValue extract(EnrolleeSearchContext enrollee) {
-        SearchValue value = term.extract(enrollee);
+        List<SearchValue> values = this.terms.stream()
+                .map(term -> term.extract(enrollee))
+                .toList();
 
-        if (value.getSearchValueType() == SearchValue.SearchValueType.STRING) {
-            return SearchValue.of(
-                    value.getStringValue().toLowerCase(),
-                    SearchValue.SearchValueType.STRING);
-        }
-
-        throw new IllegalArgumentException("Lower function can only be applied to string values");
+        return this.apply(values);
     }
+
+    protected abstract SearchValue apply(List<SearchValue> values);
 
     @Override
     public List<EnrolleeSearchQueryBuilder.JoinClause> requiredJoinClauses() {
-        return this.term.requiredJoinClauses();
+        return this.terms.stream().flatMap(term -> term.requiredJoinClauses().stream()).toList();
     }
 
     @Override
     public List<EnrolleeSearchQueryBuilder.SelectClause> requiredSelectClauses() {
-        return this.term.requiredSelectClauses();
+        return this.terms.stream().flatMap(term -> term.requiredSelectClauses().stream()).toList();
     }
 
     @Override
     public Optional<Condition> requiredConditions() {
-        return this.term.requiredConditions();
-    }
-
-    @Override
-    public String termClause() {
-        return "LOWER(" + term.termClause() + ")";
+        return this.terms
+                .stream()
+                .map(SearchTerm::requiredConditions)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .reduce(Condition::and);
     }
 
     @Override
     public List<Object> boundObjects() {
-        return this.term.boundObjects();
+        return this.terms.stream().flatMap(term -> term.boundObjects().stream()).toList();
     }
 }

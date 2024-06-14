@@ -160,6 +160,10 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         return dao.findByPortalEnvironmentId(portalEnvironmentId);
     }
 
+    public Optional<Portal> findByStudyEnvironmentId(UUID studyEnvId) {
+        return dao.findByStudyEnvironmentId(studyEnvId);
+    }
+
     public enum AllowedCascades implements CascadeProperty {
         PARTICIPANT_USER,
         STUDY,

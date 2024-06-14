@@ -10,13 +10,13 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
-public class LowerFunction implements SearchTerm {
+public class LenFunction implements SearchTerm {
 
     private final SearchTerm term;
 
-    public LowerFunction(SearchTerm term) {
+    public LenFunction(SearchTerm term) {
         if (!term.type().getType().equals(SearchValue.SearchValueType.STRING)) {
-            throw new IllegalArgumentException("Lower function can only be applied to string values");
+            throw new IllegalArgumentException("Len can only be applied to string values");
         }
         this.term = term;
     }
@@ -27,11 +27,11 @@ public class LowerFunction implements SearchTerm {
 
         if (value.getSearchValueType() == SearchValue.SearchValueType.STRING) {
             return SearchValue.of(
-                    value.getStringValue().toLowerCase(),
-                    SearchValue.SearchValueType.STRING);
+                    value.getStringValue().length(),
+                    SearchValue.SearchValueType.NUMBER);
         }
 
-        throw new IllegalArgumentException("Lower function can only be applied to string values");
+        throw new IllegalArgumentException("Trim can only be applied to string values");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LowerFunction implements SearchTerm {
 
     @Override
     public String termClause() {
-        return "LOWER(" + term.termClause() + ")";
+        return "TRIM(" + term.termClause() + ")";
     }
 
     @Override
@@ -61,6 +61,6 @@ public class LowerFunction implements SearchTerm {
 
     @Override
     public SearchValueTypeDefinition type() {
-        return SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.STRING).build();
+        return SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.NUMBER).build();
     }
 }

@@ -10,13 +10,13 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
-public class LowerFunction implements SearchTerm {
+public class IsEmptyFunction implements SearchTerm {
 
     private final SearchTerm term;
 
-    public LowerFunction(SearchTerm term) {
+    public IsEmptyFunction(SearchTerm term) {
         if (!term.type().getType().equals(SearchValue.SearchValueType.STRING)) {
-            throw new IllegalArgumentException("Lower function can only be applied to string values");
+            throw new IllegalArgumentException("IsEmpty can only be applied to string values");
         }
         this.term = term;
     }
@@ -27,8 +27,8 @@ public class LowerFunction implements SearchTerm {
 
         if (value.getSearchValueType() == SearchValue.SearchValueType.STRING) {
             return SearchValue.of(
-                    value.getStringValue().toLowerCase(),
-                    SearchValue.SearchValueType.STRING);
+                    value.getStringValue().trim().isEmpty(),
+                    SearchValue.SearchValueType.BOOLEAN);
         }
 
         throw new IllegalArgumentException("Lower function can only be applied to string values");
@@ -51,7 +51,8 @@ public class LowerFunction implements SearchTerm {
 
     @Override
     public String termClause() {
-        return "LOWER(" + term.termClause() + ")";
+        // there is no "is empty" function in sql, so I had to hack it together
+        return "NOT SIGN(LENGTH(TRIM(" + term.termClause() + ")))::int::bool";
     }
 
     @Override
@@ -61,6 +62,6 @@ public class LowerFunction implements SearchTerm {
 
     @Override
     public SearchValueTypeDefinition type() {
-        return SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.STRING).build();
+        return SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.BOOLEAN).build();
     }
 }

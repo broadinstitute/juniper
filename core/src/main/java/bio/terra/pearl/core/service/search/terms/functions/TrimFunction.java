@@ -10,13 +10,13 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Optional;
 
-public class LowerFunction implements SearchTerm {
+public class TrimFunction implements SearchTerm {
 
     private final SearchTerm term;
 
-    public LowerFunction(SearchTerm term) {
+    public TrimFunction(SearchTerm term) {
         if (!term.type().getType().equals(SearchValue.SearchValueType.STRING)) {
-            throw new IllegalArgumentException("Lower function can only be applied to string values");
+            throw new IllegalArgumentException("Trim can only be applied to string values");
         }
         this.term = term;
     }
@@ -27,11 +27,11 @@ public class LowerFunction implements SearchTerm {
 
         if (value.getSearchValueType() == SearchValue.SearchValueType.STRING) {
             return SearchValue.of(
-                    value.getStringValue().toLowerCase(),
+                    value.getStringValue().trim(),
                     SearchValue.SearchValueType.STRING);
         }
 
-        throw new IllegalArgumentException("Lower function can only be applied to string values");
+        throw new IllegalArgumentException("Trim can only be applied to string values");
     }
 
     @Override
@@ -51,7 +51,7 @@ public class LowerFunction implements SearchTerm {
 
     @Override
     public String termClause() {
-        return "LOWER(" + term.termClause() + ")";
+        return "TRIM(" + term.termClause() + ")";
     }
 
     @Override

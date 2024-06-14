@@ -565,7 +565,89 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         assertTrue(resultsNotSubject.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
         assertTrue(resultsNotSubjectOrConsented.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
+    }
 
+    @Test
+    @Transactional
+    public void testAddFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
+        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+                "add(1, 2) = 3"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testMultFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+                "mult(5, 5) = 25"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testTrimFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+                "trim('  hello  ') = 'hello'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testNestedFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+                "trim(lower('  HEY  ')) = 'hey'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testIsEmpty(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression shouldBeTrue = enrolleeSearchExpressionParser.parseRule(
+                "isEmpty('  ') = true"
+        );
+
+        EnrolleeSearchExpression shouldBeFalse = enrolleeSearchExpressionParser.parseRule(
+                "isEmpty(' HEY ') = true"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(shouldBeTrue, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+
+        results = enrolleeSearchExpressionDao.executeSearch(shouldBeFalse, enrollee.getStudyEnvironmentId());
+
+        // should false for everybody
+        assertEquals(0, results.size());
     }
 }

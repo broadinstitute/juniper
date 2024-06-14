@@ -45,11 +45,8 @@ public class UserInputTerm implements SearchTerm {
             case STRING -> {
                 return List.of(searchValue.getStringValue());
             }
-            case INTEGER -> {
-                return List.of(searchValue.getIntegerValue());
-            }
-            case DOUBLE -> {
-                return List.of(searchValue.getDoubleValue());
+            case NUMBER -> {
+                return List.of(searchValue.getNumberValue());
             }
             case BOOLEAN -> {
                 return List.of(searchValue.getBooleanValue());

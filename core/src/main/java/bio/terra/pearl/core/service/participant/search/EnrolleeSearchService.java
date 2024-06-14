@@ -13,12 +13,8 @@ import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
-import bio.terra.pearl.core.service.search.terms.LatestKitTerm;
-import bio.terra.pearl.core.service.search.terms.ProfileTerm;
-import bio.terra.pearl.core.service.search.terms.TaskTerm;
+import bio.terra.pearl.core.service.search.terms.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -28,7 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.INTEGER;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.NUMBER;
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
 
 @Service
@@ -41,7 +37,7 @@ public class EnrolleeSearchService {
     private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
     private final ObjectMapper objectMapper;
 
-    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService, PortalService portalService, SurveyService surveyService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, ObjectMapper objectMapper) {
+    public EnrolleeSearchService(EnrolleeSearchDao enrolleeSearchDao, EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, ParticipantTaskDao participantTaskDao, StudyEnvironmentService studyEnvironmentService, SurveyService surveyService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, ObjectMapper objectMapper) {
         this.enrolleeSearchDao = enrolleeSearchDao;
         this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
         this.participantTaskDao = participantTaskDao;
@@ -97,7 +93,7 @@ public class EnrolleeSearchService {
         // latest kit fields
         LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
         // age
-        fields.put("age", SearchValueTypeDefinition.builder().type(INTEGER).build());
+        fields.put("age", SearchValueTypeDefinition.builder().type(NUMBER).build());
         // answers
         List<Survey> surveys = surveyService.findByStudyEnvironmentIdWithContent(studyEnvId);
         for (Survey survey : surveys) {
@@ -109,7 +105,7 @@ public class EnrolleeSearchService {
                     .forEach(def -> {
                         fields.put(
                                 "answer." + def.getSurveyStableId() + "." + def.getQuestionStableId(),
-                                fromQuestionDefinition(def));
+                                convertQuestionDefinitionToSearchType(def));
                     });
         }
 
@@ -119,7 +115,7 @@ public class EnrolleeSearchService {
     public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
         try {
             return enrolleeSearchExpressionDao.executeSearch(
-                    enrolleeSearchExpressionParser.parseRule(expression, studyEnvId),
+                    enrolleeSearchExpressionParser.parseRule(expression),
                     studyEnvId
             );
         } catch (Exception e) {
@@ -128,7 +124,7 @@ public class EnrolleeSearchService {
 
     }
 
-    private SearchValueTypeDefinition fromQuestionDefinition(SurveyQuestionDefinition def) {
+    public SearchValueTypeDefinition convertQuestionDefinitionToSearchType(SurveyQuestionDefinition def) {
         SearchValueTypeDefinition.SearchValueTypeDefinitionBuilder<?, ?> builder = SearchValueTypeDefinition.builder();
 
         if (Objects.nonNull(def.getChoices()) && !def.getChoices().isEmpty()) {
@@ -155,8 +151,12 @@ public class EnrolleeSearchService {
 
         return builder
                 .allowOtherDescription(def.isAllowOtherDescription())
-                .type(STRING)
+                .type(getSearchValueType(def))
                 .allowMultiple(def.isAllowMultiple())
                 .build();
+    }
+
+    private SearchValue.SearchValueType getSearchValueType(SurveyQuestionDefinition def) {
+        return STRING;
     }
 }
