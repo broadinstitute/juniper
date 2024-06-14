@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -43,4 +44,9 @@ public interface SearchTerm {
      * Bound objects to be used in the SQL query. For example, the value of the term if user inputted.
      */
     List<Object> boundObjects();
+
+    /**
+     * The type of value this term represents.
+     */
+    SearchValueTypeDefinition type();
 }

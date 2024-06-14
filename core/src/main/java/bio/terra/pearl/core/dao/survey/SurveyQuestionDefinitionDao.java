@@ -2,10 +2,12 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import java.util.List;
-import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefinition> {
@@ -30,4 +32,19 @@ public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefin
         deleteByProperty("survey_id", surveyId);
     }
 
+
+    public Optional<SurveyQuestionDefinition> findByStableIds(String surveyStableId, String questionStableId) {
+        return jdbi.withHandle(handle -> handle.createQuery(
+                        """
+                                SELECT sqd.* FROM survey_question_definition sqd
+                                INNER JOIN survey s ON s.id = sqd.survey_id
+                                INNER JOIN study_environment_survey ses ON s.id = ses.survey_id
+                                AND s.stable_id = :surveyStableId
+                                AND sqd.question_stable_id = :questionStableId
+                                """)
+                .bind("surveyStableId", surveyStableId)
+                .bind("questionStableId", questionStableId)
+                .mapToBean(SurveyQuestionDefinition.class)
+                .findFirst());
+    }
 }

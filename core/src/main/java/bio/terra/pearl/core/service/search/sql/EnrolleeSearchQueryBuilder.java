@@ -4,13 +4,10 @@ import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Operator;
 import org.jooq.Record;
-import org.jooq.SelectJoinStep;
-import org.jooq.SelectQuery;
+import org.jooq.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,8 @@ import static org.jooq.impl.DSL.field;
  * the expression should be passed to the {@link bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao}.
  * where the query building will occur.
  */
+@Getter
+@Setter
 public class EnrolleeSearchQueryBuilder {
     private final List<SelectClause> selectClauseList = new ArrayList<>();
     private final List<JoinClause> joinClauseList = new ArrayList<>();

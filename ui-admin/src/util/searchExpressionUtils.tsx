@@ -2,6 +2,7 @@ import {
   BooleanOperator,
   isBooleanSearchExpression,
   isComparisonSearchFacet,
+  isFunctionTerm,
   isSearchVariable,
   SearchExpression,
   Term
@@ -68,6 +69,9 @@ const termToString = (term: Term): string | null => {
       return term.model
     }
     return `${term.model}.${term.field.join('.')}`
+  }
+  if (isFunctionTerm(term)) {
+    throw new Error('Function terms are not supported')
   }
   return term ? term.toString() : null
 }

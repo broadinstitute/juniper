@@ -1,6 +1,8 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
@@ -9,6 +11,7 @@ import org.jooq.Condition;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.jooq.impl.DSL.condition;
 
@@ -20,14 +23,20 @@ public class AnswerTerm implements SearchTerm {
     private final String questionStableId;
     private final String surveyStableId;
     private final AnswerDao answerDao;
+    private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
 
-    public AnswerTerm(AnswerDao answerDao, String surveyStableId, String questionStableId) {
+    public AnswerTerm(AnswerDao answerDao,
+                      SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
+                      String surveyStableId,
+                      String questionStableId) {
         if (!isAlphaNumeric(questionStableId) || !isAlphaNumeric(surveyStableId)) {
             throw new IllegalArgumentException("Invalid stable ids: must be alphanumeric and underscore only");
         }
 
         this.questionStableId = questionStableId;
         this.surveyStableId = surveyStableId;
+
+        this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.answerDao = answerDao;
     }
 
@@ -86,5 +95,12 @@ public class AnswerTerm implements SearchTerm {
 
     private String alias() {
         return "answer_" + questionStableId;
+    }
+
+    @Override
+    public SearchValueTypeDefinition type() {
+        return surveyQuestionDefinitionDao
+                .findByStableIds(surveyStableId, questionStableId)
+                .orElse(SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.STRING).build());
     }
 }

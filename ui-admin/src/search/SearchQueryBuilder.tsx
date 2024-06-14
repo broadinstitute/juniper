@@ -27,6 +27,7 @@ import LoadingSpinner from '../util/LoadingSpinner'
 import {
   debounce,
   isEmpty,
+  isNil,
   keys
 } from 'lodash'
 import { parseExpression } from 'util/searchExpressionParser'
@@ -67,6 +68,19 @@ export const SearchQueryBuilder = ({
     }
   }, [searchExpression])
 
+  const canUseBasicMode = useMemo(() => {
+    try {
+      if (isEmpty(searchExpression)) {
+        return true
+      }
+      toReactQueryBuilderState(parseExpression(searchExpression))
+      return true
+    } catch (_) {
+      setAdvancedMode(true)
+      return false
+    }
+  }, [searchExpression])
+
 
   const [searchResults, setSearchResults] = useState<EnrolleeSearchExpressionResult[]>([])
 
@@ -96,12 +110,18 @@ export const SearchQueryBuilder = ({
       </div>
       <button
         className="btn btn-link"
+        disabled={isLoadingSearchResults || !canUseBasicMode}
         onClick={() => setAdvancedMode(!advancedMode)}>
         {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
       </button>
     </div>
     {parseSearchExpError && <div className="alert alert-danger mb-2">
       {parseSearchExpError.message}
+    </div>}
+    {isNil(parseSearchExpError) && !canUseBasicMode && <div>
+      <div className="alert alert-warning mb-2">
+            The current search expression cannot be represented in the basic query builder.
+      </div>
     </div>}
     <div className="mb-2">
       {

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -70,5 +71,11 @@ public class UserInputTerm implements SearchTerm {
         return "?";
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return SearchValueTypeDefinition.builder()
+                .type(searchValue.getSearchValueType())
+                .build();
+    }
 
 }

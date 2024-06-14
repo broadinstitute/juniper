@@ -527,4 +527,45 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         assertEquals(0, resultsCreated.size());
 
     }
+
+    @Test
+    @Transactional
+    public void testLowerFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression lowerExp = enrolleeSearchExpressionParser.parseRule(
+                "lower({enrollee.shortcode}) = '" + enrollee.getShortcode().toLowerCase() + "'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(lowerExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testNot(TestInfo info) {
+        EnrolleeFactory.EnrolleeAndProxy bundle = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy@test.com");
+
+        EnrolleeSearchExpression notSubjectExp = enrolleeSearchExpressionParser.parseRule(
+                "!{enrollee.subject} = true"
+        );
+
+
+        // test if it works with parents
+        EnrolleeSearchExpression notSubjectOrConsentedExp = enrolleeSearchExpressionParser.parseRule(
+                "!({enrollee.subject} = true or {enrollee.consented} = true)"
+        );
+
+        List<EnrolleeSearchExpressionResult> resultsNotSubject = enrolleeSearchExpressionDao.executeSearch(notSubjectExp, bundle.governedEnrollee().getStudyEnvironmentId());
+        List<EnrolleeSearchExpressionResult> resultsNotSubjectOrConsented = enrolleeSearchExpressionDao.executeSearch(notSubjectOrConsentedExp, bundle.governedEnrollee().getStudyEnvironmentId());
+
+        assertEquals(1, resultsNotSubject.size());
+        assertEquals(1, resultsNotSubjectOrConsented.size());
+
+        assertTrue(resultsNotSubject.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
+        assertTrue(resultsNotSubjectOrConsented.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
+
+
+    }
 }

@@ -119,7 +119,7 @@ public class EnrolleeSearchService {
     public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
         try {
             return enrolleeSearchExpressionDao.executeSearch(
-                    enrolleeSearchExpressionParser.parseRule(expression),
+                    enrolleeSearchExpressionParser.parseRule(expression, studyEnvId),
                     studyEnvId
             );
         } catch (Exception e) {

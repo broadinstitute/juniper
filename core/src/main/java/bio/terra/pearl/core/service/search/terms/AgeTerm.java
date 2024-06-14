@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -63,4 +64,11 @@ public class AgeTerm implements SearchTerm {
         return List.of();
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return SearchValueTypeDefinition
+                .builder()
+                .type(SearchValue.SearchValueType.INTEGER)
+                .build();
+    }
 }

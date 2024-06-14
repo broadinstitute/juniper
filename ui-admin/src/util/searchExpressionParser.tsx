@@ -71,7 +71,7 @@ export const isComparisonSearchFacet = (
   return (expression as ComparisonSearchFacet).comparisonOperator !== undefined
 }
 
-export type Term = SearchVariable | string | number | boolean | null
+export type Term = SearchVariable | FunctionTerm | string | number | boolean | null
 
 export type SearchVariable = {
   model: string
@@ -83,6 +83,18 @@ export type SearchVariable = {
  */
 export const isSearchVariable = (term: Term): term is SearchVariable => {
   return (term as SearchVariable).model !== undefined
+}
+
+export type FunctionTerm = {
+  name: string
+  args: Term[]
+}
+
+/**
+ * Tests if a term is a FunctionTerm.
+ */
+export const isFunctionTerm = (term: Term): term is FunctionTerm => {
+  return (term as FunctionTerm).name !== undefined
 }
 
 // Helpers for parsing the ANTLR parse tree
@@ -125,6 +137,13 @@ const _ctxToComparisonOperator = (ctx: ExprContext): ComparisonOperator => {
 }
 
 const _parseTerm = (term: TermContext): Term => {
+  if (term.FUNCTION_NAME() != null) {
+    return {
+      name: term.FUNCTION_NAME().getText(),
+      args: term.term_list().map(_parseTerm)
+    }
+  }
+
   if (term.VARIABLE() != null) {
     return _parseVariable(term.VARIABLE().getText())
   }

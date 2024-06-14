@@ -10,17 +10,18 @@ import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
-import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
-import bio.terra.pearl.core.service.search.expressions.SearchOperators;
+import bio.terra.pearl.core.service.search.expressions.*;
 import bio.terra.pearl.core.service.search.terms.*;
+import bio.terra.pearl.core.service.search.terms.functions.LowerFunction;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Parses a rule expression into a {@link EnrolleeSearchExpression}. The rule expression is a string
@@ -45,7 +46,7 @@ public class EnrolleeSearchExpressionParser {
     }
 
 
-    public EnrolleeSearchExpression parseRule(String rule) throws RuleParsingException {
+    public EnrolleeSearchExpression parseRule(String rule, UUID studyEnvId) throws RuleParsingException {
         if (StringUtils.isBlank(rule)) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
@@ -60,24 +61,31 @@ public class EnrolleeSearchExpressionParser {
             parser.addErrorListener(new RuleParsingErrorListener());
             CohortRuleParser.ExprContext exp = parser.expr();
 
-            return parseExpression(exp);
+            return parseExpression(exp, studyEnvId);
         } catch (ParseCancellationException e) {
             throw new RuleParsingException("Error parsing rule: " + e.getMessage());
         }
 
     }
 
-    private EnrolleeSearchExpression parseExpression(CohortRuleParser.ExprContext ctx) {
+    private EnrolleeSearchExpression parseExpression(CohortRuleParser.ExprContext ctx, UUID studyEnvId) {
+        if (ctx.NOT() != null) {
+            if (!ctx.expr().isEmpty()) {
+                return new NotSearchExpression(parseExpression(ctx.expr(0), studyEnvId));
+            } else {
+                return new DefaultSearchExpression(enrolleeDao, profileDao);
+            }
+        }
         if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
             if (!ctx.expr().isEmpty()) {
-                return parseExpression(ctx.expr(0));
+                return parseExpression(ctx.expr(0), studyEnvId);
             } else {
                 return new DefaultSearchExpression(enrolleeDao, profileDao);
             }
         }
         if (ctx.expr().size() > 1) {
-            EnrolleeSearchExpression left = parseExpression(ctx.expr(0));
-            EnrolleeSearchExpression right = parseExpression(ctx.expr(1));
+            EnrolleeSearchExpression left = parseExpression(ctx.expr(0), studyEnvId);
+            EnrolleeSearchExpression right = parseExpression(ctx.expr(1), studyEnvId);
             return new BooleanSearchExpression(left, right, expToBooleanOperator(ctx));
         }
         return new EnrolleeTermComparisonFacet(
@@ -112,6 +120,9 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private SearchTerm parseTerm(CohortRuleParser.TermContext ctx) {
+        if (ctx.FUNCTION_NAME() != null) {
+            return parseFunctionTerm(ctx);
+        }
         if (ctx.BOOLEAN() != null) {
             return new UserInputTerm(new SearchValue(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
         } else if (ctx.STRING() != null) {
@@ -124,6 +135,21 @@ public class EnrolleeSearchExpressionParser {
         } else {
             throw new IllegalArgumentException("Unknown term type");
         }
+    }
+
+    private SearchTerm parseFunctionTerm(CohortRuleParser.TermContext ctx) {
+        String functionName = ctx.FUNCTION_NAME().getText();
+        List<CohortRuleParser.TermContext> terms = ctx.term();
+
+        if (functionName.equals("lower")) {
+            if (terms.size() != 1) {
+                throw new IllegalArgumentException("Lower function requires one argument");
+            }
+
+            return new LowerFunction(parseTerm(terms.get(0)));
+        }
+
+        throw new IllegalArgumentException("Unknown function " + functionName);
     }
 
     private SearchTerm parseVariableTerm(String variable) {
