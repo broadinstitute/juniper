@@ -5,11 +5,13 @@ import HtmlPageEditView from './HtmlPageEditView'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
 import { setupRouterTest } from '@juniper/ui-core'
+import { mockPortalEnvContext } from '../../test-utils/mocking-utils'
 
 test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={true} updatePage={jest.fn()} setSiteHasInvalidSection={jest.fn()}
+      portalEnvContext={mockPortalEnvContext('sandbox')}
       siteHasInvalidSection={false} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
   expect(screen.getAllByLabelText('Insert a blank section')[0]).toHaveAttribute('aria-disabled', 'true')
@@ -21,7 +23,7 @@ test('Insert Section button calls updatePage with a new blank HERO_WITH_IMAGE se
   const mockUpdatePageFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={false} updatePage={mockUpdatePageFn}
-      setSiteHasInvalidSection={jest.fn()}
+      setSiteHasInvalidSection={jest.fn()} portalEnvContext={mockPortalEnvContext('sandbox')}
       siteHasInvalidSection={false} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
 
@@ -44,6 +46,7 @@ test('invalid JSON disables Insert Section button', async () => {
   const mockPage = mockHtmlPage()
   const { RoutedComponent } = setupRouterTest(
     <HtmlPageEditView htmlPage={mockPage} readOnly={false} updatePage={jest.fn()} setSiteHasInvalidSection={jest.fn()}
+      portalEnvContext={mockPortalEnvContext('sandbox')}
       siteHasInvalidSection={true} footerSection={undefined} updateFooter={jest.fn()}/>)
   render(RoutedComponent)
   const sectionButtons= await screen.findAllByLabelText('Insert a blank section')

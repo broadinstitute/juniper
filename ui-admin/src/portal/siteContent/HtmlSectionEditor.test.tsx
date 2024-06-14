@@ -11,7 +11,7 @@ test('readOnly disables section type selection', async () => {
   const mockSection = mockPage.sections[0]
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor updateSection={jest.fn} section={mockSection} readOnly={true} allowTypeChange={true}
-      setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
+      setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false} siteMediaList={[]}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeDisabled()
 })
@@ -21,7 +21,7 @@ test('section type selection is enabled if the section type is unsaved', async (
   const mockSection = mockPage.sections[0]
   mockSection.id = ''
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={true}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={true} siteMediaList={[]}
       updateSection={jest.fn} setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
   expect(screen.getByLabelText('Select section type')).toBeEnabled()
@@ -35,7 +35,7 @@ test('switching section types sets the section config to the correct template', 
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={true} updateSection={mockUpdateSectionFn}
-      setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
+      setSiteHasInvalidSection={jest.fn()} siteMediaList={[]} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -58,8 +58,9 @@ test('DeleteSection button removes the section', async () => {
   const mockSection = mockPage.sections[0]
   const mockDeleteFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false} updateSection={jest.fn()}
-      removeSection={mockDeleteFn} setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
+    <HtmlSectionEditor section={mockSection} readOnly={false} siteMediaList={[]} allowTypeChange={false}
+      updateSection={jest.fn()} removeSection={mockDeleteFn} setSiteHasInvalidSection={jest.fn()}
+      siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 
   //Act
@@ -83,6 +84,7 @@ test('MoveSectionUp button allows reordering', async () => {
   const mockMoveSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false} updateSection={jest.fn}
+      siteMediaList={[]}
       moveSection={mockMoveSectionFn} setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 
@@ -107,6 +109,7 @@ test('MoveSectionDown button allows reordering', async () => {
   const mockMoveSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} updateSection={jest.fn} allowTypeChange={false}
+      siteMediaList={[]}
       moveSection={mockMoveSectionFn} setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 
@@ -125,6 +128,7 @@ test('invalid JSON shows an error around the textbox', async () => {
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false}
+      siteMediaList={[]}
       updateSection={mockUpdateSectionFn} setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 
@@ -144,7 +148,7 @@ test('invalid JSON disables moveSection buttons', async () => {
   const mockUpdateSectionFn = jest.fn()
   const { RoutedComponent } = setupRouterTest(
     <HtmlSectionEditor section={mockSection} readOnly={false} moveSection={jest.fn()} removeSection={jest.fn()}
-      allowTypeChange={false} updateSection={mockUpdateSectionFn}
+      allowTypeChange={false} updateSection={mockUpdateSectionFn} siteMediaList={[]}
       setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={true}/>)
   render(RoutedComponent)
 
@@ -166,7 +170,8 @@ test('RAW_HTML sections should load content from the rawContent field', async ()
   }
 
   const { RoutedComponent } = setupRouterTest(
-    <HtmlSectionEditor section={mockSection} readOnly={false}  allowTypeChange={false} updateSection={jest.fn()}
+    <HtmlSectionEditor section={mockSection} readOnly={false} allowTypeChange={false} updateSection={jest.fn()}
+      siteMediaList={[]}
       setSiteHasInvalidSection={jest.fn()} siteHasInvalidSection={false}/>)
   render(RoutedComponent)
 

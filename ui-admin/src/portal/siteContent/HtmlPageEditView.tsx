@@ -1,12 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { HtmlPage, HtmlSection, HtmlSectionView, SectionType } from '@juniper/ui-core'
 import HtmlSectionEditor from './HtmlSectionEditor'
 import { Button } from 'components/forms/Button'
 import { sectionTemplates } from './sectionTemplates'
+import Api, { SiteMediaMetadata } from '../../api/api'
+import { useLoadingEffect } from '../../api/api-utils'
+import { filterPriorVersions } from '../media/SiteMediaList'
+import { PortalEnvContext } from '../PortalRouter'
 
 type HtmlPageViewProps = {
+  portalEnvContext: PortalEnvContext
   htmlPage: HtmlPage
   readOnly: boolean
   siteHasInvalidSection: boolean
@@ -14,12 +19,22 @@ type HtmlPageViewProps = {
   footerSection?: HtmlSection
   updateFooter: (section?: HtmlSection) => void
   updatePage: (page: HtmlPage) => void
+  useJsonEditor?: boolean
 }
 
 /** Enables editing of a given page, showing the config and a preview for each section */
 const HtmlPageView = ({
-  htmlPage, readOnly, siteHasInvalidSection, setSiteHasInvalidSection, footerSection, updateFooter, updatePage
+  portalEnvContext, htmlPage, readOnly, siteHasInvalidSection, setSiteHasInvalidSection, footerSection,
+  updateFooter, updatePage, useJsonEditor = true
 }: HtmlPageViewProps) => {
+  const [mediaList, setMediaList] = useState<SiteMediaMetadata[]>([])
+
+  const { isLoading, reload } = useLoadingEffect(async () => {
+    const result = await Api.getPortalMedia(portalEnvContext.portal.shortcode)
+    /** Only show the most recent version of a given image in the list */
+    setMediaList(filterPriorVersions(result))
+  }, [portalEnvContext.portal.shortcode, portalEnvContext.portalEnv.environmentName])
+
   const DEFAULT_SECTION_TYPE = {
     id: '',
     sectionType: 'HERO_WITH_IMAGE' as SectionType,
@@ -102,7 +117,8 @@ const HtmlPageView = ({
         <div className="col-md-4 px-2 pb-2">
           <HtmlSectionEditor updateSection={updateSection(index)} setSiteHasInvalidSection={setSiteHasInvalidSection}
             moveSection={moveSection(index)} removeSection={removeSection(index)} allowTypeChange={section.id === ''}
-            siteHasInvalidSection={siteHasInvalidSection} section={section} readOnly={readOnly}/>
+            siteHasInvalidSection={siteHasInvalidSection} section={section} readOnly={readOnly}
+            useJsonEditor={useJsonEditor} siteMediaList={mediaList}/>
         </div>
         <div className="col-md-8">
           <HtmlSectionView section={section}/>
@@ -116,7 +132,7 @@ const HtmlPageView = ({
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={() => updateFooter(undefined)}
           siteHasInvalidSection={siteHasInvalidSection} section={footerSection}
-          updateSection={updateFooter} readOnly={readOnly}/>
+          updateSection={updateFooter} readOnly={readOnly} siteMediaList={mediaList}/>
       </div>
       <div className="col-md-8">
         <HtmlSectionView section={footerSection}/>

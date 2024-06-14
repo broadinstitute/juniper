@@ -9,11 +9,14 @@ import { Button, IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
-import { ImageConfig } from '@juniper/ui-core/build/participant/landing/ConfiguredMedia'
 import { TextInput } from '../../components/forms/TextInput'
 import { Textarea } from '../../components/forms/Textarea'
 import { Checkbox } from '../../components/forms/Checkbox'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { getMediaUrl, SiteMediaMetadata } from '../../api/api'
+import useReactSingleSelect from '../../util/react-select-utils'
+import { ImageConfig } from '@juniper/ui-core/build/participant/landing/ConfiguredMedia'
+
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
@@ -36,18 +39,22 @@ const HtmlSectionEditor = ({
   removeSection,
   moveSection,
   section,
+  siteMediaList,
   siteHasInvalidSection,
   setSiteHasInvalidSection,
   allowTypeChange,
+  useJsonEditor = true,
   readOnly
 }: {
   updateSection: (section: HtmlSection) => void
   removeSection?: () => void
   moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
+  siteMediaList: SiteMediaMetadata[]
   siteHasInvalidSection: boolean
   setSiteHasInvalidSection: (invalid: boolean) => void
   allowTypeChange: boolean
+  useJsonEditor?: boolean
   readOnly: boolean
 }) => {
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
@@ -87,6 +94,8 @@ const HtmlSectionEditor = ({
       }
     }
   }
+
+  const SectionEditorComponent = SectionEditorComponents[section.sectionType]
 
   return <>
     <div className="d-flex flex-grow-1 mb-1">
@@ -134,25 +143,27 @@ const HtmlSectionEditor = ({
         onClick={() => removeSection()}
       /> }
     </div>
-    {section.sectionType === 'STEP_OVERVIEW' ?
-      <StepOverviewSectionEditor section={section} updateSection={updateSection}/>
-      : section.sectionType === 'SOCIAL_MEDIA' ?
-        <SocialMediaSectionEditor section={section} updateSection={updateSection}/>
-        : section.sectionType === 'FAQ' ?
-          <FrequentlyAskedQuestionsSectionEditor section={section} updateSection={updateSection}/>
-          : <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-            disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
-            className={classNames('w-100 flex-grow-1 form-control font-monospace',
-              { 'is-invalid': sectionContainsErrors })}
-            onChange={e => {
-              handleEditorChange(e.target.value)
-            }}/>
-    }
+
+    {SectionEditorComponent && !useJsonEditor ? (
+      <SectionEditorComponent siteMediaList={siteMediaList} section={section} updateSection={updateSection} />
+    ) : (
+      <textarea
+        value={editorValue}
+        style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
+        disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
+        className={classNames('w-100 flex-grow-1 form-control font-monospace', {
+          'is-invalid': sectionContainsErrors
+        })}
+        onChange={e => {
+          handleEditorChange(e.target.value)
+        }}
+      />
+    )}
   </>
 }
 
-const StepOverviewSectionEditor = ({ section, updateSection }: {
-  section: HtmlSection, updateSection: (section: HtmlSection) => void
+const StepOverviewSectionEditor = ({ section, updateSection, siteMediaList }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void, siteMediaList: SiteMediaMetadata[]
 }) => {
   const config = validateStepOverviewTemplateConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
   const stepContentId = useId()
@@ -182,7 +193,7 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
               </span>
             </button>
           </div>
-          <div className="collapse show rounded-3 mb-2" id={stepContentId}
+          <div className="collapse hide rounded-3 mb-2" id={stepContentId}
             style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
             <Checkbox className="mb-2" label={'Show Step Numbers'}
               checked={config.showStepNumbers == undefined ? true : config.showStepNumbers} onChange={value => {
@@ -203,13 +214,13 @@ const StepOverviewSectionEditor = ({ section, updateSection }: {
                       }}/></div>
                   </div>
                   <div>
-                    <TextInput label="Image" value={(step.image as ImageConfig).cleanFileName}
-                      onChange={value => {
-                        const parsed = JSON.parse(section.sectionConfig!)
-                        const newSteps = [...config.steps]
-                        newSteps[i].image = { cleanFileName: value, version: 1 } //todo hardcoded version
-                        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
-                      }}/>
+                    <label className='form-label fw-semibold m-0'>Image</label>
+                    <ImageSelector imageList={siteMediaList} image={step.image as ImageConfig} onChange={image => {
+                      const parsed = JSON.parse(section.sectionConfig!)
+                      const newSteps = [...config.steps]
+                      newSteps[i].image = image
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                    }}/>
                     <TextInput label="Duration" value={step.duration} onChange={value => {
                       const parsed = JSON.parse(section.sectionConfig!)
                       const newSteps = [...config.steps]
@@ -246,7 +257,6 @@ const StyleOptions = ({ section, updateSection }: {
   console.log(config)
   const contentId = useId()
   const targetSelector = `#${contentId}`
-  // @ts-ignore
   return (
     <div>
       <div className="pb-1">
@@ -264,7 +274,7 @@ const StyleOptions = ({ section, updateSection }: {
           </span>
         </button>
       </div>
-      <div className="collapse show rounded-3 mb-2" id={contentId}
+      <div className="collapse hide rounded-3 mb-2" id={contentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
         <TextInput label="Background Color" value={config.background as string}
           placeholder={'Enter a value to override default'}
@@ -276,6 +286,11 @@ const StyleOptions = ({ section, updateSection }: {
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, color: value }) })
           }}/>
+        {/*<Textarea label={'Custom CSS'} value={JSON.stringify(customCss, null, 2)}*/}
+        {/*  placeholder={'Enter custom CSS to override default'}*/}
+        {/*  onChange={value => {*/}
+        {/*    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, ...JSON.parse(value) }) })*/}
+        {/*  }}/>*/}
       </div>
     </div>
   )
@@ -285,64 +300,94 @@ const FrequentlyAskedQuestionsSectionEditor = ({ section, updateSection }: {
   section: HtmlSection, updateSection: (section: HtmlSection) => void
 }) => {
   const config = validateFrequentlyAskedQuestionsConfig(JSON.parse(section.sectionConfig || '{}') as SectionConfig)
+  const faqContentId = useId()
+  const faqTargetSelector = `#${faqContentId}`
   return (
-    <div className="d-flex row g-0">
-      <TextInput className="mb-2" label="Title" value={config.title} onChange={value => {
-        const parsed = JSON.parse(section.sectionConfig || '{}')
-        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
-      }}/>
-      <Textarea className="mb-2" label="Blurb" value={config.blurb} onChange={value => {
-        const parsed = JSON.parse(section.sectionConfig || '{}')
-        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
-      }}/>
-      {config.questions.map((question, i) => {
-        return <div key={i} style={{ backgroundColor: '#eee', padding: '0.75rem' }} className="rounded-3 mb-2">
-          <div role="button" className="d-flex justify-content-end">
-            <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-              const parsed = JSON.parse(section.sectionConfig!)
-              const newQuestions = [...config.questions]
-              newQuestions.splice(i, 1)
-              updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
-            }}/></div>
-          <TextInput label="Question" value={question.question} onChange={value => {
-            const parsed = JSON.parse(section.sectionConfig!)
-            const newQuestions = [...config.questions]
-            newQuestions[i].question = value
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
-          }}/>
-          <Textarea rows={2} label="Answer" value={question.answer} onChange={value => {
-            const parsed = JSON.parse(section.sectionConfig!)
-            const newQuestions = [...config.questions]
-            newQuestions[i].answer = value
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
-          }}/>
+    <div>
+      <div className="d-flex row g-0">
+        <TextInput className="mb-2" label="Title" value={config.title} onChange={value => {
+          const parsed = JSON.parse(section.sectionConfig || '{}')
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+        }}/>
+        <Textarea className="mb-2" label="Blurb" value={config.blurb} onChange={value => {
+          const parsed = JSON.parse(section.sectionConfig || '{}')
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
+        }}/>
+        <div className="pb-1">
+          <button
+            aria-controls={faqTargetSelector}
+            aria-expanded="true"
+            className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
+            data-bs-target={faqTargetSelector}
+            data-bs-toggle="collapse"
+          >
+            <span className={'form-label fw-semibold mb-0'}>Questions</span>
+            <span className="text-center px-2">
+              <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+              <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+            </span>
+          </button>
         </div>
-      })}
-      <Button onClick={() => {
-        const parsed = JSON.parse(section.sectionConfig!)
-        const newQuestions = [...config.questions]
-        newQuestions.push({ question: '', answer: '' })
-        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
-      }}><FontAwesomeIcon icon={faPlus}/> Add Question</Button>
+        <div className="collapse hide rounded-3 mb-2" id={faqContentId}
+          style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
+          {config.questions.map((question, i) => {
+            return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="h5">Question {i + 1}</span>
+                <div role="button" className="d-flex justify-content-end">
+                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
+                    const parsed = JSON.parse(section.sectionConfig!)
+                    const newQuestions = [...config.questions]
+                    newQuestions.splice(i, 1)
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+                  }}/>
+                </div>
+              </div>
+              <TextInput label="Question" value={question.question} onChange={value => {
+                const parsed = JSON.parse(section.sectionConfig!)
+                const newQuestions = [...config.questions]
+                newQuestions[i].question = value
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+              }}/>
+              <Textarea rows={3} label="Answer" value={question.answer} onChange={value => {
+                const parsed = JSON.parse(section.sectionConfig!)
+                const newQuestions = [...config.questions]
+                newQuestions[i].answer = value
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+              }}/>
+            </div>
+          })}
+          <Button onClick={() => {
+            const parsed = JSON.parse(section.sectionConfig!)
+            const newQuestions = [...config.questions]
+            newQuestions.push({ question: '', answer: '' })
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, questions: newQuestions }) })
+          }}><FontAwesomeIcon icon={faPlus}/> Add Question</Button>
+        </div>
+      </div>
     </div>
   )
 }
 
 const SocialMediaSectionEditor = ({ section, updateSection }: {
-    section: HtmlSection, updateSection: (section: HtmlSection) => void
-    }) => {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
   return (
     <div>
       {socialMediaSites.map(site => {
         const handleKey = `${site.label.toLowerCase()}Handle`
-        const handle = config[handleKey]
         return (
-          <div key={site.label} className="d-flex justify-content-between align-items-center">
-            <span>{site.label}</span>
-            <TextInput value={'handle'} onChange={value => {
-              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, [handleKey]: value }) })
-            }}/>
+          <div className="d-flex align-items-center mb-2">
+            <div className="col-3">
+              <label className='fw-bold'>{site.label}</label>
+            </div>
+            <div className="col d-flex align-items-right col">
+              <TextInput value={config[handleKey] as string} placeholder={`Enter ${site.label} handle. ` +
+                  'Leave blank to hide'} onChange={value => {
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, [handleKey]: value }) })
+              }}/>
+            </div>
           </div>
         )
       })}
@@ -350,17 +395,137 @@ const SocialMediaSectionEditor = ({ section, updateSection }: {
   )
 }
 
-const ImageSelector = ({ image, onChange }: { image: ImageConfig, onChange: (image: ImageConfig) => void }) => {
+// const ButtonOptions = ({ section, updateSection }: {
+//   section: HtmlSection, updateSection: (section: HtmlSection) => void
+// }) => {
+//   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+//   const buttonTypes = {
+//     internalLink: 'Internal Link',
+//     join: 'Join Study',
+//     mailingList: 'Join Mailing List'
+//   }
+//   return (
+//     <div>
+//       <Select options={Object.entries(buttonTypes).map(([value, label]) => ({ value, label }))}
+//         value={config.buttonType} onChange={opt => {
+//           updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttonType: opt?.value }) })
+//         }}/>
+//       <TextInput label="Button Text" value={config.buttonText} onChange={value => {
+//         updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttonText: value }) })
+//       }}/>
+//       <TextInput label="Button Link" value={config.buttonLink} onChange={value => {
+//         updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttonLink: value }) })
+//       }}/>
+//     </div>
+//   )
+// }
+
+const ImageSelector = ({ imageList, image, onChange }: {
+  imageList: SiteMediaMetadata[], image: ImageConfig, onChange: (image: SiteMediaMetadata) => void
+}) => {
+  const initial = imageList.find(media => media.cleanFileName === image.cleanFileName)
+  const [, setSelectedImage] = useState<SiteMediaMetadata | undefined>(initial)
+
+  const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => <div>
+    {image.cleanFileName} <img style={{ maxHeight: '1.5em' }}
+      src={getMediaUrl(portalShortcode, image!.cleanFileName, image!.version)}/>
+  </div>
+
+  const {
+    onChange: imageOnChange, options, selectedOption, selectInputId
+  } = useReactSingleSelect(
+    imageList, //TODO hardcoded portalShortcode
+    (media: SiteMediaMetadata) => ({ label: imageOptionLabel(media, 'demo'), value: media }),
+    setSelectedImage,
+    initial
+  )
+
   return (
     <div>
-      <TextInput label="Image" value={image.cleanFileName} onChange={value => {
-        onChange({ ...image, cleanFileName: value })
-      }}/>
-      <TextInput label="Version" value={image.version} onChange={value => {
-        onChange({ ...image, version: parseInt(value) })
-      }}/>
+      <Select
+        placeholder={'Select an image'}
+        isSearchable={false}
+        inputId={selectInputId}
+        options={options}
+        value={selectedOption}
+        onChange={opt => {
+          if (opt != undefined) {
+            imageOnChange(opt)
+            onChange(opt.value)
+          }
+        }}
+      />
+    </div>
+  )
+}
+
+const DynamicSectionEditor = ({ section, updateSection }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const sectionType = section.sectionType
+  const sectionTypeConfig = sectionTemplates[sectionType]
+  const hasTitle = Object.hasOwnProperty.call(sectionTypeConfig, 'title')
+  const hasBlurb = Object.hasOwnProperty.call(sectionTypeConfig, 'blurb')
+  const hasSteps = Object.hasOwnProperty.call(sectionTypeConfig, 'steps')
+  const hasQuestions = Object.hasOwnProperty.call(sectionTypeConfig, 'questions')
+  const hasButtons = Object.hasOwnProperty.call(sectionTypeConfig, 'buttons')
+
+  return (
+    <div>
+      {hasTitle && <TitleEditor section={section} updateSection={updateSection}/>}
+      {hasBlurb && <BlurbEditor section={section} updateSection={updateSection}/>}
+      <StyleOptions section={section} updateSection={updateSection}/>
+      {hasSteps && <StepEditor section={section} updateSection={updateSection} siteMediaList={[]}/>}
+      {hasQuestions && <QuestionEditor section={section} updateSection={updateSection}/>}
+      {/*{hasButtons && <ButtonOptions section={section} updateSection={updateSection}/>}*/}
     </div>
   )
 }
 
 export default HtmlSectionEditor
+
+type SectionEditorComponentType = ({ section, updateSection }: {
+  siteMediaList: SiteMediaMetadata[],
+  section: HtmlSection; updateSection: (section: HtmlSection) => void
+}) => JSX.Element
+
+const SectionEditorComponents: Record<SectionType, SectionEditorComponentType | undefined> = {
+  FAQ: FrequentlyAskedQuestionsSectionEditor,
+  HERO_CENTERED: DynamicSectionEditor,
+  HERO_WITH_IMAGE: undefined,
+  SOCIAL_MEDIA: SocialMediaSectionEditor,
+  STEP_OVERVIEW: DynamicSectionEditor,
+  PHOTO_BLURB_GRID: undefined,
+  PARTICIPATION_DETAIL: undefined,
+  RAW_HTML: undefined,
+  LINK_SECTIONS_FOOTER: undefined,
+  BANNER_IMAGE: undefined
+}
+
+
+/* UPDATED COMPONENTS DOWN HERE */
+
+const TitleEditor = ({ section, updateSection }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+  return (
+    <TextInput className="mb-2" label="Title" value={config.title as string} onChange={value => {
+      const parsed = JSON.parse(section.sectionConfig || '{}')
+      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+    }}/>
+  )
+}
+
+const BlurbEditor = ({ section, updateSection }: {
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+  return (
+    <Textarea className="mb-2" label="Blurb" value={config.blurb as string} onChange={value => {
+      const parsed = JSON.parse(section.sectionConfig || '{}')
+      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
+    }}/>
+  )
+}
+
