@@ -212,6 +212,7 @@ export const renderNotificationConfig = (change: Trigger) => {
   </span></span>
 }
 
+/** summarizes a portal language */
 export const renderPortalLanguage = (change: PortalEnvironmentLanguage) => {
   return <span>{change.languageName} ({change.languageCode})</span>
 }
