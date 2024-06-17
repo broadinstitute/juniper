@@ -94,8 +94,8 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
   },
   environmentName: envName,
   supportedLanguages: [
-    { languageCode: 'en', languageName: 'English' },
-    { languageCode: 'es', languageName: 'Spanish' }
+    { languageCode: 'en', languageName: 'English', id: '1' },
+    { languageCode: 'es', languageName: 'Spanish', id: '2' }
   ],
   createdAt: 0
 })

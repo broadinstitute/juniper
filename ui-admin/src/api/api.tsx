@@ -252,6 +252,7 @@ export type PortalEnvironmentChange = {
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
+  languageChanges: ListChange<PortalEnvironmentLanguage, VersionedConfigChange>
 }
 
 export type StudyEnvironmentChange = {

@@ -3,7 +3,7 @@ import { faCheck, faPlus, faX } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'
 import {
-  PortalEnvironmentLanguage
+  PortalEnvironmentLanguage, PortalEnvironmentLanguageOpt
 } from '@juniper/ui-core'
 import { isEmpty, isNil } from 'lodash'
 import { Modal, ModalBody, ModalFooter } from 'react-bootstrap'
@@ -14,7 +14,7 @@ import { Button } from 'components/forms/Button'
 
 type EditablePortalEnvironmentLanguage = PortalEnvironmentLanguage & { isEditing: boolean }
 type PortalEnvironmentLanguageRow = PortalEnvironmentLanguage | EditablePortalEnvironmentLanguage
-const makeEmptyNewItem = () => ({ languageCode: '', languageName: '', isEditing: false })
+const makeEmptyNewItem = () => ({ languageCode: '', languageName: '', isEditing: false, id: '' })
 
 const isEditable = (row: PortalEnvironmentLanguageRow): row is EditablePortalEnvironmentLanguage => {
   return !isNil((row as EditablePortalEnvironmentLanguage).isEditing)
@@ -24,7 +24,7 @@ const isEditable = (row: PortalEnvironmentLanguageRow): row is EditablePortalEnv
  * some example languages options taken from A-T -- we might want to expand these.
  * But a creatable select is used so users can add their own.
  */
-const LANGUAGE_OPTIONS: PortalEnvironmentLanguage[] = [{
+const LANGUAGE_OPTIONS: PortalEnvironmentLanguageOpt[] = [{
   'languageName': 'English',
   'languageCode': 'en'
 }, {
@@ -172,7 +172,8 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
                 || isEmpty(row.original.languageCode)}
               onClick={() => updateItem({
                 languageCode: row.original.languageCode,
-                languageName: row.original.languageName
+                languageName: row.original.languageName,
+                id: ''
               })}>
               <FontAwesomeIcon icon={faCheck} aria-label={'Accept'}/>
             </Button>

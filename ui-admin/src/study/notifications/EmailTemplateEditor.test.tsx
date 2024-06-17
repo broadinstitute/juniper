@@ -14,14 +14,17 @@ describe('EmailTemplateEditor', () => {
     asMockedFn(usePortalLanguage).mockReturnValue({
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages: [{
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       }, {
         languageCode: 'es',
-        languageName: 'Español'
+        languageName: 'Español',
+        id: ''
       }]
     })
 
@@ -40,11 +43,13 @@ describe('EmailTemplateEditor', () => {
     asMockedFn(usePortalLanguage).mockReturnValue({
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages: [{
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       }]
     })
 

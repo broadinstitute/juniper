@@ -9,8 +9,8 @@ import { select } from 'react-select-event'
 
 
 const initialLanguages: PortalEnvironmentLanguage[] = [
-  { languageName: 'English', languageCode: 'en' },
-  { languageName: 'Español', languageCode: 'es' }
+  { languageName: 'English', languageCode: 'en', id: '1' },
+  { languageName: 'Español', languageCode: 'es', id: '1' }
 ]
 test('renders a list', async () => {
   const setItemsSpy = jest.fn()

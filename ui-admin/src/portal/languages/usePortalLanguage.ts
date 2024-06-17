@@ -22,7 +22,8 @@ export function usePortalLanguage() {
     return {
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages
     }

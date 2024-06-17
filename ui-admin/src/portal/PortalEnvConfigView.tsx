@@ -41,6 +41,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
   }
   useUpdateEffect(() => {
     setConfig(portalEnv.portalEnvironmentConfig)
+    setWorkingLanguages(_cloneDeep(portalEnv.supportedLanguages))
   }, [portalContext.portal.shortcode, portalEnv.environmentName])
   /** saves any changes to the server */
   const save = async (e: React.MouseEvent) => {
@@ -136,7 +137,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
           'of the participant view.  It is up to you to create the content for that language.'}/>
         </h4>
         <PortalEnvLanguageEditor items={workingLanguages} setItems={setWorkingLanguages}
-          readonly={!editableLanguages} />
+          readonly={!editableLanguages} key={`${portal.shortcode}-${portalEnv.environmentName}`}/>
       </div>
       { editableLanguages && <Button onClick={saveLanguages}
         variant="primary" disabled={!user?.superuser || isLoading}
