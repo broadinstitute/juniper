@@ -115,7 +115,8 @@ const HtmlPageView = ({
     {htmlPage.sections.map((section, index) => {
       return <div key={`${section.id}-${index}`} className="row g-0">
         <div className="col-md-4 px-2 pb-2">
-          <HtmlSectionEditor updateSection={updateSection(index)} setSiteHasInvalidSection={setSiteHasInvalidSection}
+          <HtmlSectionEditor portalEnvContext={portalEnvContext}
+            updateSection={updateSection(index)} setSiteHasInvalidSection={setSiteHasInvalidSection}
             moveSection={moveSection(index)} removeSection={removeSection(index)} allowTypeChange={section.id === ''}
             siteHasInvalidSection={siteHasInvalidSection} section={section} readOnly={readOnly}
             useJsonEditor={useJsonEditor} siteMediaList={mediaList}/>
@@ -128,7 +129,8 @@ const HtmlPageView = ({
     })}
     { footerSection && <div className="row g-0">
       <div className="col-md-4 px-2 pb-2 mb-2">
-        <HtmlSectionEditor setSiteHasInvalidSection={setSiteHasInvalidSection} allowTypeChange={false}
+        <HtmlSectionEditor portalEnvContext={portalEnvContext}
+          setSiteHasInvalidSection={setSiteHasInvalidSection} allowTypeChange={false}
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={() => updateFooter(undefined)}
           siteHasInvalidSection={siteHasInvalidSection} section={footerSection}

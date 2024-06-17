@@ -15,7 +15,7 @@ import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 import classNames from 'classnames'
 
-type StepConfig = {
+export type StepConfig = {
   image: MediaConfig,
   duration: string,
   blurb: string

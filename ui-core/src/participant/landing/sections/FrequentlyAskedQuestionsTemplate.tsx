@@ -25,7 +25,7 @@ const targetFor = (question: string): string => {
   return `#${idFor(question)}`
 }
 
-type FaqQuestion = {
+export type FaqQuestion = {
   question: string,
   answer: string
 }
