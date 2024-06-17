@@ -20,6 +20,10 @@ const isEditable = (row: PortalEnvironmentLanguageRow): row is EditablePortalEnv
   return !isNil((row as EditablePortalEnvironmentLanguage).isEditing)
 }
 
+/**
+ * some example languages options taken from A-T -- we might want to expand these.
+ * But a creatable select is used so users can add their own.
+ */
 const LANGUAGE_OPTIONS: PortalEnvironmentLanguage[] = [{
   'languageName': 'English',
   'languageCode': 'en'
@@ -58,9 +62,10 @@ const LANGUAGE_OPTIONS: PortalEnvironmentLanguage[] = [{
 /**
  * Table which allows viewing, deleting, and creating new answer mappings.
  */
-export default function PortalEnvLanguageEditor({ items, setItems } : {
+export default function PortalEnvLanguageEditor({ items, setItems, readonly } : {
     items: PortalEnvironmentLanguage[],
-    setItems: (items: PortalEnvironmentLanguage[]) => void
+    setItems: (items: PortalEnvironmentLanguage[]) => void,
+  readonly: boolean
   }
 ) {
   const [itemSelectedForDeletion, setItemSelectedForDeletion] = useState<PortalEnvironmentLanguage | null>(null)
@@ -93,15 +98,15 @@ export default function PortalEnvLanguageEditor({ items, setItems } : {
   }
 
 
-  const columns: ColumnDef<PortalEnvironmentLanguage>[] = useMemo(() => ([
-    {
+  const columns: ColumnDef<PortalEnvironmentLanguage>[] = useMemo(() => {
+    const baseCols: ColumnDef<PortalEnvironmentLanguage>[] = [{
       header: 'Name',
       accessorKey: 'languageName',
       cell: ({ row }) => {
         const value = row.original.languageName
         if (isEditable(row.original)) {
           return row.original.isEditing && <Creatable
-            aria-label={'language name'}
+            aria-label={'Language name'}
             options={LANGUAGE_OPTIONS.map(name => {
               return {
                 value: name.languageName,
@@ -123,8 +128,7 @@ export default function PortalEnvLanguageEditor({ items, setItems } : {
         }
         return value
       }
-    },
-    {
+    }, {
       header: 'Code',
       accessorKey: 'languageCode',
       cell: ({ row }) => {
@@ -132,15 +136,19 @@ export default function PortalEnvLanguageEditor({ items, setItems } : {
         if (isEditable(row.original)) {
           return row.original.isEditing && <input
             type="text"
-            aria-label={'language code'}
-            onChange={e => setNewItem({ ...row.original, languageName: e.target.value, isEditing: true })}
+            aria-label={'Language code'}
+            onChange={e => setNewItem({
+              ...row.original,
+              languageName: e.target.value,
+              isEditing: true
+            })}
             value={row.original.languageCode}
           />
         }
         return value
       }
-    },
-    {
+    }]
+    return readonly ? baseCols : baseCols.concat({
       header: 'Actions',
       id: 'actions',
       cell: ({ row }) => {
@@ -179,8 +187,8 @@ export default function PortalEnvLanguageEditor({ items, setItems } : {
           <FontAwesomeIcon icon={faTrashCan} aria-label={'Delete'}/>
         </Button>
       }
-    }
-  ]), [items, newItem])
+    })
+  }, [items, newItem, readonly])
 
   const data = useMemo(
     () => (items as PortalEnvironmentLanguageRow[]).concat(newItem),
@@ -207,7 +215,7 @@ const DeleteItemModal = (
 ) => {
   return <Modal onHide={onCancel} show={true}>
     <ModalBody>
-      Remove this language from the dropdown?
+      <div>Remove this language from the dropdown?</div>
     </ModalBody>
     <ModalFooter>
       <button className='btn btn-danger' onClick={onConfirm}>

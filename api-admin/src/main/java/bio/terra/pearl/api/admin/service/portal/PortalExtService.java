@@ -10,8 +10,8 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
@@ -26,7 +26,7 @@ public class PortalExtService {
   private final PortalEnvironmentService portalEnvironmentService;
   private final PortalEnvironmentConfigService portalEnvironmentConfigService;
   private final PortalAdminUserService portalAdminUserService;
-  private final PortalLanguageService portalLanguageService;
+  private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
   private final AuthUtilService authUtilService;
 
   public PortalExtService(
@@ -34,13 +34,13 @@ public class PortalExtService {
       PortalEnvironmentService portalEnvironmentService,
       PortalEnvironmentConfigService portalEnvironmentConfigService,
       PortalAdminUserService portalAdminUserService,
-      PortalLanguageService portalLanguageService,
+      PortalEnvironmentLanguageService portalEnvironmentLanguageService,
       AuthUtilService authUtilService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalEnvironmentConfigService = portalEnvironmentConfigService;
     this.portalAdminUserService = portalAdminUserService;
-    this.portalLanguageService = portalLanguageService;
+    this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     this.authUtilService = authUtilService;
   }
 
@@ -63,12 +63,12 @@ public class PortalExtService {
       String portalShortcode,
       EnvironmentName envName,
       PortalEnvironmentConfig newConfig,
-      AdminUser user) {
-    if (!user.isSuperuser()) {
+      AdminUser operator) {
+    if (!operator.isSuperuser()) {
       throw new PermissionDeniedException(
           "You do not have permissions to update portal configurations");
     }
-    authUtilService.authUserToPortal(user, portalShortcode);
+    authUtilService.authUserToPortal(operator, portalShortcode);
     PortalEnvironment portalEnv =
         portalEnvironmentService
             .findOne(portalShortcode, envName)
@@ -84,15 +84,15 @@ public class PortalExtService {
 
   /**
    * updates a portal environment, currently only supports updating the siteContent and preReg
-   * survey
+   * survey. Does not update any nested lists (e.g. portal languages)
    */
   public PortalEnvironment updateEnvironment(
       String portalShortcode,
       EnvironmentName envName,
       PortalEnvironment updatedEnv,
-      AdminUser user) {
+      AdminUser operator) {
 
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
     if (!EnvironmentName.sandbox.equals(envName)) {
       throw new IllegalArgumentException("You cannot directly update non-sandbox environments");
     }
@@ -106,13 +106,26 @@ public class PortalExtService {
     portalEnv.setSiteContentId(updatedEnv.getSiteContentId());
     portalEnv.setPreRegSurveyId(updatedEnv.getPreRegSurveyId());
     portalEnv = portalEnvironmentService.update(portalEnv);
-    if (updatedEnv.getSupportedLanguages().size() > 0) {
-      List<PortalEnvironmentLanguage> updatedLangs =
-          portalLanguageService.setPortalEnvLanguages(
-              portalEnv.getId(), updatedEnv.getSupportedLanguages());
-      portalEnv.setSupportedLanguages(updatedLangs);
-    }
     return portalEnv;
+  }
+
+  public List<PortalEnvironmentLanguage> setLanguages(
+      String portalShortcode,
+      EnvironmentName envName,
+      List<PortalEnvironmentLanguage> languages,
+      AdminUser operator) {
+    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+    if (!EnvironmentName.sandbox.equals(envName)) {
+      throw new IllegalArgumentException("You cannot directly update non-sandbox environments");
+    }
+    PortalEnvironment portalEnv =
+        portalEnvironmentService
+            .findOne(portal.getShortcode(), envName)
+            .orElseThrow(PortalEnvironmentMissing::new);
+
+    List<PortalEnvironmentLanguage> updatedLangs =
+        portalEnvironmentLanguageService.setPortalEnvLanguages(portalEnv.getId(), languages);
+    return updatedLangs;
   }
 
   public void removeUserFromPortal(UUID adminUserId, String portalShortcode, AdminUser operator) {

@@ -9,14 +9,14 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class PortalLanguageDao extends BaseJdbiDao<PortalEnvironmentLanguage> {
+public class PortalEnvironmentLanguageDao extends BaseJdbiDao<PortalEnvironmentLanguage> {
 
     @Override
     public Class<PortalEnvironmentLanguage> getClazz() {
         return PortalEnvironmentLanguage.class;
     }
 
-    public PortalLanguageDao(Jdbi jdbi) {
+    public PortalEnvironmentLanguageDao(Jdbi jdbi) {
         super(jdbi);
     }
 

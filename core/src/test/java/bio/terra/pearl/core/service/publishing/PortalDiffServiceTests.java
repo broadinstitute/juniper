@@ -144,7 +144,6 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
         assertThat(diffs.removedItems().get(0), samePropertyValuesAs(removedConfig));
     }
 
-
     @Test
     public void testDiffBothUninitialized() throws Exception {
         PortalEnvironment sourceEnv = PortalEnvironment.builder().portalEnvironmentConfig(

@@ -20,8 +20,6 @@ const contacts: MailingListContact[] = [{
 }]
 
 test('renders a mailing list', async () => {
-  // avoid cluttering the console with the info messages from the table creation
-  jest.spyOn(console, 'info').mockImplementation(jest.fn())
   jest.spyOn(Api, 'fetchMailingList').mockResolvedValue(contacts)
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]

@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.publishing;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.survey.Survey;
 
@@ -16,5 +17,7 @@ public record PortalEnvironmentChange(VersionedEntityChange<SiteContent> siteCon
                                       VersionedEntityChange<Survey> preRegSurveyChanges,
                                       ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges,
                                       List<ParticipantDashboardAlertChange> participantDashboardAlertChanges,
-                                      List<StudyEnvironmentChange> studyEnvChanges)
+                                      List<StudyEnvironmentChange> studyEnvChanges,
+                                      /** for now, we don't represent changed languages, just add/remove */
+                                      ListChange<PortalEnvironmentLanguage, Object> languageChanges )
 {}

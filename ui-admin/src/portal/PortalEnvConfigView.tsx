@@ -55,10 +55,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
   const saveLanguages = async (e: React.MouseEvent) => {
     e.preventDefault()
     doApiLoad(async () => {
-      await Api.updatePortalEnv(portal.shortcode, portalEnv.environmentName, {
-        ...portalEnv,
-        supportedLanguages: workingLanguages
-      })
+      await Api.setPortalEnvLanguages(portal.shortcode, portalEnv.environmentName, workingLanguages)
       Store.addNotification(successNotification('Portal languages saved'))
       reloadPortal(portal.shortcode)
     }, { setIsLoading })
@@ -74,6 +71,8 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
         setSelectedLanguage,
         selectedLanguage
       )
+
+  const editableLanguages = portalEnv.environmentName === 'sandbox'
 
   return <div>
     <form className="bg-white">
@@ -132,18 +131,19 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
     </form>
     <form className="mt-5">
       <div>
-        <label className="form-label">
+        <h4 className="h5">
           Supported languages <InfoPopup content={'This list determines which languages appear in the dropdown' +
           'of the participant view.  It is up to you to create the content for that language.'}/>
-        </label>
-        <PortalEnvLanguageEditor items={workingLanguages} setItems={setWorkingLanguages} />
+        </h4>
+        <PortalEnvLanguageEditor items={workingLanguages} setItems={setWorkingLanguages}
+          readonly={!editableLanguages} />
       </div>
-      <Button onClick={saveLanguages}
+      { editableLanguages && <Button onClick={saveLanguages}
         variant="primary" disabled={!user?.superuser || isLoading}
         tooltip={user?.superuser ? 'Save' : 'You do not have permission to edit these settings'}>
         {isLoading && <LoadingSpinner/>}
         {!isLoading && 'Save languages'}
-      </Button>
+      </Button> }
     </form>
   </div>
 }
