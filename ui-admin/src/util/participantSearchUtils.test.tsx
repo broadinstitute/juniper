@@ -1,4 +1,8 @@
-import { DefaultParticipantSearchState, ParticipantSearchState, toExpression } from './participantSearchUtils'
+import {
+  DefaultParticipantSearchState,
+  ParticipantSearchState,
+  toExpression
+} from './participantSearchUtils'
 
 describe('toExpression', () => {
   it('should return is subject on default', () => {
@@ -8,9 +12,9 @@ describe('toExpression', () => {
   it('filters basic search', () => {
     const keywordSearch = { ...DefaultParticipantSearchState, keywordSearch: 'test' }
     const result = toExpression(keywordSearch)
-    expect(result).toEqual('({profile.name} contains \'test\' '
-      + 'or {profile.contactEmail} contains \'test\' '
-      + 'or {enrollee.shortcode} contains \'test\') '
+    expect(result).toEqual('(lower({profile.name}) contains lower(\'test\') '
+      + 'or lower({profile.contactEmail}) contains lower(\'test\') '
+      + 'or lower({enrollee.shortcode}) contains lower(\'test\')) '
       + 'and {enrollee.subject} = true')
   })
   it('filters subject, consented', () => {
@@ -100,9 +104,9 @@ describe('toExpression', () => {
     }
 
     const result = toExpression(searchState)
-    expect(result).toEqual('({profile.name} contains \'test\' '
-      + 'or {profile.contactEmail} contains \'test\' '
-      + 'or {enrollee.shortcode} contains \'test\') '
+    expect(result).toEqual('(lower({profile.name}) contains lower(\'test\') '
+      + 'or lower({profile.contactEmail}) contains lower(\'test\') '
+      + 'or lower({enrollee.shortcode}) contains lower(\'test\')) '
       + 'and {enrollee.subject} = false and {enrollee.consented} = true '
       + 'and {age} >= 10 and {age} <= 20 and ({profile.sexAtBirth} = \'female\') '
       + 'and ({task.my_task.status} = \'COMPLETE\') and ({latestKit.status} = \'ERRORED\') '

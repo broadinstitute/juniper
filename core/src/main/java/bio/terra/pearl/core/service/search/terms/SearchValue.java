@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Result of a search term (profile.givenName) or user input ("John"). Useful when executing a
@@ -18,6 +19,7 @@ public class SearchValue {
     private Instant instantValue = null;
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
+    private List<SearchValue> arrayValue = null;
 
     private final SearchValueType searchValueType;
 
@@ -44,6 +46,11 @@ public class SearchValue {
     public SearchValue(Boolean booleanValue) {
         this.booleanValue = booleanValue;
         this.searchValueType = SearchValueType.BOOLEAN;
+    }
+
+    public SearchValue(List<SearchValue> arrayValue) {
+        this.arrayValue = arrayValue;
+        this.searchValueType = SearchValueType.ARRAY;
     }
 
     public SearchValue() {
@@ -76,22 +83,31 @@ public class SearchValue {
     }
 
     public boolean equals(SearchValue right) {
+        if (!this.searchValueType.equals(SearchValueType.ARRAY) && right.searchValueType.equals(SearchValueType.ARRAY)) {
+            // flip the comparison if the right side is an array so that we hit the array comparison logic
+            return right.equals(this);
+        }
         return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
-            case NUMBER -> {
-                yield this.numberValue.equals(right.numberValue);
-            }
+            case NUMBER -> this.numberValue.equals(right.numberValue);
             case INSTANT -> this.instantValue.equals(right.instantValue);
             case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
+            case DATE -> this.dateValue.equals(right.dateValue);
+            case ARRAY -> {
+                if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
+                    yield this.arrayValue.equals(right.arrayValue);
+                }
+                // like SQL, we allow comparing a single value to an array
+                // by checking if the single value is in the array
+                yield this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
+            }
             default -> false;
         };
     }
 
     public boolean greaterThan(SearchValue right) {
         return switch (this.searchValueType) {
-            case NUMBER -> {
-                yield this.numberValue > right.numberValue;
-            }
+            case NUMBER -> this.numberValue > right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
             default -> false;
         };
@@ -99,15 +115,17 @@ public class SearchValue {
 
     public boolean greaterThanOrEqualTo(SearchValue right) {
         return switch (this.searchValueType) {
-            case NUMBER -> {
-                yield this.numberValue >= right.numberValue;
-            }
+            case NUMBER -> this.numberValue >= right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);
             default -> false;
         };
     }
 
     public boolean contains(SearchValue rightSearchValue) {
+        if (this.searchValueType.equals(SearchValueType.ARRAY) || rightSearchValue.searchValueType.equals(SearchValueType.ARRAY)) {
+            return this.equals(rightSearchValue);
+        }
+
         if (this.searchValueType != SearchValueType.STRING || rightSearchValue.searchValueType != SearchValueType.STRING) {
             return false;
         }
@@ -121,6 +139,7 @@ public class SearchValue {
         INSTANT,
         DATE,
         BOOLEAN,
+        ARRAY,
         NULL
     }
 }

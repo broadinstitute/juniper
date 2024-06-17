@@ -10,7 +10,7 @@ import java.util.Optional;
 
 /**
  * Represents a term that can be used to search for enrollees. This can be anything from a field on the enrollee's profile
- * to a derived field like age.
+ * to a derived field like age. In addition, Functions are terms which modify other terms; for example, 'lower' or 'trim'.
  */
 public interface SearchTerm {
     /**

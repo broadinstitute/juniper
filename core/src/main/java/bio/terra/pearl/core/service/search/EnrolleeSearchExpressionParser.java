@@ -4,6 +4,7 @@ import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
@@ -34,14 +35,16 @@ public class EnrolleeSearchExpressionParser {
     private final MailingAddressDao mailingAddressDao;
     private final ParticipantTaskDao participantTaskDao;
     private final KitRequestDao kitRequestDao;
+    private final FamilyDao familyDao;
 
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
         this.mailingAddressDao = mailingAddressDao;
         this.participantTaskDao = participantTaskDao;
         this.kitRequestDao = kitRequestDao;
+        this.familyDao = familyDao;
     }
 
 
@@ -169,6 +172,12 @@ public class EnrolleeSearchExpressionParser {
             case "mult" -> {
                 return new MultFunction(terms.stream().map(this::parseTerm).toList());
             }
+            case "min" -> {
+                return new MinFunction(terms.stream().map(this::parseTerm).toList());
+            }
+            case "max" -> {
+                return new MaxFunction(terms.stream().map(this::parseTerm).toList());
+            }
             default -> throw new IllegalArgumentException("Unknown function " + functionName);
 
         }
@@ -212,6 +221,10 @@ public class EnrolleeSearchExpressionParser {
                 String latestKitField = parseField(trimmedVar);
 
                 return parseLatestKitTerm(latestKitField);
+            case "family":
+                String familyField = parseField(trimmedVar);
+
+                return parseFamilyTerm(familyField);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -256,5 +269,9 @@ public class EnrolleeSearchExpressionParser {
 
     private LatestKitTerm parseLatestKitTerm(String field) {
         return new LatestKitTerm(kitRequestDao, field);
+    }
+
+    private FamilyTerm parseFamilyTerm(String field) {
+        return new FamilyTerm(familyDao, field);
     }
 }
