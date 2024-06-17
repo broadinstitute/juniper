@@ -385,7 +385,7 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
-export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueType = 'STRING' | 'NUMBER' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 export type SearchValueTypeDefinition = {
   type: SearchValueType
   choices?: { stableId: string, text: string }[]

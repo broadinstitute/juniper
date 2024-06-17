@@ -8,21 +8,25 @@ import {
 } from '@testing-library/react'
 import { SearchQueryBuilder } from './SearchQueryBuilder'
 import userEvent from '@testing-library/user-event'
+import Api, { SearchValueTypeDefinition } from 'api/api'
 
-jest.mock('../api/api', () => ({
-  ...jest.requireActual('../api/api'),
-  getExpressionSearchFacets: jest.fn().mockResolvedValue([
-    {
-      'profile.mailingAddress.country': {
-        type: 'STRING',
-        choices: [{ stableId: 'US', text: 'United States' }]
-      }
-    }
-  ])
-}))
+
+const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition } = {
+  'profile.mailingAddress.country': {
+    type: 'STRING',
+    choices: [
+      { stableId: 'US', text: 'United States' }
+    ],
+    allowMultiple: false,
+    allowOtherDescription: false
+  }
+}
+
 
 describe('SearchQueryBuilder', () => {
   it('should render with basic options', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
     const onSearchExpressionChange = jest.fn()
     const { RoutedComponent } = setupRouterTest(
       <SearchQueryBuilder
@@ -47,15 +51,16 @@ describe('SearchQueryBuilder', () => {
     const valueInput = (await screen.findAllByRole('combobox'))[3]
 
     await userEvent.click(valueInput)
-    await userEvent.type(fieldInput, 'Cana{enter}')
+    await userEvent.type(fieldInput, 'US{enter}')
 
-
-    waitFor(() => {
-      expect(onSearchExpressionChange).toHaveBeenCalledWith(`{profile.mailingAddress.country} = 'CA'`)
+    await waitFor(() => {
+      expect(onSearchExpressionChange).toHaveBeenLastCalledWith(`{profile.mailingAddress.country} = 'US'`)
     })
   })
 
   it('should render advanced', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
     const onSearchExpressionChange = jest.fn()
     const { RoutedComponent } = setupRouterTest(
       <SearchQueryBuilder
@@ -68,15 +73,140 @@ describe('SearchQueryBuilder', () => {
     await waitFor(() => expect(screen.getByText('+Rule')).toBeInTheDocument())
 
 
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
     await userEvent.click(screen.getByText('(switch to advanced view)'))
 
     await userEvent.type(
       screen.getByLabelText('Search expression'),
-      '{{profile.mailingAddress.country}} = \'CA\'{enter}')
+      '{{profile.mailingAddress.country} = \'US\'')
 
 
-    waitFor(() => {
-      expect(onSearchExpressionChange).toHaveBeenCalledWith(`{profile.mailingAddress.country} = 'CA'`)
+    await waitFor(() => {
+      expect(onSearchExpressionChange).toHaveBeenLastCalledWith(`{profile.mailingAddress.country} = 'US'`)
     })
   })
+
+  it('should render with a saved search', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const onSearchExpressionChange = jest.fn()
+    const { RoutedComponent } = setupRouterTest(
+      <SearchQueryBuilder
+        studyEnvContext={mockStudyEnvContext()}
+        onSearchExpressionChange={onSearchExpressionChange}
+        searchExpression={'{profile.mailingAddress.country} = \'US\''}
+      />)
+    render(RoutedComponent)
+
+    await waitFor(() => expect(screen.getByText('+Rule')).toBeInTheDocument())
+
+    expect(screen.getByText('profile.mailingAddress.country')).toBeInTheDocument()
+    expect(screen.getByText('United States')).toBeInTheDocument()
+  })
+
+  it('should render advanced editor if error in search expression', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const onSearchExpressionChange = jest.fn()
+    const { RoutedComponent } = setupRouterTest(
+      <SearchQueryBuilder
+        studyEnvContext={mockStudyEnvContext()}
+        onSearchExpressionChange={onSearchExpressionChange}
+        searchExpression={'{profile.mailingAddress.country} =  AAAAAAAA nooOOOOO'}
+      />)
+    render(RoutedComponent)
+
+    await waitFor(() => {
+      expect(screen.getByText(
+        'unknown token', { exact: false }
+      )).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+  })
+
+  it('should render advanced editor if functions used', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const onSearchExpressionChange = jest.fn()
+    const { RoutedComponent } = setupRouterTest(
+      <SearchQueryBuilder
+        studyEnvContext={mockStudyEnvContext()}
+        onSearchExpressionChange={onSearchExpressionChange}
+        searchExpression={'lower({profile.mailingAddress.country}) = \'us\''}
+      />)
+    render(RoutedComponent)
+
+    await waitFor(() => {
+      expect(screen.getByText(
+        'The current search expression cannot be represented in the basic query builder.'
+      )).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+  })
+
+  it('should disable basic editor if error introduced in advanced editor', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const { RoutedComponent } = setupRouterTest(
+      <TestFullQueryBuilderState/>)
+    render(RoutedComponent)
+
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+
+    await userEvent.click(screen.getByText('(switch to advanced view)'))
+
+    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
+
+    await userEvent.type(
+      screen.getByLabelText('Search expression'),
+      '{{profile.mailingAddress.country} = ooOOoa aa asdfas asdf asid  !!!')
+
+    await waitFor(() => {
+      expect(screen.getByText(
+        'unknown token', { exact: false }
+      )).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+  })
+
+  it('should disable basic editor if function introduced in advanced editor', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const { RoutedComponent } = setupRouterTest(
+      <TestFullQueryBuilderState/>)
+    render(RoutedComponent)
+
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+    await userEvent.click(screen.getByText('(switch to advanced view)'))
+
+    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByText('(switch to basic view)')).toBeInTheDocument()
+    })
+
+    await userEvent.type(
+      screen.getByLabelText('Search expression'),
+      '{{profile.mailingAddress.country} = lower(\'us\')')
+
+    await waitFor(() => {
+      expect(screen.getByText(
+        'The current search expression cannot be represented in the basic query builder.'
+      )).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+  })
 })
+
+
+const TestFullQueryBuilderState = () => {
+  const [searchExpression, setSearchExpression] = React.useState('')
+  return <SearchQueryBuilder
+    studyEnvContext={mockStudyEnvContext()}
+    onSearchExpressionChange={setSearchExpression}
+    searchExpression={searchExpression}
+  />
+}

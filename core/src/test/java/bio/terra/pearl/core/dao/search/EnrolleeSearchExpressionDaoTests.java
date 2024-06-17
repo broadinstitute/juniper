@@ -592,11 +592,11 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     public void testMultFunction(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
-        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+        EnrolleeSearchExpression multExp = enrolleeSearchExpressionParser.parseRule(
                 "mult(5, 5) = 25"
         );
 
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(multExp, enrollee.getStudyEnvironmentId());
 
         // should true for everybody
         assertEquals(1, results.size());
@@ -607,11 +607,11 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     public void testTrimFunction(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
-        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
                 "trim('  hello  ') = 'hello'"
         );
 
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(trimExp, enrollee.getStudyEnvironmentId());
 
         // should true for everybody
         assertEquals(1, results.size());
@@ -622,11 +622,11 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
     public void testNestedFunction(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
-        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
                 "trim(lower('  HEY  ')) = 'hey'"
         );
 
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(trimExp, enrollee.getStudyEnvironmentId());
 
         // should true for everybody
         assertEquals(1, results.size());

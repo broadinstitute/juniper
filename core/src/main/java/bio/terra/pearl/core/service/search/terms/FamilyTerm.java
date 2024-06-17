@@ -9,7 +9,6 @@ import org.jooq.Condition;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
@@ -36,12 +35,7 @@ public class FamilyTerm implements SearchTerm {
 
     @Override
     public SearchValue extract(EnrolleeSearchContext context) {
-        if (Objects.isNull(context.getProfile()) || Objects.isNull(context.getProfile().getBirthDate())) {
-            return new SearchValue();
-        }
-
         List<Family> families = this.familyDao.findByEnrolleeId(context.getEnrollee().getId());
-
         if (families.isEmpty()) {
             return new SearchValue();
         }
@@ -50,6 +44,7 @@ public class FamilyTerm implements SearchTerm {
                 .stream()
                 .map(val -> SearchValue.ofNestedProperty(val, field, FIELDS.get(field).getType()))
                 .toList();
+
         return new SearchValue(values);
     }
 

@@ -6,9 +6,9 @@ import React, {
 import {
   Field,
   FieldSelectorProps,
+  QueryBuilder,
   formatQuery,
   OperatorSelectorProps,
-  QueryBuilder,
   RuleGroupType,
   RuleGroupTypeAny,
   ValueEditor,
@@ -162,7 +162,7 @@ const AdvancedQueryBuilder = ({
       return
     }
     onSearchExpressionChange(val)
-  }, 500), [])
+  }, 500), [searchExpression])
 
   return <div className="">
     <textarea
@@ -291,10 +291,7 @@ const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinitio
     case 'STRING':
       field.valueEditorType = 'text'
       break
-    case 'INTEGER':
-      field.inputType = 'number'
-      break
-    case 'DOUBLE':
+    case 'NUMBER':
       field.inputType = 'number'
       break
     case 'DATE':
