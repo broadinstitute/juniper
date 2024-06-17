@@ -1,4 +1,4 @@
-package bio.terra.pearl.api.admin.service.auth;
+package bio.terra.pearl.api.admin.service.auth.context;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -10,7 +10,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @Getter
 @Setter
-public class PortalStudyEnvAuthContext extends PortalStudyAuthContext {
+public class PortalStudyEnvAuthContext extends PortalStudyAuthContext
+    implements EnvironmentAwareAuthContext {
   EnvironmentName environmentName;
   StudyEnvironment studyEnvironment;
 
