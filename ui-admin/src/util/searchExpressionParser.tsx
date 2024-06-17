@@ -31,7 +31,7 @@ export const parseExpression = (expression: string): SearchExpression => {
  * Represents the overall search expression, which can either be a BooleanSearchExpression
  * or a ComparisonSearchFacet. This is a recursive data structure.
  */
-export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet
+export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet | NotExpression
 
 /**
  * Represents an AND or OR of two search expressions.
@@ -40,6 +40,20 @@ export type BooleanSearchExpression = {
   booleanOperator: BooleanOperator
   left: SearchExpression
   right: SearchExpression
+}
+
+/**
+ * Represents a NOT of a search expression.
+ */
+export type NotExpression = {
+  inner: SearchExpression
+}
+
+/**
+ * Tests if a search expression is a NotExpression.
+ */
+export const isNotExpression = (expression: SearchExpression): expression is NotExpression => {
+  return (expression as NotExpression).inner !== undefined
 }
 
 /**
@@ -99,6 +113,12 @@ export const isFunctionTerm = (term: Term): term is FunctionTerm => {
 
 // Helpers for parsing the ANTLR parse tree
 const _parseExpression = (ctx: ExprContext): SearchExpression => {
+  if (ctx.NOT()) {
+    return {
+      inner: _parseExpression(ctx.expr(0))
+    }
+  }
+
   if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
     return _parseExpression(ctx.expr(0))
   }

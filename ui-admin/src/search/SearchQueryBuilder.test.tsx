@@ -199,6 +199,34 @@ describe('SearchQueryBuilder', () => {
 
     expect(screen.getByText('(switch to basic view)')).toBeDisabled()
   })
+
+  it('should disable basic editor if not introduced in advanced editor', async () => {
+    jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+
+    const { RoutedComponent } = setupRouterTest(
+      <TestFullQueryBuilderState/>)
+    render(RoutedComponent)
+
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+    await userEvent.click(screen.getByText('(switch to advanced view)'))
+
+    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByText('(switch to basic view)')).toBeInTheDocument()
+    })
+
+    await userEvent.type(
+      screen.getByLabelText('Search expression'),
+      '!{{profile.mailingAddress.country} = \'us\'')
+
+    await waitFor(() => {
+      expect(screen.getByText(
+        'The current search expression cannot be represented in the basic query builder.'
+      )).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+  })
 })
 
 

@@ -3,6 +3,7 @@ import {
   isBooleanSearchExpression,
   isComparisonSearchFacet,
   isFunctionTerm,
+  isNotExpression,
   isSearchVariable,
   SearchExpression,
   Term
@@ -50,6 +51,10 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
     }
     return _toReactQueryBuilderState(operator, expression.left)
       .concat(_toReactQueryBuilderState(operator, expression.right))
+  }
+
+  if (isNotExpression(expression)) {
+    throw new Error('Not expressions are not supported in react-querybuilder')
   }
 
   if (isComparisonSearchFacet(expression)) {
