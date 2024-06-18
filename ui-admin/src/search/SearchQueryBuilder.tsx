@@ -39,6 +39,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'
 import pluralize from 'pluralize'
+import { Button } from '../components/forms/Button'
 
 /**
  * Frontend for building an enrollee search expression; can either
@@ -94,11 +95,11 @@ export const SearchQueryBuilder = ({
         search expression
         </ZendeskLink> that filters to enrollees that meet a specific criteria.
       </div>
-      <button
-        className="btn btn-link"
+      <Button
+        variant="link"
         onClick={() => setAdvancedMode(!advancedMode)}>
         {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
-      </button>
+      </Button>
     </div>
     {parseSearchExpError && <div className="alert alert-danger mb-2">
       {parseSearchExpError.message}
