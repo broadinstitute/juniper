@@ -92,15 +92,15 @@ public class PortalPublishingService {
      * returns the updated environment
      */
     protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) {
-        applyChangesToEnvConfig(destEnv, envChanges.configChanges());
+        applyChangesToEnvConfig(destEnv, envChanges.getConfigChanges());
 
-        applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
-        applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
-        applyChangesToTriggers(destEnv, envChanges.triggerChanges());
-        applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
-        for (StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
-            StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId(), destEnv.getPortalId());
+        applyChangesToPreRegSurvey(destEnv, envChanges.getPreRegSurveyChanges());
+        applyChangesToSiteContent(destEnv, envChanges.getSiteContentChange());
+        applyChangesToTriggers(destEnv, envChanges.getTriggerChanges());
+        applyChangesToParticipantDashboardAlerts(destEnv, envChanges.getParticipantDashboardAlertChanges());
+        for (StudyEnvironmentChange studyEnvChange : envChanges.getStudyEnvChanges()) {
+            StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.getStudyShortcode(), destEnv.getEnvironmentName());
+            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv);
         }
         try {
             PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()

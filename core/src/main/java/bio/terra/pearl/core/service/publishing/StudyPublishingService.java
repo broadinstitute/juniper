@@ -2,6 +2,7 @@ package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
 import bio.terra.pearl.core.model.publishing.ListChange;
 import bio.terra.pearl.core.model.publishing.StudyEnvironmentChange;
@@ -58,11 +59,11 @@ public class StudyPublishingService {
      */
     @Transactional
     public StudyEnvironment applyChanges(StudyEnvironment destEnv, StudyEnvironmentChange envChange,
-                                         UUID destPortalEnvId, UUID portalId) {
-        applyChangesToStudyEnvConfig(destEnv, envChange.configChanges());
-        applyChangesToPreEnrollSurvey(destEnv, envChange.preEnrollSurveyChanges(), portalId);
-        applyChangesToSurveys(destEnv, envChange.surveyChanges(), destPortalEnvId, portalId);
-        applyChangesToTriggers(destEnv, envChange.triggerChanges(), destPortalEnvId, portalId);
+                                         PortalEnvironment destPortalEnv) {
+        applyChangesToStudyEnvConfig(destEnv, envChange.getConfigChanges());
+        applyChangesToPreEnrollSurvey(destEnv, envChange.getPreEnrollSurveyChanges(), destPortalEnv.getPortalId());
+        applyChangesToSurveys(destEnv, envChange.getSurveyChanges(), destPortalEnv.getId(), destPortalEnv.getPortalId());
+        triggerService.applyDiff(envChange, destEnv, destPortalEnv);
         return destEnv;
     }
 
@@ -123,26 +124,5 @@ public class StudyPublishingService {
         }
         return destEnv.getConfiguredSurveys();
     }
-
-    protected void applyChangesToTriggers(StudyEnvironment destEnv, ListChange<Trigger,
-            VersionedConfigChange<EmailTemplate>> listChange, UUID destPortalEnvId, UUID destPortalId) {
-        for (Trigger config : listChange.addedItems()) {
-            config.setStudyEnvironmentId(destEnv.getId());
-            config.setPortalEnvironmentId(destPortalEnvId);
-            triggerService.create(config.cleanForCopying());
-            destEnv.getTriggers().add(config);
-            PublishingUtils.assignPublishedVersionIfNeeded(destEnv.getEnvironmentName(), config, emailTemplateService);
-        }
-        for (Trigger config : listChange.removedItems()) {
-            // don't delete notification configs since they may be referenced by already-sent emails
-            config.setActive(false);
-            triggerService.update(config);
-            destEnv.getTriggers().remove(config);
-        }
-        for (VersionedConfigChange<EmailTemplate> change : listChange.changedItems()) {
-            PublishingUtils.applyChangesToVersionedConfig(change, triggerService, emailTemplateService, destEnv.getEnvironmentName(), destPortalId);
-        }
-    }
-
 
 }
