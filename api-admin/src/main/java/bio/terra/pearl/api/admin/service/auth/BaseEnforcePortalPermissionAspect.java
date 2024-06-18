@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service.auth;
 
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.portal.Portal;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
