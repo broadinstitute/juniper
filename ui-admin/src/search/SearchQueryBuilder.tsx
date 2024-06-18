@@ -292,10 +292,17 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
   const options = props.options.map(option => {
     return { label: option.label, value: option.label }
   })
-
   return <div className="w-100">
     <Select
       options={options}
+      styles={{
+        control: styles => ({ ...styles }),
+        option: styles => ({ ...styles }),
+        menu: styles => ({
+          ...styles,
+          width: '650px'
+        })
+      }}
       value={{ label: props.value || '', value: props.value || '' }}
       onChange={newVal => {
         if (newVal?.label != props.value) {
