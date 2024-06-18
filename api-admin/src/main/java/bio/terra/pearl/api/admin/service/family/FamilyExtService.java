@@ -20,7 +20,6 @@ public class FamilyExtService {
   public Family find(PortalStudyEnvAuthContext authContext, String familyShortcode) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
-    
     return familyService
         .findOneByShortcode(familyShortcode)
         .filter(f -> f.getStudyEnvironmentId().equals(studyEnvironment.getId()))
