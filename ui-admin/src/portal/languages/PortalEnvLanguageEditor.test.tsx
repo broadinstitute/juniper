@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 
 import { PortalEnvironmentLanguage, renderWithRouter } from '@juniper/ui-core'
 import PortalEnvLanguageEditor from './PortalEnvLanguageEditor'
-import { getTableCell } from '../../test-utils/table-testing-utils'
+import { getTableCell } from 'test-utils/table-testing-utils'
 import userEvent from '@testing-library/user-event'
 import { select } from 'react-select-event'
 
@@ -34,7 +34,8 @@ test('add items after confirmation click', async () => {
   await userEvent.click(screen.getByLabelText('Add New'))
   await select(screen.getByLabelText('Language name'), 'Deutsch')
   await userEvent.click(screen.getByLabelText('Accept'))
-  expect(setItemsSpy).toHaveBeenCalledWith([...initialLanguages, { languageName: 'Deutsch', languageCode: 'de', id: '' }])
+  expect(setItemsSpy).toHaveBeenCalledWith([...initialLanguages,
+    { languageName: 'Deutsch', languageCode: 'de', id: '' }])
 })
 
 test('add items does not appear if readonly', async () => {
