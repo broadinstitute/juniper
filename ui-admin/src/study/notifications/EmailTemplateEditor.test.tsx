@@ -5,7 +5,7 @@ import { mockEmailTemplate } from 'test-utils/mocking-utils'
 import { asMockedFn } from '@juniper/ui-core'
 import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 
-jest.mock('portal/usePortalLanguage', () => ({
+jest.mock('portal/languages/usePortalLanguage', () => ({
   usePortalLanguage: jest.fn()
 }))
 

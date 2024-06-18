@@ -7,7 +7,7 @@ import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-
 import { HashLink } from 'react-router-hash-link'
 
 import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy, Study } from 'api/api'
-import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
+import { MailingListModal, PortalEnvironmentLanguage, PortalEnvironmentLanguageOpt, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -202,7 +202,7 @@ export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStu
  *
  */
 export function LanguageDropdown({ languageOptions, selectedLanguage, changeLanguage, reloadPortal }: {
-  languageOptions: PortalEnvironmentLanguage[],
+  languageOptions: PortalEnvironmentLanguageOpt[],
   selectedLanguage: string,
   changeLanguage: (languageCode: string) => void,
   reloadPortal: () => void
