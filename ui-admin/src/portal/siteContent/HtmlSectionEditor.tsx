@@ -1,5 +1,13 @@
 import React, { useEffect, useId, useState } from 'react'
-import { FaqQuestion, HtmlSection, SectionConfig, SectionType, socialMediaSites, StepConfig } from '@juniper/ui-core'
+import {
+  FaqQuestion,
+  HtmlSection,
+  SectionConfig,
+  SectionType,
+  socialMediaSites,
+  StepConfig,
+  SubGrid
+} from '@juniper/ui-core'
 import Select from 'react-select'
 import { Button, IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
@@ -15,18 +23,17 @@ import { ImageConfig, MediaConfig } from '@juniper/ui-core/build/participant/lan
 import { ButtonConfig } from '@juniper/ui-core/build/participant/landing/ConfiguredButton'
 import { PortalEnvContext } from '../PortalRouter'
 
-
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
-  { label: 'Hero (centered)', value: 'HERO_CENTERED' },
-  { label: 'Hero (with image)', value: 'HERO_WITH_IMAGE' },
-  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
-  { label: 'Step Overview', value: 'STEP_OVERVIEW' },
-  { label: 'Photo Blurb Grid', value: 'PHOTO_BLURB_GRID' },
-  { label: 'Participation Detail', value: 'PARTICIPATION_DETAIL' },
-  { label: 'Raw HTML', value: 'RAW_HTML' },
-  { label: 'Link Sections Footer', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'Banner Image', value: 'BANNER_IMAGE' }
+  { label: 'HERO_CENTERED', value: 'HERO_CENTERED' },
+  { label: 'HERO_WITH_IMAGE', value: 'HERO_WITH_IMAGE' },
+  { label: 'SOCIAL_MEDIA', value: 'SOCIAL_MEDIA' },
+  { label: 'STEP_OVERVIEW', value: 'STEP_OVERVIEW' },
+  { label: 'PHOTO_BLURB_GRID', value: 'PHOTO_BLURB_GRID' },
+  { label: 'PARTICIPATION_DETAIL', value: 'PARTICIPATION_DETAIL' },
+  { label: 'RAW_HTML', value: 'RAW_HTML' },
+  { label: 'LINK_SECTIONS_FOOTER', value: 'LINK_SECTIONS_FOOTER' },
+  { label: 'BANNER_IMAGE', value: 'BANNER_IMAGE' }
 ]
 
 const BUTTON_TYPES = [
@@ -212,12 +219,14 @@ const StyleOptions = ({ section, updateSection }: {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, fullWidth: value }) })
           }}/></div>}
         { Object.hasOwnProperty.call(config, 'image') &&
-          <div className='mt-2'><Select options={imagePositionOptions}
-            value={config.imagePosition ? imagePositionOptions.find(opt => opt.value === config.imagePosition)
-              : undefined}
-            onChange={opt => {
-              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, imagePosition: opt?.value }) })
-            }}/></div>}
+          <div className='mt-2'>
+            <label className='form-label fw-semibold'>Image Position</label>
+            <Select options={imagePositionOptions}
+              value={config.imagePosition ? imagePositionOptions.find(opt => opt.value === config.imagePosition)
+                : undefined}
+              onChange={opt => {
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, imagePosition: opt?.value }) })
+              }}/></div>}
       </div>
     </div>
   )
@@ -302,6 +311,7 @@ const DynamicSectionEditor = ({ portalEnvContext, section, updateSection, siteMe
   const hasImage = Object.hasOwnProperty.call(sectionTypeConfig, 'image')
   const hasLogos = Object.hasOwnProperty.call(sectionTypeConfig, 'logos')
   const hasButtons = Object.hasOwnProperty.call(sectionTypeConfig, 'buttons')
+  const hasSubGrids = Object.hasOwnProperty.call(sectionTypeConfig, 'subGrids')
 
   return (
     <div>
@@ -316,6 +326,8 @@ const DynamicSectionEditor = ({ portalEnvContext, section, updateSection, siteMe
       {hasLogos && <LogoEditor portalEnvContext={portalEnvContext} section={section}
         updateSection={updateSection} siteMediaList={siteMediaList}/>}
       {hasButtons && <ButtonEditor section={section} updateSection={updateSection}/>}
+      {hasSubGrids && <PhotoBioEditor portalEnvContext={portalEnvContext} mediaList={siteMediaList}
+        section={section} updateSection={updateSection}/>}
     </div>
   )
 }
@@ -350,10 +362,12 @@ const TitleEditor = ({ section, updateSection }: {
 }) => {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
   return (
-    <TextInput className="mb-2" label="Title" value={config.title as string} onChange={value => {
-      const parsed = JSON.parse(section.sectionConfig || '{}')
-      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
-    }}/>
+    <TextInput className="mb-2" label="Title" value={config.title as string}
+      placeholder={'Enter a title for this section'}
+      onChange={value => {
+        const parsed = JSON.parse(section.sectionConfig || '{}')
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+      }}/>
   )
 }
 
@@ -362,10 +376,12 @@ const BlurbEditor = ({ section, updateSection }: {
 }) => {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
   return (
-    <Textarea rows={3} className="mb-2" label="Blurb" value={config.blurb as string} onChange={value => {
-      const parsed = JSON.parse(section.sectionConfig || '{}')
-      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
-    }}/>
+    <Textarea rows={3} className="mb-2" label="Blurb" value={config.blurb as string}
+      placeholder={'Enter a blurb for this section'}
+      onChange={value => {
+        const parsed = JSON.parse(section.sectionConfig || '{}')
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
+      }}/>
   )
 }
 
@@ -612,11 +628,12 @@ const LogoEditor = ({ portalEnvContext, section, updateSection, siteMediaList }:
   )
 }
 
-const PhotoBioEditor = ({ section, updateSection }: {
-    section: HtmlSection, updateSection: (section: HtmlSection) => void
-    }) => {
+const PhotoBioEditor = ({ portalEnvContext, mediaList, section, updateSection }: {
+  portalEnvContext: PortalEnvContext, mediaList: SiteMediaMetadata[],
+  section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
-  const photos = config.photos as MediaConfig[] || []
+  const subGrids = config.subGrids as SubGrid[] || []
 
   const photosContentId = useId()
   const photosTargetSelector = `#${photosContentId}`
@@ -630,7 +647,7 @@ const PhotoBioEditor = ({ section, updateSection }: {
           data-bs-target={photosTargetSelector}
           data-bs-toggle="collapse"
         >
-          <span className={'form-label fw-semibold mb-0'}>Photos ({photos.length})</span>
+          <span className={'form-label fw-semibold mb-0'}>Photo Bio Sections ({subGrids.length})</span>
           <span className="text-center px-2">
             <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
             <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
@@ -640,7 +657,91 @@ const PhotoBioEditor = ({ section, updateSection }: {
       <div className="collapse hide rounded-3 mb-2" id={photosContentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
         <div>
-            not yet implemented
+          {subGrids.map((subGrid, i) => {
+            return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
+              <div className="d-flex justify-content-between align-items-center">
+                {/*<span className="h5">Photo Bio {i + 1}</span>*/}
+                <PhotoBioSectionEditor portalEnvContext={portalEnvContext}
+                  index={i}
+                  mediaList={mediaList} section={section} updateSection={updateSection}/>
+              </div>
+            </div>
+          })}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const PhotoBioSectionEditor = ({ portalEnvContext, index, mediaList, section, updateSection }: {
+    portalEnvContext: PortalEnvContext,
+  index: number, mediaList: SiteMediaMetadata[], section: HtmlSection, updateSection: (section: HtmlSection) => void
+}) => {
+  const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
+  const subGrids = config.subGrids as SubGrid[] || []
+  const subGrid = subGrids[index]
+
+  const subGridsContentId = useId()
+  const subGridsTargetSelector = `#${subGridsContentId}`
+  return (
+    <div className='w-100'>
+      <div className="pb-1">
+        <button
+          aria-controls={subGridsTargetSelector}
+          aria-expanded="true"
+          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
+          data-bs-target={subGridsTargetSelector}
+          data-bs-toggle="collapse"
+        >
+          <span className={'form-label fw-semibold mb-0'}>
+            {subGrid.title ? subGrid.title : 'Bio sub-section'} ({subGrid.photoBios.length})
+          </span> <span className="text-center px-2">
+            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
+            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
+          </span>
+        </button>
+      </div>
+      <div className="collapse hide rounded-3 mb-2" id={subGridsContentId}
+        style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
+        <div>
+          {subGrid.photoBios.map((photoBio, i) => {
+            return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
+              <div>
+                <label className='form-label fw-semibold m-0'>Image</label>
+                <ImageSelector portalEnvContext={portalEnvContext}
+                  imageList={mediaList} image={photoBio.image as ImageConfig} onChange={image => {
+                    const parsed = JSON.parse(section.sectionConfig || '{}')
+                    const newSubGrids = [...config.subGrids as SectionConfig[]]
+                    newSubGrids[i].image = image
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                  }}/>
+                <TextInput label="Name" value={photoBio.name} onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig || '{}')
+                  const newSubGrids = [...config.subGrids as SectionConfig[]]
+                  newSubGrids[i].name = value
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                }}/>
+                <TextInput label="Title" value={photoBio.title} onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig || '{}')
+                  const newSubGrids = [...config.subGrids as SectionConfig[]]
+                  newSubGrids[i].title = value
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                }}/>
+                <Textarea rows={2} label="Bio" value={photoBio.blurb} onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig || '{}')
+                  const newSubGrids = [...config.subGrids as SectionConfig[]]
+                  newSubGrids[i].bio = value
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                }}/>
+                <Textarea rows={2} label="Detail" value={photoBio.detail} onChange={value => {
+                  const parsed = JSON.parse(section.sectionConfig || '{}')
+                  const newSubGrids = [...config.subGrids as SectionConfig[]]
+                  newSubGrids[i].detail = value
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                }}/>
+              </div>
+            </div>
+          })}
         </div>
       </div>
     </div>
