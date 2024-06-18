@@ -131,7 +131,7 @@ const PortalEnvConfigView = ({ portalContext, portalEnv }: PortalEnvConfigViewPr
       </Button>
     </form>
     <form className="mt-5">
-      <div>
+      <div className="col-md-6">
         <h4 className="h5">
           Supported languages <InfoPopup content={'This list determines which languages appear in the dropdown' +
           'of the participant view.  It is up to you to create the content for that language.'}/>

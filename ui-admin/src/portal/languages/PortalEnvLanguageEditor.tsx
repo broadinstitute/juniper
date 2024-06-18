@@ -139,7 +139,7 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
             aria-label={'Language code'}
             onChange={e => setNewItem({
               ...row.original,
-              languageName: e.target.value,
+              languageCode: e.target.value,
               isEditing: true
             })}
             value={row.original.languageCode}
