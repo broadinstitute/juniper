@@ -1,6 +1,8 @@
 package bio.terra.pearl.api.admin.service.forms;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
@@ -29,14 +31,16 @@ public class SurveyResponseExtService {
     this.surveyResponseService = surveyResponseService;
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "survey_response_edit")
   public HubResponse updateResponse(
+      PortalStudyEnvAuthContext authContext,
       AdminUser user,
       String portalShortcode,
       EnvironmentName envName,
       SurveyResponse responseDto,
       String enrolleeShortcode,
       UUID taskId) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
+    Portal portal = authContext.getPortal();
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
 
