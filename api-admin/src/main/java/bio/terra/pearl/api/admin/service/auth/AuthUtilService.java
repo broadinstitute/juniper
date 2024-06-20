@@ -25,6 +25,13 @@ import org.springframework.stereotype.Service;
 /** Utility service for common auth-related methods */
 @Service
 public class AuthUtilService {
+  /**
+   * 'BASE_PERMISSON' indicates the operation is permitted for any PortalAdminUser as they are
+   * authorized to access the given portal. It might include public-ish operations like viewing
+   * surveys, etc.
+   */
+  public static final String BASE_PERMISSON = "BASE";
+
   private final AdminUserService adminUserService;
   private final BearerTokenFactory bearerTokenFactory;
   private final PortalService portalService;
@@ -77,7 +84,7 @@ public class AuthUtilService {
   public Portal authUserToPortalWithPermission(
       AdminUser user, String portalShortcode, String permission) {
     Portal portal = authUserToPortal(user, portalShortcode);
-    if (user.isSuperuser()) {
+    if (user.isSuperuser() || BASE_PERMISSON.equals(permission)) {
       return portal;
     }
     adminUserService

@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
@@ -39,17 +40,18 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
         surveyFactory.attachToEnv(survey1, bundle.getStudyEnv().getId(), true);
 
     surveyExtService.replace(
-        bundle.getPortal().getShortcode(),
-        bundle.getStudy().getShortcode(),
-        EnvironmentName.sandbox,
+        PortalStudyEnvAuthContext.of(
+            operator,
+            bundle.getPortal().getShortcode(),
+            bundle.getStudy().getShortcode(),
+            bundle.getStudyEnv().getEnvironmentName()),
         studyEnvSurvey1.getId(),
         StudyEnvironmentSurvey.builder()
             .surveyId(survey2.getId())
             .studyEnvironmentId(bundle.getStudyEnv().getId())
             .active(true)
             .surveyOrder(1)
-            .build(),
-        operator);
+            .build());
 
     // there now should be two studyEnvSurveys, one active, and one inactive
     List<StudyEnvironmentSurvey> studyEnvSurveys =
