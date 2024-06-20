@@ -65,8 +65,7 @@ export const sectionTemplates: Record<string, object> = {
     title: '',
     blurb: '',
     blurbAlign: 'center',
-    buttons: [],
-    logos: []
+    buttons: []
   },
   'HERO_WITH_IMAGE': {
     title: '',
