@@ -25,8 +25,9 @@ public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
         return findAllByProperty("family_id", familyId);
     }
 
-    public List<FamilyEnrollee> findByEnrolleeId(UUID enrolleeId) {
-        return findAllByProperty("enrollee_id", enrolleeId);
+    // WARNING: This method is not audited
+    public void deleteByEnrolleeId(UUID enrolleeId) {
+        deleteByProperty("enrollee_id", enrolleeId);
     }
 
     public List<FamilyEnrollee> findByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -37,5 +38,15 @@ public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
                 .bind("studyEnvironmentId", studyEnvironmentId)
                 .mapToBean(FamilyEnrollee.class)
                 .list());
+    }
+
+    // WARNING: This method is not audited
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        jdbi.withHandle(handle -> handle.createUpdate(
+                        "DELETE FROM family_enrollee fe " +
+                                "WHERE fe.family_id in " +
+                                "(SELECT f.id FROM family f WHERE f.study_environment_id = :studyEnvironmentId)")
+                .bind("studyEnvironmentId", studyEnvironmentId)
+                .execute());
     }
 }

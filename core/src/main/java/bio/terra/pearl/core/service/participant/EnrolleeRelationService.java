@@ -138,9 +138,9 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         bulkDelete(relations, info);
     }
 
+    // WARNING: This method is not audited
     @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
-        List<EnrolleeRelation> relations = dao.findByStudyEnvironmentId(studyEnvironmentId);
-        bulkDelete(relations, info);
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 }

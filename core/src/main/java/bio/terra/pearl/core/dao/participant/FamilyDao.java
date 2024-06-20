@@ -35,4 +35,9 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
                 .mapToBean(Family.class)
                 .list());
     }
+
+    // WARNING: This method is not audited
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        deleteByProperty("study_environment_id", studyEnvironmentId);
+    }
 }

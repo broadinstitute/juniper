@@ -119,9 +119,9 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
-        enrolleeRelationService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
-        familyEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
-        familyService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
+        enrolleeRelationService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        familyEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        familyService.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
@@ -129,7 +129,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
+        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         importService.deleteByStudyEnvId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
