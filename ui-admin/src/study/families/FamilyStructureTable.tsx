@@ -229,8 +229,9 @@ const ProxiesFor = ({ member, family, studyEnvContext }: {
           return Promise.resolve(familyProxy)
         }
 
-        // in the rare case someone has a proxy otuside of the family,
-        // let's grab it from the API
+        // in the rare case someone has a proxy outside the family,
+        // let's grab it from the API. Since this seems an usual case,
+        // we don't need to worry about performance here.
         return Api.getEnrollee(
           studyEnvContext.portal.shortcode,
           studyEnvContext.study.shortcode,
