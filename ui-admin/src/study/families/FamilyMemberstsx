@@ -58,10 +58,5 @@ export const FamilyRelations = ({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
-  return <div>
-    {basicTableLayout(table)}
-    <div className="d-flex justify-content-end">
-      <button className="btn btn-link" disabled>+ Add new family relation</button>
-    </div>
-  </div>
+  return basicTableLayout(table)
 }

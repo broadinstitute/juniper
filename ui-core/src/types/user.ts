@@ -25,6 +25,7 @@ export type Enrollee = {
     lastUpdatedAt: number
     participantTasks: ParticipantTask[]
     participantNotes: ParticipantNote[]
+    relations?: EnrolleeRelation[]
     participantUserId: string
     preRegResponse?: PreregistrationResponse
     preEnrollmentResponse?: PreregistrationResponse

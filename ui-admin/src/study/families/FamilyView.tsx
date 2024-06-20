@@ -23,7 +23,7 @@ import {
 import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
 import { uniq } from 'lodash/fp'
-import {FamilyRelations} from "study/families/FamilyRelations";
+import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
 
 
 export type SurveyWithResponsesT = {
@@ -71,7 +71,7 @@ export function LoadedFamilyView({ family, studyEnvContext, onUpdate }:
                 <NavLink to="." className={getLinkCssClasses}>Overview</NavLink>
               </li>
               <li style={navListItemStyle} className="ps-3">
-                <NavLink to="relations" className={getLinkCssClasses}>Relations</NavLink>
+                <NavLink to="membersAndRelations" className={getLinkCssClasses}>Members & Relations</NavLink>
               </li>
             </ul>
           </div>
@@ -79,7 +79,8 @@ export function LoadedFamilyView({ family, studyEnvContext, onUpdate }:
             <ErrorBoundary>
               <Routes>
                 <Route index element={<FamilyOverview family={family} studyEnvContext={studyEnvContext}/>}/>
-                <Route path="relations" element={<FamilyRelations family={family} studyEnvContext={studyEnvContext}/>}/>
+                <Route path="membersAndRelations"
+                  element={<FamilyMembersAndRelations family={family} studyEnvContext={studyEnvContext}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

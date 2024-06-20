@@ -13,7 +13,7 @@ import {
 } from 'components/InfoCard'
 import { Link } from 'react-router-dom'
 import { isEmpty } from 'lodash'
-import { FamilyTreeTable } from 'study/families/FamilyTreeTable'
+import { FamilyStructureTable } from 'study/families/FamilyStructureTable'
 
 /**
  * Overall information about a family.
@@ -42,10 +42,10 @@ export const FamilyOverview = (
     </InfoCard>
     <InfoCard>
       <InfoCardHeader>
-        <InfoCardTitle title={`Family Tree`}/>
+        <InfoCardTitle title={`Family`}/>
       </InfoCardHeader>
       <div className={'w-100'}>
-        <FamilyTreeTable
+        <FamilyStructureTable
           family={family}
           studyEnvContext={studyEnvContext}/>
       </div>

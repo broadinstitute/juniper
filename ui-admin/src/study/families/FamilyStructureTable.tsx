@@ -31,6 +31,10 @@ import {
   faCaretDown,
   faCaretUp
 } from '@fortawesome/free-solid-svg-icons'
+import { useLoadingEffect } from 'api/api-utils'
+import Api from 'api/api'
+import LoadingSpinner from 'util/LoadingSpinner'
+import { EnrolleeLink } from './FamilyOverview'
 
 type FamilyMemberWithSubrows = {
   member: Enrollee,
@@ -40,13 +44,14 @@ type FamilyMemberWithSubrows = {
 /**
  *
  */
-export const FamilyTreeTable = (
+export const FamilyStructureTable = (
   { family, studyEnvContext }: { family: Family, studyEnvContext: StudyEnvContextT }
 ) => {
   const members = useMemo(() => groupFamilyMembersWithSubrows(family), [family])
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [expanded, setExpanded] = useState<ExpandedState>({})
+
 
   const columns: ColumnDef<FamilyMemberWithSubrows>[] = [
     {
@@ -85,6 +90,13 @@ export const FamilyTreeTable = (
       accessorKey: 'member.profile.givenName',
       cell: ({ row }) => {
         return `${row.original.member.profile?.givenName || ''} ${row.original.member.profile?.familyName || ''}`.trim()
+      }
+    },
+    {
+      id: 'proxyRelation',
+      header: 'Proxies',
+      cell: ({ row }) => {
+        return <ProxiesFor member={row.original.member} family={family} studyEnvContext={studyEnvContext}/>
       }
     }
   ]
@@ -199,4 +211,41 @@ const sortByFamilyRelationship = (rows: FamilyMemberWithSubrows[]): void => {
     }
     return 0
   })
+}
+
+const ProxiesFor = ({ member, family, studyEnvContext }: {
+  member: Enrollee,
+  family: Family,
+  studyEnvContext: StudyEnvContextT
+}) => {
+  const [proxies, setProxies] = useState<Enrollee[]>([])
+  const { isLoading } = useLoadingEffect(async () => {
+    const loadedProxies = await Promise.all((member.relations || [])
+      .filter(r => r.targetEnrolleeId === member.id && r.relationshipType === 'PROXY')
+      .map(async r => {
+        // see if the proxy is in the family, if so we already have it loaded
+        const familyProxy: Enrollee = family.members?.find(m => m.id === r.enrolleeId)
+        if (!isNil(familyProxy)) {
+          return Promise.resolve(familyProxy)
+        }
+
+        // in the rare case someone has a proxy otuside of the family,
+        // let's grab it from the API
+        return Api.getEnrollee(
+          studyEnvContext.portal.shortcode,
+          studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName,
+          r.enrolleeId)
+      }))
+
+    setProxies(loadedProxies)
+  })
+
+  return <>
+    {isLoading ? <LoadingSpinner/> : <div>
+      {proxies.map(p => <div key={p.id}>
+        <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={p}/>
+      </div>)}
+    </div>}
+  </>
 }
