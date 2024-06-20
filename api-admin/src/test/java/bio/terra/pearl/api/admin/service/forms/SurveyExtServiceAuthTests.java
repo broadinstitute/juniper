@@ -18,6 +18,8 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
+
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -83,6 +85,15 @@ public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
   }
 
   @Test
+  public void testAllAuths() {
+    AuthTestUtils.assertAllAnnotated(List.of(
+            new AuthTestSpec("get", EnforcePortalPermission.class, "BASE", List.of()),
+            new AuthTestSpec("createConfiguredSurvey", EnforcePortalStudyEnvPermission.class, "BASE",
+                    List.of(SandboxOnly.class))
+    ));
+  }
+
+  @Test
   public void getRequiresSurveyMatchedToPortal() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     Portal portal = Portal.builder().shortcode("testSurveyGet").id(UUID.randomUUID()).build();
@@ -115,4 +126,6 @@ public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
         .thenReturn(Optional.of(survey));
     return survey;
   }
+
+  public record AuthTestSpec(String methodName, Class<?> authClass, String permission, List<Class<?>> otherAnnots) {}
 }
