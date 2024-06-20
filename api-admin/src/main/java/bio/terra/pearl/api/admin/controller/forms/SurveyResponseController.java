@@ -49,13 +49,7 @@ public class SurveyResponseController implements SurveyResponseApi {
         PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
     HubResponse hubResponse =
         surveyResponseExtService.updateResponse(
-            authContext,
-            user,
-            portalShortcode,
-            environmentName,
-            responseDto,
-            enrolleeShortcode,
-            taskId);
+            authContext, user, responseDto, enrolleeShortcode, taskId);
     return ResponseEntity.ok(hubResponse);
   }
 }

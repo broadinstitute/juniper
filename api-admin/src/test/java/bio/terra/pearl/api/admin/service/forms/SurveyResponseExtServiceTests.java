@@ -26,13 +26,7 @@ public class SurveyResponseExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () ->
             surveyResponseExtService.updateResponse(
-                emptyAuthContext,
-                new AdminUser(),
-                "someportal",
-                EnvironmentName.sandbox,
-                null,
-                "someenrollee",
-                null));
+                emptyAuthContext, new AdminUser(), null, "someenrollee", null));
     Mockito.verify(authUtilService)
         .authUserToPortalWithPermission(
             emptyAuthContext.getOperator(),

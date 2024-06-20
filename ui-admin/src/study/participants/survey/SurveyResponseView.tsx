@@ -97,17 +97,18 @@ export function RawEnrolleeSurveyView({
                 description="Read form responses"
               />
               <div className="dropdown-divider my-1"></div>
-              <DropdownButton
-                onClick={() => setIsEditing(true)}
-                icon={faPencil}
-                disabled={
-                  !configSurvey.survey.allowAdminEdit ||
-                    !userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit')
-                }
-                label="Editing"
-                description="Edit form responses directly"
-              />
-              <div className="dropdown-divider my-1"></div>
+              {userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit') &&
+                <>
+                  <DropdownButton
+                    onClick={() => setIsEditing(true)}
+                    icon={faPencil}
+                    disabled={!configSurvey.survey.allowAdminEdit}
+                    label="Editing"
+                    description="Edit form responses directly"
+                  />
+                  <div className="dropdown-divider my-1"></div>
+                </>
+              }
               <DropdownButton
                 onClick={() => {
                   setIsEditing(false)
