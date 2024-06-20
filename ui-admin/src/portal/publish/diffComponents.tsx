@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import { Trigger, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 
 /**
  * returns html for displaying the differences in versions.  this does not yet include support
@@ -101,7 +102,7 @@ export const versionDisplay = (stableId: string, version: number) => {
   return <span>{stableId} v{version}</span>
 }
 
-export type Configable = StudyEnvironmentSurvey | Trigger
+export type Configable = StudyEnvironmentSurvey | Trigger | PortalEnvironmentLanguage
 type ConfigChangeListViewProps<T extends Configable> = {
   configChangeList: ListChange<T, VersionedConfigChange>,
   selectedChanges: ListChange<T, VersionedConfigChange>,
@@ -209,6 +210,11 @@ export const renderNotificationConfig = (change: Trigger) => {
   return <span>{change.emailTemplate.name} - {change.triggerType}<span className="text-muted fst-italic ms-2">
     ({change.emailTemplate.stableId} v{change.emailTemplate.version})
   </span></span>
+}
+
+/** summarizes a portal language */
+export const renderPortalLanguage = (change: PortalEnvironmentLanguage) => {
+  return <span>{change.languageName} ({change.languageCode})</span>
 }
 
 /** summarizes a change to a versioned entity (name + version) */

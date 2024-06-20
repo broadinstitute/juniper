@@ -10,9 +10,13 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
-export type PortalEnvironmentLanguage = {
+export type PortalEnvironmentLanguageOpt = {
   languageCode: string
   languageName: string
+}
+
+export type PortalEnvironmentLanguage = PortalEnvironmentLanguageOpt & {
+  id: string
 }
 
 export type PortalStudy = {

@@ -23,7 +23,7 @@ import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
-import { usePortalLanguage } from '../usePortalLanguage'
+import { usePortalLanguage } from '../languages/usePortalLanguage'
 import _cloneDeep from 'lodash/cloneDeep'
 
 type NavbarOption = {label: string, value: string}

@@ -164,8 +164,8 @@ describe('FormPreview', () => {
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
               supportedLanguages={[
-                { languageCode: 'en', languageName: 'English' },
-                { languageCode: 'es', languageName: 'Spanish' }
+                { languageCode: 'en', languageName: 'English', id: '1' },
+                { languageCode: 'es', languageName: 'Spanish', id: '2' }
               ]}
             />
           </MockI18nProvider>)
@@ -185,7 +185,7 @@ describe('FormPreview', () => {
           <MockI18nProvider>
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
-              supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+              supportedLanguages={[{ languageCode: 'en', languageName: 'English', id: '1' }]}
             />
           </MockI18nProvider>)
 
