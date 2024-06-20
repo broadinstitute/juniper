@@ -11,6 +11,7 @@ import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table
 import { basicTableLayout } from 'util/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 import { Button } from 'components/forms/Button'
+import { TextInput } from '../../components/forms/TextInput'
 
 type EditablePortalEnvironmentLanguage = PortalEnvironmentLanguage & { isEditing: boolean }
 type PortalEnvironmentLanguageRow = PortalEnvironmentLanguage | EditablePortalEnvironmentLanguage
@@ -134,12 +135,13 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
       cell: ({ row }) => {
         const value = row.original.languageCode
         if (isEditable(row.original)) {
-          return row.original.isEditing && <input
-            type="text"
+          return row.original.isEditing && <TextInput
+            size={2}
+            maxLength={2}
             aria-label={'Language code'}
-            onChange={e => setNewItem({
+            onChange={textVal => setNewItem({
               ...row.original,
-              languageCode: e.target.value,
+              languageCode: textVal,
               isEditing: true
             })}
             value={row.original.languageCode}
@@ -189,7 +191,7 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
         </Button>
       }
     })
-  }, [items, newItem, readonly])
+  }, [])
 
   const data = useMemo(
     () => (items as PortalEnvironmentLanguageRow[]).concat(newItem),
