@@ -4,7 +4,7 @@
   "memberShortcodes": [
     "HDSALK",
     "HDPSLK",
-    "HDJSLK"
+    "HDDSLK"
   ],
   "relations": [
     {
@@ -13,7 +13,7 @@
       "relationship": "father"
     },
     {
-      "targetShortcode": "HDJSLK",
+      "targetShortcode": "HDDSLK",
       "shortcode": "HDSALK",
       "relationship": "father"
     }

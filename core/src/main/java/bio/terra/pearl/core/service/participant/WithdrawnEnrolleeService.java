@@ -84,7 +84,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
-            familyEnrolleeService.deleteByEnrolleeId(enrollee.getId(), dataAuditInfo); // delete all family relationships
+            familyEnrolleeService.deleteByEnrolleeId(enrollee.getId(), null); // delete all family relationships
 
             //now withdraw all the proxied users
             for (Enrollee proxy : proxiesOnlyProxyingForThisUser) {

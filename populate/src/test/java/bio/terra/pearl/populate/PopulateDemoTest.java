@@ -72,7 +72,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(members, hasSize(3));
         assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDSALK")));
         assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDPSLK")));
-        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDJSLK")));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDDSLK")));
 
         List<EnrolleeRelation> relations = enrolleeRelationService.findRelationsForFamily(family.getId());
         assertThat(relations, hasSize(2));

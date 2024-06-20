@@ -1,12 +1,12 @@
 {
   "participantUser": {
-    "username": "jtsalk@test.com",
+    "username": "dsalk@test.com",
     "lastLoginHoursAgo": 5
   },
   "profile": {
-    "givenName": "Jonathan",
+    "givenName": "Darrell",
     "familyName": "Salk",
-    "contactEmail": "jtsalk@test.com",
+    "contactEmail": "dsalk@test.com",
     "sexAtBirth": "male",
     "preferredLanguage": "es",
     "mailingAddress": {
