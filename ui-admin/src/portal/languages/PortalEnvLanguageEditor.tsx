@@ -89,16 +89,6 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
     setItems(newItems)
   }
 
-  const updateItem = (item: PortalEnvironmentLanguage) => {
-    if (item.languageCode === newItem.languageCode) {
-      addNewItem(item)
-      return
-    }
-    const newItems = items.map(m => m.languageCode === item.languageCode ? item : m)
-    setItems(newItems)
-  }
-
-
   const columns: ColumnDef<PortalEnvironmentLanguage>[] = useMemo(() => {
     const baseCols: ColumnDef<PortalEnvironmentLanguage>[] = [{
       header: 'Name',
@@ -172,7 +162,7 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
               disabled={
                 isEmpty(row.original.languageName)
                 || isEmpty(row.original.languageCode)}
-              onClick={() => updateItem({
+              onClick={() => addNewItem({
                 languageCode: row.original.languageCode,
                 languageName: row.original.languageName,
                 id: ''
