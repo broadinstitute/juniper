@@ -26,8 +26,9 @@ export function extractAllLocalTexts(lsc: LocalSiteContent) {
   }
   lsc.navbarItems.forEach((navbarItem, index) => {
     texts[`navbar[${index}].text`] = navbarItem.text
+
     if (navbarItem.itemType === 'INTERNAL') {
-      texts = { ...texts, ...extractAllPageTexts(navbarItem.htmlPage, `subpage[${index}]`) }
+      texts = { ...texts, ...extractAllPageTexts(navbarItem.htmlPage, `page[${navbarItem.htmlPage}]`) }
     }
   })
   return texts

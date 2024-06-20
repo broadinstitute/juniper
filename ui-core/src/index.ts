@@ -33,6 +33,8 @@ export * from './test-utils/router-testing-utils'
 
 export * from './participant/dashboard/Alert'
 export * from './participant/landing/sections/HtmlSectionView'
+export * from './participant/landing/sections/LinkSectionsFooter'
+export { ex} from './participant/landing/sections/HeroWithImageTemplate'
 export * from './participant/landing/sections/SiteFooter'
 export * from './participant/landing/Markdown'
 export * from './participant/landing/MailingListModal'
