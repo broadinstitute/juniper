@@ -1,13 +1,38 @@
-import React, { HTMLProps, useEffect, useState } from 'react'
-import { CellContext, Column, flexRender, Header, PaginationState, RowData, Table } from '@tanstack/react-table'
+import React, {
+  HTMLProps,
+  useEffect,
+  useState
+} from 'react'
+import {
+  CellContext,
+  Column,
+  flexRender,
+  Header,
+  PaginationState,
+  Row,
+  RowData,
+  Table
+} from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCaretDown,
+  faCaretUp,
+  faCheck,
+  faColumns,
+  faDownload
+} from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
-import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
+import {
+  escapeCsvValue,
+  saveBlobAsDownload
+} from './downloadUtils'
 import { instantToDefaultString } from '@juniper/ui-core'
-import { isEmpty } from 'lodash'
+import {
+  isEmpty,
+  isNil
+} from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
 
@@ -369,10 +394,11 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
  * Configuration for basicTableLayout. This can have configuration properties that affect different parts of the table,
  * such as headers, rows, etc. All configuration properties are optional.
  */
-export type BasicTableConfig = {
+export type BasicTableConfig<T> = {
   filterable?: boolean,
   tableClass?: string,
-  tdClass?: string
+  tdClass?: string,
+  customRowHeader?: (row: Row<T>) => React.ReactNode
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
@@ -381,7 +407,7 @@ const defaultBasicTableConfig = {
 }
 
 /** helper function for simple table layouts */
-export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = {}) {
+export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T> = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
   return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
     <thead>
@@ -392,15 +418,18 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = 
     <tbody>
       {table.getRowModel().rows.map(row => {
         return (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => {
-              return (
-                <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              )
-            })}
-          </tr>
+          <>
+            {!isNil(config.customRowHeader) && config.customRowHeader(row)}
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => {
+                return (
+                  <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                )
+              })}
+            </tr>
+          </>
         )
       })}
     </tbody>
