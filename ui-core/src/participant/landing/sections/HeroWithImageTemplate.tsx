@@ -2,7 +2,7 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from '../../../types/landingPageConfig'
+import { SectionConfig } from 'src/types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
@@ -167,6 +167,25 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
       </div>
     </div>
   )
+}
+
+/**
+ *
+ */
+export const extractMessagesAndKeys = (config: HeroWithImageTemplateConfig, prefix: string) => {
+  const texts: Record<string, string> = {}
+  if (config.title) {
+    texts[`${prefix}.title`] = config.title
+  }
+  if (config.blurb) {
+    texts[`${prefix}.blurb`] = config.blurb
+  }
+  if (config.buttons) {
+    config.buttons.forEach((button, buttonIndex) => {
+      texts[`${prefix}.button[${buttonIndex}].text`] = button.text
+    })
+  }
+  return texts
 }
 
 export default withValidatedSectionConfig(validateHeroWithImageTemplateConfig, HeroWithImageTemplate)

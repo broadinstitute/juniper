@@ -79,4 +79,23 @@ function LinkSectionsFooter(props: LinkSectionsFooterProps) {
   </>
 }
 
+/**
+ *
+ */
+export const extractMessagesAndKeys = (config: LinkSectionsFooterConfig, prefix: string) => {
+  const texts: Record<string, string> = {}
+  if (!config.itemSections) {
+    return
+  }
+  config.itemSections.forEach((section, sectionIndex) => {
+    texts[`${prefix}.title`] = section.title
+    section.items.forEach((item, itemIndex) => {
+      if (item.text) {
+        texts[`${prefix}.section[${sectionIndex}].item[${itemIndex}].text`] = item.text
+      }
+    })
+  })
+  return texts
+}
+
 export default withValidatedSectionConfig(validateLinkSectionsFooterConfig, LinkSectionsFooter)

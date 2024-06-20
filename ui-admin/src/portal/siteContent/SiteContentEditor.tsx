@@ -2,7 +2,15 @@ import React, { useState } from 'react'
 import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faClipboard,
+  faClockRotateLeft,
+  faDownload,
+  faImage,
+  faPalette,
+  faPlus,
+  faTrash
+} from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
@@ -25,6 +33,7 @@ import Modal from 'react-bootstrap/Modal'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { usePortalLanguage } from '../usePortalLanguage'
 import _cloneDeep from 'lodash/cloneDeep'
+import { extractAllTexts } from './siteContentLanguageUtils'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -220,6 +229,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     window.open(url, '_blank')
   }
 
+  const extractTexts = () => {
+    const texts = extractAllTexts(siteContent)
+    console.log(texts)
+  }
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
@@ -248,6 +261,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             </button> }
             <Button variant="secondary" className="ms-5" onClick={participantViewClick}>
               Participant view <FontAwesomeIcon icon={faExternalLink}/>
+            </Button>
+            <Button variant="secondary" className="ms-5" onClick={extractTexts}>
+              Texts <FontAwesomeIcon icon={faDownload}/>
             </Button>
           </h5>
         </div>
