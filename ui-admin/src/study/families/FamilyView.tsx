@@ -44,9 +44,9 @@ export default function FamilyView({ studyEnvContext }: { studyEnvContext: Study
 }
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export function LoadedFamilyView({ family, studyEnvContext, onUpdate }:
+export function LoadedFamilyView({ family, studyEnvContext }:
                                      { family: Family, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
-  const { currentEnv, currentEnvPath } = studyEnvContext
+  const { currentEnvPath } = studyEnvContext
 
 
   return <div className="ParticipantView mt-3 ps-4">
