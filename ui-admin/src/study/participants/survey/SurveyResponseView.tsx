@@ -103,7 +103,13 @@ export function RawEnrolleeSurveyView({
               {userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit') &&
                 <>
                   <DropdownButton
-                    onClick={() => setShowJustificationModal(true)}
+                    onClick={() => {
+                      if (configSurvey.survey.surveyType === 'ADMIN') {
+                        setIsEditing(true)
+                      } else {
+                        setShowJustificationModal(true)
+                      }
+                    }}
                     icon={faPencil}
                     disabled={!configSurvey.survey.allowAdminEdit}
                     label="Editing"
