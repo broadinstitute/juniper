@@ -8,10 +8,9 @@ import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeSearchExtService {
