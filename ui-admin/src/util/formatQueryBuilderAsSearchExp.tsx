@@ -10,6 +10,7 @@ import {
 } from 'api/api'
 import {
   get,
+  has,
   isEmpty
 } from 'lodash'
 
@@ -39,6 +40,8 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
       value === 'true' ||
       value === 'false'
 
+    const processedField = has(facets, field) ? `{${field}}` : field
+
     switch (operator) {
       case '<':
       case '<=':
@@ -60,12 +63,12 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
           processedValue = `'${escape(value, escapeQuotes)}'`
         }
 
-        return `{${field}} ${operator} ${processedValue}`
+        return `${processedField} ${operator} ${processedValue}`
       }
       case 'contains':
       case 'doesNotContain':
         return wrapInNegation(
-          `{${field}} contains ${
+          `${processedField} contains ${
             valueIsField || useBareValue
               ? trimIfString(value)
               : `'${escape(value, escapeQuotes)}'`
@@ -146,9 +149,9 @@ export const createEnrolleeSearchExpressionRuleProcessor = (facets: ExpressionSe
             firstValue = tempNum
           }
           if (operator === 'between') {
-            return `(${field} >= ${firstValue} and ${field} <= ${secondValue})`
+            return `(${processedField} >= ${firstValue} and ${processedField} <= ${secondValue})`
           } else {
-            return `(${field} < ${firstValue} or ${field} > ${secondValue})`
+            return `(${processedField} < ${firstValue} or ${processedField} > ${secondValue})`
           }
         } else {
           return ''
