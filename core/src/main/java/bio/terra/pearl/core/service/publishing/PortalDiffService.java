@@ -1,9 +1,7 @@
 package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
-import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
@@ -34,9 +32,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PortalDiffService {
-    public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
-            "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
-            "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity", "trigger");
     private final PortalEnvironmentService portalEnvService;
     private final PortalEnvironmentConfigService portalEnvironmentConfigService;
     private final SiteContentService siteContentService;
@@ -81,10 +76,10 @@ public class PortalDiffService {
         VersionedEntityChange<Survey> preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
         VersionedEntityChange<SiteContent> siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
-                destEnv.getPortalEnvironmentConfig(), CONFIG_IGNORE_PROPS);
-        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = diffConfigLists(sourceEnv.getTriggers(),
+                destEnv.getPortalEnvironmentConfig(), Publishable.CONFIG_IGNORE_PROPS);
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = Publishable.diffConfigLists(sourceEnv.getTriggers(),
                 destEnv.getTriggers(),
-                CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
 
         List<StudyEnvironmentChange> studyEnvChanges = new ArrayList<>();
         List<Study> studies = studyService.findByPortalId(sourceEnv.getPortalId());
@@ -97,15 +92,16 @@ public class PortalDiffService {
         List<ParticipantDashboardAlert> sourceAlerts = new ArrayList<>(sourceEnv.getParticipantDashboardAlerts());
         List<ParticipantDashboardAlertChange> alertChangeLists = diffAlertLists(sourceAlerts, destAlerts);
         ListChange<PortalEnvironmentLanguage, Object> languageChanges = diffLanguages(sourceEnv.getSupportedLanguages(), destEnv.getSupportedLanguages());
-        return new PortalEnvironmentChange(
-                siteContentRecord,
-                envConfigChanges,
-                preRegRecord,
-                triggerChanges,
-                alertChangeLists,
-                studyEnvChanges,
-                languageChanges
-        );
+
+        return PortalEnvironmentChange.builder()
+                .siteContentChange(siteContentRecord)
+                .configChanges(envConfigChanges)
+                .preRegSurveyChanges(preRegRecord)
+                .triggerChanges(triggerChanges)
+                .participantDashboardAlertChanges(alertChangeLists)
+                .studyEnvChanges(studyEnvChanges)
+                .languageChanges(languageChanges)
+                .build();
     }
 
     protected List<ParticipantDashboardAlertChange> diffAlertLists(
@@ -120,11 +116,11 @@ public class PortalDiffService {
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
             ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.get(sourceAlert.getTrigger());
             if (matchedAlert == null) {
-                List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, CONFIG_IGNORE_PROPS);
+                List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, Publishable.CONFIG_IGNORE_PROPS);
                 alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
             } else {
                 unmatchedDestAlerts.remove(matchedAlert.getTrigger());
-                List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, CONFIG_IGNORE_PROPS);
+                List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, Publishable.CONFIG_IGNORE_PROPS);
                 if(!alertChanges.isEmpty()) {
                     alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), alertChanges));
                 }
@@ -146,10 +142,8 @@ public class PortalDiffService {
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
+        triggerService.loadForDiffing(portalEnv);
         portalEnv.setSupportedLanguages(portalEnvironmentLanguageService.findByPortalEnvId(portalEnv.getId()));
-        List<Trigger> triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
-        triggerService.attachTemplates(triggers);
-        portalEnv.setTriggers(triggers);
 
         List<ParticipantDashboardAlert> alerts = portalDashboardConfigService.findByPortalEnvId(portalEnv.getId());
         portalEnv.setParticipantDashboardAlerts(alerts);
@@ -157,48 +151,6 @@ public class PortalDiffService {
         return portalEnv;
     }
 
-    public static <C extends VersionedEntityConfig, T extends BaseEntity & Versioned> ListChange<C, VersionedConfigChange<T>> diffConfigLists(
-            List<C> sourceConfigs,
-            List<C> destConfigs,
-            List<String> ignoreProps)
-    throws Exception {
-        List<C> unmatchedDestConfigs = new ArrayList<>(destConfigs);
-        List<VersionedConfigChange<T>> changedRecords = new ArrayList<>();
-        List<C> addedConfigs = new ArrayList<>();
-        for (C sourceConfig : sourceConfigs) {
-            C matchedConfig = unmatchedDestConfigs.stream().filter(
-                    destConfig -> isVersionedConfigMatch(sourceConfig, destConfig))
-                    .findAny().orElse(null);
-            if (matchedConfig == null) {
-                addedConfigs.add(sourceConfig);
-            } else {
-                // this remove only works if the config has an ID, since that's how BaseEntity equality works
-                // that's fine, since we're only working with already-persisted entities in this list.
-                unmatchedDestConfigs.remove(matchedConfig);
-                VersionedConfigChange<T> changeRecord = new VersionedConfigChange<T>(
-                        sourceConfig.getId(), matchedConfig.getId(),
-                        ConfigChange.allChanges(sourceConfig, matchedConfig, ignoreProps),
-                        new VersionedEntityChange<T>(sourceConfig.versionedEntity(), matchedConfig.versionedEntity())
-                );
-                if (changeRecord.isChanged()) {
-                    changedRecords.add(changeRecord);
-                }
-
-            }
-        }
-        return new ListChange<>(addedConfigs, unmatchedDestConfigs, changedRecords);
-    }
-
-    /** for now, just checks to see if they reference the same versioned document */
-    public static boolean isVersionedConfigMatch(VersionedEntityConfig configA, VersionedEntityConfig configB) {
-        if (configA == null || configB == null) {
-            return configA == configB;
-        }
-        if (configA.versionedEntity() == null || configB.versionedEntity() == null) {
-            return false;
-        }
-        return Objects.equals(configA.versionedEntity().getStableId(), configB.versionedEntity().getStableId());
-    }
 
     public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
         StudyEnvironment sourceEnv = loadStudyEnvForProcessing(studyShortcode, source);
@@ -210,24 +162,21 @@ public class PortalDiffService {
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(
                 sourceEnv.getStudyEnvironmentConfig(),
                 destEnv.getStudyEnvironmentConfig(),
-                CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
         VersionedEntityChange<Survey> preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
-        ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = diffConfigLists(
+        ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = Publishable.diffConfigLists(
                 sourceEnv.getConfiguredSurveys(),
                 destEnv.getConfiguredSurveys(),
-                CONFIG_IGNORE_PROPS);
-        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = diffConfigLists(
-                sourceEnv.getTriggers(),
-                destEnv.getTriggers(),
-                CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
 
-        return new StudyEnvironmentChange(
-                studyShortcode,
-                envConfigChanges,
-                preEnrollChange,
-                surveyChanges,
-                triggerChanges
-        );
+
+        StudyEnvironmentChange change = StudyEnvironmentChange.builder()
+                .studyShortcode(studyShortcode)
+                .configChanges(envConfigChanges)
+                .preEnrollSurveyChanges(preEnrollChange)
+                .surveyChanges(surveyChanges).build();
+        triggerService.updateDiff(sourceEnv, destEnv, change);
+        return change;
     }
 
     /** diffs the two lists -- any changes to a language will be considered an add/remove */
