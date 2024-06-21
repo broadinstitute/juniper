@@ -15,7 +15,7 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserPopDto;
@@ -51,7 +51,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final AdminUserPopulator adminUserPopulator;
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
-    private final PortalLanguageService portalLanguageService;
+    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
 
     public PortalPopulator(PortalService portalService,
@@ -65,7 +65,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
                            EmailTemplatePopulator emailTemplatePopulator,
-                           PortalLanguageService portalLanguageService) {
+                           PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -78,7 +78,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
-        this.portalLanguageService = portalLanguageService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) {
@@ -123,7 +123,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (PortalEnvironmentLanguage language : portalEnvPopDto.getSupportedLanguages()) {
             language.setPortalEnvironmentId(savedEnv.getId());
-            portalLanguageService.create(language);
+            portalEnvironmentLanguageService.create(language);
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);

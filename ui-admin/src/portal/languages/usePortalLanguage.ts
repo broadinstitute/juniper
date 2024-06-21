@@ -1,5 +1,5 @@
-import { useStudyEnvParamsFromPath } from '../study/StudyEnvironmentRouter'
-import { PortalContext } from './PortalProvider'
+import { useStudyEnvParamsFromPath } from '../../study/StudyEnvironmentRouter'
+import { PortalContext } from '../PortalProvider'
 import { useContext } from 'react'
 
 /**
@@ -22,7 +22,8 @@ export function usePortalLanguage() {
     return {
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages
     }

@@ -19,7 +19,7 @@ describe('PortalEnvDiff', () => {
       sourceEnvName="sourceEnv"
       changeSet={emptyChangeSet}/>)
     render(RoutedComponent)
-    expect(screen.queryAllByText('no changes')).toHaveLength(5)
+    expect(screen.queryAllByText('no changes')).toHaveLength(6)
     expect(screen.queryAllByRole('input')).toHaveLength(0)
   })
 
@@ -39,7 +39,7 @@ describe('PortalEnvDiff', () => {
       sourceEnvName="sourceEnv"
       changeSet={changeSet}/>)
     render(RoutedComponent)
-    expect(screen.queryAllByText('no changes')).toHaveLength(4)
+    expect(screen.queryAllByText('no changes')).toHaveLength(5)
     expect(screen.queryAllByRole('checkbox')).toHaveLength(1)
 
     // if we save without making any changes, the result should be an empty changeset
@@ -74,7 +74,7 @@ describe('PortalEnvDiff', () => {
       sourceEnvName="sourceEnv"
       changeSet={changeSet}/>)
     render(RoutedComponent)
-    expect(screen.queryAllByText('no changes')).toHaveLength(4)
+    expect(screen.queryAllByText('no changes')).toHaveLength(5)
     expect(screen.queryAllByRole('checkbox')).toHaveLength(1)
 
     // if we save without making any changes, the result should be an empty changeset
@@ -120,7 +120,7 @@ describe('PortalEnvDiff', () => {
       changeSet={changeSet}/>)
     render(RoutedComponent)
     const changeCheckboxes = screen.queryAllByRole('checkbox')
-    expect(screen.queryAllByText('no changes')).toHaveLength(4)
+    expect(screen.queryAllByText('no changes')).toHaveLength(5)
     expect(changeCheckboxes).toHaveLength(2)
 
     for (const checkbox of changeCheckboxes) {

@@ -23,7 +23,6 @@ public class PortalDiffServiceTests extends BaseSpringBootTest {
     @Autowired
     private PortalDiffService portalDiffService;
 
-
     @Test
     public void testDiffBothUninitialized() throws Exception {
         PortalEnvironment sourceEnv = PortalEnvironment.builder().portalEnvironmentConfig(

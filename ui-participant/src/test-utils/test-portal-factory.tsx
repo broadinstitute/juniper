@@ -57,7 +57,7 @@ export const mockPortalEnvironment = (): PortalEnvironment => {
     environmentName: 'sandbox',
     portalEnvironmentConfig: mockPortalEnvironmentConfig(),
     siteContent: mockSiteContent(),
-    supportedLanguages: [{ languageCode: 'en', languageName: 'English' }]
+    supportedLanguages: [{ languageCode: 'en', languageName: 'English', id: '1' }]
   }
 }
 
