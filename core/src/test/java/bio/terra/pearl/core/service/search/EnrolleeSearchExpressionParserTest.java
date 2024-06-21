@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import org.jooq.Query;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -119,6 +120,30 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertThrows(IllegalArgumentException.class,
                 () -> enrolleeSearchExpressionParser.parseRule("{profile .givenName} = 'Jonas'"));
 
+    }
+
+    @Test
+    @Transactional
+    public void testFunctionsErrorWithWrongType() {
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "lower({enrollee.subject}) = 'true'"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "trim(10) = 10"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "max('hey', 3, 4) = 5"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "min('hey', 3, 4) = 5"
+                ));
     }
 
 

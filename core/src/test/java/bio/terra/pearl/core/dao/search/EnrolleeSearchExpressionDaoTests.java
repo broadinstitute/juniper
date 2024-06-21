@@ -574,36 +574,6 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAddFunction(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
-                "add(1, 2) = 3"
-        );
-
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(addExp, enrollee.getStudyEnvironmentId());
-
-        // should true for everybody
-        assertEquals(1, results.size());
-    }
-
-    @Test
-    @Transactional
-    public void testMultFunction(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression multExp = enrolleeSearchExpressionParser.parseRule(
-                "mult(5, 5) = 25"
-        );
-
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(multExp, enrollee.getStudyEnvironmentId());
-
-        // should true for everybody
-        assertEquals(1, results.size());
-    }
-
-    @Test
-    @Transactional
     public void testTrimFunction(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
@@ -630,30 +600,6 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         // should true for everybody
         assertEquals(1, results.size());
-    }
-
-    @Test
-    @Transactional
-    public void testIsEmpty(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression shouldBeTrue = enrolleeSearchExpressionParser.parseRule(
-                "isEmpty('  ') = true"
-        );
-
-        EnrolleeSearchExpression shouldBeFalse = enrolleeSearchExpressionParser.parseRule(
-                "isEmpty(' HEY ') = true"
-        );
-
-        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(shouldBeTrue, enrollee.getStudyEnvironmentId());
-
-        // should true for everybody
-        assertEquals(1, results.size());
-
-        results = enrolleeSearchExpressionDao.executeSearch(shouldBeFalse, enrollee.getStudyEnvironmentId());
-
-        // should false for everybody
-        assertEquals(0, results.size());
     }
 
     @Test

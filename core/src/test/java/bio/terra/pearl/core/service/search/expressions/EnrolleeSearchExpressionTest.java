@@ -503,30 +503,6 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    public void testAddFunction(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression addExp = enrolleeSearchExpressionParser.parseRule(
-                "add(1, 2) = 3"
-        );
-
-        assertTrue(addExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
-    }
-
-    @Test
-    @Transactional
-    public void testMultFunction(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression multExp = enrolleeSearchExpressionParser.parseRule(
-                "mult(5, 5) = 25"
-        );
-
-        assertTrue(multExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
-    }
-
-    @Test
-    @Transactional
     public void testTrimFunction(TestInfo info) {
         Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
 
@@ -547,24 +523,6 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
         );
 
         assertTrue(trimExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
-    }
-
-    @Test
-    @Transactional
-    public void testIsEmpty(TestInfo info) {
-        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
-
-        EnrolleeSearchExpression shouldBeTrue = enrolleeSearchExpressionParser.parseRule(
-                "isEmpty('  ') = true"
-        );
-
-        EnrolleeSearchExpression shouldBeFalse = enrolleeSearchExpressionParser.parseRule(
-                "isEmpty(' HEY ') = true"
-        );
-
-
-        assertTrue(shouldBeTrue.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
-        assertFalse(shouldBeFalse.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
     }
 
     @Test

@@ -13,7 +13,10 @@ import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
 import bio.terra.pearl.core.service.search.expressions.*;
 import bio.terra.pearl.core.service.search.terms.*;
-import bio.terra.pearl.core.service.search.terms.functions.*;
+import bio.terra.pearl.core.service.search.terms.functions.LowerFunction;
+import bio.terra.pearl.core.service.search.terms.functions.MaxFunction;
+import bio.terra.pearl.core.service.search.terms.functions.MinFunction;
+import bio.terra.pearl.core.service.search.terms.functions.TrimFunction;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -152,25 +155,12 @@ public class EnrolleeSearchExpressionParser {
 
                 return new LowerFunction(parseTerm(terms.get(0)));
             }
-            case "isEmpty" -> {
-                if (terms.size() != 1) {
-                    throw new IllegalArgumentException("isEmpty requires one argument");
-                }
-
-                return new IsEmptyFunction(parseTerm(terms.get(0)));
-            }
             case "trim" -> {
                 if (terms.size() != 1) {
                     throw new IllegalArgumentException("Trim function requires one argument");
                 }
 
                 return new TrimFunction(parseTerm(terms.get(0)));
-            }
-            case "add" -> {
-                return new AddFunction(terms.stream().map(this::parseTerm).toList());
-            }
-            case "mult" -> {
-                return new MultFunction(terms.stream().map(this::parseTerm).toList());
             }
             case "min" -> {
                 return new MinFunction(terms.stream().map(this::parseTerm).toList());

@@ -6,9 +6,9 @@ import React, {
 import {
   Field,
   FieldSelectorProps,
-  QueryBuilder,
   formatQuery,
   OperatorSelectorProps,
+  QueryBuilder,
   RuleGroupType,
   RuleGroupTypeAny,
   ValueEditor,
@@ -16,7 +16,10 @@ import {
 } from 'react-querybuilder'
 import 'react-querybuilder/dist/query-builder.scss'
 import { ruleProcessorEnrolleeSearchExpression } from 'util/formatQueryBuilderAsSearchExp'
-import { useLoadingEffect } from 'api/api-utils'
+import {
+  ApiErrorResponse,
+  useLoadingEffect
+} from 'api/api-utils'
 import Api, {
   EnrolleeSearchExpressionResult,
   SearchValueTypeDefinition
@@ -64,9 +67,13 @@ export const SearchQueryBuilder = ({
       }
       parseExpression(searchExpression)
     } catch (e) {
-      return e as Error
+      return e as ApiErrorResponse
     }
   }, [searchExpression])
+
+
+  const [searchResults, setSearchResults] = useState<EnrolleeSearchExpressionResult[]>([])
+  const [searchError, setSearchError] = useState<string>()
 
   const canUseBasicMode = useMemo(() => {
     try {
@@ -79,10 +86,7 @@ export const SearchQueryBuilder = ({
       setAdvancedMode(true)
       return false
     }
-  }, [searchExpression])
-
-
-  const [searchResults, setSearchResults] = useState<EnrolleeSearchExpressionResult[]>([])
+  }, [searchExpression, searchError])
 
   const {
     isLoading: isLoadingSearchResults
@@ -95,8 +99,10 @@ export const SearchQueryBuilder = ({
         searchExpression)
 
       setSearchResults(newResults)
-    } catch (_) {
+      setSearchError(undefined)
+    } catch (e) {
       setSearchResults([])
+      setSearchError((e as ApiErrorResponse).message)
     }
   }, [searchExpression])
 
@@ -115,10 +121,13 @@ export const SearchQueryBuilder = ({
         {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
       </button>
     </div>
-    {parseSearchExpError && <div className="alert alert-danger mb-2">
+    {searchError && <div className="alert alert-danger mb-2">
+      {searchError}
+    </div>}
+    {isNil(searchError) && parseSearchExpError && <div className="alert alert-danger mb-2">
       {parseSearchExpError.message}
     </div>}
-    {isNil(parseSearchExpError) && !canUseBasicMode && <div>
+    {isNil(parseSearchExpError) && isNil(searchError) && !canUseBasicMode && <div>
       <div className="alert alert-warning mb-2">
             The current search expression cannot be represented in the basic query builder.
       </div>
@@ -261,12 +270,12 @@ const BasicQueryBuilder = ({
 }
 
 const operators = [
-  { name: '=', label: '=' },
-  { name: '!=', label: '!=' },
-  { name: '<', label: '<' },
-  { name: '<=', label: '<=' },
-  { name: '>', label: '>' },
-  { name: '>=', label: '>=' },
+  { name: '=', label: 'equals' },
+  { name: '!=', label: 'not equals' },
+  { name: '<', label: 'less than' },
+  { name: '<=', label: 'less than or equal to' },
+  { name: '>', label: 'greater than' },
+  { name: '>=', label: 'greater than or equal to' },
   { name: 'contains', label: 'contains' }
 ]
 
@@ -293,6 +302,7 @@ const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinitio
       break
     case 'NUMBER':
       field.inputType = 'number'
+      field.defaultValue = 0
       break
     case 'DATE':
       field.inputType = 'date'

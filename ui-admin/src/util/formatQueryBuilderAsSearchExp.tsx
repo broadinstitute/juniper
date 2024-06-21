@@ -39,7 +39,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
       } else if (useBareValue) {
         processedValue = trimIfString(value)
       } else {
-        processedValue = `'${escapeSingleQuotes(value, escapeQuotes)}'`
+        processedValue = `'${escape(value, escapeQuotes)}'`
       }
 
       return `{${field}} ${operator} ${processedValue}`
@@ -50,7 +50,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
         `{${field}} contains ${
           valueIsField || useBareValue
             ? trimIfString(value)
-            : `'${escapeSingleQuotes(value, escapeQuotes)}'`
+            : `'${escape(value, escapeQuotes)}'`
         }`,
         shouldNegate(operator)
       )
@@ -61,7 +61,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
         ? `'^'.concat(${trimIfString(value)})`
         : `'${
           (typeof value === 'string' && !value.startsWith('^')) || useBareValue ? '^' : ''
-        }${escapeSingleQuotes(value, escapeQuotes)}'`
+        }${escape(value, escapeQuotes)}'`
       return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operator))
     }
 
@@ -69,7 +69,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
     case 'doesNotEndWith': {
       const valueTL = valueIsField
         ? `${trimIfString(value)}.concat('$')`
-        : `'${escapeSingleQuotes(value, escapeQuotes)}${
+        : `'${escape(value, escapeQuotes)}${
           (typeof value === 'string' && !value.endsWith('$')) || useBareValue ? '$' : ''
         }'`
       return wrapInNegation(`${field} matches ${valueTL}`, shouldNegate(operator))
@@ -92,7 +92,7 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
               `${field} = ${
                 valueIsField || shouldRenderAsNumber(val, parseNumbers)
                   ? `${trimIfString(val)}`
-                  : `'${escapeSingleQuotes(val, escapeQuotes)}'`
+                  : `'${escape(val, escapeQuotes)}'`
               }`
           )
           .join(' or ')})`
@@ -115,12 +115,12 @@ export const ruleProcessorEnrolleeSearchExpression: RuleProcessor = (
         let firstValue = isNaN(firstNum)
           ? valueIsField
             ? `${first}`
-            : `'${escapeSingleQuotes(first, escapeQuotes)}'`
+            : `'${escape(first, escapeQuotes)}'`
           : firstNum
         let secondValue = isNaN(secondNum)
           ? valueIsField
             ? `${second}`
-            : `'${escapeSingleQuotes(second, escapeQuotes)}'`
+            : `'${escape(second, escapeQuotes)}'`
           : secondNum
         if (firstValue === firstNum && secondValue === secondNum && secondNum < firstNum) {
           const tempNum = secondNum
@@ -146,10 +146,12 @@ const shouldNegate = (op: string) => /^(does)?not/i.test(op)
 const wrapInNegation = (clause: string, negate: boolean) => (negate ? `!(${clause})` : `${clause}`)
 
 
-const escapeSingleQuotes = (
+const escape = (
   v: string | number | boolean | object | null,
   escapeQuotes?: boolean
-) => (typeof v !== 'string' || !escapeQuotes ? v : v.replaceAll(`'`, `\\'`))
+) => (typeof v !== 'string' || !escapeQuotes
+  ? v
+  : v.replaceAll(`'`, ``).replaceAll('\\', ''))
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const shouldRenderAsNumber = (v: any, parseNumbers?: boolean) =>

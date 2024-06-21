@@ -20,6 +20,8 @@ import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -118,6 +120,19 @@ public class EnrolleeSearchService {
                     enrolleeSearchExpressionParser.parseRule(expression),
                     studyEnvId
             );
+        } catch (UnableToExecuteStatementException e) {
+            String message = e.getShortMessage();
+
+            // PSQLException has the most useful error message, so we should
+            // see if we can grab it
+            if (e.getCause().getClass().equals(PSQLException.class)) {
+                PSQLException psqlException = (PSQLException) e.getCause();
+                if (Objects.nonNull(psqlException.getServerErrorMessage())) {
+                    message = psqlException.getServerErrorMessage().getMessage();
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid search expression: " + message);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid search expression: " + e.getMessage());
         }
