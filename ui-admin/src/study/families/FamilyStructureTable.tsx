@@ -208,7 +208,10 @@ const findRowOrSubrow = (data: FamilyMemberWithSubrows[], id: string): FamilyMem
 
 const sortByFamilyRelationship = (rows: FamilyMemberWithSubrows[]): void => {
   rows.sort((a, b) => {
-    if (a.relationToParentRow && b.relationToParentRow) {
+    if (a.relationToParentRow
+      && b.relationToParentRow
+      && a.relationToParentRow.familyRelationship
+      && b.relationToParentRow.familyRelationship) {
       return a.relationToParentRow.familyRelationship.localeCompare(b.relationToParentRow.familyRelationship)
     }
     return 0

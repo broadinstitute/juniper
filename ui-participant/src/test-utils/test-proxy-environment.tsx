@@ -240,7 +240,7 @@ export const mockRelations: EnrolleeRelation[] = [
     targetEnrolleeId: 'test-psalk-enrollee',
     createdAt: 0,
     lastUpdatedAt: 0,
-    participantUserId: 'test-jsalk-user'
+    enrolleeId: 'test-jsalk-enrollee'
   },
   {
     id: 'test-jsalk-jtsalk-relation',
@@ -248,6 +248,6 @@ export const mockRelations: EnrolleeRelation[] = [
     targetEnrolleeId: 'test-jtsalk-enrollee',
     createdAt: 0,
     lastUpdatedAt: 0,
-    participantUserId: 'test-jsalk-user'
+    enrolleeId: 'test-jsalk-enrollee'
   }
 ]

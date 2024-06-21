@@ -63,7 +63,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
               <InfoCardValue
                 title={'Name'}
                 values={
-                  [formatName(relation.enrollee.profile)]
+                  [formatName(relation.enrollee?.profile)]
                 }
               />
               <InfoCardValue
@@ -85,6 +85,9 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
   </div>
 }
 
-const formatName = (profile: Profile) => {
+const formatName = (profile: Profile | undefined) => {
+  if (!profile) {
+    return ''
+  }
   return `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
 }

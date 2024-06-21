@@ -63,14 +63,14 @@ export type EnrolleeRelation = {
     id: string
     relationshipType: RelationshipType,
     targetEnrolleeId: string,
-    targetEnrollee: Enrollee
+    targetEnrollee?: Enrollee
     enrolleeId: string
-    enrollee: Enrollee
+    enrollee?: Enrollee
     createdAt: number
     lastUpdatedAt: number
-    beginDate: number
-    endDate: number
-    familyId: string
-    familyRelationship: string
+    beginDate?: number
+    endDate?: number
+    familyId?: string
+    familyRelationship?: string
 }
 

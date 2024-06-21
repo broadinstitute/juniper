@@ -12,6 +12,7 @@ import Api, {
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import {
   Enrollee,
+  EnrolleeRelation,
   Profile
 } from '@juniper/ui-core'
 
