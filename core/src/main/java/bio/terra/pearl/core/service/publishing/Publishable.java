@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public interface PublishingSupport {
+public interface Publishable {
     public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
             "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
             "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity", "trigger");

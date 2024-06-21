@@ -25,5 +25,5 @@ public class PortalEnvironmentChange {
     ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges;
     List<ParticipantDashboardAlertChange> participantDashboardAlertChanges;
     List<StudyEnvironmentChange> studyEnvChanges;
-    ListChange<PortalEnvironmentLanguage, Object> languageChanges
+    ListChange<PortalEnvironmentLanguage, Object> languageChanges;
 }

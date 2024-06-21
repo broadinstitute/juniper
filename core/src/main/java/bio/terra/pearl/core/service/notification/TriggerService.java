@@ -14,12 +14,12 @@ import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import java.util.List;
 import java.util.UUID;
 
-import bio.terra.pearl.core.service.publishing.PublishingSupport;
+import bio.terra.pearl.core.service.publishing.Publishable;
 import bio.terra.pearl.core.service.publishing.PublishingUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class TriggerService extends CrudService<Trigger, TriggerDao> implements PublishingSupport {
+public class TriggerService extends CrudService<Trigger, TriggerDao> implements Publishable {
     private EmailTemplateService emailTemplateService;
 
     public TriggerService(TriggerDao dao, EmailTemplateService emailTemplateService) {
@@ -73,10 +73,10 @@ public class TriggerService extends CrudService<Trigger, TriggerDao> implements 
 
     @Override
     public void updateDiff(PortalEnvironment sourceEnv, PortalEnvironment destEnv, PortalEnvironmentChange change) {
-        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = PublishingSupport.diffConfigLists(
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = Publishable.diffConfigLists(
                 sourceEnv.getTriggers(),
                 destEnv.getTriggers(),
-                PublishingSupport.CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
         change.setTriggerChanges(triggerChanges);
     }
 
@@ -89,10 +89,10 @@ public class TriggerService extends CrudService<Trigger, TriggerDao> implements 
 
     @Override
     public void updateDiff(StudyEnvironment sourceEnv, StudyEnvironment destEnv, StudyEnvironmentChange change) {
-        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = PublishingSupport.diffConfigLists(
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = Publishable.diffConfigLists(
                 sourceEnv.getTriggers(),
                 destEnv.getTriggers(),
-                PublishingSupport.CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
         change.setTriggerChanges(triggerChanges);
     }
 

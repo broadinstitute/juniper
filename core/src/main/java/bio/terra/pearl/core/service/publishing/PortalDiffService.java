@@ -1,9 +1,7 @@
 package bio.terra.pearl.core.service.publishing;
 
 import bio.terra.pearl.core.dao.publishing.PortalEnvironmentChangeRecordDao;
-import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.dashboard.AlertTrigger;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
@@ -78,10 +76,10 @@ public class PortalDiffService {
         VersionedEntityChange<Survey> preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
         VersionedEntityChange<SiteContent> siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
-                destEnv.getPortalEnvironmentConfig(), PublishingSupport.CONFIG_IGNORE_PROPS);
-        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = PublishingSupport.diffConfigLists(sourceEnv.getTriggers(),
+                destEnv.getPortalEnvironmentConfig(), Publishable.CONFIG_IGNORE_PROPS);
+        ListChange<Trigger, VersionedConfigChange<EmailTemplate>> triggerChanges = Publishable.diffConfigLists(sourceEnv.getTriggers(),
                 destEnv.getTriggers(),
-                PublishingSupport.CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
 
         List<StudyEnvironmentChange> studyEnvChanges = new ArrayList<>();
         List<Study> studies = studyService.findByPortalId(sourceEnv.getPortalId());
@@ -118,11 +116,11 @@ public class PortalDiffService {
         for (ParticipantDashboardAlert sourceAlert : sourceAlerts) {
             ParticipantDashboardAlert matchedAlert = unmatchedDestAlerts.get(sourceAlert.getTrigger());
             if (matchedAlert == null) {
-                List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, PublishingSupport.CONFIG_IGNORE_PROPS);
+                List<ConfigChange> newAlert = ConfigChange.allChanges(sourceAlert, null, Publishable.CONFIG_IGNORE_PROPS);
                 alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), newAlert));
             } else {
                 unmatchedDestAlerts.remove(matchedAlert.getTrigger());
-                List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, PublishingSupport.CONFIG_IGNORE_PROPS);
+                List<ConfigChange> alertChanges = ConfigChange.allChanges(sourceAlert, matchedAlert, Publishable.CONFIG_IGNORE_PROPS);
                 if(!alertChanges.isEmpty()) {
                     alertChangeLists.add(new ParticipantDashboardAlertChange(sourceAlert.getTrigger(), alertChanges));
                 }
@@ -164,12 +162,12 @@ public class PortalDiffService {
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(
                 sourceEnv.getStudyEnvironmentConfig(),
                 destEnv.getStudyEnvironmentConfig(),
-                PublishingSupport.CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
         VersionedEntityChange<Survey> preEnrollChange = new VersionedEntityChange<Survey>(sourceEnv.getPreEnrollSurvey(), destEnv.getPreEnrollSurvey());
-        ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = PublishingSupport.diffConfigLists(
+        ListChange<StudyEnvironmentSurvey, VersionedConfigChange<Survey>> surveyChanges = Publishable.diffConfigLists(
                 sourceEnv.getConfiguredSurveys(),
                 destEnv.getConfiguredSurveys(),
-                PublishingSupport.CONFIG_IGNORE_PROPS);
+                Publishable.CONFIG_IGNORE_PROPS);
 
 
         StudyEnvironmentChange change = StudyEnvironmentChange.builder()
