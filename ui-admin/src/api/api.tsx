@@ -98,6 +98,8 @@ export type EnrolleeSearchExpressionResult = {
   latestKit?: KitRequest
 }
 
+export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
+
 type RelationshipType = 'PROXY'
 
 export type EnrolleeRelation = {
@@ -764,7 +766,7 @@ export default {
   },
 
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<{ [index: string]: SearchValueTypeDefinition }> {
+    Promise<ExpressionSearchFacets> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

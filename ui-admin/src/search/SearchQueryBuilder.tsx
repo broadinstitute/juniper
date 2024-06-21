@@ -15,13 +15,14 @@ import {
   ValueEditorProps
 } from 'react-querybuilder'
 import 'react-querybuilder/dist/query-builder.scss'
-import { ruleProcessorEnrolleeSearchExpression } from 'util/formatQueryBuilderAsSearchExp'
+import { createEnrolleeSearchExpressionRuleProcessor } from 'util/formatQueryBuilderAsSearchExp'
 import {
   ApiErrorResponse,
   useLoadingEffect
 } from 'api/api-utils'
 import Api, {
   EnrolleeSearchExpressionResult,
+  ExpressionSearchFacets,
   SearchValueTypeDefinition
 } from '../api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
@@ -214,29 +215,25 @@ const BasicQueryBuilder = ({
   const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
 
 
-  const [facets, setFacets] = React.useState<{ facet: string, typeDef: SearchValueTypeDefinition }[]>([])
+  const [facets, setFacets] = React.useState<ExpressionSearchFacets>({})
 
   const { isLoading } = useLoadingEffect(async () => {
-    const facets = await Api.getExpressionSearchFacets(
+    const loadedFacets = await Api.getExpressionSearchFacets(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName)
-    const facetArr = keys(facets).map(facet => {
-      return {
-        facet,
-        typeDef: facets[facet]
-      }
-    })
 
-    setFacets(facetArr.sort((a, b) => a.facet.localeCompare(b.facet)))
+
+    setFacets(loadedFacets)
   }, [], 'Failed to load cohort criteria options')
 
+  const ruleProcessor = useMemo(() => createEnrolleeSearchExpressionRuleProcessor(facets), [facets])
 
   const updateQuery = (query: RuleGroupTypeAny) => {
     setQuery(query)
     const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
       format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
-      ruleProcessor: ruleProcessorEnrolleeSearchExpression,
+      ruleProcessor,
       fallbackExpression: '1 = 1'
     }) : ''
 
@@ -256,7 +253,16 @@ const BasicQueryBuilder = ({
           addGroup: 'btn btn-outline-dark',
           combinators: 'form-select w-25'
         }}
-        fields={useMemo(() => facets.map(facet => facetToReactQueryField(facet.facet, facet.typeDef)), [facets])}
+        fields={useMemo(() => {
+          const facetArr = keys(facets).map(facet => {
+            return {
+              facet,
+              typeDef: facets[facet]
+            }
+          })
+          facetArr.sort((a, b) => a.facet.localeCompare(b.facet))
+          return facetArr.map(facet => facetToReactQueryField(facet.facet, facet.typeDef))
+        }, [facets])}
         controlElements={{
           fieldSelector: CustomFieldSelector,
           valueEditor: CustomValueEditor,
