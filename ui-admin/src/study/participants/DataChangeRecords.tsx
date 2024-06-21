@@ -82,7 +82,8 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
       header: 'Source',
       cell: ({ row }) => (
         row.original.responsibleUserId ? 'Participant' :
-          ` Admin (${(users.find(u => u.id === row.original.responsibleAdminUserId)?.username)})`
+          row.original.responsibleAdminUserId &&
+            `Admin (${(users.find(u => u.id === row.original.responsibleAdminUserId)?.username)})`
       )
     }
   ]
