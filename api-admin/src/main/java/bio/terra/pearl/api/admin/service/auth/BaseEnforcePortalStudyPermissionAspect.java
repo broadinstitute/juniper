@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin.service.auth;
 
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import lombok.extern.slf4j.Slf4j;

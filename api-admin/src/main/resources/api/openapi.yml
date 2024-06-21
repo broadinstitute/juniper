@@ -405,7 +405,20 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: true, schema: { type: string } }
         - { name: version, in: path, required: true, schema: { type: integer } }
-        - { name: language, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: SiteContent object with all dependent relations attached
+          content: { application/json: { schema: { schema: { type: object } } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/siteContent:
+    get:
+      summary: Returns the site content with for the given portal environment, along with all child content in the specified language (english is default)
+      tags: [ siteContent ]
+      operationId: getCurrent
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: SiteContent object with all dependent relations attached

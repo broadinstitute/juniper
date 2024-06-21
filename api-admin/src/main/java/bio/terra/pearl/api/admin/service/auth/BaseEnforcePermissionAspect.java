@@ -1,14 +1,17 @@
 package bio.terra.pearl.api.admin.service.auth;
 
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import java.lang.annotation.Annotation;
 import org.apache.commons.lang3.NotImplementedException;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 /** base class for annotations enforcing permissions around methods. */
 public abstract class BaseEnforcePermissionAspect<
     T extends PortalAuthContext, A extends Annotation> {
+  private static final String ANNOTATION_NAME = "EnforcePermission";
   private static final String AUTH_CONTEXT_USAGE_ERROR =
-      "EnforcePortalPermission annotation must be used on a method whose first argument is a %s";
+      "%s annotation must be used on a method whose first argument is a %s";
 
   /**
    * you would think we could implement this method in the base class, but because interfaces and
@@ -26,20 +29,25 @@ public abstract class BaseEnforcePermissionAspect<
    * throws NotImplementedException, since it's a programming error.
    */
   protected T extractAuthContext(ProceedingJoinPoint joinPoint) {
+    return extractAuthContext(joinPoint, getAuthContextClass(), ANNOTATION_NAME);
+  }
+
+  protected static <Z> Z extractAuthContext(
+      JoinPoint joinPoint, Class<Z> clazz, String annotationName) {
     Object[] methodArgs = joinPoint.getArgs();
     if (methodArgs.length == 0) {
       throw new NotImplementedException(
-          AUTH_CONTEXT_USAGE_ERROR.formatted(getAuthContextClass().getSimpleName()));
+          AUTH_CONTEXT_USAGE_ERROR.formatted(annotationName, clazz.getSimpleName()));
     }
     Object authContext = methodArgs[0];
     if (authContext == null) {
       throw new NotImplementedException("null auth context passed");
     }
-    if (getAuthContextClass().isInstance(authContext)) {
-      return getAuthContextClass().cast(authContext);
+    if (clazz.isInstance(authContext)) {
+      return clazz.cast(authContext);
     } else {
       throw new NotImplementedException(
-          AUTH_CONTEXT_USAGE_ERROR.formatted(getAuthContextClass().getSimpleName()));
+          AUTH_CONTEXT_USAGE_ERROR.formatted(annotationName, clazz.getSimpleName()));
     }
   }
 

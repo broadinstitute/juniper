@@ -15,6 +15,7 @@ import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -157,7 +158,7 @@ public class AnswerProcessingService {
     }
 
     public static final Map<AnswerMappingMapType, BiFunction<Answer, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
-            AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> answer.getStringValue(),
+            AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> StringUtils.trim(answer.getStringValue()),
             AnswerMappingMapType.STRING_TO_LOCAL_DATE, (Answer answer, AnswerMapping mapping) ->
                     mapToDate(answer.getStringValue(), mapping)
     );

@@ -7,23 +7,31 @@ import { failureNotification, successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import SiteContentEditor from './SiteContentEditor'
 import { previewApi } from 'util/apiContextUtils'
-import { usePortalLanguage } from '../usePortalLanguage'
 
 /** logic for loading, changing, and saving SiteContent objects */
 const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvContext}) => {
   const { portal, portalEnv } = portalEnvContext
   const portalShortcode = portal.shortcode
   const [isLoading, setIsLoading] = useState(true)
-  const { defaultLanguage } = usePortalLanguage()
   const [siteContent, setSiteContent] = useState(portalEnv.siteContent)
 
   if (!siteContent) {
     return <div>no site content configured</div>
   }
 
-  const loadSiteContent = async (stableId: string, version: number, language?: string) => {
+  const loadCurrentSiteContent = async () => {
     setIsLoading(true)
-    Api.getSiteContent(portalShortcode, stableId, version, language).then(response => {
+    Api.getCurrentSiteContent(portalShortcode, portalEnv.environmentName).then(response => {
+      setSiteContent(response)
+      setIsLoading(false)
+    }).catch(() => {
+      Store.addNotification(failureNotification('Could not load site content'))
+    })
+  }
+
+  const loadSiteContent = async (stableId: string, version: number) => {
+    setIsLoading(true)
+    Api.getSiteContent(portalShortcode, stableId, version).then(response => {
       setSiteContent(response)
       setIsLoading(false)
     }).catch(() => {
@@ -52,20 +60,14 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
    */
   const switchToVersion = async (id: string, stableId: string, version: number, loadedContent?: SiteContent) => {
     try {
-      let updatedEnv = {
+      const updatedEnv = {
         ...portalEnv,
         siteContentId: id
       }
-      updatedEnv = await Api.updatePortalEnv(portalShortcode, portalEnv.environmentName, updatedEnv)
+      await Api.updatePortalEnv(portalShortcode, portalEnv.environmentName, updatedEnv)
       if (!loadedContent) {
         loadedContent = await Api.getSiteContent(portalShortcode, stableId, version)
       }
-
-      portalEnvContext.updatePortalEnv({
-        ...portalEnv,
-        ...updatedEnv,
-        siteContent: loadedContent
-      })
       setSiteContent(loadedContent)
       Store.addNotification(successNotification(`Environment updated to use version ${version}`))
     } catch {
@@ -78,21 +80,20 @@ const SiteContentLoader = ({ portalEnvContext }: {portalEnvContext: PortalEnvCon
   const readOnly = portalEnv.environmentName !== 'sandbox'
 
   useEffect(() => {
-    if (!portalEnv.siteContent) {
-      return
-    }
-    loadSiteContent(portalEnv.siteContent.stableId, portalEnv.siteContent.version, defaultLanguage?.languageCode)
+    loadCurrentSiteContent()
   }, [portalEnv.environmentName, portalShortcode])
 
   return <>
-    { !isLoading && <SiteContentEditor siteContent={siteContent}
-      createNewVersion={createNewVersion}
-      loadSiteContent={loadSiteContent}
-      switchToVersion={switchToVersion}
-      previewApi={previewApi(portalShortcode, portalEnv.environmentName)}
-      portalEnvContext={portalEnvContext}
-      readOnly={readOnly}
-    /> }
+    { !isLoading &&
+      <SiteContentEditor siteContent={siteContent}
+        key={`${siteContent.stableId}-${siteContent.version}`}
+        createNewVersion={createNewVersion}
+        loadSiteContent={loadSiteContent}
+        switchToVersion={switchToVersion}
+        previewApi={previewApi(portalShortcode, portalEnv.environmentName)}
+        portalEnvContext={portalEnvContext}
+        readOnly={readOnly}
+      /> }
     { isLoading && <LoadingSpinner/> }
   </>
 }
