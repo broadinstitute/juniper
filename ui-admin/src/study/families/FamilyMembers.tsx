@@ -14,7 +14,7 @@ import React from 'react'
 import { basicTableLayout } from 'util/tableUtils'
 
 /**
- *
+ * Editable view of the members of a family.
  */
 export const FamilyMembers = ({
   family, studyEnvContext

@@ -12,9 +12,10 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
 import Creatable from 'react-select/creatable'
+import { EnrolleeLink } from 'study/families/FamilyOverview'
 
 /**
- *
+ * Editable view of the relationships within a family.
  */
 export const FamilyRelations = ({
   family, studyEnvContext
@@ -26,7 +27,7 @@ export const FamilyRelations = ({
     accessorKey: 'enrolleeId',
     cell: ({ row }) => {
       const enrollee = family.members?.find(m => m.id === row.original.enrolleeId)
-      return enrollee ? `${enrollee.profile?.givenName} ${enrollee.profile?.familyName}` : 'Unknown'
+      return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={enrollee}/>
     }
   }, {
     header: 'Relation',
@@ -47,7 +48,7 @@ export const FamilyRelations = ({
     accessorKey: 'targetEnrolleeId',
     cell: ({ row }) => {
       const enrollee = family.members?.find(m => m.id === row.original.targetEnrolleeId)
-      return enrollee ? `${enrollee.profile?.givenName} ${enrollee.profile?.familyName}` : 'Unknown'
+      return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={enrollee}/>
     }
   }]
 

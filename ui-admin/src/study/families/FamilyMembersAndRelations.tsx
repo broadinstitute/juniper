@@ -5,7 +5,7 @@ import { FamilyRelations } from 'study/families/FamilyRelations'
 import { FamilyMembers } from 'study/families/FamilyMembers'
 
 /**
- *
+ * Renders editable page with all family members and relations.
  */
 export const FamilyMembersAndRelations = (
   { family, studyEnvContext }:{

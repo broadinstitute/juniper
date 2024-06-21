@@ -41,8 +41,9 @@ type FamilyMemberWithSubrows = {
   relationToParentRow?: EnrolleeRelation
   subrows: FamilyMemberWithSubrows[]
 }
+
 /**
- *
+ * Renders a table of family members grouped by their relationships to each other.
  */
 export const FamilyStructureTable = (
   { family, studyEnvContext }: { family: Family, studyEnvContext: StudyEnvContextT }
@@ -96,7 +97,10 @@ export const FamilyStructureTable = (
       id: 'proxyRelation',
       header: 'Proxies',
       cell: ({ row }) => {
-        return <ProxiesFor member={row.original.member} family={family} studyEnvContext={studyEnvContext}/>
+        return <ProxyList
+          member={row.original.member}
+          family={family}
+          studyEnvContext={studyEnvContext}/>
       }
     }
   ]
@@ -153,10 +157,8 @@ export const FamilyStructureTable = (
   </div>
 }
 
-
-// Makes the key assumption that the relations are 'simple' and do not have cycles.
-// This is achieved by limiting the number of parent relations to 1 in the UI, but
-// this is not enforced in the backend.
+// Groups family members by their relationships to each other; since we're showing a tree structure,
+// we can't guarantee every relationship is represented if there are cycles in the family graph.
 const groupFamilyMembersWithSubrows = (family: Family): FamilyMemberWithSubrows[] => {
   const out: FamilyMemberWithSubrows[] = []
   // sort relations by number of parent relations
@@ -213,7 +215,8 @@ const sortByFamilyRelationship = (rows: FamilyMemberWithSubrows[]): void => {
   })
 }
 
-const ProxiesFor = ({ member, family, studyEnvContext }: {
+// Renders a list of proxies of a family member
+const ProxyList = ({ member, family, studyEnvContext }: {
   member: Enrollee,
   family: Family,
   studyEnvContext: StudyEnvContextT

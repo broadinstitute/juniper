@@ -18,11 +18,11 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         super(jdbi);
         this.enrolleeDao = enrolleeDao;
     }
+
     @Override
     protected Class<EnrolleeRelation> getClazz() {
         return EnrolleeRelation.class;
     }
-
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationshipType(UUID enrolleeId, RelationshipType type) {
         return findAllByTwoProperties("enrollee_id", enrolleeId, "relationship_type", type);
