@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.controller.family;
 
 import bio.terra.pearl.api.admin.api.FamilyApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
-import bio.terra.pearl.api.admin.service.auth.PortalStudyEnvAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.family.FamilyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;

@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.service.family;
 
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
-import bio.terra.pearl.api.admin.service.auth.PortalStudyEnvAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
