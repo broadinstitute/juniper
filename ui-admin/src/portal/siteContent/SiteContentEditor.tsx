@@ -33,7 +33,8 @@ import Modal from 'react-bootstrap/Modal'
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
 import { usePortalLanguage } from '../usePortalLanguage'
 import _cloneDeep from 'lodash/cloneDeep'
-import { extractAllTexts } from './siteContentLanguageUtils'
+import { extractAllTexts, languageExtractToCSV } from './siteContentLanguageUtils'
+import { saveBlobAsDownload } from '../../util/downloadUtils'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -230,8 +231,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
   const extractTexts = () => {
-    const texts = extractAllTexts(siteContent)
-    console.log(texts)
+    const extracts = extractAllTexts(siteContent)
+    const csvString = languageExtractToCSV(extracts)
+    const blob = new Blob([csvString], { type: 'text/plain' })
+    saveBlobAsDownload(blob, 'site-translations.csv')
   }
 
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'

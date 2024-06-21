@@ -45,12 +45,12 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
 }
 
 export const heroCenteredTemplateConfigProps = [
-    { name: 'blurb', translated: true },
-    { name: 'blurbAlign' },
-    { name: 'buttons', subProps: buttonConfigProps, isArray: true },
-    { name: 'title', translated: true },
-    { name: 'image', subProps: mediaConfigProps }
-    ]
+  { name: 'blurb', translated: true },
+  { name: 'blurbAlign' },
+  { name: 'buttons', subProps: buttonConfigProps, isArray: true },
+  { name: 'title', translated: true },
+  { name: 'image', subProps: mediaConfigProps }
+]
 
 type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConfig>
 

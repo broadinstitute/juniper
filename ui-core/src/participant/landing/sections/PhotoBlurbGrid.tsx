@@ -34,16 +34,20 @@ type PhotoBio = {
 
 export const photoBlurbGridConfigProps = [
   { name: 'title', translated: true },
-  { name: 'subGrids', isArray: true, subProps: [
+  {
+    name: 'subGrids', isArray: true, subProps: [
       { name: 'title', translated: true },
-      { name: 'photoBios', isArray: true, subProps: [
-        { name: 'image', subProps: mediaConfigProps },
-        { name: 'name' },
-        { name: 'title', translated: true},
-        { name: 'blurb', translated: true },
-        { name: 'detail', translated: true }
-      ]}
-  ]}
+      {
+        name: 'photoBios', isArray: true, subProps: [
+          { name: 'image', subProps: mediaConfigProps },
+          { name: 'name' },
+          { name: 'title', translated: true },
+          { name: 'blurb', translated: true },
+          { name: 'detail', translated: true }
+        ]
+      }
+    ]
+  }
 ]
 
 const validatePhotoBio = (config: unknown): PhotoBio => {

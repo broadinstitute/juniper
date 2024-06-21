@@ -10,7 +10,7 @@ import FrequentlyAskedQuestionsTemplate, {
 import HeroCenteredTemplate, { heroCenteredTemplateConfigProps } from './HeroCenteredTemplate'
 import HeroWithImageTemplate, { heroWithImageTemplateConfigProps } from './HeroWithImageTemplate'
 import StepOverviewTemplate, { stepOverviewTemplateConfigProps } from './StepOverviewTemplate'
-import SocialMediaTemplate from './SocialMediaTemplate'
+import SocialMediaTemplate, { socialMediaSiteConfigProps } from './SocialMediaTemplate'
 import RawHtmlTemplate from './RawHtmlTemplate'
 import PhotoBlurbGrid, { photoBlurbGridConfigProps } from './PhotoBlurbGrid'
 import ParticipationDetailTemplate, { participationDetailTemplateConfigProps } from './ParticipationDetailTemplate'
@@ -86,5 +86,6 @@ export const allSectionProps = {
   'BANNER_IMAGE': bannerImageConfigProps,
   'PARTICIPATION_DETAIL': participationDetailTemplateConfigProps,
   'PHOTO_BLURB_GRID': photoBlurbGridConfigProps,
-  'STEP_OVERVIEW': stepOverviewTemplateConfigProps
+  'STEP_OVERVIEW': stepOverviewTemplateConfigProps,
+  'SOCIAL_MEDIA': socialMediaSiteConfigProps
 }
