@@ -8,9 +8,18 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { StudyEnvParams } from '@juniper/ui-core'
 import FamilyView from './FamilyView'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
 
 /** routes to family views as appropriate */
 export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
+  const { user } = useUser()
+
+  if (!userHasPermission(user, studyEnvContext.portal.id, 'prototype')) {
+    return <></>
+  }
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
       <Link to={`${studyEnvContext.currentEnvPath}/participants`} className="me-1">
