@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyResponseDto;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -34,7 +34,7 @@ public class SurveyResponseExtService {
   public HubResponse updateResponse(
       PortalStudyEnvAuthContext authContext,
       AdminUser user,
-      SurveyResponse responseDto,
+      SurveyResponseDto responseDto,
       String enrolleeShortcode,
       UUID taskId) {
     Portal portal = authContext.getPortal();

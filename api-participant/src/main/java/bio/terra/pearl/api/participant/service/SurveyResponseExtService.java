@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyResponseDto;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SurveyResponseExtService {
-  private AuthUtilService authUtilService;
-  private RequestUtilService requestUtilService;
-  private SurveyResponseService surveyResponseService;
-  private ObjectMapper objectMapper;
+  private final AuthUtilService authUtilService;
+  private final RequestUtilService requestUtilService;
+  private final SurveyResponseService surveyResponseService;
+  private final ObjectMapper objectMapper;
 
   public SurveyResponseExtService(
       AuthUtilService authUtilService,
@@ -59,7 +59,7 @@ public class SurveyResponseExtService {
       ParticipantUser user,
       String portalShortcode,
       EnvironmentName envName,
-      SurveyResponse responseDto,
+      SurveyResponseDto responseDto,
       String enrolleeShortcode,
       UUID taskId) {
     Enrollee enrollee =

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react'
-import { SurveyResponse } from 'src/types/forms'
+import { SurveyResponseDto } from 'src/types/forms'
 import { StudyEnvParams } from 'src/types/study'
 import { HubResponse } from 'src/types/user'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
@@ -13,7 +13,7 @@ export type UpdateSurveyResponseFunc = ({
   alertErrors
 }: {
   studyEnvParams: StudyEnvParams, stableId: string, version: number,
-  response: SurveyResponse, enrolleeShortcode: string, taskId: string, alertErrors?: boolean
+  response: SurveyResponseDto, enrolleeShortcode: string, taskId: string, alertErrors?: boolean
 }) => Promise<HubResponse>
 
 export type ValidateAddressFunc = (address: MailingAddress) => Promise<AddressValidationResult>

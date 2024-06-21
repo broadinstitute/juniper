@@ -9,6 +9,7 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -101,7 +102,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
 
         List<Profile> before = profileService.findAll();
         answerProcessingService.processAllAnswerMappings(null, answers,
-                new ArrayList<>(), null, DataAuditInfo.builder().build());
+                new ArrayList<>(), null, null, DataAuditInfo.builder().build());
         List<Profile> after = profileService.findAll();
 
         // no profiles were added or removed, in other words, no-op
@@ -191,6 +192,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
                 answers,
                 mappings,
                 enrolleeBundle.portalParticipantUser(),
+                new ResponsibleEntity(enrolleeBundle.portalParticipantUser()),
                 DataAuditInfo.builder()
                         .responsibleUserId(enrolleeBundle.portalParticipantUser().getParticipantUserId())
                         .enrolleeId(enrolleeBundle.enrollee().getId())
@@ -266,6 +268,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
                 answers,
                 mappings,
                 enrolleeAndProxy.proxyPpUser(),
+                new ResponsibleEntity(enrolleeAndProxy.proxyPpUser()),
                 DataAuditInfo.builder()
                         .responsibleUserId(enrolleeAndProxy.proxyPpUser().getParticipantUserId())
                         .enrolleeId(enrolleeAndProxy.governedEnrollee().getId())

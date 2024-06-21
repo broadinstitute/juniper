@@ -2,6 +2,7 @@ package bio.terra.pearl.core.model.audit;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import com.azure.core.annotation.Get;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,7 @@ public class ResponsibleEntity {
     }
     public ResponsibleEntity(ParticipantUser user) {
         if (user == null) {
-            throw new IllegalArgumentException("user cannot be null");
+            throw new IllegalArgumentException("participant user cannot be null");
         }
         this.participantUser = user;
     }
@@ -33,6 +34,12 @@ public class ResponsibleEntity {
             throw new IllegalArgumentException("system process cannot be null");
         }
         this.systemProcess = systemProcess;
+    }
+    public ResponsibleEntity(PortalParticipantUser ppUser) {
+        if (ppUser == null) {
+            throw new IllegalArgumentException("portal participant user cannot be null");
+        }
+        this.participantUser = ppUser.getParticipantUser();
     }
     public ResponsibleEntity() {
         this.anonymousUser = true;

@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -221,6 +222,7 @@ public class EnrollmentService {
                 answers,
                 answerMappingDao.findBySurveyId(preEnrollResponse.getSurveyId()),
                 operator,
+                new ResponsibleEntity(ppUser),
                 auditInfo);
     }
 

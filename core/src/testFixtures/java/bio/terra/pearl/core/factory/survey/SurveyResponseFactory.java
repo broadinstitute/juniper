@@ -4,10 +4,7 @@ import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.AnswerType;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -62,15 +59,21 @@ public class SurveyResponseFactory {
                                                           boolean complete,
                                                           EnrolleeFactory.EnrolleeBundle bundle,
                                                           Portal portal) {
+        SurveyResponse response = SurveyResponse.builder()
+                .answers(List.of(
+                        Answer.builder()
+                                .questionStableId(questionStableId)
+                                .answerType(AnswerType.STRING)
+                                .stringValue(answerValue).build()))
+                .complete(complete)
+                .build();
+
+        SurveyResponseDto responseDto = SurveyResponseDto.builder()
+                .surveyResponse(response)
+                .build();
+
         return surveyResponseService.updateResponse(
-                SurveyResponse.builder()
-                        .answers(List.of(
-                                Answer.builder()
-                                        .questionStableId(questionStableId)
-                                        .answerType(AnswerType.STRING)
-                                        .stringValue(answerValue).build()))
-                        .complete(complete)
-                        .build(),
+                responseDto,
                 new ResponsibleEntity(bundle.participantUser()),
                 bundle.portalParticipantUser(),
                 bundle.enrollee(),

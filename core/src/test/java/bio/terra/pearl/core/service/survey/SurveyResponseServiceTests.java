@@ -11,12 +11,7 @@ import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.AnswerType;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.survey.SurveyWithResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
@@ -122,13 +117,16 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
                 .answers(answers)
                 .build();
+        SurveyResponseDto responseDto = SurveyResponseDto.builder()
+                .surveyResponse(surveyResponse)
+                .build();
         Survey survey = surveyService.find(surveyResponse.getSurveyId()).get();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         PortalParticipantUser ppUser = portalParticipantUserFactory
                 .buildPersisted(getTestName(testInfo), savedResponse.getEnrolleeId());
 
         List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
-        surveyResponseService.createOrUpdateAnswers(updatedAnswers, savedResponse, survey, ppUser);
+        surveyResponseService.createOrUpdateAnswers(updatedAnswers, responseDto, survey, ppUser, new ResponsibleEntity(ppUser));
         for (Answer updatedAnswer : updatedAnswers) {
             Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), updatedAnswer.getQuestionStableId()).get();
             assertThat(savedAnswer.getStringValue(), equalTo(updatedAnswer.getStringValue()));
@@ -151,7 +149,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 "id", "createdAt", "lastUpdatedAt"));
 
         Answer nullAnswer = Answer.builder().questionStableId("q3").stringValue(null).build();
-        surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), savedResponse, survey, ppUser);
+        surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), responseDto, survey, ppUser, new ResponsibleEntity(ppUser));
         Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), "q3").get();
         assertThat(savedAnswer.getStringValue(), nullValue());
         changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
@@ -180,8 +178,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .complete(false)
                 .answers(List.of())
                 .build();
+        SurveyResponseDto responseDto = SurveyResponseDto.builder()
+                .surveyResponse(response)
+                .build();
 
-        surveyResponseService.updateResponse(response, new ResponsibleEntity(enrolleeBundle.participantUser()),
+        surveyResponseService.updateResponse(responseDto, new ResponsibleEntity(enrolleeBundle.participantUser()),
                 enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the response was created and task status updated to viewed
@@ -197,8 +198,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .complete(false)
                 .answers(updatedAnswers)
                 .build();
+        responseDto = SurveyResponseDto.builder()
+                .surveyResponse(response)
+                .build();
 
-        surveyResponseService.updateResponse(response, new ResponsibleEntity(enrolleeBundle.participantUser()),
+        surveyResponseService.updateResponse(responseDto, new ResponsibleEntity(enrolleeBundle.participantUser()),
                 enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the response was created and task status updated to viewed
@@ -230,8 +234,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .complete(true) // set the response to complete
                 .answers(List.of())
                 .build();
+        SurveyResponseDto responseDto = SurveyResponseDto.builder()
+                .surveyResponse(response)
+                .build();
 
-        surveyResponseService.updateResponse(response, new ResponsibleEntity(enrolleeBundle.participantUser()),
+        surveyResponseService.updateResponse(responseDto, new ResponsibleEntity(enrolleeBundle.participantUser()),
                 enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the task response was created and task status updated to complete
@@ -250,8 +257,11 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .complete(false) // set the response to incomplete
                 .answers(List.of())
                 .build();
+        responseDto = SurveyResponseDto.builder()
+                .surveyResponse(response)
+                .build();
 
-        surveyResponseService.updateResponse(response, new ResponsibleEntity(enrolleeBundle.participantUser()),
+        surveyResponseService.updateResponse(responseDto, new ResponsibleEntity(enrolleeBundle.participantUser()),
                 enrolleeBundle.portalParticipantUser(), enrolleeBundle.enrollee(), task.getId(), survey.getPortalId());
 
         // check that the task status remains complete

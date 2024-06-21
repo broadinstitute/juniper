@@ -18,10 +18,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -173,8 +170,9 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 task.setTargetAssignedVersion(responsePopDto.getSurveyVersion());
                 participantTaskService.update(task, auditInfo);
             }
+            SurveyResponseDto responseDto = SurveyResponseDto.builder().surveyResponse(response).build();
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
+                    .updateResponse(responseDto, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
