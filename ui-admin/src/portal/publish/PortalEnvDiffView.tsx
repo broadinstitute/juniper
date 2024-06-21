@@ -6,7 +6,13 @@ import {
 } from 'api/api'
 import { Link } from 'react-router-dom'
 import StudyEnvDiff from './StudyEnvDiff'
-import { ConfigChangeListView, ConfigChanges, renderNotificationConfig, VersionChangeView } from './diffComponents'
+import {
+  ConfigChangeListView,
+  ConfigChanges,
+  renderNotificationConfig,
+  renderPortalLanguage,
+  VersionChangeView
+} from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _cloneDeep from 'lodash/cloneDeep'
@@ -17,7 +23,8 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   preRegSurveyChanges: { changed: false },
   triggerChanges: { addedItems: [], removedItems: [], changedItems: [] },
   participantDashboardAlertChanges: [],
-  studyEnvChanges: []
+  studyEnvChanges: [],
+  languageChanges: { addedItems: [], removedItems: [], changedItems: [] }
 }
 
 export const emptyStudyEnvChange: StudyEnvironmentChange = {
@@ -191,6 +198,17 @@ export default function PortalEnvDiffView(
             setSelectedChanges={triggerChanges =>
               setSelectedChanges({ ...selectedChanges, triggerChanges })}
             renderItemSummary={renderNotificationConfig}/>
+        </div>
+      </div>
+      <div className="my-2">
+        <h2 className="h6">
+          Portal languages</h2>
+        <div className="ms-4">
+          <ConfigChangeListView configChangeList={changeSet.languageChanges}
+            selectedChanges={selectedChanges.languageChanges}
+            setSelectedChanges={languageChanges =>
+              setSelectedChanges({ ...selectedChanges, languageChanges })}
+            renderItemSummary={renderPortalLanguage}/>
         </div>
       </div>
       <div>

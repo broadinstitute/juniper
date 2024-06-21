@@ -7,9 +7,12 @@ import bio.terra.pearl.api.admin.service.portal.PortalPublishingExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -42,6 +45,17 @@ public class PortalEnvironmentController implements PortalEnvironmentApi {
     PortalEnvironment updatedEnv =
         portalExtService.updateEnvironment(portalShortcode, environmentName, portalEnv, user);
     return ResponseEntity.ok(updatedEnv);
+  }
+
+  @Override
+  public ResponseEntity<Object> setLanguages(String portalShortcode, String envName, Object body) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<PortalEnvironmentLanguage> updatedLanguages =
+        objectMapper.convertValue(body, new TypeReference<List<PortalEnvironmentLanguage>>() {});
+    updatedLanguages =
+        portalExtService.setLanguages(portalShortcode, environmentName, updatedLanguages, user);
+    return ResponseEntity.ok(updatedLanguages);
   }
 
   @Override

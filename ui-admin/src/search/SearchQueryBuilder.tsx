@@ -44,6 +44,7 @@ import { faInfoCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Creatable from 'react-select/creatable'
 import pluralize from 'pluralize'
+import { Button } from '../components/forms/Button'
 
 /**
  * Frontend for building an enrollee search expression; can either
@@ -115,12 +116,12 @@ export const SearchQueryBuilder = ({
         search expression
         </ZendeskLink> that filters to enrollees that meet a specific criteria.
       </div>
-      <button
-        className="btn btn-link"
+      <Button
+        variant="link"
         disabled={isLoadingSearchResults || !canUseBasicMode}
         onClick={() => setAdvancedMode(!advancedMode)}>
         {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
-      </button>
+      </Button>
     </div>
     {searchError && <div className="alert alert-danger mb-2">
       {searchError}
@@ -324,10 +325,17 @@ const CustomFieldSelector = (props: FieldSelectorProps) => {
   const options = props.options.map(option => {
     return { label: option.label, value: option.label }
   })
-
   return <div className="w-100">
     <Select
       options={options}
+      styles={{
+        control: styles => ({ ...styles }),
+        option: styles => ({ ...styles }),
+        menu: styles => ({
+          ...styles,
+          width: '650px'
+        })
+      }}
       value={{ label: props.value || '', value: props.value || '' }}
       onChange={newVal => {
         if (newVal?.label != props.value) {

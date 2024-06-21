@@ -109,6 +109,14 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void mapStringToStringTrims() {
+        AnswerMapping mapping = new AnswerMapping();
+        Object result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_STRING)
+                .apply(Answer.builder().stringValue("  foo  ").build(), mapping);
+        assertThat((String) result, equalTo("foo"));
+    }
+
+    @Test
     public void mapToDateHandlesFormatString() {
         AnswerMapping mapping = AnswerMapping.builder().formatString("MM/dd/yyyy").build();
         LocalDate result = AnswerProcessingService.mapToDate("11/12/1987", mapping);
@@ -153,7 +161,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
                 "testSurvey_q1", "myFirstName",
-                "testSurvey_q2", "addressPart1",
+                "testSurvey_q2", "addressPart1 ",
                 "testSurvey_q3", "11/12/1987"
         ));
         List<AnswerMapping> mappings = List.of(

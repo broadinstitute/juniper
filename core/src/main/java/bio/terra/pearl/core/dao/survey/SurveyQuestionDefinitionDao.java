@@ -6,7 +6,6 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -30,24 +29,5 @@ public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefin
 
     public void deleteBySurveyId(UUID surveyId) {
         deleteByProperty("survey_id", surveyId);
-    }
-
-
-    public Optional<SurveyQuestionDefinition> findByStableIds(String portalShortcode, String surveyStableId, String questionStableId) {
-        return jdbi.withHandle(handle -> handle.createQuery(
-                        """
-                                SELECT sqd.* FROM survey_question_definition sqd
-                                INNER JOIN survey s ON s.id = sqd.survey_id
-                                INNER JOIN study_environment_survey ses ON s.id = ses.survey_id
-                                INNER JOIN portal p ON p.id = s.portal_id
-                                WHERE p.shortcode = :portalShortcode
-                                AND s.stable_id = :surveyStableId
-                                AND sqd.question_stable_id = :questionStableId
-                                """)
-                .bind("portalShortcode", portalShortcode)
-                .bind("surveyStableId", surveyStableId)
-                .bind("questionStableId", questionStableId)
-                .mapToBean(SurveyQuestionDefinition.class)
-                .findFirst());
     }
 }

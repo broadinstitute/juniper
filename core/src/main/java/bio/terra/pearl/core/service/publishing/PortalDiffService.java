@@ -9,6 +9,7 @@ import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.publishing.*;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
@@ -18,6 +19,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -35,16 +37,17 @@ public class PortalDiffService {
     public static final List<String> CONFIG_IGNORE_PROPS = List.of("id", "createdAt", "lastUpdatedAt", "class",
             "studyEnvironmentId", "portalEnvironmentId", "emailTemplateId", "emailTemplate",
             "consentFormId", "consentForm", "surveyId", "survey", "versionedEntity", "trigger");
-    private PortalEnvironmentService portalEnvService;
-    private PortalEnvironmentConfigService portalEnvironmentConfigService;
-    private SiteContentService siteContentService;
-    private SurveyService surveyService;
-    private TriggerService triggerService;
-    private PortalDashboardConfigService portalDashboardConfigService;
-    private ObjectMapper objectMapper;
-    private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
-    private StudyEnvironmentService studyEnvironmentService;
-    private StudyService studyService;
+    private final PortalEnvironmentService portalEnvService;
+    private final PortalEnvironmentConfigService portalEnvironmentConfigService;
+    private final SiteContentService siteContentService;
+    private final SurveyService surveyService;
+    private final TriggerService triggerService;
+    private final PortalDashboardConfigService portalDashboardConfigService;
+    private final ObjectMapper objectMapper;
+    private final PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final StudyService studyService;
+    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
     public PortalDiffService(PortalEnvironmentService portalEnvService,
                              PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -53,7 +56,8 @@ public class PortalDiffService {
                              PortalDashboardConfigService portalDashboardConfigService,
                              ObjectMapper objectMapper,
                              PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao,
-                             StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
+                             StudyEnvironmentService studyEnvironmentService, StudyService studyService,
+                             PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
         this.portalEnvService = portalEnvService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.siteContentService = siteContentService;
@@ -64,6 +68,7 @@ public class PortalDiffService {
         this.portalEnvironmentChangeRecordDao = portalEnvironmentChangeRecordDao;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     }
 
     public PortalEnvironmentChange diffPortalEnvs(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
@@ -91,14 +96,15 @@ public class PortalDiffService {
         List<ParticipantDashboardAlert> destAlerts = new ArrayList<>(destEnv.getParticipantDashboardAlerts());
         List<ParticipantDashboardAlert> sourceAlerts = new ArrayList<>(sourceEnv.getParticipantDashboardAlerts());
         List<ParticipantDashboardAlertChange> alertChangeLists = diffAlertLists(sourceAlerts, destAlerts);
-
+        ListChange<PortalEnvironmentLanguage, Object> languageChanges = diffLanguages(sourceEnv.getSupportedLanguages(), destEnv.getSupportedLanguages());
         return new PortalEnvironmentChange(
                 siteContentRecord,
                 envConfigChanges,
                 preRegRecord,
                 triggerChanges,
                 alertChangeLists,
-                studyEnvChanges
+                studyEnvChanges,
+                languageChanges
         );
     }
 
@@ -140,6 +146,7 @@ public class PortalDiffService {
         if (portalEnv.getPreRegSurveyId() != null) {
             portalEnv.setPreRegSurvey(surveyService.find(portalEnv.getPreRegSurveyId()).get());
         }
+        portalEnv.setSupportedLanguages(portalEnvironmentLanguageService.findByPortalEnvId(portalEnv.getId()));
         List<Trigger> triggers = triggerService.findByPortalEnvironmentId(portalEnv.getId());
         triggerService.attachTemplates(triggers);
         portalEnv.setTriggers(triggers);
@@ -221,6 +228,23 @@ public class PortalDiffService {
                 surveyChanges,
                 triggerChanges
         );
+    }
+
+    /** diffs the two lists -- any changes to a language will be considered an add/remove */
+    public ListChange<PortalEnvironmentLanguage, Object> diffLanguages(List<PortalEnvironmentLanguage> sourceLangs, List<PortalEnvironmentLanguage> destLangs) {
+        List<PortalEnvironmentLanguage> unmatchedDestLangs = new ArrayList<>(destLangs);
+        List<PortalEnvironmentLanguage> addedLangs = new ArrayList<>();
+        for (PortalEnvironmentLanguage sourceLang : sourceLangs) {
+            PortalEnvironmentLanguage matchedLang = unmatchedDestLangs.stream().filter(
+                    destLang -> destLang.getLanguageCode().equals(sourceLang.getLanguageCode()) && destLang.getLanguageName().equals(sourceLang.getLanguageName()))
+                    .findAny().orElse(null);
+            if (matchedLang == null) {
+                addedLangs.add(sourceLang);
+            } else {
+                unmatchedDestLangs.remove(matchedLang);
+            }
+        }
+        return new ListChange<>(addedLangs, unmatchedDestLangs, Collections.emptyList());
     }
 
     public StudyEnvironment loadStudyEnvForProcessing(String shortcode, EnvironmentName envName) {
