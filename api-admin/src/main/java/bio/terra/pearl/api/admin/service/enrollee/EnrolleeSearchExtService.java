@@ -6,35 +6,24 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
-import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Map;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeSearchExtService {
-  private AuthUtilService authUtilService;
-  private EnrolleeService enrolleeService;
-  private WithdrawnEnrolleeService withdrawnEnrolleeService;
-  private DataChangeRecordService dataChangeRecordService;
-  private EnrolleeSearchService enrolleeSearchService;
-  private StudyEnvironmentService studyEnvironmentService;
+  private final AuthUtilService authUtilService;
+  private final EnrolleeSearchService enrolleeSearchService;
+  private final StudyEnvironmentService studyEnvironmentService;
 
   public EnrolleeSearchExtService(
       AuthUtilService authUtilService,
-      EnrolleeService enrolleeService,
-      WithdrawnEnrolleeService withdrawnEnrolleeService,
-      DataChangeRecordService dataChangeRecordService,
       EnrolleeSearchService enrolleeSearchService,
       StudyEnvironmentService studyEnvironmentService) {
     this.authUtilService = authUtilService;
-    this.enrolleeService = enrolleeService;
-    this.withdrawnEnrolleeService = withdrawnEnrolleeService;
-    this.dataChangeRecordService = dataChangeRecordService;
     this.enrolleeSearchService = enrolleeSearchService;
     this.studyEnvironmentService = studyEnvironmentService;
   }

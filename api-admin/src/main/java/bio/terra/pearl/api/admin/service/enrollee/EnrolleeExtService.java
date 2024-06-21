@@ -12,15 +12,16 @@ import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
-import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.participant.search.facets.BooleanFacetValue;
 import bio.terra.pearl.core.service.participant.search.facets.sql.EnrolleeFacetSqlGenerator;
 import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
+import bio.terra.pearl.core.service.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeExtService {
