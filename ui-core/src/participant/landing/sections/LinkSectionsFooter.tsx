@@ -7,11 +7,16 @@ import { SectionConfig } from '../../../types/landingPageConfig'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from '../../util/validationUtils'
 
-import { ButtonConfig, ConfiguredLink, validateButtonConfig } from '../../../participant/landing/ConfiguredButton'
+import {
+  ButtonConfig,
+  buttonConfigProps,
+  ConfiguredLink,
+  validateButtonConfig
+} from '../../../participant/landing/ConfiguredButton'
 import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
-type LinkSectionsFooterConfig = {
+export type LinkSectionsFooterConfig = {
   itemSections?: ItemSection[]
 }
 
@@ -19,6 +24,15 @@ type ItemSection = {
   title: string,
   items: ButtonConfig[]
 }
+
+const itemSectionProps = [
+  { name: 'title', translated: true },
+  { name: 'items', subProps: buttonConfigProps, isArray: true }
+]
+
+export const linkSectionsFooterConfigProps = [
+  { name: 'itemSections', translated: false, subProps: itemSectionProps, isArray: true }
+]
 
 const validateItemSection = (config: unknown): ItemSection => {
   const message = 'Invalid LinkSectionsFooterConfig: Invalid itemSection'
@@ -77,25 +91,6 @@ function LinkSectionsFooter(props: LinkSectionsFooterProps) {
       )}
     </div>
   </>
-}
-
-/**
- *
- */
-export const extractMessagesAndKeys = (config: LinkSectionsFooterConfig, prefix: string) => {
-  const texts: Record<string, string> = {}
-  if (!config.itemSections) {
-    return
-  }
-  config.itemSections.forEach((section, sectionIndex) => {
-    texts[`${prefix}.title`] = section.title
-    section.items.forEach((item, itemIndex) => {
-      if (item.text) {
-        texts[`${prefix}.section[${sectionIndex}].item[${itemIndex}].text`] = item.text
-      }
-    })
-  })
-  return texts
 }
 
 export default withValidatedSectionConfig(validateLinkSectionsFooterConfig, LinkSectionsFooter)

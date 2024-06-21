@@ -3,16 +3,18 @@ import React from 'react'
 import { HtmlSection, SectionConfig, SectionType } from '../../../types/landingPageConfig'
 import { isPlainObject } from '../../util/validationUtils'
 
-import BannerImage from './BannerImage'
-import FrequentlyAskedQuestionsTemplate from './FrequentlyAskedQuestionsTemplate'
-import HeroCenteredTemplate from './HeroCenteredTemplate'
-import HeroWithImageTemplate from './HeroWithImageTemplate'
-import StepOverviewTemplate from './StepOverviewTemplate'
+import BannerImage, { bannerImageConfigProps } from './BannerImage'
+import FrequentlyAskedQuestionsTemplate, {
+  frequentlyAskedQuestionsConfigProps
+} from './FrequentlyAskedQuestionsTemplate'
+import HeroCenteredTemplate, { heroCenteredTemplateConfigProps } from './HeroCenteredTemplate'
+import HeroWithImageTemplate, { heroWithImageTemplateConfigProps } from './HeroWithImageTemplate'
+import StepOverviewTemplate, { stepOverviewTemplateConfigProps } from './StepOverviewTemplate'
 import SocialMediaTemplate from './SocialMediaTemplate'
 import RawHtmlTemplate from './RawHtmlTemplate'
-import PhotoBlurbGrid from './PhotoBlurbGrid'
-import ParticipationDetailTemplate from './ParticipationDetailTemplate'
-import LinkSectionsFooter from './LinkSectionsFooter'
+import PhotoBlurbGrid, { photoBlurbGridConfigProps } from './PhotoBlurbGrid'
+import ParticipationDetailTemplate, { participationDetailTemplateConfigProps } from './ParticipationDetailTemplate'
+import LinkSectionsFooter, { linkSectionsFooterConfigProps } from './LinkSectionsFooter'
 import { TemplateComponent } from './templateUtils'
 
 
@@ -74,4 +76,15 @@ export function HtmlSectionView({ section }: { section: HtmlSection }) {
     console.warn(`Page configuration error: ${err instanceof Error ? err.message : err}`)
     return null
   }
+}
+
+export const allSectionProps = {
+  'HERO_CENTERED': heroCenteredTemplateConfigProps,
+  'HERO_WITH_IMAGE': heroWithImageTemplateConfigProps,
+  'LINK_SECTIONS_FOOTER': linkSectionsFooterConfigProps,
+  'FAQ': frequentlyAskedQuestionsConfigProps,
+  'BANNER_IMAGE': bannerImageConfigProps,
+  'PARTICIPATION_DETAIL': participationDetailTemplateConfigProps,
+  'PHOTO_BLURB_GRID': photoBlurbGridConfigProps,
+  'STEP_OVERVIEW': stepOverviewTemplateConfigProps
 }

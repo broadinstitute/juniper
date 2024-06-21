@@ -39,6 +39,21 @@ type FrequentlyAskedQuestionsConfig = {
   expandAllText?: string
 }
 
+const faqQuestionProps = [
+  { name: 'question', translated: true },
+  { name: 'answer', translated: true }
+]
+
+export const frequentlyAskedQuestionsConfigProps = [
+  { name: 'title', translated: true },
+  { name: 'blurb', translated: true },
+  { name: 'questions', isArray: true, subProps: faqQuestionProps },
+  { name: 'showToggleAllButton' },
+  { name: 'collapseAllText' },
+  { name: 'expandAllText' }
+]
+
+
 const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
   const message = 'Invalid FrequentlyAskedQuestionsConfig: Invalid question'
   const config = requirePlainObject(questionConfig, message)
