@@ -50,7 +50,7 @@ describe('RawEnrolleeSurveyView', () => {
     await waitFor(() => expect(screen.getByText('Show all questions')).toBeVisible())
   })
 
-  test('Editing mode shows the survey response editor', async () => {
+  test('Editing mode shows the survey response editor after providing a justification', async () => {
     (userHasPermission as jest.Mock).mockImplementation(() => {
       return true
     })
@@ -60,7 +60,11 @@ describe('RawEnrolleeSurveyView', () => {
         studyEnvContext={mockStudyEnvContext()} response={mockResponseWithAnswer}
         configSurvey={mockConfiguredSurvey()} onUpdate={jest.fn()}/>)
     render(RoutedComponent)
+
     await userEvent.click(screen.getByText('Editing'))
+    await waitFor(() => expect(screen.getByText('Add Justification')).toBeVisible())
+    await userEvent.type(screen.getByRole('textbox'), 'This is a test justification')
+    await userEvent.click(screen.getByText('Continue to edit'))
     await waitFor(() => expect(screen.queryByText('Show all questions')).not.toBeInTheDocument())
   })
 })
