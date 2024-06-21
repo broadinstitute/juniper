@@ -4,8 +4,6 @@ import {
   Answer,
   DatasetDetails,
   EnrolleeSearchExpressionResult,
-  EnrolleeSearchFacet,
-  EnrolleeSearchResult,
   Notification,
   NotificationEventDetails,
   PepperKit,
@@ -27,8 +25,10 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, StudyEnvParams,
-  Survey, SurveyType
+  ParticipantTaskType,
+  StudyEnvParams,
+  Survey,
+  SurveyType
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
@@ -40,14 +40,6 @@ import {
 import { LoadedPortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
-import {
-  EntityOptionsArrayFacet,
-  EntityOptionsArrayFacetValue,
-  EntityOptionsValue,
-  FacetValue,
-  StringOptionsFacet,
-  StringOptionsFacetValue
-} from '../api/enrolleeSearch'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -310,19 +302,6 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
-/** returns a mock enrollee search result */
-export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
-  return {
-    enrollee: mockEnrollee(),
-    profile: mockEnrollee().profile,
-    mostRecentKitStatus: null,
-    participantUser: {
-      lastLogin: 50405345,
-      username: `${randomString(10)}@test.com`
-    }
-  }
-}
-
 /**
  * Mocks most basic enrollee search expression result response.
  */
@@ -332,44 +311,6 @@ export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionR
     profile: mockEnrollee().profile
   }
 }
-
-/** returns a mock enrollee task search facet */
-export const mockTaskSearchFacet: () => EnrolleeSearchFacet = () => {
-  const entities = [
-    { value: 'consent', label: 'Consent' },
-    { value: 'basicInfo', label: 'Basics' },
-    { value: 'cardioHistory', label: 'Cardio History' }
-  ]
-  const options = [
-    { value: 'COMPLETE', label: 'Complete' },
-    { value: 'IN_PROGRESS', label: 'In progress' },
-    { value: 'NEW', label: 'New' }
-  ]
-
-  return {
-    keyName: 'status',
-    category: 'participantTask',
-    label: 'Task status',
-    facetType: 'ENTITY_OPTIONS',
-    entities,
-    options
-  }
-}
-
-/** returns a mock enrollee task search facet value */
-export const mockTaskFacetValue: (facet: EntityOptionsArrayFacet, optionValue: string) =>
-  FacetValue = (facet: EntityOptionsArrayFacet, optionValue: string) => {
-    const optionValues: string[] = [optionValue]
-    const facetValues = facet.entities.map(entity => new EntityOptionsValue(entity.value, optionValues))
-    return new EntityOptionsArrayFacetValue(facet, { values: facetValues })
-  }
-
-/** returns a mock enrollee options search facet value */
-export const mockOptionsFacetValue: (facet: StringOptionsFacet, optionValue: string) =>
-  FacetValue = (facet: StringOptionsFacet, optionValue: string) => {
-    const optionValues: string[] = [optionValue]
-    return new StringOptionsFacetValue(facet, { values: optionValues })
-  }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForForm = (form: Survey, enrolleeId: string, taskType: ParticipantTaskType):

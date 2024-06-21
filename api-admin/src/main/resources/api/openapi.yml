@@ -539,39 +539,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
-    get:
-      summary: Searches for enrollees in an environment
-      tags: [ enrolleeSearch ]
-      operationId: search
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: facets, in: query, required: false, schema: { type: string } }
-      responses:
-        '200':
-          description: EnrolleeSearchResult objects
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/facets:
-    get:
-      summary: Gets enrollee search facets for a study and  environment
-      tags: [ enrolleeSearch ]
-      operationId: getSearchFacets
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: List of enrollee search facets
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
       summary: Gets all of the possible fields which can be searched on within the provided portal.
