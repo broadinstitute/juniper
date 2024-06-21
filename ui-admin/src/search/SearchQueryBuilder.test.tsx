@@ -122,7 +122,7 @@ describe('SearchQueryBuilder', () => {
       )).toBeInTheDocument()
     })
 
-    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).toContain('disabled')
   })
 
   it('should render advanced editor if functions used', async () => {
@@ -143,21 +143,25 @@ describe('SearchQueryBuilder', () => {
       )).toBeInTheDocument()
     })
 
-    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).toContain('disabled')
   })
 
   it('should disable basic editor if error introduced in advanced editor', async () => {
     jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+    jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
 
     const { RoutedComponent } = setupRouterTest(
       <TestFullQueryBuilderState/>)
     render(RoutedComponent)
 
-    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)').className).not.toContain('disabled'))
 
     await userEvent.click(screen.getByText('(switch to advanced view)'))
 
-    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
+    await waitFor(() => {
+      expect(screen.getByText('(switch to basic view)')).toBeInTheDocument()
+      expect(screen.getByText('(switch to basic view)').className).not.toContain('disabled')
+    })
 
     await userEvent.type(
       screen.getByLabelText('Search expression'),
@@ -169,22 +173,23 @@ describe('SearchQueryBuilder', () => {
       )).toBeInTheDocument()
     })
 
-    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).toContain('disabled')
   })
 
   it('should disable basic editor if function introduced in advanced editor', async () => {
     jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+    jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
 
     const { RoutedComponent } = setupRouterTest(
       <TestFullQueryBuilderState/>)
     render(RoutedComponent)
 
-    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)').className).not.toContain('disabled'))
     await userEvent.click(screen.getByText('(switch to advanced view)'))
 
-    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
     await waitFor(() => {
       expect(screen.getByText('(switch to basic view)')).toBeInTheDocument()
+      expect(screen.getByText('(switch to basic view)').className).not.toContain('disabled')
     })
 
     await userEvent.type(
@@ -197,20 +202,21 @@ describe('SearchQueryBuilder', () => {
       )).toBeInTheDocument()
     })
 
-    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).toContain('disabled')
   })
 
   it('should disable basic editor if not introduced in advanced editor', async () => {
     jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
+    jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
 
     const { RoutedComponent } = setupRouterTest(
       <TestFullQueryBuilderState/>)
     render(RoutedComponent)
 
-    await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
+    await waitFor(() => expect(screen.getByText('(switch to advanced view)').className).not.toContain('disabled'))
     await userEvent.click(screen.getByText('(switch to advanced view)'))
 
-    expect(screen.getByText('(switch to basic view)')).not.toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).not.toContain('disabled')
     await waitFor(() => {
       expect(screen.getByText('(switch to basic view)')).toBeInTheDocument()
     })
@@ -225,7 +231,7 @@ describe('SearchQueryBuilder', () => {
       )).toBeInTheDocument()
     })
 
-    expect(screen.getByText('(switch to basic view)')).toBeDisabled()
+    expect(screen.getByText('(switch to basic view)').className).toContain('disabled')
   })
 })
 
