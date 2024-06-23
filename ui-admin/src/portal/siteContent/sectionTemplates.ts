@@ -58,7 +58,7 @@ export const sectionTemplates: Record<string, object> = {
   'FAQ': {
     title: 'Frequently Asked Questions',
     blurb: '',
-    questions: [],
+    questions: [{ ...templateQuestion }],
     showToggleAllButton: true
   },
   'HERO_CENTERED': {

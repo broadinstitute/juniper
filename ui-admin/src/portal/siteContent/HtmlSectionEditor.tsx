@@ -57,7 +57,9 @@ const HtmlSectionEditor = ({
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
-  const [localUseJsonEditor, setLocalUseJsonEditor] = useState(useJsonEditor)
+  // Allows the user to switch a single section to the JSON view. Eventually we may want to get rid of
+  // the full JSON Editor tab and just allow users to peek into the JSON for a single section.
+  const [sectionUseJsonEditor, setSectionUseJsonEditor] = useState(useJsonEditor)
 
   const getSectionContent = (section: HtmlSection) => {
     if (section.sectionType === 'RAW_HTML') {
@@ -116,12 +118,12 @@ const HtmlSectionEditor = ({
             })
           }
         }}/>
-      <IconButton icon={faCode}
-        aria-label={localUseJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
+      { !useJsonEditor && <IconButton icon={faCode}
+        aria-label={sectionUseJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
         className="ms-2"
         variant="light"
-        onClick={() => setLocalUseJsonEditor(!localUseJsonEditor)}
-      />
+        onClick={() => setSectionUseJsonEditor(!sectionUseJsonEditor)}
+      /> }
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
@@ -148,7 +150,7 @@ const HtmlSectionEditor = ({
       /> }
     </div>
 
-    {SectionEditorComponent && !localUseJsonEditor ? (
+    {SectionEditorComponent && !sectionUseJsonEditor ? (
       <SectionEditorComponent portalEnvContext={portalEnvContext}
         siteMediaList={siteMediaList} section={section} updateSection={updateSection} />
     ) : (
