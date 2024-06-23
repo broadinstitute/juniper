@@ -16,7 +16,7 @@ export const ImageSelector = ({ portalEnvContext, imageList, image, onChange }: 
   const [, setSelectedImage] = useState<SiteMediaMetadata | undefined>(initial)
 
   const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => <div>
-    {image.cleanFileName} <img style={{ maxHeight: '1.5em' }}
+    {image.cleanFileName} <img style={{ maxHeight: '1.5em' }} alt={image.cleanFileName}
       src={getMediaUrl(portalShortcode, image!.cleanFileName, image!.version)}/>
   </div>
 

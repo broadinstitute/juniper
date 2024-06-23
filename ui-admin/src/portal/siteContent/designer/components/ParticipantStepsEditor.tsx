@@ -44,52 +44,46 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
         <div className='mb-2'><Checkbox label={'Show Step Numbers'}
           checked={config.showStepNumbers as boolean == undefined ? true : config.showStepNumbers as boolean}
           onChange={value => {
-            const parsed = JSON.parse(section.sectionConfig || '{}')
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, showStepNumbers: value }) })
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, showStepNumbers: value }) })
           }}/></div>
         <div>
           {steps.map((step, i) => {
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
-                <span className="h5">Step {i + 1}</span>
+                <span className="h5">Edit step</span>
                 <div role="button" className="d-flex justify-content-end">
                   <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-                    const parsed = JSON.parse(section.sectionConfig!)
                     const newSteps = [...config.steps as StepConfig[]]
                     newSteps.splice(i, 1)
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}/></div>
               </div>
               <div>
                 <label className='form-label fw-semibold m-0'>Image</label>
                 <ImageSelector portalEnvContext={portalEnvContext}
                   imageList={siteMediaList} image={step.image as ImageConfig} onChange={image => {
-                    const parsed = JSON.parse(section.sectionConfig!)
                     const newSteps = [...config.steps as StepConfig[]]
                     newSteps[i].image = image
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}/>
                 <TextInput label="Duration" value={step.duration} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig!)
                   const newSteps = [...config.steps as StepConfig[]]
                   newSteps[i].duration = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                 }}/>
                 <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig!)
                   const newSteps = [...config.steps as StepConfig[]]
                   newSteps[i].blurb = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                 }}/>
               </div>
             </div>
           })}
         </div>
         <Button onClick={() => {
-          const parsed = JSON.parse(section.sectionConfig!)
           const newSteps = [...config.steps as StepConfig[]]
           newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
-          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, steps: newSteps }) })
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>
       </div>
     </div>

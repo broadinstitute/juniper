@@ -40,13 +40,12 @@ export const ButtonEditor = ({ section, updateSection }: {
           {buttons.map((button, i) => {
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
-                <span className="h5">Button {i + 1}</span>
+                <span className="h5">Edit button</span>
                 <div role="button" className="d-flex justify-content-end">
                   <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-                    const parsed = JSON.parse(section.sectionConfig!)
                     const newButtons = [...config.buttons as ButtonConfig[]]
                     newButtons.splice(i, 1)
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                   }}/></div>
               </div>
               <div>
@@ -56,34 +55,29 @@ export const ButtonEditor = ({ section, updateSection }: {
                 ]} aria-label={'Select section type'}
                 onChange={opt => {
                   if (opt != undefined) {
-                    const parsed = JSON.parse(section.sectionConfig || '{}')
                     const newButtons = [...config.buttons as ButtonConfig[]]
                     newButtons[i].type = ButtonTypeTemplates[opt.value].type
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                   }
                 }}/>
                 <TextInput label="Button Text" value={button.text} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newButtons = [...config.buttons as ButtonConfig[]]
                   newButtons[i].text = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                 }}/>
-                {/* @ts-ignore */}
-                {button.type === 'externalLink' || button.type === 'internalLink' &&
+                {(!button.type || button.type === 'internalLink') &&
                     <TextInput label="Button Link" value={button.href} onChange={value => {
-                      const parsed = JSON.parse(section.sectionConfig || '{}')
                       const newButtons = [...config.buttons as ButtonConfig[]]
-                      // @ts-ignore
+                      // @ts-ignore we've already checked that it's a link button, which requires an href
                       newButtons[i].href = value
-                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                     }}/>}
                 {button.type === 'join' &&
                     <TextInput label="Study Shortcode" value={button.studyShortcode} onChange={value => {
-                      const parsed = JSON.parse(section.sectionConfig || '{}')
                       const newButtons = [...config.buttons as ButtonConfig[]]
-                      // @ts-ignore
+                      // @ts-ignore we've already checked that it's a join button, which requires a shortcode
                       newButtons[i].studyShortcode = value
-                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                     }}/>}
               </div>
             </div>
@@ -92,7 +86,7 @@ export const ButtonEditor = ({ section, updateSection }: {
         <Button onClick={() => {
           const parsed = JSON.parse(section.sectionConfig!)
           const newButtons = [...buttons]
-          newButtons.push({ type: undefined, text: '', href: '' })
+          newButtons.push({ type: 'internalLink', text: '', href: '' })
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Button
         </Button>

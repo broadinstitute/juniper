@@ -48,27 +48,24 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
                 <div className="d-flex justify-content-end">
                   <IconButton icon={faChevronUp} aria-label={'Move Up'} disabled={i < 1}
                     onClick={() => {
-                      const parsed = JSON.parse(section.sectionConfig!)
                       const newLogos = [...config.logos as MediaConfig[]]
                       const temp = newLogos[i]
                       newLogos[i] = newLogos[i - 1]
                       newLogos[i - 1] = temp
-                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
                     }}/>
                   <IconButton icon={faChevronDown} aria-label={'Move Down'} disabled={i > logos.length - 2}
                     onClick={() => {
-                      const parsed = JSON.parse(section.sectionConfig!)
                       const newLogos = [...config.logos as MediaConfig[]]
                       const temp = newLogos[i]
                       newLogos[i] = newLogos[i + 1]
                       newLogos[i + 1] = temp
-                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
                     }}/>
                   <IconButton icon={faTimes} className={'text-danger'} aria-label={'Delete'} onClick={() => {
-                    const parsed = JSON.parse(section.sectionConfig!)
                     const newLogos = [...config.logos as MediaConfig[]]
                     newLogos.splice(i, 1)
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
                   }}/>
                 </div>
               </div>

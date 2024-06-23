@@ -13,8 +13,7 @@ export const TitleEditor = ({ section, updateSection }: {
     <TextInput className="mb-2" label="Title" value={config.title as string}
       placeholder={'Enter a title for this section'}
       onChange={value => {
-        const parsed = JSON.parse(section.sectionConfig || '{}')
-        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, title: value }) })
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, title: value }) })
       }}/>
   )
 }

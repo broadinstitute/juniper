@@ -203,7 +203,8 @@ const DynamicSectionEditor = ({ portalEnvContext, section, updateSection, siteMe
           <LogoEditor portalEnvContext={portalEnvContext} section={section}
             updateSection={updateSection} siteMediaList={siteMediaList}/>}
       {hasButtons &&
-          <ButtonEditor section={section} updateSection={updateSection}/>}
+          <ButtonEditor
+            section={section} updateSection={updateSection}/>}
       {hasSubGrids &&
           <PhotoBioEditor portalEnvContext={portalEnvContext} mediaList={siteMediaList}
             section={section} updateSection={updateSection}/>}
