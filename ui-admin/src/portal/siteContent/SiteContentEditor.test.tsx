@@ -7,6 +7,14 @@ import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 import { MockI18nProvider, NavbarItemExternal, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { select } from 'react-select-event'
+import { Store } from 'react-notifications-component'
+
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  getPortalMedia: jest.fn().mockResolvedValue([])
+}))
+
+jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
 test('enables live-preview text editing', async () => {
   const siteContent = mockSiteContent()

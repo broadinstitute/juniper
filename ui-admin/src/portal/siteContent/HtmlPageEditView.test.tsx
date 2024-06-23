@@ -6,6 +6,9 @@ import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
 import { setupRouterTest } from '@juniper/ui-core'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
+import { Store } from 'react-notifications-component'
+
+jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
 test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()
