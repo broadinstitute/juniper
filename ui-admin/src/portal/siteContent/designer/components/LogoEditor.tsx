@@ -6,7 +6,7 @@ import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
-import { Button } from 'components/forms/Button'
+import { Button, IconButton } from 'components/forms/Button'
 import { ImageSelector } from './ImageSelector'
 
 /**
@@ -44,17 +44,36 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
           {logos.map((logo, i) => {
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
-                <span className="h5">Logo {i + 1}</span>
-                <div role="button" className="d-flex justify-content-end">
-                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
+                <span className="h5">Edit logo</span>
+                <div className="d-flex justify-content-end">
+                  <IconButton icon={faChevronUp} aria-label={'Move Up'} disabled={i < 1}
+                    onClick={() => {
+                      const parsed = JSON.parse(section.sectionConfig!)
+                      const newLogos = [...config.logos as MediaConfig[]]
+                      const temp = newLogos[i]
+                      newLogos[i] = newLogos[i - 1]
+                      newLogos[i - 1] = temp
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+                    }}/>
+                  <IconButton icon={faChevronDown} aria-label={'Move Down'} disabled={i > logos.length - 2}
+                    onClick={() => {
+                      const parsed = JSON.parse(section.sectionConfig!)
+                      const newLogos = [...config.logos as MediaConfig[]]
+                      const temp = newLogos[i]
+                      newLogos[i] = newLogos[i + 1]
+                      newLogos[i + 1] = temp
+                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+                    }}/>
+                  <IconButton icon={faTimes} className={'text-danger'} aria-label={'Delete'} onClick={() => {
                     const parsed = JSON.parse(section.sectionConfig!)
                     const newLogos = [...config.logos as MediaConfig[]]
                     newLogos.splice(i, 1)
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
-                  }}/></div>
+                  }}/>
+                </div>
               </div>
               <div>
-                <label className='form-label fw-semibold m-0'>Image</label>
+                <label className='form-label fw-semibold'>Image</label>
                 <ImageSelector portalEnvContext={portalEnvContext}
                   imageList={siteMediaList} image={logo as ImageConfig} onChange={image => {
                     const parsed = JSON.parse(section.sectionConfig || '{}')
@@ -65,7 +84,7 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
                     }
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
                   }}/>
-                <TextInput label="Alt Text" value={logo.alt} onChange={value => {
+                <TextInput label="Image Alt Text" value={logo.alt} onChange={value => {
                   const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newLogos = [...config.logos as MediaConfig[]]
                   newLogos[i].alt = value

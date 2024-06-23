@@ -5,7 +5,7 @@ import HtmlSectionEditor from './HtmlSectionEditor'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
 import { SectionType, setupRouterTest } from '@juniper/ui-core'
-import { mockPortalEnvContext } from '../../test-utils/mocking-utils'
+import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 
 test('readOnly disables section type selection', async () => {
   const mockPage = mockHtmlPage()
