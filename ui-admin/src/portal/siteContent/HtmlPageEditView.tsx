@@ -8,7 +8,7 @@ import { sectionTemplates } from './sectionTemplates'
 import Api, { SiteMediaMetadata } from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
 import { filterPriorVersions } from '../media/SiteMediaList'
-import { PortalEnvContext } from '../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 
 type HtmlPageViewProps = {
   portalEnvContext: PortalEnvContext

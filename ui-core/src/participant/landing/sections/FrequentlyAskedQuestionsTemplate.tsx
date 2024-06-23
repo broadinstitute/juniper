@@ -48,7 +48,7 @@ const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
 }
 
 /** Validate that a section configuration object conforms to FrequentlyAskedQuestionsConfig */
-export const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): FrequentlyAskedQuestionsConfig => {
+const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): FrequentlyAskedQuestionsConfig => {
   const message = 'Invalid FrequentlyAskedQuestionsConfig'
   const title = requireOptionalString(config, 'title', message)
   const blurb = requireOptionalString(config, 'blurb', message)

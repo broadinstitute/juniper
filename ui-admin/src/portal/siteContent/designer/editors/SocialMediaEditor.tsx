@@ -19,10 +19,12 @@ export const SocialMediaEditor = ({ section, updateSection }: {
               <label className='fw-bold'>{site.label}</label>
             </div>
             <div className="col d-flex align-items-right col">
-              <TextInput value={config[handleKey] as string} placeholder={`Enter ${site.label} handle. ` +
-                                'Leave blank to hide'} onChange={value => {
-                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, [handleKey]: value }) })
-              }}/>
+              <TextInput
+                value={config[handleKey] as string}
+                placeholder={`Enter ${site.label} handle. Leave blank to hide`}
+                onChange={value => {
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, [handleKey]: value }) })
+                }}/>
             </div>
           </div>
         )

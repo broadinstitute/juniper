@@ -79,8 +79,8 @@ export const ItemSectionsEditor = ({ section, updateSection }: {
 const ItemSectionEditor = ({ itemSection, updateItemSection }: {
     itemSection: ItemSection, updateItemSection: (itemSection: ItemSection) => void
 }) => {
-  const itemssContentId = useId()
-  const itemsTargetSelector = `#${itemssContentId}`
+  const itemsContentId = useId()
+  const itemsTargetSelector = `#${itemsContentId}`
   return (
     <div style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
       <label className='form-label fw-semibold'>Title</label>
@@ -101,7 +101,7 @@ const ItemSectionEditor = ({ itemSection, updateItemSection }: {
           </span>
         </button>
       </div>
-      <div className="collapse hide rounded-3 mb-2" id={itemssContentId}>
+      <div className="collapse hide rounded-3 mb-2" id={itemsContentId}>
         {itemSection.items.map((item, i) => {
           return <div key={i} className="rounded-3 mb-2"
             style={{ backgroundColor: '#eee', padding: '0.75rem' }}>

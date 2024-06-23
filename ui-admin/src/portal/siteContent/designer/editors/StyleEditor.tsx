@@ -16,6 +16,7 @@ export const StyleEditor = ({ section, updateSection }: {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
   const contentId = useId()
   const targetSelector = `#${contentId}`
+
   const imagePositionOptions = [
     { label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }
   ]

@@ -10,7 +10,7 @@ import { ParticipationStepsEditor } from './editors/ParticipantStepsEditor'
 import { FrequentlyAskedQuestionEditor } from './editors/FrequentlyAskedQuestionEditor'
 import { LogoEditor } from './editors/LogoEditor'
 import { ButtonsEditor } from './editors/ButtonsEditor'
-import { PhotoBioEditor } from './editors/PhotoBioEditor'
+import { SubGridsEditor } from './editors/SubGridsEditor'
 import React from 'react'
 import { ItemSectionsEditor } from './editors/ItemSectionsEditor'
 
@@ -58,7 +58,7 @@ export const SectionDesigner = ({ portalEnvContext, section, updateSection, site
           <ButtonsEditor
             section={section} updateSection={updateSection}/>}
       {hasSubGrids &&
-          <PhotoBioEditor portalEnvContext={portalEnvContext} mediaList={siteMediaList}
+          <SubGridsEditor portalEnvContext={portalEnvContext} mediaList={siteMediaList}
             section={section} updateSection={updateSection}/>}
       {hasItemSections &&
             <ItemSectionsEditor section={section} updateSection={updateSection}/>}
