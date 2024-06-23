@@ -81,7 +81,7 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
                     }
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
                   }}/>
-                <TextInput label="Image Alt Text" value={logo.alt} onChange={value => {
+                <TextInput label="Image Alt Text" className="mb-2" value={logo.alt} onChange={value => {
                   const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newLogos = [...config.logos as MediaConfig[]]
                   newLogos[i].alt = value

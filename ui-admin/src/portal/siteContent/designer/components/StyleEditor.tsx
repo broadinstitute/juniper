@@ -36,23 +36,23 @@ export const StyleEditor = ({ section, updateSection }: {
       </div>
       <div className="collapse hide rounded-3 mb-2" id={contentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
-        <TextInput label="Background Color" value={config.background as string}
+        <TextInput label="Background Color" className="mb-2" value={config.background as string}
           placeholder={'Enter a value to override default'}
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, background: value }) })
           }}/>
-        <TextInput label="Text Color" value={config.color as string}
+        <TextInput label="Text Color" className="mb-2" value={config.color as string}
           placeholder={'Enter a value to override default'}
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, color: value }) })
           }}/>
-        { Object.hasOwnProperty.call(config, 'image') && <div className='mt-2'><Checkbox label={'Full Width'}
+        { Object.hasOwnProperty.call(config, 'image') && <Checkbox label={'Full Width'} className="mb-2"
           checked={config.fullWidth as boolean == undefined ? false : config.fullWidth as boolean}
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, fullWidth: value }) })
-          }}/></div>}
+          }}/>}
         { Object.hasOwnProperty.call(config, 'image') &&
-            <div className='mt-2'>
+            <div className='my-2'>
               <label className='form-label fw-semibold'>Image Position</label>
               <Select options={imagePositionOptions}
                 value={config.imagePosition ? imagePositionOptions.find(opt => opt.value === config.imagePosition)

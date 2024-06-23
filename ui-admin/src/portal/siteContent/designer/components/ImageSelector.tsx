@@ -33,6 +33,7 @@ export const ImageSelector = ({ portalEnvContext, imageList, image, onChange }: 
     <div>
       <Select
         placeholder={'Select an image'}
+        className={'mb-2'}
         isSearchable={false}
         inputId={selectInputId}
         options={options}

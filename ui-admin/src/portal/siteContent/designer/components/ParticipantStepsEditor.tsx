@@ -4,12 +4,13 @@ import { SiteMediaMetadata } from 'api/api'
 import React, { useId } from 'react'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Checkbox } from 'components/forms/Checkbox'
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
 import { Button } from 'components/forms/Button'
 import { ImageSelector } from './ImageSelector'
+import { ListElementController } from './ListElementController'
 
 /**
  *
@@ -51,12 +52,13 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit step</span>
-                <div role="button" className="d-flex justify-content-end">
-                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-                    const newSteps = [...config.steps as StepConfig[]]
-                    newSteps.splice(i, 1)
+                <ListElementController<StepConfig>
+                  items={config.steps as StepConfig[]}
+                  updateItems={newSteps => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
-                  }}/></div>
+                  }}
+                  index={i}
+                />
               </div>
               <div>
                 <label className='form-label fw-semibold m-0'>Image</label>
@@ -66,12 +68,12 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
                     newSteps[i].image = image
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}/>
-                <TextInput label="Duration" value={step.duration} onChange={value => {
+                <TextInput label="Duration" className="mb-2" value={step.duration} onChange={value => {
                   const newSteps = [...config.steps as StepConfig[]]
                   newSteps[i].duration = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                 }}/>
-                <Textarea rows={2} label="Blurb" value={step.blurb} onChange={value => {
+                <Textarea rows={2} label="Blurb" className="mb-2" value={step.blurb} onChange={value => {
                   const newSteps = [...config.steps as StepConfig[]]
                   newSteps[i].blurb = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })

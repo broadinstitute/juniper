@@ -2,10 +2,11 @@ import { ButtonConfig, HtmlSection, SectionConfig } from '@juniper/ui-core'
 import React, { useId } from 'react'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
+import { ListElementController } from './ListElementController'
 
 /**
  * Returns an editor for a button that appears in a website section
@@ -41,53 +42,54 @@ export const ButtonEditor = ({ section, updateSection }: {
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit button</span>
-                <div role="button" className="d-flex justify-content-end">
-                  <FontAwesomeIcon icon={faTimes} className={'text-danger'} onClick={() => {
-                    const newButtons = [...config.buttons as ButtonConfig[]]
-                    newButtons.splice(i, 1)
+                <ListElementController<ButtonConfig>
+                  items={buttons}
+                  updateItems={newButtons => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
-                  }}/></div>
+                  }}
+                  index={i}
+                />
               </div>
               <div>
-                <label className='form-label fw-semibold m-0'>Button Type</label>
-                <Select className='w-100' options={BUTTON_TYPES} value={BUTTON_TYPES[
+                <label className='form-label fw-semibold mb-2'>Button Type</label>
+                <Select className='w-100 mb-2' options={BUTTON_TYPES} value={BUTTON_TYPES[
                   BUTTON_TYPES.findIndex(opt => opt.value === button.type)
                 ]} aria-label={'Select section type'}
                 onChange={opt => {
                   if (opt != undefined) {
-                    const newButtons = [...config.buttons as ButtonConfig[]]
+                    const newButtons = [...buttons]
                     newButtons[i].type = ButtonTypeTemplates[opt.value].type
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                   }
                 }}/>
-                <TextInput label="Button Text" value={button.text} onChange={value => {
-                  const newButtons = [...config.buttons as ButtonConfig[]]
+                <TextInput label="Button Text" className="mb-2" value={button.text} onChange={value => {
+                  const newButtons = [...buttons]
                   newButtons[i].text = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                 }}/>
                 {(!button.type || button.type === 'internalLink') &&
-                    <TextInput label="Button Link" value={button.href} onChange={value => {
-                      const newButtons = [...config.buttons as ButtonConfig[]]
+                    <TextInput label="Button Link" className="mb-2" value={button.href} onChange={value => {
+                      const newButtons = [...buttons]
                       // @ts-ignore we've already checked that it's a link button, which requires an href
                       newButtons[i].href = value
                       updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                     }}/>}
                 {button.type === 'join' &&
-                    <TextInput label="Study Shortcode" value={button.studyShortcode} onChange={value => {
-                      const newButtons = [...config.buttons as ButtonConfig[]]
-                      // @ts-ignore we've already checked that it's a join button, which requires a shortcode
-                      newButtons[i].studyShortcode = value
-                      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
-                    }}/>}
+                    <TextInput label="Study Shortcode" className="mb-2"
+                      value={button.studyShortcode} onChange={value => {
+                        const newButtons = [...buttons]
+                        // @ts-ignore we've already checked that it's a join button, which requires a shortcode
+                        newButtons[i].studyShortcode = value
+                        updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
+                      }}/>}
               </div>
             </div>
           })}
         </div>
         <Button onClick={() => {
-          const parsed = JSON.parse(section.sectionConfig!)
           const newButtons = [...buttons]
           newButtons.push({ type: 'internalLink', text: '', href: '' })
-          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, buttons: newButtons }) })
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Button
         </Button>
       </div>

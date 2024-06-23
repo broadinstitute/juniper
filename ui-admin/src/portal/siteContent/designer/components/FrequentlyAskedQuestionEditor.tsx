@@ -2,10 +2,11 @@ import { FaqQuestion, HtmlSection, SectionConfig } from '@juniper/ui-core'
 import React, { useId } from 'react'
 import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
-import { Button, IconButton } from 'components/forms/Button'
+import { Button } from 'components/forms/Button'
+import { ListElementController } from './ListElementController'
 
 /**
  * Returns an editor for the FAQ element of a website section
@@ -35,44 +36,26 @@ export const FrequentlyAskedQuestionEditor = ({ section, updateSection }: {
     </div>
     <div className="collapse hide rounded-3 mb-2" id={faqContentId}
       style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
-      {questions.map((question, i) => {
-        return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
+      {questions.map((question, index) => {
+        return <div key={index} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
           <div className="d-flex justify-content-between align-items-center">
             <span className="h5">Edit question</span>
-            <div className="d-flex justify-content-end">
-              <IconButton icon={faChevronUp} aria-label={'Move Up'} disabled={i < 1}
-                onClick={() => {
-                  const newQuestions = [...config.questions as FaqQuestion[]]
-                  const temp = newQuestions[i]
-                  newQuestions[i] = newQuestions[i - 1]
-                  newQuestions[i - 1] = temp
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-                }}/>
-              <IconButton icon={faChevronDown} aria-label={'Move Down'} disabled={i > questions.length - 2}
-                onClick={() => {
-                  const newQuestions = [...config.questions as FaqQuestion[]]
-                  const temp = newQuestions[i]
-                  newQuestions[i] = newQuestions[i + 1]
-                  newQuestions[i + 1] = temp
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-                }}/>
-              <IconButton icon={faTimes} className={'text-danger'} aria-label={'Delete'} onClick={() => {
-                const newQuestions = [...config.questions as FaqQuestion[]]
-                newQuestions.splice(i, 1)
-                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-              }}/>
-            </div>
+            <ListElementController<FaqQuestion> items={config.questions as FaqQuestion[]} updateItems={newQuestions => {
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
+            }} index={index} />
           </div>
-          <TextInput label="Question" placeholder={'Enter a question'} value={question.question} onChange={value => {
-            const newQuestions = [...config.questions as FaqQuestion[]]
-            newQuestions[i].question = value
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-          }}/>
-          <Textarea rows={3} label="Answer" placeholder={'Enter an answer'} value={question.answer} onChange={value => {
-            const newQuestions = [...config.questions as FaqQuestion[]]
-            newQuestions[i].answer = value
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-          }}/>
+          <TextInput label="Question" className="mb-2" placeholder={'Enter a question'}
+            value={question.question} onChange={value => {
+              const newQuestions = [...config.questions as FaqQuestion[]]
+              newQuestions[index].question = value
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
+            }}/>
+          <Textarea rows={3} label="Answer" className="mb-2" placeholder={'Enter an answer'}
+            value={question.answer} onChange={value => {
+              const newQuestions = [...config.questions as FaqQuestion[]]
+              newQuestions[index].answer = value
+              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
+            }}/>
         </div>
       })}
       <Button onClick={() => {
