@@ -53,7 +53,7 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit step</span>
                 <ListElementController<StepConfig>
-                  items={config.steps as StepConfig[]}
+                  items={steps}
                   updateItems={newSteps => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}
@@ -64,17 +64,17 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
                 <label className='form-label fw-semibold m-0'>Image</label>
                 <ImageSelector portalEnvContext={portalEnvContext}
                   imageList={siteMediaList} image={step.image as ImageConfig} onChange={image => {
-                    const newSteps = [...config.steps as StepConfig[]]
+                    const newSteps = [...steps]
                     newSteps[i].image = image
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}/>
                 <TextInput label="Duration" className="mb-2" value={step.duration} onChange={value => {
-                  const newSteps = [...config.steps as StepConfig[]]
+                  const newSteps = [...steps]
                   newSteps[i].duration = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                 }}/>
                 <Textarea rows={2} label="Blurb" className="mb-2" value={step.blurb} onChange={value => {
-                  const newSteps = [...config.steps as StepConfig[]]
+                  const newSteps = [...steps]
                   newSteps[i].blurb = value
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                 }}/>
@@ -83,7 +83,7 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
           })}
         </div>
         <Button onClick={() => {
-          const newSteps = [...config.steps as StepConfig[]]
+          const newSteps = [...steps]
           newSteps.push({ image: { cleanFileName: '', version: 1 }, duration: '', blurb: '' })
           updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Step</Button>

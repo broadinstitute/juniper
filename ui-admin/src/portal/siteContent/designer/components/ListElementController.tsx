@@ -1,5 +1,5 @@
 import React from 'react'
-import { IconButton } from '../../../../components/forms/Button'
+import { IconButton } from 'components/forms/Button'
 import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
 
 type ListControllerProps<T> = {
