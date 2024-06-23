@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../components/forms/Button'
 
-/** renders a modal for deleting pages from the portal website */
+/** renders a modal for selecting translation functions */
 const TranslationModal = ({ onDismiss, siteContent }: {
   siteContent: SiteContent, onDismiss: () => void
 }) => {

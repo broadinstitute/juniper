@@ -245,7 +245,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2">
-        <div className="d-flex flex-grow-1">
+        <div className="d-flex flex-grow-1 align-items-center">
           <h5>Website Content
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
             (v{siteContent.version})
@@ -259,7 +259,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             </Button>
           </h5>
         </div>
-        <div className="d-flex flex-grow-1 justify-content-end">
+        <div className="d-flex flex-grow-1 justify-content-end align-items-center">
           {
             isEditable && <>
               <Button className="me-md-2" variant="primary"
