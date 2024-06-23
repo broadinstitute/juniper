@@ -9,27 +9,28 @@ type ListControllerProps<T> = {
 }
 
 /**
- *
+ * Controller for re-ordering or deleting elements in a list
  */
 export const ListElementController = <T, >({ items, updateItems, index }: ListControllerProps<T>) => {
+  const moveItem = (direction: 'up' | 'down') => {
+    if (index === 0 && direction === 'up') { return }
+    const newItems = [...items]
+    const itemToMove = newItems[index]
+    newItems.splice(index, 1)
+    if (direction === 'up') {
+      newItems.splice(index - 1, 0, itemToMove)
+    } else {
+      newItems.splice(index + 1, 0, itemToMove)
+    }
+    updateItems(newItems)
+  }
+
   return (
     <div className="d-flex justify-content-end">
       <IconButton icon={faChevronUp} aria-label={'Move Up'} disabled={index < 1}
-        onClick={() => {
-          const newItems = [...items]
-          const temp = newItems[index]
-          newItems[index] = newItems[index - 1]
-          newItems[index - 1] = temp
-          updateItems(newItems)
-        }}/>
+        onClick={() => moveItem('up')}/>
       <IconButton icon={faChevronDown} aria-label={'Move Down'} disabled={index > items.length - 2}
-        onClick={() => {
-          const newItems = [...items]
-          const temp = newItems[index]
-          newItems[index] = newItems[index + 1]
-          newItems[index + 1] = temp
-          updateItems(newItems)
-        }}/>
+        onClick={() => moveItem('down')}/>
       <IconButton icon={faTimes} className={'text-danger'} aria-label={'Delete'} onClick={() => {
         const newItems = [...items]
         newItems.splice(index, 1)

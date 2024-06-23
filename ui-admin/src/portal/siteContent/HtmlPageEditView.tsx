@@ -5,8 +5,8 @@ import { HtmlPage, HtmlSection, HtmlSectionView, SectionType } from '@juniper/ui
 import HtmlSectionEditor from './HtmlSectionEditor'
 import { Button } from 'components/forms/Button'
 import { sectionTemplates } from './sectionTemplates'
-import Api, { SiteMediaMetadata } from '../../api/api'
-import { useLoadingEffect } from '../../api/api-utils'
+import Api, { SiteMediaMetadata } from 'api/api'
+import { useLoadingEffect } from 'api/api-utils'
 import { filterPriorVersions } from '../media/SiteMediaList'
 import { PortalEnvContext } from '../PortalRouter'
 
@@ -29,7 +29,7 @@ const HtmlPageView = ({
 }: HtmlPageViewProps) => {
   const [mediaList, setMediaList] = useState<SiteMediaMetadata[]>([])
 
-  const { isLoading, reload } = useLoadingEffect(async () => {
+  useLoadingEffect(async () => {
     const result = await Api.getPortalMedia(portalEnvContext.portal.shortcode)
     /** Only show the most recent version of a given image in the list */
     setMediaList(filterPriorVersions(result))
