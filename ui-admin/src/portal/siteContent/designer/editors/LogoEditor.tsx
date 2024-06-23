@@ -1,4 +1,4 @@
-import { PortalEnvContext } from '../../../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 import { HtmlSection, ImageConfig, SectionConfig } from '@juniper/ui-core'
 import { SiteMediaMetadata } from 'api/api'
 import React, { useId } from 'react'

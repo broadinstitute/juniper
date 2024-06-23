@@ -1,6 +1,6 @@
-import { PortalEnvContext } from '../../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 import { HtmlSection } from '@juniper/ui-core'
-import { SiteMediaMetadata } from '../../../api/api'
+import { SiteMediaMetadata } from 'api/api'
 import { sectionTemplates } from '../sectionTemplates'
 import { TitleEditor } from './editors/TitleEditor'
 import { BlurbEditor } from './editors/BlurbEditor'

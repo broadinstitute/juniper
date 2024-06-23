@@ -2,7 +2,7 @@ import { HtmlSection, ImageConfig, SectionConfig } from '@juniper/ui-core'
 import { SiteMediaMetadata } from 'api/api'
 import React from 'react'
 import { ImageSelector } from '../components/ImageSelector'
-import { PortalEnvContext } from '../../../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 
 /**
  * Returns an editor for an image element of a website section

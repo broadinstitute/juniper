@@ -1,4 +1,4 @@
-import { PortalEnvContext } from '../../../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 import { getMediaUrl, SiteMediaMetadata } from 'api/api'
 import React, { useState } from 'react'
 import useReactSingleSelect from 'util/react-select-utils'
