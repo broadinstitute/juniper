@@ -9,7 +9,7 @@ import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
 import { ImageSelector } from '../components/ImageSelector'
 import { ListElementController } from '../components/ListElementController'
-import { Button } from '../../../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 
 /**
  * Returns an editor for the photo bio element of a website section

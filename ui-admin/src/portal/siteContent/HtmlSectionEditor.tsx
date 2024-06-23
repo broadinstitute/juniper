@@ -9,7 +9,7 @@ import { faChevronDown, faChevronUp, faCode, faTimes } from '@fortawesome/free-s
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
 import { SiteMediaMetadata } from 'api/api'
-import { PortalEnvContext } from '../PortalRouter'
+import { PortalEnvContext } from 'portal/PortalRouter'
 import { SocialMediaEditor } from './designer/editors/SocialMediaEditor'
 import { SectionDesigner } from './designer/SectionDesigner'
 

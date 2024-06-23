@@ -5,7 +5,7 @@ import HtmlPageEditView from './HtmlPageEditView'
 import userEvent from '@testing-library/user-event'
 import { sectionTemplates } from './sectionTemplates'
 import { setupRouterTest } from '@juniper/ui-core'
-import { mockPortalEnvContext } from '../../test-utils/mocking-utils'
+import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 
 test('readOnly disables insert new section button', async () => {
   const mockPage = mockHtmlPage()

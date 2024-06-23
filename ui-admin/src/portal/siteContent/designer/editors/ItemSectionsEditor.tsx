@@ -8,7 +8,7 @@ import { ButtonEditor } from './ButtonsEditor'
 import classNames from 'classnames'
 
 /**
- *
+ * Editor for footer item sections
  */
 export const ItemSectionsEditor = ({ section, updateSection }: {
     section: HtmlSection, updateSection: (section: HtmlSection) => void
