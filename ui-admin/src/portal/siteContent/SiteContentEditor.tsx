@@ -4,7 +4,7 @@ import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faClipboard,
-  faClockRotateLeft, faEllipsisV,
+  faClockRotateLeft, faEllipsisV, faGlobe,
   faImage,
   faPalette,
   faPlus,
@@ -288,7 +288,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             Actions <FontAwesomeIcon className="ms-2" icon={faEllipsisV}/>
           </a>
           <div className="dropdown-menu">
-            <ul className="list-unstyled">
+            <ul className="list-unstyled mb-0">
               <li onClick={() => setShowBrandingModal(true)}>
                 <a className="dropdown-item" onClick={() => setShowBrandingModal(true)}>
                   Branding <FontAwesomeIcon icon={faPalette} className="fa-lg"/>
@@ -315,7 +315,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               }
               <li >
                 <a className="dropdown-item" onClick={() => setShowTranslationModal(true)}>
-                  Translations
+                  Translations <FontAwesomeIcon icon={faGlobe} className="fa-lg"/>
                 </a>
               </li>
             </ul>
