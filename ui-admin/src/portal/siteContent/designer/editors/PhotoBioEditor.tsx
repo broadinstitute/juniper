@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
-import { ImageSelector } from './ImageSelector'
+import { ImageSelector } from '../components/ImageSelector'
 
 /**
  * Returns an editor for the photo bio element of a website section

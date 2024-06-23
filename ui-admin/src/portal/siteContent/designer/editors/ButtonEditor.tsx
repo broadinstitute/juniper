@@ -6,7 +6,7 @@ import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-
 import Select from 'react-select'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
-import { ListElementController } from './ListElementController'
+import { ListElementController } from '../components/ListElementController'
 
 /**
  * Returns an editor for a button that appears in a website section
@@ -43,11 +43,11 @@ export const ButtonEditor = ({ section, updateSection }: {
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit button</span>
                 <ListElementController<ButtonConfig>
+                  index={i}
                   items={buttons}
                   updateItems={newButtons => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
                   }}
-                  index={i}
                 />
               </div>
               <div>

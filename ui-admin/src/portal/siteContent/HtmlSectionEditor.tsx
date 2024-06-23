@@ -10,28 +10,20 @@ import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
 import { SiteMediaMetadata } from 'api/api'
 import { PortalEnvContext } from '../PortalRouter'
-import { ButtonEditor } from './designer/components/ButtonEditor'
-import { FrequentlyAskedQuestionEditor } from './designer/components/FrequentlyAskedQuestionEditor'
-import { TitleEditor } from './designer/components/TitleEditor'
-import { BlurbEditor } from './designer/components/BlurbEditor'
-import { ImageEditor } from './designer/components/ImageEditor'
-import { StyleEditor } from './designer/components/StyleEditor'
-import { ParticipationStepsEditor } from './designer/components/ParticipantStepsEditor'
-import { LogoEditor } from './designer/components/LogoEditor'
-import { PhotoBioEditor } from './designer/components/PhotoBioEditor'
-import { SocialMediaEditor } from './designer/components/SocialMediaEditor'
+import { SocialMediaEditor } from './designer/editors/SocialMediaEditor'
+import { SectionDesigner } from './designer/SectionDesigner'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
   { label: 'Hero (centered)', value: 'HERO_CENTERED' },
   { label: 'Hero (with image)', value: 'HERO_WITH_IMAGE' },
-  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
+  { label: 'Banner Image', value: 'BANNER_IMAGE' },
+  { label: 'Participation Details', value: 'PARTICIPATION_DETAIL' },
   { label: 'Participation Step Overview', value: 'STEP_OVERVIEW' },
   { label: 'Photo Grid', value: 'PHOTO_BLURB_GRID' },
-  { label: 'Participation Details', value: 'PARTICIPATION_DETAIL' },
-  { label: 'Raw HTML', value: 'RAW_HTML' },
-  { label: 'Footer', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'Banner Image', value: 'BANNER_IMAGE' }
+  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
+  { label: 'HTML', value: 'RAW_HTML' },
+  { label: 'Footer', value: 'LINK_SECTIONS_FOOTER' }
 ]
 
 /**
@@ -168,50 +160,6 @@ const HtmlSectionEditor = ({
   </>
 }
 
-const DynamicSectionEditor = ({ portalEnvContext, section, updateSection, siteMediaList }: {
-  portalEnvContext: PortalEnvContext,
-  section: HtmlSection, updateSection: (section: HtmlSection) => void, siteMediaList: SiteMediaMetadata[]
-}) => {
-  const sectionType = section.sectionType
-  const sectionTypeConfig = sectionTemplates[sectionType]
-  const hasTitle = Object.hasOwnProperty.call(sectionTypeConfig, 'title')
-  const hasBlurb = Object.hasOwnProperty.call(sectionTypeConfig, 'blurb')
-  const hasSteps = Object.hasOwnProperty.call(sectionTypeConfig, 'steps')
-  const hasQuestions = Object.hasOwnProperty.call(sectionTypeConfig, 'questions')
-  const hasImage = Object.hasOwnProperty.call(sectionTypeConfig, 'image')
-  const hasLogos = Object.hasOwnProperty.call(sectionTypeConfig, 'logos')
-  const hasButtons = Object.hasOwnProperty.call(sectionTypeConfig, 'buttons')
-  const hasSubGrids = Object.hasOwnProperty.call(sectionTypeConfig, 'subGrids')
-
-  return (
-    <div>
-      {hasTitle &&
-          <TitleEditor section={section} updateSection={updateSection}/>}
-      {hasBlurb &&
-          <BlurbEditor section={section} updateSection={updateSection}/>}
-      {hasImage &&
-          <ImageEditor portalEnvContext={portalEnvContext} section={section}
-            updateSection={updateSection} siteMediaList={siteMediaList}/>}
-      {/* All sections have a style editor */}
-      <StyleEditor section={section} updateSection={updateSection}/>
-      {hasSteps &&
-          <ParticipationStepsEditor portalEnvContext={portalEnvContext} section={section}
-            updateSection={updateSection} siteMediaList={siteMediaList}/>}
-      {hasQuestions &&
-          <FrequentlyAskedQuestionEditor section={section} updateSection={updateSection}/>}
-      {hasLogos &&
-          <LogoEditor portalEnvContext={portalEnvContext} section={section}
-            updateSection={updateSection} siteMediaList={siteMediaList}/>}
-      {hasButtons &&
-          <ButtonEditor
-            section={section} updateSection={updateSection}/>}
-      {hasSubGrids &&
-          <PhotoBioEditor portalEnvContext={portalEnvContext} mediaList={siteMediaList}
-            section={section} updateSection={updateSection}/>}
-    </div>
-  )
-}
-
 export default HtmlSectionEditor
 
 type SectionEditorComponentType = ({ section, updateSection }: {
@@ -222,14 +170,14 @@ type SectionEditorComponentType = ({ section, updateSection }: {
 }) => JSX.Element
 
 const SectionEditorComponents: Record<SectionType, SectionEditorComponentType | undefined> = {
-  FAQ: DynamicSectionEditor,
-  HERO_CENTERED: DynamicSectionEditor,
-  HERO_WITH_IMAGE: DynamicSectionEditor,
+  FAQ: SectionDesigner,
+  HERO_CENTERED: SectionDesigner,
+  HERO_WITH_IMAGE: SectionDesigner,
   SOCIAL_MEDIA: SocialMediaEditor,
-  STEP_OVERVIEW: DynamicSectionEditor,
-  PHOTO_BLURB_GRID: DynamicSectionEditor,
-  PARTICIPATION_DETAIL: DynamicSectionEditor,
+  STEP_OVERVIEW: SectionDesigner,
+  PHOTO_BLURB_GRID: SectionDesigner,
+  PARTICIPATION_DETAIL: SectionDesigner,
   RAW_HTML: undefined,
-  LINK_SECTIONS_FOOTER: DynamicSectionEditor,
-  BANNER_IMAGE: DynamicSectionEditor
+  LINK_SECTIONS_FOOTER: SectionDesigner,
+  BANNER_IMAGE: SectionDesigner
 }

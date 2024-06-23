@@ -7,8 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
-import { ImageSelector } from './ImageSelector'
-import { ListElementController } from './ListElementController'
+import { ImageSelector } from '../components/ImageSelector'
+import { ListElementController } from '../components/ListElementController'
 
 /**
  *
@@ -46,12 +46,12 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
             return <div key={i} style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit logo</span>
-                <ListElementController
+                <ListElementController<ImageConfig>
+                  index={i}
                   items={logos}
                   updateItems={newLogos => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
                   }}
-                  index={i}
                 />
               </div>
               <div>

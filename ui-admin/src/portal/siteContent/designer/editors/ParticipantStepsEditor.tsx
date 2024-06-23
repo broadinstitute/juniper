@@ -9,8 +9,8 @@ import { Checkbox } from 'components/forms/Checkbox'
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
 import { Button } from 'components/forms/Button'
-import { ImageSelector } from './ImageSelector'
-import { ListElementController } from './ListElementController'
+import { ImageSelector } from '../components/ImageSelector'
+import { ListElementController } from '../components/ListElementController'
 
 /**
  *
@@ -53,11 +53,11 @@ export const ParticipationStepsEditor = ({ portalEnvContext, section, updateSect
               <div className="d-flex justify-content-between align-items-center">
                 <span className="h5">Edit step</span>
                 <ListElementController<StepConfig>
+                  index={i}
                   items={steps}
                   updateItems={newSteps => {
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, steps: newSteps }) })
                   }}
-                  index={i}
                 />
               </div>
               <div>

@@ -6,7 +6,7 @@ import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
 import { Button } from 'components/forms/Button'
-import { ListElementController } from './ListElementController'
+import { ListElementController } from '../components/ListElementController'
 
 /**
  * Returns an editor for the FAQ element of a website section
@@ -41,11 +41,11 @@ export const FrequentlyAskedQuestionEditor = ({ section, updateSection }: {
           <div className="d-flex justify-content-between align-items-center">
             <span className="h5">Edit question</span>
             <ListElementController<FaqQuestion>
+              index={i}
               items={questions}
               updateItems={newQuestions => {
                 updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, questions: newQuestions }) })
-              }}
-              index={i} />
+              }}/>
           </div>
           <TextInput label="Question" className="mb-2" placeholder={'Enter a question'}
             value={question.question} onChange={value => {
