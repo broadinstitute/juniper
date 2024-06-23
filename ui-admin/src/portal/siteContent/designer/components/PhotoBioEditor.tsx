@@ -94,34 +94,29 @@ const PhotoBioSectionEditor = ({ portalEnvContext, index, mediaList, section, up
                 <label className='form-label fw-semibold m-0'>Image</label>
                 <ImageSelector portalEnvContext={portalEnvContext}
                   imageList={mediaList} image={photoBio.image as ImageConfig} onChange={image => {
-                    const parsed = JSON.parse(section.sectionConfig || '{}')
                     const newSubGrids = [...config.subGrids as SectionConfig[]]
                     newSubGrids[i].image = image
-                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, subGrids: newSubGrids }) })
                   }}/>
                 <TextInput label="Name" value={photoBio.name} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newSubGrids = [...config.subGrids as SectionConfig[]]
                   newSubGrids[i].name = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, subGrids: newSubGrids }) })
                 }}/>
                 <TextInput label="Title" value={photoBio.title} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newSubGrids = [...config.subGrids as SectionConfig[]]
                   newSubGrids[i].title = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, subGrids: newSubGrids }) })
                 }}/>
                 <Textarea rows={2} label="Bio" value={photoBio.blurb} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newSubGrids = [...config.subGrids as SectionConfig[]]
                   newSubGrids[i].bio = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, subGrids: newSubGrids }) })
                 }}/>
                 <Textarea rows={2} label="Detail" value={photoBio.detail} onChange={value => {
-                  const parsed = JSON.parse(section.sectionConfig || '{}')
                   const newSubGrids = [...config.subGrids as SectionConfig[]]
                   newSubGrids[i].detail = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, subGrids: newSubGrids }) })
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, subGrids: newSubGrids }) })
                 }}/>
               </div>
             </div>

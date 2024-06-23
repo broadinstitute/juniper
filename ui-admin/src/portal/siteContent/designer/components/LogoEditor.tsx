@@ -82,10 +82,9 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
           })}
         </div>
         <Button onClick={() => {
-          const parsed = JSON.parse(section.sectionConfig!)
           const newLogos = [...logos]
           newLogos.push({ cleanFileName: '', version: 1 })
-          updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, logos: newLogos }) })
+          updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
         }}><FontAwesomeIcon icon={faPlus}/> Add Logo</Button>
       </div>
     </div>

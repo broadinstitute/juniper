@@ -23,15 +23,15 @@ import { SocialMediaEditor } from './designer/components/SocialMediaEditor'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
-  { label: 'HERO_CENTERED', value: 'HERO_CENTERED' },
-  { label: 'HERO_WITH_IMAGE', value: 'HERO_WITH_IMAGE' },
-  { label: 'SOCIAL_MEDIA', value: 'SOCIAL_MEDIA' },
-  { label: 'STEP_OVERVIEW', value: 'STEP_OVERVIEW' },
-  { label: 'PHOTO_BLURB_GRID', value: 'PHOTO_BLURB_GRID' },
-  { label: 'PARTICIPATION_DETAIL', value: 'PARTICIPATION_DETAIL' },
-  { label: 'RAW_HTML', value: 'RAW_HTML' },
-  { label: 'LINK_SECTIONS_FOOTER', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'BANNER_IMAGE', value: 'BANNER_IMAGE' }
+  { label: 'Hero (centered)', value: 'HERO_CENTERED' },
+  { label: 'Hero (with image)', value: 'HERO_WITH_IMAGE' },
+  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
+  { label: 'Participation Step Overview', value: 'STEP_OVERVIEW' },
+  { label: 'Photo Grid', value: 'PHOTO_BLURB_GRID' },
+  { label: 'Participation Details', value: 'PARTICIPATION_DETAIL' },
+  { label: 'Raw HTML', value: 'RAW_HTML' },
+  { label: 'Footer', value: 'LINK_SECTIONS_FOOTER' },
+  { label: 'Banner Image', value: 'BANNER_IMAGE' }
 ]
 
 /**
@@ -114,7 +114,7 @@ const HtmlSectionEditor = ({
               setSiteHasInvalidSection(false)
               setSectionContainsErrors(false)
             }
-            const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
+            const sectionTemplate = JSON.stringify(sectionTemplates[opt.value])
             setSectionTypeOpt(opt)
             updateSection({
               ...section,

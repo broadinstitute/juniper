@@ -13,8 +13,7 @@ export const BlurbEditor = ({ section, updateSection }: {
     <Textarea rows={3} className="mb-2" label="Blurb" value={config.blurb as string}
       placeholder={'Enter a blurb for this section'}
       onChange={value => {
-        const parsed = JSON.parse(section.sectionConfig || '{}')
-        updateSection({ ...section, sectionConfig: JSON.stringify({ ...parsed, blurb: value }) })
+        updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, blurb: value }) })
       }}/>
   )
 }
