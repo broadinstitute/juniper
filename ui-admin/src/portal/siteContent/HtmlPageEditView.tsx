@@ -134,6 +134,7 @@ const HtmlPageView = ({
           //These are undefined because we do not allow the user to move or remove the footer section
           moveSection={undefined} removeSection={() => updateFooter(undefined)}
           siteHasInvalidSection={siteHasInvalidSection} section={footerSection}
+          useJsonEditor={useJsonEditor}
           updateSection={updateFooter} readOnly={readOnly} siteMediaList={mediaList}/>
       </div>
       <div className="col-md-8">

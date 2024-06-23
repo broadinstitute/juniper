@@ -27,7 +27,7 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
       <div className="pb-1">
         <button
           aria-controls={logosTargetSelector}
-          aria-expanded="true"
+          aria-expanded="false"
           className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
           data-bs-target={logosTargetSelector}
           data-bs-toggle="collapse"
@@ -65,17 +65,21 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
                     }
                     updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
                   }}/>
-                <TextInput label="Image Alt Text" className="mb-2" value={logo.alt} onChange={value => {
-                  const newLogos = [...logos]
-                  newLogos[i].alt = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
-                }}/>
+                <TextInput label="Image Alt Text" className="mb-2" value={logo.alt}
+                  placeholder={'Enter alt text for the image'}
+                  onChange={value => {
+                    const newLogos = [...logos]
+                    newLogos[i].alt = value
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
+                  }}/>
 
-                <TextInput label="Link" value={logo.link} onChange={value => {
-                  const newLogos = [...logos]
-                  newLogos[i].link = value
-                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
-                }}/>
+                <TextInput label="Link" value={logo.link}
+                  placeholder={'Clicking the logo will take the user to this URL'}
+                  onChange={value => {
+                    const newLogos = [...logos]
+                    newLogos[i].link = value
+                    updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, logos: newLogos }) })
+                  }}/>
 
               </div>
             </div>

@@ -5,7 +5,7 @@ import {
 } from '@juniper/ui-core'
 import Select from 'react-select'
 import { IconButton } from 'components/forms/Button'
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faCode, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
 import { SiteMediaMetadata } from 'api/api'
@@ -57,6 +57,7 @@ const HtmlSectionEditor = ({
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
+  const [localUseJsonEditor, setLocalUseJsonEditor] = useState(useJsonEditor)
 
   const getSectionContent = (section: HtmlSection) => {
     if (section.sectionType === 'RAW_HTML') {
@@ -115,6 +116,12 @@ const HtmlSectionEditor = ({
             })
           }
         }}/>
+      <IconButton icon={faCode}
+        aria-label={localUseJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
+        className="ms-2"
+        variant="light"
+        onClick={() => setLocalUseJsonEditor(!localUseJsonEditor)}
+      />
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
@@ -141,7 +148,7 @@ const HtmlSectionEditor = ({
       /> }
     </div>
 
-    {SectionEditorComponent && !useJsonEditor ? (
+    {SectionEditorComponent && !localUseJsonEditor ? (
       <SectionEditorComponent portalEnvContext={portalEnvContext}
         siteMediaList={siteMediaList} section={section} updateSection={updateSection} />
     ) : (

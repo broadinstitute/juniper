@@ -22,7 +22,7 @@ export const FrequentlyAskedQuestionEditor = ({ section, updateSection }: {
     <div className="pb-1">
       <button
         aria-controls={faqTargetSelector}
-        aria-expanded="true"
+        aria-expanded="false"
         className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
         data-bs-target={faqTargetSelector}
         data-bs-toggle="collapse"

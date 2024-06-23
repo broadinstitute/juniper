@@ -11,11 +11,11 @@ import { ButtonConfig, ConfiguredLink, validateButtonConfig } from '../../../par
 import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
-type LinkSectionsFooterConfig = {
+export type LinkSectionsFooterConfig = {
   itemSections?: ItemSection[]
 }
 
-type ItemSection = {
+export type ItemSection = {
   title: string,
   items: ButtonConfig[]
 }

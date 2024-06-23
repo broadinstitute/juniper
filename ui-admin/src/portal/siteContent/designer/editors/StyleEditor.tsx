@@ -16,13 +16,19 @@ export const StyleEditor = ({ section, updateSection }: {
   const config = JSON.parse(section.sectionConfig || '{}') as SectionConfig
   const contentId = useId()
   const targetSelector = `#${contentId}`
-  const imagePositionOptions = [{ label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }]
+  const imagePositionOptions = [
+    { label: 'Left', value: 'left' }, { label: 'Right', value: 'right' }
+  ]
+  const blurbAlignOptions = [
+    { label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }
+  ]
+
   return (
     <div>
       <div className="pb-1">
         <button
           aria-controls={targetSelector}
-          aria-expanded="true"
+          aria-expanded="false"
           className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
           data-bs-target={targetSelector}
           data-bs-toggle="collapse"
@@ -46,11 +52,6 @@ export const StyleEditor = ({ section, updateSection }: {
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, color: value }) })
           }}/>
-        { Object.hasOwnProperty.call(config, 'image') && <Checkbox label={'Full Width'} className="mb-2"
-          checked={config.fullWidth as boolean == undefined ? false : config.fullWidth as boolean}
-          onChange={value => {
-            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, fullWidth: value }) })
-          }}/>}
         { Object.hasOwnProperty.call(config, 'image') &&
             <div className='my-2'>
               <label className='form-label fw-semibold'>Image Position</label>
@@ -59,7 +60,23 @@ export const StyleEditor = ({ section, updateSection }: {
                   : undefined}
                 onChange={opt => {
                   updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, imagePosition: opt?.value }) })
-                }}/></div>}
+                }}/>
+            </div>}
+        { Object.hasOwnProperty.call(config, 'image') && <Checkbox label={'Full Width'} className="mb-2"
+          checked={config.fullWidth as boolean == undefined ? false : config.fullWidth as boolean}
+          onChange={value => {
+            updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, fullWidth: value }) })
+          }}/>}
+        { Object.hasOwnProperty.call(config, 'blurbAlign') &&
+            <div className='my-2'>
+              <label className='form-label fw-semibold'>Blurb Text Position</label>
+              <Select options={blurbAlignOptions}
+                value={config.blurbAlign ? blurbAlignOptions.find(opt => opt.value === config.blurbAlign)
+                  : undefined}
+                onChange={opt => {
+                  updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, blurbAlign: opt?.value }) })
+                }}/>
+            </div>}
       </div>
     </div>
   )
