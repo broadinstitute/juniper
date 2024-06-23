@@ -7,8 +7,8 @@ import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalString } from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
@@ -43,6 +43,14 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
     image
   }
 }
+
+export const heroCenteredTemplateConfigProps = [
+  { name: 'blurb', translated: true },
+  { name: 'blurbAlign' },
+  { name: 'buttons', subProps: buttonConfigProps, isArray: true },
+  { name: 'title', translated: true },
+  { name: 'image', subProps: mediaConfigProps }
+]
 
 type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConfig>
 

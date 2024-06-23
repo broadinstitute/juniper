@@ -2,20 +2,21 @@ import classNames from 'classnames'
 import _ from 'lodash'
 import React from 'react'
 
-import { SectionConfig } from '../../../types/landingPageConfig'
+import { SectionConfig } from 'src/types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
   from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../ApiProvider'
+import { blurbProp, SectionProp, titleProp } from './SectionProp'
 
-type HeroWithImageTemplateConfig = {
+export type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
@@ -25,6 +26,18 @@ type HeroWithImageTemplateConfig = {
   logos?: MediaConfig[],
   title?: string // large heading text
 }
+
+export const heroWithImageTemplateConfigProps: SectionProp[] = [
+  titleProp,
+  blurbProp,
+  { name: 'buttons', subProps: buttonConfigProps, isArray: true },
+  { name: 'fullWidth' },
+  { name: 'image', subProps: mediaConfigProps },
+  { name: 'imagePosition' },
+  { name: 'imageWidthPercentage' },
+  { name: 'logos', subProps: mediaConfigProps, isArray: true }
+]
+
 
 /** Validate that a section configuration object conforms to HeroWithImageTemplateConfig */
 const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithImageTemplateConfig => {

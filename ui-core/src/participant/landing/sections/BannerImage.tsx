@@ -3,7 +3,7 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 
 import { TemplateComponentProps } from './templateUtils'
 
@@ -17,6 +17,10 @@ const validateBannerImageConfig = (config: SectionConfig): BannerImageConfig => 
 }
 
 type BannerImageProps = TemplateComponentProps<BannerImageConfig>
+
+export const bannerImageConfigProps = [
+  { name: 'image', subProps: mediaConfigProps }
+]
 
 /**
  * Template for a full width banner image.
