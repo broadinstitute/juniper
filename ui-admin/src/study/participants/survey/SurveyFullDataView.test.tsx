@@ -97,7 +97,7 @@ describe('ItemDisplay', () => {
       question={question as unknown as Question}
       answerMap={answerMap}
       surveyVersion={1}
-      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish' }]}
+      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish', id: '' }]}
       showFullQuestions={true}/>)
 
     expect(screen.getByText('(testQ) (Answered in Spanish)')).toBeInTheDocument()
@@ -116,7 +116,7 @@ describe('ItemDisplay', () => {
       question={question as unknown as Question}
       answerMap={answerMap}
       surveyVersion={1}
-      supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
+      supportedLanguages={[{ languageCode: 'en', languageName: 'English', id: '' }]}
       showFullQuestions={true}/>)
 
     expect(screen.getByText('(testQ)')).toBeInTheDocument()
@@ -136,7 +136,7 @@ describe('ItemDisplay', () => {
       question={question as unknown as Question}
       answerMap={answerMap}
       surveyVersion={1}
-      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish' }]}
+      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish', id: '' }]}
       showFullQuestions={true}/>)
 
     expect(screen.getByText('(testQ)')).toBeInTheDocument()

@@ -7,13 +7,14 @@ import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfi
 import { requireOptionalArray, requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
   from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 import classNames from 'classnames'
+import { blurbProp, titleProp } from './SectionProp'
 
 export type StepConfig = {
   image: MediaConfig,
@@ -27,6 +28,19 @@ export type StepOverviewTemplateConfig = {
   showStepNumbers?: boolean, // whether to show step numbers, default true
   title?: string, // large heading text
 }
+
+export const stepOverviewTemplateConfigProps = [
+  { name: 'buttons', subProps: buttonConfigProps, isArray: true },
+  {
+    name: 'steps', isArray: true, subProps: [
+      { name: 'image', subProps: mediaConfigProps },
+      { name: 'duration', translated: true },
+      blurbProp
+    ]
+  },
+  { name: 'showStepNumbers' },
+  titleProp
+]
 
 const validateStepConfig = (config: unknown): StepConfig => {
   const message = 'Invalid StepOverviewTemplateConfig: Invalid step'

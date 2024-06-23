@@ -11,7 +11,7 @@ import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { useUser } from 'user/UserProvider'
+import { userHasPermission, useUser } from 'user/UserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck, faCircleCheck,
@@ -97,14 +97,18 @@ export function RawEnrolleeSurveyView({
                 description="Read form responses"
               />
               <div className="dropdown-divider my-1"></div>
-              <DropdownButton
-                onClick={() => setIsEditing(true)}
-                icon={faPencil}
-                disabled={!configSurvey.survey.allowAdminEdit}
-                label="Editing"
-                description="Edit form responses directly"
-              />
-              <div className="dropdown-divider my-1"></div>
+              {userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit') &&
+                <>
+                  <DropdownButton
+                    onClick={() => setIsEditing(true)}
+                    icon={faPencil}
+                    disabled={!configSurvey.survey.allowAdminEdit}
+                    label="Editing"
+                    description="Edit form responses directly"
+                  />
+                  <div className="dropdown-divider my-1"></div>
+                </>
+              }
               <DropdownButton
                 onClick={() => {
                   setIsEditing(false)

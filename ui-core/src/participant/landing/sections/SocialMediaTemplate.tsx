@@ -36,6 +36,13 @@ type SocialMediaSiteConfig = {
   renderUrl: (args: { domain: string, handle: string }) => string
 }
 
+export const socialMediaSiteConfigProps = [
+  { name: 'domain' },
+  { name: 'icon' },
+  { name: 'label' },
+  { name: 'renderUrl' }
+]
+
 export const socialMediaSites: SocialMediaSiteConfig[] = [
   {
     domain: 'x.com',

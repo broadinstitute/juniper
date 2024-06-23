@@ -7,7 +7,12 @@ import { SectionConfig } from '../../../types/landingPageConfig'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalArray, requirePlainObject, requireString } from '../../util/validationUtils'
 
-import { ButtonConfig, ConfiguredLink, validateButtonConfig } from '../../../participant/landing/ConfiguredButton'
+import {
+  ButtonConfig,
+  buttonConfigProps,
+  ConfiguredLink,
+  validateButtonConfig
+} from '../../../participant/landing/ConfiguredButton'
 import { socialMediaSites } from './SocialMediaTemplate'
 import { TemplateComponentProps } from './templateUtils'
 
@@ -19,6 +24,15 @@ export type ItemSection = {
   title: string,
   items: ButtonConfig[]
 }
+
+const itemSectionProps = [
+  { name: 'title', translated: true },
+  { name: 'items', subProps: buttonConfigProps, isArray: true }
+]
+
+export const linkSectionsFooterConfigProps = [
+  { name: 'itemSections', translated: false, subProps: itemSectionProps, isArray: true }
+]
 
 const validateItemSection = (config: unknown): ItemSection => {
   const message = 'Invalid LinkSectionsFooterConfig: Invalid itemSection'

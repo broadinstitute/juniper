@@ -13,7 +13,7 @@ import {
   ParticipantTaskType,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig,
+  PortalEnvironmentConfig, PortalEnvironmentLanguage,
   Profile,
   SiteContent,
   Study,
@@ -252,6 +252,7 @@ export type PortalEnvironmentChange = {
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
+  languageChanges: ListChange<PortalEnvironmentLanguage, VersionedConfigChange>
 }
 
 export type StudyEnvironmentChange = {
@@ -1260,6 +1261,16 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async setPortalEnvLanguages(portalShortcode: string, envName: string, languages: PortalEnvironmentLanguage[]) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/portalLanguages`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(languages)
     })
     return await this.processJsonResponse(response)
   },

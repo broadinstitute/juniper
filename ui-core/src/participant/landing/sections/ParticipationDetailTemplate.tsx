@@ -8,11 +8,12 @@ import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalString } from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
+import { blurbProp, titleProp } from './SectionProp'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
@@ -23,6 +24,16 @@ type ParticipationDetailTemplateConfig = {
   timeIndication?: string, // e.g. 45+ minutes
   title?: string, // large heading text
 }
+
+export const participationDetailTemplateConfigProps = [
+  titleProp,
+  blurbProp,
+  { name: 'actionButton', subProps: buttonConfigProps },
+  { name: 'image', subProps: mediaConfigProps },
+  { name: 'imagePosition' },
+  { name: 'stepNumberText', translated: true },
+  { name: 'timeIndication', translated: true }
+]
 
 /** Validate that a section configuration object conforms to ParticipationDetailTemplateConfig */
 const validateParticipationDetailTemplateConfig = (config: SectionConfig): ParticipationDetailTemplateConfig => {

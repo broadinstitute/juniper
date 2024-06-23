@@ -4,10 +4,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
@@ -25,9 +27,29 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
+  public void updateChecksSandbox(TestInfo info) {
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
+
+    Assertions.assertThrows(
+        UnsupportedOperationException.class,
+        () -> {
+          studyEnvironmentExtService.update(
+              PortalStudyEnvAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb),
+              new StudyEnvironment());
+        });
+  }
+
+  @Test
+  @Transactional
   public void updateConfigAuthsToStudy(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), false);
     Assertions.assertThrows(
         NotFoundException.class,
@@ -45,7 +67,7 @@ public class StudyEnvironmentExtServiceTests extends BaseSpringBootTest {
   @Transactional
   public void updateConfigAllowsSuperuser(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle("updateConfigAllowsSuperuser", EnvironmentName.irb);
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
     AdminUser superUser = adminUserFactory.buildPersisted(getTestName(info), true);
     studyEnvironmentExtService.updateConfig(
         superUser,

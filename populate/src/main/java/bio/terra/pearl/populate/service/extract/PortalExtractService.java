@@ -5,12 +5,11 @@ import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.portal.exception.PortalConfigMissing;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
@@ -37,7 +36,7 @@ public class PortalExtractService {
     private final MediaExtractor mediaExtractor;
     private final EmailTemplateExtractor emailTemplateExtractor;
     private final ParticipantDashboardAlertDao participantDashboardAlertDao;
-    private final PortalLanguageService portalLanguageService;
+    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
     private final ObjectMapper objectMapper;
 
@@ -51,7 +50,7 @@ public class PortalExtractService {
                                 MediaExtractor mediaExtractor,
                                 EmailTemplateExtractor emailTemplateExtractor,
                                 ParticipantDashboardAlertDao participantDashboardAlertDao,
-                                PortalLanguageService portalLanguageService,
+                                PortalEnvironmentLanguageService portalEnvironmentLanguageService,
                                 @Qualifier("extractionObjectMapper") ObjectMapper objectMapper) {
         this.portalService = portalService;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -62,7 +61,7 @@ public class PortalExtractService {
         this.mediaExtractor = mediaExtractor;
         this.emailTemplateExtractor = emailTemplateExtractor;
         this.participantDashboardAlertDao = participantDashboardAlertDao;
-        this.portalLanguageService = portalLanguageService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
         this.objectMapper = objectMapper;
         this.objectMapper.addMixIn(Portal.class, PortalMixin.class);
     }
@@ -116,7 +115,7 @@ public class PortalExtractService {
             surveyPopDto.setPopulateFileName(context.getFileNameForEntity(portalEnv.getPreRegSurveyId()));
             envPopDto.setPreRegSurveyDto(surveyPopDto);
         }
-        envPopDto.setSupportedLanguages(portalLanguageService.findByPortalEnvId(portalEnv.getId()));
+        envPopDto.setSupportedLanguages(portalEnvironmentLanguageService.findByPortalEnvId(portalEnv.getId()));
         envPopDto.setParticipantDashboardAlerts(participantDashboardAlertDao.findByPortalEnvironmentId(portalEnv.getId()));
         return envPopDto;
     }
