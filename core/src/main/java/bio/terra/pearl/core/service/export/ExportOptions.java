@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.export;
 
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import lombok.Getter;
 import lombok.experimental.SuperBuilder;
 
@@ -10,7 +11,7 @@ public final class ExportOptions {
     private final boolean splitOptionsIntoColumns;
     private final boolean stableIdsForOptions;
     private final boolean onlyIncludeMostRecent;
-    private final boolean includeProxiesAsRows;
+    private final EnrolleeSearchExpression filter;
     private final ExportFileFormat fileFormat;
     private final Integer limit;
 
@@ -18,7 +19,7 @@ public final class ExportOptions {
         this.splitOptionsIntoColumns = false;
         this.stableIdsForOptions = false;
         this.onlyIncludeMostRecent = true;
-        this.includeProxiesAsRows = false;
+        this.filter = null;
         this.fileFormat = ExportFileFormat.TSV;
         this.limit = null;
     }

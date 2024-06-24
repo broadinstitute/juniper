@@ -25,6 +25,10 @@ public interface EnrolleeSearchExpression {
     EnrolleeSearchQueryBuilder generateQueryBuilder(UUID studyEnvId);
 
     default Query generateQuery(UUID studyEnvId) {
-        return this.generateQueryBuilder(studyEnvId).toQuery(DSL.using(SQLDialect.POSTGRES));
+        return this.generateQuery(studyEnvId, EnrolleeSearchOptions.builder().build());
+    }
+
+    default Query generateQuery(UUID studyEnvId, EnrolleeSearchOptions opts) {
+        return this.generateQueryBuilder(studyEnvId).toQuery(DSL.using(SQLDialect.POSTGRES), opts);
     }
 }

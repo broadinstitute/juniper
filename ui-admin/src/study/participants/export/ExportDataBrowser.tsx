@@ -1,4 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, { ExportData } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -17,9 +20,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
-import { renderPageHeader, renderTruncatedText } from 'util/pageUtils'
+import {
+  renderPageHeader,
+  renderTruncatedText
+} from 'util/pageUtils'
 import { failureNotification } from '../../../util/notifications'
 import { Store } from 'react-notifications-component'
+import { buildFilter } from 'util/exportUtils'
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc
@@ -75,7 +82,7 @@ const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContex
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName, {
-        fileFormat: 'JSON', limit: 10, includeProxiesAsRows: false
+        fileFormat: 'JSON', limit: 10, filter: buildFilter()
       })
     const result = await response.json()
     if (!response.ok) {

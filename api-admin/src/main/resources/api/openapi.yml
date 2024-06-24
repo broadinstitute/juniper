@@ -970,7 +970,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
       responses:
@@ -991,7 +991,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
       responses:
         '200':

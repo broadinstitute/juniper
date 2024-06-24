@@ -7,6 +7,7 @@ import { currentIsoDate } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import { saveBlobAsDownload } from 'util/downloadUtils'
 import { doApiLoad } from 'api/api-utils'
+import { buildFilter } from 'util/exportUtils'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -25,6 +26,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
   const [fileFormat, setFileFormat] = useState(FILE_FORMATS[0])
   const [includeProxiesAsRows, setIncludeProxiesAsRows] = useState(false)
+  const [includeUnconsented, setIncludeUnconsented] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -33,7 +35,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       onlyIncludeMostRecent,
       splitOptionsIntoColumns: !humanReadable,
       stableIdsForOptions: !humanReadable,
-      includeProxiesAsRows,
+      filter: buildFilter({ includeProxiesAsRows, includeUnconsented }),
       fileFormat: fileFormat.value
     }
   }
@@ -99,6 +101,11 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
             <input type="radio" name="onlyIncludeMostRecent" value="false" checked={!onlyIncludeMostRecent}
               onChange={includeRecentChanged} className="me-1" disabled={true}/>
             Include all completions
+          </label>
+          <label>
+            <input type="checkbox" name="includeUnconsented" checked={includeUnconsented}
+              onChange={() => setIncludeUnconsented(!includeUnconsented)} className="me-1"/>
+            Include enrollees who have not consented
           </label>
         </div>
         <div className="py-2">
