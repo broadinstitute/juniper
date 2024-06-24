@@ -35,7 +35,8 @@ const TranslationModal = ({ onDismiss, siteContent, setSiteContent }: {
     </Modal.Header>
     <Modal.Body>
       <div className="mb-3">
-        <Button variant="secondary" onClick={extractTexts}>Download texts <FontAwesomeIcon icon={faDownload}/>
+        <Button variant="primary" outline={true}
+          onClick={extractTexts}>Download texts <FontAwesomeIcon icon={faDownload}/>
         </Button>
       </div>
       <div>
