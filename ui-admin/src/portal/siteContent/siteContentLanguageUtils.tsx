@@ -4,11 +4,14 @@ import {
 import { SectionProp } from '@juniper/ui-core/build/participant/landing/sections/SectionProp'
 import _union from 'lodash/union'
 import { escapeCsvValue } from 'util/downloadUtils'
+import * as csv from 'fast-csv'
+import _set from 'lodash/set'
 
+const KEY_HEADER = 'key'
 
 /** take the textMaps and reformat into a CSV with one row per key, and one language per column */
 export function languageExtractToCSV(languageExtract: LanguageExtract[]): string {
-  const headerRow = ['', ...languageExtract.map(extract => extract.language)]
+  const headerRow = [KEY_HEADER, ...languageExtract.map(extract => extract.language)]
   const allKeys = _union(...languageExtract.map(extract => Object.keys(extract.textMap)))
   const rows = allKeys.map(key =>
     [key, ...languageExtract.map(extract => escapeCsvValue(extract.textMap[key] ?? ''))]
@@ -99,4 +102,23 @@ export function extractConfigTexts(sectionConfig: Record<string, unknown>, secti
     }
   })
   return texts
+}
+
+/** take a csv as string and import it to the siteContent */
+export function languageImportFromCSV(siteContent: SiteContent, csvString: string): void {
+  csv.parseString(csvString, { headers: true  })
+    .on('data', row => parseRow(row, siteContent, [])
+    )
+}
+
+/**
+ *
+ */
+export function parseRow(row: Record<string, string>, siteContent: SiteContent): void {
+  Object.keys(row).forEach(language => {
+    const lsc = siteContent.localizedSiteContents.find(lsc => lsc.language === language)
+    if (lsc) {
+      _set(lsc, row[KEY_HEADER], row[language])
+    }
+  })
 }
