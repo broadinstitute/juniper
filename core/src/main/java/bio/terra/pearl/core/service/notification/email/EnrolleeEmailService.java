@@ -91,7 +91,8 @@ public class EnrolleeEmailService implements NotificationSender {
                     // email starts, so the notification update will fail. This is expected and not a problem.
                     log.info("notification update failed for populated withdrawn participant -- this is expected");
                 } else {
-                    log.error("failed to update notification: {}, portal: {}, trigger: {}", notification.getId(), contextInfo.portal().getShortcode(), config.getId());
+                    log.error("failed to update notification: {}, portal: {}, trigger: {}, error: {}",
+                            notification.getId(), contextInfo.portal().getShortcode(), config.getId(), e.getMessage());
                 }
             }
 
