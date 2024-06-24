@@ -35,12 +35,6 @@ public class ResponsibleEntity {
         }
         this.systemProcess = systemProcess;
     }
-    public ResponsibleEntity(PortalParticipantUser ppUser) {
-        if (ppUser == null) {
-            throw new IllegalArgumentException("portal participant user cannot be null");
-        }
-        this.participantUser = ppUser.getParticipantUser();
-    }
     public ResponsibleEntity() {
         this.anonymousUser = true;
     }

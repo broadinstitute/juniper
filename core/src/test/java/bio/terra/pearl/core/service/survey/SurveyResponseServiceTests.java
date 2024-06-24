@@ -168,7 +168,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         assertThat(actual.getJustification(), equalTo(expected.getJustification()));
 
         Answer nullAnswer = Answer.builder().questionStableId("q3").stringValue(null).build();
-        surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), responseDto, survey, ppUser, new ResponsibleEntity(ppUser));
+        surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), responseDto, survey, ppUser, new ResponsibleEntity(pUser));
         Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), "q3").get();
         assertThat(savedAnswer.getStringValue(), nullValue());
         changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());

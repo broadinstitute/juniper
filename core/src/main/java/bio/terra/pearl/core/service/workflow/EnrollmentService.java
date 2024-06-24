@@ -196,6 +196,8 @@ public class EnrollmentService {
         answers.forEach(Answer::inferTypeIfMissing);
 
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+        ParticipantUser participantUser = participantUserService.find(ppUser.getParticipantUserId())
+                .orElseThrow(() -> new NotFoundException("Participant user not found"));
 
         SurveyResponse surveyResponse =
                 SurveyResponse
@@ -222,7 +224,7 @@ public class EnrollmentService {
                 answers,
                 answerMappingDao.findBySurveyId(preEnrollResponse.getSurveyId()),
                 operator,
-                new ResponsibleEntity(ppUser),
+                new ResponsibleEntity(participantUser),
                 auditInfo);
     }
 
