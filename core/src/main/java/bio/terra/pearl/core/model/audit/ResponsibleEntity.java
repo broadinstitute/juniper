@@ -25,7 +25,7 @@ public class ResponsibleEntity {
     }
     public ResponsibleEntity(ParticipantUser user) {
         if (user == null) {
-            throw new IllegalArgumentException("participant user cannot be null");
+            throw new IllegalArgumentException("user cannot be null");
         }
         this.participantUser = user;
     }
