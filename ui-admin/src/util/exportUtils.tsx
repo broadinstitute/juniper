@@ -1,8 +1,8 @@
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 export type ExportFilterOptions = {
-  includeProxiesAsRows: boolean,
-  includeUnconsented: boolean
+  includeProxiesAsRows?: boolean,
+  includeUnconsented?: boolean
 }
 
 /**

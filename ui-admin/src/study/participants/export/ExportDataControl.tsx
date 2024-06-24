@@ -102,22 +102,23 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
               onChange={includeRecentChanged} className="me-1" disabled={true}/>
             Include all completions
           </label>
+        </div>
+        <div className="py-2">
+          <p className="fw-bold mb-1">
+            Filter Options
+          </p>
           <label>
             <input type="checkbox" name="includeUnconsented" checked={includeUnconsented}
               onChange={() => setIncludeUnconsented(!includeUnconsented)} className="me-1"/>
             Include enrollees who have not consented
           </label>
-        </div>
-        <div className="py-2">
-          <p className="fw-bold mb-1">
-            Proxy Options
-          </p>
           <label>
             <input type="checkbox" name="includeProxiesAsRows" checked={includeProxiesAsRows}
               onChange={() => setIncludeProxiesAsRows(!includeProxiesAsRows)} className="me-1"/>
             Include proxies as rows
           </label>
         </div>
+
         <div className="py-2">
           <span className="fw-bold">File format</span><br/>
           {FILE_FORMATS.map(format => <label className="me-3" key={format.value}>
