@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -120,17 +121,15 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
                 .answers(answers)
                 .build();
-
         Survey survey = surveyService.find(surveyResponse.getSurveyId()).get();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         PortalParticipantUser ppUser = portalParticipantUserFactory
                 .buildPersisted(getTestName(testInfo), savedResponse.getEnrolleeId());
+        ParticipantUser pUser = participantUserService.find(ppUser.getParticipantUserId()).get();
 
         SurveyResponseDto responseDto = SurveyResponseDto.builder()
                 .surveyResponse(savedResponse)
                 .build();
-
-        ParticipantUser pUser = participantUserService.find(ppUser.getParticipantUserId()).get();
 
         List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
         surveyResponseService.createOrUpdateAnswers(updatedAnswers, responseDto, survey, ppUser, new ResponsibleEntity(pUser));
@@ -143,29 +142,17 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
         List<DataChangeRecord> changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
         assertThat(changeRecords.size(), equalTo(1));
-
-        DataChangeRecord actual = changeRecords.get(0);
-        DataChangeRecord expected = DataChangeRecord.builder()
-                .enrolleeId(savedResponse.getEnrolleeId())
-                .surveyId(survey.getId())
-                .responsibleUserId(pUser.getId())
-                .portalParticipantUserId(ppUser.getId())
-                .operationId(savedResponse.getId())
-                .modelName(survey.getStableId())
-                .fieldName("foo")
-                .oldValue("bar")
-                .newValue("baz").build();
-
-        assertThat(actual.getEnrolleeId(), equalTo(expected.getEnrolleeId()));
-        assertThat(actual.getSurveyId(), equalTo(expected.getSurveyId()));
-        assertThat(actual.getResponsibleUserId(), equalTo(expected.getResponsibleUserId()));
-        assertThat(actual.getPortalParticipantUserId(), equalTo(expected.getPortalParticipantUserId()));
-        assertThat(actual.getOperationId(), equalTo(expected.getOperationId()));
-        assertThat(actual.getModelName(), equalTo(expected.getModelName()));
-        assertThat(actual.getFieldName(), equalTo(expected.getFieldName()));
-        assertThat(actual.getOldValue(), equalTo(expected.getOldValue()));
-        assertThat(actual.getNewValue(), equalTo(expected.getNewValue()));
-        assertThat(actual.getJustification(), equalTo(expected.getJustification()));
+        assertThat(changeRecords.get(0), samePropertyValuesAs(DataChangeRecord.builder()
+                        .enrolleeId(savedResponse.getEnrolleeId())
+                        .surveyId(survey.getId())
+                        .responsibleUserId(ppUser.getParticipantUserId())
+                        .portalParticipantUserId(ppUser.getId())
+                        .operationId(savedResponse.getId())
+                        .modelName(survey.getStableId())
+                        .fieldName("foo")
+                        .oldValue("bar")
+                        .newValue("baz").build(),
+                "id", "createdAt", "lastUpdatedAt"));
 
         Answer nullAnswer = Answer.builder().questionStableId("q3").stringValue(null).build();
         surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), responseDto, survey, ppUser, new ResponsibleEntity(pUser));

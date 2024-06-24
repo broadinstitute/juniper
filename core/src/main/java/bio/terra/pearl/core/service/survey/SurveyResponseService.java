@@ -274,17 +274,23 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             // if the values are the same, don't bother with an update
             return existing;
         }
-        DataChangeRecord change = DataChangeRecord.builder()
-                .surveyId(survey.getId())
+
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(response.getSurveyResponse().getEnrolleeId())
-                .operationId(response.getSurveyResponse().getId())
-                .justification(response.getJustification())
+                .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
+                .justification(response.getJustification())
+                .build();
+        auditInfo.setResponsibleEntity(operator);
+
+        DataChangeRecord change = DataChangeRecord.fromAuditInfo(auditInfo)
+                .operationId(response.getSurveyResponse().getId())
                 .modelName(survey.getStableId())
                 .fieldName(existing.getQuestionStableId())
                 .oldValue(existing.valueAsString())
-                .newValue(updated.valueAsString()).build();
-        change.setResponsibleEntity(operator);
+                .newValue(updated.valueAsString())
+                .build();
+
         changeRecords.add(change);
         existing.inferTypeIfMissing();
         existing.setSurveyVersion(updated.getSurveyVersion());
