@@ -442,8 +442,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
         }
         { showTranslationModal &&
           <TranslationModal onDismiss={() => setShowTranslationModal(false)}
-                            siteContent={workingContent}
-                            setSiteContent={setWorkingContent} />
+            siteContent={workingContent}
+            setSiteContent={setWorkingContent} />
         }
         { showUnsavedPreviewModal &&
           <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
