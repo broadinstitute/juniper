@@ -31,6 +31,16 @@ type LanguageExtract = {
  */
 export function extractAllTexts(siteContent: SiteContent): LanguageExtract[] {
   const extracts = processSectionConfigs(siteContent, extractSectionTexts)
+  // Outside of the configs, the the navbarItem texts are the only texts needing i18n
+  siteContent.localizedSiteContents.forEach(lsc => {
+    lsc.navbarItems.forEach((navbarItem, index)  => {
+      extracts.push({
+        textMap: { [`navbarItems[${index}].text`]: navbarItem.text },
+        language: lsc.language
+      })
+    })
+  })
+
   const languages = _uniq(extracts.map(extract => extract.language))
   const combinedExtracts = languages.map(language => {
     const textMap: Record<string, string> = {}
@@ -143,6 +153,9 @@ export function processSectionConfigs<T>(siteContent: SiteContent, processor: Co
       lsc.landingPage.sections.forEach((section, index) => {
         results.push(processor(section, `landingPage.sections[${index}]`, lsc.language))
       })
+    }
+    if (lsc.footerSection) {
+      results.push(processor(lsc.footerSection, 'footerSection', lsc.language))
     }
     lsc.navbarItems.forEach((navbarItem, itemIndex) => {
       if (navbarItem.itemType === 'INTERNAL') {
