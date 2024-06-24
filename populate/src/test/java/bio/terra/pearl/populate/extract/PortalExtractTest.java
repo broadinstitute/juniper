@@ -49,7 +49,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         PortalEnvironment sandboxPortalEnv = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).orElseThrow();
         // confirm portal environment properties got copied
         assertThat(participantDashboardAlertDao.findByPortalEnvironmentId(sandboxPortalEnv.getId()), hasSize(1));
-        assertThat(portalLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
+        assertThat(portalEnvironmentLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
 
         // confirm all templates got repopulated
         assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(14));

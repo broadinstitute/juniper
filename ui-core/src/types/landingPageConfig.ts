@@ -29,6 +29,7 @@ export type HtmlSection = {
   anchorRef?: string
   rawContent?: string | null
   sectionConfig?: string | null
+  parsedConfig?: object // NOT stored in DB -- this is a temporary place to store the parsed config
 }
 
 // Type for JSON decoded HtmlSection sectionConfig.

@@ -1,14 +1,12 @@
-package bio.terra.pearl.core.service.participant.search;
+package bio.terra.pearl.core.service.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
-import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.StudyFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.kit.KitRequestStatus;
-import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.Study;
@@ -21,23 +19,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class EnrolleeSearchServiceTest extends BaseSpringBootTest {
     @Autowired
     private EnrolleeSearchService searchService;
-    @MockBean
-    private ParticipantTaskDao mockParticipantTaskDao;
 
     @Autowired
     private PortalFactory portalFactory;
@@ -50,31 +43,6 @@ class EnrolleeSearchServiceTest extends BaseSpringBootTest {
 
     @Autowired
     private StudyFactory studyFactory;
-
-    @Test
-    void testGetTaskFacet() {
-        List<ParticipantTaskDao.EnrolleeTasks> tasks = List.of(
-            ParticipantTaskDao.EnrolleeTasks.builder().targetName("Consent").targetStableId("consent").build(),
-            ParticipantTaskDao.EnrolleeTasks.builder().targetName("Survey").targetStableId("survey").build()
-        );
-        when(mockParticipantTaskDao.findTaskNamesByStudy(any())).thenReturn(tasks);
-
-        StudyEnvironment studyEnvironment = StudyEnvironment.builder().studyId(UUID.randomUUID()).build();
-        EnrolleeSearchFacet facet = searchService.getTaskFacet(studyEnvironment);
-        assertThat(facet.getKeyName(), equalTo("status"));
-        assertThat(facet.getCategory(), equalTo("participantTask"));
-        assertThat(facet.getFacetType(), equalTo(EnrolleeSearchFacet.FacetType.ENTITY_OPTIONS));
-
-        Set<String> facetEntityValues = facet.getEntities().stream()
-                .map(EnrolleeSearchFacet.ValueLabel::getValue).collect(Collectors.toSet());
-        assertThat(facetEntityValues, equalTo(Set.of("consent", "survey")));
-
-        // ensure that facet task types are in sync with TaskStatus enum
-        Set<String> taskTypes = Arrays.stream(TaskStatus.values()).map(Enum::name).collect(Collectors.toSet());
-        Set<String> facetTaskTypes = facet.getOptions().stream()
-                .map(EnrolleeSearchFacet.ValueLabel::getValue).collect(Collectors.toSet());
-        assertThat(taskTypes, equalTo(facetTaskTypes));
-    }
 
     @Test
     @Transactional

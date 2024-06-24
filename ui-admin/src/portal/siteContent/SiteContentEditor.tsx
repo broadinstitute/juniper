@@ -30,7 +30,7 @@ import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 
 import { useNonNullReactSingleSelect } from 'util/react-select-utils'
-import { usePortalLanguage } from '../usePortalLanguage'
+import { usePortalLanguage } from '../languages/usePortalLanguage'
 import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 
@@ -441,7 +441,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
         }
         { showTranslationModal &&
-          <TranslationModal onDismiss={() => setShowTranslationModal(false)} siteContent={siteContent}/>
+          <TranslationModal onDismiss={() => setShowTranslationModal(false)}
+                            siteContent={workingContent}
+                            setSiteContent={setWorkingContent} />
         }
         { showUnsavedPreviewModal &&
           <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
