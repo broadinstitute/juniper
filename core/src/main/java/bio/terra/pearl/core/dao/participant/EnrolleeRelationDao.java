@@ -77,7 +77,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         );
     }
 
-    // WARNING: This method is not audited
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         jdbi.withHandle(handle ->
                 handle.createUpdate(

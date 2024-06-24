@@ -41,7 +41,7 @@ public class AdminTaskService extends DataAuditedService<AdminTask, AdminTaskDao
         bulkDelete(tasks, auditInfo);
     }
 
-    // WARNING: This method is not audited
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         dao.deleteByStudyEnvironmentId(studyEnvId);

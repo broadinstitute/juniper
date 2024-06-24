@@ -31,7 +31,7 @@ public class AdminTaskDao extends BaseMutableJdbiDao<AdminTask> {
         return findAllByProperty("study_environment_id", studyEnvId);
     }
 
-    // WARNING: This method is not audited
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     public void deleteByStudyEnvironmentId(UUID studyEnvId) {
         deleteByProperty("study_environment_id", studyEnvId);
     }

@@ -25,7 +25,7 @@ public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
         return findAllByProperty("family_id", familyId);
     }
 
-    // WARNING: This method is not audited
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByProperty("enrollee_id", enrolleeId);
     }
@@ -40,7 +40,7 @@ public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
                 .list());
     }
 
-    // WARNING: This method is not audited
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         jdbi.withHandle(handle -> handle.createUpdate(
                         "DELETE FROM family_enrollee fe " +
