@@ -20,10 +20,10 @@ public class TraceableEntity extends BaseEntity {
     private String justification; // if an admin changes a participant's data, a justification is needed
 
     public void setResponsibleEntity(ResponsibleEntity responsibleEntity) {
-        setResponsibleUserId(responsibleEntity.getParticipantUser() != null ? responsibleEntity.getParticipantUser().getId() : null);
-        setResponsibleAdminUserId(responsibleEntity.getAdminUser() != null ? responsibleEntity.getAdminUser().getId() : null);
-        setSystemProcess(responsibleEntity.getSystemProcess() != null ? responsibleEntity.getSystemProcess() : null);
-        setAnonymousUser(responsibleEntity.getAnonymousUser() != null ? responsibleEntity.getAnonymousUser() : null);
+        this.responsibleUserId = responsibleEntity.getParticipantUser() != null ? responsibleEntity.getParticipantUser().getId() : null;
+        this.responsibleAdminUserId = responsibleEntity.getAdminUser() != null ? responsibleEntity.getAdminUser().getId() : null;
+        this.systemProcess = responsibleEntity.getSystemProcess() != null ? responsibleEntity.getSystemProcess() : null;
+        this.anonymousUser = responsibleEntity.getAnonymousUser() != null ? responsibleEntity.getAnonymousUser() : null;
     }
 
 }
