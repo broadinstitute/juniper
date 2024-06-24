@@ -2,7 +2,6 @@ package bio.terra.pearl.core.model.audit;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import com.azure.core.annotation.Get;
 import lombok.Getter;
 import lombok.Setter;
