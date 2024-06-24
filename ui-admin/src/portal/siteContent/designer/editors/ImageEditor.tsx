@@ -17,7 +17,16 @@ export const ImageEditor = ({ portalEnvContext, section, updateSection, siteMedi
       <label className='form-label fw-semibold'>Image</label>
       <ImageSelector portalEnvContext={portalEnvContext}
         imageList={siteMediaList} image={config.image as ImageConfig} onChange={image => {
-          updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, image }) })
+          updateSection({
+            ...section, sectionConfig: JSON.stringify({
+              ...config,
+              image: {
+                cleanFileName: image.cleanFileName,
+                version: image.version
+              }
+
+            })
+          })
         }}/>
     </div>
   )
