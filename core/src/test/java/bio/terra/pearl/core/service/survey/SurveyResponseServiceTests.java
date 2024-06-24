@@ -17,7 +17,6 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -35,7 +34,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.samePropertyValuesAs;
 
 public class SurveyResponseServiceTests extends BaseSpringBootTest {
     @Autowired
@@ -132,10 +130,10 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .surveyResponse(savedResponse)
                 .build();
 
-        ParticipantUser loaded = participantUserService.find(ppUser.getParticipantUserId()).get();
+        ParticipantUser pUser = participantUserService.find(ppUser.getParticipantUserId()).get();
 
         List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
-        surveyResponseService.createOrUpdateAnswers(updatedAnswers, responseDto, survey, ppUser, new ResponsibleEntity(loaded));
+        surveyResponseService.createOrUpdateAnswers(updatedAnswers, responseDto, survey, ppUser, new ResponsibleEntity(pUser));
         for (Answer updatedAnswer : updatedAnswers) {
             Answer savedAnswer = answerService.findForQuestion(savedResponse.getId(), updatedAnswer.getQuestionStableId()).get();
             assertThat(savedAnswer.getStringValue(), equalTo(updatedAnswer.getStringValue()));
@@ -150,7 +148,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         DataChangeRecord expected = DataChangeRecord.builder()
                 .enrolleeId(savedResponse.getEnrolleeId())
                 .surveyId(survey.getId())
-                .responsibleUserId(loaded.getId())
+                .responsibleUserId(pUser.getId())
                 .portalParticipantUserId(ppUser.getId())
                 .operationId(savedResponse.getId())
                 .modelName(survey.getStableId())
@@ -158,7 +156,16 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
                 .oldValue("bar")
                 .newValue("baz").build();
 
-        assertThat(actual, samePropertyValuesAs(expected, "id", "createdAt", "lastUpdatedAt"));
+        assertThat(actual.getEnrolleeId(), equalTo(expected.getEnrolleeId()));
+        assertThat(actual.getSurveyId(), equalTo(expected.getSurveyId()));
+        assertThat(actual.getResponsibleUserId(), equalTo(expected.getResponsibleUserId()));
+        assertThat(actual.getPortalParticipantUserId(), equalTo(expected.getPortalParticipantUserId()));
+        assertThat(actual.getOperationId(), equalTo(expected.getOperationId()));
+        assertThat(actual.getModelName(), equalTo(expected.getModelName()));
+        assertThat(actual.getFieldName(), equalTo(expected.getFieldName()));
+        assertThat(actual.getOldValue(), equalTo(expected.getOldValue()));
+        assertThat(actual.getNewValue(), equalTo(expected.getNewValue()));
+        assertThat(actual.getJustification(), equalTo(expected.getJustification()));
 
         Answer nullAnswer = Answer.builder().questionStableId("q3").stringValue(null).build();
         surveyResponseService.createOrUpdateAnswers(List.of(nullAnswer), responseDto, survey, ppUser, new ResponsibleEntity(ppUser));

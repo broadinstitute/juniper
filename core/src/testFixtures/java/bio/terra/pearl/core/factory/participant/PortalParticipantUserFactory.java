@@ -2,12 +2,10 @@ package bio.terra.pearl.core.factory.participant;
 
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +23,13 @@ public class PortalParticipantUserFactory {
     StudyEnvironmentService studyEnvironmentService;
     @Autowired
     EnrolleeService enrolleeService;
-    @Autowired
-    private ParticipantUserFactory participantUserFactory;
-    @Autowired
-    private ParticipantUserService participantUserService;
 
     /** creates a PortalParticipantUser for the given enrollee.  This will create a new portal and portal environment */
     public PortalParticipantUser buildPersisted(String testName, UUID enrolleeId) {
         Enrollee enrollee = enrolleeService.find(enrolleeId).get();
-        ParticipantUser pUser = participantUserService.find(enrollee.getParticipantUserId()).get();
         StudyEnvironment studyEnvironment = studyEnvironmentService.find(enrollee.getStudyEnvironmentId()).get();
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(testName, studyEnvironment.getEnvironmentName());
         PortalParticipantUser ppUser = PortalParticipantUser.builder()
-                .participantUser(pUser)
                 .participantUserId(enrollee.getParticipantUserId())
                 .portalEnvironmentId(portalEnv.getId()).build();
         return portalParticipantUserService.create(ppUser);
