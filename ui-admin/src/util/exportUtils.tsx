@@ -6,7 +6,7 @@ export type ExportFilterOptions = {
 }
 
 /**
- *
+ * Builds a filter string for the export API. Defaults to only include consented subjects.
  */
 export const buildFilter = (
   opts: ExportFilterOptions = {
