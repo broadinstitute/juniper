@@ -143,7 +143,7 @@ public class SearchValue {
             return false;
         }
 
-        return this.stringValue.contains(rightSearchValue.stringValue);
+        return this.stringValue.toLowerCase().contains(rightSearchValue.stringValue.toLowerCase());
     }
 
     public enum SearchValueType {
