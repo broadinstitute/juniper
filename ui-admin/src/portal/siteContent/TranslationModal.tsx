@@ -4,7 +4,7 @@ import { SiteContent } from '@juniper/ui-core'
 import { languageExtractToCSV, languageImportFromCSV } from './siteContentLanguageUtils'
 import { saveBlobAsDownload } from 'util/downloadUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faUpload } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../components/forms/Button'
 import { useFileUploadButton } from '../../util/uploadUtils'
 
@@ -24,7 +24,7 @@ const TranslationModal = ({ onDismiss, siteContent, setSiteContent }: {
       setSiteContent(updatedContent)
     }
     reader.readAsText(file)
-  }, 'Import translation CSV')
+  }, <span>Upload texts <FontAwesomeIcon icon={faUpload}/></span>)
 
   return <Modal show={true}
     onHide={() => {
@@ -35,11 +35,16 @@ const TranslationModal = ({ onDismiss, siteContent, setSiteContent }: {
     </Modal.Header>
     <Modal.Body>
       <div className="mb-3">
+        <p>Download the current translations as a CSV file.
+        You can edit the file in a spreadsheet program and upload the
+          edited sheet.</p>
         <Button variant="primary" outline={true}
           onClick={extractTexts}>Download texts <FontAwesomeIcon icon={faDownload}/>
         </Button>
       </div>
       <div>
+        <p>Upload a csv file of language texts -- this should be based on a file created from the
+          &quot;download&quot; button above.</p>
         { FileChooser }
       </div>
     </Modal.Body>
