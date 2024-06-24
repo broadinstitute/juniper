@@ -117,13 +117,15 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
         SurveyResponse surveyResponse = surveyResponseFactory.builderWithDependencies(testName)
                 .answers(answers)
                 .build();
-        SurveyResponseDto responseDto = SurveyResponseDto.builder()
-                .surveyResponse(surveyResponse)
-                .build();
+
         Survey survey = surveyService.find(surveyResponse.getSurveyId()).get();
         SurveyResponse savedResponse = surveyResponseService.create(surveyResponse);
         PortalParticipantUser ppUser = portalParticipantUserFactory
                 .buildPersisted(getTestName(testInfo), savedResponse.getEnrolleeId());
+
+        SurveyResponseDto responseDto = SurveyResponseDto.builder()
+                .surveyResponse(savedResponse)
+                .build();
 
         List<Answer> updatedAnswers = AnswerFactory.fromMap(Map.of("foo", "baz", "q3", "answer3"));
         surveyResponseService.createOrUpdateAnswers(updatedAnswers, responseDto, survey, ppUser, new ResponsibleEntity(ppUser));
@@ -136,6 +138,7 @@ public class SurveyResponseServiceTests extends BaseSpringBootTest {
 
         List<DataChangeRecord> changeRecords = dataChangeRecordService.findByEnrollee(savedResponse.getEnrolleeId());
         assertThat(changeRecords.size(), equalTo(1));
+
         assertThat(changeRecords.get(0), samePropertyValuesAs(DataChangeRecord.builder()
                         .enrolleeId(savedResponse.getEnrolleeId())
                         .surveyId(survey.getId())
