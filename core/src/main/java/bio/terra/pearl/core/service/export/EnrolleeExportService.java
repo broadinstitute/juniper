@@ -89,7 +89,11 @@ public class EnrolleeExportService {
         if (limit != null && !results.isEmpty()) {
             results = results.subList(0, Math.min(results.size(), limit));
         }
-        return generateExportMaps(results.stream().map(EnrolleeSearchExpressionResult::getEnrollee).toList(), moduleFormatters);
+        return generateExportMaps(
+                results.stream()
+                        .map(EnrolleeSearchExpressionResult::getEnrollee)
+                        .toList(),
+                moduleFormatters);
     }
 
     public List<Map<String, String>> generateExportMaps(List<Enrollee> enrollees,

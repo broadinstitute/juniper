@@ -24,7 +24,7 @@ import {
   renderPageHeader,
   renderTruncatedText
 } from 'util/pageUtils'
-import { failureNotification } from '../../../util/notifications'
+import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { buildFilter } from 'util/exportUtils'
 
