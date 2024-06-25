@@ -10,6 +10,12 @@ import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { RawEnrolleeSurveyView } from './SurveyResponseView'
+import { userHasPermission } from 'user/UserProvider'
+
+jest.mock('user/UserProvider', () => ({
+  ...jest.requireActual('user/UserProvider'),
+  userHasPermission: jest.fn()
+}))
 
 describe('RawEnrolleeSurveyView', () => {
   const mockResponseWithAnswer = {
@@ -45,6 +51,9 @@ describe('RawEnrolleeSurveyView', () => {
   })
 
   test('Editing mode shows the survey response editor', async () => {
+    (userHasPermission as jest.Mock).mockImplementation(() => {
+      return true
+    })
     const { RoutedComponent } = setupRouterTest(
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         updateResponseMap={jest.fn()}

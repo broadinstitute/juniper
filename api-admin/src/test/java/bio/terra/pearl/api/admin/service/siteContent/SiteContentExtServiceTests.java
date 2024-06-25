@@ -12,7 +12,7 @@ import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.site.LocalizedSiteContent;
 import bio.terra.pearl.core.model.site.SiteContent;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -25,20 +25,20 @@ public class SiteContentExtServiceTests extends BaseSpringBootTest {
   @Autowired private PortalEnvironmentFactory portalEnvironmentFactory;
   @Autowired private SiteContentFactory siteContentFactory;
   @Autowired private SiteContentService siteContentService;
-  @Autowired private PortalLanguageService portalLanguageService;
+  @Autowired private PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
   @Test
   @Transactional
   public void testGetLoadAllLanguages(TestInfo testInfo) {
     PortalEnvironment portalEnv =
         portalEnvironmentFactory.buildPersisted(getTestName(testInfo), EnvironmentName.sandbox);
-    portalLanguageService.create(
+    portalEnvironmentLanguageService.create(
         PortalEnvironmentLanguage.builder()
             .languageCode("es")
             .languageName("Spanish")
             .portalEnvironmentId(portalEnv.getId())
             .build());
-    portalLanguageService.create(
+    portalEnvironmentLanguageService.create(
         PortalEnvironmentLanguage.builder()
             .languageCode("en")
             .languageName("English")

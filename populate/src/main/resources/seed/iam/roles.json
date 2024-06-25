@@ -3,7 +3,13 @@
     "name": "study_admin",
     "displayName": "Study admin",
     "description": "View and edit all aspects of a study",
-    "permissionNames": ["study_settings_edit", "survey_edit", "consent_form_edit", "site_content_edit"]
+    "permissionNames": [
+      "study_settings_edit",
+      "survey_edit",
+      "consent_form_edit",
+      "site_content_edit",
+      "survey_response_edit"
+    ]
   },
   {
     "name": "prototype_tester",

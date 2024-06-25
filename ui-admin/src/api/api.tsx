@@ -16,6 +16,7 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
+  PortalEnvironmentLanguage,
   Profile,
   SiteContent,
   Study,
@@ -26,12 +27,6 @@ import {
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
-import {
-  FacetOption,
-  FacetType,
-  FacetValue,
-  facetValuesToString
-} from './enrolleeSearch'
 import queryString from 'query-string'
 import {
   AdminUser,
@@ -73,25 +68,6 @@ export type {
 export type StudyEnvironmentUpdate = {
   id: string,
   preEnrollSurveyId: string
-}
-
-export type EnrolleeSearchFacet = {
-  keyName: string,
-  category: string,
-  label: string,
-  facetType: FacetType,
-  entities: FacetOption[]
-  options: FacetOption[]
-}
-
-export type EnrolleeSearchResult = {
-  enrollee: Enrollee,
-  profile: Profile,
-  participantUser: {
-    lastLogin: number,
-    username: string
-  }
-  mostRecentKitStatus: string | null
 }
 
 export type EnrolleeSearchExpressionResult = {
@@ -239,6 +215,7 @@ export type PortalEnvironmentChange = {
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
+  languageChanges: ListChange<PortalEnvironmentLanguage, VersionedConfigChange>
 }
 
 export type StudyEnvironmentChange = {
@@ -743,24 +720,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<EnrolleeSearchFacet[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
     Promise<{ [index: string]: SearchValueTypeDefinition }> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
-    Promise<EnrolleeSearchResult[]> {
-    const facetString = encodeURIComponent(facetValuesToString(facetValues))
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1247,6 +1209,16 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders(),
       body: JSON.stringify(update)
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async setPortalEnvLanguages(portalShortcode: string, envName: string, languages: PortalEnvironmentLanguage[]) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/portalLanguages`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(languages)
     })
     return await this.processJsonResponse(response)
   },

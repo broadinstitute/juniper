@@ -28,5 +28,10 @@
     "name": "tdr_export",
     "displayName": "TDR snapshot management",
     "description": "Allows user to export study data to Terra Data Repo"
+  },
+  {
+    "name": "survey_response_edit",
+    "displayName": "Survey response editing",
+    "description": "Allows user to edit participant survey responses"
   }
 ]

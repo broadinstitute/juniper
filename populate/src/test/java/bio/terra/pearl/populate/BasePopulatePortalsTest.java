@@ -9,7 +9,7 @@ import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -84,7 +84,7 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     @Autowired
-    protected PortalLanguageService portalLanguageService;
+    protected PortalEnvironmentLanguageService portalEnvironmentLanguageService;
     @Autowired
     protected FamilyPopulator familyPopulator;
     @Autowired

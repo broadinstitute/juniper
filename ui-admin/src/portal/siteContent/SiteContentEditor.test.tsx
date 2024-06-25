@@ -102,7 +102,7 @@ test('invalid site JSON disables Add navbar button', async () => {
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
 
   //Assert
-  const addPageButton = screen.getByText('Add navbar item')
+  const addPageButton = screen.getByText('Add')
   expect(addPageButton).toHaveAttribute('aria-disabled', 'true')
 })
 
@@ -134,7 +134,7 @@ test('delete page button is disabled when Landing page is selected', async () =>
   render(RoutedComponent)
 
   //Assert
-  const deletePageButton = screen.getByText('Delete navbar item')
+  const deletePageButton = screen.getByText('Delete')
   expect(deletePageButton).toHaveAttribute('aria-disabled', 'true')
 })
 

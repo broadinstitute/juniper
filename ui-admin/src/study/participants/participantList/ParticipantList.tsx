@@ -165,6 +165,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   return <div className="ParticipantList container-fluid px-4 py-2">
     { renderPageHeader('Participant List') }
     <ParticipantSearch
+      key={currentEnv.environmentName}
       studyEnvContext={studyEnvContext}
       searchState={searchState}
       updateSearchState={updateSearchState}
