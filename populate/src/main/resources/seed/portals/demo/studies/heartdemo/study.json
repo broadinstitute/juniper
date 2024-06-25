@@ -33,6 +33,7 @@
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -89,6 +90,8 @@
       }],
       "enrolleeFiles": [
         "enrollees/jsalk.json",
+        "enrollees/psalk.json",
+        "enrollees/dsalk.json",
         "enrollees/newEnrollee.json",
         "enrollees/consentedEnrollee.json",
         "enrollees/basicsDone.json",
@@ -99,6 +102,9 @@
         "enrollees/child2Family2.json",
         "enrollees/invited.json",
         "enrollees/lostInterest.json"
+      ],
+      "familyFiles": [
+        "families/salk.json"
       ],
       "preEnrollmentResponseDtos": [{
           "qualified": false,
@@ -128,6 +134,7 @@
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
@@ -176,6 +183,7 @@
       "studyEnvironmentConfig": {
         "acceptingEnrollment": true,
         "acceptingProxyEnrollment": true,
+        "enableFamilyLinkage": true,
         "passwordProtected": false,
         "password": "broad_institute",
         "initialized": true
