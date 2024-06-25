@@ -20,7 +20,7 @@ export type LinkSectionsFooterConfig = {
   itemSections?: ItemSection[]
 }
 
-type ItemSection = {
+export type ItemSection = {
   title: string,
   items: ButtonConfig[]
 }

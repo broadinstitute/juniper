@@ -343,7 +343,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           >
             <Tab
               eventKey="designer"
-              title="Designer"
+              title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
               disabled={hasInvalidSection}
             >
               <ErrorBoundary>
@@ -351,6 +351,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                   {pageToRender &&
                       <ApiProvider api={previewApi}>
                         <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                          portalEnvContext={portalEnvContext}
+                          siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
+                          footerSection={localContent.footerSection} updateFooter={updateFooter}
+                          updatePage={page => updatePage(page, currentNavBarItem?.text)} useJsonEditor={false}/>
+                      </ApiProvider>}
+                </div>
+              </ErrorBoundary>
+            </Tab>
+            <Tab
+              eventKey="json"
+              title="JSON Editor"
+              disabled={hasInvalidSection}
+            >
+              <ErrorBoundary>
+                <div>
+                  {pageToRender &&
+                      <ApiProvider api={previewApi}>
+                        <HtmlPageEditView portalEnvContext={portalEnvContext} htmlPage={pageToRender}
+                          readOnly={readOnly}
                           siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                           footerSection={localContent.footerSection} updateFooter={updateFooter}
                           updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
