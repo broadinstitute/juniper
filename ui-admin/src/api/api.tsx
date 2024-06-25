@@ -279,7 +279,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
-  includeProxiesAsRows?: boolean,
+  filter?: string,
   limit?: number
 }
 

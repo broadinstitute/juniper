@@ -186,10 +186,11 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
+                .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                 .limit(null)
                 .build();
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.getFilter(), options.getLimit());
 
         assertThat(exportData, hasSize(12));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))

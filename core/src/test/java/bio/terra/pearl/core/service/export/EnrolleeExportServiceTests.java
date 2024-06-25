@@ -16,6 +16,7 @@ import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -26,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 
 
 /**
@@ -46,6 +45,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyService surveyService;
     @Autowired
     private SurveyFactory surveyFactory;
+    @Autowired
+    private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 
     @Test
     @Transactional
@@ -56,7 +57,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         Enrollee enrollee3 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
-        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, false, 2);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, 2);
 
         assertThat(exportMaps, hasSize(2));
         // confirm enrollees are in reverse order of creation
@@ -74,14 +75,14 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Enrollee regularEnrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
         List<ModuleFormatter> exportModuleInfoWithProxies = enrolleeExportService.generateModuleInfos(ExportOptions
                         .builder()
-                        .includeProxiesAsRows(true)
+                        .filter(null) // no filter means proxies will be included
                         .onlyIncludeMostRecent(true)
                         .fileFormat(ExportFileFormat.TSV)
                         .limit(null)
                         .build(),
                 studyEnv.getId());
 
-        List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoWithProxies, true, null);
+        List<Map<String, String>> exportMapsWithProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoWithProxies, null, null);
         assertThat(exportMapsWithProxies, hasSize(3));
 
         assertThat(exportMapsWithProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
@@ -95,7 +96,12 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         List<ModuleFormatter> exportModuleInfoNoProxies = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
 
-        List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfoNoProxies, false, null);
+        List<Map<String, String>> exportMapsNoProxies = enrolleeExportService.generateExportMaps(
+                studyEnv.getId(),
+                exportModuleInfoNoProxies,
+                // this rule is constructed in the frontend by default
+                enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"),
+                null);
         assertThat(exportMapsNoProxies, hasSize(2));
 
         assertThat(exportMapsNoProxies.get(0).get("enrollee.shortcode"), equalTo(regularEnrollee.getShortcode()));
