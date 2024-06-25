@@ -3,8 +3,7 @@ import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/ap
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faClipboard,
-  faClockRotateLeft, faEllipsisV, faGlobe,
+  faClockRotateLeft, faGlobe,
   faImage,
   faPalette,
   faPlus,
@@ -284,42 +283,6 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               }
             </>
           }
-          <a className="btn" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Actions <FontAwesomeIcon className="ms-2" icon={faEllipsisV}/>
-          </a>
-          <div className="dropdown-menu">
-            <ul className="list-unstyled mb-0">
-              <li onClick={() => setShowBrandingModal(true)}>
-                <a className="dropdown-item" onClick={() => setShowBrandingModal(true)}>
-                  Branding <FontAwesomeIcon icon={faPalette} className="fa-lg"/>
-                </a>
-              </li>
-              <li>
-                <Link to="../media" className="dropdown-item">
-                  Manage media <FontAwesomeIcon icon={faImage} className="fa-lg"/>
-                </Link>
-              </li>
-              { portalEnv.preRegSurveyId &&
-                <li>
-                  <Link to={'../forms/preReg'}>
-                    Pre-registration <FontAwesomeIcon icon={faClipboard} className="fa-lg"/>
-                  </Link>
-                </li> }
-              { !portalEnv.preRegSurveyId &&
-                <li>
-                  <a className="dropdown-item" onClick={() => setShowAddPreRegModal(true)}>
-                    Pre-registration <FontAwesomeIcon icon={faClipboard} className="fa-lg"/>
-                  </a>
-
-                </li>
-              }
-              <li >
-                <a className="dropdown-item" onClick={() => setShowTranslationModal(true)}>
-                  Translations <FontAwesomeIcon icon={faGlobe} className="fa-lg"/>
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
       </div>
       <div className="px-2">
@@ -348,6 +311,17 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={languageOnChange}/>
           </div> }
+          <div className="d-flex ms-auto">
+            <Button variant="light" onClick={() => setShowBrandingModal(true)}>
+              Branding <FontAwesomeIcon icon={faPalette} className="fa-lg"/>
+            </Button>
+            <Link to="../media" className="btn btn-light ms-2">
+              Media <FontAwesomeIcon icon={faImage} className="fa-lg"/>
+            </Link>
+            <Button variant="light" onClick={() => setShowTranslationModal(true)} className="ms-2">
+              Translations <FontAwesomeIcon icon={faGlobe} className="fa-lg"/>
+            </Button>
+          </div>
         </div>
       </div>
       { !localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
