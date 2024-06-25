@@ -1,25 +1,21 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeRelationFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -28,12 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -46,35 +37,34 @@ public class EnrolleeExportService {
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
-    private final EnrolleeService enrolleeService;
     private final KitRequestService kitRequestService;
     private final ParticipantUserService participantUserService;
-    private final KitTypeDao kitTypeDao;
     private final ObjectMapper objectMapper;
     private final EnrolleeRelationService enrolleeRelationService;
+    private final EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
-                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService, SurveyResponseService surveyResponseService,
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService,
+                                 SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
-                                 EnrolleeService enrolleeService, KitRequestService kitRequestService,
+                                 KitRequestService kitRequestService,
                                  ParticipantUserService participantUserService,
-                                 KitTypeDao kitTypeDao,
                                  EnrolleeRelationService enrolleeRelationService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 EnrolleeSearchExpressionDao enrolleeSearchExpressionDao) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
-        this.enrolleeService = enrolleeService;
         this.kitRequestService = kitRequestService;
         this.participantUserService = participantUserService;
-        this.kitTypeDao = kitTypeDao;
         this.enrolleeRelationService = enrolleeRelationService;
         this.objectMapper = objectMapper;
+        this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
     }
 
     /**
@@ -83,18 +73,27 @@ public class EnrolleeExportService {
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
-        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.isIncludeProxiesAsRows(), exportOptions.getLimit());
+        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.getFilter(), exportOptions.getLimit());
         BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
         exporter.export(os);
     }
 
-    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId, List<ModuleFormatter> moduleFormatters, boolean includeProxiesAsRows, Integer limit) {
+    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId, List<ModuleFormatter> moduleFormatters, EnrolleeSearchExpression filter, Integer limit) {
 
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId, includeProxiesAsRows ? null : true, "created_at", "DESC");
-        if (limit != null && enrollees.size() > 0) {
-            enrollees = enrollees.subList(0, Math.min(enrollees.size(), limit));
+        List<EnrolleeSearchExpressionResult> results =
+                enrolleeSearchExpressionDao.executeSearch(
+                        filter,
+                        studyEnvironmentId,
+                        EnrolleeSearchOptions.builder().sortField("enrollee.created_at").sortAscending(false).build());
+
+        if (limit != null && !results.isEmpty()) {
+            results = results.subList(0, Math.min(results.size(), limit));
         }
-        return generateExportMaps(enrollees, moduleFormatters);
+        return generateExportMaps(
+                results.stream()
+                        .map(EnrolleeSearchExpressionResult::getEnrollee)
+                        .toList(),
+                moduleFormatters);
     }
 
     public List<Map<String, String>> generateExportMaps(List<Enrollee> enrollees,
