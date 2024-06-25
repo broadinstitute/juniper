@@ -20,6 +20,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
+import bio.terra.pearl.populate.service.FamilyPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +85,10 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     @Autowired
     protected PortalEnvironmentLanguageService portalEnvironmentLanguageService;
+    @Autowired
+    protected FamilyPopulator familyPopulator;
+    @Autowired
+    protected FamilyService familyService;
     @Autowired
     protected BaseSeedPopulator baseSeedPopulator;
 }
