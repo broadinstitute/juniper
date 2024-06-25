@@ -6,6 +6,10 @@ import bio.terra.pearl.core.service.search.terms.SearchValue;
 
 import java.util.List;
 
+/**
+ * Selects the maximum value from a list of values.
+ * Example: max(1, 2, 3, 4) = 4
+ */
 public class MaxFunction extends VarArgFunction {
     public MaxFunction(List<SearchTerm> terms) {
         super(terms, SearchValue.SearchValueType.NUMBER);

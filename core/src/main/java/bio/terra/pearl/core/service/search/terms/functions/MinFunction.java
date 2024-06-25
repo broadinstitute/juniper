@@ -6,6 +6,10 @@ import bio.terra.pearl.core.service.search.terms.SearchValue;
 
 import java.util.List;
 
+/**
+ * Selects the minimum value from a list of values.
+ * Example: min(1, 2, 3, 4) = 1
+ */
 public class MinFunction extends VarArgFunction {
     public MinFunction(List<SearchTerm> terms) {
         super(terms, SearchValue.SearchValueType.NUMBER);
