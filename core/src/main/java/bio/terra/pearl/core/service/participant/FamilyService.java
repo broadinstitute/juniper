@@ -82,9 +82,10 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return dao.findByEnrolleeId(enrolleeId);
     }
 
+
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
-        List<Family> families = findByStudyEnvironmentId(studyEnvironmentId);
-        bulkDelete(families, info);
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 }

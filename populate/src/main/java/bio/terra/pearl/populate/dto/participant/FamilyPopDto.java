@@ -11,8 +11,9 @@ import java.util.List;
 public class FamilyPopDto extends Family {
     private String probandShortcode;
     private List<String> memberShortcodes;
-    private List<FamilyRelationship> relationDtos;
 
-    public static record FamilyRelationship(String shortcode, String targetShortcode, String relationship) {
+    private List<FamilyRelationshipPopDto> relationDtos;
+
+    public static record FamilyRelationshipPopDto(String shortcode, String targetShortcode, String relationship) {
     }
 }

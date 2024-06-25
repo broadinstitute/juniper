@@ -84,7 +84,7 @@ public class FamilyPopulator extends BasePopulator<Family, FamilyPopDto, StudyPo
         addToFamily(family, members);
     }
 
-    private void createRelations(Family family, List<FamilyPopDto.FamilyRelationship> relations) {
+    private void createRelations(Family family, List<FamilyPopDto.FamilyRelationshipPopDto> relations) {
         DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "populateFamily")).build();
 
@@ -104,7 +104,7 @@ public class FamilyPopulator extends BasePopulator<Family, FamilyPopDto, StudyPo
         });
     }
 
-    private void syncRelations(Family family, List<FamilyPopDto.FamilyRelationship> relations) {
+    private void syncRelations(Family family, List<FamilyPopDto.FamilyRelationshipPopDto> relations) {
         enrolleeRelationService.deleteByFamilyId(family.getId(), DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "populateFamily")).build());
         createRelations(family, relations);

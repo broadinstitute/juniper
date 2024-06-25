@@ -77,18 +77,6 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         );
     }
 
-    public List<EnrolleeRelation> findByStudyEnvironmentId(UUID studyEnvironmentId) {
-        return jdbi.withHandle(handle ->
-                handle.createQuery(
-                                "SELECT relation.* FROM enrollee_relation relation " +
-                                        "INNER JOIN enrollee enrollee ON relation.enrollee_id = enrollee.id " +
-                                        "WHERE enrollee.study_environment_id = :studyEnvironmentId")
-                        .bind("studyEnvironmentId", studyEnvironmentId)
-                        .mapTo(clazz)
-                        .list()
-        );
-    }
-
     public List<EnrolleeRelation> findAllByEnrolleeOrTargetId(UUID enrolleeId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery(
@@ -97,6 +85,18 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
                         .bind("enrolleeId", enrolleeId)
                         .mapTo(clazz)
                         .list()
+        );
+    }
+
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate(
+                                "DELETE FROM enrollee_relation relation " +
+                                        "WHERE relation.enrollee_id IN " +
+                                        "(SELECT enrollee.id FROM enrollee enrollee WHERE enrollee.study_environment_id = :studyEnvironmentId)")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .execute()
         );
     }
 }

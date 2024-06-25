@@ -28,17 +28,15 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
         bulkDelete(objs, info);
     }
 
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
-    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId, DataAuditInfo info) {
-        List<FamilyEnrollee> objs = dao.findByStudyEnvironmentId(studyEnvironmentId);
-
-        bulkDelete(objs, info);
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
-    public void deleteByEnrolleeId(UUID id, DataAuditInfo info) {
-        List<FamilyEnrollee> objs = dao.findByEnrolleeId(id);
-
-        bulkDelete(objs, info);
+    public void deleteByEnrolleeId(UUID id) {
+        dao.deleteByEnrolleeId(id);
     }
 }
