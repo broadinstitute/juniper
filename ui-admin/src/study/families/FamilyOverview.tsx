@@ -1,9 +1,6 @@
 import React from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import {
-  Enrollee,
-  Family
-} from '@juniper/ui-core'
+import { Family } from '@juniper/ui-core'
 import {
   InfoCard,
   InfoCardBody,
@@ -11,9 +8,8 @@ import {
   InfoCardRow,
   InfoCardTitle
 } from 'components/InfoCard'
-import { Link } from 'react-router-dom'
-import { isEmpty } from 'lodash'
 import { FamilyStructureTable } from 'study/families/FamilyStructureTable'
+import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 
 /**
  * Overall information about a family.
@@ -51,24 +47,4 @@ export const FamilyOverview = (
       </div>
     </InfoCard>
   </div>
-}
-
-/**
- *
- */
-export const EnrolleeLink = ({ studyEnvContext, enrollee }: {
-  studyEnvContext: StudyEnvContextT,
-  enrollee: Enrollee
-}) => {
-  const name = `${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`.trim()
-  const path = `${studyEnvContext.currentEnvPath}/participants/${enrollee.shortcode}`
-  if (isEmpty(name)) {
-    return <Link to={path}>{enrollee.shortcode}</Link>
-  }
-  return <span>
-    {name} <Link
-      to={path}>
-      <span className=" fst-italic">({enrollee.shortcode})</span>
-    </Link>
-  </span>
 }

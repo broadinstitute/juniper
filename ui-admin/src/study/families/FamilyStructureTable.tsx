@@ -34,7 +34,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import Api from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { EnrolleeLink } from './FamilyOverview'
+import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 
 type FamilyMemberWithSubrows = {
   member: Enrollee,
@@ -153,7 +153,10 @@ export const FamilyStructureTable = (
   }, [])
 
   return <div>
-    {basicTableLayout(table, { customRowHeader })}
+    {basicTableLayout(table, {
+      customRowHeader,
+      tableClass: 'table table-striped m-0'
+    })}
   </div>
 }
 

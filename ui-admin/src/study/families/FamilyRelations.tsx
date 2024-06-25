@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
 import Creatable from 'react-select/creatable'
-import { EnrolleeLink } from 'study/families/FamilyOverview'
+import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 
 /**
  * Editable view of the relationships within a family.
