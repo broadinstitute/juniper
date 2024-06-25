@@ -2,13 +2,13 @@ import { PortalEnvContext } from 'portal/PortalRouter'
 import { HtmlSection, ImageConfig, SectionConfig } from '@juniper/ui-core'
 import { SiteMediaMetadata } from 'api/api'
 import React, { useId } from 'react'
-import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
 import { ImageSelector } from '../components/ImageSelector'
 import { ListElementController } from '../components/ListElementController'
+import { CollapsibleSectionButton } from '../components/CollapsibleSectionButton'
 
 /**
  *
@@ -24,21 +24,7 @@ export const LogoEditor = ({ portalEnvContext, section, updateSection, siteMedia
 
   return (
     <div>
-      <div className="pb-1">
-        <button
-          aria-controls={logosTargetSelector}
-          aria-expanded="false"
-          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
-          data-bs-target={logosTargetSelector}
-          data-bs-toggle="collapse"
-        >
-          <span className={'form-label fw-semibold mb-0'}>Logos ({logos.length})</span>
-          <span className="text-center px-2">
-            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
-            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
-          </span>
-        </button>
-      </div>
+      <CollapsibleSectionButton targetSelector={logosTargetSelector} sectionLabel={`Logos (${logos.length})`}/>
       <div className="collapse hide rounded-3 mb-2" id={logosContentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
         <div>

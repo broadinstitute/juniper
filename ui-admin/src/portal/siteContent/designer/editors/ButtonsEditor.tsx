@@ -1,11 +1,12 @@
 import { ButtonConfig, HtmlSection, SectionConfig } from '@juniper/ui-core'
 import React, { useId } from 'react'
-import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import { TextInput } from 'components/forms/TextInput'
 import { Button } from 'components/forms/Button'
+import { CollapsibleSectionButton } from '../components/CollapsibleSectionButton'
+import { ListElementController } from '../components/ListElementController'
 
 /**
  * Returns an editor allowing the user to add and edit buttons
@@ -19,31 +20,32 @@ export const ButtonsEditor = ({ section, updateSection }: {
   const buttonsTargetSelector = `#${buttonsContentId}`
   return (
     <div>
-      <div className="pb-1">
-        <button
-          aria-controls={buttonsTargetSelector}
-          aria-expanded="false"
-          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
-          data-bs-target={buttonsTargetSelector}
-          data-bs-toggle="collapse"
-        >
-          <span className={'form-label fw-semibold mb-0'}>Buttons ({buttons.length})</span>
-          <span className="text-center px-2">
-            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
-            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
-          </span>
-        </button>
-      </div>
+      <CollapsibleSectionButton targetSelector={buttonsTargetSelector} sectionLabel={`Buttons (${buttons.length})`}/>
       <div className="collapse hide rounded-3 mb-2" id={buttonsContentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
         <div>
-          {buttons.map((button, i) => {
-            return <ButtonEditor key={i} button={button} updateButton={newButton => {
-              const newButtons = [...buttons]
-              newButtons[i] = newButton
-              updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
-            }}/>
-          })}
+          {buttons.map((button, i) => (
+            <div key={i}>
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="h6">Edit button</span>
+                <ListElementController<ButtonConfig>
+                  index={i}
+                  items={buttons}
+                  updateItems={newButtons => {
+                    updateSection({
+                      ...section,
+                      sectionConfig: JSON.stringify({ ...config, buttons: newButtons })
+                    })
+                  }}
+                />
+              </div>
+              <ButtonEditor key={i} button={button} updateButton={newButton => {
+                const newButtons = [...buttons]
+                newButtons[i] = newButton
+                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, buttons: newButtons }) })
+              }}/>
+            </div>
+          ))}
         </div>
         <Button onClick={() => {
           const newButtons = [...buttons]
@@ -60,7 +62,7 @@ export const ButtonsEditor = ({ section, updateSection }: {
  * Returns an editor for a single button
  */
 export const ButtonEditor = ({ button, updateButton }: {
-    button: ButtonConfig, updateButton: (button: ButtonConfig) => void
+  button: ButtonConfig, updateButton: (button: ButtonConfig) => void
 }) => {
   return (
     <div style={{ backgroundColor: '#ddd', padding: '0.75rem' }} className="rounded-3 mb-2">

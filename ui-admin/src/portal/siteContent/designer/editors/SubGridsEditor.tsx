@@ -2,14 +2,14 @@ import { PortalEnvContext } from 'portal/PortalRouter'
 import { HtmlSection, SectionConfig, SiteMediaMetadata } from 'api/api'
 import { ImageConfig, PhotoBio, SubGrid } from '@juniper/ui-core'
 import React, { useId } from 'react'
-import classNames from 'classnames'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { TextInput } from 'components/forms/TextInput'
 import { Textarea } from 'components/forms/Textarea'
 import { ImageSelector } from '../components/ImageSelector'
 import { ListElementController } from '../components/ListElementController'
 import { Button } from 'components/forms/Button'
+import { CollapsibleSectionButton } from '../components/CollapsibleSectionButton'
 
 /**
  * Returns an editor for the photo bio element of a website section
@@ -25,21 +25,8 @@ export const SubGridsEditor = ({ portalEnvContext, mediaList, section, updateSec
   const photosTargetSelector = `#${photosContentId}`
   return (
     <div>
-      <div className="pb-1">
-        <button
-          aria-controls={photosTargetSelector}
-          aria-expanded="false"
-          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
-          data-bs-target={photosTargetSelector}
-          data-bs-toggle="collapse"
-        >
-          <span className={'form-label fw-semibold mb-0'}>Photo Bio Sections ({subGrids.length})</span>
-          <span className="text-center px-2">
-            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
-            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
-          </span>
-        </button>
-      </div>
+      <CollapsibleSectionButton targetSelector={photosTargetSelector}
+        sectionLabel={`Photo Bio Sections (${subGrids.length})`}/>
       <div className="collapse hide rounded-3 mb-2" id={photosContentId}
         style={{ backgroundColor: '#eee', padding: '0.75rem' }}>
         <div>
@@ -81,21 +68,8 @@ const SubGridEditor = ({ portalEnvContext, index, mediaList, section, updateSect
   return (
     <div className='w-100'>
       <div className="d-flex justify-content-between align-items-center">
-        <button
-          aria-controls={subGridsTargetSelector}
-          aria-expanded="false"
-          className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
-          data-bs-target={subGridsTargetSelector}
-          data-bs-toggle="collapse"
-        >
-          <span className={'form-label fw-semibold mb-0'}>
-            {subGrid.title ? subGrid.title : 'Bio sub-section'} ({subGrid.photoBios.length})
-          </span>
-          <span className="text-center px-2">
-            <FontAwesomeIcon icon={faChevronDown} className="hidden-when-collapsed"/>
-            <FontAwesomeIcon icon={faChevronUp} className="hidden-when-expanded"/>
-          </span>
-        </button>
+        <CollapsibleSectionButton targetSelector={subGridsTargetSelector}
+          sectionLabel={subGrid.title ? subGrid.title : `Bio sub-section (${subGrid.photoBios.length})`}/>
         <ListElementController items={subGrids} index={index} updateItems={newSubGrids => {
           updateSection({
             ...section,
