@@ -16,7 +16,7 @@ jest.mock('api/api', () => ({
 
 jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 
-test('enables live-preview text editing', async () => {
+test('enables live-preview json editing', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
   const { RoutedComponent } = setupRouterTest(
@@ -26,6 +26,9 @@ test('enables live-preview text editing', async () => {
   render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()
+
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
 
   const sectionInput = screen.getByRole('textbox')
   const aboutUsHeading = screen.queryAllByRole('heading')
@@ -87,6 +90,9 @@ test('invalid site JSON disables Save button', async () => {
       switchToVersion={jest.fn()} portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
+
   //Act
   const sectionInput = screen.getByRole('textbox')
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
@@ -105,6 +111,9 @@ test('invalid site JSON disables Add navbar button', async () => {
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
+
   //Act
   const sectionInput = screen.getByRole('textbox')
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
@@ -122,6 +131,9 @@ test('invalid site JSON disables page selector', async () => {
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
+
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
 
   //Act
   const sectionInput = screen.getByRole('textbox')
