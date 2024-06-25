@@ -15,6 +15,7 @@
     "@types/jest": "^27.5.2",
     "@types/json-stringify-safe": "^5.0.3",
     "@types/node": "^16.11.58",
+    "@types/papaparse": "^5.3.14",
     "chokidar-cli": "^3.0.0",
     "eslint": "^8.23.0",
     "eslint-import-resolver-typescript": "^3.5.5",
@@ -30,8 +31,5 @@
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 e2e-tests/src ui-admin/src ui-core/src ui-participant/src"
-  },
-  "dependencies": {
-    "json-stringify-safe": "^5.0.1"
   }
 }
