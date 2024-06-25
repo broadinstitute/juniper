@@ -94,9 +94,9 @@ const urlParamsToSearchState = (searchParams: URLSearchParams, searchParamName: 
 export const toExpression = (searchState: ParticipantSearchState) => {
   const expressions: string[] = []
   if (!isEmpty(searchState.keywordSearch)) {
-    expressions.push(`(lower({profile.name}) contains lower('${searchState.keywordSearch}') `
-      + `or lower({profile.contactEmail}) contains lower('${searchState.keywordSearch}') `
-      + `or lower({enrollee.shortcode}) contains lower('${searchState.keywordSearch}'))`)
+    expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
+      + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
+      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}')`)
   }
 
   if (searchState.subject !== undefined) {

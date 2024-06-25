@@ -96,9 +96,9 @@ test('keyword search sends search api request', async () => {
     'portalCode',
     'fakeStudy',
     'sandbox',
-    '(lower({profile.name}) contains lower(\'foo\') ' +
-    'or lower({profile.contactEmail}) contains lower(\'foo\') ' +
-    'or lower({enrollee.shortcode}) contains lower(\'foo\')) ' +
+    '({profile.name} contains \'foo\' ' +
+    'or {profile.contactEmail} contains \'foo\' ' +
+    'or {enrollee.shortcode} contains \'foo\') ' +
     'and {enrollee.subject} = true'
   )
 })
