@@ -18,6 +18,7 @@ export const CollapsibleSectionButton = (props: CollapsibleSectionProps) => {
       <button
         aria-controls={targetSelector}
         aria-expanded="false"
+        type={'button'}
         className={classNames('btn w-100 py-2 px-0 d-flex text-decoration-none')}
         data-bs-target={targetSelector}
         data-bs-toggle="collapse"
