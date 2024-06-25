@@ -14,9 +14,7 @@ import {
   ExpandedState,
   getCoreRowModel,
   getExpandedRowModel,
-  getSortedRowModel,
   Row,
-  SortingState,
   useReactTable
 } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -50,9 +48,7 @@ export const FamilyStructureTable = (
 ) => {
   const members = useMemo(() => groupFamilyMembersWithSubrows(family), [family])
 
-  const [sorting, setSorting] = useState<SortingState>([])
   const [expanded, setExpanded] = useState<ExpandedState>({})
-
 
   const columns: ColumnDef<FamilyMemberWithSubrows>[] = [
     {
@@ -109,16 +105,13 @@ export const FamilyStructureTable = (
     data: members,
     columns,
     state: {
-      expanded,
-      sorting
+      expanded
     },
     onExpandedChange: setExpanded,
     enableExpanding: true,
+    enableSorting: false,
     getSubRows: row => row.subrows,
-
-    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getExpandedRowModel: getExpandedRowModel()
   })
 

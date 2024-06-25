@@ -1,4 +1,5 @@
 import React, {
+  Fragment,
   HTMLProps,
   useEffect,
   useState
@@ -418,9 +419,9 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
     <tbody>
       {table.getRowModel().rows.map(row => {
         return (
-          <>
+          <Fragment key={row.id}>
             {!isNil(config.customRowHeader) && config.customRowHeader(row)}
-            <tr key={row.id}>
+            <tr>
               {row.getVisibleCells().map(cell => {
                 return (
                   <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
@@ -429,7 +430,7 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
                 )
               })}
             </tr>
-          </>
+          </Fragment>
         )
       })}
     </tbody>

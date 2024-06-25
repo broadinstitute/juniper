@@ -18,8 +18,9 @@ export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: Stud
   const { user } = useUser()
 
   if (!userHasPermission(user, studyEnvContext.portal.id, 'prototype')) {
-    return <></>
+    return <p>You do not have the appropriate permissions to access this prototype feature.</p>
   }
+
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
       <Link to={`${studyEnvContext.currentEnvPath}/participants`} className="me-1">

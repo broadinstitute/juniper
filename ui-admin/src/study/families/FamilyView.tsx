@@ -68,7 +68,7 @@ export function LoadedFamilyView({ family, studyEnvContext }:
           <div style={navDivStyle}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
-                <NavLink to="." className={getLinkCssClasses}>Overview</NavLink>
+                <NavLink end to="." className={getLinkCssClasses}>Overview</NavLink>
               </li>
               <li style={navListItemStyle} className="ps-3">
                 <NavLink to="membersAndRelations" className={getLinkCssClasses}>Members & Relations</NavLink>
