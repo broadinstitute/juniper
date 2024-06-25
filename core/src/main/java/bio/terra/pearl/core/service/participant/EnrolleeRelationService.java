@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -24,14 +25,17 @@ import java.util.stream.Collectors;
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
     private final EnrolleeService enrolleeService;
     private final ProfileService profileService;
+    private final FamilyService familyService;
+
     public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                    DataChangeRecordService dataChangeRecordService,
                                    @Lazy EnrolleeService enrolleeService,
                                    ObjectMapper objectMapper,
-                                   ProfileService profileService) {
+                                   ProfileService profileService, FamilyService familyService) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.profileService = profileService;
+        this.familyService = familyService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -54,7 +58,7 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return filterValid(dao.findAllByEnrolleeId(enrolleeId));
     }
 
-    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
+    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
         Enrollee target = this.enrolleeService.find(enrolleeId).orElseThrow(() -> new NotFoundException("Enrollee not found"));
         profileService
                 .loadWithMailingAddress(target.getProfileId())
@@ -62,12 +66,22 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
 
         List<EnrolleeRelation> relations = findByTargetEnrolleeId(enrolleeId);
 
+        List<UUID> familyIds = relations.stream().map(EnrolleeRelation::getFamilyId).toList();
+        List<Family> families = familyService.findAll(familyIds);
+
         return relations.stream().map(relation -> {
             relation.setTargetEnrollee(target);
             relation.setEnrollee(this.enrolleeService.find(relation.getEnrolleeId()).orElse(null));
             profileService
                     .loadWithMailingAddress(relation.getEnrollee().getProfileId())
                     .ifPresent(relation.getEnrollee()::setProfile);
+
+            relation.setFamily(families
+                    .stream()
+                    .filter(family -> family.getId().equals(relation.getFamilyId()))
+                    .findFirst()
+                    .orElse(null));
+    
             return relation;
         }).toList();
     }

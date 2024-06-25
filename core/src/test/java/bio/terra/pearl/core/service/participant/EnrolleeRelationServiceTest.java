@@ -248,12 +248,12 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
     @Test
     @Transactional
-    void testFindByTargetEnrolleeIdWithEnrollees(TestInfo info) {
+    void testFindByTargetEnrolleeIdWithEnrolleesAndFamily(TestInfo info) {
         EnrolleeFactory.EnrolleeAndProxy hubResponse = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxyEmail@test.com");
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
 
-        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(governedEnrollee.getId());
+        List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(governedEnrollee.getId());
 
         Assertions.assertEquals(1, enrolleeRelations.size());
 

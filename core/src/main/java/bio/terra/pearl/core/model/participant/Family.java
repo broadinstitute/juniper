@@ -16,4 +16,6 @@ public class Family extends BaseEntity {
     private UUID probandEnrolleeId;
     private UUID studyEnvironmentId;
     private String shortcode;
+
+    private Enrollee proband;
 }

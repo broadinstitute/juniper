@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Family;
@@ -17,15 +18,17 @@ import java.util.UUID;
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
     private final FamilyEnrolleeService familyEnrolleeService;
+    private final EnrolleeDao enrolleeDao;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
-                         FamilyEnrolleeService familyEnrolleeService) {
+                         FamilyEnrolleeService familyEnrolleeService, EnrolleeDao enrolleeDao) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.familyEnrolleeService = familyEnrolleeService;
+        this.enrolleeDao = enrolleeDao;
     }
 
     @Transactional
@@ -55,6 +58,16 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
     public List<Family> findByEnrolleeId(UUID enrolleeId) {
         return dao.findByEnrolleeId(enrolleeId);
+    }
+
+    public List<Family> findByEnrolleeIdWithProband(UUID enrolleeId) {
+        List<Family> families = dao.findByEnrolleeId(enrolleeId);
+        families.forEach(family -> {
+            if (family.getProbandEnrolleeId() != null) {
+                enrolleeDao.find(family.getProbandEnrolleeId()).ifPresent(family::setProband);
+            }
+        });
+        return families;
     }
 
     // WARNING: This method is not audited; it should only be used during study population/repopulation

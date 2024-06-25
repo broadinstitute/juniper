@@ -8,18 +8,9 @@ import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeRelationFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestService;
-import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.ParticipantUserService;
-import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.participant.*;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -28,12 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -52,6 +38,7 @@ public class EnrolleeExportService {
     private final KitTypeDao kitTypeDao;
     private final ObjectMapper objectMapper;
     private final EnrolleeRelationService enrolleeRelationService;
+    private final FamilyService familyService;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
@@ -62,7 +49,7 @@ public class EnrolleeExportService {
                                  ParticipantUserService participantUserService,
                                  KitTypeDao kitTypeDao,
                                  EnrolleeRelationService enrolleeRelationService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper, FamilyService familyService) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
@@ -75,6 +62,7 @@ public class EnrolleeExportService {
         this.kitTypeDao = kitTypeDao;
         this.enrolleeRelationService = enrolleeRelationService;
         this.objectMapper = objectMapper;
+        this.familyService = familyService;
     }
 
     /**
@@ -128,6 +116,7 @@ public class EnrolleeExportService {
         moduleFormatters.add(new ProfileFormatter(exportOptions));
         moduleFormatters.add(new KitRequestFormatter());
         moduleFormatters.add(new EnrolleeRelationFormatter());
+        moduleFormatters.add(new FamilyFormatter());
         moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
         return moduleFormatters;
     }
@@ -180,7 +169,8 @@ public class EnrolleeExportService {
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId()),
                 kitRequestService.findByEnrollee(enrollee),
-                enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId())
+                enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId()),
+                familyService.findByEnrolleeIdWithProband(enrollee.getId())
         );
     }
 
