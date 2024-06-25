@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faDownload, faUpload } from '@fortawesome/free-solid-svg-icons'
 import { Button } from '../../components/forms/Button'
 import { useFileUploadButton } from '../../util/uploadUtils'
+import { successNotification } from '../../util/notifications'
+import { Store } from 'react-notifications-component'
 
 /** renders a modal for selecting translation functions */
 const TranslationModal = ({ onDismiss, siteContent, setSiteContent }: {
@@ -21,7 +23,9 @@ const TranslationModal = ({ onDismiss, siteContent, setSiteContent }: {
     const reader = new FileReader()
     reader.onload = () => {
       const updatedContent = languageImportFromCSV(siteContent, reader.result as string)
+      Store.addNotification(successNotification('Text updated.  Use &quot;Save&quot; to persist the changes'))
       setSiteContent(updatedContent)
+      onDismiss()
     }
     reader.readAsText(file)
   }, <span>Upload texts <FontAwesomeIcon icon={faUpload}/></span>)

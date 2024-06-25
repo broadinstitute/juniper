@@ -31,10 +31,5 @@
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 e2e-tests/src ui-admin/src ui-core/src ui-participant/src"
-  },
-  "dependencies": {
-    "json-stringify-safe": "^5.0.1",
-    "papaparse": "^5.4.1",
-    "stream": "npm:stream-browserify@^3.0.0"
   }
 }
