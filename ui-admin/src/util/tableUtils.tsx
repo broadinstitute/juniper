@@ -399,6 +399,7 @@ export type BasicTableConfig<T> = {
   filterable?: boolean,
   tableClass?: string,
   tdClass?: string,
+  trClass?: string,
   customRowHeader?: (row: Row<T>) => React.ReactNode
 }
 
@@ -421,7 +422,7 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
         return (
           <Fragment key={row.id}>
             {!isNil(config.customRowHeader) && config.customRowHeader(row)}
-            <tr>
+            <tr className={config.trClass}>
               {row.getVisibleCells().map(cell => {
                 return (
                   <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>

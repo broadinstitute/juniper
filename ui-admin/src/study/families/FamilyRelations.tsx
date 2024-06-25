@@ -60,7 +60,7 @@ export const FamilyRelations = ({
     getSortedRowModel: getSortedRowModel()
   })
   return <div>
-    {basicTableLayout(table)}
+    {basicTableLayout(table, { trClass: 'align-middle' })}
     <div className="d-flex justify-content-end">
       <button className="btn btn-link" disabled>+ Add new family relation</button>
     </div>

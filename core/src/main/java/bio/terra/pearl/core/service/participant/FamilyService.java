@@ -52,15 +52,19 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return dao.findOneByShortcode(shortcode);
     }
 
+    public Optional<Family> findOneByShortcodeAndStudyEnvironmentId(String shortcode, UUID studyEnvironmentId) {
+        return dao.findOneByShortcodeAndStudyEnvironmentId(shortcode, studyEnvironmentId);
+    }
+
     public Family loadForAdminView(Family family) {
         family.setMembers(enrolleeDao.findAllByFamilyId(family.getId()).stream().map(enrollee -> {
             enrollee.setProfile(profileDao.find(enrollee.getProfileId()).orElse(null));
             return enrollee;
         }).toList());
         family.setRelations(enrolleeRelationDao.findRelationsForFamily(family.getId()));
-        family.setProband(enrolleeDao.find(family.getProbandEnrolleeId()).map(e -> {
-            e.setProfile(profileDao.find(e.getProfileId()).orElse(null));
-            return e;
+        family.setProband(enrolleeDao.find(family.getProbandEnrolleeId()).map(proband -> {
+            proband.setProfile(profileDao.find(proband.getProfileId()).orElse(null));
+            return proband;
         }).orElse(null));
         return family;
     }

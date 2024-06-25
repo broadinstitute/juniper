@@ -21,8 +21,7 @@ public class FamilyExtService {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
     return familyService
-        .findOneByShortcode(familyShortcode)
-        .filter(f -> f.getStudyEnvironmentId().equals(studyEnvironment.getId()))
+        .findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvironment.getId())
         .map(familyService::loadForAdminView)
         .orElseThrow(() -> new NotFoundException("Family not found"));
   }
