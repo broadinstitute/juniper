@@ -16,8 +16,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import java.util.UUID;
 
 public class PublishingUtils {
-
-    protected static <C extends BaseEntity & VersionedEntityConfig, T extends BaseEntity & Versioned>
+    public static <C extends BaseEntity & VersionedEntityConfig, T extends BaseEntity & Versioned>
     C applyChangesToVersionedConfig(VersionedConfigChange<T> versionedConfigChange,
                                     CrudService<C, ?> configService,
                                     VersionedEntityService<T, ?> documentService,

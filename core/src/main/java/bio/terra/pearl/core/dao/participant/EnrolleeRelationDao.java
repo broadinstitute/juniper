@@ -64,4 +64,28 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
     public List<EnrolleeRelation> findAllByEnrolleeId(UUID enrolleeId) {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
+
+    public List<EnrolleeRelation> findRelationsForFamily(UUID familyId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "SELECT * FROM enrollee_relation " +
+                                        "WHERE relationship_type = 'FAMILY'" +
+                                        "AND family_id = :familyId")
+                        .bind("familyId", familyId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
+    // WARNING: This method is not audited; it should only be used during study population/repopulation
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate(
+                                "DELETE FROM enrollee_relation relation " +
+                                        "WHERE relation.enrollee_id IN " +
+                                        "(SELECT enrollee.id FROM enrollee enrollee WHERE enrollee.study_environment_id = :studyEnvironmentId)")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .execute()
+        );
+    }
 }

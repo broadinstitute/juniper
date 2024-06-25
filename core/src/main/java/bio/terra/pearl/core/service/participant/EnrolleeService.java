@@ -282,6 +282,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     }
 
+    public List<Enrollee> findAllByFamilyId(UUID id) {
+        return dao.findAllByFamilyId(id);
+    }
+
     public enum AllowedCascades implements CascadeProperty {
         PARTICIPANT_USER
     }

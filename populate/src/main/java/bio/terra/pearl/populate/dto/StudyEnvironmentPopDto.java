@@ -5,13 +5,14 @@ import bio.terra.pearl.populate.dto.notifications.TriggerPopDto;
 import bio.terra.pearl.populate.dto.survey.PreEnrollmentResponsePopDto;
 import bio.terra.pearl.populate.dto.survey.StudyEnvironmentSurveyPopDto;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +29,8 @@ public class StudyEnvironmentPopDto extends StudyEnvironment {
     private List<String> kitTypeNames = new ArrayList<>();
     @Builder.Default
     private List<String> enrolleeFiles = new ArrayList<>();
+    @Builder.Default
+    private List<String> familyFiles = new ArrayList<>();
 
     private SurveyPopDto preEnrollSurveyDto;
 }

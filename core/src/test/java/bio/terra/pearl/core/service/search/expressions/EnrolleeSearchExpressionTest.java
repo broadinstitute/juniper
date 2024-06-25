@@ -411,6 +411,18 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                                         .build())
                                 .build()));
 
+        // case insensitive
+        assertTrue(enrolleeSearchExpressionParser
+                .parseRule("{profile.name} contains 'jonas'")
+                .evaluate(
+                        EnrolleeSearchContext
+                                .builder()
+                                .profile(Profile.builder()
+                                        .givenName("Jonas")
+                                        .familyName("Salk")
+                                        .build())
+                                .build()));
+
         assertTrue(enrolleeSearchExpressionParser
                 .parseRule("{profile.name} contains 'nas Sa'")
                 .evaluate(
