@@ -5,9 +5,10 @@ import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.participant.*;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyType;
@@ -16,7 +17,12 @@ import bio.terra.pearl.core.service.export.formatters.item.ItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.item.PropertyItemFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
+import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -25,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -47,6 +54,16 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
     @Autowired
     private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    @Autowired
+    private FamilyService familyService;
+    @Autowired
+    private FamilyEnrolleeService familyEnrolleeService;
+    @Autowired
+    private StudyEnvironmentConfigService studyEnvironmentConfigService;
+    @Autowired
+    private StudyEnvironmentService studyEnvironmentService;
+    @Autowired
+    private EnrolleeRelationService enrolleeRelationService;
 
     @Test
     @Transactional
@@ -109,8 +126,107 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         assertThat(exportMapsNoProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
         assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
+    }
+
+    @Test
+    @Transactional
+    public void testExportChecksStudyEnvConfigProxy(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+
+        enrolleeFactory.buildProxyAndGovernedEnrollee(testName, portalEnv, studyEnv);
+
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, null);
+
+        // no family or relation data should be exported because the study env config has neither enabled
+        assertThat(exportMaps, hasSize(2));
+        assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
+        assertThat(exportMaps.get(0).containsKey("relation.relationshipType"), equalTo(false));
+
+        // enable proxy but not family
+        studyEnvironmentConfigService.update(StudyEnvironmentConfig
+                .builder()
+                .id(studyEnv.getStudyEnvironmentConfigId())
+                .acceptingProxyEnrollment(true)
+                .build());
+
+        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
+        exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, null);
+
+        // should export relation but not family data
+        assertThat(exportMaps, hasSize(2));
+        assertThat(exportMaps.get(0).get("relation.relationshipType"), equalTo("PROXY"));
+        assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
+        assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
+    }
+
+    @Test
+    @Transactional
+    public void testExportChecksStudyEnvConfigFamily(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(testName);
+        Enrollee enrollee = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+        Enrollee enrollee2 = enrolleeFactory.buildPersisted(testName, studyEnv, new Profile());
+
+        UUID studyEnvId = enrollee.getStudyEnvironmentId();
+        Family family = familyService.create(
+                Family.builder().studyEnvironmentId(studyEnvId).probandEnrolleeId(enrollee.getId()).shortcode("FAMILY1").build(),
+                getAuditInfo(testInfo));
+
+        familyEnrolleeService.bulkCreate(
+                List.of(
+                        FamilyEnrollee.builder().enrolleeId(enrollee.getId()).familyId(family.getId()).build(),
+                        FamilyEnrollee.builder().enrolleeId(enrollee2.getId()).familyId(family.getId()).build()
+                ),
+                getAuditInfo(testInfo)
+        );
+
+        enrolleeRelationService.create(
+                EnrolleeRelation
+                        .builder()
+                        .familyRelationship("father")
+                        .relationshipType(RelationshipType.FAMILY)
+                        .familyId(family.getId())
+                        .enrolleeId(enrollee.getId())
+                        .targetEnrolleeId(enrollee2.getId())
+                        .build(),
+                getAuditInfo(testInfo)
+        );
+
+        List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId);
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnvId, exportModuleInfo, null, null);
+
+        // no family or relation data should be exported because the study env config has neither enabled
+        assertThat(exportMaps, hasSize(2));
+        assertThat(exportMaps.get(0).containsKey("family.shortcode"), equalTo(false));
+        assertThat(exportMaps.get(0).containsKey("relation.relationshipType"), equalTo(false));
+
+        // enable family data
+        StudyEnvironmentConfig config = studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvId);
+        studyEnvironmentConfigService.update(StudyEnvironmentConfig
+                .builder()
+                .id(config.getId())
+                .enableFamilyLinkage(true)
+                .build());
+
+        exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnvId);
+        exportMaps = enrolleeExportService.generateExportMaps(studyEnvId, exportModuleInfo, null, null);
+
+        // should export family and relation data
+        assertThat(exportMaps, hasSize(2));
+        assertThat(exportMaps.get(0).get("family.shortcode"), equalTo(family.getShortcode()));
+        assertThat(exportMaps.get(1).get("family.shortcode"), equalTo(family.getShortcode()));
+
+        Map<String, String> targetExportMap = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
+        assertThat(targetExportMap.get("relation.relationshipType"), equalTo("FAMILY"));
+        assertThat(targetExportMap.get("relation.familyRelationship"), equalTo("father"));
+        assertThat(targetExportMap.get("relation.family.shortcode"), equalTo("FAMILY1"));
 
     }
+
 
     private final String SOCIAL_HEALTH_EXCERPT = """
             {

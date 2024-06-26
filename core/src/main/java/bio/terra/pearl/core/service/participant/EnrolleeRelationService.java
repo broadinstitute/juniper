@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
@@ -14,24 +15,24 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation, EnrolleeRelationDao> {
     private final EnrolleeService enrolleeService;
     private final ProfileService profileService;
+    private final FamilyService familyService;
+
     public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                    DataChangeRecordService dataChangeRecordService,
                                    @Lazy EnrolleeService enrolleeService,
                                    ObjectMapper objectMapper,
-                                   ProfileService profileService) {
+                                   ProfileService profileService, FamilyService familyService) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.profileService = profileService;
+        this.familyService = familyService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -54,6 +55,29 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
         return filterValid(dao.findAllByEnrolleeId(enrolleeId));
     }
 
+    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
+        List<EnrolleeRelation> relations = this.findByTargetEnrolleeIdWithEnrollees(enrolleeId);
+        List<UUID> familyIds = relations
+                .stream()
+                .map(EnrolleeRelation::getFamilyId)
+                .filter(Objects::nonNull)
+                .distinct() // only grab unique family ids; likely to be repeats
+                .toList();
+        List<Family> families = familyService.findAll(familyIds);
+
+        relations.forEach(relation -> {
+            if (relation.getFamilyId() != null) {
+                relation.setFamily(families
+                        .stream()
+                        .filter(family -> family.getId().equals(relation.getFamilyId()))
+                        .findFirst()
+                        .orElse(null));
+            }
+        });
+
+        return relations;
+    }
+    
     public List<EnrolleeRelation> findAllByEnrolleeOrTargetId(UUID enrolleeId) {
         return filterValid(dao.findAllByEnrolleeOrTargetId(enrolleeId));
     }
@@ -72,9 +96,11 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
             profileService
                     .loadWithMailingAddress(relation.getEnrollee().getProfileId())
                     .ifPresent(relation.getEnrollee()::setProfile);
+
             return relation;
         }).toList();
     }
+
 
     public boolean isUserProxyForAnyOf(UUID participantUserId, List<UUID> enrolleeIds) {
         return !dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, enrolleeIds)

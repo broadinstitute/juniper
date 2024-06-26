@@ -81,6 +81,15 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return dao.findByEnrolleeId(enrolleeId);
     }
 
+    public List<Family> findByEnrolleeIdWithProband(UUID enrolleeId) {
+        List<Family> families = dao.findByEnrolleeId(enrolleeId);
+        families.forEach(family -> {
+            if (family.getProbandEnrolleeId() != null) {
+                enrolleeService.find(family.getProbandEnrolleeId()).ifPresent(family::setProband);
+            }
+        });
+        return families;
+    }
 
     // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
