@@ -7,9 +7,9 @@
  */
 
 const templateImageConfig = {
-  cleanFileName: 'Enter cleanFileName here',
+  cleanFileName: '',
   version: 1,
-  alt: 'Enter alt text here',
+  alt: '',
   style: {
     height: '40px'
   }
@@ -17,13 +17,13 @@ const templateImageConfig = {
 
 const templatePhotoBio = {
   image: { ...templateImageConfig },
-  name: 'Enter name here',
-  title: 'Enter title here',
-  blurb: 'Enter blurb here'
+  name: '',
+  title: '',
+  blurb: ''
 }
 
 const templateSubgrid = {
-  title: 'Enter title here',
+  title: '',
   photoBios: [{
     ...templatePhotoBio
   }]
@@ -35,12 +35,12 @@ const templateMailingListButtonConfig = {
 }
 
 const templateLinkConfig = {
-  text: 'Enter text here',
-  href: 'Enter link here'
+  text: '',
+  href: ''
 }
 
 const templateItemSection = {
-  title: 'Enter title here',
+  title: '',
   items: [{
     ...templateLinkConfig
   },
@@ -50,78 +50,52 @@ const templateItemSection = {
 }
 
 const templateQuestion = {
-  question: 'Enter question here',
-  answer: 'Enter answer here'
+  question: '',
+  answer: ''
 }
 
 export const sectionTemplates: Record<string, object> = {
   'FAQ': {
     title: 'Frequently Asked Questions',
-    blurb: 'Enter blurb here',
-    questions: [
-      {
-        ...templateQuestion
-      },
-      {
-        ...templateQuestion
-      }
-    ],
+    blurb: '',
+    questions: [{ ...templateQuestion }],
     showToggleAllButton: true
   },
   'HERO_CENTERED': {
-    title: 'Enter title here',
-    blurb: 'Enter blurb here',
+    title: '',
+    blurb: '',
     blurbAlign: 'center',
-    buttons: [
-      {
-        ...templateMailingListButtonConfig
-      }
-    ]
+    buttons: []
   },
   'HERO_WITH_IMAGE': {
-    title: 'Enter title here',
-    blurb: 'Enter blurb here',
+    title: '',
+    blurb: '',
     fullWidth: true,
     image: {
       ...templateImageConfig
     },
     imagePosition: 'right',
-    buttons: [
-      {
-        ...templateMailingListButtonConfig
-      }
-    ],
-    logos: [
-      {
-        ...templateImageConfig
-      }
-    ]
+    buttons: [],
+    logos: []
   },
   'SOCIAL_MEDIA': {
-    xHandle: 'Enter X handle here',
-    instagramHandle: 'Enter Instagram handle here',
-    facebookHandle: 'Enter Facebook handle here',
-    tiktokHandle: 'Enter TikTok handle here',
-    linkedinHandle: 'Enter LinkedIn handle here',
-    threadsHandle: 'Enter Threads handle here',
-    youtubeHandle: 'Enter YouTube handle here',
+    xHandle: '',
+    instagramHandle: '',
+    facebookHandle: '',
+    tiktokHandle: '',
+    linkedinHandle: '',
+    threadsHandle: '',
+    youtubeHandle: '',
     paddingBottom: 0
   },
   'STEP_OVERVIEW': {
-    title: 'Enter title here',
+    title: '',
     showStepNumbers: true,
-    steps: [
-      {
-        blurb: 'Enter blurb here',
-        duration: '15-45 minutes',
-        image: {
-          ...templateImageConfig
-        }
-      }
-    ]
+    steps: [],
+    buttons: []
   },
   'PHOTO_BLURB_GRID': {
-    title: 'Enter title here',
+    title: '',
     subGrids: [
       {
         ...templateSubgrid
@@ -132,14 +106,14 @@ export const sectionTemplates: Record<string, object> = {
     actionButton: {
       ...templateMailingListButtonConfig
     },
-    blurb: 'Enter blurb here',
+    blurb: '',
     image: {
       ...templateImageConfig
     },
     imagePosition: 'right',
-    stepNumberText: 'STEP 1',
-    timeIndication: '45+ minutes',
-    title: 'Enter title here'
+    stepNumberText: '',
+    timeIndication: '',
+    title: ''
   },
   'LINK_SECTIONS_FOOTER': {
     itemSections: [
@@ -156,7 +130,9 @@ export const sectionTemplates: Record<string, object> = {
   },
   'BANNER_IMAGE': {
     image: {
-      ...templateImageConfig
+      cleanFileName: '',
+      version: 1,
+      alt: ''
     }
   }
 }

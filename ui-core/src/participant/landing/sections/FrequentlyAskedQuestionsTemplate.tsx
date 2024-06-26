@@ -25,12 +25,12 @@ const targetFor = (question: string): string => {
   return `#${idFor(question)}`
 }
 
-type FaqQuestion = {
+export type FaqQuestion = {
   question: string,
   answer: string
 }
 
-type FrequentlyAskedQuestionsConfig = {
+export type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
   questions: FaqQuestion[], // the questions
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button

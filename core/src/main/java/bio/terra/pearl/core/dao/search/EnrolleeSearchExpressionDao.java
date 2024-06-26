@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.dao.search;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -9,6 +11,8 @@ import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -32,18 +36,33 @@ import java.util.function.Consumer;
 @Component
 public class EnrolleeSearchExpressionDao {
     private final Jdbi jdbi;
+    private final EnrolleeDao enrolleeDao;
+    private final ProfileDao profileDao;
 
-    public EnrolleeSearchExpressionDao(Jdbi jdbi) {
+    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao) {
         this.jdbi = jdbi;
+        this.enrolleeDao = enrolleeDao;
+        this.profileDao = profileDao;
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId) {
-        return executeSearch(expression.generateQueryBuilder(studyEnvId));
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), EnrolleeSearchOptions.builder().build());
     }
 
-    private List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search) {
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId, EnrolleeSearchOptions opts) {
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), opts);
+    }
+
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search, EnrolleeSearchOptions opts) {
         return jdbi.withHandle(handle -> {
-            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES));
+            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES), opts);
+
             Query query = jdbiFromJooq(jooqQuery, handle);
             return query
                     .registerRowMapper(Family.class, BeanMapper.of(Family.class, "family"))

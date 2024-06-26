@@ -1,4 +1,4 @@
-import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem, AddressValidationResult } from 'api/api'
+import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem, AddressValidationResult, SectionType } from 'api/api'
 import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
 import { HubResponse } from '@juniper/ui-core'
 
@@ -55,6 +55,17 @@ export const mockHtmlSection = (): HtmlSection => {
       title: 'about us',
       blurb: 'we are the best'
     })
+  }
+}
+
+/**
+ * Returns an empty html section of the given type
+ */
+export const makeEmptyHtmlSection = (sectionType: SectionType): HtmlSection => {
+  return {
+    id: 'fakeId',
+    sectionType,
+    sectionConfig: JSON.stringify({})
   }
 }
 

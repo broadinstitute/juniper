@@ -841,6 +841,22 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}:
+    get:
+      summary: Finds a family by shortcode
+      tags: [ family ]
+      operationId: find
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Family object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
     get:
       summary: gets all the active triggered actions for the environment
@@ -970,7 +986,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
       responses:
@@ -991,7 +1007,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
       responses:
         '200':

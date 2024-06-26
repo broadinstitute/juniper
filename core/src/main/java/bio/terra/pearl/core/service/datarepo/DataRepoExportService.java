@@ -11,12 +11,7 @@ import bio.terra.pearl.core.dao.study.StudyDao;
 import bio.terra.pearl.core.dao.study.StudyEnvironmentDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.datarepo.DataRepoJob;
-import bio.terra.pearl.core.model.datarepo.Dataset;
-import bio.terra.pearl.core.model.datarepo.DatasetStatus;
-import bio.terra.pearl.core.model.datarepo.JobType;
-import bio.terra.pearl.core.model.datarepo.TdrColumn;
-import bio.terra.pearl.core.model.datarepo.TdrTable;
+import bio.terra.pearl.core.model.datarepo.*;
 import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.azure.AzureBlobStorageClient;
@@ -36,13 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayOutputStream;
 import java.time.Instant;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -239,7 +228,7 @@ public class DataRepoExportService {
             List<Map<String, String>> enrolleeMaps = enrolleeExportService.generateExportMaps(
                     studyEnvironmentId,
                     moduleFormatters,
-                    false,
+                    null,
                     exportOptions.getLimit());
 
             TsvExporter tsvExporter = new TsvExporter(moduleFormatters, enrolleeMaps);

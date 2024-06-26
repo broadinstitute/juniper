@@ -40,4 +40,8 @@ public class FamilyDao extends BaseMutableJdbiDao<Family> {
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         deleteByProperty("study_environment_id", studyEnvironmentId);
     }
+
+    public Optional<Family> findOneByShortcodeAndStudyEnvironmentId(String shortcode, UUID studyEnvironmentId) {
+        return findByTwoProperties("shortcode", shortcode, "study_environment_id", studyEnvironmentId);
+    }
 }

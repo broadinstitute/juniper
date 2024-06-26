@@ -1,49 +1,65 @@
 import React, { useEffect, useState } from 'react'
-import { HtmlSection, SectionType } from '@juniper/ui-core'
+import {
+  HtmlSection,
+  SectionType
+} from '@juniper/ui-core'
 import Select from 'react-select'
 import { IconButton } from 'components/forms/Button'
-import { faChevronDown, faChevronUp, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faChevronDown, faChevronUp, faCode, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { sectionTemplates } from './sectionTemplates'
 import classNames from 'classnames'
+import { SiteMediaMetadata } from 'api/api'
+import { PortalEnvContext } from 'portal/PortalRouter'
+import { SocialMediaEditor } from './designer/editors/SocialMediaEditor'
+import { SectionDesigner } from './designer/SectionDesigner'
 
 const SECTION_TYPES = [
   { label: 'FAQ', value: 'FAQ' },
-  { label: 'HERO_CENTERED', value: 'HERO_CENTERED' },
-  { label: 'HERO_WITH_IMAGE', value: 'HERO_WITH_IMAGE' },
-  { label: 'SOCIAL_MEDIA', value: 'SOCIAL_MEDIA' },
-  { label: 'STEP_OVERVIEW', value: 'STEP_OVERVIEW' },
-  { label: 'PHOTO_BLURB_GRID', value: 'PHOTO_BLURB_GRID' },
-  { label: 'PARTICIPATION_DETAIL', value: 'PARTICIPATION_DETAIL' },
-  { label: 'RAW_HTML', value: 'RAW_HTML' },
-  { label: 'LINK_SECTIONS_FOOTER', value: 'LINK_SECTIONS_FOOTER' },
-  { label: 'BANNER_IMAGE', value: 'BANNER_IMAGE' }
+  { label: 'Hero (centered)', value: 'HERO_CENTERED' },
+  { label: 'Hero (with image)', value: 'HERO_WITH_IMAGE' },
+  { label: 'Banner Image', value: 'BANNER_IMAGE' },
+  { label: 'Participation Details', value: 'PARTICIPATION_DETAIL' },
+  { label: 'Participation Step Overview', value: 'STEP_OVERVIEW' },
+  { label: 'Photo Grid', value: 'PHOTO_BLURB_GRID' },
+  { label: 'Social Media', value: 'SOCIAL_MEDIA' },
+  { label: 'HTML', value: 'RAW_HTML' },
+  { label: 'Footer', value: 'LINK_SECTIONS_FOOTER' }
 ]
 
 /**
  * Returns an editor for an HtmlSection
  */
 const HtmlSectionEditor = ({
+  portalEnvContext,
   updateSection,
   removeSection,
   moveSection,
   section,
+  siteMediaList,
   siteHasInvalidSection,
   setSiteHasInvalidSection,
   allowTypeChange,
+  useJsonEditor = true,
   readOnly
 }: {
+  portalEnvContext: PortalEnvContext
   updateSection: (section: HtmlSection) => void
   removeSection?: () => void
   moveSection?: (direction: 'up' | 'down') => void
   section: HtmlSection
+  siteMediaList: SiteMediaMetadata[]
   siteHasInvalidSection: boolean
   setSiteHasInvalidSection: (invalid: boolean) => void
   allowTypeChange: boolean
+  useJsonEditor?: boolean
   readOnly: boolean
 }) => {
   const [sectionContainsErrors, setSectionContainsErrors] = useState(false)
   const initial = SECTION_TYPES.find(sectionType => sectionType.value === section.sectionType)
   const [sectionTypeOpt, setSectionTypeOpt] = useState(initial)
+  // Allows the user to switch a single section to the JSON view. Eventually we may want to get rid of
+  // the full JSON Editor tab and just allow users to peek into the JSON for a single section.
+  const [sectionUseJsonEditor, setSectionUseJsonEditor] = useState(useJsonEditor)
 
   const getSectionContent = (section: HtmlSection) => {
     if (section.sectionType === 'RAW_HTML') {
@@ -79,6 +95,8 @@ const HtmlSectionEditor = ({
     }
   }
 
+  const SectionEditorComponent = SectionEditorComponents[section.sectionType]
+
   return <>
     <div className="d-flex flex-grow-1 mb-1">
       <Select className='w-100' options={SECTION_TYPES} value={sectionTypeOpt} aria-label={'Select section type'}
@@ -91,7 +109,7 @@ const HtmlSectionEditor = ({
               setSiteHasInvalidSection(false)
               setSectionContainsErrors(false)
             }
-            const sectionTemplate = JSON.stringify(sectionTemplates[opt.label])
+            const sectionTemplate = JSON.stringify(sectionTemplates[opt.value])
             setSectionTypeOpt(opt)
             updateSection({
               ...section,
@@ -100,6 +118,12 @@ const HtmlSectionEditor = ({
             })
           }
         }}/>
+      { !useJsonEditor && <IconButton icon={faCode}
+        aria-label={sectionUseJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
+        className="ms-2"
+        variant="light"
+        onClick={() => setSectionUseJsonEditor(!sectionUseJsonEditor)}
+      /> }
       { moveSection && <IconButton
         aria-label="Move this section before the previous one"
         className="ms-2"
@@ -125,14 +149,44 @@ const HtmlSectionEditor = ({
         onClick={() => removeSection()}
       /> }
     </div>
-    <textarea value={editorValue} style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
-      disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
-      className={classNames('w-100 flex-grow-1 form-control font-monospace',
-        { 'is-invalid': sectionContainsErrors })}
-      onChange={e => {
-        handleEditorChange(e.target.value)
-      }}/>
+
+    {SectionEditorComponent && !sectionUseJsonEditor ? (
+      <SectionEditorComponent portalEnvContext={portalEnvContext}
+        siteMediaList={siteMediaList} section={section} updateSection={updateSection} />
+    ) : (
+      <textarea
+        value={editorValue}
+        style={{ height: 'calc(100% - 2em)', width: '100%', minHeight: '300px' }}
+        disabled={readOnly || (siteHasInvalidSection && !sectionContainsErrors)}
+        className={classNames('w-100 flex-grow-1 form-control font-monospace', {
+          'is-invalid': sectionContainsErrors
+        })}
+        onChange={e => {
+          handleEditorChange(e.target.value)
+        }}
+      />
+    )}
   </>
 }
 
 export default HtmlSectionEditor
+
+type SectionEditorComponentType = ({ section, updateSection }: {
+  portalEnvContext: PortalEnvContext
+  siteMediaList: SiteMediaMetadata[]
+  section: HtmlSection
+  updateSection: (section: HtmlSection) => void
+}) => JSX.Element
+
+const SectionEditorComponents: Record<SectionType, SectionEditorComponentType | undefined> = {
+  FAQ: SectionDesigner,
+  HERO_CENTERED: SectionDesigner,
+  HERO_WITH_IMAGE: SectionDesigner,
+  SOCIAL_MEDIA: SocialMediaEditor,
+  STEP_OVERVIEW: SectionDesigner,
+  PHOTO_BLURB_GRID: SectionDesigner,
+  PARTICIPATION_DETAIL: SectionDesigner,
+  RAW_HTML: undefined,
+  LINK_SECTIONS_FOOTER: SectionDesigner,
+  BANNER_IMAGE: SectionDesigner
+}

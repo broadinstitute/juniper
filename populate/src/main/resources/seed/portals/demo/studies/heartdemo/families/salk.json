@@ -6,7 +6,7 @@
     "HDPSLK",
     "HDDSLK"
   ],
-  "relations": [
+  "relationDtos": [
     {
       "targetShortcode": "HDPSLK",
       "shortcode": "HDSALK",

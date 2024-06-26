@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.search.sql;
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +45,7 @@ public class EnrolleeSearchQueryBuilder {
     /**
      * Converts the builder to a jOOQ query.
      */
-    public SelectQuery<Record> toQuery(DSLContext context) {
+    public SelectQuery<Record> toQuery(DSLContext context, EnrolleeSearchOptions opts) {
         SelectJoinStep<Record> selectQuery = context
                 .select(selectClauseList
                         .stream()
@@ -61,12 +62,18 @@ public class EnrolleeSearchQueryBuilder {
             selectQuery = selectQuery.leftJoin(tableName).on(join.getOn());
         }
 
-        return selectQuery
+        SelectConditionStep selectConditionStep = selectQuery
                 .where(
                         whereConditions,
                         condition("enrollee.study_environment_id = ?", studyEnvId)
-                )
-                .getQuery();
+                );
+
+        if (Objects.nonNull(opts.getSortField()) && !opts.getSortField().isEmpty()) {
+            String sortField = opts.getSortField() + " " + (opts.isSortAscending() ? "ASC" : "DESC");
+            return selectConditionStep.orderBy(field(sortField)).getQuery();
+        }
+
+        return selectConditionStep.getQuery();
     }
 
     /**

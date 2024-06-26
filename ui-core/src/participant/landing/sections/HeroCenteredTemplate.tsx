@@ -14,7 +14,7 @@ import { InlineMarkdown, Markdown } from '../Markdown'
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 
-type HeroCenteredTemplateConfig = {
+export type HeroCenteredTemplateConfig = {
   blurb?: string, //  text below the title
   blurbAlign?: 'left' | 'right' | 'center' // left|right|center  where to align the blurb text.  default is 'center'
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes

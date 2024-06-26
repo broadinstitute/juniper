@@ -1,7 +1,14 @@
-import React, { useContext, useEffect } from 'react'
-import { EnrolleeRelation, PortalParticipantUser } from 'api/api'
+import React, {
+  useContext,
+  useEffect
+} from 'react'
+import { PortalParticipantUser } from 'api/api'
 import { useUser } from './UserProvider'
-import { Enrollee, Profile } from '@juniper/ui-core'
+import {
+  Enrollee,
+  EnrolleeRelation,
+  Profile
+} from '@juniper/ui-core'
 
 export type ActiveUserContextT = {
   ppUser: PortalParticipantUser | null,

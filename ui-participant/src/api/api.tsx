@@ -1,14 +1,16 @@
 import {
   AddressValidationResult,
-  Enrollee, HubResponse,
+  Enrollee,
+  EnrolleeRelation,
+  HubResponse,
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
-  StudyEnvironmentSurvey,
   Profile,
+  StudyEnvironmentSurvey,
   StudyEnvParams,
   Survey,
   SurveyResponse
@@ -58,15 +60,6 @@ export type LoginResult = {
   enrollees: Enrollee[],
   relations: EnrolleeRelation[],
   profile: Profile
-}
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: string,
-  targetEnrolleeId: string,
-  createdAt: number
-  lastUpdatedAt: number
-  participantUserId: string
 }
 
 export type KitRequest = {
