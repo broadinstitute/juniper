@@ -11,7 +11,7 @@ import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table
 import { basicTableLayout } from 'util/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 import { Button } from 'components/forms/Button'
-import { TextInput } from '../../components/forms/TextInput'
+import { TextInput } from 'components/forms/TextInput'
 
 type EditablePortalEnvironmentLanguage = PortalEnvironmentLanguage & { isEditing: boolean }
 type PortalEnvironmentLanguageRow = PortalEnvironmentLanguage | EditablePortalEnvironmentLanguage
@@ -65,7 +65,7 @@ const LANGUAGE_OPTIONS: PortalEnvironmentLanguageOpt[] = [{
  */
 export default function PortalEnvLanguageEditor({ items, setItems, readonly } : {
     items: PortalEnvironmentLanguage[],
-    setItems: (items: PortalEnvironmentLanguage[]) => void,
+    setItems:  React.Dispatch<React.SetStateAction<PortalEnvironmentLanguage[]>>,
   readonly: boolean
   }
 ) {
@@ -77,16 +77,18 @@ export default function PortalEnvLanguageEditor({ items, setItems, readonly } : 
     if (!itemSelectedForDeletion) {
       return
     }
-
-    const filteredItems = items.filter(m => m.languageCode !== itemSelectedForDeletion.languageCode)
-    setItems(filteredItems)
+    setItems(items => {
+      const filteredItems = items.filter(m => m.languageCode !== itemSelectedForDeletion.languageCode)
+      return filteredItems
+    })
     setItemSelectedForDeletion(null)
   }
 
   const addNewItem = (item: PortalEnvironmentLanguage) => {
-    const newItems = [...items, item]
     setNewItem(makeEmptyNewItem())
-    setItems(newItems)
+    setItems(items => {
+      return [...items, item]
+    })
   }
 
   const columns: ColumnDef<PortalEnvironmentLanguage>[] = useMemo(() => {
