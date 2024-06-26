@@ -105,7 +105,15 @@ public class ActivityImporter {
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
             }
         }
-        survey.setJsonContent(root);
+        try {
+            String surveyJson = objectMapper.writeValueAsString(root);
+            for (Map.Entry<String, String> entry : JUNIPER_PEPPER_STRING_MAP.entrySet()) {
+                surveyJson = surveyJson.replaceAll(entry.getKey(), entry.getValue());
+            }
+            survey.setJsonContent(objectMapper.readTree(surveyJson));
+        } catch (Exception e) {
+            throw new RuntimeException("Error converting survey to JSON", e);
+        }
         return survey;
     }
 
@@ -201,6 +209,7 @@ public class ActivityImporter {
             txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getVariables());
         }
 
+
         return txtMap;
     }
 
@@ -266,5 +275,9 @@ public class ActivityImporter {
                 .build();
         return objectMapper.valueToTree(surveyJSContent);
     }
+
+    Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
+            "\\$ddp.participantFirstName()", "{proxy.givenName}"
+    );
 
 }
