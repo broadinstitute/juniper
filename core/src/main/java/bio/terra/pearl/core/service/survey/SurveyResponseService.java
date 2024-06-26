@@ -256,7 +256,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             if (existing != null) {
                 return updateAnswer(existing, answer, response, justification, survey, ppUser, changeRecords, operator);
             }
-            return createAnswer(answer, response, survey, ppUser);
+            return createAnswer(answer, response, survey, operator);
         }).toList();
         dataChangeRecordService.bulkCreate(changeRecords);
         return updatedAnswers;
@@ -300,8 +300,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
-                                Survey survey, PortalParticipantUser ppUser) {
-        answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
+                                Survey survey, ResponsibleEntity operator) {
+
+        answer.setCreatingParticipantUserId(operator.getParticipantUser().getId());
+        answer.setCreatingAdminUserId(operator.getAdminUser().getId());
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
         if (answer.getSurveyVersion() == 0) {
