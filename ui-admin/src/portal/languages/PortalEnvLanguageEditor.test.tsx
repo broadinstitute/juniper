@@ -25,7 +25,8 @@ test('removes items after confirmation dialog', async () => {
   await userEvent.click(getTableCell(screen.getByRole('table'), 'English', 'Actions').querySelector('button')!)
   expect(screen.getByText('Remove this language from the dropdown?')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Yes'))
-  expect(setItemsSpy).toHaveBeenCalledWith([{ languageName: 'Español', languageCode: 'es', id: '1' }])
+  expect(setItemsSpy).toHaveBeenCalledTimes(1)
+  expect(setItemsSpy.mock.lastCall[0](initialLanguages)).toEqual([{ languageName: 'Español', languageCode: 'es', id: '1' }])
 })
 
 test('add items after confirmation click', async () => {
@@ -34,8 +35,11 @@ test('add items after confirmation click', async () => {
   await userEvent.click(screen.getByLabelText('Add New'))
   await select(screen.getByLabelText('Language name'), 'Deutsch')
   await userEvent.click(screen.getByLabelText('Accept'))
-  expect(setItemsSpy).toHaveBeenCalledWith([...initialLanguages,
-    { languageName: 'Deutsch', languageCode: 'de', id: '' }])
+  expect(setItemsSpy).toHaveBeenCalledTimes(1)
+  expect(setItemsSpy.mock.lastCall[0](initialLanguages)).toEqual([
+    ...initialLanguages,
+    { languageName: 'Deutsch', languageCode: 'de', id: '' }
+  ])
 })
 
 test('add items does not appear if readonly', async () => {
