@@ -1,4 +1,4 @@
-// Generated from src/main/antlr/bio/terra/pearl/core/antlr/CohortRule.g4 by ANTLR 4.13.1
+// Generated from bio/terra/pearl/core/antlr/CohortRule.g4 by ANTLR 4.13.1
 
 import {ParseTreeVisitor} from 'antlr4';
 

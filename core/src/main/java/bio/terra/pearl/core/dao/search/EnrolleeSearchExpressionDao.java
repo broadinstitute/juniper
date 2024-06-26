@@ -5,6 +5,7 @@ import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -64,6 +65,7 @@ public class EnrolleeSearchExpressionDao {
 
             Query query = jdbiFromJooq(jooqQuery, handle);
             return query
+                    .registerRowMapper(Family.class, BeanMapper.of(Family.class, "family"))
                     .registerRowMapper(EnrolleeSearchExpressionResult.class, new EnrolleeSearchResultMapper())
                     .reduceRows(new EnrolleeSearchResultReducer())
                     .toList();
@@ -181,8 +183,18 @@ public class EnrolleeSearchExpressionDao {
             final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
 
-            // currently, does nothing, but in the future could reduce down rows from tables which
-            // could return multiple values; e.g., kits
+            // Add family to enrollee
+            if (isColumnPresent(rowView, "family_id", UUID.class)) {
+                searchResult.getFamilies().add(rowView.getRow(Family.class));
+            }
+        }
+
+        private <T> boolean isColumnPresent(RowView rv, String columnName, Class<T> c) {
+            try {
+                return rv.getColumn(columnName, c) != null;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

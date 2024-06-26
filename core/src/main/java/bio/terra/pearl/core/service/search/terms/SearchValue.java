@@ -6,6 +6,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Result of a search term (profile.givenName) or user input ("John"). Useful when executing a
@@ -14,11 +15,11 @@ import java.time.LocalDate;
 @Getter
 public class SearchValue {
     private String stringValue = null;
-    private Integer integerValue = null;
-    private Double doubleValue = null;
+    private Double numberValue = null;
     private Instant instantValue = null;
     private LocalDate dateValue = null;
     private Boolean booleanValue = null;
+    private List<SearchValue> arrayValue = null;
 
     private final SearchValueType searchValueType;
 
@@ -27,14 +28,9 @@ public class SearchValue {
         this.searchValueType = SearchValueType.STRING;
     }
 
-    public SearchValue(Integer integerValue) {
-        this.integerValue = integerValue;
-        this.searchValueType = SearchValueType.INTEGER;
-    }
-
-    public SearchValue(Double doubleValue) {
-        this.doubleValue = doubleValue;
-        this.searchValueType = SearchValueType.DOUBLE;
+    public SearchValue(Double numberValue) {
+        this.numberValue = numberValue;
+        this.searchValueType = SearchValueType.NUMBER;
     }
 
     public SearchValue(Instant instantValue) {
@@ -52,6 +48,11 @@ public class SearchValue {
         this.searchValueType = SearchValueType.BOOLEAN;
     }
 
+    public SearchValue(List<SearchValue> arrayValue) {
+        this.arrayValue = arrayValue;
+        this.searchValueType = SearchValueType.ARRAY;
+    }
+
     public SearchValue() {
         this.searchValueType = SearchValueType.NULL;
     }
@@ -61,8 +62,7 @@ public class SearchValue {
             return switch (type) {
                 case STRING -> new SearchValue(objValue.toString());
                 case DATE -> new SearchValue((LocalDate) objValue);
-                case INTEGER -> new SearchValue((Integer) objValue);
-                case DOUBLE -> new SearchValue((Double) objValue);
+                case NUMBER -> new SearchValue((Double) objValue);
                 case BOOLEAN -> new SearchValue((Boolean) objValue);
                 default -> throw new IllegalArgumentException("Invalid field type: " + type);
             };
@@ -83,38 +83,31 @@ public class SearchValue {
     }
 
     public boolean equals(SearchValue right) {
+        if (!this.searchValueType.equals(SearchValueType.ARRAY) && right.searchValueType.equals(SearchValueType.ARRAY)) {
+            // flip the comparison if the right side is an array so that we hit the array comparison logic
+            return right.equals(this);
+        }
         return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue).equals(right.doubleValue);
-                yield this.integerValue.equals(right.integerValue);
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue.equals(Double.valueOf(right.integerValue));
-                }
-                yield this.doubleValue.equals(right.doubleValue);
-            }
+            case NUMBER -> this.numberValue.equals(right.numberValue);
             case INSTANT -> this.instantValue.equals(right.instantValue);
             case BOOLEAN -> this.booleanValue.equals(right.booleanValue);
+            case DATE -> this.dateValue.equals(right.dateValue);
+            case ARRAY -> {
+                if (right.getSearchValueType().equals(SearchValueType.ARRAY)) {
+                    yield this.arrayValue.equals(right.arrayValue);
+                }
+                // like SQL, we allow comparing a single value to an array
+                // by checking if the single value is in the array
+                yield this.arrayValue.stream().anyMatch(innerVal -> innerVal.equals(right));
+            }
             default -> false;
         };
     }
 
     public boolean greaterThan(SearchValue right) {
         return switch (this.searchValueType) {
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue) > right.doubleValue;
-                yield this.integerValue > right.integerValue;
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue > Double.valueOf(right.integerValue);
-                }
-                yield this.doubleValue > right.doubleValue;
-            }
+            case NUMBER -> this.numberValue > right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
             default -> false;
         };
@@ -122,23 +115,17 @@ public class SearchValue {
 
     public boolean greaterThanOrEqualTo(SearchValue right) {
         return switch (this.searchValueType) {
-            case INTEGER -> {
-                if (right.doubleValue != null)
-                    yield Double.valueOf(this.integerValue) >= right.doubleValue;
-                yield this.integerValue >= right.integerValue;
-            }
-            case DOUBLE -> {
-                if (right.integerValue != null) {
-                    yield this.doubleValue >= Double.valueOf(right.integerValue);
-                }
-                yield this.doubleValue >= right.doubleValue;
-            }
+            case NUMBER -> this.numberValue >= right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);
             default -> false;
         };
     }
 
     public boolean contains(SearchValue rightSearchValue) {
+        if (this.searchValueType.equals(SearchValueType.ARRAY) || rightSearchValue.searchValueType.equals(SearchValueType.ARRAY)) {
+            return this.equals(rightSearchValue);
+        }
+
         if (this.searchValueType != SearchValueType.STRING || rightSearchValue.searchValueType != SearchValueType.STRING) {
             return false;
         }
@@ -148,11 +135,11 @@ public class SearchValue {
 
     public enum SearchValueType {
         STRING,
-        INTEGER,
-        DOUBLE,
+        NUMBER,
         INSTANT,
         DATE,
         BOOLEAN,
+        ARRAY,
         NULL
     }
 }

@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 /**
  * Represents a term that can be used to search for enrollees. This can be anything from a field on the enrollee's profile
- * to a derived field like age.
+ * to a derived field like age. In addition, Functions are terms which modify other terms; for example, 'lower' or 'trim'.
  */
 public interface SearchTerm {
     /**
@@ -43,4 +44,9 @@ public interface SearchTerm {
      * Bound objects to be used in the SQL query. For example, the value of the term if user inputted.
      */
     List<Object> boundObjects();
+
+    /**
+     * The type of value this term represents.
+     */
+    SearchValueTypeDefinition type();
 }

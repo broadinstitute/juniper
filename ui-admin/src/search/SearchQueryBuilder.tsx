@@ -15,10 +15,14 @@ import {
   ValueEditorProps
 } from 'react-querybuilder'
 import 'react-querybuilder/dist/query-builder.scss'
-import { ruleProcessorEnrolleeSearchExpression } from 'util/formatQueryBuilderAsSearchExp'
-import { useLoadingEffect } from 'api/api-utils'
+import { createEnrolleeSearchExpressionRuleProcessor } from 'util/formatQueryBuilderAsSearchExp'
+import {
+  ApiErrorResponse,
+  useLoadingEffect
+} from 'api/api-utils'
 import Api, {
   EnrolleeSearchExpressionResult,
+  ExpressionSearchFacets,
   SearchValueTypeDefinition
 } from '../api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
@@ -27,6 +31,7 @@ import LoadingSpinner from '../util/LoadingSpinner'
 import {
   debounce,
   isEmpty,
+  isNil,
   keys
 } from 'lodash'
 import { parseExpression } from 'util/searchExpressionParser'
@@ -64,12 +69,26 @@ export const SearchQueryBuilder = ({
       }
       parseExpression(searchExpression)
     } catch (e) {
-      return e as Error
+      return e as ApiErrorResponse
     }
   }, [searchExpression])
 
 
   const [searchResults, setSearchResults] = useState<EnrolleeSearchExpressionResult[]>([])
+  const [searchError, setSearchError] = useState<string>()
+
+  const canUseBasicMode = useMemo(() => {
+    try {
+      if (isEmpty(searchExpression)) {
+        return true
+      }
+      toReactQueryBuilderState(parseExpression(searchExpression))
+      return true
+    } catch (_) {
+      setAdvancedMode(true)
+      return false
+    }
+  }, [searchExpression, searchError])
 
   const {
     isLoading: isLoadingSearchResults
@@ -82,8 +101,10 @@ export const SearchQueryBuilder = ({
         searchExpression)
 
       setSearchResults(newResults)
-    } catch (_) {
+      setSearchError(undefined)
+    } catch (e) {
       setSearchResults([])
+      setSearchError((e as ApiErrorResponse).message)
     }
   }, [searchExpression])
 
@@ -97,12 +118,21 @@ export const SearchQueryBuilder = ({
       </div>
       <Button
         variant="link"
+        disabled={isLoadingSearchResults || !canUseBasicMode}
         onClick={() => setAdvancedMode(!advancedMode)}>
         {advancedMode ? '(switch to basic view)' : '(switch to advanced view)'}
       </Button>
     </div>
-    {parseSearchExpError && <div className="alert alert-danger mb-2">
+    {searchError && <div className="alert alert-danger mb-2">
+      {searchError}
+    </div>}
+    {isNil(searchError) && parseSearchExpError && <div className="alert alert-danger mb-2">
       {parseSearchExpError.message}
+    </div>}
+    {isNil(parseSearchExpError) && isNil(searchError) && !canUseBasicMode && <div>
+      <div className="alert alert-warning mb-2">
+            The current search expression cannot be represented in the basic query builder.
+      </div>
     </div>}
     <div className="mb-2">
       {
@@ -143,7 +173,7 @@ const AdvancedQueryBuilder = ({
       return
     }
     onSearchExpressionChange(val)
-  }, 500), [])
+  }, 500), [searchExpression])
 
   return <div className="">
     <textarea
@@ -186,29 +216,25 @@ const BasicQueryBuilder = ({
   const [query, setQuery] = useState<RuleGroupTypeAny | undefined>(initialQuery)
 
 
-  const [facets, setFacets] = React.useState<{ facet: string, typeDef: SearchValueTypeDefinition }[]>([])
+  const [facets, setFacets] = React.useState<ExpressionSearchFacets>({})
 
   const { isLoading } = useLoadingEffect(async () => {
-    const facets = await Api.getExpressionSearchFacets(
+    const loadedFacets = await Api.getExpressionSearchFacets(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName)
-    const facetArr = keys(facets).map(facet => {
-      return {
-        facet,
-        typeDef: facets[facet]
-      }
-    })
 
-    setFacets(facetArr.sort((a, b) => a.facet.localeCompare(b.facet)))
+
+    setFacets(loadedFacets)
   }, [], 'Failed to load cohort criteria options')
 
+  const ruleProcessor = useMemo(() => createEnrolleeSearchExpressionRuleProcessor(facets), [facets])
 
   const updateQuery = (query: RuleGroupTypeAny) => {
     setQuery(query)
     const enrolleeSearchExpression = query.rules.length > 0 ? formatQuery(query, {
       format: 'spel', // not the actual format, but formatquery requires you specify one of their formats
-      ruleProcessor: ruleProcessorEnrolleeSearchExpression,
+      ruleProcessor,
       fallbackExpression: '1 = 1'
     }) : ''
 
@@ -228,7 +254,16 @@ const BasicQueryBuilder = ({
           addGroup: 'btn btn-outline-dark',
           combinators: 'form-select w-25'
         }}
-        fields={useMemo(() => facets.map(facet => facetToReactQueryField(facet.facet, facet.typeDef)), [facets])}
+        fields={useMemo(() => {
+          const facetArr = keys(facets).map(facet => {
+            return {
+              facet,
+              typeDef: facets[facet]
+            }
+          })
+          facetArr.sort((a, b) => a.facet.localeCompare(b.facet))
+          return facetArr.map(facet => facetToReactQueryField(facet.facet, facet.typeDef))
+        }, [facets])}
         controlElements={{
           fieldSelector: CustomFieldSelector,
           valueEditor: CustomValueEditor,
@@ -242,12 +277,12 @@ const BasicQueryBuilder = ({
 }
 
 const operators = [
-  { name: '=', label: '=' },
-  { name: '!=', label: '!=' },
-  { name: '<', label: '<' },
-  { name: '<=', label: '<=' },
-  { name: '>', label: '>' },
-  { name: '>=', label: '>=' },
+  { name: '=', label: 'equals' },
+  { name: '!=', label: 'not equals' },
+  { name: '<', label: 'less than' },
+  { name: '<=', label: 'less than or equal to' },
+  { name: '>', label: 'greater than' },
+  { name: '>=', label: 'greater than or equal to' },
   { name: 'contains', label: 'contains' }
 ]
 
@@ -272,11 +307,9 @@ const facetToReactQueryField = (facet: string, typeDef: SearchValueTypeDefinitio
     case 'STRING':
       field.valueEditorType = 'text'
       break
-    case 'INTEGER':
+    case 'NUMBER':
       field.inputType = 'number'
-      break
-    case 'DOUBLE':
-      field.inputType = 'number'
+      field.defaultValue = 0
       break
     case 'DATE':
       field.inputType = 'date'

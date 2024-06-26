@@ -2,6 +2,8 @@ import {
   BooleanOperator,
   isBooleanSearchExpression,
   isComparisonSearchFacet,
+  isFunctionTerm,
+  isNotExpression,
   isSearchVariable,
   SearchExpression,
   Term
@@ -51,9 +53,13 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
       .concat(_toReactQueryBuilderState(operator, expression.right))
   }
 
+  if (isNotExpression(expression)) {
+    throw new Error('Not expressions are not supported in react-querybuilder')
+  }
+
   if (isComparisonSearchFacet(expression)) {
     return [{
-      field: termToString(expression.left) || '',
+      field: termToString(expression.left)?.toString() || '',
       value: termToString(expression.right),
       operator: expression.comparisonOperator
     }]
@@ -62,12 +68,15 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
 }
 
 // Converts a Term object into a string representation.
-const termToString = (term: Term): string | null => {
+const termToString = (term: Term): string | number | boolean | null => {
   if (isSearchVariable(term)) {
     if (term.field.length === 0) {
       return term.model
     }
     return `${term.model}.${term.field.join('.')}`
   }
-  return term ? term.toString() : null
+  if (isFunctionTerm(term)) {
+    throw new Error('Function terms are not supported')
+  }
+  return term
 }

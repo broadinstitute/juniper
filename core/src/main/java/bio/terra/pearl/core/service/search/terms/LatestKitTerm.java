@@ -79,6 +79,11 @@ public class LatestKitTerm implements SearchTerm {
         return List.of();
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return FIELDS.get(field);
+    }
+
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry(
                     "status",
