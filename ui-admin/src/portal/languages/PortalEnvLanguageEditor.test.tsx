@@ -26,7 +26,8 @@ test('removes items after confirmation dialog', async () => {
   expect(screen.getByText('Remove this language from the dropdown?')).toBeInTheDocument()
   await userEvent.click(screen.getByText('Yes'))
   expect(setItemsSpy).toHaveBeenCalledTimes(1)
-  expect(setItemsSpy.mock.lastCall[0](initialLanguages)).toEqual([{ languageName: 'Español', languageCode: 'es', id: '1' }])
+  expect(setItemsSpy.mock.lastCall[0](initialLanguages))
+    .toEqual([{ languageName: 'Español', languageCode: 'es', id: '1' }])
 })
 
 test('add items after confirmation click', async () => {
