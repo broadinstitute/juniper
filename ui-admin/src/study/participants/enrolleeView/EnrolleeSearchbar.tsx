@@ -4,6 +4,7 @@ import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Enrollee } from '@juniper/ui-core'
 import { isEmpty } from 'lodash'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 /**
  *
@@ -11,7 +12,8 @@ import { isEmpty } from 'lodash'
 export const EnrolleeSearchbar = ({
   studyEnvContext,
   onEnrolleeSelected,
-  selectedEnrollee
+  selectedEnrollee,
+  searchExpFilter
 }: {
   studyEnvContext: StudyEnvContextT,
   onEnrolleeSelected: (enrollee: Enrollee | null) => void,
@@ -19,11 +21,17 @@ export const EnrolleeSearchbar = ({
   searchExpFilter?: string
 }) => {
   const searchEnrollees = async (value: string): Promise<Enrollee[]> => {
+    const defaultSearchExp = `{enrollee.shortcode} contains '${value}' or {profile.name} contains '${value}'`
+
+    const searchExp = searchExpFilter
+      ? concatSearchExpressions([defaultSearchExp, searchExpFilter])
+      : defaultSearchExp
+
     const results = await Api.executeSearchExpression(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
-      `{enrollee.shortcode} contains '${value}' or {profile.name} contains '${value}'`)
+      searchExp)
 
     return results.map((result: EnrolleeSearchExpressionResult) => {
       const enrollee = result.enrollee

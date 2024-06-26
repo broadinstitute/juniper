@@ -44,4 +44,8 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
     public Optional<FamilyEnrollee> findByFamilyIdAndEnrolleeId(UUID familyId, UUID enrolleeId) {
         return dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
     }
+
+    public List<FamilyEnrollee> findByFamilyId(UUID familyId) {
+        return dao.findByFamilyId(familyId);
+    }
 }

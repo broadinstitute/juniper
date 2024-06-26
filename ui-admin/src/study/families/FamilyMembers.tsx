@@ -51,7 +51,9 @@ export const FamilyMembers = ({
         return <EnrolleeSearchbar
           studyEnvContext={studyEnvContext}
           selectedEnrollee={newMember}
-          onEnrolleeSelected={enrollee => setNewMember(enrollee)}/>
+          onEnrolleeSelected={enrollee => setNewMember(enrollee)}
+          searchExpFilter={`{family.shortcode} != '${family.shortcode}'`}
+        />
       }
 
       return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original as Enrollee}/>

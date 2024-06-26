@@ -105,13 +105,20 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                             String enrolleeShortcode,
                             UUID studyEnvId,
                             DataAuditInfo auditInfo) {
+        // ensure the family and enrollee are in the expected study environment
         Family family = findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvId)
                 .orElseThrow(() -> new NotFoundException("Family not found"));
 
         Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
                 .orElseThrow(() -> new NotFoundException("Enrollee not found"));
 
-        // attach audit info to the enrollee
+        // ensure the enrollee is not already a member of the family
+        List<FamilyEnrollee> existingMembers = familyEnrolleeService.findByFamilyId(family.getId());
+        if (existingMembers.stream().anyMatch(fe -> fe.getEnrolleeId().equals(enrollee.getId()))) {
+            throw new IllegalArgumentException("Enrollee is already a member of the family");
+        }
+
+        // attach audit info to the enrollee (so it shows up in data audit table)
         auditInfo.setEnrolleeId(enrollee.getId());
 
         familyEnrolleeService.create(
