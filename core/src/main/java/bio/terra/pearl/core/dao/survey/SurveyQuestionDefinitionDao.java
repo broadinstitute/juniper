@@ -2,10 +2,11 @@ package bio.terra.pearl.core.dao.survey;
 
 import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import java.util.List;
-import java.util.UUID;
 import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefinition> {
@@ -29,5 +30,4 @@ public class SurveyQuestionDefinitionDao extends BaseJdbiDao<SurveyQuestionDefin
     public void deleteBySurveyId(UUID surveyId) {
         deleteByProperty("survey_id", surveyId);
     }
-
 }

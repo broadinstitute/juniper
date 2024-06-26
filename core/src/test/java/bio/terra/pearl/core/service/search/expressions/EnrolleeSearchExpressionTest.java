@@ -4,12 +4,14 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -51,6 +53,9 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     @Autowired
     KitRequestFactory kitRequestFactory;
+
+    @Autowired
+    FamilyFactory familyFactory;
 
     @Test
     @Transactional
@@ -471,6 +476,111 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                                         .build())
                                 .build()));
 
+    }
+
+
+    @Test
+    @Transactional
+    public void testLowerFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression lowerExp = enrolleeSearchExpressionParser.parseRule(
+                "lower({enrollee.shortcode}) = '" + enrollee.getShortcode().toLowerCase() + "'"
+        );
+
+        assertTrue(lowerExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testNot(TestInfo info) {
+        EnrolleeFactory.EnrolleeAndProxy bundle = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy@test.com");
+
+        EnrolleeSearchExpression notSubjectExp = enrolleeSearchExpressionParser.parseRule(
+                "!{enrollee.subject} = true"
+        );
+
+
+        // test if it works with parents
+        EnrolleeSearchExpression notSubjectOrConsentedExp = enrolleeSearchExpressionParser.parseRule(
+                "!({enrollee.subject} = true or {enrollee.consented} = true)"
+        );
+
+        assertFalse(notSubjectExp.evaluate(EnrolleeSearchContext.builder().enrollee(bundle.governedEnrollee()).build()));
+        assertTrue(notSubjectExp.evaluate(EnrolleeSearchContext.builder().enrollee(bundle.proxy()).build()));
+
+        assertFalse(notSubjectOrConsentedExp.evaluate(EnrolleeSearchContext.builder().enrollee(bundle.governedEnrollee()).build()));
+        assertTrue(notSubjectOrConsentedExp.evaluate(EnrolleeSearchContext.builder().enrollee(bundle.proxy()).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testTrimFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
+                "trim('  hello  ') = 'hello'"
+        );
+
+        assertTrue(trimExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testNestedFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
+                "trim(lower('  HEY  ')) = 'hey'"
+        );
+
+        assertTrue(trimExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testMinFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression minExp = enrolleeSearchExpressionParser.parseRule(
+                "min(20, 6, 5, 10, 8, 100) = 5"
+        );
+
+        assertTrue(minExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testMaxFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression maxExp = enrolleeSearchExpressionParser.parseRule(
+                "max(20, 6, 5, 10, 8, 100) = 100"
+        );
+
+        assertTrue(maxExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrollee).build()));
+    }
+
+    @Test
+    @Transactional
+    public void testFamilyTerm(TestInfo info) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrolleeNoFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+        Enrollee enrolleeWithOtherFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+        Enrollee enrolleeWithFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+
+        Family family = familyFactory.buildPersisted(getTestName(info), enrolleeWithFamily);
+        // create some other families to ensure no match
+        familyFactory.buildPersisted(getTestName(info), enrolleeWithFamily);
+        familyFactory.buildPersisted(getTestName(info), enrolleeWithOtherFamily);
+
+        EnrolleeSearchExpression familyExp = enrolleeSearchExpressionParser.parseRule(
+                "{family.shortcode} = '%s'".formatted(family.getShortcode())
+        );
+
+        assertTrue(familyExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeWithFamily).build()));
+        assertFalse(familyExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeNoFamily).build()));
+        assertFalse(familyExp.evaluate(EnrolleeSearchContext.builder().enrollee(enrolleeWithOtherFamily).build()));
     }
 
 }

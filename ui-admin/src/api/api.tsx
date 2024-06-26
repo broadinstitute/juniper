@@ -76,6 +76,8 @@ export type EnrolleeSearchExpressionResult = {
   latestKit?: KitRequest
 }
 
+export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
+
 export type ProfileUpdateDto = {
   justification: string,
   profile: Profile
@@ -349,7 +351,7 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
-export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueType = 'STRING' | 'NUMBER' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 export type SearchValueTypeDefinition = {
   type: SearchValueType
   choices?: { stableId: string, text: string }[]
@@ -721,7 +723,7 @@ export default {
   },
 
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<{ [index: string]: SearchValueTypeDefinition }> {
+    Promise<ExpressionSearchFacets> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)

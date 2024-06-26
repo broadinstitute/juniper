@@ -1,4 +1,8 @@
-import { DefaultParticipantSearchState, ParticipantSearchState, toExpression } from './participantSearchUtils'
+import {
+  DefaultParticipantSearchState,
+  ParticipantSearchState,
+  toExpression
+} from './participantSearchUtils'
 
 describe('toExpression', () => {
   it('should return is subject on default', () => {

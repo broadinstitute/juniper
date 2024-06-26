@@ -25,14 +25,14 @@ describe('to react query builder', () => {
                 {
                   'field': 'age',
                   'operator': '>',
-                  'value': '30'
+                  'value': 30
                 }
               ]
             },
             {
               'field': 'age',
               'operator': '<',
-              'value': '20'
+              'value': 20
             }
           ]
         }
@@ -64,24 +64,24 @@ describe('to react query builder', () => {
                 {
                   'field': 'age',
                   'operator': '>',
-                  'value': '30'
+                  'value': 30
                 },
                 {
                   'field': 'age',
                   'operator': '<',
-                  'value': '40'
+                  'value': 40
                 },
                 {
                   'field': 'age',
                   'operator': '>',
-                  'value': '20'
+                  'value': 20
                 }
               ]
             },
             {
               'field': 'age',
               'operator': '<',
-              'value': '20'
+              'value': 20
             }
           ]
         }
@@ -112,14 +112,14 @@ describe('to react query builder', () => {
                 {
                   'field': 'age',
                   'operator': '>',
-                  'value': '30'
+                  'value': 30
                 }
               ]
             },
             {
               'field': 'age',
               'operator': '<',
-              'value': '20'
+              'value': 20
             },
             {
               'combinator': 'and',
@@ -127,12 +127,12 @@ describe('to react query builder', () => {
                 {
                   'field': 'age',
                   'operator': '>',
-                  'value': '30'
+                  'value': 30
                 },
                 {
                   'field': 'age',
                   'operator': '<',
-                  'value': '40'
+                  'value': 40
                 }
               ]
             }
