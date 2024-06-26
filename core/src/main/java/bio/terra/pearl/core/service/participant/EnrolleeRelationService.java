@@ -15,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,15 +56,35 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     }
 
     public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrolleesAndFamily(UUID enrolleeId) {
+        List<EnrolleeRelation> relations = this.findByTargetEnrolleeIdWithEnrollees(enrolleeId);
+        List<UUID> familyIds = relations
+                .stream()
+                .map(EnrolleeRelation::getFamilyId)
+                .filter(Objects::nonNull)
+                .distinct() // only grab unique family ids; likely to be repeats
+                .toList();
+        List<Family> families = familyService.findAll(familyIds);
+
+        relations.forEach(relation -> {
+            if (relation.getFamilyId() != null) {
+                relation.setFamily(families
+                        .stream()
+                        .filter(family -> family.getId().equals(relation.getFamilyId()))
+                        .findFirst()
+                        .orElse(null));
+            }
+        });
+
+        return relations;
+    }
+
+    public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
         Enrollee target = this.enrolleeService.find(enrolleeId).orElseThrow(() -> new NotFoundException("Enrollee not found"));
         profileService
                 .loadWithMailingAddress(target.getProfileId())
                 .ifPresent(target::setProfile);
 
         List<EnrolleeRelation> relations = findByTargetEnrolleeId(enrolleeId);
-
-        List<UUID> familyIds = relations.stream().map(EnrolleeRelation::getFamilyId).toList();
-        List<Family> families = familyService.findAll(familyIds);
 
         return relations.stream().map(relation -> {
             relation.setTargetEnrollee(target);
@@ -76,15 +93,10 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                     .loadWithMailingAddress(relation.getEnrollee().getProfileId())
                     .ifPresent(relation.getEnrollee()::setProfile);
 
-            relation.setFamily(families
-                    .stream()
-                    .filter(family -> family.getId().equals(relation.getFamilyId()))
-                    .findFirst()
-                    .orElse(null));
-    
             return relation;
         }).toList();
     }
+
 
     public boolean isUserProxyForAnyOf(UUID participantUserId, List<UUID> enrolleeIds) {
         return !dao.findEnrolleeRelationsByProxyParticipantUser(participantUserId, enrolleeIds)

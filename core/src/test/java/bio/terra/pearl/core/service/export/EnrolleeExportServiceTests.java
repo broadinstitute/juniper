@@ -7,6 +7,7 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
+import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
@@ -47,6 +48,8 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
     private SurveyFactory surveyFactory;
     @Autowired
     private EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
+    @Autowired
+    private FamilyFactory familyFactory;
 
     @Test
     @Transactional
@@ -109,8 +112,28 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         assertThat(exportMapsNoProxies.get(1).get("enrollee.shortcode"), equalTo(enrolleeWithProxy.governedEnrollee().getShortcode()));
         assertThat(exportMapsNoProxies.get(1).get("enrollee.subject"), equalTo("true"));
-
     }
+
+    @Test
+    @Transactional
+    public void testExportChecksStudyEnvConfig(TestInfo testInfo) {
+        String testName = getTestName(testInfo);
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(testName, EnvironmentName.sandbox);
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+
+        EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(testName, portalEnv, studyEnv);
+        Enrollee enrollee = enrolleeAndProxy.governedEnrollee();
+        Enrollee proxy = enrolleeAndProxy.proxy();
+
+        familyFactory.
+
+                List<ModuleFormatter> exportModuleInfo = enrolleeExportService.generateModuleInfos(new ExportOptions(), studyEnv.getId());
+        List<Map<String, String>> exportMaps = enrolleeExportService.generateExportMaps(studyEnv.getId(), exportModuleInfo, null, null);
+        assertThat(exportMaps, hasSize(1));
+        assertThat(exportMaps.get(0).get("enrollee.shortcode"), equalTo(enrollee.getShortcode()));
+    }
+
 
     private final String SOCIAL_HEALTH_EXCERPT = """
             {
