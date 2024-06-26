@@ -68,9 +68,10 @@ export function PagedSurveyView({
         studyEnvParams, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
         version: form.version,
         response: {
-          surveyResponse: responseDto,
+          ...responseDto,
           justification
-        }, taskId
+        },
+        taskId
       })
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
@@ -117,7 +118,7 @@ export function PagedSurveyView({
       studyEnvParams, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
       version: form.version,
       response: {
-        surveyResponse: responseDto,
+        ...responseDto,
         justification
       },
       taskId, alertErrors

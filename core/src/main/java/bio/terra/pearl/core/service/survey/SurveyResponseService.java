@@ -115,7 +115,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates a survey response and fires appropriate downstream events.
      */
     @Transactional
-    public HubResponse<SurveyResponse> updateResponse(SurveyResponseDto responseDto, ResponsibleEntity operator,
+    public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, ResponsibleEntity operator,
+                                                      String justification,
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
@@ -124,17 +125,12 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
         Survey survey = surveyService.findByStableIdWithMappings(task.getTargetStableId(),
                 task.getTargetAssignedVersion(), portalId).get();
-        validateResponse(survey, task, responseDto.getSurveyResponse().getAnswers());
+        validateResponse(survey, task, responseDto.getAnswers());
 
         // find or create the SurveyResponse object to attach the snapshot
-        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto.getSurveyResponse(), portalId, operator);
+        SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
 
-        SurveyResponseDto updatedResponseDto = SurveyResponseDto.builder()
-                .surveyResponse(response)
-                .justification(responseDto.getJustification())
-                .build();
-
-        List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getSurveyResponse().getAnswers(), updatedResponseDto, survey, ppUser, operator);
+        List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, justification, survey, ppUser, operator);
         List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
         List<Answer> existingAnswers = answerService.findByResponse(response.getId());
         allAnswers.addAll(existingAnswers);
@@ -144,14 +140,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 .enrolleeId(enrollee.getId())
                 .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .justification(responseDto.getJustification())
+                .justification(justification)
                 .build();
         auditInfo.setResponsibleEntity(operator);
 
         // process any answers that need to be propagated elsewhere to the data model
         answerProcessingService.processAllAnswerMappings(
                 enrollee,
-                responseDto.getSurveyResponse().getAnswers(),
+                responseDto.getAnswers(),
                 survey.getAnswerMappings(),
                 ppUser,
                 operator,
@@ -240,14 +236,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * Creates and attaches the answers to the response.
      */
     @Transactional
-    public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponseDto response,
+    public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response, String justification,
                                               Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
         // to confirm they were in fact associated with this user & response.  So it's easier to just ignore user-supplied ids and
         // use the responseId (which we have already validated) and questionStableIds to get existing answers
-        List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getSurveyResponse().getId(), updatedStableIds);
+        List<Answer> existingAnswers = answerService.findByResponseAndQuestions(response.getId(), updatedStableIds);
 
         // put the answers into a map by their questionStableId so we can quickly match them to the submitted answers
         Map<String, Answer> existingAnswerMap = new HashMap<>();
@@ -258,16 +254,16 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         List<Answer> updatedAnswers = answers.stream().map(answer -> {
             Answer existing = existingAnswerMap.get(answer.getQuestionStableId());
             if (existing != null) {
-                return updateAnswer(existing, answer, response, survey, ppUser, changeRecords, operator);
+                return updateAnswer(existing, answer, response, justification, survey, ppUser, changeRecords, operator);
             }
-            return createAnswer(answer, response.getSurveyResponse(), survey, ppUser);
+            return createAnswer(answer, response, survey, ppUser);
         }).toList();
         dataChangeRecordService.bulkCreate(changeRecords);
         return updatedAnswers;
     }
 
     @Transactional
-    public Answer updateAnswer(Answer existing, Answer updated, SurveyResponseDto response,
+    public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response, String justification,
                                Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords,
                                ResponsibleEntity operator) {
         if (existing.valuesEqual(updated)) {
@@ -276,15 +272,15 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         }
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
-                .enrolleeId(response.getSurveyResponse().getEnrolleeId())
+                .enrolleeId(response.getEnrolleeId())
                 .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
-                .justification(response.getJustification())
+                .justification(justification)
                 .build();
         auditInfo.setResponsibleEntity(operator);
 
         DataChangeRecord change = DataChangeRecord.fromAuditInfo(auditInfo)
-                .operationId(response.getSurveyResponse().getId())
+                .operationId(response.getId())
                 .modelName(survey.getStableId())
                 .fieldName(existing.getQuestionStableId())
                 .oldValue(existing.valueAsString())

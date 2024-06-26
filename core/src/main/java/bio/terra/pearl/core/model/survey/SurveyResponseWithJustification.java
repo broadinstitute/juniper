@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @SuperBuilder
 @NoArgsConstructor
-public class SurveyResponseDto {
-    private SurveyResponse surveyResponse;
+public class SurveyResponseWithJustification extends SurveyResponse {
     private String justification;
 }

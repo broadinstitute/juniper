@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { SurveyResponseDto } from 'src/types/forms'
 import { StudyEnvParams } from 'src/types/study'
 import { HubResponse } from 'src/types/user'
 import { AddressValidationResult, MailingAddress } from 'src/types/address'
+import { SurveyResponseWithJustification } from 'src/types/forms'
 
 export type ImageUrlFunc = (cleanFileName: string, version: number) => string
 export type SubmitMailingListContactFunc = (name: string, email: string) => Promise<object>
@@ -13,7 +13,7 @@ export type UpdateSurveyResponseFunc = ({
   alertErrors
 }: {
   studyEnvParams: StudyEnvParams, stableId: string, version: number,
-  response: SurveyResponseDto, enrolleeShortcode: string, taskId: string, alertErrors?: boolean
+  response: SurveyResponseWithJustification, enrolleeShortcode: string, taskId: string, alertErrors?: boolean
 }) => Promise<HubResponse>
 
 export type ValidateAddressFunc = (address: MailingAddress) => Promise<AddressValidationResult>

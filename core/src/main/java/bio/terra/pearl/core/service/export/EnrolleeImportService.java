@@ -16,7 +16,6 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.survey.SurveyResponseDto;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -338,7 +337,6 @@ public class EnrolleeImportService {
     protected SurveyResponse importSurveyResponse(UUID portalId, SurveyFormatter formatter, Map<String, String> enrolleeMap, ExportOptions exportOptions,
                                                   StudyEnvironment studyEnv, PortalParticipantUser ppUser, Enrollee enrollee, DataAuditInfo auditInfo) {
         SurveyResponse response = formatter.fromStringMap(studyEnv.getId(), enrolleeMap);
-        SurveyResponseDto surveyResponseDto = SurveyResponseDto.builder().surveyResponse(response).justification("Imported").build();
         if (response == null) {
             return null;
         }
@@ -358,7 +356,7 @@ public class EnrolleeImportService {
             relatedTask = tasks.get(0);
         }
         // we're not worrying about dating the response yet
-        return surveyResponseService.updateResponse(surveyResponseDto, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
-                ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+        return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
+                "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }

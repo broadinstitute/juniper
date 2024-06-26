@@ -88,8 +88,7 @@ export type SurveyResponse = FormResponse & {
   complete: boolean
 }
 
-export type SurveyResponseDto = {
-  surveyResponse: SurveyResponse,
+export type SurveyResponseWithJustification = SurveyResponse & {
   justification?: string
 }
 

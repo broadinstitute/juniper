@@ -6,7 +6,7 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.SurveyResponseDto;
+import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.survey.SurveyWithResponse;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.portal.PortalWithPortalUser;
@@ -59,7 +59,7 @@ public class SurveyResponseExtService {
       ParticipantUser user,
       String portalShortcode,
       EnvironmentName envName,
-      SurveyResponseDto responseDto,
+      SurveyResponse response,
       String enrolleeShortcode,
       UUID taskId) {
     Enrollee enrollee =
@@ -69,8 +69,9 @@ public class SurveyResponseExtService {
             enrollee.getParticipantUserId(), portalShortcode, envName);
     HubResponse result =
         surveyResponseService.updateResponse(
-            responseDto,
+            response,
             new ResponsibleEntity(user),
+            null,
             portalWithPortalUser.ppUser(),
             enrollee,
             taskId,

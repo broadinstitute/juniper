@@ -68,13 +68,10 @@ public class SurveyResponseFactory {
                 .complete(complete)
                 .build();
 
-        SurveyResponseDto responseDto = SurveyResponseDto.builder()
-                .surveyResponse(response)
-                .build();
-
         return surveyResponseService.updateResponse(
-                responseDto,
+                response,
                 new ResponsibleEntity(bundle.participantUser()),
+                null,
                 bundle.portalParticipantUser(),
                 bundle.enrollee(),
                 task.getId(),

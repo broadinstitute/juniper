@@ -170,9 +170,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 task.setTargetAssignedVersion(responsePopDto.getSurveyVersion());
                 participantTaskService.update(task, auditInfo);
             }
-            SurveyResponseDto responseDto = SurveyResponseDto.builder().surveyResponse(response).build();
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(responseDto, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
+                    .updateResponse(response, new ResponsibleEntity(responsibleUser), null, ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
