@@ -55,9 +55,20 @@
       "answerPopDtos": [
         {"questionStableId": "hd_hd_basic_firstName", "stringValue": "Jonas", "viewedLanguage": "en"},
         {"questionStableId": "hd_hd_basic_lastName", "stringValue": "Salk", "viewedLanguage": "en"},
-        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street", "viewedLanguage": "es"},
+        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "1223 Walnut Street", "viewedLanguage": "es"},
         {"questionStableId": "hd_hd_basic_mghPatient", "stringValue": "yes", "viewedLanguage": "es"}
       ],
+      "currentPageNo": 1,
+      "complete": true,
+      "submittedHoursAgo": 48
+    }, {
+      "surveyStableId": "hd_hd_basicInfo",
+      "surveyVersion": 1,
+      "answerPopDtos": [
+        {"questionStableId": "hd_hd_basic_streetAddress", "stringValue": "123 Walnut Street", "viewedLanguage": "es"}
+      ],
+      "justification":  "User entered the incorrect mailing address.",
+      "creatingAdminUsername":  "staff@heartdemo.org",
       "currentPageNo": 1,
       "complete": true,
       "submittedHoursAgo": 48
