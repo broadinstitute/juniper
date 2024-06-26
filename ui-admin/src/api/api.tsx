@@ -1261,6 +1261,36 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async addMemberToFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string
+  ) {
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/members/${enrolleeShortcode}`
+
+    const result = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(result)
+  },
+
+  async removeMemberFromFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string
+  ) {
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/members/${enrolleeShortcode}`
+
+    const result = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(result)
+  },
+
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`

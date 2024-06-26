@@ -46,4 +46,42 @@ public class FamilyController implements FamilyApi {
 
     return ResponseEntity.ok(family);
   }
+
+  @Override
+  public ResponseEntity<Void> removeEnrollee(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode) {
+    familyExtService.removeEnrollee(
+        PortalStudyEnvAuthContext.of(
+            authUtilService.requireAdminUser(request),
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
+        familyShortcode,
+        enrolleeShortcode);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> addEnrollee(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode) {
+    familyExtService.addEnrollee(
+        PortalStudyEnvAuthContext.of(
+            authUtilService.requireAdminUser(request),
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
+        familyShortcode,
+        enrolleeShortcode);
+
+    return ResponseEntity.noContent().build();
+  }
 }

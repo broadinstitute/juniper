@@ -4,8 +4,11 @@ import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Lazy;
@@ -95,5 +98,45 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    @Transactional
+    public void addEnrollee(String familyShortcode,
+                            String enrolleeShortcode,
+                            UUID studyEnvId,
+                            DataAuditInfo auditInfo) {
+        Family family = findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Family not found"));
+
+        Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+
+        // attach audit info to the enrollee
+        auditInfo.setEnrolleeId(enrollee.getId());
+
+        familyEnrolleeService.create(
+                FamilyEnrollee.builder()
+                        .familyId(family.getId())
+                        .enrolleeId(enrollee.getId())
+                        .build(),
+                auditInfo
+        );
+    }
+
+    @Transactional
+    public void removeEnrollee(String familyShortcode,
+                               String enrolleeShortcode,
+                               UUID studyEnvId,
+                               DataAuditInfo auditInfo) {
+        Family family = findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Family not found"));
+
+        Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+
+        FamilyEnrollee fe = familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
+                .orElseThrow(() -> new NotFoundException("Enrollee not found in family"));
+
+        familyEnrolleeService.delete(fe.getId(), auditInfo);
     }
 }

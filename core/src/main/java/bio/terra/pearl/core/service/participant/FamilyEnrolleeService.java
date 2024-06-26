@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,5 +39,9 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
     @Transactional
     public void deleteByEnrolleeId(UUID id) {
         dao.deleteByEnrolleeId(id);
+    }
+
+    public Optional<FamilyEnrollee> findByFamilyIdAndEnrolleeId(UUID familyId, UUID enrolleeId) {
+        return dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
     }
 }

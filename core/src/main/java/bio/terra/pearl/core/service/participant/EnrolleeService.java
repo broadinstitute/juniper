@@ -284,6 +284,10 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
 
     }
 
+    public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {
+        return dao.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId);
+    }
+
     public Enrollee attachProfile(Enrollee enrollee) {
         Optional<Profile> profiles = profileService.find(enrollee.getProfileId());
 
