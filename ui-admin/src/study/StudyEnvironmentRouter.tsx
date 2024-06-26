@@ -1,10 +1,25 @@
 import React, { useContext } from 'react'
-import { Portal, PortalEnvironment, Study, StudyEnvironment, Trigger } from 'api/api'
+import {
+  Portal,
+  PortalEnvironment,
+  Study,
+  StudyEnvironment,
+  Trigger
+} from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
-import { LoadedPortalContextT, PortalContext, PortalParams } from '../portal/PortalProvider'
+import {
+  LoadedPortalContextT,
+  PortalContext,
+  PortalParams
+} from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
@@ -24,11 +39,16 @@ import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
-import { ApiProvider, I18nProvider, StudyEnvParams } from '@juniper/ui-core'
+import {
+  ApiProvider,
+  I18nProvider,
+  StudyEnvParams
+} from '@juniper/ui-core'
 import DashboardSettings from 'dashboard/DashboardSettings'
 import { previewApi } from 'util/apiContextUtils'
 import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
+import FamilyRouter from './families/FamilyRouter'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -90,6 +110,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           <Route path="notificationContent/*" element={<TriggerList studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}/>
           <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
+          <Route path="families/*" element={<FamilyRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
           <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>

@@ -77,6 +77,10 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
 
         return relations;
     }
+    
+    public List<EnrolleeRelation> findAllByEnrolleeOrTargetId(UUID enrolleeId) {
+        return filterValid(dao.findAllByEnrolleeOrTargetId(enrolleeId));
+    }
 
     public List<EnrolleeRelation> findByTargetEnrolleeIdWithEnrollees(UUID enrolleeId) {
         Enrollee target = this.enrolleeService.find(enrolleeId).orElseThrow(() -> new NotFoundException("Enrollee not found"));

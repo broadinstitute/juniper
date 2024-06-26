@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -17,5 +18,8 @@ public class Family extends BaseEntity {
     private UUID studyEnvironmentId;
     private String shortcode;
 
+    // optional related entities
     private Enrollee proband;
+    private List<Enrollee> members;
+    private List<EnrolleeRelation> relations;
 }

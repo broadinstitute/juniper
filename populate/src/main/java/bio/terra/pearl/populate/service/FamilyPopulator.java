@@ -63,7 +63,7 @@ public class FamilyPopulator extends BasePopulator<Family, FamilyPopDto, StudyPo
         List<Enrollee> members = enrolleeService.findAllByShortcodes(popDto.getMemberShortcodes());
         addToFamily(family, members);
 
-        createRelations(family, popDto.getRelations());
+        createRelations(family, popDto.getRelationDtos());
 
         return family;
     }
@@ -134,7 +134,7 @@ public class FamilyPopulator extends BasePopulator<Family, FamilyPopDto, StudyPo
         List<Enrollee> members = enrolleeService.findAllByShortcodes(popDto.getMemberShortcodes());
         syncFamilyMembers(family, members);
 
-        syncRelations(family, popDto.getRelations());
+        syncRelations(family, popDto.getRelationDtos());
 
         return family;
     }

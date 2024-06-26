@@ -14,17 +14,17 @@ import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 import { Modal } from 'react-bootstrap'
 
-type PhotoBlurbGridConfig = {
+export type PhotoBlurbGridConfig = {
   title?: string,
   subGrids: SubGrid[]
 }
 
-type SubGrid = {
+export type SubGrid = {
   title?: string
   photoBios: PhotoBio[]
 }
 
-type PhotoBio = {
+export type PhotoBio = {
   image: MediaConfig,
   name: string,
   title?: string,

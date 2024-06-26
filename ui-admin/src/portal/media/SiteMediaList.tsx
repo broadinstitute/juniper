@@ -26,8 +26,8 @@ import { useUser } from '../../user/UserProvider'
 /** shows a list of images in a table */
 export default function SiteMediaList({ portalContext, portalEnv }:
                                             {portalContext: LoadedPortalContextT, portalEnv: PortalEnvironment}) {
-  const [images, setImages] = React.useState<SiteMediaMetadata[]>([])
-  const [sorting, setSorting] = React.useState<SortingState>([{
+  const [images, setImages] = useState<SiteMediaMetadata[]>([])
+  const [sorting, setSorting] = useState<SortingState>([{
     id: 'cleanFileName', desc: false
   }])
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('siteMediaList')
