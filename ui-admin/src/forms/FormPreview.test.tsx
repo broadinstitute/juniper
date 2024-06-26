@@ -1,5 +1,5 @@
 /* eslint-disable jest/expect-expect */
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -243,6 +243,70 @@ describe('FormPreview', () => {
         // Assert
         screen.getAllByLabelText('Hidden question')
       })
+    })
+
+    const dyanmicTextFormContent: FormContent = {
+      title: 'Test survey',
+      pages: [
+        {
+          elements: [
+            {
+              name: 'test_hello',
+              type: 'text',
+              title: 'Hello participant {profile.givenName} {profile.familyName}'
+            },
+            {
+              name: 'test_proxy_hello',
+              type: 'text',
+              title: 'you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'
+            }
+          ]
+        }
+      ]
+    }
+
+    it('updates dynamic text from participant profile', async () => {
+      const user = userEvent.setup()
+      render(
+        <MockI18nProvider>
+          <FormPreview formContent={dyanmicTextFormContent} supportedLanguages={[]}/>
+        </MockI18nProvider>)
+      // with no values specified, the dynamic text should not be replaced
+      expect(screen.getByText('Hello participant {profile.givenName} {profile.familyName}'))
+        .toBeInTheDocument()
+      const participantFields = screen.getByTestId('profileInfoFields')
+
+      await user.type(within(participantFields).getByLabelText('Given name'), 'Jonas')
+      expect(screen.getByText('Hello participant Jonas {profile.familyName}'))
+        .toBeInTheDocument()
+
+      await user.type(within(participantFields).getByLabelText('Family name'), 'Salk')
+      expect(screen.getByText('Hello participant Jonas Salk'))
+        .toBeInTheDocument()
+
+      // proxy fields should be unchanged
+      expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+    })
+
+    it('updates dynamic text from proxy profile', async () => {
+      const user = userEvent.setup()
+      render(
+        <MockI18nProvider>
+          <FormPreview formContent={dyanmicTextFormContent} supportedLanguages={[]}/>
+        </MockI18nProvider>)
+      // with no values specified, the dynamic text should not be replaced
+      expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+      const proxyField = screen.getByTestId('proxyInfoFields')
+
+      await user.type(within(proxyField).getByLabelText('Given name'), 'Child')
+      expect(screen.getByText('you are proxying Child {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+
+      await user.type(within(proxyField).getByLabelText('Family name'), 'Salk')
+      expect(screen.getByText('you are proxying Child Salk'))
+        .toBeInTheDocument()
     })
   })
 })
