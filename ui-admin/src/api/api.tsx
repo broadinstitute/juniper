@@ -78,21 +78,6 @@ export type EnrolleeSearchExpressionResult = {
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
 
-type RelationshipType = 'PROXY'
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: RelationshipType,
-  targetEnrolleeId: string,
-  targetEnrollee: Enrollee
-  enrolleeId: string
-  enrollee: Enrollee
-  createdAt: number
-  lastUpdatedAt: number
-  beginDate: number
-  endDate: number
-}
-
 export type ProfileUpdateDto = {
   justification: string,
   profile: Profile
