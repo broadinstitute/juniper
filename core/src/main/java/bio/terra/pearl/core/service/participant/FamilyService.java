@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
@@ -9,6 +8,7 @@ import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +19,7 @@ import java.util.UUID;
 @Service
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
-    private final EnrolleeDao enrolleeDao;
+    private final EnrolleeService enrolleeService;
     private final EnrolleeRelationDao enrolleeRelationDao;
     private final ProfileDao profileDao;
     private final FamilyEnrolleeService familyEnrolleeService;
@@ -28,13 +28,13 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                          DataChangeRecordService dataChangeRecordService,
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
-                         EnrolleeDao enrolleeDao,
+                         @Lazy EnrolleeService enrolleeService,
                          EnrolleeRelationDao enrolleeRelationDao,
                          ProfileDao profileDao,
                          FamilyEnrolleeService familyEnrolleeService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
-        this.enrolleeDao = enrolleeDao;
+        this.enrolleeService = enrolleeService;
         this.enrolleeRelationDao = enrolleeRelationDao;
         this.profileDao = profileDao;
         this.familyEnrolleeService = familyEnrolleeService;
@@ -57,15 +57,10 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     }
 
     public Family loadForAdminView(Family family) {
-        family.setMembers(enrolleeDao.findAllByFamilyId(family.getId()).stream().map(enrollee -> {
-            enrollee.setProfile(profileDao.find(enrollee.getProfileId()).orElse(null));
-            return enrollee;
-        }).toList());
+        family.setMembers(enrolleeService.findAllByFamilyId(family.getId()));
+        enrolleeService.attachProfiles(family.getMembers());
         family.setRelations(enrolleeRelationDao.findRelationsForFamily(family.getId()));
-        family.setProband(enrolleeDao.find(family.getProbandEnrolleeId()).map(proband -> {
-            proband.setProfile(profileDao.find(proband.getProfileId()).orElse(null));
-            return proband;
-        }).orElse(null));
+        family.setProband(enrolleeService.find(family.getProbandEnrolleeId()).map(enrolleeService::attachProfile).orElse(null));
         return family;
     }
 

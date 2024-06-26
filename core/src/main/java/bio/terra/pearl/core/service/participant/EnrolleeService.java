@@ -7,6 +7,7 @@ import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -281,6 +282,25 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                             .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(environment.getId()));
                 });
 
+    }
+
+    public Enrollee attachProfile(Enrollee enrollee) {
+        Optional<Profile> profiles = profileService.find(enrollee.getProfileId());
+
+        profiles.ifPresent(enrollee::setProfile);
+
+        return enrollee;
+    }
+
+
+    public List<Enrollee> attachProfiles(List<Enrollee> enrollees) {
+        List<Profile> profiles = profileService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
+
+        for (int i = 0; i < enrollees.size(); i++) {
+            enrollees.get(i).setProfile(profiles.get(i));
+        }
+
+        return enrollees;
     }
 
     public List<Enrollee> findAllByFamilyId(UUID id) {
