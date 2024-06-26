@@ -17,6 +17,7 @@ export * from './types/task'
 export * from './types/address'
 export * from './types/kits'
 export * from './types/user'
+export * from './types/family'
 
 export * from './autoSaveUtils'
 export * from './reactUtils'

@@ -2,7 +2,9 @@ import {
   AddressValidationResult,
   AlertTrigger,
   Enrollee,
+  EnrolleeRelation,
   EnvironmentName,
+  Family,
   HubResponse,
   KitRequest,
   KitType,
@@ -72,21 +74,6 @@ export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
   latestKit?: KitRequest
-}
-
-type RelationshipType = 'PROXY'
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: RelationshipType,
-  targetEnrolleeId: string,
-  targetEnrollee: Enrollee
-  enrolleeId: string
-  enrollee: Enrollee
-  createdAt: number
-  lastUpdatedAt: number
-  beginDate: number
-  endDate: number
 }
 
 export type ProfileUpdateDto = {
@@ -1266,6 +1253,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcode: string
+  ): Promise<Family> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
     const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
@@ -1381,6 +1376,7 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+
 }
 
 /** gets an image url for SiteMedia */
