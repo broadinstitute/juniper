@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
@@ -256,7 +257,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             if (existing != null) {
                 return updateAnswer(existing, answer, response, justification, survey, ppUser, changeRecords, operator);
             }
-            return createAnswer(answer, response, survey, operator);
+            return createAnswer(answer, response, survey, ppUser, operator);
         }).toList();
         dataChangeRecordService.bulkCreate(changeRecords);
         return updatedAnswers;
@@ -300,11 +301,14 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
-                                Survey survey, ResponsibleEntity operator) {
-        if(operator.getAdminUser() != null) {
+                                Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
+        if (answer.getCreatingAdminUserId() != null) {
             answer.setCreatingAdminUserId(operator.getAdminUser().getId());
         } else {
-            answer.setCreatingParticipantUserId(operator.getParticipantUser().getId());
+            // If an admin wasn't specified, we'll default to attributing this to the participant user.
+            // It's also possible that a system process (such as import) could have created the response,
+            // but we still want to tie it to the participant user in that case.
+            answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         }
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
