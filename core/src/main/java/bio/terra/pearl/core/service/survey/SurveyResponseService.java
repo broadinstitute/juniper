@@ -301,9 +301,11 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
                                 Survey survey, ResponsibleEntity operator) {
-
-        answer.setCreatingParticipantUserId(operator.getParticipantUser().getId());
-        answer.setCreatingAdminUserId(operator.getAdminUser().getId());
+        if(operator.getAdminUser() != null) {
+            answer.setCreatingAdminUserId(operator.getAdminUser().getId());
+        } else {
+            answer.setCreatingParticipantUserId(operator.getParticipantUser().getId());
+        }
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
         if (answer.getSurveyVersion() == 0) {
