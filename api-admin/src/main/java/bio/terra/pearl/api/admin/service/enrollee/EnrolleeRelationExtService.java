@@ -77,13 +77,22 @@ public class EnrolleeRelationExtService {
       throw new IllegalArgumentException("Cannot create proxy relationships");
     }
 
+    if (enrolleeRelationService
+        .findByEnrolleeIdAndRelationType(relation.getEnrolleeId(), relation.getRelationshipType())
+        .stream()
+        .anyMatch(r -> r.getTargetEnrolleeId().equals(relation.getTargetEnrolleeId()))) {
+      throw new IllegalArgumentException("Enrollee relation already exists");
+    }
+
     DataAuditInfo auditInfo =
         DataAuditInfo.builder()
             .responsibleAdminUserId(authContext.getOperator().getId())
             .enrolleeId(relation.getTargetEnrolleeId())
             .build();
 
-    return enrolleeRelationService.create(relation, auditInfo);
+    EnrolleeRelation created = enrolleeRelationService.create(relation, auditInfo);
+    enrolleeRelationService.attachEnrolleesAndFamily(created);
+    return created;
   }
 
   // todo

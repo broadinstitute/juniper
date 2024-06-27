@@ -26,6 +26,7 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final EnrolleeRelationDao enrolleeRelationDao;
     private final ProfileDao profileDao;
     private final FamilyEnrolleeService familyEnrolleeService;
+    private final EnrolleeRelationService enrolleeRelationService;
 
     public FamilyService(FamilyDao familyDao,
                          DataChangeRecordService dataChangeRecordService,
@@ -34,13 +35,14 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                          @Lazy EnrolleeService enrolleeService,
                          EnrolleeRelationDao enrolleeRelationDao,
                          ProfileDao profileDao,
-                         FamilyEnrolleeService familyEnrolleeService) {
+                         FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.enrolleeService = enrolleeService;
         this.enrolleeRelationDao = enrolleeRelationDao;
         this.profileDao = profileDao;
         this.familyEnrolleeService = familyEnrolleeService;
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     @Transactional
@@ -62,7 +64,10 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     public Family loadForAdminView(Family family) {
         family.setMembers(enrolleeService.findAllByFamilyId(family.getId()));
         enrolleeService.attachProfiles(family.getMembers());
-        family.setRelations(enrolleeRelationDao.findRelationsForFamily(family.getId()));
+        family.setRelations(enrolleeRelationService.findRelationsForFamily(family.getId()).stream().map(relation -> {
+            enrolleeRelationService.attachEnrolleesAndFamily(relation);
+            return relation;
+        }).toList());
         family.setProband(enrolleeService.find(family.getProbandEnrolleeId()).map(enrolleeService::attachProfile).orElse(null));
         return family;
     }

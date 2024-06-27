@@ -729,11 +729,19 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async executeSearchExpression(portalShortcode: string, studyShortcode: string, envName: string, expression: string):
+  async executeSearchExpression(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    expression: string,
+    opts: { limit?: number } = {}):
     Promise<EnrolleeSearchExpressionResult[]> {
-    const url = `${
+    let url = `${
       baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
     }/enrollee/search/v2?expression=${encodeURIComponent(expression)}`
+    if (opts.limit) {
+      url += `&limit=${opts.limit}`
+    }
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -852,6 +860,33 @@ export default {
     )
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async createRelation(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: EnvironmentName,
+    relation: EnrolleeRelation): Promise<EnrolleeRelation> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(relation),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async deleteRelation(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: EnvironmentName,
+    relationId: string): Promise<Response> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/${relationId}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async fetchKitsByStudyEnvironment(

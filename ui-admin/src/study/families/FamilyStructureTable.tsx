@@ -161,7 +161,9 @@ const groupFamilyMembersWithSubrows = (family: Family): FamilyMemberWithSubrows[
   // to ensure that parents are created before children
   const relations = (family.relations || []).sort(
     (a, b) => getNumParentRelations(a, family) - getNumParentRelations(b, family)
-  )
+  ).filter(r => {
+    return family.members?.find(m => m.id === r.enrolleeId) && family.members?.find(m => m.id === r.targetEnrolleeId)
+  })
 
   relations.forEach(r => {
     const parentExisting = findRowOrSubrow(out, r.enrolleeId)
@@ -169,22 +171,32 @@ const groupFamilyMembersWithSubrows = (family: Family): FamilyMemberWithSubrows[
 
     if (parentExisting && !childExisting) {
       parentExisting.subrows.push({
-        member: family.members?.find(m => m.id === r.targetEnrolleeId),
+        member: family.members?.find(m => m?.id === r.targetEnrolleeId),
         relationToParentRow: r,
         subrows: []
       })
       sortByFamilyRelationship(parentExisting.subrows)
     } else if (!parentExisting && !childExisting) {
       out.push({
-        member: family.members?.find(m => m.id === r.enrolleeId),
+        member: family.members?.find(m => m?.id === r.enrolleeId),
         subrows: [{
-          member: family.members?.find(m => m.id === r.targetEnrolleeId),
+          member: family.members?.find(m => m?.id === r.targetEnrolleeId),
           relationToParentRow: r,
           subrows: []
         }]
       })
     }
   })
+
+  family.members?.forEach(m => {
+    if (!findRowOrSubrow(out, m.id)) {
+      out.push({
+        member: m,
+        subrows: []
+      })
+    }
+  })
+
 
   return out
 }

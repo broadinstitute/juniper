@@ -24,17 +24,18 @@ import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import { isNil } from 'lodash'
 import Api from 'api/api'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 /**
  * Editable view of the members of a family.
  */
 export const FamilyMembers = ({
-  family, studyEnvContext
+  family, studyEnvContext, reloadFamily
 }:{
-  family: Family, studyEnvContext: StudyEnvContextT
+  family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void
 }) => {
   const [isAddingNewMember, setIsAddingNewMember] = useState<boolean>(false)
-  const [newMember, setNewMember] = useState<Enrollee | null>(null)
+  const [newMember, setNewMember] = useState<Enrollee>()
 
   const isNewMemberCreationRow = (row: Row<Partial<Enrollee>>) => {
     return isAddingNewMember && row.index === family.members?.length
@@ -52,7 +53,14 @@ export const FamilyMembers = ({
           studyEnvContext={studyEnvContext}
           selectedEnrollee={newMember}
           onEnrolleeSelected={enrollee => setNewMember(enrollee)}
-          searchExpFilter={`{family.shortcode} != '${family.shortcode}'`}
+          searchExpFilter={
+            // filter out the current members from the search results;
+            // there might be a better way to do this, but I couldn't
+            // figure out how to get the SQL to come out right without
+            // any weird edge cases, and families should be O(10) anyway
+            concatSearchExpressions(
+              members.map(enrollee => `{enrollee.shortcode} != '${enrollee.shortcode}'`)
+            )}
         />
       }
 
@@ -74,7 +82,8 @@ export const FamilyMembers = ({
 
               setIsAddingNewMember(false)
               setMembers(old => [...old, newMember!])
-              setNewMember(null)
+              setNewMember(undefined)
+              reloadFamily()
             }}
             disabled={isNil(newMember)}
           >
@@ -84,7 +93,7 @@ export const FamilyMembers = ({
             className='btn btn-secondary'
             onClick={() => {
               setIsAddingNewMember(false)
-              setNewMember(null)
+              setNewMember(undefined)
             }}
           >
             <FontAwesomeIcon icon={faX} aria-label={'Cancel adding enrollee to family'}/>
@@ -105,6 +114,7 @@ export const FamilyMembers = ({
               row.original.shortcode)
 
             setMembers(old => old.filter(m => m.shortcode !== row.original.shortcode))
+            reloadFamily()
           }}
         >
           <FontAwesomeIcon icon={faTrashCan} aria-label={'Remove enrollee from family'}/>

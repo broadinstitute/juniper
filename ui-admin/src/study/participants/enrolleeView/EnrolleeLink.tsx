@@ -11,6 +11,10 @@ export const EnrolleeLink = ({ studyEnvContext, enrollee }: {
   studyEnvContext: StudyEnvContextT,
   enrollee: Enrollee
 }) => {
+  if (!enrollee) {
+    return <></>
+  }
+
   const name = `${enrollee.profile?.givenName || ''} ${enrollee.profile?.familyName || ''}`.trim()
   const path = `${studyEnvContext.currentEnvPath}/participants/${enrollee.shortcode}`
   if (isEmpty(name)) {

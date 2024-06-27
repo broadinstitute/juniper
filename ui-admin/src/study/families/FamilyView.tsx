@@ -39,13 +39,13 @@ export default function FamilyView({ studyEnvContext }: { studyEnvContext: Study
   return <>
     {isLoading && <LoadingSpinner/>}
     {!isLoading && family && <LoadedFamilyView family={family} studyEnvContext={studyEnvContext}
-      onUpdate={reload}/>}
+      reloadFamily={reload}/>}
   </>
 }
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export function LoadedFamilyView({ family, studyEnvContext }:
-                                     { family: Family, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
+export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
+                                   { family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void }) {
   const { currentEnvPath } = studyEnvContext
 
 
@@ -78,9 +78,14 @@ export function LoadedFamilyView({ family, studyEnvContext }:
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
-                <Route index element={<FamilyOverview family={family} studyEnvContext={studyEnvContext}/>}/>
+                <Route index element={<FamilyOverview
+                  family={family}
+                  studyEnvContext={studyEnvContext}/>}
+                />
                 <Route path="membersAndRelations"
-                  element={<FamilyMembersAndRelations family={family} studyEnvContext={studyEnvContext}/>}/>
+                  element={<FamilyMembersAndRelations family={family}
+                    studyEnvContext={studyEnvContext}
+                    reloadFamily={reloadFamily}/>}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

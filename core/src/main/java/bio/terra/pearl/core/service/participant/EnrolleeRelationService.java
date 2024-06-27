@@ -28,7 +28,8 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                                    DataChangeRecordService dataChangeRecordService,
                                    @Lazy EnrolleeService enrolleeService,
                                    ObjectMapper objectMapper,
-                                   ProfileService profileService, FamilyService familyService) {
+                                   ProfileService profileService,
+                                   @Lazy FamilyService familyService) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.profileService = profileService;
@@ -137,6 +138,11 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                 "deleteAllByEnrolleeIdOrTargetId")).build());
     }
 
+    public void deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
+        List<EnrolleeRelation> enrolleeRelations = dao.findAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(enrolleeId, familyId);
+        bulkDelete(enrolleeRelations, info);
+    }
+
     /**
      * This method returns a list of enrollees that are proxies only for this target user.
      * An enrollee is exclusively proxied if it is only proxied by the given enrollee and no other enrollees.
@@ -172,5 +178,20 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    public void attachEnrolleesAndFamily(EnrolleeRelation relation) {
+        relation.setEnrollee(enrolleeService.find(relation.getEnrolleeId()).map(enrollee -> {
+            enrolleeService.attachProfile(enrollee);
+            return enrollee;
+        }).orElse(null));
+        relation.setTargetEnrollee(enrolleeService.find(relation.getTargetEnrolleeId()).map(enrollee -> {
+            enrolleeService.attachProfile(enrollee);
+            return enrollee;
+        }).orElse(null));
+
+        if (relation.getFamilyId() != null) {
+            relation.setFamily(familyService.find(relation.getFamilyId()).orElse(null));
+        }
     }
 }

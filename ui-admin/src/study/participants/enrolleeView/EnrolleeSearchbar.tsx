@@ -16,12 +16,12 @@ export const EnrolleeSearchbar = ({
   searchExpFilter
 }: {
   studyEnvContext: StudyEnvContextT,
-  onEnrolleeSelected: (enrollee: Enrollee | null) => void,
-  selectedEnrollee: Enrollee | null,
+  onEnrolleeSelected: (enrollee?: Enrollee) => void,
+  selectedEnrollee?: Enrollee,
   searchExpFilter?: string
 }) => {
   const searchEnrollees = async (value: string): Promise<Enrollee[]> => {
-    const defaultSearchExp = `{enrollee.shortcode} contains '${value}' or {profile.name} contains '${value}'`
+    const defaultSearchExp = `({enrollee.shortcode} contains '${value}' or {profile.name} contains '${value}')`
 
     const searchExp = searchExpFilter
       ? concatSearchExpressions([defaultSearchExp, searchExpFilter])
@@ -31,7 +31,8 @@ export const EnrolleeSearchbar = ({
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
-      searchExp)
+      searchExp,
+      { limit: 10 })
 
     return results.map((result: EnrolleeSearchExpressionResult) => {
       const enrollee = result.enrollee
@@ -56,7 +57,7 @@ export const EnrolleeSearchbar = ({
     }}
     value={selectedEnrollee ? { value: selectedEnrollee, label: labelForEnrollee(selectedEnrollee) } : null}
     onChange={selectedOption => {
-      const newSelectedEnrollee = selectedOption ? selectedOption.value : null
+      const newSelectedEnrollee = selectedOption?.value
       onEnrolleeSelected(newSelectedEnrollee)
     }}
   />

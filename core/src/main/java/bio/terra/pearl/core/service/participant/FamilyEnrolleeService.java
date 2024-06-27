@@ -16,10 +16,13 @@ import java.util.UUID;
 @Service
 public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, FamilyEnrolleeDao> {
 
+    private final EnrolleeRelationService enrolleeRelationService;
+
     public FamilyEnrolleeService(FamilyEnrolleeDao familyEnrolleeDao,
                                  DataChangeRecordService dataChangeRecordService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper, EnrolleeRelationService enrolleeRelationService) {
         super(familyEnrolleeDao, dataChangeRecordService, objectMapper);
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     @Transactional
@@ -47,5 +50,14 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
 
     public List<FamilyEnrollee> findByFamilyId(UUID familyId) {
         return dao.findByFamilyId(familyId);
+    }
+
+    @Transactional
+    public void deleteEnrolleeAndFamilyRelationships(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
+        Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(enrolleeId, familyId);
+        familyEnrollee.ifPresent(fe -> {
+            this.delete(fe.getId(), info);
+            enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId();
+        });
     }
 }
