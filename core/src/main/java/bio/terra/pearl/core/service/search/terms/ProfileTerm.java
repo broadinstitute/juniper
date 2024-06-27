@@ -89,6 +89,11 @@ public class ProfileTerm implements SearchTerm {
         return List.of();
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return FIELDS.get(field);
+    }
+
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry("givenName", SearchValueTypeDefinition.builder().type(STRING).build()),
             Map.entry("familyName", SearchValueTypeDefinition.builder().type(STRING).build()),

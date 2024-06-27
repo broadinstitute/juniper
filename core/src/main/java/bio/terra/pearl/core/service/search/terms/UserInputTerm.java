@@ -1,5 +1,6 @@
 package bio.terra.pearl.core.service.search.terms;
 
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
@@ -44,11 +45,8 @@ public class UserInputTerm implements SearchTerm {
             case STRING -> {
                 return List.of(searchValue.getStringValue());
             }
-            case INTEGER -> {
-                return List.of(searchValue.getIntegerValue());
-            }
-            case DOUBLE -> {
-                return List.of(searchValue.getDoubleValue());
+            case NUMBER -> {
+                return List.of(searchValue.getNumberValue());
             }
             case BOOLEAN -> {
                 return List.of(searchValue.getBooleanValue());
@@ -70,5 +68,11 @@ public class UserInputTerm implements SearchTerm {
         return "?";
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return SearchValueTypeDefinition.builder()
+                .type(searchValue.getSearchValueType())
+                .build();
+    }
 
 }

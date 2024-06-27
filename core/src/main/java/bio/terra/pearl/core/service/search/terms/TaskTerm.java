@@ -99,6 +99,11 @@ public class TaskTerm implements SearchTerm {
         return "task_" + targetStableId;
     }
 
+    @Override
+    public SearchValueTypeDefinition type() {
+        return FIELDS.get(field);
+    }
+
     public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
             Map.entry("status",
                     SearchValueTypeDefinition

@@ -1,9 +1,16 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 
 import ParticipantList from './ParticipantList'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
-import { mockEnrolleeSearchExpressionResult, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import {
+  mockEnrolleeSearchExpressionResult,
+  mockStudyEnvContext
+} from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
@@ -91,7 +98,8 @@ test('keyword search sends search api request', async () => {
     'sandbox',
     '({profile.name} contains \'foo\' ' +
     'or {profile.contactEmail} contains \'foo\' ' +
-    'or {enrollee.shortcode} contains \'foo\') and {enrollee.subject} = true'
+    'or {enrollee.shortcode} contains \'foo\') ' +
+    'and {enrollee.subject} = true'
   )
 })
 

@@ -6,18 +6,17 @@ import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
-import bio.terra.pearl.core.service.search.terms.EnrolleeTerm;
-import bio.terra.pearl.core.service.search.terms.LatestKitTerm;
-import bio.terra.pearl.core.service.search.terms.ProfileTerm;
-import bio.terra.pearl.core.service.search.terms.TaskTerm;
+import bio.terra.pearl.core.service.search.terms.*;
 import bio.terra.pearl.core.service.survey.SurveyService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jdbi.v3.core.statement.UnableToExecuteStatementException;
+import org.postgresql.util.PSQLException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.INTEGER;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.NUMBER;
 import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
 
 @Service
@@ -27,7 +26,11 @@ public class EnrolleeSearchService {
     private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
     private final ObjectMapper objectMapper;
 
-    public EnrolleeSearchService(EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, SurveyService surveyService, EnrolleeSearchExpressionParser enrolleeSearchExpressionParser, ObjectMapper objectMapper) {
+
+    public EnrolleeSearchService(EnrolleeSearchExpressionDao enrolleeSearchExpressionDao,
+                                 SurveyService surveyService,
+                                 EnrolleeSearchExpressionParser enrolleeSearchExpressionParser,
+                                 ObjectMapper objectMapper) {
         this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
         this.surveyService = surveyService;
         this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
@@ -45,7 +48,7 @@ public class EnrolleeSearchService {
         // latest kit fields
         LatestKitTerm.FIELDS.forEach((term, type) -> fields.put("latestKit." + term, type));
         // age
-        fields.put("age", SearchValueTypeDefinition.builder().type(INTEGER).build());
+        fields.put("age", SearchValueTypeDefinition.builder().type(NUMBER).build());
         // answers
         List<Survey> surveys = surveyService.findByStudyEnvironmentIdWithContent(studyEnvId);
         for (Survey survey : surveys) {
@@ -57,7 +60,7 @@ public class EnrolleeSearchService {
                     .forEach(def -> {
                         fields.put(
                                 "answer." + def.getSurveyStableId() + "." + def.getQuestionStableId(),
-                                fromQuestionDefinition(def));
+                                convertQuestionDefinitionToSearchType(def));
                     });
         }
 
@@ -70,13 +73,26 @@ public class EnrolleeSearchService {
                     enrolleeSearchExpressionParser.parseRule(expression),
                     studyEnvId
             );
+        } catch (UnableToExecuteStatementException e) {
+            String message = e.getShortMessage();
+
+            // PSQLException has the most useful error message, so we should
+            // see if we can grab it
+            if (e.getCause().getClass().equals(PSQLException.class)) {
+                PSQLException psqlException = (PSQLException) e.getCause();
+                if (Objects.nonNull(psqlException.getServerErrorMessage())) {
+                    message = psqlException.getServerErrorMessage().getMessage();
+                }
+            }
+
+            throw new IllegalArgumentException("Invalid search expression: " + message);
         } catch (Exception e) {
             throw new IllegalArgumentException("Invalid search expression: " + e.getMessage());
         }
 
     }
 
-    private SearchValueTypeDefinition fromQuestionDefinition(SurveyQuestionDefinition def) {
+    public SearchValueTypeDefinition convertQuestionDefinitionToSearchType(SurveyQuestionDefinition def) {
         SearchValueTypeDefinition.SearchValueTypeDefinitionBuilder<?, ?> builder = SearchValueTypeDefinition.builder();
 
         if (Objects.nonNull(def.getChoices()) && !def.getChoices().isEmpty()) {
@@ -103,8 +119,12 @@ public class EnrolleeSearchService {
 
         return builder
                 .allowOtherDescription(def.isAllowOtherDescription())
-                .type(STRING)
+                .type(getSearchValueType(def))
                 .allowMultiple(def.isAllowMultiple())
                 .build();
+    }
+
+    private SearchValue.SearchValueType getSearchValueType(SurveyQuestionDefinition def) {
+        return STRING;
     }
 }
