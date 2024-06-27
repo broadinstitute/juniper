@@ -12,11 +12,13 @@ import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -24,16 +26,18 @@ public class EnrolleeRelationExtService {
   private final EnrolleeRelationService enrolleeRelationService;
   private final EnrolleeService enrolleeService;
   private final FamilyService familyService;
+  private final FamilyEnrolleeService familyEnrolleeService;
 
   public EnrolleeRelationExtService(
-      AuthUtilService authUtilService,
-      EnrolleeRelationService enrolleeRelationService,
-      EnrolleeService enrolleeService,
-      FamilyService familyService) {
+          AuthUtilService authUtilService,
+          EnrolleeRelationService enrolleeRelationService,
+          EnrolleeService enrolleeService,
+          FamilyService familyService, FamilyEnrolleeService familyEnrolleeService) {
     this.authUtilService = authUtilService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.enrolleeService = enrolleeService;
     this.familyService = familyService;
+    this.familyEnrolleeService = familyEnrolleeService;
   }
 
   public List<EnrolleeRelation> findRelationsForTargetEnrollee(
@@ -77,6 +81,30 @@ public class EnrolleeRelationExtService {
       throw new IllegalArgumentException("Cannot create proxy relationships");
     }
 
+    if (relation.getRelationshipType().equals(RelationshipType.FAMILY)) {
+      if (Objects.isNull(relation.getFamilyId())) {
+        throw new IllegalArgumentException("Family ID is required for family relationships");
+      }
+
+      // ensure that the enrollees are in the family
+      familyEnrolleeService
+              .getOrCreate(relation.getTargetEnrolleeId(),
+                      relation.getFamilyId(),
+                      DataAuditInfo.builder()
+                              .responsibleAdminUserId(authContext.getOperator().getId())
+                              .enrolleeId(relation.getTargetEnrolleeId())
+                              .build());
+
+      familyEnrolleeService
+              .getOrCreate(relation.getEnrolleeId(),
+                      relation.getFamilyId(),
+                      DataAuditInfo.builder()
+                              .responsibleAdminUserId(authContext.getOperator().getId())
+                              .enrolleeId(relation.getEnrolleeId())
+                              .build());
+    }
+
+    // ensure that the relationship does not already exist
     if (enrolleeRelationService
         .findByEnrolleeIdAndRelationType(relation.getEnrolleeId(), relation.getRelationshipType())
         .stream()
@@ -90,6 +118,7 @@ public class EnrolleeRelationExtService {
             .enrolleeId(relation.getTargetEnrolleeId())
             .build();
 
+    // finally, create the relationship
     EnrolleeRelation created = enrolleeRelationService.create(relation, auditInfo);
     enrolleeRelationService.attachEnrolleesAndFamily(created);
     return created;

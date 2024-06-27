@@ -53,11 +53,29 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
     }
 
     @Transactional
-    public void deleteEnrolleeAndFamilyRelationships(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
+    public void deleteFamilyEnrolleeAndAllRelationships(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
         Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(enrolleeId, familyId);
         familyEnrollee.ifPresent(fe -> {
             this.delete(fe.getId(), info);
-            enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId();
+            enrolleeRelationService.deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(
+                    enrolleeId, familyId, info);
+
         });
+    }
+
+    @Transactional
+    public FamilyEnrollee getOrCreate(
+            UUID enrolleeId,
+            UUID familyId,
+            DataAuditInfo auditInfo
+    ) {
+        return findByFamilyIdAndEnrolleeId(familyId, enrolleeId)
+                .orElseGet(() -> create(
+                        FamilyEnrollee
+                                .builder()
+                                .familyId(familyId)
+                                .enrolleeId(enrolleeId)
+                                .build(),
+                        auditInfo));
     }
 }

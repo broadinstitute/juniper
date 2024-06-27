@@ -17,6 +17,7 @@ import { basicTableLayout } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCheck,
+  faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
@@ -25,6 +26,7 @@ import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearc
 import { isNil } from 'lodash'
 import Api from 'api/api'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
+import { ConfirmationModal } from 'components/ConfirmationModal'
 
 /**
  * Editable view of the members of a family.
@@ -38,15 +40,29 @@ export const FamilyMembers = ({
   const [newMember, setNewMember] = useState<Enrollee>()
 
   const isNewMemberCreationRow = (row: Row<Partial<Enrollee>>) => {
-    return isAddingNewMember && row.index === family.members?.length
+    return isAddingNewMember && row.index === 0
   }
 
   const [members, setMembers] = useState<Enrollee[]>(family.members || [])
+
+  const [memberSelectedForDeletion, setMemberSelectedForDeletion] = React.useState<Enrollee>()
+
+  const deleteMember = async (shortcode: string) => {
+    await Api.removeMemberFromFamily(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      family.shortcode,
+      shortcode)
+
+    setMembers(old => old.filter(m => m.shortcode !== shortcode))
+    reloadFamily()
+  }
 
   const columns: ColumnDef<Partial<Enrollee>>[] = useMemo(() => [{
     id: 'member',
     header: 'Member',
     accessorKey: 'member',
+    minSize: 800,
     cell: ({ row }) => {
       if (isNewMemberCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -68,6 +84,8 @@ export const FamilyMembers = ({
     }
   }, {
     header: 'Actions',
+    size: 100,
+    maxSize: 100,
     cell: ({ row }) => {
       if (isNewMemberCreationRow(row)) {
         return <>
@@ -101,20 +119,13 @@ export const FamilyMembers = ({
         </>
       } else {
         return <button
-          className='btn btn-outline-danger border-0'
+          className='btn btn-secondary border-0'
           onClick={async () => {
             if (isNil(row.original.shortcode)) {
               return
             }
 
-            await Api.removeMemberFromFamily(studyEnvContext.portal.shortcode,
-              studyEnvContext.study.shortcode,
-              studyEnvContext.currentEnv.environmentName,
-              family.shortcode,
-              row.original.shortcode)
-
-            setMembers(old => old.filter(m => m.shortcode !== row.original.shortcode))
-            reloadFamily()
+            setMemberSelectedForDeletion(row.original as Enrollee)
           }}
         >
           <FontAwesomeIcon icon={faTrashCan} aria-label={'Remove enrollee from family'}/>
@@ -124,7 +135,7 @@ export const FamilyMembers = ({
   }], [isAddingNewMember, newMember, family.members, studyEnvContext])
 
   const data = useMemo(() => {
-    return ((members as Partial<Enrollee>[]).concat((isAddingNewMember ? [{}] : []))) || []
+    return (isAddingNewMember ? [{}] : []).concat((members as Partial<Enrollee>[]))
   }, [members, isAddingNewMember])
   const table = useReactTable<Partial<Enrollee>>({
     data,
@@ -134,9 +145,25 @@ export const FamilyMembers = ({
   })
 
   return <div>
-    {basicTableLayout(table)}
-    <div className="d-flex justify-content-end">
-      <button className="btn btn-link" onClick={() => setIsAddingNewMember(true)}>+ Add new family member</button>
-    </div>
+    <h4>
+      Members
+      <button className='btn btn-secondary ms-2' onClick={() => setIsAddingNewMember(true)}>
+        <FontAwesomeIcon className={'me-2'} icon={faPlus} aria-label={'Add new member'}/>
+        Add new member
+      </button>
+    </h4>
+    {basicTableLayout(table, { useSize: true })}
+    {memberSelectedForDeletion && <ConfirmationModal
+      title={<>
+          Are you sure you want to remove <EnrolleeLink
+          studyEnvContext={studyEnvContext}
+          enrollee={memberSelectedForDeletion}
+        /> from the family?
+      </>}
+      body={'This action cannot be undone.'}
+      onConfirm={() => deleteMember(memberSelectedForDeletion?.shortcode || '')}
+      onCancel={() => setMemberSelectedForDeletion(undefined)}
+      confirmButtonStyle={'btn-danger'}
+    />}
   </div>
 }

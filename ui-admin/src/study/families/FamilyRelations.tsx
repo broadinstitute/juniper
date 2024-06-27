@@ -17,6 +17,7 @@ import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import {
   faCheck,
+  faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -26,6 +27,7 @@ import {
   isEmpty
 } from 'lodash'
 import Api from 'api/api'
+import { ConfirmationModal } from 'components/ConfirmationModal'
 
 /**
  * Editable view of the relationships within a family.
@@ -39,11 +41,12 @@ export const FamilyRelations = ({
   const [isAddingNewRelation, setIsAddingNewRelation] = React.useState<boolean>(false)
   const [newRelation, setNewRelation] = React.useState<Partial<EnrolleeRelation>>({})
 
+  const [relationSelectedForDeletion, setRelationSelectedForDeletion] = React.useState<string>()
+
   const isNewRelationCreationRow = (row: Row<Partial<EnrolleeRelation>>) => {
-    return isAddingNewRelation && row.index === family.relations?.length
+    return isAddingNewRelation && row.index === 0
   }
 
-  console.log(relations)
   const createNewRelation = async () => {
     if (!newRelation) {
       return
@@ -87,6 +90,7 @@ export const FamilyRelations = ({
   const columns: ColumnDef<Partial<EnrolleeRelation>>[] = [{
     header: 'Enrollee',
     accessorKey: 'enrolleeId',
+    size: 500,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -97,7 +101,6 @@ export const FamilyRelations = ({
             })
           }}
           selectedEnrollee={newRelation?.enrollee}
-          searchExpFilter={`{family.shortcode} = '${family.shortcode}'`}
         />
       }
 
@@ -107,12 +110,16 @@ export const FamilyRelations = ({
   }, {
     header: 'Relation',
     accessorKey: 'familyRelationship',
+    size: 500,
     cell: ({ row }) => {
       const relationship = row.original?.familyRelationship
       return <span className="fst-italic">
         is the <Creatable
           isDisabled={!isNewRelationCreationRow(row)}
           options={[]}
+          styles={{
+            control: provided => ({ ...provided, minWidth: '120px' })
+          }}
           value={{ value: relationship, label: relationship }}
           onChange={option => setNewRelation(old => {
             return { ...old, familyRelationship: option?.value || '' }
@@ -124,6 +131,7 @@ export const FamilyRelations = ({
   }, {
     header: 'Target',
     accessorKey: 'targetEnrolleeId',
+    size: 500,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -134,7 +142,6 @@ export const FamilyRelations = ({
             })
           }}
           selectedEnrollee={newRelation?.targetEnrollee}
-          searchExpFilter={`{family.shortcode} = '${family.shortcode}'`}
         />
       }
 
@@ -144,6 +151,8 @@ export const FamilyRelations = ({
   },
   {
     header: 'Actions',
+    size: 130,
+    maxSize: 130,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <>
@@ -166,10 +175,10 @@ export const FamilyRelations = ({
         </>
       } else {
         return <button
-          className='btn btn-outline-danger border-0'
+          className='btn btn-secondary border-0'
           onClick={async () => {
             if (row.original.id) {
-              await deleteRelation(row.original.id)
+              setRelationSelectedForDeletion(row.original.id)
             }
           }}
         >
@@ -182,16 +191,28 @@ export const FamilyRelations = ({
 
   const table = useReactTable({
     data: useMemo(() => {
-      return (relations as Partial<EnrolleeRelation>[]).concat(isAddingNewRelation ? [newRelation] : [])
+      return (isAddingNewRelation ? [newRelation] : []).concat(relations as Partial<EnrolleeRelation>[])
     }, [relations, isAddingNewRelation, newRelation]),
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
   return <div>
-    {basicTableLayout(table, { trClass: 'align-middle' })}
-    <div className="d-flex justify-content-end">
-      <button className="btn btn-link" onClick={() => setIsAddingNewRelation(true)}>+ Add new family relation</button>
-    </div>
+    <h4>
+      Relations
+      <button className='btn btn-secondary ms-2' onClick={() => setIsAddingNewRelation(true)}>
+        <FontAwesomeIcon className='me-2' icon={faPlus} aria-label={'Add new relation'}/>
+        Add new relation
+      </button>
+    </h4>
+    {basicTableLayout(table, { trClass: 'align-middle', useSize: true })}
+
+    {relationSelectedForDeletion && <ConfirmationModal
+      title={'Are you sure you want to delete this relation?'}
+      body={'This action cannot be undone.'}
+      onConfirm={() => deleteRelation(relationSelectedForDeletion)}
+      onCancel={() => setRelationSelectedForDeletion(undefined)}
+      confirmButtonStyle={'btn-danger'}
+    />}
   </div>
 }

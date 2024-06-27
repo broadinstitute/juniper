@@ -757,7 +757,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations:
     post:
-      summary: Creates a new relation between two enrollees
+      summary: Creates a new relation between two enrollees; if creating a family relation,
+        then they will also be added to the family (if not already).
       tags: [ enrolleeRelation ]
       operationId: create
       parameters:

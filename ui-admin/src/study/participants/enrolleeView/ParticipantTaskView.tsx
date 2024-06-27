@@ -10,7 +10,10 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { tableHeader } from 'util/tableUtils'
-import { Enrollee, instantToDefaultString } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDefaultString
+} from '@juniper/ui-core'
 
 const columns: ColumnDef<ParticipantTask>[] = [{
   header: 'Task',
@@ -59,7 +62,9 @@ const ParticipantTaskView = ({ enrollee }: {enrollee: Enrollee}) => {
     <table className="table table-striped">
       <thead>
         <tr>
-          {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable: false }))}
+          {table
+            .getFlatHeaders()
+            .map(header => tableHeader(header, { sortable: true, filterable: false, useSize: false }))}
         </tr>
       </thead>
       <tbody>

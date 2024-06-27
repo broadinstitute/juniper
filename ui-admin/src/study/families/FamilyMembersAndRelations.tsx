@@ -3,6 +3,7 @@ import { Family } from '@juniper/ui-core'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { FamilyRelations } from 'study/families/FamilyRelations'
 import { FamilyMembers } from 'study/families/FamilyMembers'
+import { ProbandEditor } from 'study/families/ProbandEditor'
 
 /**
  * Renders editable page with all family members and relations.
@@ -13,10 +14,10 @@ export const FamilyMembersAndRelations = (
   }
 ) => {
   return <div>
-    <h4>Members</h4>
-    <FamilyMembers family={family} studyEnvContext={studyEnvContext} reloadFamily={reloadFamily}/>
+    <ProbandEditor family={family} studyEnvContext={studyEnvContext} reloadFamily={reloadFamily}/>
     <div className="my-4"/>
-    <h4>Relations</h4>
     <FamilyRelations family={family} studyEnvContext={studyEnvContext} reloadFamily={reloadFamily}/>
+    <div className="my-4"/>
+    <FamilyMembers family={family} studyEnvContext={studyEnvContext} reloadFamily={reloadFamily}/>
   </div>
 }

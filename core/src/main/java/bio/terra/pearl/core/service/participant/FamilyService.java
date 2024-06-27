@@ -149,6 +149,10 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         FamilyEnrollee fe = familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
                 .orElseThrow(() -> new NotFoundException("Enrollee not found in family"));
 
-        familyEnrolleeService.delete(fe.getId(), auditInfo);
+        // also cleans up any relationships the enrollee has within the family
+        familyEnrolleeService.deleteFamilyEnrolleeAndAllRelationships(
+                enrollee.getId(),
+                family.getId(),
+                auditInfo);
     }
 }

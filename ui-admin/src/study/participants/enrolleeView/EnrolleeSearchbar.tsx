@@ -13,12 +13,14 @@ export const EnrolleeSearchbar = ({
   studyEnvContext,
   onEnrolleeSelected,
   selectedEnrollee,
-  searchExpFilter
+  searchExpFilter,
+  disabled = false
 }: {
   studyEnvContext: StudyEnvContextT,
   onEnrolleeSelected: (enrollee?: Enrollee) => void,
   selectedEnrollee?: Enrollee,
-  searchExpFilter?: string
+  searchExpFilter?: string,
+  disabled?: boolean
 }) => {
   const searchEnrollees = async (value: string): Promise<Enrollee[]> => {
     const defaultSearchExp = `({enrollee.shortcode} contains '${value}' or {profile.name} contains '${value}')`
@@ -50,7 +52,9 @@ export const EnrolleeSearchbar = ({
   }
 
   return <AsyncSelect
+    isDisabled={disabled}
     cacheOptions
+    defaultOptions
     loadOptions={async (value: string) => {
       const enrollees = await searchEnrollees(value)
       return enrollees.map(enrollee => ({ value: enrollee, label: labelForEnrollee(enrollee) }))
