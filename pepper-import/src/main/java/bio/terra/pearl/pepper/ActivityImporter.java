@@ -108,7 +108,7 @@ public class ActivityImporter {
         try {
             String surveyJson = objectMapper.writeValueAsString(root);
             for (Map.Entry<String, String> entry : JUNIPER_PEPPER_STRING_MAP.entrySet()) {
-                surveyJson = surveyJson.replace(entry.getKey(), entry.getValue());
+                surveyJson = surveyJson.replaceAll(entry.getKey(), entry.getValue());
             }
             survey.setJsonContent(objectMapper.readTree(surveyJson));
         } catch (Exception e) {
@@ -281,7 +281,12 @@ public class ActivityImporter {
     }
 
     Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
-            "$ddp.participantFirstName()", "{proxyProfile.givenName}"
+            "\\$ddp.participantFirstName\\(\\)", "{proxyProfile.givenName}",
+            "\\<p.*?\\>", "",
+            "\\</p\\>", "\\\\n",
+            "\\<em.*?\\>", "**",
+            "\\</em\\>", "**",
+            " +", " "
     );
 
 }
