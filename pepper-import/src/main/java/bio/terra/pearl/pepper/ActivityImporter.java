@@ -108,7 +108,7 @@ public class ActivityImporter {
         try {
             String surveyJson = objectMapper.writeValueAsString(root);
             for (Map.Entry<String, String> entry : JUNIPER_PEPPER_STRING_MAP.entrySet()) {
-                surveyJson = surveyJson.replaceAll(entry.getKey(), entry.getValue());
+                surveyJson = surveyJson.replace(entry.getKey(), entry.getValue());
             }
             survey.setJsonContent(objectMapper.readTree(surveyJson));
         } catch (Exception e) {
@@ -202,30 +202,34 @@ public class ActivityImporter {
     }
 
     private Map<String, String> getQuestionTxt(QuestionDef pepperQuestionDef) {
-        Map<String, String> txtMap = getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getVariables());
+        Map<String, String> txtMap = getVariableTranslationsTxt(pepperQuestionDef.getPromptTemplate().getTemplateText(),
+                pepperQuestionDef.getPromptTemplate().getVariables());
         if (txtMap.isEmpty() && pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("TEXT")) {
             TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
             //try placeholder template
-            txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getVariables());
+            txtMap = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getTemplateText(),
+                    textQuestionDef.getPlaceholderTemplate().getVariables());
         }
 
 
         return txtMap;
     }
 
-    private Map<String, String> getVariableTranslationsTxt(Collection<TemplateVariable> templateVariables) {
-        Map<String, String> txtMap = new HashMap<>();
+    /**
+     * Template texts are typically constructed as variables with formatting markup between them
+     * so we need to replace the variable name with the translation text in the appropriate language,
+     * but preserve the markup
+     */
+    private Map<String, String> getVariableTranslationsTxt(String templateText, Collection<TemplateVariable> templateVariables) {
+        Map<String, String> textMap = new HashMap<>();
+        // for each variable, get the translations and replace the variable name with the translation text in the appropriate language
         for (TemplateVariable var : templateVariables) {
-            List<Translation> translations = var.getTranslations();
-            translations.forEach(t -> {
-                if (txtMap.containsKey(t.getLanguageCode())) {
-                    txtMap.put(t.getLanguageCode(), txtMap.get(t.getLanguageCode()) + "\n" + t.getText());
-                } else {
-                    txtMap.put(t.getLanguageCode(), t.getText());
-                }
-            });
+            for (Translation translation : var.getTranslations()) {
+                String languageText = textMap.getOrDefault(translation.getLanguageCode(), StringUtils.trim(templateText));
+                textMap.put(translation.getLanguageCode(), languageText.replace( "$" + var.getName(), translation.getText()));
+            }
         }
-        return txtMap;
+        return textMap;
     }
 
 
@@ -259,11 +263,11 @@ public class ActivityImporter {
         Map<String, String> titleTxtMap = new HashMap<>();
         if (!StringUtils.isEmpty(bodyTemplateTxt) && bodyTemplateTxt.contains("$")) {
             //get txt from variables
-            htmlTxtMap = getVariableTranslationsTxt(contentBlockDef.getBodyTemplate().getVariables());
+            htmlTxtMap = getVariableTranslationsTxt(contentBlockDef.getBodyTemplate().getTemplateText(), contentBlockDef.getBodyTemplate().getVariables());
         }
 
         if (!StringUtils.isEmpty(titleTemplateTxt) && titleTemplateTxt.contains("$")) {
-            titleTxtMap = getVariableTranslationsTxt(contentBlockDef.getTitleTemplate().getVariables());
+            titleTxtMap = getVariableTranslationsTxt(contentBlockDef.getTitleTemplate().getTemplateText(), contentBlockDef.getTitleTemplate().getVariables());
         }
 
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
@@ -277,7 +281,7 @@ public class ActivityImporter {
     }
 
     Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
-            "\\$ddp.participantFirstName()", "{proxy.givenName}"
+            "$ddp.participantFirstName()", "{proxyProfile.givenName}"
     );
 
 }
