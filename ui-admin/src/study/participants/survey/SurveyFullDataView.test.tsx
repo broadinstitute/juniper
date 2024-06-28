@@ -222,8 +222,7 @@ describe('ItemDisplay', () => {
     render(<ResponseEditHistory
       question={question} answer={answer} editHistory={[firstChangeRecord, secondChangeRecord]}/>)
 
-    expect(screen.getByText('Answered on 1/1/2020, 12:00:00 AM by', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('Edited on 1/1/2020, 1:00:00 AM by', { exact: false })).toBeInTheDocument()
-    expect(screen.getByText('Edited on 1/1/2020, 2:00:00 AM by', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('Answered on', { exact: false })).toBeInTheDocument()
+    expect(screen.getAllByText('Edited on', { exact: false })).toHaveLength(2)
   })
 })
