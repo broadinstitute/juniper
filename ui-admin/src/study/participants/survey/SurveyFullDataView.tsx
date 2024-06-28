@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { AdminUser } from 'api/adminUser'
+import { doApiLoad } from '../../../api/api-utils'
 
 type SurveyFullDataViewProps = {
   responseId?: string,
@@ -54,9 +55,13 @@ export default function SurveyFullDataView({
 
   useEffect(() => {
     if (responseId && enrollee) {
-      Api.fetchEnrolleeChangeRecords(
-        studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName,
-        enrollee.shortcode, survey.stableId).then(changeRecords => {
+      doApiLoad(async () => {
+        const changeRecords = await Api.fetchEnrolleeChangeRecords(
+          studyEnvContext.portal.shortcode,
+          studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName,
+          enrollee.shortcode,
+          survey.stableId)
         setChangeRecords(changeRecords)
       })
     }
