@@ -184,8 +184,8 @@ const getBeforeAndAfterAnswer = (changeRecord: DataChangeRecord) => {
 }
 
 /*
- * Displays the answer value and the entity responsible for answering it. If changes have been made to the answer,
- * we backtrack through the change records to find the original answer.
+ * Displays the original answer value and the entity responsible for answering it. If changes have
+ * been made to the answer, we backtrack through the change records to find the original answer.
  */
 const getOriginalAnswer = (
   question: Question | CalculatedValue, answer: Answer, changeRecords: DataChangeRecord[], users: AdminUser[]
