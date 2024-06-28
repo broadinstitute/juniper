@@ -6,15 +6,17 @@ import { Enrollee, findDifferencesBetweenObjects, instantToDefaultString, Object
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/tableUtils'
-import { useLoadingEffect } from '../../api/api-utils'
+import { basicTableLayout } from 'util/tableUtils'
+import { useLoadingEffect } from 'api/api-utils'
 import { isEmpty } from 'lodash'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
 
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function DataChangeRecords({ enrollee, studyEnvContext }:
                                                 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal } = studyEnvContext
+  const { users } = useAdminUserContext()
   const [notifications, setNotifications] = useState<DataChangeRecord[]>([])
 
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
@@ -79,7 +81,9 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
     {
       header: 'Source',
       cell: ({ row }) => (
-        row.original.responsibleUserId ? 'Participant' : 'Admin'
+        row.original.responsibleUserId ? 'Participant' :
+          row.original.responsibleAdminUserId &&
+            `Admin (${(users.find(u => u.id === row.original.responsibleAdminUserId)?.username)})`
       )
     }
   ]

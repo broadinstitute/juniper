@@ -3,6 +3,7 @@ package bio.terra.pearl.core.service.survey;
 import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -35,14 +36,9 @@ import java.util.function.BiFunction;
 @Service
 @Slf4j
 public class AnswerProcessingService {
-    private ObjectMapper objectMapper;
-    private ProfileService profileService;
-    private DataChangeRecordDao dataChangeRecordDao;
-    public AnswerProcessingService(ObjectMapper objectMapper, ProfileService profileService,
-                                   DataChangeRecordDao dataChangeRecordDao) {
-        this.objectMapper = objectMapper;
+    private final ProfileService profileService;
+    public AnswerProcessingService(ProfileService profileService) {
         this.profileService = profileService;
-        this.dataChangeRecordDao = dataChangeRecordDao;
     }
 
     /** takes a response and a list of mappings and saves any appropriate updates to the data model
@@ -53,13 +49,14 @@ public class AnswerProcessingService {
             Enrollee enrollee,
             List<Answer> answers,
             List<AnswerMapping> mappings,
-            PortalParticipantUser operator,
+            PortalParticipantUser ppUser,
+            ResponsibleEntity operator,
             DataAuditInfo auditInfo) {
         if (mappings.isEmpty()) {
             return;
         }
         processProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
-        processProxyProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
+        processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
     }
 
     /**
@@ -71,7 +68,7 @@ public class AnswerProcessingService {
             Enrollee enrollee,
             List<Answer> answers,
             List<AnswerMapping> mappings,
-            PortalParticipantUser operator,
+            ResponsibleEntity operator,
             DataAuditInfo auditInfo) {
         List<AnswerMapping> profileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROFILE)).toList();
