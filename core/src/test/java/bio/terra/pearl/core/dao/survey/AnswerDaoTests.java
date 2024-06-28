@@ -38,8 +38,7 @@ public class AnswerDaoTests extends BaseSpringBootTest {
         .build();
     Answer savedAnswer = answerDao.create(stringAnswer);
     DaoTestUtils.assertGeneratedProperties(savedAnswer);
-    assertThat(savedAnswer, samePropertyValuesAs(stringAnswer, "id", "createdAt", "lastUpdatedAt",
-        "valueAndType"));
+    assertThat(savedAnswer, samePropertyValuesAs(stringAnswer, "id", "createdAt", "lastUpdatedAt"));
   }
 
   @Test
