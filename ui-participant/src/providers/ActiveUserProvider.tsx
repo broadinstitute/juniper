@@ -15,7 +15,6 @@ export type ActiveUserContextT = {
   profile: Profile | null,
   enrollees: Enrollee[],
   proxyRelations: EnrolleeRelation[],
-  familyRelations: EnrolleeRelation[],
   setActiveUser: (ppUserId: string) => void;
   updateProfile: (profile: Profile) => void;
 }
@@ -26,7 +25,6 @@ const ActiveUserContext = React.createContext<ActiveUserContextT>({
   profile: null,
   enrollees: [],
   proxyRelations: [],
-  familyRelations: [],
   setActiveUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -45,7 +43,7 @@ export const useActiveUser = () => useContext(ActiveUserContext)
 /** Provider for the current logged-in user. */
 export default function ActiveUserProvider({ children }: { children: React.ReactNode }) {
   const userContext = useUser()
-  const { ppUsers, enrollees, proxyRelations, familyRelations, updateEnrollee } = userContext
+  const { ppUsers, enrollees, proxyRelations, updateEnrollee } = userContext
 
   const [activePpUser, setActivePpUser] = React.useState<PortalParticipantUser | null>(null)
 
@@ -73,12 +71,6 @@ export default function ActiveUserProvider({ children }: { children: React.React
       ? proxyRelations.filter(
         relation => enrollees.some(
           enrollee => enrollee.id === relation.targetEnrolleeId
-            && enrollee.profileId === activePpUser.profileId))
-      : [],
-    familyRelations: activePpUser
-      ? familyRelations.filter(
-        relation => enrollees.some(
-          enrollee => (enrollee.id === relation.targetEnrolleeId || enrollee.id === relation.enrolleeId)
             && enrollee.profileId === activePpUser.profileId))
       : [],
     setActiveUser: (ppUserId: string) => {

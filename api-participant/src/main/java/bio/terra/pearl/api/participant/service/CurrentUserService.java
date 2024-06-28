@@ -101,7 +101,7 @@ public class CurrentUserService {
 
     List<Enrollee> enrollees = loadEnrollees(ppUser);
 
-    List<EnrolleeRelation> relations = loadEnrolleeRelations(enrollees);
+    List<EnrolleeRelation> relations = loadProxyRelations(enrollees);
     enrollees.addAll(relations.stream().map(EnrolleeRelation::getTargetEnrollee).toList());
 
     List<PortalParticipantUser> ppUsers = new ArrayList<>();
@@ -132,7 +132,7 @@ public class CurrentUserService {
     return enrollees;
   }
 
-  private List<EnrolleeRelation> loadEnrolleeRelations(List<Enrollee> enrollees) {
+  private List<EnrolleeRelation> loadProxyRelations(List<Enrollee> enrollees) {
     List<EnrolleeRelation> relations = new ArrayList<>();
     if (!enrollees.isEmpty()) {
       relations =
@@ -179,5 +179,5 @@ public class CurrentUserService {
       Profile profile,
       List<PortalParticipantUser> ppUsers, // includes proxied ppusers
       List<Enrollee> enrollees,
-      List<EnrolleeRelation> relations) {}
+      List<EnrolleeRelation> proxyRelations) {}
 }

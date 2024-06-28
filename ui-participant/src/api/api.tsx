@@ -58,7 +58,7 @@ export type LoginResult = {
   user: ParticipantUser,
   ppUsers: PortalParticipantUser[],
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  proxyRelations: EnrolleeRelation[],
   profile: Profile
 }
 

@@ -15,8 +15,7 @@ export const mockUseUser = (isAnonymous: boolean): UserContextT => {
     refreshLoginState: jest.fn(),
     ppUsers: [],
     enrollees: [],
-    proxyRelations: [],
-    familyRelations: []
+    proxyRelations: []
   }
 }
 
@@ -34,7 +33,6 @@ export const mockUseActiveUser = (): ActiveUserContextT => {
     profile: {},
     enrollees: [],
     proxyRelations: [],
-    familyRelations: [],
     setActiveUser: jest.fn(),
     updateProfile: jest.fn()
   }
