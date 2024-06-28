@@ -36,7 +36,10 @@ public class FamilyExtService {
   // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public void addEnrollee(
-      PortalStudyEnvAuthContext authContext, String familyShortcode, String enrolleeShortcode) {
+      PortalStudyEnvAuthContext authContext,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
     AdminUser user = authContext.getOperator();
 
@@ -44,13 +47,19 @@ public class FamilyExtService {
         familyShortcode,
         enrolleeShortcode,
         studyEnvironment.getId(),
-        DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build());
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(user.getId())
+            .justification(justification)
+            .build());
   }
 
   // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public void removeEnrollee(
-      PortalStudyEnvAuthContext authContext, String familyShortcode, String enrolleeShortcode) {
+      PortalStudyEnvAuthContext authContext,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
     AdminUser user = authContext.getOperator();
 
@@ -58,6 +67,29 @@ public class FamilyExtService {
         familyShortcode,
         enrolleeShortcode,
         studyEnvironment.getId(),
-        DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build());
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(user.getId())
+            .justification(justification)
+            .build());
+  }
+
+  // todo
+  @EnforcePortalStudyEnvPermission(permission = "???")
+  public Family updateProband(
+      PortalStudyEnvAuthContext authContext,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
+    StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
+    AdminUser user = authContext.getOperator();
+
+    return familyService.updateProband(
+        familyShortcode,
+        enrolleeShortcode,
+        studyEnvironment.getId(),
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(user.getId())
+            .justification(justification)
+            .build());
   }
 }

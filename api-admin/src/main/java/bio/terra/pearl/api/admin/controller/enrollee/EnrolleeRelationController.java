@@ -50,7 +50,11 @@ public class EnrolleeRelationController implements EnrolleeRelationApi {
 
   @Override
   public ResponseEntity<Object> create(
-      String portalShortcode, String studyShortcode, String envName, Object body) {
+      String justification,
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      Object body) {
     EnrolleeRelation relation = objectMapper.convertValue(body, EnrolleeRelation.class);
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     EnrolleeRelation createdRelation =
@@ -60,13 +64,18 @@ public class EnrolleeRelationController implements EnrolleeRelationApi {
                 portalShortcode,
                 studyShortcode,
                 EnvironmentName.valueOfCaseInsensitive(envName)),
-            relation);
+            relation,
+            justification);
     return ResponseEntity.ok(createdRelation);
   }
 
   @Override
   public ResponseEntity<Void> delete(
-      String portalShortcode, String studyShortcode, String envName, UUID enrolleeRelationId) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      UUID enrolleeRelationId,
+      String justification) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     enrolleeRelationExtService.delete(
         PortalStudyEnvAuthContext.of(
@@ -74,7 +83,8 @@ public class EnrolleeRelationController implements EnrolleeRelationApi {
             portalShortcode,
             studyShortcode,
             EnvironmentName.valueOfCaseInsensitive(envName)),
-        enrolleeRelationId);
+        enrolleeRelationId,
+        justification);
     return ResponseEntity.noContent().build();
   }
 }

@@ -7,10 +7,12 @@ import {
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCheck,
+  faFloppyDisk,
   faPencil,
   faX
 } from '@fortawesome/free-solid-svg-icons'
+import JustifyChangesModal from 'study/participants/JustifyChangesModal'
+import Api from 'api/api'
 
 
 /**
@@ -28,6 +30,19 @@ export const ProbandEditor = (
   }) => {
   const [proband, setProband] = React.useState<Enrollee>(family.proband)
   const [editMode, setEditMode] = React.useState<boolean>(false)
+  const [openSaveNewProbandModal, setOpenSaveNewProbandModal] = React.useState<boolean>(false)
+
+  const saveProband = async (justification: string) => {
+    await Api.updateProband(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      family.shortcode,
+      proband.shortcode,
+      justification)
+    reloadFamily()
+    setEditMode(false)
+    setOpenSaveNewProbandModal(false)
+  }
   return <div>
     <h4>Proband</h4>
     <div className="d-flex">
@@ -54,13 +69,11 @@ export const ProbandEditor = (
       </button>}
       {editMode && <>
         <button
-          className="btn btn-success ms-2"
+          className="btn btn-primary ms-2"
           onClick={async () => {
-            console.log(proband)
-            setEditMode(false)
-            reloadFamily()
+            setOpenSaveNewProbandModal(true)
           }}>
-          <FontAwesomeIcon icon={faCheck}/>
+          <FontAwesomeIcon icon={faFloppyDisk}/>
         </button>
         <button
           className="btn btn-secondary"
@@ -71,7 +84,10 @@ export const ProbandEditor = (
           <FontAwesomeIcon icon={faX}/>
         </button>
       </>}
-
+      {openSaveNewProbandModal && <JustifyChangesModal
+        saveWithJustification={saveProband}
+        onDismiss={() => setOpenSaveNewProbandModal(false)}
+      />}
     </div>
   </div>
 }

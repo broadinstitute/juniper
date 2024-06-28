@@ -18,7 +18,6 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link } from 'react-router-dom'
 import {
   isNil,
   lowerCase,
@@ -72,21 +71,10 @@ export const FamilyStructureTable = (
       }
     },
     {
-      id: 'shortcode',
-      header: 'Shortcode',
-      accessorKey: 'member.shortcode',
+      id: 'enrollee',
+      header: 'Enrollee',
       cell: ({ row }) => {
-        return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.member.shortcode}`}>
-          {row.original.member.shortcode}
-        </Link>
-      }
-    },
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'member.profile.givenName',
-      cell: ({ row }) => {
-        return `${row.original.member.profile?.givenName || ''} ${row.original.member.profile?.familyName || ''}`.trim()
+        return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.member}/>
       }
     },
     {

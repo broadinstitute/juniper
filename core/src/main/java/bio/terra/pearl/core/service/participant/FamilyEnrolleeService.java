@@ -54,13 +54,16 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
 
     @Transactional
     public void deleteFamilyEnrolleeAndAllRelationships(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
-        Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(enrolleeId, familyId);
-        familyEnrollee.ifPresent(fe -> {
-            this.delete(fe.getId(), info);
-            enrolleeRelationService.deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(
-                    enrolleeId, familyId, info);
+        Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
+        familyEnrollee.ifPresentOrElse(fe -> {
+                    this.delete(fe.getId(), info);
+                    enrolleeRelationService.deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(
+                            enrolleeId, familyId, info);
 
-        });
+                },
+                () -> {
+                    throw new IllegalArgumentException("Family enrollee not found");
+                });
     }
 
     @Transactional

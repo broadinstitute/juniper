@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react'
 import {
+  Enrollee,
   EnrolleeRelation,
   Family
 } from '@juniper/ui-core'
@@ -16,7 +17,7 @@ import Creatable from 'react-select/creatable'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import {
-  faCheck,
+  faFloppyDisk,
   faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
@@ -27,7 +28,7 @@ import {
   isEmpty
 } from 'lodash'
 import Api from 'api/api'
-import { ConfirmationModal } from 'components/ConfirmationModal'
+import JustifyChangesModal from 'study/participants/JustifyChangesModal'
 
 /**
  * Editable view of the relationships within a family.
@@ -39,7 +40,9 @@ export const FamilyRelations = ({
 }) => {
   const [relations, setRelations] = React.useState<EnrolleeRelation[]>(family.relations || [])
   const [isAddingNewRelation, setIsAddingNewRelation] = React.useState<boolean>(false)
+
   const [newRelation, setNewRelation] = React.useState<Partial<EnrolleeRelation>>({})
+  const [openSaveNewRelationModal, setOpenSaveNewRelationModal] = React.useState<boolean>(false)
 
   const [relationSelectedForDeletion, setRelationSelectedForDeletion] = React.useState<string>()
 
@@ -47,7 +50,7 @@ export const FamilyRelations = ({
     return isAddingNewRelation && row.index === 0
   }
 
-  const createNewRelation = async () => {
+  const createNewRelation = async (justification: string) => {
     if (!newRelation) {
       return
     }
@@ -67,23 +70,31 @@ export const FamilyRelations = ({
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
-      relation as EnrolleeRelation
+      relation as EnrolleeRelation,
+      justification
     )
 
     setRelations(old => [...old, createdRelation])
     setNewRelation({})
     setIsAddingNewRelation(false)
+    setOpenSaveNewRelationModal(false)
     reloadFamily()
   }
 
-  const deleteRelation = async (relationId: string) => {
+  const isMemberOfFamily = (enrolleeId: string) => {
+    return family.members?.findIndex(m => m.id === enrolleeId) !== -1
+  }
+
+  const deleteRelation = async (relationId: string, justification: string) => {
     await Api.deleteRelation(
       studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
-      relationId
+      relationId,
+      justification
     )
     setRelations(old => old.filter(r => r.id !== relationId))
+    setRelationSelectedForDeletion(undefined)
     reloadFamily()
   }
 
@@ -157,11 +168,11 @@ export const FamilyRelations = ({
       if (isNewRelationCreationRow(row)) {
         return <>
           <button
-            className='btn btn-success'
-            onClick={createNewRelation}
+            className='btn btn-primary'
+            onClick={() => setOpenSaveNewRelationModal(true)}
             disabled={!newRelation?.enrolleeId || !newRelation?.targetEnrolleeId}
           >
-            <FontAwesomeIcon icon={faCheck} aria-label={'Add relation to family'}/>
+            <FontAwesomeIcon icon={faFloppyDisk} aria-label={'Add relation to family'}/>
           </button>
           <button
             className='btn btn-secondary'
@@ -207,12 +218,32 @@ export const FamilyRelations = ({
     </h4>
     {basicTableLayout(table, { trClass: 'align-middle', useSize: true })}
 
-    {relationSelectedForDeletion && <ConfirmationModal
-      title={'Are you sure you want to delete this relation?'}
-      body={'This action cannot be undone.'}
-      onConfirm={() => deleteRelation(relationSelectedForDeletion)}
-      onCancel={() => setRelationSelectedForDeletion(undefined)}
-      confirmButtonStyle={'btn-danger'}
+    {relationSelectedForDeletion && <JustifyChangesModal
+      saveWithJustification={justification => deleteRelation(relationSelectedForDeletion, justification)}
+      onDismiss={() => setRelationSelectedForDeletion(undefined)}
     />}
+
+    {openSaveNewRelationModal &&
+        <JustifyChangesModal
+          saveWithJustification={createNewRelation}
+          onDismiss={() => setOpenSaveNewRelationModal(false)}
+          bodyText={<>
+            {(!isMemberOfFamily(newRelation.enrolleeId || '')
+                  || !isMemberOfFamily(newRelation.targetEnrolleeId || ''))
+                && <p>
+                  <strong>Warning:</strong> creating this relation will also add new members of the family:
+                  <ul>
+                    {!isMemberOfFamily(newRelation.enrolleeId || '') && <li>
+                      <EnrolleeLink studyEnvContext={studyEnvContext}
+                        enrollee={newRelation.enrollee as Enrollee}/>
+                    </li>}
+                    {!isMemberOfFamily(newRelation.targetEnrolleeId || '') && <li>
+                      <EnrolleeLink studyEnvContext={studyEnvContext}
+                        enrollee={newRelation.targetEnrollee as Enrollee}/>
+                    </li>}
+                  </ul>
+                </p>}
+          </>}
+        />}
   </div>
 }

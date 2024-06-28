@@ -16,7 +16,7 @@ import React, {
 import { basicTableLayout } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCheck,
+  faFloppyDisk,
   faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
@@ -26,7 +26,7 @@ import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearc
 import { isNil } from 'lodash'
 import Api from 'api/api'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
-import { ConfirmationModal } from 'components/ConfirmationModal'
+import JustifyChangesModal from 'study/participants/JustifyChangesModal'
 
 /**
  * Editable view of the members of a family.
@@ -46,15 +46,34 @@ export const FamilyMembers = ({
   const [members, setMembers] = useState<Enrollee[]>(family.members || [])
 
   const [memberSelectedForDeletion, setMemberSelectedForDeletion] = React.useState<Enrollee>()
+  const [openSaveNewMemberModal, setOpenSaveNewMemberModal] = React.useState<boolean>(false)
 
-  const deleteMember = async (shortcode: string) => {
+  const deleteMember = async (shortcode: string, justification: string) => {
     await Api.removeMemberFromFamily(studyEnvContext.portal.shortcode,
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName,
       family.shortcode,
-      shortcode)
+      shortcode,
+      justification)
 
     setMembers(old => old.filter(m => m.shortcode !== shortcode))
+    setMemberSelectedForDeletion(undefined)
+    reloadFamily()
+  }
+
+
+  const createNewMember = async (justification: string) => {
+    await Api.addMemberToFamily(studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName,
+      family.shortcode,
+      newMember!.shortcode,
+      justification)
+
+    setIsAddingNewMember(false)
+    setMembers(old => [...old, newMember!])
+    setNewMember(undefined)
+    setOpenSaveNewMemberModal(false)
     reloadFamily()
   }
 
@@ -90,22 +109,13 @@ export const FamilyMembers = ({
       if (isNewMemberCreationRow(row)) {
         return <>
           <button
-            className='btn btn-success'
+            className='btn btn-primary'
             onClick={async () => {
-              await Api.addMemberToFamily(studyEnvContext.portal.shortcode,
-                studyEnvContext.study.shortcode,
-                studyEnvContext.currentEnv.environmentName,
-                family.shortcode,
-                newMember!.shortcode)
-
-              setIsAddingNewMember(false)
-              setMembers(old => [...old, newMember!])
-              setNewMember(undefined)
-              reloadFamily()
+              setOpenSaveNewMemberModal(true)
             }}
             disabled={isNil(newMember)}
           >
-            <FontAwesomeIcon icon={faCheck} aria-label={'Add enrollee to family'}/>
+            <FontAwesomeIcon icon={faFloppyDisk} aria-label={'Add enrollee to family'}/>
           </button>
           <button
             className='btn btn-secondary'
@@ -153,17 +163,34 @@ export const FamilyMembers = ({
       </button>
     </h4>
     {basicTableLayout(table, { useSize: true })}
-    {memberSelectedForDeletion && <ConfirmationModal
-      title={<>
-          Are you sure you want to remove <EnrolleeLink
+    {memberSelectedForDeletion && <JustifyChangesModal
+      bodyText={<>
+        <p>Are you sure you want to remove <EnrolleeLink
           studyEnvContext={studyEnvContext}
           enrollee={memberSelectedForDeletion}
-        /> from the family?
+        /> from the family? All associated family relations will also be deleted.</p>
+        <p>
+            Note that this will not remove the enrollee from the study.
+        </p>
       </>}
-      body={'This action cannot be undone.'}
-      onConfirm={() => deleteMember(memberSelectedForDeletion?.shortcode || '')}
-      onCancel={() => setMemberSelectedForDeletion(undefined)}
-      confirmButtonStyle={'btn-danger'}
+      saveWithJustification={justification => deleteMember(
+        memberSelectedForDeletion?.shortcode || '',
+        justification)}
+      onDismiss={() => setMemberSelectedForDeletion(undefined)}
     />}
+
+    {
+      openSaveNewMemberModal &&
+        <JustifyChangesModal
+          saveWithJustification={createNewMember}
+          onDismiss={() => setOpenSaveNewMemberModal(false)}
+          bodyText={<p>
+              Are you sure you want to add <EnrolleeLink
+              studyEnvContext={studyEnvContext}
+              enrollee={newMember as Enrollee}/> to the family?
+          </p>
+          }
+        />
+    }
   </div>
 }

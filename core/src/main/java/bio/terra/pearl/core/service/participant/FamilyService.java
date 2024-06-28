@@ -155,4 +155,16 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                 family.getId(),
                 auditInfo);
     }
+
+    @Transactional
+    public Family updateProband(String familyShortcode, String enrolleeShortcode, UUID studyEnvId, DataAuditInfo auditInfo) {
+        Family family = findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Family not found"));
+
+        Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
+                .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+
+        family.setProbandEnrolleeId(enrollee.getId());
+        return update(family, auditInfo);
+    }
 }

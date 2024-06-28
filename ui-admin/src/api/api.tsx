@@ -866,8 +866,10 @@ export default {
     portalShortcode: string,
     studyShortcode: string,
     envName: EnvironmentName,
-    relation: EnrolleeRelation): Promise<EnrolleeRelation> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations`
+    relation: EnrolleeRelation,
+    justification: string): Promise<EnrolleeRelation> {
+    const params = queryString.stringify({ justification })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations?${params}`
     const response = await fetch(url, {
       method: 'POST',
       body: JSON.stringify(relation),
@@ -880,8 +882,10 @@ export default {
     portalShortcode: string,
     studyShortcode: string,
     envName: EnvironmentName,
-    relationId: string): Promise<Response> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/${relationId}`
+    relationId: string,
+    justification: string): Promise<Response> {
+    const params = queryString.stringify({ justification })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/${relationId}?${params}`
     const response = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
@@ -1300,11 +1304,12 @@ export default {
 
   async addMemberToFamily(
     portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
-    familyShortcode: string, enrolleeShortcode: string
+    familyShortcode: string, enrolleeShortcode: string, justification: string
   ) {
+    const params = queryString.stringify({ justification })
     const url = `${
       baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
-    }/families/${familyShortcode}/members/${enrolleeShortcode}`
+    }/families/${familyShortcode}/members/${enrolleeShortcode}?${params}`
 
     const result = await fetch(url, {
       method: 'PUT',
@@ -1315,17 +1320,34 @@ export default {
 
   async removeMemberFromFamily(
     portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
-    familyShortcode: string, enrolleeShortcode: string
+    familyShortcode: string, enrolleeShortcode: string, justification: string
   ) {
+    const params = queryString.stringify({ justification })
     const url = `${
       baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
-    }/families/${familyShortcode}/members/${enrolleeShortcode}`
+    }/families/${familyShortcode}/members/${enrolleeShortcode}?${params}`
 
     const result = await fetch(url, {
       method: 'DELETE',
       headers: this.getInitHeaders()
     })
     return await this.processResponse(result)
+  },
+
+  async updateProband(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string, justification: string
+  ): Promise<Family> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/proband/${enrolleeShortcode}?${params}`
+
+    const result = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(result)
   },
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):

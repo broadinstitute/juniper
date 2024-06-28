@@ -53,7 +53,8 @@ public class FamilyController implements FamilyApi {
       String studyShortcode,
       String envName,
       String familyShortcode,
-      String enrolleeShortcode) {
+      String enrolleeShortcode,
+      String justification) {
     familyExtService.removeEnrollee(
         PortalStudyEnvAuthContext.of(
             authUtilService.requireAdminUser(request),
@@ -61,7 +62,8 @@ public class FamilyController implements FamilyApi {
             studyShortcode,
             EnvironmentName.valueOfCaseInsensitive(envName)),
         familyShortcode,
-        enrolleeShortcode);
+        enrolleeShortcode,
+        justification);
 
     return ResponseEntity.noContent().build();
   }
@@ -72,7 +74,8 @@ public class FamilyController implements FamilyApi {
       String studyShortcode,
       String envName,
       String familyShortcode,
-      String enrolleeShortcode) {
+      String enrolleeShortcode,
+      String justification) {
     familyExtService.addEnrollee(
         PortalStudyEnvAuthContext.of(
             authUtilService.requireAdminUser(request),
@@ -80,8 +83,31 @@ public class FamilyController implements FamilyApi {
             studyShortcode,
             EnvironmentName.valueOfCaseInsensitive(envName)),
         familyShortcode,
-        enrolleeShortcode);
+        enrolleeShortcode,
+        justification);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Object> updateProband(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
+    Family family =
+        familyExtService.updateProband(
+            PortalStudyEnvAuthContext.of(
+                authUtilService.requireAdminUser(request),
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            familyShortcode,
+            enrolleeShortcode,
+            justification);
+
+    return ResponseEntity.ok(family);
   }
 }

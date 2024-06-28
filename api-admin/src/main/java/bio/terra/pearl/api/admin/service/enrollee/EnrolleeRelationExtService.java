@@ -14,11 +14,10 @@ import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -29,10 +28,11 @@ public class EnrolleeRelationExtService {
   private final FamilyEnrolleeService familyEnrolleeService;
 
   public EnrolleeRelationExtService(
-          AuthUtilService authUtilService,
-          EnrolleeRelationService enrolleeRelationService,
-          EnrolleeService enrolleeService,
-          FamilyService familyService, FamilyEnrolleeService familyEnrolleeService) {
+      AuthUtilService authUtilService,
+      EnrolleeRelationService enrolleeRelationService,
+      EnrolleeService enrolleeService,
+      FamilyService familyService,
+      FamilyEnrolleeService familyEnrolleeService) {
     this.authUtilService = authUtilService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.enrolleeService = enrolleeService;
@@ -57,7 +57,8 @@ public class EnrolleeRelationExtService {
 
   // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
-  public EnrolleeRelation create(PortalStudyEnvAuthContext authContext, EnrolleeRelation relation) {
+  public EnrolleeRelation create(
+      PortalStudyEnvAuthContext authContext, EnrolleeRelation relation, String justification) {
 
     // ensure the enrollees/families are in the expected study environment
     enrolleeService
@@ -87,21 +88,21 @@ public class EnrolleeRelationExtService {
       }
 
       // ensure that the enrollees are in the family
-      familyEnrolleeService
-              .getOrCreate(relation.getTargetEnrolleeId(),
-                      relation.getFamilyId(),
-                      DataAuditInfo.builder()
-                              .responsibleAdminUserId(authContext.getOperator().getId())
-                              .enrolleeId(relation.getTargetEnrolleeId())
-                              .build());
+      familyEnrolleeService.getOrCreate(
+          relation.getTargetEnrolleeId(),
+          relation.getFamilyId(),
+          DataAuditInfo.builder()
+              .responsibleAdminUserId(authContext.getOperator().getId())
+              .enrolleeId(relation.getTargetEnrolleeId())
+              .build());
 
-      familyEnrolleeService
-              .getOrCreate(relation.getEnrolleeId(),
-                      relation.getFamilyId(),
-                      DataAuditInfo.builder()
-                              .responsibleAdminUserId(authContext.getOperator().getId())
-                              .enrolleeId(relation.getEnrolleeId())
-                              .build());
+      familyEnrolleeService.getOrCreate(
+          relation.getEnrolleeId(),
+          relation.getFamilyId(),
+          DataAuditInfo.builder()
+              .responsibleAdminUserId(authContext.getOperator().getId())
+              .enrolleeId(relation.getEnrolleeId())
+              .build());
     }
 
     // ensure that the relationship does not already exist
@@ -116,6 +117,7 @@ public class EnrolleeRelationExtService {
         DataAuditInfo.builder()
             .responsibleAdminUserId(authContext.getOperator().getId())
             .enrolleeId(relation.getTargetEnrolleeId())
+            .justification(justification)
             .build();
 
     // finally, create the relationship
@@ -126,7 +128,8 @@ public class EnrolleeRelationExtService {
 
   // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
-  public void delete(PortalStudyEnvAuthContext authContext, UUID enrolleeRelationId) {
+  public void delete(
+      PortalStudyEnvAuthContext authContext, UUID enrolleeRelationId, String justification) {
     EnrolleeRelation relation =
         enrolleeRelationService
             .find(enrolleeRelationId)
@@ -145,6 +148,7 @@ public class EnrolleeRelationExtService {
         DataAuditInfo.builder()
             .responsibleAdminUserId(authContext.getOperator().getId())
             .enrolleeId(relation.getTargetEnrolleeId())
+            .justification(justification)
             .build();
 
     enrolleeRelationService.delete(relation.getId(), auditInfo);

@@ -765,6 +765,7 @@ paths:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
         description: enrollee relation
@@ -785,6 +786,7 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeRelationId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: Successful deletion
@@ -893,6 +895,24 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/proband/{enrolleeShortcode}:
+    patch:
+      summary: Updates the family's proband
+      tags: [ family ]
+      operationId: updateProband
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          content: { application/json: { schema: { type: object } } }
+          description: Successfully updated proband
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/members/{enrolleeShortcode}:
     put:
       summary: Adds a new member to the family
@@ -904,6 +924,7 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: familyShortcode, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: Successful addition
@@ -919,6 +940,7 @@ paths:
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: familyShortcode, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: Successful deletion
