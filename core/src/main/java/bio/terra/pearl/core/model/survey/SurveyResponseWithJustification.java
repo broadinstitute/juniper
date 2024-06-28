@@ -6,6 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+/*
+ * SurveyResponseWithJustification exists for admin flows, which require a justification
+ * to be provided for audit purposes. Participant flows do not require a justification and
+ * should rely on SurveyResponse instead.
+ */
+
 @Getter
 @Setter
 @SuperBuilder
