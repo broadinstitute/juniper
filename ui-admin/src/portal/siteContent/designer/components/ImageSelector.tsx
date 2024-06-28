@@ -10,14 +10,14 @@ import { ImageConfig } from '@juniper/ui-core'
  */
 export const ImageSelector = ({ portalEnvContext, imageList, image, onChange }: {
     portalEnvContext: PortalEnvContext,
-    imageList: SiteMediaMetadata[], image: ImageConfig, onChange: (image: SiteMediaMetadata) => void
+    imageList: SiteMediaMetadata[], image?: ImageConfig, onChange: (image: SiteMediaMetadata) => void
 }) => {
-  const initial = imageList.find(media => media.cleanFileName === image.cleanFileName)
+  const initial = imageList.find(media => media.cleanFileName === image?.cleanFileName)
   const [, setSelectedImage] = useState<SiteMediaMetadata | undefined>(initial)
 
   const imageOptionLabel = (image: SiteMediaMetadata, portalShortcode: string) => <div>
     {image.cleanFileName} <img style={{ maxHeight: '1.5em' }} alt={image.cleanFileName}
-      src={getMediaUrl(portalShortcode, image!.cleanFileName, image!.version)}/>
+      src={getMediaUrl(portalShortcode, image.cleanFileName, image!.version)}/>
   </div>
 
   const {

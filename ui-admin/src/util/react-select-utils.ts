@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction, useId } from 'react'
  * */
 export default function useReactSingleSelect<T>(items: T[],
   labelFunction: (i: T) => {label: React.ReactNode, value: T},
-  setSelectedItem: Dispatch<SetStateAction<T | undefined>>, selectedItem?: T) {
+  setSelectedItem: Dispatch<SetStateAction<T | undefined>> | ((x: T | undefined) => void), selectedItem?: T) {
   const options = items.map(labelFunction)
   const selectedValue = selectedItem ? labelFunction(selectedItem).value : undefined
   const selectedOption = options.find(opt => opt.value === selectedValue)
