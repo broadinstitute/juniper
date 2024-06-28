@@ -160,7 +160,7 @@ const ResponseEditHistory = ({ question, answer, editHistory }: {
         <div key={index} className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
           <FontAwesomeIcon icon={faPencil} className="me-2"/>
           <div>
-            {beforeAndAfter(changeRecord)}
+            {getBeforeAndAfterAnswer(changeRecord)}
             <div className="text-muted" style={{ fontSize: '0.75em' }}>
                 Edited on {instantToDefaultString(changeRecord.createdAt)} by <span className='fw-semibold'>
                 {users.find(user =>
@@ -170,13 +170,12 @@ const ResponseEditHistory = ({ question, answer, editHistory }: {
           </div>
         </div>
       )}
-      {firstValue(question, answer, editHistory, users)}
-      {/*{findOriginalValueFromChangeRecords(answer, editHistoryForQuestion, users, question)}*/}
+      {getOriginalAnswer(question, answer, editHistory, users)}
     </div>
   </>
 }
 
-const beforeAndAfter = (changeRecord: DataChangeRecord) => {
+const getBeforeAndAfterAnswer = (changeRecord: DataChangeRecord) => {
   return <div className="d-flex align-items-center">
     <div className="bg-danger-subtle fw-medium">{changeRecord.oldValue}</div>
     <FontAwesomeIcon icon={faArrowRight} className="mx-1"/>
@@ -184,33 +183,23 @@ const beforeAndAfter = (changeRecord: DataChangeRecord) => {
   </div>
 }
 
-const firstValue = (
+/*
+ * Displays the answer value and the entity responsible for answering it. If changes have been made to the answer,
+ * we backtrack through the change records to find the original answer.
+ */
+const getOriginalAnswer = (
   question: Question | CalculatedValue, answer: Answer, changeRecords: DataChangeRecord[], users: AdminUser[]
 ) => {
-  const changeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
+  const originalChangeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
     a.createdAt < b.createdAt ? -1 : 0)[0]
-  if (!changeRecord) {
-    return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
-      <FontAwesomeIcon icon={faPencil} className="me-2"/>
-      <div>
-        <span className='fw-medium'>{getDisplayValue(answer, question)}</span>
-        <div className="text-muted" style={{ fontSize: '0.75em' }}>
-          Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
-            {users.find(user =>
-              user.id === answer.creatingAdminUserId)?.username ?? 'Participant'}
-          </span>
-        </div>
-      </div>
-    </div>
-  }
-
-
   return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
     <FontAwesomeIcon icon={faPencil} className="me-2"/>
     <div>
-      <span className='fw-medium'>{changeRecord.oldValue}</span>
+      <span className='fw-medium'>
+        {originalChangeRecord ? originalChangeRecord.oldValue : getDisplayValue(answer, question)}
+      </span>
       <div className="text-muted" style={{ fontSize: '0.75em' }}>
-        Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
+          Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
           {users.find(user =>
             user.id === answer.creatingAdminUserId)?.username ?? 'Participant'}
         </span>
