@@ -302,7 +302,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
                                 Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
-        if (answer.getCreatingAdminUserId() != null) {
+        if (response.getCreatingAdminUserId() != null) {
             answer.setCreatingAdminUserId(operator.getAdminUser().getId());
         } else {
             // If an admin wasn't specified, we'll default to attributing this to the participant user.

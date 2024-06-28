@@ -62,8 +62,11 @@ public class EnrolleeExtService {
   }
 
   public List<DataChangeRecord> findDataChangeRecords(
-      AdminUser operator, String enrolleeShortcode) {
+      AdminUser operator, String enrolleeShortcode, String modelName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
+    if (modelName != null) {
+      return dataChangeRecordService.findAllRecordsForEnrolleeAndModelName(enrollee, modelName);
+    }
     return dataChangeRecordService.findAllRecordsForEnrollee(enrollee);
   }
 

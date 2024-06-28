@@ -134,9 +134,12 @@ export function RawEnrolleeSurveyView({
       </div>
       <hr/>
       {(!isEditing && !response?.answers.length) && <div>No response for enrollee {enrollee.shortcode}</div>}
-      {(!isEditing && response?.answers.length) && <SurveyFullDataView answers={response?.answers || []}
+      {(!isEditing && response?.answers.length) && <SurveyFullDataView
+        responseId={response.id}
+        enrollee={enrollee}
+        answers={response?.answers || []}
         survey={configSurvey.survey}
-        userId={enrollee.participantUserId}
+        // userId={enrollee.participantUserId}
         studyEnvContext={studyEnvContext}/>}
       {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}

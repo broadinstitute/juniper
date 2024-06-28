@@ -776,9 +776,10 @@ export default {
   },
 
   async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<DataChangeRecord[]> {
-    const url =
-      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
+    enrolleeShortcode: string, modelName?: string): Promise<DataChangeRecord[]> {
+    const params = queryString.stringify({ modelName })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/changeRecords?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

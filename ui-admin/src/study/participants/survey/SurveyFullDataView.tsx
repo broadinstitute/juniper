@@ -1,35 +1,41 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
 import {
-  createAddressValidator,
+  createAddressValidator, Enrollee, instantToDefaultString,
   makeSurveyJsData,
   PortalEnvironment,
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
 } from '@juniper/ui-core'
-import Api, { Answer, Survey } from 'api/api'
+import Api, { Answer, DataChangeRecord, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import PrintFormModal from './PrintFormModal'
 import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { useAdminUserContext } from '../../../providers/AdminUserProvider'
+import { AdminUser } from '../../../api/adminUser'
 
 type SurveyFullDataViewProps = {
+  responseId?: string,
   answers: Answer[],
   survey: Survey,
   resumeData?: string,
-  userId?: string,
+  enrollee?: Enrollee,
   studyEnvContext: StudyEnvContextT
 }
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({
-  answers, resumeData, survey, userId, studyEnvContext
+  responseId, answers, resumeData, survey, enrollee, studyEnvContext
 }: SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
-  const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
+  const [changeRecords, setChangeRecords] = useState<DataChangeRecord[]>([])
+  const surveyJsData = makeSurveyJsData(resumeData, answers, enrollee?.participantUserId)
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
   surveyJsModel.data = surveyJsData!.data
@@ -45,6 +51,16 @@ export default function SurveyFullDataView({
   const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
     env.environmentName === studyEnvContext.currentEnv.environmentName)
   const supportedLanguages = portalEnv?.supportedLanguages ?? []
+
+  useEffect(() => {
+    if (responseId && enrollee) {
+      Api.fetchEnrolleeChangeRecords(
+        studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName,
+        enrollee.shortcode, survey.stableId).then(changeRecords => {
+        setChangeRecords(changeRecords)
+      })
+    }
+  }, [responseId])
 
   return <div>
     <div className="d-flex d-print-none">
@@ -74,7 +90,7 @@ export default function SurveyFullDataView({
       <Route index element={<dl>
         {questions.map((question, index) =>
           <ItemDisplay key={index} question={question} answerMap={answerMap} supportedLanguages={supportedLanguages}
-            surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
+            surveyVersion={survey.version} showFullQuestions={showFullQuestions} editHistory={changeRecords}/>)}
       </dl>}/>
     </Routes>
   </div>
@@ -85,7 +101,8 @@ type ItemDisplayProps = {
   answerMap: Record<string, Answer>,
   surveyVersion: number,
   showFullQuestions: boolean,
-  supportedLanguages: PortalEnvironmentLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[],
+  editHistory?: DataChangeRecord[]
 }
 
 /**
@@ -93,10 +110,11 @@ type ItemDisplayProps = {
  * with stableId and the viewed language (if applicable)
  */
 export const ItemDisplay = ({
-  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages
+  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages, editHistory = []
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
   const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
+  const editHistoryForQuestion= editHistory.filter(changeRecord => changeRecord.fieldName === question.name).reverse()
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -105,17 +123,101 @@ export const ItemDisplay = ({
   if ((question as CalculatedValue).expression) {
     stableIdText += ' -- derived'
   }
+
   return <>
     <dt className="fw-normal">
-      {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">
+      <div className="d-flex align-items-center">
+        {renderQuestionText(answer, question, showFullQuestions)}
+        <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
-      </span>
+        </span>
+        { answer && <ResponseEditHistory question={question} answer={answer}editHistory={editHistoryForQuestion}/> }
+      </div>
     </dt>
     <dl>
       <pre className="fw-bold">{displayValue}</pre>
     </dl>
   </>
+}
+
+const ResponseEditHistory = ({ question, answer, editHistory }: {
+  question: Question | CalculatedValue, answer: Answer, editHistory: DataChangeRecord[]
+}) => {
+  const { users } = useAdminUserContext()
+
+  return <>
+    <div
+      data-bs-toggle='dropdown'
+      role='button'
+      className="btn btn-light dropdown-toggle fst-italic ms-2 rounded-3 p-1 border-1"
+      id="viewHistory"
+      aria-label="View history"
+      aria-haspopup="true"
+      aria-expanded="false"
+    ><FontAwesomeIcon icon={faHistory} className="fa-sm"/> View history</div>
+    <div className="dropdown-menu" aria-labelledby="viewHistory">
+      {editHistory.map((changeRecord, index) =>
+        <div key={index} className="dropdown-item d-flex align-items-center disabled">
+          <FontAwesomeIcon icon={faPencil} className="me-2"/>
+          <div>
+            {beforeAndAfter(changeRecord)}
+            <div className="text-muted" style={{ fontSize: '0.75em' }}>
+                Edited on {instantToDefaultString(changeRecord.createdAt)} by <span className='fw-semibold'>
+                {users.find(user =>
+                  user.id === changeRecord.responsibleAdminUserId)?.username ?? 'Participant'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+      {firstValue(question, answer, editHistory, users)}
+      {/*{findOriginalValueFromChangeRecords(answer, editHistoryForQuestion, users, question)}*/}
+    </div>
+  </>
+}
+
+const beforeAndAfter = (changeRecord: DataChangeRecord) => {
+  return <div className="d-flex align-items-center">
+    <div className="bg-danger-subtle fw-semibold">{changeRecord.oldValue}</div>
+    <FontAwesomeIcon icon={faArrowRight} className="mx-1"/>
+    <div className="bg-success-subtle fw-semibold">{changeRecord.newValue}</div>
+  </div>
+}
+
+const firstValue = (
+  question: Question | CalculatedValue, answer: Answer, changeRecords: DataChangeRecord[], users: AdminUser[]
+) => {
+  const changeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
+    a.createdAt < b.createdAt ? -1 : 0)[0]
+  console.log(answer)
+  if (!changeRecord) {
+    return <div className="dropdown-item d-flex align-items-center disabled">
+      <FontAwesomeIcon icon={faPencil} className="me-2"/>
+      <div>
+        <span className='fw-semibold'>{getDisplayValue(answer, question)}</span>
+        <div className="text-muted" style={{ fontSize: '0.75em' }}>
+          Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
+            {users.find(user =>
+              user.id === answer.creatingAdminUserId)?.username ?? 'Participant'}
+          </span>
+        </div>
+      </div>
+    </div>
+  }
+
+
+  return <div className="dropdown-item d-flex align-items-center disabled">
+    <FontAwesomeIcon icon={faPencil} className="me-2"/>
+    <div>
+      <span className='fw-semibold'>{changeRecord.oldValue}</span>
+      <div className="text-muted" style={{ fontSize: '0.75em' }}>
+        Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
+          {users.find(user =>
+            user.id === changeRecord.responsibleAdminUserId)?.username ?? 'Participant'}
+        </span>
+      </div>
+    </div>
+  </div>
 }
 
 /** renders the value of the answer, either as plaintext, a matched choice, or an image for signatures */
