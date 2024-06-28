@@ -27,6 +27,10 @@ import { isNil } from 'lodash'
 import Api from 'api/api'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import JustifyChangesModal from 'study/participants/JustifyChangesModal'
+import { Store } from 'react-notifications-component'
+import { failureNotification } from 'util/notifications'
+import classNames from 'classnames'
+import InfoPopup from 'components/forms/InfoPopup'
 
 /**
  * Editable view of the members of a family.
@@ -49,32 +53,40 @@ export const FamilyMembers = ({
   const [openSaveNewMemberModal, setOpenSaveNewMemberModal] = React.useState<boolean>(false)
 
   const deleteMember = async (shortcode: string, justification: string) => {
-    await Api.removeMemberFromFamily(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      family.shortcode,
-      shortcode,
-      justification)
+    try {
+      await Api.removeMemberFromFamily(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        family.shortcode,
+        shortcode,
+        justification)
 
-    setMembers(old => old.filter(m => m.shortcode !== shortcode))
-    setMemberSelectedForDeletion(undefined)
-    reloadFamily()
+      setMembers(old => old.filter(m => m.shortcode !== shortcode))
+      setMemberSelectedForDeletion(undefined)
+      reloadFamily()
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not remove member from family.'))
+    }
   }
 
 
   const createNewMember = async (justification: string) => {
-    await Api.addMemberToFamily(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      family.shortcode,
-      newMember!.shortcode,
-      justification)
+    try {
+      await Api.addMemberToFamily(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        family.shortcode,
+        newMember!.shortcode,
+        justification)
 
-    setIsAddingNewMember(false)
-    setMembers(old => [...old, newMember!])
-    setNewMember(undefined)
-    setOpenSaveNewMemberModal(false)
-    reloadFamily()
+      setIsAddingNewMember(false)
+      setMembers(old => [...old, newMember!])
+      setNewMember(undefined)
+      setOpenSaveNewMemberModal(false)
+      reloadFamily()
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not add member to family.'))
+    }
   }
 
   const columns: ColumnDef<Partial<Enrollee>>[] = useMemo(() => [{
@@ -106,6 +118,7 @@ export const FamilyMembers = ({
     size: 100,
     maxSize: 100,
     cell: ({ row }) => {
+      const isProband = row.original.id === family.probandEnrolleeId
       if (isNewMemberCreationRow(row)) {
         return <>
           <button
@@ -128,18 +141,26 @@ export const FamilyMembers = ({
           </button>
         </>
       } else {
-        return <button
-          className='btn btn-secondary border-0'
-          onClick={async () => {
-            if (isNil(row.original.shortcode)) {
-              return
-            }
+        return <>
+          <button
+            className={classNames('btn btn-secondary border-0', isProband && 'btn-outline-secondary')}
+            type={'button'}
+            disabled={isProband}
+            onClick={async () => {
+              if (isNil(row.original.shortcode)) {
+                return
+              }
 
-            setMemberSelectedForDeletion(row.original as Enrollee)
-          }}
-        >
-          <FontAwesomeIcon icon={faTrashCan} aria-label={'Remove enrollee from family'}/>
-        </button>
+              setMemberSelectedForDeletion(row.original as Enrollee)
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faTrashCan}
+              aria-label={'Remove enrollee from family'}
+            />
+          </button>
+          {isProband && <InfoPopup content="The proband cannot be removed from the family."/>}
+        </>
       }
     }
   }], [isAddingNewMember, newMember, family.members, studyEnvContext])

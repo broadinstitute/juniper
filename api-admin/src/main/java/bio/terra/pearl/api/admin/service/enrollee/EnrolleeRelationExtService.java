@@ -13,11 +13,10 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -74,11 +73,11 @@ public class EnrolleeRelationExtService {
           .orElseThrow(() -> new NotFoundException("Family not found"));
     }
     DataAuditInfo auditInfo =
-            DataAuditInfo.builder()
-                    .responsibleAdminUserId(authContext.getOperator().getId())
-                    .enrolleeId(relation.getTargetEnrolleeId())
-                    .justification(justification)
-                    .build();
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(authContext.getOperator().getId())
+            .enrolleeId(relation.getTargetEnrolleeId())
+            .justification(justification)
+            .build();
 
     if (relation.getRelationshipType().equals(RelationshipType.FAMILY)) {
       return enrolleeRelationService.createFamilyRelationship(relation, auditInfo);

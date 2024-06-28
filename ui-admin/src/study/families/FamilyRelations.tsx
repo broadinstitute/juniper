@@ -29,6 +29,8 @@ import {
 } from 'lodash'
 import Api from 'api/api'
 import JustifyChangesModal from 'study/participants/JustifyChangesModal'
+import { Store } from 'react-notifications-component'
+import { failureNotification } from 'util/notifications'
 
 /**
  * Editable view of the relationships within a family.
@@ -51,34 +53,38 @@ export const FamilyRelations = ({
   }
 
   const createNewRelation = async (justification: string) => {
-    if (!newRelation) {
-      return
+    try {
+      if (!newRelation) {
+        return
+      }
+
+      if (isEmpty(newRelation.enrolleeId)
+        || isEmpty(newRelation.targetEnrolleeId)
+        || isEmpty(newRelation.familyRelationship)) {
+        return
+      }
+
+      const relation = cloneDeep(newRelation)
+
+      relation.relationshipType = 'FAMILY'
+      relation.familyId = family.id
+
+      const createdRelation = await Api.createRelation(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        relation as EnrolleeRelation,
+        justification
+      )
+
+      setRelations(old => [...old, createdRelation])
+      setNewRelation({})
+      setIsAddingNewRelation(false)
+      setOpenSaveNewRelationModal(false)
+      reloadFamily()
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not create relationship.'))
     }
-
-    if (isEmpty(newRelation.enrolleeId)
-      || isEmpty(newRelation.targetEnrolleeId)
-      || isEmpty(newRelation.familyRelationship)) {
-      return
-    }
-
-    const relation = cloneDeep(newRelation)
-
-    relation.relationshipType = 'FAMILY'
-    relation.familyId = family.id
-
-    const createdRelation = await Api.createRelation(
-      studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      relation as EnrolleeRelation,
-      justification
-    )
-
-    setRelations(old => [...old, createdRelation])
-    setNewRelation({})
-    setIsAddingNewRelation(false)
-    setOpenSaveNewRelationModal(false)
-    reloadFamily()
   }
 
   const isMemberOfFamily = (enrolleeId: string) => {
@@ -86,16 +92,20 @@ export const FamilyRelations = ({
   }
 
   const deleteRelation = async (relationId: string, justification: string) => {
-    await Api.deleteRelation(
-      studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      relationId,
-      justification
-    )
-    setRelations(old => old.filter(r => r.id !== relationId))
-    setRelationSelectedForDeletion(undefined)
-    reloadFamily()
+    try {
+      await Api.deleteRelation(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        relationId,
+        justification
+      )
+      setRelations(old => old.filter(r => r.id !== relationId))
+      setRelationSelectedForDeletion(undefined)
+      reloadFamily()
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not delete relationship.'))
+    }
   }
 
   const columns: ColumnDef<Partial<EnrolleeRelation>>[] = [{

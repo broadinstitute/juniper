@@ -13,6 +13,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import JustifyChangesModal from 'study/participants/JustifyChangesModal'
 import Api from 'api/api'
+import { Store } from 'react-notifications-component'
+import { failureNotification } from 'util/notifications'
 
 
 /**
@@ -33,15 +35,19 @@ export const ProbandEditor = (
   const [openSaveNewProbandModal, setOpenSaveNewProbandModal] = React.useState<boolean>(false)
 
   const saveProband = async (justification: string) => {
-    await Api.updateProband(studyEnvContext.portal.shortcode,
-      studyEnvContext.study.shortcode,
-      studyEnvContext.currentEnv.environmentName,
-      family.shortcode,
-      proband.shortcode,
-      justification)
-    reloadFamily()
-    setEditMode(false)
-    setOpenSaveNewProbandModal(false)
+    try {
+      await Api.updateProband(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        family.shortcode,
+        proband.shortcode,
+        justification)
+      reloadFamily()
+      setEditMode(false)
+      setOpenSaveNewProbandModal(false)
+    } catch (e) {
+      Store.addNotification(failureNotification('Could not update proband.'))
+    }
   }
   return <div>
     <h4>Proband</h4>
