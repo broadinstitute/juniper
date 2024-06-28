@@ -114,7 +114,9 @@ export const ItemDisplay = ({
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
   const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
-  const editHistoryForQuestion= editHistory.filter(changeRecord => changeRecord.fieldName === question.name).reverse()
+  const editHistoryForQuestion = editHistory
+    .filter(changeRecord => changeRecord.fieldName === question.name)
+    .sort((a, b) => b.createdAt - a.createdAt)
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -131,7 +133,7 @@ export const ItemDisplay = ({
         <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
         </span>
-        { answer && <ResponseEditHistory question={question} answer={answer}editHistory={editHistoryForQuestion}/> }
+        { answer && <ResponseEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> }
       </div>
     </dt>
     <dl>
