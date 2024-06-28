@@ -3,6 +3,7 @@ import { Survey as SurveyJSComponent } from 'survey-react-ui'
 import 'survey-core/survey.i18n'
 
 import {
+  applyMarkdown,
   createAddressValidator,
   FormContent,
   PortalEnvironmentLanguage,
@@ -30,10 +31,15 @@ export const FormPreview = (props: FormPreviewProps) => {
   const { i18n } = useI18n()
 
   const [surveyModel] = useState(() => {
+    // note that this roughly mimics surveyUtils.newSurveyJSModel but with key differences, such
+    // as the pages not being url-routable
     const model = surveyJSModelFromFormContent(formContent)
     model.setVariable('portalEnvironmentName', 'sandbox')
+    model.setVariable('profile', { })
+    model.setVariable('proxyProfile', { })
     model.ignoreValidation = true
     model.locale = defaultLanguage.languageCode
+    model.onTextMarkdown.add(applyMarkdown)
     model.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return model
   })
@@ -50,12 +56,16 @@ export const FormPreview = (props: FormPreviewProps) => {
           value={{
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,
-            locale: surveyModel.locale
+            locale: surveyModel.locale,
+            profile: surveyModel.getVariable('profile'),
+            proxyProfile: surveyModel.getVariable('proxyProfile')
           }}
-          onChange={({ ignoreValidation, showInvisibleElements, locale }) => {
+          onChange={({ ignoreValidation, showInvisibleElements, locale, profile, proxyProfile }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
             surveyModel.locale = locale
+            surveyModel.setVariable('profile', profile)
+            surveyModel.setVariable('proxyProfile', proxyProfile)
             forceUpdate()
           }}
         />

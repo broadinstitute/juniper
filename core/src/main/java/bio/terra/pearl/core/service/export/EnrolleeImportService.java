@@ -357,6 +357,6 @@ public class EnrolleeImportService {
         }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
-                ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+                "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }

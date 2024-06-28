@@ -8,7 +8,7 @@ import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyResponseWithJustification;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
@@ -34,16 +34,23 @@ public class SurveyResponseExtService {
   public HubResponse updateResponse(
       PortalStudyEnvAuthContext authContext,
       AdminUser user,
-      SurveyResponse responseDto,
+      SurveyResponseWithJustification responseDto,
       String enrolleeShortcode,
       UUID taskId) {
     Portal portal = authContext.getPortal();
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
     PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+    String justification = responseDto.getJustification();
 
     HubResponse result =
         surveyResponseService.updateResponse(
-            responseDto, new ResponsibleEntity(user), ppUser, enrollee, taskId, portal.getId());
+            responseDto,
+            new ResponsibleEntity(user),
+            justification,
+            ppUser,
+            enrollee,
+            taskId,
+            portal.getId());
     return result;
   }
 }

@@ -16,10 +16,10 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class SurveyResponseController implements SurveyResponseApi {
-  private SurveyResponseExtService surveyResponseExtService;
-  private HttpServletRequest request;
-  private RequestUtilService requestUtilService;
-  private ObjectMapper objectMapper;
+  private final SurveyResponseExtService surveyResponseExtService;
+  private final HttpServletRequest request;
+  private final RequestUtilService requestUtilService;
+  private final ObjectMapper objectMapper;
 
   public SurveyResponseController(
       SurveyResponseExtService surveyResponseExtService,

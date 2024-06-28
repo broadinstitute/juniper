@@ -141,22 +141,22 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .findFirst().orElseThrow();
         assertThat(enrollee.isConsented(), equalTo(false));
 
-        SurveyResponse consentResponseDto = SurveyResponse.builder()
+        SurveyResponse consentResponse = SurveyResponse.builder()
                 .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
                 .complete(false)
                 .resumeData("")
                 .build();
-        surveyResponseService.updateResponse(consentResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+        surveyResponseService.updateResponse(consentResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, consentTask.getId(), consent.getPortalId());
         // since the response is incomplete, no consent event should be fired
         assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), nullValue());
 
-        consentResponseDto = SurveyResponse.builder()
+        consentResponse = SurveyResponse.builder()
                 .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foobar")))
                 .complete(true)
                 .resumeData("")
                 .build();
-        surveyResponseService.updateResponse(consentResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+        surveyResponseService.updateResponse(consentResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, consentTask.getId(), consent.getPortalId());
         assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), hasSize(1));
         assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_SURVEY_EVENT), hasSize(2));
@@ -171,12 +171,12 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(surveyTasks.get(0).getTargetStableId(), equalTo(survey.getStableId()));
 
         // now try to complete the survey
-        SurveyResponse survResponseDto = SurveyResponse.builder()
+        SurveyResponse survResponse = SurveyResponse.builder()
                         .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
                         .complete(true)
                         .resumeData("stuff")
                         .build();
-        hubResponse = surveyResponseService.updateResponse(survResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+        hubResponse = surveyResponseService.updateResponse(survResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, surveyTasks.get(0).getId(), survey.getPortalId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
