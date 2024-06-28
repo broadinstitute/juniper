@@ -7,7 +7,8 @@ import { isEmpty } from 'lodash'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 /**
- *
+ * Searchbar for selecting an enrollee; uses search expressions, so you can pass in a filter
+ * to narrow down the results.
  */
 export const EnrolleeSearchbar = ({
   studyEnvContext,

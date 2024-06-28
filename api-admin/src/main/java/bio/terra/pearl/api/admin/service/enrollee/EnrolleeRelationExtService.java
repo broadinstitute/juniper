@@ -13,10 +13,11 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -51,7 +52,6 @@ public class EnrolleeRelationExtService {
     return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public EnrolleeRelation create(
       PortalStudyEnvAuthContext authContext, EnrolleeRelation relation, String justification) {
@@ -87,7 +87,6 @@ public class EnrolleeRelationExtService {
     }
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public void delete(
       PortalStudyEnvAuthContext authContext, UUID enrolleeRelationId, String justification) {

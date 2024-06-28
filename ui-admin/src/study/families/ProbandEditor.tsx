@@ -18,7 +18,7 @@ import { failureNotification } from 'util/notifications'
 
 
 /**
- *
+ * Simple editor that allows you to change the proband of a family.
  */
 export const ProbandEditor = (
   {

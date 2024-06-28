@@ -22,7 +22,6 @@ public class FamilyExtService {
     this.familyEnrolleeService = familyEnrolleeService;
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public Family find(PortalStudyEnvAuthContext authContext, String familyShortcode) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
@@ -33,7 +32,6 @@ public class FamilyExtService {
         .orElseThrow(() -> new NotFoundException("Family not found"));
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public void addEnrollee(
       PortalStudyEnvAuthContext authContext,
@@ -53,7 +51,6 @@ public class FamilyExtService {
             .build());
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public void removeEnrollee(
       PortalStudyEnvAuthContext authContext,
@@ -73,7 +70,6 @@ public class FamilyExtService {
             .build());
   }
 
-  // todo
   @EnforcePortalStudyEnvPermission(permission = "???")
   public Family updateProband(
       PortalStudyEnvAuthContext authContext,
