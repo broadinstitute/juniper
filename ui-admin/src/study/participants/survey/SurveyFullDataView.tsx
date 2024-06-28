@@ -16,8 +16,8 @@ import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useAdminUserContext } from '../../../providers/AdminUserProvider'
-import { AdminUser } from '../../../api/adminUser'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { AdminUser } from 'api/adminUser'
 
 type SurveyFullDataViewProps = {
   responseId?: string,
@@ -157,7 +157,7 @@ const ResponseEditHistory = ({ question, answer, editHistory }: {
     ><FontAwesomeIcon icon={faHistory} className="fa-sm"/> View history</div>
     <div className="dropdown-menu" aria-labelledby="viewHistory">
       {editHistory.map((changeRecord, index) =>
-        <div key={index} className="dropdown-item d-flex align-items-center disabled">
+        <div key={index} className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
           <FontAwesomeIcon icon={faPencil} className="me-2"/>
           <div>
             {beforeAndAfter(changeRecord)}
@@ -178,9 +178,9 @@ const ResponseEditHistory = ({ question, answer, editHistory }: {
 
 const beforeAndAfter = (changeRecord: DataChangeRecord) => {
   return <div className="d-flex align-items-center">
-    <div className="bg-danger-subtle fw-semibold">{changeRecord.oldValue}</div>
+    <div className="bg-danger-subtle fw-medium">{changeRecord.oldValue}</div>
     <FontAwesomeIcon icon={faArrowRight} className="mx-1"/>
-    <div className="bg-success-subtle fw-semibold">{changeRecord.newValue}</div>
+    <div className="bg-success-subtle fw-medium">{changeRecord.newValue}</div>
   </div>
 }
 
@@ -189,12 +189,11 @@ const firstValue = (
 ) => {
   const changeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
     a.createdAt < b.createdAt ? -1 : 0)[0]
-  console.log(answer)
   if (!changeRecord) {
-    return <div className="dropdown-item d-flex align-items-center disabled">
+    return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
       <FontAwesomeIcon icon={faPencil} className="me-2"/>
       <div>
-        <span className='fw-semibold'>{getDisplayValue(answer, question)}</span>
+        <span className='fw-medium'>{getDisplayValue(answer, question)}</span>
         <div className="text-muted" style={{ fontSize: '0.75em' }}>
           Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
             {users.find(user =>
@@ -206,14 +205,14 @@ const firstValue = (
   }
 
 
-  return <div className="dropdown-item d-flex align-items-center disabled">
+  return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
     <FontAwesomeIcon icon={faPencil} className="me-2"/>
     <div>
-      <span className='fw-semibold'>{changeRecord.oldValue}</span>
+      <span className='fw-medium'>{changeRecord.oldValue}</span>
       <div className="text-muted" style={{ fontSize: '0.75em' }}>
         Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
           {users.find(user =>
-            user.id === changeRecord.responsibleAdminUserId)?.username ?? 'Participant'}
+            user.id === answer.creatingAdminUserId)?.username ?? 'Participant'}
         </span>
       </div>
     </div>

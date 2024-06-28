@@ -139,7 +139,6 @@ export function RawEnrolleeSurveyView({
         enrollee={enrollee}
         answers={response?.answers || []}
         survey={configSurvey.survey}
-        // userId={enrollee.participantUserId}
         studyEnvContext={studyEnvContext}/>}
       {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}
