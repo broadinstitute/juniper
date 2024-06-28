@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +21,8 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
 
     public FamilyEnrolleeService(FamilyEnrolleeDao familyEnrolleeDao,
                                  DataChangeRecordService dataChangeRecordService,
-                                 ObjectMapper objectMapper, EnrolleeRelationService enrolleeRelationService) {
+                                 ObjectMapper objectMapper,
+                                 @Lazy EnrolleeRelationService enrolleeRelationService) {
         super(familyEnrolleeDao, dataChangeRecordService, objectMapper);
         this.enrolleeRelationService = enrolleeRelationService;
     }

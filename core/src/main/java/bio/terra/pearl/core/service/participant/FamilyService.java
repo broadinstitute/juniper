@@ -146,8 +146,12 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
                 .orElseThrow(() -> new NotFoundException("Enrollee not found"));
 
-        FamilyEnrollee fe = familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
+        familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
                 .orElseThrow(() -> new NotFoundException("Enrollee not found in family"));
+
+        if (family.getProbandEnrolleeId() != null && family.getProbandEnrolleeId().equals(enrollee.getId())) {
+            throw new IllegalArgumentException("Cannot remove proband from family");
+        }
 
         // also cleans up any relationships the enrollee has within the family
         familyEnrolleeService.deleteFamilyEnrolleeAndAllRelationships(
@@ -163,6 +167,9 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
         Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
                 .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+
+        familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Enrollee not in family"));
 
         family.setProbandEnrolleeId(enrollee.getId());
         return update(family, auditInfo);

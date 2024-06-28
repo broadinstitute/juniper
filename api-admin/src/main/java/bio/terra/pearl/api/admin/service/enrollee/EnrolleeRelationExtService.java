@@ -12,12 +12,12 @@ import bio.terra.pearl.core.model.participant.RelationshipType;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -25,19 +25,16 @@ public class EnrolleeRelationExtService {
   private final EnrolleeRelationService enrolleeRelationService;
   private final EnrolleeService enrolleeService;
   private final FamilyService familyService;
-  private final FamilyEnrolleeService familyEnrolleeService;
 
   public EnrolleeRelationExtService(
       AuthUtilService authUtilService,
       EnrolleeRelationService enrolleeRelationService,
       EnrolleeService enrolleeService,
-      FamilyService familyService,
-      FamilyEnrolleeService familyEnrolleeService) {
+      FamilyService familyService) {
     this.authUtilService = authUtilService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.enrolleeService = enrolleeService;
     this.familyService = familyService;
-    this.familyEnrolleeService = familyEnrolleeService;
   }
 
   public List<EnrolleeRelation> findRelationsForTargetEnrollee(
@@ -76,54 +73,19 @@ public class EnrolleeRelationExtService {
           .filter(f -> f.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId()))
           .orElseThrow(() -> new NotFoundException("Family not found"));
     }
-
-    if (relation.getRelationshipType().equals(RelationshipType.PROXY)) {
-      // for now, let's only allow creating family relationships
-      throw new IllegalArgumentException("Cannot create proxy relationships");
-    }
+    DataAuditInfo auditInfo =
+            DataAuditInfo.builder()
+                    .responsibleAdminUserId(authContext.getOperator().getId())
+                    .enrolleeId(relation.getTargetEnrolleeId())
+                    .justification(justification)
+                    .build();
 
     if (relation.getRelationshipType().equals(RelationshipType.FAMILY)) {
-      if (Objects.isNull(relation.getFamilyId())) {
-        throw new IllegalArgumentException("Family ID is required for family relationships");
-      }
-
-      // ensure that the enrollees are in the family
-      familyEnrolleeService.getOrCreate(
-          relation.getTargetEnrolleeId(),
-          relation.getFamilyId(),
-          DataAuditInfo.builder()
-              .responsibleAdminUserId(authContext.getOperator().getId())
-              .enrolleeId(relation.getTargetEnrolleeId())
-              .build());
-
-      familyEnrolleeService.getOrCreate(
-          relation.getEnrolleeId(),
-          relation.getFamilyId(),
-          DataAuditInfo.builder()
-              .responsibleAdminUserId(authContext.getOperator().getId())
-              .enrolleeId(relation.getEnrolleeId())
-              .build());
+      return enrolleeRelationService.createFamilyRelationship(relation, auditInfo);
+    } else {
+      // for now, let's only allow creating family relationships
+      throw new IllegalArgumentException("Can only create family relationships");
     }
-
-    // ensure that the relationship does not already exist
-    if (enrolleeRelationService
-        .findByEnrolleeIdAndRelationType(relation.getEnrolleeId(), relation.getRelationshipType())
-        .stream()
-        .anyMatch(r -> r.getTargetEnrolleeId().equals(relation.getTargetEnrolleeId()))) {
-      throw new IllegalArgumentException("Enrollee relation already exists");
-    }
-
-    DataAuditInfo auditInfo =
-        DataAuditInfo.builder()
-            .responsibleAdminUserId(authContext.getOperator().getId())
-            .enrolleeId(relation.getTargetEnrolleeId())
-            .justification(justification)
-            .build();
-
-    // finally, create the relationship
-    EnrolleeRelation created = enrolleeRelationService.create(relation, auditInfo);
-    enrolleeRelationService.attachEnrolleesAndFamily(created);
-    return created;
   }
 
   // todo

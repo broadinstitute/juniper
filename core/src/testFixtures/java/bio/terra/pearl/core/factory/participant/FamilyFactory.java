@@ -18,15 +18,15 @@ public class FamilyFactory {
     private FamilyEnrolleeService familyEnrolleeService;
 
 
-    public Family buildPersisted(String testName, Enrollee enrollee) {
-        Family family = Family.builder().probandEnrolleeId(enrollee.getId()).studyEnvironmentId(enrollee.getStudyEnvironmentId()).build();
+    public Family buildPersisted(String testName, Enrollee proband) {
+        Family family = Family.builder().probandEnrolleeId(proband.getId()).studyEnvironmentId(proband.getStudyEnvironmentId()).build();
 
         DataAuditInfo auditInfo = DataAuditInfo.builder().systemProcess(
                 DataAuditInfo.systemProcessName(getClass(), "buildPersisted")
         ).build();
 
         family = familyService.create(family, auditInfo);
-        linkEnrolleeToFamily(enrollee, family);
+        linkEnrolleeToFamily(proband, family);
         return family;
     }
 

@@ -23,17 +23,20 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     private final EnrolleeService enrolleeService;
     private final ProfileService profileService;
     private final FamilyService familyService;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public EnrolleeRelationService(EnrolleeRelationDao enrolleeRelationDao,
                                    DataChangeRecordService dataChangeRecordService,
                                    @Lazy EnrolleeService enrolleeService,
                                    ObjectMapper objectMapper,
                                    ProfileService profileService,
-                                   @Lazy FamilyService familyService) {
+                                   @Lazy FamilyService familyService,
+                                   FamilyEnrolleeService familyEnrolleeService) {
         super(enrolleeRelationDao, dataChangeRecordService, objectMapper);
         this.enrolleeService = enrolleeService;
         this.profileService = profileService;
         this.familyService = familyService;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     public List<EnrolleeRelation> findByEnrolleeIdAndRelationType(UUID enrolleeId, RelationshipType relationshipType) {
@@ -178,6 +181,47 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    /**
+     * Create a family relationship between two enrollees. If the enrollees are not already in the family, they will be
+     * added to the family.
+     */
+    @Transactional
+    public EnrolleeRelation createFamilyRelationship(EnrolleeRelation relation, DataAuditInfo auditInfo) {
+        relation.setRelationshipType(RelationshipType.FAMILY);
+
+        if (Objects.isNull(relation.getFamilyId())) {
+            throw new IllegalArgumentException("Family ID is required for family relationships");
+        }
+
+        auditInfo.setEnrolleeId(relation.getTargetEnrolleeId());
+        // ensure that the enrollees are in the family
+        familyEnrolleeService.getOrCreate(
+                relation.getTargetEnrolleeId(),
+                relation.getFamilyId(),
+                auditInfo);
+
+        auditInfo.setEnrolleeId(relation.getEnrolleeId());
+        familyEnrolleeService.getOrCreate(
+                relation.getEnrolleeId(),
+                relation.getFamilyId(),
+                auditInfo);
+
+        auditInfo.setEnrolleeId(relation.getTargetEnrolleeId());
+
+        // ensure that the relationship does not already exist
+        if (findByEnrolleeIdAndRelationType(relation.getEnrolleeId(), relation.getRelationshipType())
+                .stream()
+                .anyMatch(r -> r.getTargetEnrolleeId().equals(relation.getTargetEnrolleeId()))) {
+            throw new IllegalArgumentException("Enrollee relation already exists");
+        }
+
+
+        // finally, create the relationship
+        EnrolleeRelation created = create(relation, auditInfo);
+        attachEnrolleesAndFamily(created);
+        return created;
     }
 
     public void attachEnrolleesAndFamily(EnrolleeRelation relation) {
