@@ -1,13 +1,36 @@
-import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faGlobe,
+  faUser
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
-import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useId,
+  useRef
+} from 'react'
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams
+} from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy, Study } from 'api/api'
-import { MailingListModal, PortalEnvironmentLanguageOpt, useI18n } from '@juniper/ui-core'
+import Api, {
+  getEnvSpec,
+  getImageUrl,
+  NavbarItem,
+  PortalStudy,
+  Study
+} from 'api/api'
+import {
+  MailingListModal,
+  PortalEnvironmentLanguageOpt,
+  useI18n
+} from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -261,7 +284,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
  * User account dropdown menu, with options to edit profile, change password, and log out
  */
 export const AccountOptionsDropdown = () => {
-  const { user, logoutUser, relations } = useUser()
+  const { user, logoutUser, proxyRelations } = useUser()
   const { i18n, selectedLanguage } = useI18n()
   const config = useConfig()
   const envSpec = getEnvSpec()
@@ -319,7 +342,7 @@ export const AccountOptionsDropdown = () => {
             {user.username}
           </p>
           <hr className="dropdown-divider d-none d-lg-block"/>
-          {relations.length === 0 ? <NavLink to="/hub/profile">
+          {proxyRelations.length === 0 ? <NavLink to="/hub/profile">
             <button className="dropdown-item" aria-label="edit profile">
               {i18n('profile')}
             </button>

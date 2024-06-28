@@ -29,7 +29,8 @@ export type UserContextT = {
   // logged in.
   ppUsers: PortalParticipantUser[]
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  proxyRelations: EnrolleeRelation[],
+  familyRelations: EnrolleeRelation[],
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
@@ -44,7 +45,8 @@ const UserContext = React.createContext<UserContextT>({
   user: null,
   ppUsers: [],
   enrollees: [],
-  relations: [],
+  proxyRelations: [],
+  familyRelations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -199,7 +201,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const userContext: UserContextT = {
     user: loginState ? loginState.user : null,
     enrollees: loginState ? loginState.enrollees : [],
-    relations: loginState ? loginState.relations : [],
+    proxyRelations: loginState ? loginState.relations.filter(r => r.relationshipType === 'PROXY') : [],
+    familyRelations: loginState ? loginState.relations.filter(r => r.relationshipType === 'FAMILY') : [],
     ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
     profile: loginState?.profile,
     loginUser,
