@@ -142,7 +142,10 @@ export const ItemDisplay = ({
   </>
 }
 
-const ResponseEditHistory = ({ question, answer, editHistory }: {
+/**
+ * Renders a dropdown with the edit history for a question response
+ */
+export const ResponseEditHistory = ({ question, answer, editHistory }: {
   question: Question | CalculatedValue, answer: Answer, editHistory: DataChangeRecord[]
 }) => {
   const { users } = useAdminUserContext()

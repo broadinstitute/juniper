@@ -1,9 +1,10 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
+import { getDisplayValue, ItemDisplay, ResponseEditHistory } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
+import { DataChangeRecord } from 'api/api'
 
 
 describe('getDisplayValue', () => {
@@ -140,5 +141,89 @@ describe('ItemDisplay', () => {
       showFullQuestions={true}/>)
 
     expect(screen.getByText('(testQ)')).toBeInTheDocument()
+  })
+
+  it('renders an edit history button if the question has been edited', async () => {
+    const question = { name: 'testQ', text: 'test question', isVisible: true, getType: () => 'text' }
+    const answer: Answer = {
+      stringValue: 'test123',
+      questionStableId: 'testQ',
+      surveyVersion: 1,
+      viewedLanguage: 'es',
+      lastUpdatedAt: 1234
+    } as Answer
+
+    const changeRecord: DataChangeRecord = {
+      id: 'test_id',
+      createdAt: 1234,
+      modelName: 'test_survey',
+      fieldName: 'testQ',
+      oldValue: 'test123',
+      newValue: 'test456',
+      responsibleUserId: 'test_user'
+    }
+
+    const answerMap: Record<string, Answer> = {}
+    answerMap[answer.questionStableId] = answer
+    render(<ItemDisplay
+      question={question as unknown as Question}
+      answerMap={answerMap}
+      surveyVersion={2}
+      editHistory={[changeRecord]}
+      supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish', id: '' }]}
+      showFullQuestions={true}/>)
+
+    expect(screen.getByText('View history')).toBeInTheDocument()
+
+    const viewHistoryButton = screen.getByText('View history')
+    viewHistoryButton.click()
+    expect(screen.getByText('test456')).toBeInTheDocument()
+  })
+
+  it('renders the full edit history for a question', async () => {
+    const question = {
+      name: 'testQ',
+      text: 'test question',
+      isVisible: true,
+      getType: () => 'text'
+    } as unknown as Question
+
+    const answer: Answer = {
+      stringValue: 'test123',
+      questionStableId: 'testQ',
+      surveyVersion: 1,
+      viewedLanguage: 'es',
+      lastUpdatedAt: 1577854800,
+      createdAt: 1577854800
+    } as Answer
+
+    const firstChangeRecord: DataChangeRecord = {
+      id: 'test_id',
+      createdAt: 1577858400,
+      modelName: 'test_survey',
+      fieldName: 'testQ',
+      oldValue: 'test123',
+      newValue: 'test456',
+      responsibleUserId: 'test_user'
+    }
+
+    const secondChangeRecord: DataChangeRecord = {
+      id: 'test_id',
+      createdAt: 1577862000,
+      modelName: 'test_survey',
+      fieldName: 'testQ',
+      oldValue: 'test456',
+      newValue: 'test789',
+      responsibleUserId: 'test_user'
+    }
+
+    const answerMap: Record<string, Answer> = {}
+    answerMap[answer.questionStableId] = answer
+    render(<ResponseEditHistory
+      question={question} answer={answer} editHistory={[firstChangeRecord, secondChangeRecord]}/>)
+
+    expect(screen.getByText('Answered on 1/1/2020, 12:00:00 AM by', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('Edited on 1/1/2020, 1:00:00 AM by', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('Edited on 1/1/2020, 2:00:00 AM by', { exact: false })).toBeInTheDocument()
   })
 })
