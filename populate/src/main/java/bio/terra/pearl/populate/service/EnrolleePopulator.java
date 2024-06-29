@@ -176,13 +176,8 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
-            ParticipantTask task = null;
-            try {
-                task = participantTaskService
+            ParticipantTask task = participantTaskService
                         .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
-            } catch (Exception e) {
-                log.warn("SUP");
-            }
 
             if (responsePopDto.getSurveyVersion() != task.getTargetAssignedVersion()) {
                 /**
