@@ -1,5 +1,5 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import {
+import Api, {
   AdminTask,
   Answer,
   DatasetDetails,
@@ -504,4 +504,11 @@ export const mockStudyEnvParams = (): StudyEnvParams => {
 /** random ids to be used in place of guids */
 export const randomId = (prefix: string): string => {
   return `${prefix}${Math.floor(Math.random() * 1000)}`
+}
+
+/** APIs invoked for query builder UX */
+export const mockExpressionApis = () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
+  jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue({})
 }
