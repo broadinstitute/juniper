@@ -5,7 +5,6 @@ import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
 import { mockExpressionApis, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
-import Api from '../../api/api'
 
 describe('SurveyEditorView', () => {
   const mockForm = ():Survey => ({
