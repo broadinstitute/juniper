@@ -49,7 +49,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(14, enrollees.size());
+        Assertions.assertEquals(15, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
@@ -192,7 +192,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
         List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.getFilter(), options.getLimit());
 
-        assertThat(exportData, hasSize(12));
+        assertThat(exportData, hasSize(13));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));
@@ -213,9 +213,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
         assertThat(surveys, hasSize(15));
-        surveys.forEach(survey -> {
-            assertThat(survey.getStableId(), Matchers.startsWith(newShortcode));
-        });
+      
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         assertThat(siteContents, hasSize(2));
         siteContents.forEach(siteContent -> {

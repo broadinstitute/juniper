@@ -163,6 +163,10 @@ a {
   padding: 0px;
 }
 
+.survey-hide-complete #sv-nav-complete {
+    display: none;
+}
+
 /* note the shadow is applied to the *child*.  This prevents jittering when the button is hovered */
 .hover-shadow > * {
   box-shadow: 0 0px 10px rgba(0,0,0,.1);

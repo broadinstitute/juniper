@@ -103,7 +103,8 @@
         "enrollees/child1Family2.json",
         "enrollees/child2Family2.json",
         "enrollees/invited.json",
-        "enrollees/lostInterest.json"
+        "enrollees/lostInterest.json",
+        "enrollees/lostInterestNo.json"
       ],
       "familyFiles": [
         "families/salk.json"
