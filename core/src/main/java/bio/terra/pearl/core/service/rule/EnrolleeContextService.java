@@ -1,7 +1,5 @@
 package bio.terra.pearl.core.service.rule;
 
-import bio.terra.pearl.core.dao.participant.MailingAddressDao;
-import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -20,15 +18,13 @@ public class EnrolleeContextService {
     private final ProfileService profileService;
     private final EnrolleeService enrolleeService;
     private final ParticipantUserService participantUserService;
-    private final MailingAddressDao mailingAddressDao;
 
 
     public EnrolleeContextService(ProfileService profileService, @Lazy EnrolleeService enrolleeService,
-                                  ParticipantUserService participantUserService, MailingAddressDao mailingAddressDao) {
+                                  ParticipantUserService participantUserService) {
         this.profileService = profileService;
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
-        this.mailingAddressDao = mailingAddressDao;
     }
 
     public EnrolleeContext fetchData(Enrollee enrollee) {
