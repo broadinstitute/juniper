@@ -4,6 +4,7 @@ import { useApiContext } from '../../participant/ApiProvider'
 
 import { requireOptionalString, requirePlainObject, requireOptionalNumber }
   from '../../participant/util/validationUtils'
+import { SectionProp } from 'src/participant/landing/sections/SectionProp'
 
 export type VideoConfig = {
   videoLink: string
@@ -22,6 +23,16 @@ export type ImageConfig = {
 }
 
 export type MediaConfig = ImageConfig | VideoConfig
+
+export const mediaConfigProps: SectionProp[] = [
+  { name: 'cleanFileName', translated: false, subProps: [] },
+  { name: 'version', translated: false, subProps: [] },
+  { name: 'alt', translated: true, subProps: [] },
+  { name: 'className', translated: false, subProps: [] },
+  { name: 'style', translated: false, subProps: [] },
+  { name: 'link', translated: false, subProps: [] },
+  { name: 'videoLink', translated: false, subProps: [] }
+]
 
 // TODO: Add JSDoc
 // eslint-disable-next-line jsdoc/require-jsdoc

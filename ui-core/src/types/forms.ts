@@ -88,6 +88,10 @@ export type SurveyResponse = FormResponse & {
   complete: boolean
 }
 
+export type SurveyResponseWithJustification = SurveyResponse & {
+  justification?: string
+}
+
 export type PreregistrationResponse = FormResponse & {
   surveyId: string
   answers: Answer[]

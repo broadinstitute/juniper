@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { PortalEnvironmentLanguage } from '@juniper/ui-core'
+import { PortalEnvironmentLanguage, Profile } from '@juniper/ui-core'
 import Select from 'react-select'
 import useReactSingleSelect from 'util/react-select-utils'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faGlobe } from '@fortawesome/free-solid-svg-icons'
-import { usePortalLanguage } from 'portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
+import InfoPopup from '../components/forms/InfoPopup'
+import { TextInput } from '../components/forms/TextInput'
 
 type FormPreviewOptions = {
   ignoreValidation: boolean
   showInvisibleElements: boolean
   locale: string
+  profile?: Profile
+  proxyProfile?: Profile
 }
 
 type FormPreviewOptionsProps = {
@@ -37,6 +39,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
 
   return (
     <div>
+      <h3 className="h6">Preview options</h3>
       <div className="form-check">
         <label className="form-check-label" htmlFor="form-preview-ignore-validation">
           <input
@@ -50,12 +53,12 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           />
           Ignore validation
         </label>
+        <InfoPopup content={<p className="form-text">
+          Ignore validation to preview all pages of a form without enforcing required fields.
+          Enable validation to simulate a participant&apos;s experience.
+        </p>}/>
       </div>
-      <p className="form-text">
-        Ignore validation to preview all pages of a form without enforcing required fields.
-        Enable validation to simulate a participant&apos;s experience.
-      </p>
-      <div className="form-check">
+      <div className="form-check mt-3">
         <label className="form-check-label" htmlFor="form-preview-show-invisible-elements">
           <input
             checked={value.showInvisibleElements}
@@ -68,13 +71,19 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           />
           Show invisible questions
         </label>
+        <InfoPopup content={<p className="form-text">
+          Show all questions, regardless of their visibility. Use this to review questions that
+          would be hidden by survey branching logic.
+        </p>}/>
       </div>
-      <p className="form-text">
-        Show all questions, regardless of their visibility. Use this to review questions that
-        would be hidden by survey branching logic.
-      </p>
-      { languageOptions.length > 1 && <><div className="form-group">
-        <label htmlFor={selectLanguageInputId}><FontAwesomeIcon icon={faGlobe}/> Language Preview</label>
+      <div className="form-group mt-3">
+        <label htmlFor={selectLanguageInputId}>Language Preview</label>
+        <InfoPopup content={<p><p>
+          The language to use when rendering the form. If the language is not supported for this form, the default
+          language for the form will be used. </p>
+        <p>The values for this dropdown are taken from the supported languages
+          configurable in &quot;Site Settings&quot;.
+        </p></p>}/>
         <Select
           inputId={selectLanguageInputId}
           options={languageOptions}
@@ -84,10 +93,68 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
             onChange({ ...value, locale: language?.value.languageCode ?? 'default' })
           }}/>
       </div>
-      <p className="form-text">
-        The language to use when rendering the form. If the language is not supported for this form, the default
-          language for the form will be used.
-      </p></> }
+      <div className="mt-4">
+        <div data-testid="profileInfoFields">
+          <h4 className="h6">
+          Participant profile <InfoPopup content={<p>
+          Change the values below to test how your survey appears to different participants
+          due to branching logic or dynamic texts.  The participant profile is the profile of the
+          user taking the survey.
+            </p>}/>
+          </h4>
+          <TextInput onChange={text => onChange({
+            ...value,
+            profile: {
+              ...value.profile,
+              givenName: text
+            }
+          })}
+          label={'Given name'}
+          unboldLabel={true}
+          value={value.profile?.givenName ?? ''} />
+          <TextInput onChange={text => onChange({
+            ...value,
+            profile: {
+              ...value.profile,
+              familyName: text
+            }
+          })}
+          label={'Family name'}
+          unboldLabel={true}
+          value={value.profile?.familyName ?? ''} />
+        </div>
+        <div data-testid="proxyInfoFields">
+          <h4 className="h6 mt-3">
+            Proxy profile <InfoPopup content={<p>
+            Change the values below to test how your survey appears to different participants
+            due to branching logic or dynamic texts.  The proxy profile is the profile of the
+            person the user is taking the survey on behalf of.
+            </p>}/>
+          </h4>
+          <TextInput onChange={text => onChange({
+            ...value,
+            proxyProfile: {
+              ...value.proxyProfile,
+              givenName: text
+            }
+          })}
+          label={'Given name'}
+          data-testid="proxyGivenName"
+          unboldLabel={true}
+          value={value.proxyProfile?.givenName ?? ''} />
+          <TextInput onChange={text => onChange({
+            ...value,
+            proxyProfile: {
+              ...value.proxyProfile,
+              familyName: text
+            }
+          })}
+          label={'Family name'}
+          unboldLabel={true}
+          value={value.proxyProfile?.familyName ?? ''} />
+        </div>
+      </div>
+
     </div>
   )
 }

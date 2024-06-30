@@ -1,13 +1,18 @@
 package bio.terra.pearl.core.dao.search;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -31,20 +36,36 @@ import java.util.function.Consumer;
 @Component
 public class EnrolleeSearchExpressionDao {
     private final Jdbi jdbi;
+    private final EnrolleeDao enrolleeDao;
+    private final ProfileDao profileDao;
 
-    public EnrolleeSearchExpressionDao(Jdbi jdbi) {
+    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao) {
         this.jdbi = jdbi;
+        this.enrolleeDao = enrolleeDao;
+        this.profileDao = profileDao;
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId) {
-        return executeSearch(expression.generateQueryBuilder(studyEnvId));
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), EnrolleeSearchOptions.builder().build());
     }
 
-    private List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search) {
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId, EnrolleeSearchOptions opts) {
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), opts);
+    }
+
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search, EnrolleeSearchOptions opts) {
         return jdbi.withHandle(handle -> {
-            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES));
+            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES), opts);
+
             Query query = jdbiFromJooq(jooqQuery, handle);
             return query
+                    .registerRowMapper(Family.class, BeanMapper.of(Family.class, "family"))
                     .registerRowMapper(EnrolleeSearchExpressionResult.class, new EnrolleeSearchResultMapper())
                     .reduceRows(new EnrolleeSearchResultReducer())
                     .toList();
@@ -162,8 +183,18 @@ public class EnrolleeSearchExpressionDao {
             final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
 
-            // currently, does nothing, but in the future could reduce down rows from tables which
-            // could return multiple values; e.g., kits
+            // Add family to enrollee
+            if (isColumnPresent(rowView, "family_id", UUID.class)) {
+                searchResult.getFamilies().add(rowView.getRow(Family.class));
+            }
+        }
+
+        private <T> boolean isColumnPresent(RowView rv, String columnName, Class<T> c) {
+            try {
+                return rv.getColumn(columnName, c) != null;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

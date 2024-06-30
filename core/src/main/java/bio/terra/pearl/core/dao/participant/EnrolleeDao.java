@@ -146,4 +146,16 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
         return findByTwoProperties("participant_user_id", participantUserId, "study_environment_id", studyEnvId);
     }
+
+    public List<Enrollee> findAllByFamilyId(UUID id) {
+        return jdbi.withHandle(handle -> handle.createQuery("""
+                        SELECT enrollee.* FROM enrollee enrollee
+                        INNER JOIN family_enrollee family_enrollee ON enrollee.id = family_enrollee.enrollee_id
+                        WHERE family_enrollee.family_id = :id
+                        """)
+                .bind("id", id)
+                .mapTo(clazz)
+                .list());
+    }
+
 }

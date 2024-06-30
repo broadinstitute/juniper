@@ -2,11 +2,7 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.site.SiteContent;
@@ -32,12 +28,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** confirm demo portal populates as expected */
 public class PopulateDemoTest extends BasePopulatePortalsTest {
@@ -57,7 +49,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(12, enrollees.size());
+        Assertions.assertEquals(14, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
@@ -65,6 +57,26 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         checkProxyWithTwoGovernedEnrollee(enrollees);
         checkLostInterestEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
+        checkFamilies(sandboxEnvironmentId);
+    }
+
+    private void checkFamilies(UUID sandboxEnvironmentId) {
+        List<Family> families = familyService.findByStudyEnvironmentId(sandboxEnvironmentId);
+        assertThat(families, hasSize(1));
+        Family family = families.get(0);
+        assertThat(family.getShortcode(), equalTo("F_SALKFM"));
+        assertThat(family.getProbandEnrolleeId(), not(equalTo(null)));
+
+        List<Enrollee> members = enrolleeService.findAllByFamilyId(family.getId());
+
+        assertThat(members, hasSize(3));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDSALK")));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDPSLK")));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDDSLK")));
+
+        List<EnrolleeRelation> relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertThat(relations, hasSize(2));
+
     }
 
     /** confirm the enrollee wtih answers to two different survey versions was populated correctly */
@@ -174,12 +186,13 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
+                .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                 .limit(null)
                 .build();
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.getFilter(), options.getLimit());
 
-        assertThat(exportData, hasSize(10));
+        assertThat(exportData, hasSize(12));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));

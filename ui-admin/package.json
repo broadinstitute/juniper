@@ -15,6 +15,7 @@
     "html-react-parser": "^3.0.4",
     "lodash": "^4.17.21",
     "oidc-client-ts": "^2.2.0",
+    "papaparse": "^5.4.1",
     "plotly.js": "^2.30.0",
     "pluralize": "^8.0.0",
     "query-string": "^7.1.3",

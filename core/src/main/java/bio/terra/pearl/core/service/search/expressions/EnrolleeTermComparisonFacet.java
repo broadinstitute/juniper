@@ -69,8 +69,9 @@ public class EnrolleeTermComparisonFacet implements EnrolleeSearchExpression {
         Condition whereCondition;
         if (this.operator.equals(SearchOperators.CONTAINS)) {
             // If the operator is CONTAINS, we need to wrap the right term in % to make it a valid SQL LIKE clause
+            // contains is case insensitive
             whereCondition = condition(
-                    this.leftTermExtractor.termClause() + " LIKE concat('%', " + rightTermExtractor.termClause() + ", '%')",
+                    this.leftTermExtractor.termClause() + " ILIKE concat('%', " + rightTermExtractor.termClause() + ", '%')",
                     boundObjects.toArray()
             );
         } else {

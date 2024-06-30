@@ -3,9 +3,9 @@ import EmailTemplateEditor from './EmailTemplateEditor'
 import { screen, render } from '@testing-library/react'
 import { mockEmailTemplate } from 'test-utils/mocking-utils'
 import { asMockedFn } from '@juniper/ui-core'
-import { usePortalLanguage } from 'portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 
-jest.mock('portal/usePortalLanguage', () => ({
+jest.mock('portal/languages/usePortalLanguage', () => ({
   usePortalLanguage: jest.fn()
 }))
 
@@ -14,14 +14,17 @@ describe('EmailTemplateEditor', () => {
     asMockedFn(usePortalLanguage).mockReturnValue({
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages: [{
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       }, {
         languageCode: 'es',
-        languageName: 'Español'
+        languageName: 'Español',
+        id: ''
       }]
     })
 
@@ -40,11 +43,13 @@ describe('EmailTemplateEditor', () => {
     asMockedFn(usePortalLanguage).mockReturnValue({
       defaultLanguage: {
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       },
       supportedLanguages: [{
         languageCode: 'en',
-        languageName: 'English'
+        languageName: 'English',
+        id: ''
       }]
     })
 

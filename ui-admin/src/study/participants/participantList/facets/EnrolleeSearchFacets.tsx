@@ -6,7 +6,7 @@ import Creatable from 'react-select/creatable'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Select from 'react-select'
 import { ParticipantSearchState } from 'util/participantSearchUtils'
-import { LazySearchQueryBuilder } from '../../../../search/LazySearchQueryBuilder'
+import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 
 /**
  * Renders the facets that you can search upon in the participant list.

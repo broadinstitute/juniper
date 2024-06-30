@@ -1,6 +1,7 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.survey.AnswerDao;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
@@ -78,6 +79,13 @@ public class AnswerTerm implements SearchTerm {
     @Override
     public List<Object> boundObjects() {
         return List.of();
+    }
+
+    @Override
+    public SearchValueTypeDefinition type() {
+        // TODO: this should be determined by the survey question definition, but for now
+        //       we are assuming all answers are strings
+        return SearchValueTypeDefinition.builder().type(SearchValue.SearchValueType.STRING).build();
     }
 
     private static boolean isAlphaNumeric(String s) {

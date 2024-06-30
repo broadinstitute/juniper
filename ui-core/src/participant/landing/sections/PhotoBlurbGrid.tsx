@@ -7,30 +7,48 @@ import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfi
 import { requireOptionalArray, requireOptionalString, requirePlainObject, requireString }
   from '../../util/validationUtils'
 
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
 import { Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 import { Modal } from 'react-bootstrap'
 
-type PhotoBlurbGridConfig = {
+export type PhotoBlurbGridConfig = {
   title?: string,
   subGrids: SubGrid[]
 }
 
-type SubGrid = {
+export type SubGrid = {
   title?: string
   photoBios: PhotoBio[]
 }
 
-type PhotoBio = {
+export type PhotoBio = {
   image: MediaConfig,
   name: string,
   title?: string,
   blurb?: string,
   detail?: string
 }
+
+export const photoBlurbGridConfigProps = [
+  { name: 'title', translated: true },
+  {
+    name: 'subGrids', isArray: true, subProps: [
+      { name: 'title', translated: true },
+      {
+        name: 'photoBios', isArray: true, subProps: [
+          { name: 'image', subProps: mediaConfigProps },
+          { name: 'name' },
+          { name: 'title', translated: true },
+          { name: 'blurb', translated: true },
+          { name: 'detail', translated: true }
+        ]
+      }
+    ]
+  }
+]
 
 const validatePhotoBio = (config: unknown): PhotoBio => {
   const message = 'Invalid Invalid PhotoBlurbGridConfig: invalid photoBio'

@@ -21,6 +21,8 @@ import java.util.UUID;
 public class EnrolleeRelation extends BaseEntity {
     private UUID enrolleeId;
     private UUID targetEnrolleeId; // note the targetEnrollee does not necessary have to be a subject
+    private UUID familyId;
+    private Family family;
     private Enrollee targetEnrollee;
     private Enrollee enrollee;
     private RelationshipType relationshipType;

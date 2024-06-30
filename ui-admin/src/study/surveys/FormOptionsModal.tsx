@@ -15,7 +15,6 @@ import {
 import InfoPopup from 'components/forms/InfoPopup'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import {
-  userHasPermission,
   useUser
 } from 'user/UserProvider'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
@@ -113,16 +112,15 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                 })}
               /> Allow study staff to edit participant responses
             </label>}
-              Eligibility Rule
-            {userHasPermission(user, studyEnvContext.portal.id, 'prototype_tester')
-              && <div className="my-2">
-                <LazySearchQueryBuilder
-                  studyEnvContext={studyEnvContext}
-                  onSearchExpressionChange={exp => updateWorkingForm({
-                    ...workingForm, eligibilityRule: exp
-                  })}
-                  searchExpression={workingForm.eligibilityRule || ''}/>
-              </div>}
+            <h3 className="h6 mt-4">Eligibility Rule</h3>
+            <div className="mb-2">
+              <LazySearchQueryBuilder
+                studyEnvContext={studyEnvContext}
+                onSearchExpressionChange={exp => updateWorkingForm({
+                  ...workingForm, eligibilityRule: exp
+                })}
+                searchExpression={workingForm.eligibilityRule || ''}/>
+            </div>
           </div>
         </div>
     }

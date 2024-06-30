@@ -2,7 +2,9 @@ import {
   AddressValidationResult,
   AlertTrigger,
   Enrollee,
+  EnrolleeRelation,
   EnvironmentName,
+  Family,
   HubResponse,
   KitRequest,
   KitType,
@@ -14,6 +16,7 @@ import {
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
+  PortalEnvironmentLanguage,
   Profile,
   SiteContent,
   Study,
@@ -24,12 +27,6 @@ import {
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
-import {
-  FacetOption,
-  FacetType,
-  FacetValue,
-  facetValuesToString
-} from './enrolleeSearch'
 import queryString from 'query-string'
 import {
   AdminUser,
@@ -73,45 +70,13 @@ export type StudyEnvironmentUpdate = {
   preEnrollSurveyId: string
 }
 
-export type EnrolleeSearchFacet = {
-  keyName: string,
-  category: string,
-  label: string,
-  facetType: FacetType,
-  entities: FacetOption[]
-  options: FacetOption[]
-}
-
-export type EnrolleeSearchResult = {
-  enrollee: Enrollee,
-  profile: Profile,
-  participantUser: {
-    lastLogin: number,
-    username: string
-  }
-  mostRecentKitStatus: string | null
-}
-
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
   latestKit?: KitRequest
 }
 
-type RelationshipType = 'PROXY'
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: RelationshipType,
-  targetEnrolleeId: string,
-  targetEnrollee: Enrollee
-  enrolleeId: string
-  enrollee: Enrollee
-  createdAt: number
-  lastUpdatedAt: number
-  beginDate: number
-  endDate: number
-}
+export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
 
 export type ProfileUpdateDto = {
   justification: string,
@@ -252,6 +217,7 @@ export type PortalEnvironmentChange = {
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
+  languageChanges: ListChange<PortalEnvironmentLanguage, VersionedConfigChange>
 }
 
 export type StudyEnvironmentChange = {
@@ -302,7 +268,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
-  includeProxiesAsRows?: boolean,
+  filter?: string,
   limit?: number
 }
 
@@ -385,7 +351,7 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
-export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueType = 'STRING' | 'NUMBER' | 'DATE' | 'BOOLEAN' | 'INSTANT'
 export type SearchValueTypeDefinition = {
   type: SearchValueType
   choices?: { stableId: string, text: string }[]
@@ -756,24 +722,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<EnrolleeSearchFacet[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<{ [index: string]: SearchValueTypeDefinition }> {
+    Promise<ExpressionSearchFacets> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
-  async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
-    Promise<EnrolleeSearchResult[]> {
-    const facetString = encodeURIComponent(facetValuesToString(facetValues))
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1264,6 +1215,16 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async setPortalEnvLanguages(portalShortcode: string, envName: string, languages: PortalEnvironmentLanguage[]) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/portalLanguages`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(languages)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async listPortalEnvAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
     const response = await fetch(url, this.getGetInit())
@@ -1291,6 +1252,14 @@ export default {
       headers: this.getInitHeaders(),
       body: JSON.stringify(alertConfig)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async getFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcode: string
+  ): Promise<Family> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcode}`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -1409,6 +1378,7 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+
 }
 
 /** gets an image url for SiteMedia */

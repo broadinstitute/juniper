@@ -125,4 +125,5 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
                         .mapTo(Portal.class)
                         .findOne());
     }
+    
 }

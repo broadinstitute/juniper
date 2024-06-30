@@ -18,10 +18,7 @@ import bio.terra.pearl.core.model.participant.PortalParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.PreEnrollmentResponse;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -140,18 +137,26 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
                                   PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context,
-                                  ParticipantUser responsibleUser)
+                                  ParticipantUser pUser)
             throws JsonProcessingException {
+        ResponsibleEntity responsibleUser;
+        if(responsePopDto.getCreatingAdminUsername() != null) {
+            responsibleUser = new ResponsibleEntity(adminUserDao.findByUsername(responsePopDto.getCreatingAdminUsername()).get());
+        } else {
+            responsibleUser = new ResponsibleEntity(pUser);
+        }
         Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
                 responsePopDto.getSurveyVersion(), context.getPortalShortcode()).orElseThrow(() -> new NotFoundException("Survey not found " + context.applyShortcodeOverride(responsePopDto.getSurveyStableId())));
 
-        SurveyResponse response = SurveyResponse.builder()
+        SurveyResponseWithJustification response = SurveyResponseWithJustification.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
                 .complete(responsePopDto.isComplete())
+                .justification(responsePopDto.getJustification())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
+
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
             Answer answer = convertAnswerPopDto(answerPopDto);
             response.getAnswers().add(answer);
@@ -159,7 +164,16 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId()).build();
-        auditInfo.setResponsibleEntity(new ResponsibleEntity(responsibleUser));
+
+        auditInfo.setResponsibleEntity(responsibleUser);
+
+        if(responsePopDto.getCreatingAdminUsername() != null) {
+            AdminUser adminUser = adminUserDao.findByUsername(responsePopDto.getCreatingAdminUsername()).get();
+            response.setCreatingAdminUserId(adminUser.getId());
+            response.setCreatingParticipantUserId(null);
+            auditInfo.setJustification(responsePopDto.getJustification());
+        }
+
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
@@ -174,7 +188,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
+                    .updateResponse(response, responsibleUser, responsePopDto.getJustification(), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());

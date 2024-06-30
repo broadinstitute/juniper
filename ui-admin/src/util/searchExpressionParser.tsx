@@ -31,7 +31,7 @@ export const parseExpression = (expression: string): SearchExpression => {
  * Represents the overall search expression, which can either be a BooleanSearchExpression
  * or a ComparisonSearchFacet. This is a recursive data structure.
  */
-export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet
+export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet | NotExpression
 
 /**
  * Represents an AND or OR of two search expressions.
@@ -40,6 +40,20 @@ export type BooleanSearchExpression = {
   booleanOperator: BooleanOperator
   left: SearchExpression
   right: SearchExpression
+}
+
+/**
+ * Represents a NOT of a search expression.
+ */
+export type NotExpression = {
+  inner: SearchExpression
+}
+
+/**
+ * Tests if a search expression is a NotExpression.
+ */
+export const isNotExpression = (expression: SearchExpression): expression is NotExpression => {
+  return (expression as NotExpression).inner !== undefined
 }
 
 /**
@@ -71,7 +85,7 @@ export const isComparisonSearchFacet = (
   return (expression as ComparisonSearchFacet).comparisonOperator !== undefined
 }
 
-export type Term = SearchVariable | string | number | boolean | null
+export type Term = SearchVariable | FunctionTerm | string | number | boolean | null
 
 export type SearchVariable = {
   model: string
@@ -85,8 +99,26 @@ export const isSearchVariable = (term: Term): term is SearchVariable => {
   return (term as SearchVariable).model !== undefined
 }
 
+export type FunctionTerm = {
+  name: string
+  args: Term[]
+}
+
+/**
+ * Tests if a term is a FunctionTerm.
+ */
+export const isFunctionTerm = (term: Term): term is FunctionTerm => {
+  return (term as FunctionTerm).name !== undefined
+}
+
 // Helpers for parsing the ANTLR parse tree
 const _parseExpression = (ctx: ExprContext): SearchExpression => {
+  if (ctx.NOT()) {
+    return {
+      inner: _parseExpression(ctx.expr(0))
+    }
+  }
+
   if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
     return _parseExpression(ctx.expr(0))
   }
@@ -125,6 +157,13 @@ const _ctxToComparisonOperator = (ctx: ExprContext): ComparisonOperator => {
 }
 
 const _parseTerm = (term: TermContext): Term => {
+  if (term.FUNCTION_NAME() != null) {
+    return {
+      name: term.FUNCTION_NAME().getText(),
+      args: term.term_list().map(_parseTerm)
+    }
+  }
+
   if (term.VARIABLE() != null) {
     return _parseVariable(term.VARIABLE().getText())
   }

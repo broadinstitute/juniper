@@ -8,9 +8,10 @@ import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.participant.*;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
@@ -20,6 +21,7 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
+import bio.terra.pearl.populate.service.FamilyPopulator;
 import bio.terra.pearl.populate.service.KitTypePopulator;
 import bio.terra.pearl.populate.service.PortalPopulator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +85,13 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     @Autowired
     protected StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
     @Autowired
-    protected PortalLanguageService portalLanguageService;
+    protected PortalEnvironmentLanguageService portalEnvironmentLanguageService;
+    @Autowired
+    protected FamilyPopulator familyPopulator;
+    @Autowired
+    protected FamilyService familyService;
     @Autowired
     protected BaseSeedPopulator baseSeedPopulator;
+    @Autowired
+    protected EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
 }

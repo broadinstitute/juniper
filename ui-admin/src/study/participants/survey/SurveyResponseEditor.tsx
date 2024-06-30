@@ -7,15 +7,16 @@ import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam } from '@juni
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
-import { usePortalLanguage } from 'portal/usePortalLanguage'
+import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 
 /** allows editing of a survey response */
 export default function SurveyResponseEditor({
-  studyEnvContext, response, survey, enrollee, adminUserId, onUpdate, setAutosaveStatus, updateResponseMap
+  studyEnvContext, response, survey, enrollee, adminUserId,
+  onUpdate, setAutosaveStatus, updateResponseMap, justification
 }: {
   studyEnvContext: StudyEnvContextT, response?: SurveyResponse, setAutosaveStatus: (status: AutosaveStatus) => void,
   survey: Survey, enrollee: Enrollee, adminUserId: string, onUpdate: () => void,
-  updateResponseMap: (stableId: string, response: SurveyResponse) => void
+  updateResponseMap: (stableId: string, response: SurveyResponse) => void, justification?: string
 }) {
   const { defaultLanguage } = usePortalLanguage()
   const taskId = useTaskIdParam()
@@ -49,6 +50,7 @@ export default function SurveyResponseEditor({
         updateProfile={() => { /*no-op for admins*/ }}
         updateEnrollee={() => { /*no-op for admins*/ }}
         taskId={taskId}
+        justification={justification}
         showHeaders={false}/>
     </div>
   </div>

@@ -7,8 +7,8 @@ import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.site.SiteContent;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import java.util.List;
 import java.util.Optional;
@@ -19,17 +19,17 @@ import org.springframework.stereotype.Service;
 public class SiteContentExtService {
   private final AuthUtilService authUtilService;
   private final SiteContentService siteContentService;
-  private final PortalLanguageService portalLanguageService;
+  private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
   private final PortalEnvironmentService portalEnvironmentService;
 
   public SiteContentExtService(
       AuthUtilService authUtilService,
       SiteContentService siteContentService,
-      PortalLanguageService portalLanguageService,
+      PortalEnvironmentLanguageService portalEnvironmentLanguageService,
       PortalEnvironmentService portalEnvironmentService) {
     this.authUtilService = authUtilService;
     this.siteContentService = siteContentService;
-    this.portalLanguageService = portalLanguageService;
+    this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     this.portalEnvironmentService = portalEnvironmentService;
   }
 
@@ -60,7 +60,7 @@ public class SiteContentExtService {
   public Optional<SiteContent> loadSiteContent(UUID siteContentId, PortalEnvironment portalEnv) {
     Optional<SiteContent> siteContentOpt = siteContentService.find(siteContentId);
     List<PortalEnvironmentLanguage> languages =
-        portalLanguageService.findByPortalEnvId(portalEnv.getId());
+        portalEnvironmentLanguageService.findByPortalEnvId(portalEnv.getId());
     if (siteContentOpt.isPresent()
         && siteContentOpt.get().getPortalId().equals(portalEnv.getPortalId())) {
       for (PortalEnvironmentLanguage lang : languages) {

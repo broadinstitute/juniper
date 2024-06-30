@@ -42,6 +42,6 @@ public class EnrolleeRelationExtService {
         enrolleeService
             .findByShortcodeAndStudyEnv(enrolleeShortcode, studyShortcode, environmentName)
             .orElseThrow(() -> new NotFoundException("Enrollee not found"));
-    return enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId());
+    return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
   }
 }

@@ -1,25 +1,25 @@
 package bio.terra.pearl.core.service.export;
 
-import bio.terra.pearl.core.dao.kit.KitTypeDao;
+import bio.terra.pearl.core.dao.search.EnrolleeSearchExpressionDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.survey.SurveyQuestionDefinitionDao;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.EnrolleeRelation;
+import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
+import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.EnrolleeRelationFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
-import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.*;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
@@ -28,12 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -46,35 +41,39 @@ public class EnrolleeExportService {
     private final StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     private final SurveyResponseService surveyResponseService;
     private final ParticipantTaskService participantTaskService;
-    private final EnrolleeService enrolleeService;
     private final KitRequestService kitRequestService;
     private final ParticipantUserService participantUserService;
-    private final KitTypeDao kitTypeDao;
     private final ObjectMapper objectMapper;
     private final EnrolleeRelationService enrolleeRelationService;
+    private final FamilyService familyService;
+    private final EnrolleeSearchExpressionDao enrolleeSearchExpressionDao;
+    private final StudyEnvironmentConfigService studyEnvironmentConfigService;
 
     public EnrolleeExportService(ProfileService profileService,
                                  AnswerDao answerDao,
                                  SurveyQuestionDefinitionDao surveyQuestionDefinitionDao,
-                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService, SurveyResponseService surveyResponseService,
+                                 StudyEnvironmentSurveyService studyEnvironmentSurveyService,
+                                 SurveyResponseService surveyResponseService,
                                  ParticipantTaskService participantTaskService,
-                                 EnrolleeService enrolleeService, KitRequestService kitRequestService,
+                                 KitRequestService kitRequestService,
                                  ParticipantUserService participantUserService,
-                                 KitTypeDao kitTypeDao,
                                  EnrolleeRelationService enrolleeRelationService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 FamilyService familyService,
+                                 EnrolleeSearchExpressionDao enrolleeSearchExpressionDao, StudyEnvironmentConfigService studyEnvironmentConfigService) {
         this.profileService = profileService;
         this.answerDao = answerDao;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
         this.studyEnvironmentSurveyService = studyEnvironmentSurveyService;
         this.surveyResponseService = surveyResponseService;
         this.participantTaskService = participantTaskService;
-        this.enrolleeService = enrolleeService;
         this.kitRequestService = kitRequestService;
         this.participantUserService = participantUserService;
-        this.kitTypeDao = kitTypeDao;
         this.enrolleeRelationService = enrolleeRelationService;
         this.objectMapper = objectMapper;
+        this.familyService = familyService;
+        this.enrolleeSearchExpressionDao = enrolleeSearchExpressionDao;
+        this.studyEnvironmentConfigService = studyEnvironmentConfigService;
     }
 
     /**
@@ -83,23 +82,36 @@ public class EnrolleeExportService {
      * */
     public void export(ExportOptions exportOptions, UUID studyEnvironmentId, OutputStream os) {
         List<ModuleFormatter> moduleFormatters = generateModuleInfos(exportOptions, studyEnvironmentId);
-        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.isIncludeProxiesAsRows(), exportOptions.getLimit());
+        List<Map<String, String>> enrolleeMaps = generateExportMaps(studyEnvironmentId, moduleFormatters, exportOptions.getFilter(), exportOptions.getLimit());
         BaseExporter exporter = getExporter(exportOptions.getFileFormat(), moduleFormatters, enrolleeMaps);
         exporter.export(os);
     }
 
-    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId, List<ModuleFormatter> moduleFormatters, boolean includeProxiesAsRows, Integer limit) {
+    public List<Map<String, String>> generateExportMaps(UUID studyEnvironmentId, List<ModuleFormatter> moduleFormatters, EnrolleeSearchExpression filter, Integer limit) {
 
-        List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(studyEnvironmentId, includeProxiesAsRows ? null : true, "created_at", "DESC");
-        if (limit != null && enrollees.size() > 0) {
-            enrollees = enrollees.subList(0, Math.min(enrollees.size(), limit));
+        List<EnrolleeSearchExpressionResult> results =
+                enrolleeSearchExpressionDao.executeSearch(
+                        filter,
+                        studyEnvironmentId,
+                        EnrolleeSearchOptions.builder().sortField("enrollee.created_at").sortAscending(false).build());
+
+        if (limit != null && !results.isEmpty()) {
+            results = results.subList(0, Math.min(results.size(), limit));
         }
-        return generateExportMaps(enrollees, moduleFormatters);
+        StudyEnvironmentConfig studyEnvironmentConfig = studyEnvironmentConfigService.findByStudyEnvironmentId(studyEnvironmentId);
+
+        return generateExportMaps(
+                studyEnvironmentConfig,
+                results.stream()
+                        .map(EnrolleeSearchExpressionResult::getEnrollee)
+                        .toList(),
+                moduleFormatters);
     }
 
-    public List<Map<String, String>> generateExportMaps(List<Enrollee> enrollees,
+    public List<Map<String, String>> generateExportMaps(StudyEnvironmentConfig config,
+                                                        List<Enrollee> enrollees,
                                                         List<ModuleFormatter> moduleFormatters) {
-        List<EnrolleeExportData> enrolleeExportData = loadAllEnrolleesForExport(enrollees);
+        List<EnrolleeExportData> enrolleeExportData = loadAllEnrolleesForExport(config, enrollees);
 
         List<Map<String, String>> exportMaps = new ArrayList<>();
         for (EnrolleeExportData exportData : enrolleeExportData) {
@@ -128,6 +140,7 @@ public class EnrolleeExportService {
         moduleFormatters.add(new ProfileFormatter(exportOptions));
         moduleFormatters.add(new KitRequestFormatter());
         moduleFormatters.add(new EnrolleeRelationFormatter());
+        moduleFormatters.add(new FamilyFormatter());
         moduleFormatters.addAll(generateSurveyModules(exportOptions, studyEnvironmentId));
         return moduleFormatters;
     }
@@ -163,15 +176,19 @@ public class EnrolleeExportService {
         return moduleFormatters;
     }
 
-    protected List<EnrolleeExportData> loadAllEnrolleesForExport(List<Enrollee> enrollees) {
+    protected List<EnrolleeExportData> loadAllEnrolleesForExport(StudyEnvironmentConfig config,
+                                                                 List<Enrollee> enrollees) {
+
+
         // for now, load each enrollee individually.  Later we'll want more sophisticated batching strategies
         return enrollees
                 .stream()
-                .map(enrollee -> loadEnrolleeData(enrollee))
+                .map(enrollee -> loadEnrolleeData(config, enrollee))
                 .toList();
     }
 
-    protected EnrolleeExportData loadEnrolleeData(Enrollee enrollee) {
+    protected EnrolleeExportData loadEnrolleeData(StudyEnvironmentConfig config,
+                                                  Enrollee enrollee) {
         return new EnrolleeExportData(
                 enrollee,
                 participantUserService.find(enrollee.getParticipantUserId()).orElseThrow(),
@@ -180,8 +197,22 @@ public class EnrolleeExportService {
                 participantTaskService.findByEnrolleeId(enrollee.getId()),
                 surveyResponseService.findByEnrolleeId(enrollee.getId()),
                 kitRequestService.findByEnrollee(enrollee),
-                enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId())
+                loadRelations(config, enrollee),
+                config.isEnableFamilyLinkage() ? familyService.findByEnrolleeIdWithProband(enrollee.getId()) : Collections.emptyList()
         );
+    }
+
+    private List<EnrolleeRelation> loadRelations(StudyEnvironmentConfig config, Enrollee enrollee) {
+        if (config.isEnableFamilyLinkage()) {
+            return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
+        }
+        if (config.isAcceptingProxyEnrollment()) {
+            return enrolleeRelationService.findByTargetEnrolleeIdWithEnrollees(enrollee.getId());
+        }
+
+        // for performance reasons, we should grab nothing unless the study environment is configured to use
+        // family linkage or proxy enrollment
+        return Collections.emptyList();
     }
 
     protected BaseExporter getExporter(ExportFileFormat fileFormat, List<ModuleFormatter> moduleFormatters,

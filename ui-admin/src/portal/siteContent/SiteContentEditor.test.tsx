@@ -7,8 +7,16 @@ import userEvent from '@testing-library/user-event'
 import { mockPortalEnvContext } from 'test-utils/mocking-utils'
 import { MockI18nProvider, NavbarItemExternal, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { select } from 'react-select-event'
+import { Store } from 'react-notifications-component'
 
-test('enables live-preview text editing', async () => {
+jest.mock('api/api', () => ({
+  ...jest.requireActual('api/api'),
+  getPortalMedia: jest.fn().mockResolvedValue([])
+}))
+
+jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
+
+test('enables live-preview json editing', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
   const { RoutedComponent } = setupRouterTest(
@@ -18,6 +26,9 @@ test('enables live-preview text editing', async () => {
   render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()
+
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
 
   const sectionInput = screen.getByRole('textbox')
   const aboutUsHeading = screen.queryAllByRole('heading')
@@ -79,6 +90,9 @@ test('invalid site JSON disables Save button', async () => {
       switchToVersion={jest.fn()} portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
+
   //Act
   const sectionInput = screen.getByRole('textbox')
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
@@ -97,12 +111,15 @@ test('invalid site JSON disables Add navbar button', async () => {
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
 
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
+
   //Act
   const sectionInput = screen.getByRole('textbox')
   await userEvent.type(sectionInput, '{\\\\}}') //testing-library requires escaping, this equates to "}"
 
   //Assert
-  const addPageButton = screen.getByText('Add navbar item')
+  const addPageButton = screen.getByText('Add')
   expect(addPageButton).toHaveAttribute('aria-disabled', 'true')
 })
 
@@ -114,6 +131,9 @@ test('invalid site JSON disables page selector', async () => {
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
   render(RoutedComponent)
+
+  const jsonEditorTab = screen.getByText('JSON Editor')
+  await userEvent.click(jsonEditorTab)
 
   //Act
   const sectionInput = screen.getByRole('textbox')
@@ -134,7 +154,7 @@ test('delete page button is disabled when Landing page is selected', async () =>
   render(RoutedComponent)
 
   //Assert
-  const deletePageButton = screen.getByText('Delete navbar item')
+  const deletePageButton = screen.getByText('Delete')
   expect(deletePageButton).toHaveAttribute('aria-disabled', 'true')
 })
 

@@ -25,7 +25,7 @@ export type AutosaveStatus = 'SAVING' | 'SAVED' | 'ERROR'
 /** handles paging the form */
 export function PagedSurveyView({
   updateResponseMap,
-  studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage,
+  studyEnvParams, form, response, updateEnrollee, updateProfile, taskId, selectedLanguage, justification,
   setAutosaveStatus, enrollee, proxyProfile, adminUserId, onSuccess, onFailure, showHeaders = true
 }: {
     studyEnvParams: StudyEnvParams, form: Survey, response: SurveyResponse,
@@ -36,6 +36,7 @@ export function PagedSurveyView({
     updateEnrollee: (enrollee: Enrollee, updateWithoutRerender?: boolean) => void,
     updateProfile: (profile: Profile, updateWithoutRerender?: boolean) => void,
     proxyProfile?: Profile,
+    justification?: string,
     taskId: string, adminUserId: string | null, enrollee: Enrollee, showHeaders?: boolean,
 }) {
   const resumableData = makeSurveyJsData(response?.resumeData, response?.answers, enrollee.participantUserId)
@@ -65,7 +66,12 @@ export function PagedSurveyView({
     try {
       const response = await Api.updateSurveyResponse({
         studyEnvParams, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-        version: form.version, response: responseDto, taskId
+        version: form.version,
+        response: {
+          ...responseDto,
+          justification
+        },
+        taskId
       })
       response.enrollee.participantTasks = response.tasks
       updateEnrollee(response.enrollee)
@@ -103,13 +109,19 @@ export function PagedSurveyView({
       creatingParticipantId: adminUserId ? null : enrollee.participantUserId,
       creatingAdminUserId: adminUserId,
       surveyId: form.id,
+      justification,
       complete: response?.complete ?? false
     } as SurveyResponse
     // only log & alert if this is the first autosave problem to avoid spamming logs & alerts
     const alertErrors = !lastAutoSaveErrored.current
     Api.updateSurveyResponse({
       studyEnvParams, stableId: form.stableId, enrolleeShortcode: enrollee.shortcode,
-      version: form.version, response: responseDto, taskId, alertErrors
+      version: form.version,
+      response: {
+        ...responseDto,
+        justification
+      },
+      taskId, alertErrors
     }).then(response => {
       const updatedEnrollee = {
         ...response.enrollee,

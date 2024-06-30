@@ -25,12 +25,12 @@ const targetFor = (question: string): string => {
   return `#${idFor(question)}`
 }
 
-type FaqQuestion = {
+export type FaqQuestion = {
   question: string,
   answer: string
 }
 
-type FrequentlyAskedQuestionsConfig = {
+export type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
   questions: FaqQuestion[], // the questions
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
@@ -38,6 +38,21 @@ type FrequentlyAskedQuestionsConfig = {
   collapseAllText?: string,
   expandAllText?: string
 }
+
+const faqQuestionProps = [
+  { name: 'question', translated: true },
+  { name: 'answer', translated: true }
+]
+
+export const frequentlyAskedQuestionsConfigProps = [
+  { name: 'title', translated: true },
+  { name: 'blurb', translated: true },
+  { name: 'questions', isArray: true, subProps: faqQuestionProps },
+  { name: 'showToggleAllButton' },
+  { name: 'collapseAllText' },
+  { name: 'expandAllText' }
+]
+
 
 const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
   const message = 'Invalid FrequentlyAskedQuestionsConfig: Invalid question'

@@ -9,12 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, PropertyItemFormatter<KitRequestDto>> {
+public class KitRequestFormatter extends BeanListModuleFormatter<KitRequestDto> {
     private static final String KIT_REQUEST_MODULE_NAME = "sample_kit";
     private static final List<String> KIT_REQUEST_INCLUDED_PROPERTIES =
             List.of("status", "sentToAddress", "sentAt", "receivedAt", "createdAt", "labeledAt",
@@ -31,21 +30,13 @@ public class KitRequestFormatter extends ModuleFormatter<KitRequestDto, Property
     }
 
     @Override
-    public Map<String, String> toStringMap(EnrolleeExportData enrolleeData) {
-        List<KitRequestDto> kitRequests = enrolleeData.getKitRequests();
-        // sort the kits oldest first
-        List<KitRequestDto> sortedKitRequests = kitRequests.stream()
-                .sorted(Comparator.comparing(KitRequestDto::getCreatedAt)).toList();
-        Map<String, String> allKitMap = new HashMap<>();
-        for (int i = 0; i < sortedKitRequests.size(); i++) {
-            for (PropertyItemFormatter<KitRequestDto> itemInfo : getItemFormatters()) {
-                String value = itemInfo.getExportString(sortedKitRequests.get(i));
-                String columnName = getColumnKey(itemInfo, false, null, i + 1);
-                allKitMap.put(columnName, value);
-            }
-        }
-        maxNumRepeats = Math.max(maxNumRepeats, sortedKitRequests.size());
-        return allKitMap;
+    public List<KitRequestDto> getBeans(EnrolleeExportData enrolleeExportData) {
+        return enrolleeExportData.getKitRequests();
+    }
+
+    @Override
+    public Comparator<KitRequestDto> getComparator() {
+        return Comparator.comparing(KitRequestDto::getCreatedAt);
     }
 
     public List<KitRequestDto> listFromStringMap(Map<String, String> enrolleeMap) {

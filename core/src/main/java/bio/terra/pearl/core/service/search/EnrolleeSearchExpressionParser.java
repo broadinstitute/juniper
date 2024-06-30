@@ -4,23 +4,27 @@ import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
 import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.dao.participant.MailingAddressDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
 import bio.terra.pearl.core.service.rule.RuleParsingException;
-import bio.terra.pearl.core.service.search.expressions.BooleanSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
-import bio.terra.pearl.core.service.search.expressions.EnrolleeTermComparisonFacet;
-import bio.terra.pearl.core.service.search.expressions.SearchOperators;
+import bio.terra.pearl.core.service.search.expressions.*;
 import bio.terra.pearl.core.service.search.terms.*;
+import bio.terra.pearl.core.service.search.terms.functions.LowerFunction;
+import bio.terra.pearl.core.service.search.terms.functions.MaxFunction;
+import bio.terra.pearl.core.service.search.terms.functions.MinFunction;
+import bio.terra.pearl.core.service.search.terms.functions.TrimFunction;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.apache.commons.lang3.StringUtils;
 import org.jooq.Operator;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * Parses a rule expression into a {@link EnrolleeSearchExpression}. The rule expression is a string
@@ -34,14 +38,16 @@ public class EnrolleeSearchExpressionParser {
     private final MailingAddressDao mailingAddressDao;
     private final ParticipantTaskDao participantTaskDao;
     private final KitRequestDao kitRequestDao;
+    private final FamilyDao familyDao;
 
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
         this.mailingAddressDao = mailingAddressDao;
         this.participantTaskDao = participantTaskDao;
         this.kitRequestDao = kitRequestDao;
+        this.familyDao = familyDao;
     }
 
 
@@ -68,6 +74,13 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private EnrolleeSearchExpression parseExpression(CohortRuleParser.ExprContext ctx) {
+        if (ctx.NOT() != null) {
+            if (!ctx.expr().isEmpty()) {
+                return new NotSearchExpression(parseExpression(ctx.expr(0)));
+            } else {
+                return new DefaultSearchExpression(enrolleeDao, profileDao);
+            }
+        }
         if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
             if (!ctx.expr().isEmpty()) {
                 return parseExpression(ctx.expr(0));
@@ -112,6 +125,9 @@ public class EnrolleeSearchExpressionParser {
     }
 
     private SearchTerm parseTerm(CohortRuleParser.TermContext ctx) {
+        if (ctx.FUNCTION_NAME() != null) {
+            return parseFunctionTerm(ctx);
+        }
         if (ctx.BOOLEAN() != null) {
             return new UserInputTerm(new SearchValue(Boolean.parseBoolean(ctx.BOOLEAN().getText())));
         } else if (ctx.STRING() != null) {
@@ -124,6 +140,38 @@ public class EnrolleeSearchExpressionParser {
         } else {
             throw new IllegalArgumentException("Unknown term type");
         }
+    }
+
+    private SearchTerm parseFunctionTerm(CohortRuleParser.TermContext ctx) {
+        String functionName = ctx.FUNCTION_NAME().getText();
+        List<CohortRuleParser.TermContext> terms = ctx.term();
+
+        switch (functionName) {
+            // lower function (e.g., lower({profile.name})
+            case "lower" -> {
+                if (terms.size() != 1) {
+                    throw new IllegalArgumentException("Lower function requires one argument");
+                }
+
+                return new LowerFunction(parseTerm(terms.get(0)));
+            }
+            case "trim" -> {
+                if (terms.size() != 1) {
+                    throw new IllegalArgumentException("Trim function requires one argument");
+                }
+
+                return new TrimFunction(parseTerm(terms.get(0)));
+            }
+            case "min" -> {
+                return new MinFunction(terms.stream().map(this::parseTerm).toList());
+            }
+            case "max" -> {
+                return new MaxFunction(terms.stream().map(this::parseTerm).toList());
+            }
+            default -> throw new IllegalArgumentException("Unknown function " + functionName);
+
+        }
+
     }
 
     private SearchTerm parseVariableTerm(String variable) {
@@ -163,6 +211,10 @@ public class EnrolleeSearchExpressionParser {
                 String latestKitField = parseField(trimmedVar);
 
                 return parseLatestKitTerm(latestKitField);
+            case "family":
+                String familyField = parseField(trimmedVar);
+
+                return parseFamilyTerm(familyField);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -207,5 +259,9 @@ public class EnrolleeSearchExpressionParser {
 
     private LatestKitTerm parseLatestKitTerm(String field) {
         return new LatestKitTerm(kitRequestDao, field);
+    }
+
+    private FamilyTerm parseFamilyTerm(String field) {
+        return new FamilyTerm(familyDao, field);
     }
 }

@@ -539,39 +539,6 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
-    get:
-      summary: Searches for enrollees in an environment
-      tags: [ enrolleeSearch ]
-      operationId: search
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: facets, in: query, required: false, schema: { type: string } }
-      responses:
-        '200':
-          description: EnrolleeSearchResult objects
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/facets:
-    get:
-      summary: Gets enrollee search facets for a study and  environment
-      tags: [ enrolleeSearch ]
-      operationId: getSearchFacets
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: List of enrollee search facets
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
       summary: Gets all of the possible fields which can be searched on within the provided portal.
@@ -874,6 +841,22 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}:
+    get:
+      summary: Finds a family by shortcode
+      tags: [ family ]
+      operationId: find
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Family object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
     get:
       summary: gets all the active triggered actions for the environment
@@ -1003,7 +986,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
       responses:
@@ -1024,7 +1007,7 @@ paths:
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
       responses:
         '200':
@@ -1207,6 +1190,23 @@ paths:
       responses:
         '200':
           description: PortalEnvironmentChangeRecord object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/portalLanguages:
+    post:
+      summary: Updates an environments list of supported languages.
+      tags: [ portalEnvironment ]
+      operationId: setLanguages
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: List of PortalLanguages
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
