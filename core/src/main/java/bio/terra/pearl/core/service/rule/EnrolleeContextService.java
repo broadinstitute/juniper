@@ -1,5 +1,7 @@
 package bio.terra.pearl.core.service.rule;
 
+import bio.terra.pearl.core.dao.participant.MailingAddressDao;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
@@ -18,12 +20,15 @@ public class EnrolleeContextService {
     private final ProfileService profileService;
     private final EnrolleeService enrolleeService;
     private final ParticipantUserService participantUserService;
+    private final MailingAddressDao mailingAddressDao;
 
 
-    public EnrolleeContextService(ProfileService profileService, @Lazy EnrolleeService enrolleeService, ParticipantUserService participantUserService) {
+    public EnrolleeContextService(ProfileService profileService, @Lazy EnrolleeService enrolleeService,
+                                  ParticipantUserService participantUserService, MailingAddressDao mailingAddressDao) {
         this.profileService = profileService;
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
+        this.mailingAddressDao = mailingAddressDao;
     }
 
     public EnrolleeContext fetchData(Enrollee enrollee) {
@@ -35,11 +40,11 @@ public class EnrolleeContextService {
     /**
      * useful for bulk-fetching enrollees for processing
      * this isn't terribly optimized -- we could do the join in the DB.  But this is assuming that the number of enrollees
-     *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 3 total DB roundtrips
+     *  is ~5-30, not 1000+, and so the main goal is just making sure we only do 4 total DB roundtrips
      */
     public List<EnrolleeContext> fetchData(List<UUID> enrolleeIds) {
         List<Enrollee> enrollees = enrolleeService.findAll(enrolleeIds);
-        List<Profile> profiles = profileService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
+        List<Profile> profiles = profileService.findAllWithMailingAddressPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
         List<ParticipantUser> users = participantUserService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getParticipantUserId).toList());
         List<EnrolleeContext> ruleData = IntStream.range(0, enrollees.size()).mapToObj(i ->
                 new EnrolleeContext(enrollees.get(i), profiles.get(i), users.get(i))

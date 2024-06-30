@@ -18,6 +18,8 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
+import bio.terra.pearl.core.service.rule.EnrolleeContext;
+import bio.terra.pearl.core.service.rule.EnrolleeContextService;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
@@ -56,6 +58,8 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
 
     @Autowired
     FamilyFactory familyFactory;
+    @Autowired
+    EnrolleeContextService enrolleeContextService;
 
     @Test
     @Transactional
@@ -195,6 +199,25 @@ class EnrolleeSearchExpressionTest extends BaseSpringBootTest {
                 .enrollee(Enrollee.builder().build())
                 .profile(Profile.builder().mailingAddress(MailingAddress.builder().state("NY").build()).build())
                 .build()));
+    }
+
+    @Test
+    @Transactional
+    public void testEvaluateMailingAddressFromDb(TestInfo info) {
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee maEnrollee = enrolleeFactory.buildPersisted(getTestName(info),
+                studyEnvironment,
+                Profile.builder().mailingAddress(MailingAddress.builder().state("MA").build()).build());
+        EnrolleeContext context = enrolleeContextService.fetchData(maEnrollee);
+        EnrolleeSearchContext searchContext = EnrolleeSearchContext.builder()
+                .profile(context.getProfile())
+                .enrollee(context.getEnrollee()).build();
+
+        EnrolleeSearchExpression searchExp = enrolleeSearchExpressionParser.parseRule("{profile.mailingAddress.state} = 'MA'");
+        assertTrue(searchExp.evaluate(searchContext));
+
+        searchExp = enrolleeSearchExpressionParser.parseRule("{profile.mailingAddress.state} = 'CT'");
+        assertFalse(searchExp.evaluate(searchContext));
     }
 
     @Test
