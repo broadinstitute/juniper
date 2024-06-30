@@ -71,7 +71,7 @@ public class SurveyExtService {
     return surveysInPortal;
   }
 
-  @EnforcePortalStudyPermission(permission = AuthUtilService.BASE_PERMISSON)
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
   public List<StudyEnvironmentSurvey> findWithSurveyNoContent(
       PortalStudyAuthContext authContext,
       String stableId,

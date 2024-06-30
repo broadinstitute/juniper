@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
@@ -18,8 +19,8 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -37,60 +38,28 @@ public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
   @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
 
   @Test
-  public void getRequiresPortalAuth() {
-    AuthTestUtils.assertHasPermissionEnforced(
-        surveyExtService, "get", EnforcePortalPermission.class, "BASE");
-  }
-
-  @Test
-  public void listVersionsRequiresPortalAuth() {
-    AuthTestUtils.assertHasPermissionEnforced(
-        surveyExtService, "get", EnforcePortalPermission.class, "BASE");
-  }
-
-  @Test
-  public void createConfiguredRequiresPortalAuth() {
-    AuthTestUtils.assertHasPermissionEnforced(
+  public void assertAllMethods() {
+    AuthTestUtils.assertAllMethodsAnnotated(
         surveyExtService,
-        "createConfiguredSurvey",
-        EnforcePortalStudyEnvPermission.class,
-        "survey_edit");
-  }
-
-  @Test
-  public void createConfiguredOnlyInSandbox() {
-    AuthTestUtils.assertHasAnnotation(
-        surveyExtService, "createConfiguredSurvey", SandboxOnly.class);
-  }
-
-  @Test
-  public void deleteRequiresPortalAuth() {
-    AuthTestUtils.assertHasPermissionEnforced(
-        surveyExtService, "delete", EnforcePortalStudyEnvPermission.class, "survey_edit");
-  }
-
-  @Test
-  public void removeConfiguredSurveyRequiresPortalAuth() {
-    AuthTestUtils.assertHasPermissionEnforced(
-        surveyExtService,
-        "removeConfiguredSurvey",
-        EnforcePortalStudyEnvPermission.class,
-        "survey_edit");
-  }
-
-  @Test
-  public void removeOnlyInSandbox() {
-    AuthTestUtils.assertHasAnnotation(
-        surveyExtService, "removeConfiguredSurvey", SandboxOnly.class);
-  }
-
-  @Test
-  public void testAllAuths() {
-    AuthTestUtils.assertAllAnnotated(List.of(
-            new AuthTestSpec("get", EnforcePortalPermission.class, "BASE", List.of()),
-            new AuthTestSpec("createConfiguredSurvey", EnforcePortalStudyEnvPermission.class, "BASE",
-                    List.of(SandboxOnly.class))
-    ));
+        Map.of(
+            "get", AuthAnnotationSpec.withPortalPerm("BASE"),
+            "listVersions", AuthAnnotationSpec.withPortalPerm("BASE"),
+            "findWithSurveyNoContent", AuthAnnotationSpec.withPortalStudyEnvPerm("BASE"),
+            "create", AuthAnnotationSpec.withPortalPerm("survey_edit"),
+            "delete", AuthAnnotationSpec.withPortalPerm("survey_edit"),
+            "createNewVersion", AuthAnnotationSpec.withPortalPerm("survey_edit"),
+            "createConfiguredSurvey",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class)),
+            "updateConfiguredSurvey",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class)),
+            "removeConfiguredSurvey",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class)),
+            "replace",
+                AuthAnnotationSpec.withPortalStudyEnvPerm(
+                    "survey_edit", List.of(SandboxOnly.class))));
   }
 
   @Test
@@ -127,5 +96,6 @@ public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
     return survey;
   }
 
-  public record AuthTestSpec(String methodName, Class<?> authClass, String permission, List<Class<?>> otherAnnots) {}
+  public record AuthTestSpec(
+      String methodName, Class<?> authClass, String permission, List<Class<?>> otherAnnots) {}
 }
