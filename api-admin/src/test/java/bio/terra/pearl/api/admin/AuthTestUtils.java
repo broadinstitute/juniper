@@ -13,82 +13,6 @@ import org.apache.commons.beanutils.MethodUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 
 public class AuthTestUtils {
-
-  public static void assertHasAnnotation(
-      Object service, String methodName, Class<? extends Annotation> annotationClass) {
-    List<Method> targetMethods =
-        Arrays.stream(service.getClass().getDeclaredMethods())
-            .filter(method -> method.getName().equals(methodName))
-            .toList();
-    assertThat(targetMethods.size(), greaterThan(0));
-    targetMethods
-        .stream() // we need to check all methods with the same name in case they are overloaded
-        .forEach(
-            targetMethod ->
-                assertThat(
-                    AnnotationUtils.findAnnotation(targetMethod, annotationClass), notNullValue()));
-  }
-
-  public static void assertHasPermissionEnforced(
-      Object service,
-      String methodName,
-      Class<? extends Annotation> annotationClass,
-      String permissionName) {
-    List<Method> targetMethods =
-        Arrays.stream(service.getClass().getDeclaredMethods())
-            .filter(method -> method.getName().equals(methodName))
-            .toList();
-    assertThat(targetMethods.size(), greaterThan(0));
-    targetMethods
-        .stream() // we need to check all methods with the same name in case they are overloaded
-        .forEach(
-            targetMethod -> {
-              Annotation annotation = AnnotationUtils.findAnnotation(targetMethod, annotationClass);
-              try {
-                String permission =
-                    (String) MethodUtils.invokeMethod(annotation, "permission", null);
-                assertThat(permission, equalTo(permissionName));
-              } catch (Exception e) {
-                throw new RuntimeException(e);
-              }
-            });
-  }
-
-  /** methods we don't validate annotations on -- base Object methods and methods added by Spring */
-  private static final List<String> excludedMethodNames =
-      List.of(
-          "equals",
-          "toString",
-          "hashCode",
-          "indexOf",
-          "newInstance",
-          "isFrozen",
-          "addAdvisor",
-          "setCallback",
-          "getTargetClass",
-          "CGLIB$findMethodProxy",
-          "getCallback",
-          "getCallbacks",
-          "CGLIB$SET_THREAD_CALLBACKS",
-          "CGLIB$SET_STATIC_CALLBACKS",
-          "setCallbacks",
-          "getTargetSource",
-          "getProxiedInterfaces",
-          "isInterfaceProxied",
-          "getAdvisorCount",
-          "getAdvisors",
-          "isProxyTargetClass",
-          "setTargetSource",
-          "setExposeProxy",
-          "isExposeProxy",
-          "setPreFiltered",
-          "isPreFiltered",
-          "removeAdvisor",
-          "replaceAdvisor",
-          "removeAdvice",
-          "toProxyConfigString",
-          "addAdvice");
-
   /** confirms all public methods of the given class are annotated according to the specs */
   public static void assertAllMethodsAnnotated(
       Object service, Map<String, AuthAnnotationSpec> annotationSpecs) {
@@ -147,4 +71,39 @@ public class AuthTestUtils {
           notNullValue());
     }
   }
+
+  /** methods we don't validate annotations on -- base Object methods and methods added by Spring */
+  private static final List<String> excludedMethodNames =
+      List.of(
+          "equals",
+          "toString",
+          "hashCode",
+          "indexOf",
+          "newInstance",
+          "isFrozen",
+          "addAdvisor",
+          "setCallback",
+          "getTargetClass",
+          "CGLIB$findMethodProxy",
+          "getCallback",
+          "getCallbacks",
+          "CGLIB$SET_THREAD_CALLBACKS",
+          "CGLIB$SET_STATIC_CALLBACKS",
+          "setCallbacks",
+          "getTargetSource",
+          "getProxiedInterfaces",
+          "isInterfaceProxied",
+          "getAdvisorCount",
+          "getAdvisors",
+          "isProxyTargetClass",
+          "setTargetSource",
+          "setExposeProxy",
+          "isExposeProxy",
+          "setPreFiltered",
+          "isPreFiltered",
+          "removeAdvisor",
+          "replaceAdvisor",
+          "removeAdvice",
+          "toProxyConfigString",
+          "addAdvice");
 }

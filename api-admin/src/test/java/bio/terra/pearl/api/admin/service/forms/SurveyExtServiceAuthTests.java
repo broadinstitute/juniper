@@ -1,41 +1,36 @@
 package bio.terra.pearl.api.admin.service.forms;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.SandboxOnly;
 import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
-import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.factory.admin.AdminUserBundle;
+import bio.terra.pearl.core.factory.admin.AdminUserFactory;
+import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
+import bio.terra.pearl.core.factory.portal.PortalFactory;
+import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.study.StudyEnvironmentService;
-import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
-import bio.terra.pearl.core.service.survey.SurveyService;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.transaction.annotation.Transactional;
 
 public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
 
   @Autowired private SurveyExtService surveyExtService;
-
-  @MockBean private AuthUtilService mockAuthUtilService;
-  @MockBean private SurveyService mockSurveyService;
-  @MockBean private StudyEnvironmentSurveyService mockStudyEnvironmentSurveyService;
-  @MockBean private StudyEnvironmentService mockStudyEnvironmentService;
+  @Autowired private PortalFactory portalFactory;
+  @Autowired private SurveyFactory surveyFactory;
+  @Autowired private AdminUserFactory adminUserFactory;
+  @Autowired private PortalAdminUserFactory portalAdminUserFactory;
 
   @Test
   public void assertAllMethods() {
@@ -63,37 +58,28 @@ public class SurveyExtServiceAuthTests extends BaseSpringBootTest {
   }
 
   @Test
-  public void getRequiresSurveyMatchedToPortal() {
-    AdminUser user = AdminUser.builder().superuser(false).build();
-    Portal portal = Portal.builder().shortcode("testSurveyGet").id(UUID.randomUUID()).build();
-    Survey matchedSurvey = configureMockSurvey("testMatchedToPortal", 1, portal.getId());
-    Survey unmatchedSurvey = configureMockSurvey("testUnmatchedToPortal", 1, UUID.randomUUID());
-    when(mockAuthUtilService.authUserToPortal(user, portal.getShortcode())).thenReturn(portal);
-    when(mockAuthUtilService.authSurveyToPortal(portal, "testMatchedToPortal", 1))
-        .thenReturn(matchedSurvey);
-    when(mockAuthUtilService.authSurveyToPortal(portal, "testUnmatchedToPortal", 1))
-        .thenThrow(new NotFoundException("not found"));
-
+  @Transactional
+  public void getRequiresSurveyMatchedToPortal(TestInfo info) {
+    Portal portal = portalFactory.buildPersisted(getTestName(info));
+    AdminUserBundle userBundle =
+        portalAdminUserFactory.buildPersistedWithPortals(getTestName(info), List.of(portal));
+    Portal otherPortal = portalFactory.buildPersisted(getTestName(info));
+    Survey survey = surveyFactory.buildPersisted(getTestName(info), portal.getId());
     assertThat(
         surveyExtService.get(
-            PortalAuthContext.of(user, portal.getShortcode()),
-            matchedSurvey.getStableId(),
-            matchedSurvey.getVersion()),
-        notNullValue());
+            PortalAuthContext.of(userBundle.user(), portal.getShortcode()),
+            survey.getStableId(),
+            survey.getVersion()),
+        equalTo(survey));
+
+    // not found if attempted to retrieve via the other portal
     Assertions.assertThrows(
         NotFoundException.class,
         () ->
             surveyExtService.get(
-                PortalAuthContext.of(user, portal.getShortcode()),
-                unmatchedSurvey.getStableId(),
-                unmatchedSurvey.getVersion()));
-  }
-
-  private Survey configureMockSurvey(String stableId, int version, UUID portalId) {
-    Survey survey = Survey.builder().stableId(stableId).version(1).portalId(portalId).build();
-    when(mockSurveyService.findByStableId(stableId, version, portalId))
-        .thenReturn(Optional.of(survey));
-    return survey;
+                PortalAuthContext.of(userBundle.user(), otherPortal.getShortcode()),
+                survey.getStableId(),
+                survey.getVersion()));
   }
 
   public record AuthTestSpec(
