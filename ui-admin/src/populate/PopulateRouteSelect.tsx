@@ -8,6 +8,7 @@ import ExtractPortal from './ExtractPortal'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
 import { renderPageHeader } from 'util/pageUtils'
 import PopulateCommand from './PopulateCommand'
+import PopulateHome from './PopulateHome'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
@@ -49,7 +50,7 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
             element={<ExtractPortal initialPortalShortcode={portalShortcode || ''}/>}/>
           <Route path="runCommand"
             element={<PopulateCommand/>}/>
-          <Route path="*" element={<div>Choose a populate option</div>}/>
+          <Route path="*" element={<PopulateHome/>}/>
         </Routes>
         <Outlet/>
       </div>
