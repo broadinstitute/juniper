@@ -9,12 +9,11 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
-import java.util.UUID;
 
 @Controller
 @Slf4j
@@ -41,11 +40,11 @@ public class EnrolleeRelationController implements EnrolleeRelationApi {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<EnrolleeRelation> relations =
         enrolleeRelationExtService.findRelationsForTargetEnrollee(
-                PortalStudyEnvAuthContext.of(
-                        adminUser,
-                        portalShortcode,
-                        studyShortcode,
-                        EnvironmentName.valueOfCaseInsensitive(envName)),
+            PortalStudyEnvAuthContext.of(
+                adminUser,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
             enrolleeShortcode);
     return ResponseEntity.ok(relations);
   }

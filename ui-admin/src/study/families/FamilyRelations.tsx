@@ -120,13 +120,6 @@ export const FamilyRelations = ({
               return { ...old, enrollee, enrolleeId: enrollee?.id }
             })
           }}
-          searchExpFilter={
-            // we can only add one new member at a time, so if the target
-            // isn't a part of the family, then the source must be
-            newRelation.targetEnrollee && !isMemberOfFamily(newRelation.targetEnrollee.id)
-              ? `{family.shortcode} = '${family.shortcode}'`
-              : undefined
-          }
           selectedEnrollee={newRelation?.enrollee}
         />
       }
@@ -168,13 +161,6 @@ export const FamilyRelations = ({
               return { ...old, targetEnrollee: enrollee, targetEnrolleeId: enrollee?.id }
             })
           }}
-          searchExpFilter={
-            // we can only add one new member at a time, so if the source
-            // isn't a part of the family, then the target must be
-            newRelation.enrollee && !isMemberOfFamily(newRelation.enrollee.id)
-              ? `{family.shortcode} = '${family.shortcode}'`
-              : undefined
-          }
           selectedEnrollee={newRelation?.targetEnrollee}
         />
       }
@@ -185,8 +171,8 @@ export const FamilyRelations = ({
   },
   {
     header: 'Actions',
-    size: 130,
-    maxSize: 130,
+    size: 230,
+    maxSize: 230,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <>

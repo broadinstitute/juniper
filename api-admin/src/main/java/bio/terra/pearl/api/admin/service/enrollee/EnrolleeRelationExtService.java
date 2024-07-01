@@ -10,11 +10,10 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
@@ -33,16 +32,15 @@ public class EnrolleeRelationExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public List<EnrolleeRelation> findRelationsForTargetEnrollee(
-          PortalStudyEnvAuthContext authContext,
-      String enrolleeShortcode) {
+      PortalStudyEnvAuthContext authContext, String enrolleeShortcode) {
 
     Enrollee enrollee =
         enrolleeService
-                .findByShortcodeAndStudyEnv(
-                        enrolleeShortcode,
-                        authContext.getStudyShortcode(),
-                        authContext.getEnvironmentName())
-                .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+            .findByShortcodeAndStudyEnv(
+                enrolleeShortcode,
+                authContext.getStudyShortcode(),
+                authContext.getEnvironmentName())
+            .orElseThrow(() -> new NotFoundException("Enrollee not found"));
     return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
   }
 

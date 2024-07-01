@@ -114,8 +114,8 @@ export const FamilyMembers = ({
     }
   }, {
     header: 'Actions',
-    size: 100,
-    maxSize: 100,
+    size: 140,
+    maxSize: 140,
     cell: ({ row }) => {
       const isProband = row.original.id === family.probandEnrolleeId
       if (isNewMemberCreationRow(row)) {
