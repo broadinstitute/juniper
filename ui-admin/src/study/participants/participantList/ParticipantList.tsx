@@ -1,12 +1,19 @@
-import React, { useMemo, useState } from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Link } from 'react-router-dom'
+import {
+  Link,
+  useSearchParams
+} from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
   getCoreRowModel,
   getFilteredRowModel,
+  getGroupedRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
@@ -23,15 +30,24 @@ import {
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faEnvelope
+} from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import {
+  currentIsoDate,
+  instantToDefaultString
+} from '@juniper/ui-core'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
 import { useParticipantSearchState } from 'util/participantSearchUtils'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
+import { FamilyLink } from 'study/families/FamilyLink'
+import { isEmpty } from 'lodash'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -47,6 +63,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     'familyName': false,
     'contactEmail': false
   })
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const groupByFamily = searchParams.get('groupByFamily') === 'true'
+  const setGroupByFamily = (groupByFamily: boolean) => {
+    setSearchParams({ ...searchParams, groupByFamily: groupByFamily.toString() })
+  }
+
+  const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
   const {
     searchState,
@@ -109,6 +134,20 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       columnType: 'string'
     }
   }, {
+    id: 'familyShortcode',
+    header: 'Family shortcode',
+    meta: {
+      columnType: 'string'
+    },
+    accessorFn: row => row.families.map(family => family.shortcode),
+    cell: ({ row }) => {
+      if (isEmpty(row.original.families)) {
+        return <span className='fst-italic'>None</span>
+      }
+      return <>{row.original.families.map((family, idx) => <FamilyLink key={idx} family={family}
+        studyEnvContext={studyEnvContext}/>)}</>
+    }
+  }, {
     id: 'contactEmail',
     header: 'Contact email',
     accessorKey: 'profile.contactEmail',
@@ -129,12 +168,34 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }], [study.shortcode, currentEnv.environmentName])
 
+  const flattenFamilies = (participants: EnrolleeSearchExpressionResult[]) => {
+    return participants.flatMap(participant => {
+      if (participant.families.length === 0) {
+        return [participant]
+      }
+      return participant.families.map(family => {
+        return {
+          ...participant,
+          families: [family]
+        }
+      })
+    })
+  }
+
   const table = useReactTable({
-    data: participantList,
+    data: useMemo(
+      () => groupByFamily
+        ? flattenFamilies(participantList)
+        : participantList,
+      [groupByFamily, participantList]),
     columns,
     state: {
       sorting,
-      rowSelection,
+      rowSelection: useMemo(() => groupByFamily ? {
+        ...rowSelection,
+        'familyShortcode': true
+      } : rowSelection, [groupByFamily, rowSelection]),
+      grouping: useMemo(() => groupByFamily ? ['familyShortcode'] : [], [groupByFamily]),
       columnVisibility
     },
     initialState: {
@@ -147,12 +208,20 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getGroupedRowModel: getGroupedRowModel(),
     onRowSelectionChange: setRowSelection
   })
 
   const { isLoading } = useLoadingEffect(async () => {
-    const results = await Api.executeSearchExpression(portal.shortcode,
-      study.shortcode, currentEnv.environmentName, searchExpression)
+    const results = await Api.executeSearchExpression(
+      portal.shortcode,
+      study.shortcode,
+      currentEnv.environmentName,
+      // if families exist, adding these expression guarantees that we get all families.
+      // might be a better way to do it, but this works for now
+      familyLinkageEnabled
+        ? concatSearchExpressions([`(include({family.shortcode}))`, searchExpression])
+        : searchExpression)
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
@@ -187,9 +256,12 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
             studyEnvContext={studyEnvContext}
             onDismiss={() => setShowEmailModal(false)}/> }
+          {familyLinkageEnabled && <Button onClick={() => setGroupByFamily(!groupByFamily)}>
+            {groupByFamily ? 'Ungroup families' : 'Group families'}
+          </Button>}
         </div>
       </div>
-      { basicTableLayout(table, { filterable: true }) }
+      {basicTableLayout(table, { filterable: true })}
       { renderEmptyMessage(participantList, 'No participants') }
       <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
     </LoadingSpinner>

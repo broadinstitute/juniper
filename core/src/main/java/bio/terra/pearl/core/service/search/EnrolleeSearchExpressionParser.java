@@ -52,7 +52,8 @@ public class EnrolleeSearchExpressionParser {
 
 
     public EnrolleeSearchExpression parseRule(String rule) throws RuleParsingException {
-        if (StringUtils.isBlank(rule)) {
+        System.out.println("what is happening");
+        if (StringUtils.isBlank(rule.trim())) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
 
@@ -80,6 +81,12 @@ public class EnrolleeSearchExpressionParser {
             } else {
                 return new DefaultSearchExpression(enrolleeDao, profileDao);
             }
+        }
+        if (ctx.INCLUDE() != null) {
+            if (ctx.term().size() != 1) {
+                throw new IllegalArgumentException("Include expression requires one term");
+            }
+            return new IncludeExpression(profileDao, enrolleeDao, parseTerm(ctx.term(0)));
         }
         if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
             if (!ctx.expr().isEmpty()) {

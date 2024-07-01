@@ -419,6 +419,27 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
     </thead>
     <tbody>
       {table.getRowModel().rows.map(row => {
+        if (row.getIsGrouped()) {
+          return row.subRows.map(((subRow, subRowIdx) => {
+            return (
+              <tr key={subRow.id} className={config.trClass}>
+                {subRow.getVisibleCells().map((cell, cellIdx) => {
+                  if (subRowIdx > 0 && cellIdx === 0) {
+                    return <></>
+                  }
+                  return (
+                    <td
+                      rowSpan={subRowIdx === 0 && cellIdx === 0 ? row.subRows.length : undefined}
+                      key={cell.id}
+                      className={config.tdClass ? config.tdClass : ''}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  )
+                })}
+              </tr>)
+          }))
+        }
+
         return (
           <Fragment key={row.id}>
             {!isNil(config.customRowHeader) && config.customRowHeader(row)}

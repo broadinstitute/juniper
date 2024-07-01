@@ -73,7 +73,8 @@ export type StudyEnvironmentUpdate = {
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
-  latestKit?: KitRequest
+  latestKit?: KitRequest,
+  families: Family[]
 }
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }

@@ -308,7 +308,8 @@ export const mockEnrollee: () => Enrollee = () => {
 export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
   return {
     enrollee: mockEnrollee(),
-    profile: mockEnrollee().profile
+    profile: mockEnrollee().profile,
+    families: []
   }
 }
 

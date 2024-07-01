@@ -31,12 +31,13 @@ export const parseExpression = (expression: string): SearchExpression => {
  * Represents the overall search expression, which can either be a BooleanSearchExpression
  * or a ComparisonSearchFacet. This is a recursive data structure.
  */
-export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet | NotExpression
+export type SearchExpression = BooleanSearchExpression | ComparisonSearchFacet | NotExpression | IncludeExpression
 
 /**
  * Represents an AND or OR of two search expressions.
  */
 export type BooleanSearchExpression = {
+  type: 'boolean'
   booleanOperator: BooleanOperator
   left: SearchExpression
   right: SearchExpression
@@ -46,6 +47,7 @@ export type BooleanSearchExpression = {
  * Represents a NOT of a search expression.
  */
 export type NotExpression = {
+  type: 'not'
   inner: SearchExpression
 }
 
@@ -53,14 +55,14 @@ export type NotExpression = {
  * Tests if a search expression is a NotExpression.
  */
 export const isNotExpression = (expression: SearchExpression): expression is NotExpression => {
-  return (expression as NotExpression).inner !== undefined
+  return (expression as NotExpression).type === 'not'
 }
 
 /**
  * Tests if a search expression is a BooleanSearchExpression.
  */
 export const isBooleanSearchExpression = (expression: SearchExpression): expression is BooleanSearchExpression => {
-  return (expression as BooleanSearchExpression).booleanOperator !== undefined
+  return (expression as BooleanSearchExpression).type === 'boolean'
 }
 
 export type BooleanOperator = 'and' | 'or'
@@ -71,6 +73,7 @@ export type ComparisonOperator = '=' | '!=' | '>' | '>=' | '<' | '<=' | 'contain
  * Represents a comparison between two terms.
  */
 export type ComparisonSearchFacet = {
+  type: 'comparison'
   comparisonOperator: ComparisonOperator
   left: Term
   right: Term
@@ -82,7 +85,25 @@ export type ComparisonSearchFacet = {
 export const isComparisonSearchFacet = (
   expression: SearchExpression
 ): expression is ComparisonSearchFacet => {
-  return (expression as ComparisonSearchFacet).comparisonOperator !== undefined
+  return (expression as ComparisonSearchFacet).type === 'comparison'
+}
+
+
+/**
+ * Represents an include expression.
+ */
+export type IncludeExpression = {
+  type: 'include'
+  inner: Term
+}
+
+/**
+ * Tests if a search expression is an IncludeExpression.
+ */
+export const isIncludeExpression = (
+  expression: SearchExpression
+): expression is IncludeExpression => {
+  return (expression as IncludeExpression).type === 'include'
 }
 
 export type Term = SearchVariable | FunctionTerm | string | number | boolean | null
@@ -115,7 +136,14 @@ export const isFunctionTerm = (term: Term): term is FunctionTerm => {
 const _parseExpression = (ctx: ExprContext): SearchExpression => {
   if (ctx.NOT()) {
     return {
+      type: 'not',
       inner: _parseExpression(ctx.expr(0))
+    }
+  }
+  if (ctx.INCLUDE()) {
+    return {
+      type: 'include',
+      inner: _parseTerm(ctx.term(0))
     }
   }
 
@@ -125,6 +153,7 @@ const _parseExpression = (ctx: ExprContext): SearchExpression => {
 
   if (ctx.expr_list().length > 1) {
     return {
+      type: 'boolean',
       booleanOperator: _ctxToBooleanOperator(ctx),
       left: _parseExpression(ctx.expr(0)),
       right: _parseExpression(ctx.expr(1))
@@ -132,6 +161,7 @@ const _parseExpression = (ctx: ExprContext): SearchExpression => {
   }
 
   return {
+    type: 'comparison',
     comparisonOperator: _ctxToComparisonOperator(ctx),
     left: _parseTerm(ctx.term(0)),
     right: _parseTerm(ctx.term(1))

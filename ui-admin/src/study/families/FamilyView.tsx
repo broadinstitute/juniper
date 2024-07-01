@@ -22,8 +22,8 @@ import {
 } from 'util/subNavStyles'
 import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
-import { uniq } from 'lodash/fp'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
+import { getFamilyNames } from 'util/familyUtils'
 
 
 export type SurveyWithResponsesT = {
@@ -57,7 +57,7 @@ export function LoadedFamilyView({ family, studyEnvContext }:
     <div className="row">
       <div className="col-12">
         <h4>
-          {getFamilyNameString(family)} Family&nbsp;
+          {getFamilyNames(family)} Family&nbsp;
           <span className="detail" title="Participant shortcode"> ({family.shortcode})</span>
         </h4>
       </div>
@@ -96,15 +96,4 @@ function getLinkCssClasses({ isActive }: { isActive: boolean }) {
   return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
 }
 
-const getFamilyNameString = (family: Family) => {
-  const familyNames = family.members?.map(enrollee => enrollee.profile.familyName) || ''
-  const uniqNames = uniq(familyNames)
-  if (uniqNames.length === 1) {
-    return uniqNames[0]
-  } else if (uniqNames.length === 2) {
-    return `${uniqNames[0]} and ${uniqNames[1]}`
-  } else {
-    return `${uniqNames.slice(0, uniqNames.length - 1).join(', ')}, and ${uniqNames[uniqNames.length - 1]}`
-  }
-}
 
