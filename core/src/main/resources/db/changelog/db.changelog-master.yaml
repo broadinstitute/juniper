@@ -284,6 +284,14 @@ databaseChangeLog:
   - include:
       file: changesets/2024_06_28_primary_study.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_18_admin_task_refactor.yaml
+      relativeToChangelogFile: true
+#  - include:
+#      file: changesets/2024_06_19_admin_tasks_to_participant_tasks.yaml
+#      relativeToChangelogFile: true
+
+
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
 # are atomic. When they are grouped in a changeset and one fails the changeset cannot be
 # rolled back or rerun making recovery more difficult

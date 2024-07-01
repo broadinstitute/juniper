@@ -141,25 +141,9 @@ export type PepperKit = {
 }
 
 export type AdminTaskListDto = {
-  tasks: AdminTask[]
+  tasks: ParticipantTask[]
   enrollees: Enrollee[]
   participantNotes: ParticipantNote[]
-}
-
-export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
-
-export type AdminTask = {
-  id: string
-  createdAt: number
-  completedAt?: number
-  status: AdminTaskStatus
-  studyEnvironmentId: string
-  enrolleeId?: string
-  participantNoteId?: string
-  creatingAdminUserId?: string
-  assignedAdminUserId?: string
-  description?: string
-  dispositionNote?: string
 }
 
 export type SiteMediaMetadata = {
@@ -784,7 +768,7 @@ export default {
   },
 
   async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<AdminTask[]> {
+    enrolleeShortcode: string): Promise<ParticipantTask[]> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
@@ -1170,7 +1154,7 @@ export default {
   },
 
   async updateAdminTask(portalShortcode: string, studyShortcode: string,
-    envName: string, task: AdminTask): Promise<AdminTask> {
+    envName: string, task: ParticipantTask): Promise<ParticipantTask> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks/${task.id}`
     const response = await fetch(url, {
       method: 'PATCH',

@@ -149,7 +149,7 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks:
     get:
       summary: Gets all the admin tasks for this study environment
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: getByStudyEnvironment
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -158,14 +158,14 @@ paths:
         - { name: include, in: query, required: false, schema: { type: string } }
       responses:
         '200':
-          description: List of admin tasks
+          description: List of admin-assigned participant tasks
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks/{id}:
     patch:
       summary: Updates the specified task
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: update
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
@@ -773,7 +773,7 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/adminTasks:
     get:
       summary: List adminTasks related to an enrollee
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: getByEnrollee
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }

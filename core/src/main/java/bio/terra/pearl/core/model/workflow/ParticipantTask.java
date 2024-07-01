@@ -26,9 +26,11 @@ public class ParticipantTask extends BaseEntity {
     private boolean blocksHub; // whether this task blocks the participant from doing optional tasks in the hub
     private UUID studyEnvironmentId;
     private UUID enrolleeId;
+    private UUID assignedAdminUserId;
     private UUID portalParticipantUserId;
     private UUID surveyResponseId;
     private UUID kitRequestId;
+    private UUID participantNoteId;
 }
 
 

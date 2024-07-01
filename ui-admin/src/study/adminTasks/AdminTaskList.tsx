@@ -1,9 +1,16 @@
 import React, { useMemo, useState } from 'react'
-import Api, { AdminTask, AdminTaskListDto } from 'api/api'
+import Api, { AdminTaskListDto, StudyEnvironmentSurvey } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
-import { instantToDateString, instantToDefaultString, StudyEnvParams } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDateString,
+  instantToDefaultString,
+  ParticipantNote,
+  ParticipantTask,
+  StudyEnvParams
+} from '@juniper/ui-core'
 import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import _truncate from 'lodash/truncate'
@@ -28,14 +35,18 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
     { id: 'createdAt', desc: true }
   ])
   const { users } = useAdminUserContext()
-  const [selectedTask, setSelectedTask] = useState<AdminTask>()
+  const [selectedTask, setSelectedTask] = useState<ParticipantTask>()
   const [showEditModal, setShowEditModal] = useState(false)
 
 
-  const columns: ColumnDef<AdminTask>[] = [{
+  const columns: ColumnDef<ParticipantTask>[] = [{
     header: 'Task',
     id: 'taskDescription',
-    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
+    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), studyEnvContext, taskData)
+  }, {
+    header: 'Task Type',
+    accessorKey: 'taskType',
+    cell: info => renderTaskTypeColumn(info.row.original)
   }, {
     header: 'Status',
     accessorKey: 'status',
@@ -74,11 +85,11 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
   }, [studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
     studyEnvContext.currentEnv.environmentName])
 
-  const editTask = (task: AdminTask) => {
+  const editTask = (task: ParticipantTask) => {
     setSelectedTask(task)
     setShowEditModal(true)
   }
-  const onDoneEditing = (updatedTask?: AdminTask) => {
+  const onDoneEditing = (updatedTask?: ParticipantTask) => {
     setSelectedTask(undefined)
     setShowEditModal(false)
     if (updatedTask) {
@@ -110,10 +121,14 @@ taskData: AdminTaskListDto}) => {
   const myTasks = useMemo(() => taskData.tasks.filter(task =>
     task.assignedAdminUserId === user?.id || ''), [taskData.tasks.length])
 
-  const columns: ColumnDef<AdminTask>[] = [{
+  const columns: ColumnDef<ParticipantTask>[] = [{
     header: 'Task',
     id: 'taskDescription',
-    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), taskData)
+    cell: info => taskDescription(info.row.original, paramsFromContext(studyEnvContext), studyEnvContext, taskData)
+  }, {
+    header: 'Task Type',
+    accessorKey: 'taskType',
+    cell: info => renderTaskTypeColumn(info.row.original)
   }, {
     header: 'Status',
     accessorKey: 'status',
@@ -140,30 +155,63 @@ taskData: AdminTaskListDto}) => {
 }
 
 
-const taskDescription = (task: AdminTask, studyEnvParams: StudyEnvParams, taskData: AdminTaskListDto) => {
+const taskDescription = (
+  task: ParticipantTask, studyEnvParams: StudyEnvParams, studyEnvContext: StudyEnvContextT, taskData: AdminTaskListDto
+) => {
   const matchedNote = task.participantNoteId ?
     taskData.participantNotes.find(note => note.id === task.participantNoteId) : undefined
   const matchedEnrollee = task.enrolleeId ?
     taskData.enrollees.find(enrollee => enrollee.id === task.enrolleeId) : undefined
+  const matchedForm = task.targetStableId ? studyEnvContext.currentEnv.configuredSurveys.find(survey =>
+    survey.survey.stableId === task.targetStableId) : undefined
+
   return <>
-    {matchedNote && <span>
-      {_truncate(matchedNote.text, { length: 50 })}<br/>
-      <span className="text-muted">Participant&nbsp;
-        <Link to={studyEnvParticipantPath(studyEnvParams, matchedEnrollee?.shortcode as string)}>
-          {matchedEnrollee?.shortcode}
-        </Link>
-      </span>
-    </span> }
+    {matchedNote && matchedEnrollee && noteDescription(matchedNote, matchedEnrollee, studyEnvParams)}
+    {matchedForm && matchedEnrollee && formDescription(matchedForm, matchedEnrollee, studyEnvParams)}
   </>
 }
 
-const renderStatusColumn = (task: AdminTask) => {
+const noteDescription = (note: ParticipantNote, enrollee: Enrollee, studyEnvParams: StudyEnvParams) => {
+  return <>
+    <span>
+      {_truncate(note.text, { length: 50 })}<br/>
+      <span className="text-muted">Participant&nbsp;
+        <Link to={studyEnvParticipantPath(studyEnvParams, enrollee?.shortcode as string)}>
+          {enrollee?.shortcode}
+        </Link>
+      </span>
+    </span>
+  </>
+}
+
+const formDescription = (survey: StudyEnvironmentSurvey, enrollee: Enrollee, studyEnvParams: StudyEnvParams) => {
+  return <>
+    <span>
+      {_truncate(survey.survey.name, { length: 50 })}
+      <span className='text-muted fst-italic'> v{survey.survey.version}</span> <br/>
+      <span className="text-muted">Participant&nbsp;
+        <Link to={studyEnvParticipantPath(studyEnvParams, enrollee?.shortcode as string)}>
+          {enrollee?.shortcode}
+        </Link>
+      </span>
+    </span>
+  </>
+}
+
+const renderStatusColumn = (task: ParticipantTask) => {
   if (task.status === 'COMPLETE') {
     return <div>
       <div><FontAwesomeIcon icon={faCheck}/> {instantToDateString(task.completedAt)} </div>
-      <span>{task.dispositionNote}</span>
     </div>
   } else {
     return <span>{task.status}</span>
+  }
+}
+
+const renderTaskTypeColumn = (task: ParticipantTask) => {
+  if (task.taskType === 'ADMIN_NOTE') {
+    return <span>Note</span>
+  } else {
+    return <span>Form</span>
   }
 }

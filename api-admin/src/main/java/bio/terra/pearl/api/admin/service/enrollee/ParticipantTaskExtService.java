@@ -3,7 +3,9 @@ package bio.terra.pearl.api.admin.service.enrollee;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
@@ -15,15 +17,16 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import java.util.List;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ParticipantTaskExtService {
-  private ParticipantTaskService participantTaskService;
-  private StudyEnvironmentService studyEnvironmentService;
-  private AuthUtilService authUtilService;
-  private EnrolleeService enrolleeService;
-  private SurveyTaskDispatcher surveyTaskDispatcher;
+  private final ParticipantTaskService participantTaskService;
+  private final StudyEnvironmentService studyEnvironmentService;
+  private final AuthUtilService authUtilService;
+  private final EnrolleeService enrolleeService;
+  private final SurveyTaskDispatcher surveyTaskDispatcher;
 
   public ParticipantTaskExtService(
       ParticipantTaskService participantTaskService,
@@ -92,5 +95,45 @@ public class ParticipantTaskExtService {
         participantTaskService.updateTasks(
             studyEnv.getId(), updateDto, new ResponsibleEntity(operator));
     return updatedTasks;
+  }
+
+  public ParticipantTaskService.AdminTaskListDto getByStudyEnvironment(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName environmentName,
+      List<String> includedRelations,
+      AdminUser user) {
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnvironment =
+        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
+    return participantTaskService.findByStudyEnvironmentId(
+        studyEnvironment.getId(), includedRelations);
+  }
+
+  public List<ParticipantTask> getByEnrollee(String enrolleeShortcode, AdminUser user) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+    return participantTaskService.findByEnrolleeId(enrollee.getId()).stream()
+        .filter(task -> task.getTaskType().equals(TaskType.ADMIN_NOTE))
+        .toList();
+  }
+
+  public ParticipantTask update(
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName envName,
+      UUID taskId,
+      ParticipantTask updatedTask,
+      AdminUser user) {
+    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+    StudyEnvironment studyEnvironment =
+        studyEnvironmentService.findByStudy(studyShortcode, envName).get();
+    ParticipantTask taskToUpdate = participantTaskService.find(taskId).get();
+    if (!taskToUpdate.getStudyEnvironmentId().equals(studyEnvironment.getId())) {
+      throw new IllegalArgumentException("You cannot access that task from this study");
+    }
+    taskToUpdate.setAssignedAdminUserId(updatedTask.getAssignedAdminUserId());
+    taskToUpdate.setStatus(updatedTask.getStatus());
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    return participantTaskService.update(taskToUpdate, auditInfo);
   }
 }

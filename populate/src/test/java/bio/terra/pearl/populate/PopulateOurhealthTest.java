@@ -16,7 +16,7 @@ import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -102,7 +102,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     }
 
     private void checkAdminTasks(UUID sandboxStudyEnvId) {
-        AdminTaskService.AdminTaskListDto taskInfo = adminTaskService.findByStudyEnvironmentId(sandboxStudyEnvId,
+        ParticipantTaskService.AdminTaskListDto taskInfo = participantTaskService.findByStudyEnvironmentId(sandboxStudyEnvId,
                 List.of("participantNote", "enrollee"));
         // check that 3 tasks from 2 enrollees, related to 3 notes
         assertThat(taskInfo.tasks(), hasSize(3));

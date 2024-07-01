@@ -34,6 +34,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public List<ParticipantTask> findByStudyEnvironmentId(UUID studyEnvId) {
+        return findAllByProperty("study_environment_id", studyEnvId);
+    }
+
     public Optional<ParticipantTask> findByEnrolleeId(UUID taskId, UUID enrolleeId) {
         return findByTwoProperties("id", taskId, "enrollee_id", enrolleeId);
     }

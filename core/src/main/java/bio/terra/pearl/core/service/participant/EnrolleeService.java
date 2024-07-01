@@ -19,7 +19,6 @@ import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
@@ -47,7 +46,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final PortalParticipantUserService portalParticipantUserService;
     private final ParticipantNoteService participantNoteService;
     private final KitRequestService kitRequestService;
-    private final AdminTaskService adminTaskService;
     private final SecureRandom secureRandom;
     private final RandomUtilService randomUtilService;
     private final EnrolleeRelationService enrolleeRelationService;
@@ -68,7 +66,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
-                           AdminTaskService adminTaskService, SecureRandom secureRandom,
+                           SecureRandom secureRandom,
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
                            PortalParticipantUserService portalParticipantUserService,
@@ -87,7 +85,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.participantUserService = participantUserService;
         this.participantNoteService = participantNoteService;
         this.kitRequestService = kitRequestService;
-        this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
         this.enrolleeRelationService = enrolleeRelationService;
@@ -213,7 +210,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
         }
-        adminTaskService.deleteByEnrolleId(enrolleeId, null);
         participantNoteService.deleteByEnrollee(enrolleeId);
         kitRequestService.deleteByEnrolleeId(enrolleeId, cascades);
 

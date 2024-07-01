@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import RequestKitModal from './RequestKitModal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -9,6 +9,7 @@ import { Enrollee, instantToDefaultString, KitRequest } from '@juniper/ui-core'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
+import { Button } from '../../components/forms/Button'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -74,13 +75,18 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     getCoreRowModel: getCoreRowModel()
   })
 
-  return <div>
-    <h2 className="h4">Kit requests</h2>
-    {user?.superuser &&
-      <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
-        <FontAwesomeIcon icon={faPlus}/> Create a kit request
-      </button>
-    }
+  return <div className="card w-75 border shadow-sm mb-3">
+    <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
+      <div className="d-flex justify-content-between align-items-center w-100">
+        <div className="fw-bold lead my-1">Kit Requests</div>
+        {user?.superuser &&
+            <Button onClick={() => setShowRequestKitModal(true)}
+              variant="light" className="border m-1">
+              <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
+            </Button>
+        }
+      </div>
+    </div>
     {showRequestKitModal && <RequestKitModal
       studyEnvContext={studyEnvContext}
       enrolleeShortcode={enrollee.shortcode}
@@ -88,5 +94,6 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       onSubmit={onSubmit}
     />}
     {basicTableLayout(table)}
+    {<div className='my-3'>{renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}</div>}
   </div>
 }
