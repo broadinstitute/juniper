@@ -7,22 +7,18 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FamilyExtService {
   private final FamilyService familyService;
-  private final FamilyEnrolleeService familyEnrolleeService;
 
-  public FamilyExtService(
-      FamilyService familyService, FamilyEnrolleeService familyEnrolleeService) {
+  public FamilyExtService(FamilyService familyService) {
     this.familyService = familyService;
-    this.familyEnrolleeService = familyEnrolleeService;
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public Family find(PortalStudyEnvAuthContext authContext, String familyShortcode) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
@@ -32,7 +28,7 @@ public class FamilyExtService {
         .orElseThrow(() -> new NotFoundException("Family not found"));
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public void addEnrollee(
       PortalStudyEnvAuthContext authContext,
       String familyShortcode,
@@ -51,7 +47,7 @@ public class FamilyExtService {
             .build());
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public void removeEnrollee(
       PortalStudyEnvAuthContext authContext,
       String familyShortcode,
@@ -70,7 +66,7 @@ public class FamilyExtService {
             .build());
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public Family updateProband(
       PortalStudyEnvAuthContext authContext,
       String familyShortcode,

@@ -1,25 +1,44 @@
-import React, { useEffect, useState } from 'react'
-import { StudyEnvironmentSurvey, SurveyResponse } from 'api/api'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  StudyEnvironmentSurvey,
+  SurveyResponse
+} from 'api/api'
 
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import {
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import SurveyFullDataView from './SurveyFullDataView'
 import SurveyResponseEditor from './SurveyResponseEditor'
 import { ResponseMapT } from '../enrolleeView/EnrolleeView'
 import { EnrolleeParams } from '../enrolleeView/useRoutedEnrollee'
-import { AutosaveStatus, Enrollee, instantToDefaultString } from '@juniper/ui-core'
+import {
+  AutosaveStatus,
+  Enrollee,
+  instantToDefaultString
+} from '@juniper/ui-core'
 import DocumentTitle from 'util/DocumentTitle'
 import _uniq from 'lodash/uniq'
 import pluralize from 'pluralize'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { userHasPermission, useUser } from 'user/UserProvider'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCheck, faCircleCheck,
+  faCheck,
+  faCircleCheck,
   faCircleHalfStroke,
   faEye,
   faPencil,
   faPrint,
-  faSave, faWarning
+  faSave,
+  faWarning
 } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
@@ -100,7 +119,7 @@ export function RawEnrolleeSurveyView({
                 description="Read form responses"
               />
               <div className="dropdown-divider my-1"></div>
-              {userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit') &&
+              {userHasPermission(user, studyEnvContext.portal.id, 'participant_data_edit') &&
                 <>
                   <DropdownButton
                     onClick={() => {

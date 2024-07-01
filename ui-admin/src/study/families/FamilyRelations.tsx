@@ -17,7 +17,6 @@ import Creatable from 'react-select/creatable'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import {
-  faFloppyDisk,
   faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
@@ -121,6 +120,13 @@ export const FamilyRelations = ({
               return { ...old, enrollee, enrolleeId: enrollee?.id }
             })
           }}
+          searchExpFilter={
+            // we can only add one new member at a time, so if the target
+            // isn't a part of the family, then the source must be
+            newRelation.targetEnrollee && !isMemberOfFamily(newRelation.targetEnrollee.id)
+              ? `{family.shortcode} = '${family.shortcode}'`
+              : undefined
+          }
           selectedEnrollee={newRelation?.enrollee}
         />
       }
@@ -162,6 +168,13 @@ export const FamilyRelations = ({
               return { ...old, targetEnrollee: enrollee, targetEnrolleeId: enrollee?.id }
             })
           }}
+          searchExpFilter={
+            // we can only add one new member at a time, so if the source
+            // isn't a part of the family, then the target must be
+            newRelation.enrollee && !isMemberOfFamily(newRelation.enrollee.id)
+              ? `{family.shortcode} = '${family.shortcode}'`
+              : undefined
+          }
           selectedEnrollee={newRelation?.targetEnrollee}
         />
       }
@@ -182,7 +195,7 @@ export const FamilyRelations = ({
             onClick={() => setOpenSaveNewRelationModal(true)}
             disabled={!newRelation?.enrolleeId || !newRelation?.targetEnrolleeId}
           >
-            <FontAwesomeIcon icon={faFloppyDisk} aria-label={'Add relation to family'}/>
+            Save
           </button>
           <button
             className='btn btn-secondary'

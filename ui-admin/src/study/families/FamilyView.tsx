@@ -24,6 +24,7 @@ import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
 import { uniq } from 'lodash/fp'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
+import { useUser } from 'user/UserProvider'
 
 
 export type SurveyWithResponsesT = {
@@ -48,6 +49,8 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                                    { family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void }) {
   const { currentEnvPath } = studyEnvContext
 
+  const { user } = useUser()
+
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={family?.shortcode || ''}>
@@ -68,24 +71,30 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
           <div style={navDivStyle}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
-                <NavLink end to="." className={getLinkCssClasses}>Overview</NavLink>
+                <NavLink end to="." className={getLinkCssClasses}>Members & Relations</NavLink>
               </li>
-              <li style={navListItemStyle} className="ps-3">
-                <NavLink to="membersAndRelations" className={getLinkCssClasses}>Members & Relations</NavLink>
-              </li>
+              {user?.superuser && <li style={navListItemStyle} className="ps-3">
+                <NavLink to="overview" className={getLinkCssClasses}>Overview<span
+                  className='badge bg-primary fw-light ms-2'>BETA</span></NavLink>
+              </li>}
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
-                <Route index element={<FamilyOverview
-                  family={family}
-                  studyEnvContext={studyEnvContext}/>}
-                />
-                <Route path="membersAndRelations"
+                <Route index
                   element={<FamilyMembersAndRelations family={family}
                     studyEnvContext={studyEnvContext}
                     reloadFamily={reloadFamily}/>}/>
+                {/**
+                 * eventually, we would want overview to be the index element
+                 * so that there could be a readonly view for those without edit
+                 * permissions
+                 */}
+                {user?.superuser && <Route path="overview" element={<FamilyOverview
+                  family={family}
+                  studyEnvContext={studyEnvContext}/>}
+                />}
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

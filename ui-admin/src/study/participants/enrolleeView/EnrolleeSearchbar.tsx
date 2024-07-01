@@ -56,6 +56,7 @@ export const EnrolleeSearchbar = ({
     isDisabled={disabled}
     cacheOptions
     defaultOptions
+    isClearable
     loadOptions={async (value: string) => {
       const enrollees = await searchEnrollees(value)
       return enrollees.map(enrollee => ({ value: enrollee, label: labelForEnrollee(enrollee) }))

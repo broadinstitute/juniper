@@ -1,10 +1,7 @@
 package bio.terra.pearl.api.admin.service.enrollee;
 
-import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.EnrolleeRelation;
@@ -13,45 +10,43 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import org.springframework.stereotype.Service;
 
 @Service
 public class EnrolleeRelationExtService {
-  private final AuthUtilService authUtilService;
   private final EnrolleeRelationService enrolleeRelationService;
   private final EnrolleeService enrolleeService;
   private final FamilyService familyService;
 
   public EnrolleeRelationExtService(
-      AuthUtilService authUtilService,
       EnrolleeRelationService enrolleeRelationService,
       EnrolleeService enrolleeService,
       FamilyService familyService) {
-    this.authUtilService = authUtilService;
     this.enrolleeRelationService = enrolleeRelationService;
     this.enrolleeService = enrolleeService;
     this.familyService = familyService;
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public List<EnrolleeRelation> findRelationsForTargetEnrollee(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
+          PortalStudyEnvAuthContext authContext,
       String enrolleeShortcode) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
 
     Enrollee enrollee =
         enrolleeService
-            .findByShortcodeAndStudyEnv(enrolleeShortcode, studyShortcode, environmentName)
-            .orElseThrow(() -> new NotFoundException("Enrollee not found"));
+                .findByShortcodeAndStudyEnv(
+                        enrolleeShortcode,
+                        authContext.getStudyShortcode(),
+                        authContext.getEnvironmentName())
+                .orElseThrow(() -> new NotFoundException("Enrollee not found"));
     return enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(enrollee.getId());
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public EnrolleeRelation create(
       PortalStudyEnvAuthContext authContext, EnrolleeRelation relation, String justification) {
 
@@ -86,7 +81,7 @@ public class EnrolleeRelationExtService {
     }
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "???")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public void delete(
       PortalStudyEnvAuthContext authContext, UUID enrolleeRelationId, String justification) {
     EnrolleeRelation relation =

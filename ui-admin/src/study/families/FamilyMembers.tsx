@@ -16,7 +16,6 @@ import React, {
 import { basicTableLayout } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faFloppyDisk,
   faPlus,
   faX
 } from '@fortawesome/free-solid-svg-icons'
@@ -128,7 +127,7 @@ export const FamilyMembers = ({
             }}
             disabled={isNil(newMember)}
           >
-            <FontAwesomeIcon icon={faFloppyDisk} aria-label={'Add enrollee to family'}/>
+            Save
           </button>
           <button
             className='btn btn-secondary'

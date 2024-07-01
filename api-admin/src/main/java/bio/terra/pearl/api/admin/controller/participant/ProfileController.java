@@ -3,7 +3,9 @@ package bio.terra.pearl.api.admin.controller.participant;
 import bio.terra.pearl.api.admin.api.ProfileApi;
 import bio.terra.pearl.api.admin.models.dto.ProfileUpdateDto;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.participant.ProfileExtService;
+import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +45,11 @@ public class ProfileController implements ProfileApi {
 
     Profile profile =
         profileExtService.updateProfileForEnrollee(
-            operator,
+            PortalStudyEnvAuthContext.of(
+                operator,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
             enrolleeShortcode,
             profileUpdateDto.getJustification(),
             profileUpdateDto.getProfile());

@@ -7,7 +7,6 @@ import {
 import { EnrolleeSearchbar } from 'study/participants/enrolleeView/EnrolleeSearchbar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faFloppyDisk,
   faPencil,
   faX
 } from '@fortawesome/free-solid-svg-icons'
@@ -79,7 +78,7 @@ export const ProbandEditor = (
           onClick={async () => {
             setOpenSaveNewProbandModal(true)
           }}>
-          <FontAwesomeIcon icon={faFloppyDisk}/>
+            Save
         </button>
         <button
           className="btn btn-secondary"
