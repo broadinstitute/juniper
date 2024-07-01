@@ -44,7 +44,8 @@
         "participants/proxyFamily2.json",
         "participants/invited.json",
         "participants/unenrolled.json",
-        "participants/lostInterest.json"
+        "participants/lostInterest.json",
+        "participants/lostInterestNo.json"
       ],
       "mailingListContacts": [
         {

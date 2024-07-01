@@ -30,4 +30,5 @@ public class PortalEnvironmentConfig extends BaseEntity {
     private String emailSourceAddress; // what goes in the 'from' field of emails to participants from this portal
     @Builder.Default
     private String defaultLanguage = "en";
+    private String primaryStudy; // study shortcode of a study that all initial participants are enrolled in
 }

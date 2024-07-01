@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "add_primary_study"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: portal_environment_config
+            columns:
+              - column:
+                  name: primary_study
+                  type: text

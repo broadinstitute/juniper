@@ -2,6 +2,7 @@ package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.SurveyApi;
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -30,41 +31,45 @@ public class SurveyController implements SurveyApi {
 
   @Override
   public ResponseEntity<Object> get(String portalShortcode, String stableId, Integer version) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    Survey survey = surveyExtService.get(portalShortcode, stableId, version, adminUser);
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    Survey survey =
+        surveyExtService.get(PortalAuthContext.of(operator, portalShortcode), stableId, version);
     return ResponseEntity.ok(survey);
   }
 
   @Override
   public ResponseEntity<Object> getAllVersions(String portalShortcode, String stableId) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(surveyExtService.listVersions(portalShortcode, stableId, adminUser));
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    return ResponseEntity.ok(
+        surveyExtService.listVersions(PortalAuthContext.of(operator, portalShortcode), stableId));
   }
 
   @Override
   public ResponseEntity<Object> create(String portalShortcode, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
 
     Survey survey = objectMapper.convertValue(body, Survey.class);
-    Survey savedSurvey = surveyExtService.create(portalShortcode, survey, adminUser);
+    Survey savedSurvey =
+        surveyExtService.create(PortalAuthContext.of(operator, portalShortcode), survey);
     return ResponseEntity.ok(savedSurvey);
   }
 
   @Override
   public ResponseEntity<Object> newVersion(String portalShortcode, String stableId, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     Survey survey = objectMapper.convertValue(body, Survey.class);
     if (!stableId.equals(survey.getStableId())) {
       throw new IllegalArgumentException("survey parameters don't match");
     }
-    Survey savedSurvey = surveyExtService.createNewVersion(portalShortcode, survey, adminUser);
+    Survey savedSurvey =
+        surveyExtService.createNewVersion(PortalAuthContext.of(operator, portalShortcode), survey);
     return ResponseEntity.ok(savedSurvey);
   }
 
   @Override
   public ResponseEntity<Void> delete(String portalShortcode, String stableId) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
-    surveyExtService.delete(portalShortcode, stableId, adminUser);
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    surveyExtService.delete(PortalAuthContext.of(operator, portalShortcode), stableId);
     return ResponseEntity.noContent().build();
   }
 }

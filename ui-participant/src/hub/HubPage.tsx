@@ -138,7 +138,7 @@ const StudySection = (props: StudySectionProps) => {
           {/* if the user is not a subject, prompt them to enroll */}
           <Link
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
-            to={`${getJoinLink(matchedStudy, { ppUserId: ppUser?.id })}`}
+            to={`${getJoinLink(matchedStudy.shortcode, { ppUserId: ppUser?.id })}`}
           >
             {i18n('joinStudy')}
           </Link>
