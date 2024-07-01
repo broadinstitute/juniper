@@ -70,6 +70,10 @@ export type Answer = {
   surveyStableId?: string
   surveyVersion?: number
   viewedLanguage?: string
+  creatingParticipantUserId?: string
+  creatingAdminUserId?: string
+  createdAt?: number
+  lastUpdatedAt?: number
 }
 
 export type FormResponse = {
