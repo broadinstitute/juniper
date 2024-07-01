@@ -1,10 +1,10 @@
 import { CalculatedValue, Question } from 'survey-core'
 import { Answer, instantToDefaultString } from '@juniper/ui-core'
-import { DataChangeRecord } from '../../../api/api'
-import { useAdminUserContext } from '../../../providers/AdminUserProvider'
+import { DataChangeRecord } from 'api/api'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { AdminUser } from '../../../api/adminUser'
+import { faArrowRight, faCircleInfo, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { AdminUser } from 'api/adminUser'
 import React from 'react'
 import { getDisplayValue } from './SurveyFullDataView'
 import { sortBy } from 'lodash'
@@ -21,12 +21,19 @@ export const AnswerEditHistory = ({ question, answer, editHistory }: {
     <div
       data-bs-toggle='dropdown'
       role='button'
-      className="btn btn-light dropdown-toggle fst-italic ms-2 rounded-3 p-1 border-1"
+      className="btn btn-light p-0"
       id="viewHistory"
       aria-label="View history"
       aria-haspopup="true"
       aria-expanded="false"
-    ><FontAwesomeIcon icon={faHistory} className="fa-sm"/> View history</div>
+    >
+      <div className="d-flex align-items-center">
+        <pre className="fw-bold my-0">{getDisplayValue(answer, question)}</pre>
+        { editHistory.length > 0 ?
+          <FontAwesomeIcon icon={faHistory} className="ms-2"/> :
+          <FontAwesomeIcon icon={faCircleInfo} className="ms-2"/>}
+      </div>
+    </div>
     <div className="dropdown-menu" aria-labelledby="viewHistory">
       {editHistory.map((changeRecord, index) =>
         <div key={index} className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>

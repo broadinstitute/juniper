@@ -135,11 +135,12 @@ export const ItemDisplay = ({
         <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
         </span>
-        { answer && <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> }
       </div>
     </dt>
     <dl>
-      <pre className="fw-bold">{displayValue}</pre>
+      { answer ?
+        <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> :
+        <pre className="fw-bold">{displayValue}</pre>}
     </dl>
   </>
 }
