@@ -51,4 +51,48 @@ describe('OutreachTasks', () => {
     await waitFor(() => expect(screen.getByText('Survey 1 blurb')).toBeInTheDocument())
     await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
   })
+
+  it('excludes completed tasks', async () => {
+    const enrollee = mockEnrollee()
+    const study = {
+      ...mockStudy(),
+      studyEnvironments: [{ ...mockStudyEnv(), id: 'studyEnv1' }]
+    }
+    const tasksWithSurvey: TaskWithSurvey[] = [
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'NEW'),
+          targetStableId: 'outreach1',
+          studyEnvironmentId: 'studyEnv1',
+          status: 'COMPLETE'
+        },
+        survey: {
+          ...mockSurvey('outreach1'),
+          surveyType: 'OUTREACH',
+          blurb: 'Survey 1 blurb'
+        }
+      },
+      {
+        task: {
+          ...mockParticipantTask('OUTREACH', 'NEW'),
+          targetStableId: 'outreach2',
+          studyEnvironmentId: 'studyEnv1'
+        },
+        survey: {
+          ...mockSurvey('outreach2'),
+          surveyType: 'OUTREACH',
+          blurb: 'Survey 2 blurb'
+        }
+      }
+    ]
+    jest.spyOn(Api, 'listOutreachActivities').mockResolvedValue(tasksWithSurvey)
+    const { RoutedComponent } = setupRouterTest(
+      <MockI18nProvider>
+        <OutreachTasks enrollees={[enrollee]} studies={[study]}/>
+      </MockI18nProvider>
+    )
+    render(RoutedComponent)
+    await waitFor(() => expect(screen.getByText('Survey 2 blurb')).toBeInTheDocument())
+    expect(screen.queryByText('Survey 1 blurb')).toBeNull()
+  })
 })

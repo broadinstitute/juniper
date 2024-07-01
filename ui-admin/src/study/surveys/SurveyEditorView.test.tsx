@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
-import { mockStudyEnvContext } from 'test-utils/mocking-utils'
+import { mockExpressionApis, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 
 describe('SurveyEditorView', () => {
@@ -56,6 +56,7 @@ describe('SurveyEditorView', () => {
   })
 
   test('shows a dropdown with options', async () => {
+    mockExpressionApis()
     renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
@@ -69,6 +70,7 @@ describe('SurveyEditorView', () => {
   })
 
   test('allows the user to download the JSON file', async () => {
+    mockExpressionApis()
     renderWithRouter(<SurveyEditorView
       studyEnvContext={mockStudyEnvContext()}
       currentForm={mockForm()}
@@ -103,3 +105,4 @@ describe('SurveyEditorView', () => {
     expect(screen.getByText('- published v2')).toBeInTheDocument()
   })
 })
+
