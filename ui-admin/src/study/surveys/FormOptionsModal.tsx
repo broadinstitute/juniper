@@ -14,9 +14,6 @@ import {
 } from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import {
-  useUser
-} from 'user/UserProvider'
 import { LazySearchQueryBuilder } from 'search/LazySearchQueryBuilder'
 
 
@@ -63,8 +60,6 @@ export const FormOptions = ({ studyEnvContext, initialWorkingForm, updateWorking
                                 updateWorkingForm: (props: SaveableFormProps) => void
                               }) => {
   const workingForm = initialWorkingForm as Survey
-
-  const { user } = useUser()
 
   return <>
     {(workingForm && !!workingForm.surveyType) &&
