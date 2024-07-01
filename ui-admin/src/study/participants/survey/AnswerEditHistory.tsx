@@ -7,6 +7,7 @@ import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-i
 import { AdminUser } from '../../../api/adminUser'
 import React from 'react'
 import { getDisplayValue } from './SurveyFullDataView'
+import { sortBy } from 'lodash'
 
 /**
  * Renders a dropdown with the edit history for a question response
@@ -61,8 +62,7 @@ const renderChangeRecordSimple = (changeRecord: DataChangeRecord) => {
 const renderOriginalAnswer = (
   question: Question | CalculatedValue, answer: Answer, changeRecords: DataChangeRecord[], users: AdminUser[]
 ) => {
-  const originalChangeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
-    a.createdAt < b.createdAt ? -1 : 0)[0]
+  const originalChangeRecord = sortBy(changeRecords, 'createdAt')[0]
   return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
     <FontAwesomeIcon icon={faPencil} className="me-2"/>
     <div>
