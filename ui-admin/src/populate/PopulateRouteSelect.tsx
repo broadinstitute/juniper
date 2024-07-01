@@ -18,6 +18,9 @@ export default function PopulateRouteSelect({ portalShortcode }: {portalShortcod
       <div style={navDivStyle}>
         <ul className="list-unstyled">
           <li style={navListItemStyle} className="ps-3">
+            <NavLink to="" end style={navLinkStyleFunc}>Quick shortcuts</NavLink>
+          </li>
+          <li style={navListItemStyle} className="ps-3">
             <NavLink to="portal" style={navLinkStyleFunc}>Portal</NavLink>
           </li>
           <li style={navListItemStyle} className="ps-3">
