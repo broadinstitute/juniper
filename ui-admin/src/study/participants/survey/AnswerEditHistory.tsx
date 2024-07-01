@@ -30,8 +30,8 @@ export const AnswerEditHistory = ({ question, answer, editHistory }: {
       <div className="d-flex align-items-center">
         <pre className="fw-bold my-0">{getDisplayValue(answer, question)}</pre>
         { editHistory.length > 0 ?
-          <FontAwesomeIcon icon={faHistory} className="ms-2"/> :
-          <FontAwesomeIcon icon={faCircleInfo} className="ms-2"/>}
+          <FontAwesomeIcon icon={faHistory} className="fa-sm ms-2"/> :
+          <FontAwesomeIcon icon={faCircleInfo} className="fa-sm ms-2"/>}
       </div>
     </div>
     <div className="dropdown-menu" aria-labelledby="viewHistory">
