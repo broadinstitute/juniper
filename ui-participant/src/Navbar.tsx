@@ -6,7 +6,7 @@ import React, { useEffect, useId, useRef } from 'react'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy, Study } from 'api/api'
+import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalEnvironmentConfig, PortalStudy } from 'api/api'
 import { MailingListModal, PortalEnvironmentLanguageOpt, useI18n } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
@@ -107,7 +107,7 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  to={getMainJoinLink(portal.portalStudies)}
+                  to={getMainJoinLink(portal.portalStudies, portalEnv.portalEnvironmentConfig)}
                 >
                   {i18n('navbarJoin')}
                 </NavLink>
@@ -173,9 +173,9 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
 /**
  * Returns the join link for a specific study
  */
-export const getJoinLink = (study: Study, opts?: { isProxyEnrollment?: boolean, ppUserId?: string }) => {
+export const getJoinLink = (studyShortcode: string, opts?: { isProxyEnrollment?: boolean, ppUserId?: string }) => {
   const { isProxyEnrollment, ppUserId } = opts || {}
-  const joinPath = `/studies/${study.shortcode}/join`
+  const joinPath = `/studies/${studyShortcode}/join`
   if (isProxyEnrollment || ppUserId) {
     return `${joinPath}?${isProxyEnrollment ? 'isProxyEnrollment=true' : ''}${ppUserId ? `&ppUserId=${ppUserId}` : ''}`
   }
@@ -183,11 +183,15 @@ export const getJoinLink = (study: Study, opts?: { isProxyEnrollment?: boolean, 
 }
 
 /** the default join link -- will be rendered in the top right corner */
-export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
+export const getMainJoinLink = (portalStudies: PortalStudy[], portalEnvConfig: PortalEnvironmentConfig) => {
+  // if there's a primary study, link to it
+  if (portalEnvConfig.primaryStudy) {
+    return getJoinLink(portalEnvConfig.primaryStudy)
+  }
   const joinable = filterUnjoinableStudies(portalStudies)
   /** if there's only one joinable study, link directly to it */
   const joinPath = joinable.length === 1
-    ? getJoinLink(joinable[0].study)
+    ? getJoinLink(joinable[0].study.shortcode)
     : '/join'
   return joinPath
 }
