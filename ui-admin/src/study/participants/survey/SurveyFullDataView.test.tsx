@@ -174,9 +174,9 @@ describe('ItemDisplay', () => {
       supportedLanguages={[{ languageCode: 'es', languageName: 'Spanish', id: '' }]}
       showFullQuestions={true}/>)
 
-    expect(screen.getByText('View history')).toBeInTheDocument()
+    expect(screen.getByLabelText('View history')).toBeInTheDocument()
 
-    const viewHistoryButton = screen.getByText('View history')
+    const viewHistoryButton = screen.getByLabelText('View history')
     viewHistoryButton.click()
     expect(screen.getByText('test456')).toBeInTheDocument()
   })
