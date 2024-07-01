@@ -14,7 +14,7 @@ import PrintFormModal from './PrintFormModal'
 import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { doApiLoad } from '../../../api/api-utils'
+import { doApiLoad } from 'api/api-utils'
 import { AnswerEditHistory } from './AnswerEditHistory'
 
 type SurveyFullDataViewProps = {
