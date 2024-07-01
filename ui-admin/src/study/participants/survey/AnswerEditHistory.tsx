@@ -3,7 +3,7 @@ import { Answer, instantToDefaultString } from '@juniper/ui-core'
 import { DataChangeRecord } from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faCircleInfo, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faChevronDown, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
 import { AdminUser } from 'api/adminUser'
 import React from 'react'
 import { getDisplayValue } from './SurveyFullDataView'
@@ -30,8 +30,8 @@ export const AnswerEditHistory = ({ question, answer, editHistory }: {
       <div className="d-flex align-items-center">
         <pre className="fw-bold my-0">{getDisplayValue(answer, question)}</pre>
         { editHistory.length > 0 ?
-          <FontAwesomeIcon icon={faHistory} className="fa-sm ms-2"/> :
-          <FontAwesomeIcon icon={faCircleInfo} className="fa-sm ms-2"/>}
+          <FontAwesomeIcon icon={faHistory} className="fa-sm ms-2 text-muted"/> :
+          <FontAwesomeIcon icon={faChevronDown} className="fa-sm ms-2 text-muted"/>}
       </div>
     </div>
     <div className="dropdown-menu" aria-labelledby="viewHistory">
