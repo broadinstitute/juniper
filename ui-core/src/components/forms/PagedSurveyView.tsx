@@ -17,6 +17,7 @@ import { SurveyAutoCompleteButton } from './SurveyAutoCompleteButton'
 import { SurveyReviewModeButton } from './ReviewModeButton'
 import { StudyEnvParams } from 'src/types/study'
 import { Enrollee, Profile } from 'src/types/user'
+import classNames from 'classnames'
 
 const AUTO_SAVE_INTERVAL = 3 * 1000  // auto-save every 3 seconds if there are changes
 
@@ -150,11 +151,12 @@ export function PagedSurveyView({
   }
 
   useAutosaveEffect(saveDiff, AUTO_SAVE_INTERVAL)
-
+  const isOutreach = form.surveyType === 'OUTREACH'
   return (
     <>
       {/* f3f3f3 background is to match surveyJs "modern" theme */}
-      <div style={{ background: '#f3f3f3' }} className="flex-grow-1">
+      <div style={{ background: '#f3f3f3' }} className={classNames('flex-grow-1',
+        isOutreach ? 'survey-hide-complete' : '')}>
         <SurveyReviewModeButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         <SurveyAutoCompleteButton surveyModel={surveyModel} envName={studyEnvParams.envName}/>
         {showHeaders && <h1 className="text-center mt-5 mb-0 pb-0 fw-bold">
