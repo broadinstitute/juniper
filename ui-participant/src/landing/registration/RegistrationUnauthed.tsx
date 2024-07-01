@@ -2,10 +2,15 @@ import React from 'react'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import Api, { Survey } from 'api/api'
 import { RegistrationContextT } from './PortalRegistrationRouter'
-import { useUser } from '../../providers/UserProvider'
+import { useUser } from 'providers/UserProvider'
 import { useNavigate } from 'react-router-dom'
-import { defaultSurvey, EnvironmentName, useI18n, useSurveyJSModel } from '@juniper/ui-core'
-import { usePortalEnv } from '../../providers/PortalProvider'
+import {
+  defaultSurvey,
+  EnvironmentName,
+  useI18n,
+  useSurveyJSModel
+} from '@juniper/ui-core'
+import { usePortalEnv } from 'providers/PortalProvider'
 
 /** This registration survey is a hardcoded survey--will be deprecated soon */
 const registrationSurvey = {
@@ -83,7 +88,7 @@ export default function RegistrationUnauthed({ registrationContext, returnTo }: 
         ppUsers: response.ppUsers,
         profile: response.profile,
         enrollees: response.enrollees,
-        relations: response.relations
+        proxyRelations: response.proxyRelations
       }, response.user.token)
       if (returnTo) {
         navigate(returnTo)

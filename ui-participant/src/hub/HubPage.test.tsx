@@ -1,7 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
-import { MockI18nProvider, mockTextsDefault, setupRouterTest } from '@juniper/ui-core'
+import {
+  MockI18nProvider,
+  mockTextsDefault,
+  setupRouterTest
+} from '@juniper/ui-core'
 
 jest.mock('../providers/PortalProvider', () => {
   return {
@@ -31,7 +38,7 @@ jest.mock('../providers/PortalProvider', () => {
 jest.mock('../providers/UserProvider', () => {
   return {
     useUser: () => ({
-      relations: []
+      proxyRelations: []
     })
   }
 })
