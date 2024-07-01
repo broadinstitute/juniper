@@ -34,8 +34,10 @@ export default function StudySettings({ studyEnvContext, portalContext }:
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Site Settings') }
-    <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>
-    <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}/>
+    <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}
+      key={studyEnvContext.currentEnvPath}/>
+    <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}
+      key={portalEnv.environmentName}/>
   </div>
 }
 

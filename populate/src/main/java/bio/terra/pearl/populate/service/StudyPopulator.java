@@ -97,7 +97,7 @@ public class StudyPopulator extends BasePopulator<Study, StudyPopDto, PortalPopu
 
         // save any of the pre-enrollment responses that aren't associated with an enrollee
         for (PreEnrollmentResponsePopDto responsePopDto : studyPopEnv.getPreEnrollmentResponseDtos()) {
-            Survey survey = surveyService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+            Survey survey = surveyService.findByStableIdAndPortalShortcode(responsePopDto.getSurveyStableId(),
                     responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
             String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
             PreEnrollmentResponse response = PreEnrollmentResponse.builder()
