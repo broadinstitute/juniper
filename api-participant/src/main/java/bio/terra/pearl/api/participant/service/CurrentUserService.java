@@ -101,8 +101,8 @@ public class CurrentUserService {
 
     List<Enrollee> enrollees = loadEnrollees(ppUser);
 
-    List<EnrolleeRelation> relations = loadProxyRelations(enrollees);
-    enrollees.addAll(relations.stream().map(EnrolleeRelation::getTargetEnrollee).toList());
+    List<EnrolleeRelation> proxyRelations = loadProxyRelations(enrollees);
+    enrollees.addAll(proxyRelations.stream().map(EnrolleeRelation::getTargetEnrollee).toList());
 
     List<PortalParticipantUser> ppUsers = new ArrayList<>();
     ppUsers.add(ppUser);
@@ -121,7 +121,7 @@ public class CurrentUserService {
         });
 
     return new UserLoginDto(
-        user, profileService.loadProfile(ppUser), ppUsers, enrollees, relations);
+        user, profileService.loadProfile(ppUser), ppUsers, enrollees, proxyRelations);
   }
 
   private List<Enrollee> loadEnrollees(PortalParticipantUser ppUser) {
