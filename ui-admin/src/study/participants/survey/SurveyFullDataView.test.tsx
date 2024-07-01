@@ -1,10 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 
-import { getDisplayValue, ItemDisplay, ResponseEditHistory } from './SurveyFullDataView'
+import { getDisplayValue, ItemDisplay } from './SurveyFullDataView'
 import { Question } from 'survey-core'
 import { Answer } from '@juniper/ui-core/build/types/forms'
 import { DataChangeRecord } from 'api/api'
+import { AnswerEditHistory } from './AnswerEditHistory'
 
 
 describe('getDisplayValue', () => {
@@ -219,7 +220,7 @@ describe('ItemDisplay', () => {
 
     const answerMap: Record<string, Answer> = {}
     answerMap[answer.questionStableId] = answer
-    render(<ResponseEditHistory
+    render(<AnswerEditHistory
       question={question} answer={answer} editHistory={[firstChangeRecord, secondChangeRecord]}/>)
 
     expect(screen.getByText('Answered on', { exact: false })).toBeInTheDocument()

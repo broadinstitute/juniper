@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
 import {
-  createAddressValidator, Enrollee, instantToDefaultString,
+  createAddressValidator, Enrollee,
   makeSurveyJsData,
   PortalEnvironment,
   PortalEnvironmentLanguage,
@@ -14,11 +14,8 @@ import PrintFormModal from './PrintFormModal'
 import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight, faHistory, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { useAdminUserContext } from 'providers/AdminUserProvider'
-import { AdminUser } from 'api/adminUser'
 import { doApiLoad } from '../../../api/api-utils'
+import { AnswerEditHistory } from './AnswerEditHistory'
 
 type SurveyFullDataViewProps = {
   responseId?: string,
@@ -138,84 +135,13 @@ export const ItemDisplay = ({
         <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
         </span>
-        { answer && <ResponseEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> }
+        { answer && <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> }
       </div>
     </dt>
     <dl>
       <pre className="fw-bold">{displayValue}</pre>
     </dl>
   </>
-}
-
-/**
- * Renders a dropdown with the edit history for a question response
- */
-export const ResponseEditHistory = ({ question, answer, editHistory }: {
-  question: Question | CalculatedValue, answer: Answer, editHistory: DataChangeRecord[]
-}) => {
-  const { users } = useAdminUserContext()
-
-  return <>
-    <div
-      data-bs-toggle='dropdown'
-      role='button'
-      className="btn btn-light dropdown-toggle fst-italic ms-2 rounded-3 p-1 border-1"
-      id="viewHistory"
-      aria-label="View history"
-      aria-haspopup="true"
-      aria-expanded="false"
-    ><FontAwesomeIcon icon={faHistory} className="fa-sm"/> View history</div>
-    <div className="dropdown-menu" aria-labelledby="viewHistory">
-      {editHistory.map((changeRecord, index) =>
-        <div key={index} className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
-          <FontAwesomeIcon icon={faPencil} className="me-2"/>
-          <div>
-            {getBeforeAndAfterAnswer(changeRecord)}
-            <div className="text-muted" style={{ fontSize: '0.75em' }}>
-                Edited on {instantToDefaultString(changeRecord.createdAt)} by <span className='fw-semibold'>
-                {users.find(user =>
-                  user.id === changeRecord.responsibleAdminUserId)?.username ?? 'Participant'}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-      {getOriginalAnswer(question, answer, editHistory, users)}
-    </div>
-  </>
-}
-
-const getBeforeAndAfterAnswer = (changeRecord: DataChangeRecord) => {
-  return <div className="d-flex align-items-center">
-    <div className="bg-danger-subtle fw-medium">{changeRecord.oldValue}</div>
-    <FontAwesomeIcon icon={faArrowRight} className="mx-1"/>
-    <div className="bg-success-subtle fw-medium">{changeRecord.newValue}</div>
-  </div>
-}
-
-/*
- * Displays the original answer value and the entity responsible for answering it. If changes have
- * been made to the answer, we backtrack through the change records to find the original answer.
- */
-const getOriginalAnswer = (
-  question: Question | CalculatedValue, answer: Answer, changeRecords: DataChangeRecord[], users: AdminUser[]
-) => {
-  const originalChangeRecord = changeRecords.sort((a, b) => a.createdAt > b.createdAt ? 1 :
-    a.createdAt < b.createdAt ? -1 : 0)[0]
-  return <div className="dropdown-item d-flex align-items-center" style={{ pointerEvents: 'none' }}>
-    <FontAwesomeIcon icon={faPencil} className="me-2"/>
-    <div>
-      <span className='fw-medium'>
-        {originalChangeRecord ? originalChangeRecord.oldValue : getDisplayValue(answer, question)}
-      </span>
-      <div className="text-muted" style={{ fontSize: '0.75em' }}>
-          Answered on {instantToDefaultString(answer.createdAt)} by <span className='fw-semibold'>
-          {users.find(user =>
-            user.id === answer.creatingAdminUserId)?.username ?? 'Participant'}
-        </span>
-      </div>
-    </div>
-  </div>
 }
 
 /** renders the value of the answer, either as plaintext, a matched choice, or an image for signatures */
