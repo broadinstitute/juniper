@@ -99,4 +99,18 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
                         .execute()
         );
     }
+
+    public List<EnrolleeRelation> findAllFamilyRelationshipsByEitherEnrollee(UUID enrolleeId, UUID familyId) {
+        return jdbi.withHandle(handle ->
+                handle.createQuery(
+                                "SELECT * FROM enrollee_relation " +
+                                        "WHERE (enrollee_id = :enrolleeId OR target_enrollee_id = :enrolleeId) " +
+                                        "AND relationship_type = 'FAMILY' " +
+                                        "AND family_id = :familyId")
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("familyId", familyId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
 }

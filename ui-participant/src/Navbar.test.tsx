@@ -14,7 +14,7 @@ import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
-import { mockUsePortalEnv } from './test-utils/test-portal-factory'
+import { mockPortalEnvironmentConfig, mockUsePortalEnv } from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
 
 jest.mock('oidc-client-ts')
@@ -120,7 +120,7 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/studies/foo/join')
   })
 
@@ -146,7 +146,7 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/join')
   })
 
@@ -172,8 +172,36 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/studies/foo/join')
+  })
+
+  it('joins the primary study if there are multiple', () => {
+    const portalStudies = [{
+      study: {
+        shortcode: 'foo',
+        name: 'Foo',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }, {
+      study: {
+        shortcode: 'bar',
+        name: 'Bar',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }] as PortalStudy[]
+    const joinPath = getMainJoinLink(portalStudies, {
+      ...mockPortalEnvironmentConfig(), primaryStudy: 'bar'
+    })
+    expect(joinPath).toBe('/studies/bar/join')
   })
 })
 

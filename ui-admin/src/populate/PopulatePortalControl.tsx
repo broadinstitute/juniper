@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Api from 'api/api'
-import { failureNotification, successNotification } from '../util/notifications'
+import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { FileNameControl, OverwriteControl, PopulateButton } from './PopulateControls'
-import { doApiLoad } from '../api/api-utils'
-import { useFileUploadButton } from '../util/uploadUtils'
+import { doApiLoad } from 'api/api-utils'
+import { useFileUploadButton } from 'util/uploadUtils'
 
 /** control for invoking the populate portal API */
 export default function PopulatePortalControl() {
@@ -34,8 +34,8 @@ export default function PopulatePortalControl() {
     e.preventDefault()
     if (!isLoading) { populate() }
   }}>
-    <h3 className="h5">Portal</h3>
-    <p>Repopulates the entire portal, including all studies contained in the portal. </p>
+    <h3 className="h5">Portals</h3>
+    <p>Repopulates an entire portal, including all studies contained in the portal. </p>
     <div className="d-flex flex-column row-gap-2">
       <div>
         { FileChooser }
@@ -58,7 +58,9 @@ export default function PopulatePortalControl() {
                 from the files.  This method will fail if there are participants in the live environment who
                 have not been withdrawn.  This option has no effect if &quot;Shortcode override&quot; is set.
         </span>}/>
-      <PopulateButton onClick={populate} isLoading={isLoading}/>
+      <div>
+        <PopulateButton onClick={populate} isLoading={isLoading}/>
+      </div>
     </div>
   </form>
 }

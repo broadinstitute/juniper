@@ -3,6 +3,8 @@ package bio.terra.pearl.core.model.survey;
 import bio.terra.pearl.core.model.BaseEntity;
 import java.util.Objects;
 import java.util.UUID;
+
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -34,6 +36,11 @@ public class Answer extends BaseEntity {
     // store all numbers as doubles to match Javascript/JSON.
     private Double numberValue;
     private Boolean booleanValue;
+
+    public void setCreatingEntity(ResponsibleEntity responsibleEntity) {
+        this.creatingParticipantUserId = responsibleEntity.getParticipantUser() != null ? responsibleEntity.getParticipantUser().getId() : null;
+        this.creatingAdminUserId = responsibleEntity.getAdminUser() != null ? responsibleEntity.getAdminUser().getId() : null;
+    }
 
     public void setValueAndType(Object value) {
         answerType = AnswerType.forValue(value);

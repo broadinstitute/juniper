@@ -302,12 +302,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
                                 Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
-        if (answer.getCreatingAdminUserId() != null) {
-            answer.setCreatingAdminUserId(operator.getAdminUser().getId());
+        if(operator.getParticipantUser() != null || operator.getAdminUser() != null) {
+            answer.setCreatingEntity(operator);
         } else {
-            // If an admin wasn't specified, we'll default to attributing this to the participant user.
-            // It's also possible that a system process (such as import) could have created the response,
-            // but we still want to tie it to the participant user in that case.
+            //Answers created by a system process (i.e. enrollee import) should be associated with the participant user
             answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
         }
         answer.setSurveyResponseId(response.getId());

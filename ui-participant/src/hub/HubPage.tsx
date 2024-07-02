@@ -1,12 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { usePortalEnv } from 'providers/PortalProvider'
 
-import Api, { Portal, Study } from 'api/api'
+import Api, {
+  Portal,
+  Study
+} from 'api/api'
 import { isTaskActive } from './TaskLink'
 import { DocumentTitle } from 'util/DocumentTitle'
 
-import { HubMessageAlert, HubUpdateMessage, useHubUpdate } from './hubUpdates'
-import { Enrollee, ParticipantDashboardAlert, useI18n } from '@juniper/ui-core'
+import {
+  HubMessageAlert,
+  HubUpdateMessage,
+  useHubUpdate
+} from './hubUpdates'
+import {
+  Enrollee,
+  ParticipantDashboardAlert,
+  useI18n
+} from '@juniper/ui-core'
 import KitBanner from './kit/KitBanner'
 import StudyResearchTasks from './StudyResearchTasks'
 import OutreachTasks from './OutreachTasks'
@@ -26,7 +40,7 @@ export default function HubPage() {
   } = useActiveUser()
 
   const {
-    relations
+    proxyRelations
   } = useUser()
 
   const { i18n } = useI18n()
@@ -89,7 +103,7 @@ export default function HubPage() {
 
         <div className="my-md-4 mx-auto" style={{ maxWidth: 768 }}>
           <div className="w-100 mt-2 mb-0 d-flex mb-2">
-            {relations.length > 0 && <ParticipantSelector/>}
+            {proxyRelations.length > 0 && <ParticipantSelector/>}
           </div>
           <main
             className="hub-dashboard py-4 px-2 px-md-5 shadow-sm"
@@ -138,7 +152,7 @@ const StudySection = (props: StudySectionProps) => {
           {/* if the user is not a subject, prompt them to enroll */}
           <Link
             className="btn rounded-pill ps-4 pe-4 fw-bold btn-primary"
-            to={`${getJoinLink(matchedStudy, { ppUserId: ppUser?.id })}`}
+            to={`${getJoinLink(matchedStudy.shortcode, { ppUserId: ppUser?.id })}`}
           >
             {i18n('joinStudy')}
           </Link>

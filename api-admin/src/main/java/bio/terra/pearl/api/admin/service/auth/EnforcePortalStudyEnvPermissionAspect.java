@@ -1,8 +1,10 @@
 package bio.terra.pearl.api.admin.service.auth;
 
-import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.study.PortalStudy;
+import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -10,21 +12,27 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-/** Aspect to enforce portal permissions on methods annotated with EnforcePortalPermission. */
+/**
+ * Aspect to enforce portal permissions on methods annotated with EnforcePortalStudyEnvPermission.
+ */
 @Component
 @Aspect
 @Slf4j
-public class BaseEnforcePortalStudyPermissionAspect
-    extends BaseEnforcePermissionAspect<PortalStudyAuthContext, EnforcePortalStudyPermission> {
+public class EnforcePortalStudyEnvPermissionAspect
+    extends BaseEnforcePermissionAspect<
+        PortalStudyEnvAuthContext, EnforcePortalStudyEnvPermission> {
   private final AuthUtilService authUtilService;
+  private final StudyEnvironmentService studyEnvironmentService;
 
-  public BaseEnforcePortalStudyPermissionAspect(AuthUtilService authUtilService) {
+  public EnforcePortalStudyEnvPermissionAspect(
+      AuthUtilService authUtilService, StudyEnvironmentService studyEnvironmentService) {
     this.authUtilService = authUtilService;
+    this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  @Around(value = "@annotation(EnforcePortalStudyPermission)")
+  @Around(value = "@annotation(EnforcePortalStudyEnvPermission)")
   public Object enforcePermission(ProceedingJoinPoint joinPoint) throws Throwable {
-    PortalStudyAuthContext authContext = extractAuthContext(joinPoint);
+    PortalStudyEnvAuthContext authContext = extractAuthContext(joinPoint);
     String permission = getPermissionName(joinPoint);
     Portal portal =
         authUtilService.authUserToPortalWithPermission(
@@ -37,12 +45,12 @@ public class BaseEnforcePortalStudyPermissionAspect
             authContext.getPortalShortcode(),
             authContext.getStudyShortcode());
     authContext.setPortalStudy(portalStudy);
-    return joinPoint.proceed();
-  }
 
-  @Override
-  protected Class<PortalStudyAuthContext> getAuthContextClass() {
-    return PortalStudyAuthContext.class;
+    StudyEnvironment studyEnv =
+        studyEnvironmentService.verifyStudy(
+            authContext.getStudyShortcode(), authContext.getEnvironmentName());
+    authContext.setStudyEnvironment(studyEnv);
+    return joinPoint.proceed();
   }
 
   @Override
@@ -54,7 +62,12 @@ public class BaseEnforcePortalStudyPermissionAspect
   }
 
   @Override
-  protected Class<EnforcePortalStudyPermission> getAnnotationClass() {
-    return EnforcePortalStudyPermission.class;
+  protected Class<PortalStudyEnvAuthContext> getAuthContextClass() {
+    return PortalStudyEnvAuthContext.class;
+  }
+
+  @Override
+  protected Class<EnforcePortalStudyEnvPermission> getAnnotationClass() {
+    return EnforcePortalStudyEnvPermission.class;
   }
 }

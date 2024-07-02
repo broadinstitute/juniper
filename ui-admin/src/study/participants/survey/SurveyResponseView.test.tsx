@@ -11,11 +11,14 @@ import React from 'react'
 import userEvent from '@testing-library/user-event'
 import { RawEnrolleeSurveyView } from './SurveyResponseView'
 import { userHasPermission } from 'user/UserProvider'
+import Api from 'api/api'
 
 jest.mock('user/UserProvider', () => ({
   ...jest.requireActual('user/UserProvider'),
   userHasPermission: jest.fn()
 }))
+
+jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue([])
 
 describe('RawEnrolleeSurveyView', () => {
   const mockResponseWithAnswer = {

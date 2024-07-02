@@ -158,4 +158,7 @@ public class EnrolleeDao extends BaseMutableJdbiDao<Enrollee> {
                 .list());
     }
 
+    public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {
+        return findByTwoProperties("shortcode", enrolleeShortcode, "study_environment_id", studyEnvId);
+    }
 }

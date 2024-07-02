@@ -6,19 +6,25 @@ import bio.terra.pearl.core.model.participant.FamilyEnrollee;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, FamilyEnrolleeDao> {
 
+    private final EnrolleeRelationService enrolleeRelationService;
+
     public FamilyEnrolleeService(FamilyEnrolleeDao familyEnrolleeDao,
                                  DataChangeRecordService dataChangeRecordService,
-                                 ObjectMapper objectMapper) {
+                                 ObjectMapper objectMapper,
+                                 @Lazy EnrolleeRelationService enrolleeRelationService) {
         super(familyEnrolleeDao, dataChangeRecordService, objectMapper);
+        this.enrolleeRelationService = enrolleeRelationService;
     }
 
     @Transactional
@@ -38,5 +44,43 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
     @Transactional
     public void deleteByEnrolleeId(UUID id) {
         dao.deleteByEnrolleeId(id);
+    }
+
+    public Optional<FamilyEnrollee> findByFamilyIdAndEnrolleeId(UUID familyId, UUID enrolleeId) {
+        return dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
+    }
+
+    public List<FamilyEnrollee> findByFamilyId(UUID familyId) {
+        return dao.findByFamilyId(familyId);
+    }
+
+    @Transactional
+    public void deleteFamilyEnrolleeAndAllRelationships(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
+        Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
+        familyEnrollee.ifPresentOrElse(fe -> {
+                    this.delete(fe.getId(), info);
+                    enrolleeRelationService.deleteAllFamilyRelationshipsByEitherEnrollee(
+                            enrolleeId, familyId, info);
+
+                },
+                () -> {
+                    throw new IllegalArgumentException("Family enrollee not found");
+                });
+    }
+
+    @Transactional
+    public FamilyEnrollee getOrCreate(
+            UUID enrolleeId,
+            UUID familyId,
+            DataAuditInfo auditInfo
+    ) {
+        return findByFamilyIdAndEnrolleeId(familyId, enrolleeId)
+                .orElseGet(() -> create(
+                        FamilyEnrollee
+                                .builder()
+                                .familyId(familyId)
+                                .enrolleeId(enrolleeId)
+                                .build(),
+                        auditInfo));
     }
 }

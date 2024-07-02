@@ -39,8 +39,9 @@ export type PortalEnvironmentConfig = {
   password: string
   passwordProtected: boolean
   participantHostname?: string
-  emailSourceAddress?: string,
+  emailSourceAddress?: string
   defaultLanguage: string
+  primaryStudy?: string
 }
 
 export {}

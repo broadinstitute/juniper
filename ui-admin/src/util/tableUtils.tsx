@@ -36,6 +36,7 @@ import {
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
+import classNames from 'classnames'
 
 /**
  * Returns a debounced input react component
@@ -172,14 +173,18 @@ function SearchFilter<A>({
  * */
 export function tableHeader<A, B>(
   header: Header<A, B>,
-  options: { sortable: boolean, filterable: boolean }
+  options: { sortable?: boolean, filterable?: boolean, useSize?: boolean }
 ) {
   const sortDirection = options.sortable && header.column.getIsSorted()
   const ariaSort = options.sortable ?
     sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
 
   return <th key={header.id}
-    aria-sort={ariaSort}>
+    aria-sort={ariaSort}
+    className={classNames(
+      options.useSize ? `col-${header.getSize()}` : undefined
+    )}
+  >
     <div>
       { options.sortable ? sortableTableHeader(header) : null }
       { options.filterable ? filterableTableHeader(header) : null }
@@ -400,7 +405,8 @@ export type BasicTableConfig<T> = {
   tableClass?: string,
   tdClass?: string,
   trClass?: string,
-  customRowHeader?: (row: Row<T>) => React.ReactNode
+  customRowHeader?: (row: Row<T>) => React.ReactNode,
+  useSize?: boolean
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
@@ -414,7 +420,11 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
   return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
     <thead>
       <tr>
-        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
+        {table
+          .getFlatHeaders()
+          .map(header => tableHeader(header, {
+            sortable: true, filterable, useSize: config?.useSize || false
+          }))}
       </tr>
     </thead>
     <tbody>
@@ -422,7 +432,7 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
         return (
           <Fragment key={row.id}>
             {!isNil(config.customRowHeader) && config.customRowHeader(row)}
-            <tr className={config.trClass}>
+            <tr className={classNames(config.trClass)}>
               {row.getVisibleCells().map(cell => {
                 return (
                   <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
