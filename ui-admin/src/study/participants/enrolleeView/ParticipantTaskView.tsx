@@ -64,7 +64,7 @@ const ParticipantTaskView = ({ enrollee }: {enrollee: Enrollee}) => {
         <tr>
           {table
             .getFlatHeaders()
-            .map(header => tableHeader(header, { sortable: true, filterable: false, useSize: false }))}
+            .map(header => tableHeader(header, { sortable: true }))}
         </tr>
       </thead>
       <tbody>

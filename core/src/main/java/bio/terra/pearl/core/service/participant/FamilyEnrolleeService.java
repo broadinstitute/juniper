@@ -59,7 +59,7 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
         Optional<FamilyEnrollee> familyEnrollee = dao.findByFamilyIdAndEnrolleeId(familyId, enrolleeId);
         familyEnrollee.ifPresentOrElse(fe -> {
                     this.delete(fe.getId(), info);
-                    enrolleeRelationService.deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(
+                    enrolleeRelationService.deleteAllFamilyRelationshipsByEitherEnrollee(
                             enrolleeId, familyId, info);
 
                 },

@@ -141,8 +141,8 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
                 "deleteAllByEnrolleeIdOrTargetId")).build());
     }
 
-    public void deleteAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
-        List<EnrolleeRelation> enrolleeRelations = dao.findAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(enrolleeId, familyId);
+    public void deleteAllFamilyRelationshipsByEitherEnrollee(UUID enrolleeId, UUID familyId, DataAuditInfo info) {
+        List<EnrolleeRelation> enrolleeRelations = dao.findAllFamilyRelationshipsByEitherEnrollee(enrolleeId, familyId);
         bulkDelete(enrolleeRelations, info);
     }
 

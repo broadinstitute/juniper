@@ -173,7 +173,7 @@ function SearchFilter<A>({
  * */
 export function tableHeader<A, B>(
   header: Header<A, B>,
-  options: { sortable: boolean, filterable: boolean, useSize: boolean }
+  options: { sortable?: boolean, filterable?: boolean, useSize?: boolean }
 ) {
   const sortDirection = options.sortable && header.column.getIsSorted()
   const ariaSort = options.sortable ?
@@ -181,9 +181,9 @@ export function tableHeader<A, B>(
 
   return <th key={header.id}
     aria-sort={ariaSort}
-    style={{
-      width: options.useSize ? `${header.getSize()}px` : undefined
-    }}
+    className={classNames(
+      options.useSize ? `col-${header.getSize()}` : undefined
+    )}
   >
     <div>
       { options.sortable ? sortableTableHeader(header) : null }

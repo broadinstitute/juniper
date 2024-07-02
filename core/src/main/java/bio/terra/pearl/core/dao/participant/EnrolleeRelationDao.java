@@ -100,7 +100,7 @@ public class EnrolleeRelationDao extends BaseMutableJdbiDao<EnrolleeRelation> {
         );
     }
 
-    public List<EnrolleeRelation> findAllFamilyRelationshipsByEnrolleeIdOrTargetIdAndFamilyId(UUID enrolleeId, UUID familyId) {
+    public List<EnrolleeRelation> findAllFamilyRelationshipsByEitherEnrollee(UUID enrolleeId, UUID familyId) {
         return jdbi.withHandle(handle ->
                 handle.createQuery(
                                 "SELECT * FROM enrollee_relation " +

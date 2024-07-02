@@ -99,6 +99,11 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         return families;
     }
 
+    public boolean isEnrolleeInFamily(Family family, Enrollee enrollee) {
+        List<FamilyEnrollee> existingMembers = familyEnrolleeService.findByFamilyId(family.getId());
+        return existingMembers.stream().anyMatch(fe -> fe.getEnrolleeId().equals(enrollee.getId()));
+    }
+
     // WARNING: This method is not audited; it should only be used during study population/repopulation
     @Transactional
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -118,9 +123,8 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                 .orElseThrow(() -> new NotFoundException("Enrollee not found"));
 
         // ensure the enrollee is not already a member of the family
-        List<FamilyEnrollee> existingMembers = familyEnrolleeService.findByFamilyId(family.getId());
-        if (existingMembers.stream().anyMatch(fe -> fe.getEnrolleeId().equals(enrollee.getId()))) {
-            throw new IllegalArgumentException("Enrollee is already a member of the family");
+        if (isEnrolleeInFamily(family, enrollee)) {
+            throw new IllegalArgumentException("Enrollee already in family");
         }
 
         // attach audit info to the enrollee (so it shows up in data audit table)
@@ -146,8 +150,9 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
         Enrollee enrollee = enrolleeService.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId)
                 .orElseThrow(() -> new NotFoundException("Enrollee not found"));
 
-        familyEnrolleeService.findByFamilyIdAndEnrolleeId(family.getId(), enrollee.getId())
-                .orElseThrow(() -> new NotFoundException("Enrollee not found in family"));
+        if (!isEnrolleeInFamily(family, enrollee)) {
+            throw new NotFoundException("Enrollee not found in in family");
+        }
 
         if (family.getProbandEnrolleeId() != null && family.getProbandEnrolleeId().equals(enrollee.getId())) {
             throw new IllegalArgumentException("Cannot remove proband from family");

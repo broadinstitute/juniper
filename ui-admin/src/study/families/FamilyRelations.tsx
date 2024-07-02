@@ -110,7 +110,8 @@ export const FamilyRelations = ({
   const columns: ColumnDef<Partial<EnrolleeRelation>>[] = [{
     header: 'Enrollee',
     accessorKey: 'enrolleeId',
-    size: 500,
+    size: 2,
+    maxSize: 2,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -130,7 +131,8 @@ export const FamilyRelations = ({
   }, {
     header: 'Relation',
     accessorKey: 'familyRelationship',
-    size: 500,
+    size: 2,
+    maxSize: 2,
     cell: ({ row }) => {
       const relationship = row.original?.familyRelationship
       return <span className="fst-italic">
@@ -151,7 +153,8 @@ export const FamilyRelations = ({
   }, {
     header: 'Target',
     accessorKey: 'targetEnrolleeId',
-    size: 500,
+    size: 2,
+    maxSize: 2,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -171,8 +174,8 @@ export const FamilyRelations = ({
   },
   {
     header: 'Actions',
-    size: 230,
-    maxSize: 230,
+    size: 1,
+    maxSize: 1,
     cell: ({ row }) => {
       if (isNewRelationCreationRow(row)) {
         return <>

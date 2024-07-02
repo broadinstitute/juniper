@@ -92,7 +92,8 @@ export const FamilyMembers = ({
     id: 'member',
     header: 'Member',
     accessorKey: 'member',
-    minSize: 800,
+    size: 6,
+    maxSize: 6,
     cell: ({ row }) => {
       if (isNewMemberCreationRow(row)) {
         return <EnrolleeSearchbar
@@ -114,8 +115,8 @@ export const FamilyMembers = ({
     }
   }, {
     header: 'Actions',
-    size: 140,
-    maxSize: 140,
+    size: 1,
+    maxSize: 1,
     cell: ({ row }) => {
       const isProband = row.original.id === family.probandEnrolleeId
       if (isNewMemberCreationRow(row)) {
