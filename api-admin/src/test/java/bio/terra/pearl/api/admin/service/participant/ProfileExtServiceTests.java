@@ -1,6 +1,9 @@
 package bio.terra.pearl.api.admin.service.participant;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
+import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -13,6 +16,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -43,7 +47,11 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () -> {
           profileExtService.updateProfileForEnrollee(
-              operator,
+              PortalStudyEnvAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb),
               enrollee.getShortcode(),
               "Asdf",
               Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
@@ -63,7 +71,11 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
 
     profileExtService.updateProfileForEnrollee(
-        operator,
+        PortalStudyEnvAuthContext.of(
+            operator,
+            studyEnvBundle.getPortal().getShortcode(),
+            studyEnvBundle.getStudy().getShortcode(),
+            EnvironmentName.irb),
         enrollee.getShortcode(),
         "A good reason",
         Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
@@ -81,5 +93,14 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     Assertions.assertFalse(profileUpdateRecord.getOldValue().contains("TEST"));
     Assertions.assertTrue(profileUpdateRecord.getNewValue().contains("TEST"));
     Assertions.assertEquals("A good reason", profileUpdateRecord.getJustification());
+  }
+
+  @Test
+  public void testAuthentication() {
+    AuthTestUtils.assertAllMethodsAnnotated(
+        profileExtService,
+        Map.of(
+            "updateProfileForEnrollee",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit")));
   }
 }

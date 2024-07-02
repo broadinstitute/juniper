@@ -46,4 +46,68 @@ public class FamilyController implements FamilyApi {
 
     return ResponseEntity.ok(family);
   }
+
+  @Override
+  public ResponseEntity<Void> removeEnrollee(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
+    familyExtService.removeEnrollee(
+        PortalStudyEnvAuthContext.of(
+            authUtilService.requireAdminUser(request),
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
+        familyShortcode,
+        enrolleeShortcode,
+        justification);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> addEnrollee(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
+    familyExtService.addEnrollee(
+        PortalStudyEnvAuthContext.of(
+            authUtilService.requireAdminUser(request),
+            portalShortcode,
+            studyShortcode,
+            EnvironmentName.valueOfCaseInsensitive(envName)),
+        familyShortcode,
+        enrolleeShortcode,
+        justification);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Object> updateProband(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String enrolleeShortcode,
+      String justification) {
+    Family family =
+        familyExtService.updateProband(
+            PortalStudyEnvAuthContext.of(
+                authUtilService.requireAdminUser(request),
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            familyShortcode,
+            enrolleeShortcode,
+            justification);
+
+    return ResponseEntity.ok(family);
+  }
 }

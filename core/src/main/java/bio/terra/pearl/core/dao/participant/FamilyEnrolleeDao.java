@@ -6,6 +6,7 @@ import org.jdbi.v3.core.Jdbi;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -42,5 +43,9 @@ public class FamilyEnrolleeDao extends BaseMutableJdbiDao<FamilyEnrollee> {
                                 "(SELECT f.id FROM family f WHERE f.study_environment_id = :studyEnvironmentId)")
                 .bind("studyEnvironmentId", studyEnvironmentId)
                 .execute());
+    }
+
+    public Optional<FamilyEnrollee> findByFamilyIdAndEnrolleeId(UUID familyId, UUID enrolleeId) {
+        return findByTwoProperties("family_id", familyId, "enrollee_id", enrolleeId);
     }
 }

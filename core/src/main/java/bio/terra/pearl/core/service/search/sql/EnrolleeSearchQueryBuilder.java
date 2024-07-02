@@ -68,9 +68,19 @@ public class EnrolleeSearchQueryBuilder {
                         condition("enrollee.study_environment_id = ?", studyEnvId)
                 );
 
+
         if (Objects.nonNull(opts.getSortField()) && !opts.getSortField().isEmpty()) {
             String sortField = opts.getSortField() + " " + (opts.isSortAscending() ? "ASC" : "DESC");
-            return selectConditionStep.orderBy(field(sortField)).getQuery();
+
+            var ordered = selectConditionStep.orderBy(field(sortField));
+            if (Objects.nonNull(opts.getLimit())) {
+                return ordered.limit(opts.getLimit()).getQuery();
+            }
+            return ordered.getQuery();
+        }
+
+        if (Objects.nonNull(opts.getLimit())) {
+            return selectConditionStep.limit(opts.getLimit()).getQuery();
         }
 
         return selectConditionStep.getQuery();

@@ -18,7 +18,6 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Link } from 'react-router-dom'
 import {
   isNil,
   lowerCase,
@@ -72,21 +71,10 @@ export const FamilyStructureTable = (
       }
     },
     {
-      id: 'shortcode',
-      header: 'Shortcode',
-      accessorKey: 'member.shortcode',
+      id: 'enrollee',
+      header: 'Enrollee',
       cell: ({ row }) => {
-        return <Link to={`${studyEnvContext.currentEnvPath}/participants/${row.original.member.shortcode}`}>
-          {row.original.member.shortcode}
-        </Link>
-      }
-    },
-    {
-      id: 'name',
-      header: 'Name',
-      accessorKey: 'member.profile.givenName',
-      cell: ({ row }) => {
-        return `${row.original.member.profile?.givenName || ''} ${row.original.member.profile?.familyName || ''}`.trim()
+        return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.member}/>
       }
     },
     {
@@ -161,7 +149,9 @@ const groupFamilyMembersWithSubrows = (family: Family): FamilyMemberWithSubrows[
   // to ensure that parents are created before children
   const relations = (family.relations || []).sort(
     (a, b) => getNumParentRelations(a, family) - getNumParentRelations(b, family)
-  )
+  ).filter(r => {
+    return family.members?.find(m => m.id === r.enrolleeId) && family.members?.find(m => m.id === r.targetEnrolleeId)
+  })
 
   relations.forEach(r => {
     const parentExisting = findRowOrSubrow(out, r.enrolleeId)
@@ -169,22 +159,32 @@ const groupFamilyMembersWithSubrows = (family: Family): FamilyMemberWithSubrows[
 
     if (parentExisting && !childExisting) {
       parentExisting.subrows.push({
-        member: family.members?.find(m => m.id === r.targetEnrolleeId),
+        member: family.members?.find(m => m?.id === r.targetEnrolleeId),
         relationToParentRow: r,
         subrows: []
       })
       sortByFamilyRelationship(parentExisting.subrows)
     } else if (!parentExisting && !childExisting) {
       out.push({
-        member: family.members?.find(m => m.id === r.enrolleeId),
+        member: family.members?.find(m => m?.id === r.enrolleeId),
         subrows: [{
-          member: family.members?.find(m => m.id === r.targetEnrolleeId),
+          member: family.members?.find(m => m?.id === r.targetEnrolleeId),
           relationToParentRow: r,
           subrows: []
         }]
       })
     }
   })
+
+  family.members?.forEach(m => {
+    if (!findRowOrSubrow(out, m.id)) {
+      out.push({
+        member: m,
+        subrows: []
+      })
+    }
+  })
+
 
   return out
 }
