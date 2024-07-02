@@ -58,6 +58,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run test and coverage
+        run: npm --workspace=${{ matrix.subproject }} run test -- --coverage ./${{ matrix.subproject }}
       - name: Get branch name
         id: branch-name
         uses: tj-actions/branch-names@v8
