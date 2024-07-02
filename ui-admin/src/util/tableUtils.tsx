@@ -19,6 +19,8 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
+  faChevronDown,
+  faChevronUp,
   faColumns,
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
@@ -36,6 +38,7 @@ import {
 } from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
+import classNames from 'classnames'
 
 /**
  * Returns a debounced input react component
@@ -411,7 +414,7 @@ const defaultBasicTableConfig = {
 /** helper function for simple table layouts */
 export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T> = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
-  return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
+  return <table className={config.tableClass ? config.tableClass : 'table '}>
     <thead>
       <tr>
         {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
@@ -420,24 +423,7 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
     <tbody>
       {table.getRowModel().rows.map(row => {
         if (row.getIsGrouped()) {
-          return row.subRows.map(((subRow, subRowIdx) => {
-            return (
-              <tr key={subRow.id} className={config.trClass}>
-                {subRow.getVisibleCells().map((cell, cellIdx) => {
-                  if (subRowIdx > 0 && cellIdx === 0) {
-                    return <></>
-                  }
-                  return (
-                    <td
-                      rowSpan={subRowIdx === 0 && cellIdx === 0 ? row.subRows.length : undefined}
-                      key={cell.id}
-                      className={config.tdClass ? config.tdClass : ''}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  )
-                })}
-              </tr>)
-          }))
+          return renderGroupedRows(row, config)
         }
 
         return (
@@ -457,6 +443,44 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
       })}
     </tbody>
   </table>
+}
+
+const renderGroupedRows = <T extends RowData>(row: Row<T>, config: BasicTableConfig<T>) => {
+  return <>
+    <tr>
+      {row.getVisibleCells().map(((cell, idx) => {
+        return (
+          <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
+            {idx === 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
+            {idx === 0 && <span className="ms-2">
+              {row.subRows.length} rows
+              <button className="btn btn-link " onClick={() => row.toggleExpanded()}>
+                {row.getIsExpanded() ? <FontAwesomeIcon icon={faChevronUp}/> : <FontAwesomeIcon icon={faChevronDown}/>}
+              </button>
+            </span>}
+          </td>
+        )
+      }))}
+    </tr>
+    {row.getIsExpanded() && row.subRows.map((subRow => {
+      return (
+        <tr key={subRow.id} className={config.trClass}>
+          {subRow.getVisibleCells().map((cell, cellIdx) => {
+            return (
+              <td
+                key={cell.id}
+                className={classNames(
+                  config.tdClass ? config.tdClass : ''
+                )}>
+                {cellIdx === 0 ?
+                  <></>
+                  : flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            )
+          })}
+        </tr>)
+    }))}
+  </>
 }
 
 /** renders a boolean value as a checkmark (true)  or a blank (false) */
