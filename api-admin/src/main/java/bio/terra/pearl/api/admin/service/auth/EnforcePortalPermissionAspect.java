@@ -16,12 +16,11 @@ import org.springframework.stereotype.Component;
  * Aspect to enforce portal permissions on methods annotated with EnforcePortalPermission. Inspired
  * by https://stackoverflow.com/questions/50882444/can-spring-annotation-access-method-parameters
  */
-public class BaseEnforcePortalPermissionAspect
+public class EnforcePortalPermissionAspect
     extends BaseEnforcePermissionAspect<PortalAuthContext, EnforcePortalPermission> {
-
   private final AuthUtilService authUtilService;
 
-  public BaseEnforcePortalPermissionAspect(AuthUtilService authUtilService) {
+  public EnforcePortalPermissionAspect(AuthUtilService authUtilService) {
     this.authUtilService = authUtilService;
   }
 

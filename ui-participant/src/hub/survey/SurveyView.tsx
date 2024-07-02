@@ -69,9 +69,8 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
           'hubUpdateFormSubmittedTitle',
           {
             substitutions: {
-              formName: i18n(`${form.stableId}:${form.version}`)
-            },
-            defaultValue: form.name
+              formName: i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })
+            }
           }),
         type: 'SUCCESS'
       }

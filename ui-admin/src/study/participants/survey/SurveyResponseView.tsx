@@ -25,6 +25,7 @@ import { Button } from 'components/forms/Button'
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core'
 import classNames from 'classnames'
 import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons'
+import JustifyChangesModal from '../JustifyChangesModal'
 
 /** Show responses for a survey based on url param */
 export default function SurveyResponseView({ enrollee, responseMap, updateResponseMap, studyEnvContext, onUpdate }: {
@@ -64,6 +65,8 @@ export function RawEnrolleeSurveyView({
   // Admin-only forms should default to edit mode
   const [isEditing, setIsEditing] = useState(configSurvey.survey.surveyType === 'ADMIN')
   const [autosaveStatus, setAutosaveStatus] = useState<AutosaveStatus | undefined>()
+  const [showJustificationModal, setShowJustificationModal] = useState(false)
+  const [justification, setJustification] = useState<string>('')
 
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${configSurvey.survey.name}`}/>
@@ -100,7 +103,13 @@ export function RawEnrolleeSurveyView({
               {userHasPermission(user, studyEnvContext.portal.id, 'survey_response_edit') &&
                 <>
                   <DropdownButton
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      if (configSurvey.survey.surveyType === 'ADMIN') {
+                        setIsEditing(true)
+                      } else {
+                        setShowJustificationModal(true)
+                      }
+                    }}
                     icon={faPencil}
                     disabled={!configSurvey.survey.allowAdminEdit}
                     label="Editing"
@@ -125,15 +134,28 @@ export function RawEnrolleeSurveyView({
       </div>
       <hr/>
       {(!isEditing && !response?.answers.length) && <div>No response for enrollee {enrollee.shortcode}</div>}
-      {(!isEditing && response?.answers.length) && <SurveyFullDataView answers={response?.answers || []}
+      {(!isEditing && response?.answers.length) && <SurveyFullDataView
+        responseId={response.id}
+        enrollee={enrollee}
+        answers={response?.answers || []}
         survey={configSurvey.survey}
-        userId={enrollee.participantUserId}
         studyEnvContext={studyEnvContext}/>}
       {isEditing && user && <SurveyResponseEditor studyEnvContext={studyEnvContext}
         updateResponseMap={updateResponseMap}
+        justification={justification}
         setAutosaveStatus={setAutosaveStatus}
         survey={configSurvey.survey} response={response} adminUserId={user.id}
         enrollee={enrollee} onUpdate={onUpdate}/>}
+      {showJustificationModal && <JustifyChangesModal
+        saveWithJustification={justification => {
+          setJustification(justification)
+          setShowJustificationModal(false)
+          setIsEditing(true)
+        }}
+        onDismiss={() => setShowJustificationModal(false)}
+        changes={[]}
+        confirmText={'Continue to edit'}
+      />}
     </div>
   </div>
 }

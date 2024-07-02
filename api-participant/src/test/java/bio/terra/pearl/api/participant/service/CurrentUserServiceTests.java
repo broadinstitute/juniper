@@ -164,7 +164,7 @@ public class CurrentUserServiceTests extends BaseSpringBootTest {
     assertThat(loadedUser.user().getUsername(), equalTo(email));
     assertThat(loadedUser.user().getPortalParticipantUsers(), hasSize(1));
     assertThat(loadedUser.enrollees(), hasSize(2)); // includes proxy enrollees
-    assertThat(loadedUser.relations(), hasSize(1));
+    assertThat(loadedUser.proxyRelations(), hasSize(1));
   }
 
   @Test

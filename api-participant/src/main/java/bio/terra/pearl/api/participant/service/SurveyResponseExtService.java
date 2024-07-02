@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class SurveyResponseExtService {
-  private AuthUtilService authUtilService;
-  private RequestUtilService requestUtilService;
-  private SurveyResponseService surveyResponseService;
-  private ObjectMapper objectMapper;
+  private final AuthUtilService authUtilService;
+  private final RequestUtilService requestUtilService;
+  private final SurveyResponseService surveyResponseService;
+  private final ObjectMapper objectMapper;
 
   public SurveyResponseExtService(
       AuthUtilService authUtilService,
@@ -59,7 +59,7 @@ public class SurveyResponseExtService {
       ParticipantUser user,
       String portalShortcode,
       EnvironmentName envName,
-      SurveyResponse responseDto,
+      SurveyResponse response,
       String enrolleeShortcode,
       UUID taskId) {
     Enrollee enrollee =
@@ -69,8 +69,9 @@ public class SurveyResponseExtService {
             enrollee.getParticipantUserId(), portalShortcode, envName);
     HubResponse result =
         surveyResponseService.updateResponse(
-            responseDto,
+            response,
             new ResponsibleEntity(user),
+            null,
             portalWithPortalUser.ppUser(),
             enrollee,
             taskId,

@@ -6,7 +6,7 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.forms.SurveyResponseExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
+import bio.terra.pearl.core.model.survey.SurveyResponseWithJustification;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,7 +44,8 @@ public class SurveyResponseController implements SurveyResponseApi {
       Object body) {
     AdminUser user = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    SurveyResponse responseDto = objectMapper.convertValue(body, SurveyResponse.class);
+    SurveyResponseWithJustification responseDto =
+        objectMapper.convertValue(body, SurveyResponseWithJustification.class);
     PortalStudyEnvAuthContext authContext =
         PortalStudyEnvAuthContext.of(user, portalShortcode, studyShortcode, environmentName);
     HubResponse hubResponse =

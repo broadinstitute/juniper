@@ -46,10 +46,14 @@ public class EnrolleeController implements EnrolleeApi {
 
   @Override
   public ResponseEntity<Object> listChangeRecords(
-      String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      String modelName) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<DataChangeRecord> records =
-        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
+        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode, modelName);
     return ResponseEntity.ok(records);
   }
 

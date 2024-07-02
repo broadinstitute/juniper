@@ -21,7 +21,7 @@ type ProvideTestUserProps = {
   user?: ParticipantUser,
   portal?: Portal,
   enrollees?: Enrollee[],
-  relations?: EnrolleeRelation[],
+  proxyRelations?: EnrolleeRelation[],
   children: React.ReactNode
 }
 /**
@@ -96,7 +96,7 @@ const _ProvideTestUser = ({
   ppUsers,
   user,
   enrollees = [],
-  relations = [],
+  proxyRelations = [],
   children
 }: ProvideTestUserProps) => {
   const {
@@ -158,7 +158,7 @@ const _ProvideTestUser = ({
         token: ''
       },
       enrollees,
-      relations
+      proxyRelations
     })
   }, [])
 

@@ -70,6 +70,10 @@ export type Answer = {
   surveyStableId?: string
   surveyVersion?: number
   viewedLanguage?: string
+  creatingParticipantUserId?: string
+  creatingAdminUserId?: string
+  createdAt?: number
+  lastUpdatedAt?: number
 }
 
 export type FormResponse = {
@@ -86,6 +90,10 @@ export type SurveyResponse = FormResponse & {
   enrolleeId: string
   answers: Answer[]
   complete: boolean
+}
+
+export type SurveyResponseWithJustification = SurveyResponse & {
+  justification?: string
 }
 
 export type PreregistrationResponse = FormResponse & {

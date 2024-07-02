@@ -1,7 +1,15 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import React from 'react'
 import HubPage from './HubPage'
-import { MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import {
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 import ProvideFullTestUserContext from 'test-utils/ProvideFullTestUserContext'
 import {
   mockEnrolleesWithProxies,
@@ -9,7 +17,7 @@ import {
   mockPpUsersWithProxies,
   mockRelations,
   mockUser
-} from '../test-utils/test-proxy-environment'
+} from 'test-utils/test-proxy-environment'
 
 
 jest.mock('../api/api', () => {
@@ -27,7 +35,7 @@ describe('HubPage with proxies', () => {
       <ProvideFullTestUserContext
         enrollees={mockEnrolleesWithProxies}
         ppUsers={mockPpUsersWithProxies}
-        relations={mockRelations}
+        proxyRelations={mockRelations}
         user={mockUser}
         portal={mockPortal}
       >
@@ -49,7 +57,7 @@ describe('HubPage with proxies', () => {
       <ProvideFullTestUserContext
         enrollees={mockEnrolleesWithProxies}
         ppUsers={mockPpUsersWithProxies}
-        relations={mockRelations}
+        proxyRelations={mockRelations}
         user={mockUser}
         portal={mockPortal}
       >

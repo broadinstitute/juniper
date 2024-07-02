@@ -256,4 +256,3 @@ const setupSurveyTest = (survey: Survey, profile?: Profile) => {
   expect(screen.getByText('You are on page1')).toBeInTheDocument()
   return { submitSpy: mockUpdateSurveyResponse, RoutedComponent, triggerAutosave }
 }
-

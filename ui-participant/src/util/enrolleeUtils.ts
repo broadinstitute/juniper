@@ -1,8 +1,18 @@
-import Api, { PortalParticipantUser, Study } from 'api/api'
+import Api, {
+  PortalParticipantUser,
+  Study
+} from 'api/api'
 import { HubUpdate } from 'hub/hubUpdates'
-import { I18nOptions, useI18n, Enrollee } from '@juniper/ui-core'
+import {
+  Enrollee,
+  I18nOptions,
+  useI18n
+} from '@juniper/ui-core'
 import { useUser } from '../providers/UserProvider'
-import { isEmpty, isNil } from 'lodash'
+import {
+  isEmpty,
+  isNil
+} from 'lodash'
 
 /** whether the list of enrollees contains an enrollee matching the study */
 export function userHasJoinedStudy(study: Study, enrollees: Enrollee[]) {
@@ -66,14 +76,14 @@ export async function enrollProxyUserInStudy(
  */
 export const useName = (ppUser: PortalParticipantUser | undefined) => {
   const { i18n } = useI18n()
-  const { enrollees, user, relations } = useUser()
+  const { enrollees, user, proxyRelations } = useUser()
 
   if (!ppUser) {
     return ''
   }
   const profile = enrollees
     .find(enrollee => enrollee.profileId === ppUser.profileId && !isNil(enrollee.profile))?.profile
-  const hasProxies = relations.some(relation => relation.relationshipType === 'PROXY')
+  const hasProxies = proxyRelations.some(relation => relation.relationshipType === 'PROXY')
   const isMainUser = ppUser.participantUserId === user?.id
 
   const givenName = profile?.givenName || ''
