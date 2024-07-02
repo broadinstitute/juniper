@@ -13,6 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class EnrolleeContext {
     private final Enrollee enrollee;
-    private final Profile profile;
+    private final Profile profile; // profile is assumed to have the mailing address attached
     private final ParticipantUser participantUser;
 }

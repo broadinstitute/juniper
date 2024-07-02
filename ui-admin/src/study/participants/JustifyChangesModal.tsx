@@ -13,11 +13,13 @@ export default function JustifyChangesModal({
   saveWithJustification,
   onDismiss,
   changes,
+  bodyText,
   confirmText
 }: {
   saveWithJustification: (justification: string) => void,
   onDismiss: () => void,
-  changes: ObjectDiff[],
+  changes?: ObjectDiff[],
+  bodyText?: React.ReactNode,
   confirmText?: string
 }) {
   const [justification, setJustification] = useState<string>('')
@@ -36,7 +38,8 @@ export default function JustifyChangesModal({
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      { changes.length > 0 && <div className="border-start border-3 p-1 ps-2 border-warning w-75 ms-4 mb-4"
+      {bodyText}
+      {(changes && changes.length > 0) && <div className="border-start border-3 p-1 ps-2 border-warning w-75 ms-4 mb-4"
         style={{ backgroundColor: '#f2f2f2' }}>
         <p className={'fw-bold mb-0'}>Pending Changes</p>
         {changes.map((change, idx) =>
@@ -44,7 +47,8 @@ export default function JustifyChangesModal({
             {change.fieldName}: {change.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {change.newValue}
           </p>
         )}
-      </div> }
+
+      </div>}
       <h6>Description:</h6>
       <textarea className="form-control" rows={3}
         required={true} value={justification}

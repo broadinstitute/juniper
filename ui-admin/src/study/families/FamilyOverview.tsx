@@ -16,7 +16,8 @@ import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
  */
 export const FamilyOverview = (
   {
-    family, studyEnvContext
+    family,
+    studyEnvContext
   }: {
     family: Family,
     studyEnvContext: StudyEnvContextT,
@@ -43,7 +44,8 @@ export const FamilyOverview = (
       <div className={'w-100'}>
         <FamilyStructureTable
           family={family}
-          studyEnvContext={studyEnvContext}/>
+          studyEnvContext={studyEnvContext}
+        />
       </div>
     </InfoCard>
   </div>

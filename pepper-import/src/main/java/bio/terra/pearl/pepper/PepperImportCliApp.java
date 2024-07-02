@@ -56,6 +56,7 @@ public class PepperImportCliApp implements CommandLineRunner {
                 throw new IOInternalException("couldn't write survey", e);
             }
         }
+        log.info("COMPLETE : command line importer");
     }
 
 

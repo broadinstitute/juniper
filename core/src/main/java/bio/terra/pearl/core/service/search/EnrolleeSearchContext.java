@@ -18,5 +18,5 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class EnrolleeSearchContext {
     private Enrollee enrollee;
-    private Profile profile;
+    private Profile profile; // must have mailing address attached
 }

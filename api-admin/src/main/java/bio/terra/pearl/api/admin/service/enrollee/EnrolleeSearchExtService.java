@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
 import bio.terra.pearl.core.service.search.EnrolleeSearchService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import java.util.List;
@@ -45,7 +46,8 @@ public class EnrolleeSearchExtService {
       String portalShortcode,
       String studyShortcode,
       EnvironmentName envName,
-      String expression) {
+      String expression,
+      Integer limit) {
 
     authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
 
@@ -54,6 +56,7 @@ public class EnrolleeSearchExtService {
             .findByStudy(studyShortcode, envName)
             .orElseThrow(() -> new IllegalStateException("Study environment not found"));
 
-    return this.enrolleeSearchService.executeSearchExpression(studyEnvironment.getId(), expression);
+    return this.enrolleeSearchService.executeSearchExpression(
+        studyEnvironment.getId(), expression, EnrolleeSearchOptions.builder().limit(limit).build());
   }
 }
