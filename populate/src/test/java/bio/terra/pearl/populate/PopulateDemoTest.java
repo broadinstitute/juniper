@@ -212,7 +212,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
         assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
-        assertThat(surveys, hasSize(14));
+        assertThat(surveys, hasSize(15));
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         assertThat(siteContents, hasSize(2));
         siteContents.forEach(siteContent -> {
