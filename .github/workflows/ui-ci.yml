@@ -29,6 +29,8 @@ jobs:
         run: DISABLE_ESLINT_PLUGIN=true npm --workspace=ui-admin --workspace=ui-participant run build
       - name: Run tests
         run: npm --workspace=ui-core --workspace=ui-admin --workspace=ui-participant test
+      - name: Run test and coverage
+        run: npm --workspace=ui-admin run test -- --coverage ./ui-admin
       - name: Notify slack on failure
         uses: broadinstitute/action-slack@v3.8.0
         if: failure() && github.ref == 'refs/heads/development'
