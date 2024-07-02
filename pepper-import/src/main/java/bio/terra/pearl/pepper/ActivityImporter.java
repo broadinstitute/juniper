@@ -280,6 +280,8 @@ public class ActivityImporter {
         return objectMapper.valueToTree(surveyJSContent);
     }
 
+    /** maps pepper replacement vars to Juniper vars, and html markup to markdown.
+     * After testing some more surveys, we might want to upgrade this to use a html->markdown parsing library */
     Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
             "\\$ddp.participantFirstName\\(\\)", "{proxyProfile.givenName}",
             "\\<p.*?\\>", "",
