@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: "family_change_records"
+      author: connorlbark
+      changes:
+        - addColumn:
+            tableName: data_change_record
+            columns:
+              - column:
+                  name: family_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_family_enrollee_family_id,
+                    references: family(id)
+                    nullable: true

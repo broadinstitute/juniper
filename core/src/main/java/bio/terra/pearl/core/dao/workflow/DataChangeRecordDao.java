@@ -76,4 +76,12 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByProperty("enrollee_id", enrolleeId);
     }
+
+    public List<DataChangeRecord> findByFamilyId(UUID familyId) {
+        return findAllByProperty("family_id", familyId);
+    }
+
+    public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
+        return findAllByTwoProperties("family_id", familyId, "model_name", model);
+    }
 }

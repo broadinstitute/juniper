@@ -75,4 +75,12 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     public void deleteByEnrolleeId(UUID enrolleeId) {
         dao.deleteByEnrolleeId(enrolleeId);
     }
+
+    public List<DataChangeRecord> findByFamilyId(UUID familyId) {
+        return dao.findByFamilyId(familyId);
+    }
+
+    public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
+        return dao.findByFamilyIdAndModelName(familyId, model);
+    }
 }
