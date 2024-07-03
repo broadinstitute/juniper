@@ -460,13 +460,18 @@ const renderGroupedRows = <T extends RowData>(row: Row<T>, config: BasicTableCon
       {row.getVisibleCells().map(((cell, idx) => {
         return (
           <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
-            {idx === 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
-            {idx === 0 && <span className="ms-2">
-              {row.subRows.length} rows
-              <button className="btn btn-link " onClick={() => row.toggleExpanded()}>
-                {row.getIsExpanded() ? <FontAwesomeIcon icon={faChevronUp}/> : <FontAwesomeIcon icon={faChevronDown}/>}
+            <div className='d-flex align-items-baseline'>
+              {idx === 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
+              {idx === 0 && <><span className="ms-2">
+              ({row.subRows.length})
+              </span>
+              <button className="btn btn-link" onClick={() => row.toggleExpanded()}>
+                {row.getIsExpanded()
+                  ? <FontAwesomeIcon icon={faChevronUp}/>
+                  : <FontAwesomeIcon icon={faChevronDown}/>}
               </button>
-            </span>}
+              </>}
+            </div>
           </td>
         )
       }))}

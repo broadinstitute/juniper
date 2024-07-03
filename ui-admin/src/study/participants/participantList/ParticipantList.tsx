@@ -150,8 +150,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }, {
     id: 'contactEmail',
-    size: 2,
-    maxSize: 2,
     header: 'Contact email',
     accessorKey: 'profile.contactEmail',
     meta: {
@@ -159,8 +157,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     }
   }, {
     header: 'Consented',
-    size: 1,
-    maxSize: 1,
     accessorKey: 'enrollee.consented',
     meta: {
       columnType: 'boolean',
