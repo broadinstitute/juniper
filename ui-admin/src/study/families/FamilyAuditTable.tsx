@@ -69,12 +69,14 @@ export const FamilyAuditTable = ({
   }
 
   const fetchEnrollees = async (record: DataChangeRecord): Promise<DataChangeRecordWithEnrollees> => {
-    if (['FamilyEnrollee', 'EnrolleeRelation'].includes(record.modelName)) {
+    if (['FamilyEnrollee', 'EnrolleeRelation', 'Family'].includes(record.modelName)) {
       const oldValue = record.oldValue || '{}'
       const newValue = record.newValue || '{}'
 
       const enrolleeId = tryGetProperty(newValue, 'enrolleeId')
         || tryGetProperty(oldValue, 'enrolleeId')
+        || tryGetProperty(newValue, 'probandEnrolleeId')
+        || tryGetProperty(oldValue, 'probandEnrolleeId')
       const targetEnrolleeId = tryGetProperty(newValue, 'targetEnrolleeId')
         || tryGetProperty(oldValue, 'targetEnrolleeId')
 
