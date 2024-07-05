@@ -1,7 +1,14 @@
 import { flow, identity, set, update } from 'lodash/fp'
 import React, { useState } from 'react'
 
-import { FormContent, FormContentPage, FormPanel, HtmlElement, Question } from '@juniper/ui-core'
+import {
+  FormContent,
+  FormContentPage,
+  FormPanel,
+  HtmlElement,
+  PortalEnvironmentLanguage,
+  Question
+} from '@juniper/ui-core'
 
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
@@ -19,6 +26,7 @@ import { getContainerElementPath, getCurrentElementIndex, getSurveyElementFromPa
 type FormDesignerProps = {
   readOnly?: boolean
   content: FormContent
+  currentLanguage: PortalEnvironmentLanguage
   onChange: (editedContent: FormContent, callback?: () => void) => void
 }
 

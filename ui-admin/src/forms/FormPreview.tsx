@@ -14,19 +14,18 @@ import {
 
 import { FormPreviewOptions } from './FormPreviewOptions'
 import Api from 'api/api'
-import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
+import useUpdateEffect from '../util/useUpdateEffect'
 
 type FormPreviewProps = {
   formContent: FormContent
-  supportedLanguages: PortalEnvironmentLanguage[]
+  currentLanguage: PortalEnvironmentLanguage
 }
 
 /**
  * Renders a preview of a form/survey.
  */
 export const FormPreview = (props: FormPreviewProps) => {
-  const { formContent, supportedLanguages } = props
-  const { defaultLanguage } = usePortalLanguage()
+  const { formContent, currentLanguage } = props
 
   const { i18n } = useI18n()
 
@@ -38,12 +37,16 @@ export const FormPreview = (props: FormPreviewProps) => {
     model.setVariable('profile', { })
     model.setVariable('proxyProfile', { })
     model.ignoreValidation = true
-    model.locale = defaultLanguage.languageCode
+    model.locale = currentLanguage.languageCode
     model.onTextMarkdown.add(applyMarkdown)
     model.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr), i18n))
     return model
   })
   const forceUpdate = useForceUpdate()
+  useUpdateEffect(() => {
+    surveyModel.locale = currentLanguage.languageCode
+  }, [currentLanguage.languageCode])
+
 
   return (
     <div className="overflow-hidden flex-grow-1 d-flex flex-row mh-100" style={{ flexBasis: 0 }}>
@@ -52,7 +55,6 @@ export const FormPreview = (props: FormPreviewProps) => {
       </div>
       <div className="flex-shrink-0 p-3" style={{ width: 300 }}>
         <FormPreviewOptions
-          supportedLanguages={supportedLanguages}
           value={{
             ignoreValidation: surveyModel.ignoreValidation,
             showInvisibleElements: surveyModel.showInvisibleElements,
@@ -63,7 +65,6 @@ export const FormPreview = (props: FormPreviewProps) => {
           onChange={({ ignoreValidation, showInvisibleElements, locale, profile, proxyProfile }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
-            surveyModel.locale = locale
             surveyModel.setVariable('profile', profile)
             surveyModel.setVariable('proxyProfile', proxyProfile)
             forceUpdate()

@@ -18,6 +18,7 @@ type FormContentEditorProps = {
   initialAnswerMappings: AnswerMapping[]
   visibleVersionPreviews: VersionedForm[]
   supportedLanguages: PortalEnvironmentLanguage[]
+  currentLanguage: PortalEnvironmentLanguage
   readOnly: boolean
   onFormContentChange: OnChangeFormContent
   onAnswerMappingChange: OnChangeAnswerMappings
@@ -31,6 +32,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     initialAnswerMappings,
     visibleVersionPreviews,
     supportedLanguages,
+    currentLanguage,
     readOnly,
     onFormContentChange,
     onAnswerMappingChange
@@ -59,6 +61,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormDesigner
               readOnly={readOnly}
               content={editedContent}
+              currentLanguage={currentLanguage}
               onChange={(newContent, callback?: () => void) => {
                 setEditedContent(newContent, callback)
                 try {
@@ -110,7 +113,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Preview"
         >
           <ErrorBoundary>
-            <FormPreview formContent={editedContent} supportedLanguages={supportedLanguages} />
+            <FormPreview formContent={editedContent} currentLanguage={currentLanguage} />
           </ErrorBoundary>
         </Tab>
         { visibleVersionPreviews.map(form =>
@@ -121,7 +124,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           >
             <FormPreview
               formContent={JSON.parse(form.content) as FormContent}
-              supportedLanguages={supportedLanguages}
+              currentLanguage={currentLanguage}
             />
           </Tab>
         )}

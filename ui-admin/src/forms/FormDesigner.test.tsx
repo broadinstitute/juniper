@@ -27,9 +27,10 @@ const formContent: FormContent = {
   ]
 }
 
+const ENGLISH = { languageCode: 'en', languageName: 'English', id: '' }
 describe('FormDesigner', () => {
   it('renders form', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>)
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()} currentLanguage={ENGLISH}/>)
 
     expect(screen.getByLabelText('test_firstName')).toBeInTheDocument()
     expect(screen.getByLabelText('test_lastName')).toBeInTheDocument()
@@ -38,7 +39,7 @@ describe('FormDesigner', () => {
   })
 
   it('shows elements based on the path', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>,
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()} currentLanguage={ENGLISH}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     // we should be showing the editor for the second question
     expect(screen.getByText('Last name')).toBeInTheDocument()
@@ -51,7 +52,7 @@ describe('FormDesigner', () => {
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
     const { RoutedComponent, router } = setupRouterTest(
-      <FormDesigner content={formContent} onChange={updateValue}/>,
+      <FormDesigner content={formContent} onChange={updateValue} currentLanguage={ENGLISH}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     render(RoutedComponent)
     // we should be showing the editor for the second question
@@ -85,8 +86,9 @@ describe('FormDesigner', () => {
     // dummy update function that just invokes the callback
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
-    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
-      ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
+    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent}
+      currentLanguage={ENGLISH} onChange={updateValue}/>,
+    ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
     render(RoutedComponent)
     // we should be showing the page 1 summary
     expect(screen.getAllByText('Page 1')).toHaveLength(2)
