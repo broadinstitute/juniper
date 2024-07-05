@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,10 +18,12 @@ public class SurveyJSQuestion {
     public String type;
     public String inputType;
     public Map<String, String> title;
-    public boolean required;
-    //public boolean isRequired;
+    public boolean isRequired;
+    public Map<String, String> requiredText;
     public List<Choice> choices;
     public String visibleIf;
+    @Builder.Default
+    public List<SurveyJsValidator> validators = new ArrayList<>();
 
     @AllArgsConstructor
     @Data
