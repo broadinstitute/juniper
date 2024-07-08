@@ -103,6 +103,8 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     meta: {
       columnType: 'instant'
     },
+    // if we don't use an accessorFn, tanstack will spam the logs with
+    // 'undefined' warnings
     accessorFn: row => row.participantUser?.lastLogin,
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
