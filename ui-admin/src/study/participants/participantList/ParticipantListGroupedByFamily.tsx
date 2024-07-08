@@ -91,7 +91,12 @@ function ParticipantListGroupedByFamily({
     header: 'Family Name',
     accessorKey: 'familyName',
     accessorFn: family => `${getFamilyNames(family)} Family`
-  },  {
+  }, {
+    header: '# Members',
+    accessorKey: 'members',
+    enableColumnFilter: true,
+    accessorFn: family => family.members?.length
+  }, {
     header: 'Created At',
     accessorKey: 'createdAt',
     enableColumnFilter: false,
@@ -123,6 +128,7 @@ function ParticipantListGroupedByFamily({
       sorting
     },
     enableRowSelection: true,
+    enableColumnFilters: true,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
