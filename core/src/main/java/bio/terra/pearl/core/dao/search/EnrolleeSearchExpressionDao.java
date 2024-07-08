@@ -6,6 +6,7 @@ import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
@@ -128,6 +129,12 @@ public class EnrolleeSearchExpressionDao {
                     KitRequest.class,
                     "latest_kit",
                     enrolleeSearchExpressionResult::setLatestKit);
+
+            mapBean(rs,
+                    ctx,
+                    ParticipantUser.class,
+                    "participant_user",
+                    enrolleeSearchExpressionResult::setParticipantUser);
 
             return enrolleeSearchExpressionResult;
         }
