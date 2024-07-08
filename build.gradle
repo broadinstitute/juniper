@@ -25,16 +25,17 @@ sonar {
         property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
         property 'sonar.organization', 'dsp-appsec'
         property 'sonar.host.url', 'https://sonarcloud.io'
+        property 'sonar.coverage.jacoco.xmlReportPaths', "/home/runner/work/juniper/juniper/api-admin/build/reports/jacoco/test/jacocoTestReport.xml,/home/runner/work/juniper/juniper/api-participant/build/reports/jacoco/test/jacocoTestReport.xml"
     }
 }
 
 subprojects {
     apply plugin: 'org.sonarqube'
     sonar {
+        println("Sonar xmlReportPath: ${project.buildDir}")
         properties {
             property 'sonar.sources', 'src/main/java,src/main/resources'
-            property 'sonar.coverage.jacoco.xmlReportPaths', 'api-admin/build/reports/jacoco/test/jacocoTestReport.xml'
+            property 'sonar.coverage.jacoco.xmlReportPaths', '/home/runner/work/juniper/juniper/api-admin/build/reports/jacoco/test/jacocoTestReport.xml,/home/runner/work/juniper/juniper/api-participant/build/reports/jacoco/test/jacocoTestReport.xml'
         }
     }
-
 }
