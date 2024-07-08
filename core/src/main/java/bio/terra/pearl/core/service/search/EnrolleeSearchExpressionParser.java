@@ -81,6 +81,12 @@ public class EnrolleeSearchExpressionParser {
                 return new DefaultSearchExpression(enrolleeDao, profileDao);
             }
         }
+        if (ctx.INCLUDE() != null) {
+            if (ctx.term().size() != 1) {
+                throw new IllegalArgumentException("Include expression requires one term");
+            }
+            return new IncludeExpression(profileDao, enrolleeDao, parseTerm(ctx.term(0)));
+        }
         if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
             if (!ctx.expr().isEmpty()) {
                 return parseExpression(ctx.expr(0));
