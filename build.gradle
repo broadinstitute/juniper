@@ -25,25 +25,17 @@ sonar {
         property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
         property 'sonar.organization', 'dsp-appsec'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        def jacocoXmlReports = []
-        fileTree(dir: "${project.rootDir}", includes: ['**/build/reports/jacoco/test/jacocoTestReport.xml']).each { File file ->
-            jacocoXmlReports.add(file.absolutePath)
-        }
-        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoXmlReports.join(',')
     }
 }
 
 subprojects {
     apply plugin: 'org.sonarqube'
     sonar {
-        println("Sonar xmlReportPath: ${project.buildDir}")
+        println("Sonar xmlReportPath: ${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+
         properties {
             property 'sonar.sources', 'src/main/java,src/main/resources'
-            def jacocoXmlReports = []
-            fileTree(dir: "${project.rootDir}", includes: ['**/build/reports/jacoco/test/jacocoTestReport.xml']).each { File file ->
-                jacocoXmlReports.add(file.absolutePath)
-            }
-            property 'sonar.coverage.jacoco.xmlReportPaths', jacocoXmlReports.join(',')
+            property 'sonar.coverage.jacoco.xmlReportPaths', "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
         }
     }
 }

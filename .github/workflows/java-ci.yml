@@ -53,7 +53,7 @@ jobs:
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: build jacocoTestReport --info # if you need to see test failure full stacktraces, change this to `build --info`
+          arguments: build --info # if you need to see test failure full stacktraces, change this to `build --info`
       - name: Upload test artifacts
         if: failure() || success()
         uses: actions/upload-artifact@v3
@@ -61,11 +61,13 @@ jobs:
           name: test-results
           path: |
             api-admin/build/test-results/test/*.xml
-            api-admin/build/reports/jacoco/test/*.xml
+            api-admin/build/reports/jacoco/test/**
             api-participant/build/test-results/test/*.xml
-            api-participant/build/reports/jacoco/test/*.xml
+            api-participant/build/reports/jacoco/test/**
             core/build/test-results/test/*.xml
+            core/build/reports/jacoco/test/**
             populate/build/test-results/test/*.xml
+            populate/build/reports/jacoco/test/**
       - name: JUnit test report
         # Generate a report if the tests fail or succeed, but not if the user cancels
         if: success() || failure()
