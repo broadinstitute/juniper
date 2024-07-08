@@ -4,10 +4,13 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import java.util.List;
+import java.util.Objects;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,5 +86,22 @@ public class FamilyExtService {
             .responsibleAdminUserId(user.getId())
             .justification(justification)
             .build());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public List<DataChangeRecord> listChangeRecords(
+      PortalStudyEnvAuthContext authContext, String familyShortcode, String modelName) {
+    StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
+
+    Family family =
+        familyService
+            .findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvironment.getId())
+            .orElseThrow(() -> new NotFoundException("Family not found"));
+
+    if (Objects.nonNull(modelName)) {
+      return familyService.findDataChangeRecordsByFamilyIdAndModelName(family.getId(), modelName);
+    }
+
+    return familyService.findDataChangeRecordsByFamilyId(family.getId());
   }
 }

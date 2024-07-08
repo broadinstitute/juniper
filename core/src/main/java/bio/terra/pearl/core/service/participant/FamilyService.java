@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
 import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.FamilyEnrollee;
@@ -129,7 +130,7 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
         // attach audit info to the enrollee (so it shows up in data audit table)
         auditInfo.setEnrolleeId(enrollee.getId());
-
+        auditInfo.setFamilyId(family.getId());
         familyEnrolleeService.create(
                 FamilyEnrollee.builder()
                         .familyId(family.getId())
@@ -158,6 +159,8 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
             throw new IllegalArgumentException("Cannot remove proband from family");
         }
 
+        auditInfo.setFamilyId(family.getId());
+        auditInfo.setEnrolleeId(enrollee.getId());
         // also cleans up any relationships the enrollee has within the family
         familyEnrolleeService.deleteFamilyEnrolleeAndAllRelationships(
                 enrollee.getId(),
@@ -177,6 +180,16 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                 .orElseThrow(() -> new IllegalArgumentException("Enrollee not in family"));
 
         family.setProbandEnrolleeId(enrollee.getId());
+        auditInfo.setFamilyId(family.getId());
+        auditInfo.setEnrolleeId(enrollee.getId());
         return update(family, auditInfo);
+    }
+
+    public List<DataChangeRecord> findDataChangeRecordsByFamilyId(UUID familyId) {
+        return dataChangeRecordService.findByFamilyId(familyId);
+    }
+
+    public List<DataChangeRecord> findDataChangeRecordsByFamilyIdAndModelName(UUID familyId, String model) {
+        return dataChangeRecordService.findByFamilyIdAndModelName(familyId, model);
     }
 }

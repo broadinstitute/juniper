@@ -195,6 +195,7 @@ public class EnrolleeRelationService extends DataAuditedService<EnrolleeRelation
             throw new IllegalArgumentException("Family ID is required for family relationships");
         }
 
+        auditInfo.setFamilyId(relation.getFamilyId());
         auditInfo.setEnrolleeId(relation.getTargetEnrolleeId());
         // ensure that the enrollees are in the family
         familyEnrolleeService.getOrCreate(

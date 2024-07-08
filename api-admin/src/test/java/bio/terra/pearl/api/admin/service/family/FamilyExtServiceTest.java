@@ -40,7 +40,9 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
             "find", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
             "addEnrollee", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
             "removeEnrollee", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
-            "updateProband", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit")));
+            "updateProband", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "listChangeRecords",
+                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
   }
 
   @Test
