@@ -16,7 +16,8 @@ describe('search expression parser', () => {
             ],
             'model': 'profile'
           },
-          'right': 'John'
+          'right': 'John',
+          'type': 'comparison'
         },
         'right': {
           'comparisonOperator': '>',
@@ -24,8 +25,10 @@ describe('search expression parser', () => {
             'field': [],
             'model': 'age'
           },
-          'right': 30
-        }
+          'right': 30,
+          'type': 'comparison'
+        },
+        'type': 'boolean'
       },
       'right': {
         'comparisonOperator': '<',
@@ -33,8 +36,10 @@ describe('search expression parser', () => {
           'field': [],
           'model': 'age'
         },
-        'right': 20
-      }
+        'right': 20,
+        'type': 'comparison'
+      },
+      'type': 'boolean'
     })
   })
 
@@ -51,7 +56,8 @@ describe('search expression parser', () => {
           ],
           'model': 'profile'
         },
-        'right': 'John'
+        'right': 'John',
+        'type': 'comparison'
       },
       'right': {
         'booleanOperator': 'or',
@@ -61,7 +67,8 @@ describe('search expression parser', () => {
             'field': [],
             'model': 'age'
           },
-          'right': 30
+          'right': 30,
+          'type': 'comparison'
         },
         'right': {
           'booleanOperator': 'and',
@@ -71,7 +78,8 @@ describe('search expression parser', () => {
               'field': [],
               'model': 'age'
             },
-            'right': 20
+            'right': 20,
+            'type': 'comparison'
           },
           'right': {
             'comparisonOperator': '>',
@@ -79,10 +87,14 @@ describe('search expression parser', () => {
               'field': [],
               'model': 'age'
             },
-            'right': 10
-          }
-        }
-      }
+            'right': 10,
+            'type': 'comparison'
+          },
+          'type': 'boolean'
+        },
+        'type': 'boolean'
+      },
+      'type': 'boolean'
     })
   })
 
@@ -98,7 +110,8 @@ describe('search expression parser', () => {
         ],
         'model': 'answer'
       },
-      'right': true
+      'right': true,
+      'type': 'comparison'
     })
   })
 
