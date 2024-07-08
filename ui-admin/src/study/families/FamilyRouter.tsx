@@ -23,7 +23,7 @@ export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: Stud
 
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
-      <Link to={`${studyEnvContext.currentEnvPath}/participants`} className="me-1">
+      <Link to={`${studyEnvContext.currentEnvPath}/participants?groupByFamily=true`} className="me-1">
         families</Link>
     </NavBreadcrumb>
     <Routes>

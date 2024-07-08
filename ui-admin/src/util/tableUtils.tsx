@@ -19,8 +19,6 @@ import {
   faCaretDown,
   faCaretUp,
   faCheck,
-  faChevronDown,
-  faChevronUp,
   faColumns,
   faDownload
 } from '@fortawesome/free-solid-svg-icons'
@@ -408,6 +406,7 @@ export type BasicTableConfig<T> = {
   tdClass?: string,
   trClass?: string,
   customRowHeader?: (row: Row<T>) => React.ReactNode,
+  customRowFooter?: (row: Row<T>) => React.ReactNode,
   useSize?: boolean
 }
 
@@ -419,7 +418,7 @@ const defaultBasicTableConfig = {
 /** helper function for simple table layouts */
 export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T> = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
-  return <table className={config.tableClass ? config.tableClass : 'table '}>
+  return <table className={config.tableClass ? config.tableClass : 'table'}>
     <thead>
       <tr>
         {table
@@ -431,70 +430,24 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
     </thead>
     <tbody>
       {table.getRowModel().rows.map(row => {
-        if (row.getIsGrouped()) {
-          return renderGroupedRows(row, config)
-        }
-
         return (
           <Fragment key={row.id}>
             {!isNil(config.customRowHeader) && config.customRowHeader(row)}
             <tr className={classNames(config.trClass)}>
               {row.getVisibleCells().map(cell => {
                 return (
-                  <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
+                  <td key={cell.id} className={config.tdClass ? config.tdClass : 'align-middle'}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 )
               })}
             </tr>
+            {!isNil(config.customRowFooter) && config.customRowFooter(row)}
           </Fragment>
         )
       })}
     </tbody>
   </table>
-}
-
-const renderGroupedRows = <T extends RowData>(row: Row<T>, config: BasicTableConfig<T>) => {
-  return <>
-    <tr>
-      {row.getVisibleCells().map(((cell, idx) => {
-        return (
-          <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
-            <div className='d-flex align-items-baseline'>
-              {idx === 0 && flexRender(cell.column.columnDef.cell, cell.getContext())}
-              {idx === 0 && <><span className="ms-2">
-              ({row.subRows.length})
-              </span>
-              <button className="btn btn-link" onClick={() => row.toggleExpanded()}>
-                {row.getIsExpanded()
-                  ? <FontAwesomeIcon icon={faChevronUp}/>
-                  : <FontAwesomeIcon icon={faChevronDown}/>}
-              </button>
-              </>}
-            </div>
-          </td>
-        )
-      }))}
-    </tr>
-    {row.getIsExpanded() && row.subRows.map((subRow => {
-      return (
-        <tr key={subRow.id} className={config.trClass}>
-          {subRow.getVisibleCells().map((cell, cellIdx) => {
-            return (
-              <td
-                key={cell.id}
-                className={classNames(
-                  config.tdClass ? config.tdClass : ''
-                )}>
-                {cellIdx === 0 ?
-                  <></>
-                  : flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            )
-          })}
-        </tr>)
-    }))}
-  </>
 }
 
 /** renders a boolean value as a checkmark (true)  or a blank (false) */

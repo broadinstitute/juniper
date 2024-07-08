@@ -54,7 +54,7 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={family?.shortcode || ''}>
-      <Link to={`${currentEnvPath}/family/${family.shortcode}`}>
+      <Link to={`${currentEnvPath}/families/${family.shortcode}`}>
         {family?.shortcode}</Link>
     </NavBreadcrumb>
     <div className="row">

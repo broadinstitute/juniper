@@ -52,8 +52,7 @@ public class EnrolleeSearchExpressionParser {
 
 
     public EnrolleeSearchExpression parseRule(String rule) throws RuleParsingException {
-        System.out.println("what is happening");
-        if (StringUtils.isBlank(rule.trim())) {
+        if (StringUtils.isBlank(rule)) {
             return new DefaultSearchExpression(enrolleeDao, profileDao);
         }
 

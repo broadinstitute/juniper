@@ -57,6 +57,7 @@ export const useParticipantSearchState = (searchParamName='search') => {
 
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(searchParams => {
+      console.log(searchParams)
       return { ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) }
     })
   }
