@@ -16,11 +16,11 @@ import { isEmpty, isEqual } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
 import { ApiProvider } from '@juniper/ui-core'
 import { previewApi } from 'util/apiContextUtils'
-import { saveBlobAsDownload } from '../../util/downloadUtils'
+import { saveBlobAsDownload } from 'util/downloadUtils'
 import FormHistoryModal from './FormHistoryModal'
-import useLanguageSelectorFromParam from '../../portal/languages/useLanguageSelector'
+import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
 import Select from 'react-select'
-import InfoPopup from '../../components/forms/InfoPopup'
+import InfoPopup from 'components/forms/InfoPopup'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -68,8 +68,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     currentLanguage, languageOnChange, selectedLanguageOption,
     selectLanguageInputId, languageOptions
   } = useLanguageSelectorFromParam()
-  const selectedLanguage = selectedLanguageOption?.value
-
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {

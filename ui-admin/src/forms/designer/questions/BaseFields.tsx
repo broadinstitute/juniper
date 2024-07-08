@@ -39,7 +39,8 @@ export const BaseFields = (props: BaseFieldsProps) => {
                 languageCode: props.currentLanguage.languageCode,
                 supportedLanguages: props.supportedLanguages
               })
-          })}}
+            })
+          }}
         />
       </div>
 

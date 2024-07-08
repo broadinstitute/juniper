@@ -62,7 +62,7 @@ export const FormPreview = (props: FormPreviewProps) => {
             profile: surveyModel.getVariable('profile'),
             proxyProfile: surveyModel.getVariable('proxyProfile')
           }}
-          onChange={({ ignoreValidation, showInvisibleElements, locale, profile, proxyProfile }) => {
+          onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
             surveyModel.setVariable('profile', profile)
