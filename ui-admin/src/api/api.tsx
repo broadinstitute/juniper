@@ -1304,6 +1304,14 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getAllFamilies(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName
+  ): Promise<Family[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async addMemberToFamily(
     portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
     familyShortcode: string, enrolleeShortcode: string, justification: string

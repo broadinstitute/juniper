@@ -48,6 +48,20 @@ public class FamilyController implements FamilyApi {
   }
 
   @Override
+  public ResponseEntity<Object> findAll(
+      String portalShortcode, String studyShortcode, String environmentName) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+
+    return ResponseEntity.ok(
+        familyExtService.findAll(
+            PortalStudyEnvAuthContext.of(
+                operator,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(environmentName))));
+  }
+
+  @Override
   public ResponseEntity<Void> removeEnrollee(
       String portalShortcode,
       String studyShortcode,

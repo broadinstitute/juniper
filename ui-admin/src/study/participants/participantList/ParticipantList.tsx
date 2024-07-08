@@ -10,6 +10,11 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListGroupedByFamily from 'study/participants/participantList/ParticipantListGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faPeopleGroup,
+  faPerson
+} from '@fortawesome/free-solid-svg-icons'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -48,19 +53,28 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
 
   return <div className="ParticipantList container-fluid px-4 py-2">
-    { renderPageHeader('Participant List') }
-    <ParticipantSearch
-      key={currentEnv.environmentName}
-      studyEnvContext={studyEnvContext}
-      searchState={searchState}
-      updateSearchState={updateSearchState}
-      setSearchState={setSearchState}
-    />
-    <button
-      className="btn btn-link"
-      onClick={() => setGroupByFamily(!groupByFamily)}>
-      group by family
-    </button>
+    {renderPageHeader('Participant List')}
+    <div className="d-flex align-content-center">
+      <ParticipantSearch
+        key={currentEnv.environmentName}
+        studyEnvContext={studyEnvContext}
+        searchState={searchState}
+        updateSearchState={updateSearchState}
+        setSearchState={setSearchState}
+      />
+      {
+        familyLinkageEnabled && <div className="d-flex align-content-center ms-2">
+          <button className="btn-secondary btn-sm"
+            onClick={() => setGroupByFamily(!groupByFamily)}>
+            {groupByFamily
+              ? <><FontAwesomeIcon size={'sm'} icon={faPerson}/> Ungroup Families</>
+              : <><FontAwesomeIcon size={'sm'} icon={faPeopleGroup}/> Group by family</>}
+          </button>
+        </div>
+      }
+
+    </div>
+
 
     <LoadingSpinner isLoading={isLoading}>
       {groupByFamily

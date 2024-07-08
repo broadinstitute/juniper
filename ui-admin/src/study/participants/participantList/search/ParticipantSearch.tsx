@@ -16,14 +16,14 @@ function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, se
 }) {
   const [advancedSearch, setAdvancedSearch] = useState(false)
 
-  return <div>
-    <div className="align-items-baseline d-flex mb-2">
+  return <>
+    <div className="align-items-center d-flex">
       {advancedSearch && <AdvancedSearchModal
         studyEnvContext={studyEnvContext}
         onDismiss={() => setAdvancedSearch(false)}
         searchState={searchState}
         setSearchState={setSearchState}/>}
-      <div className="mb-2">
+      <div className="align-items-center">
         <BasicSearch
           searchState={searchState}
           updateSearchState={updateSearchState}/>
@@ -38,7 +38,7 @@ function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, se
     <SearchCriteriaView
       searchState={searchState}
       updateSearchState={updateSearchState}/>
-  </div>
+  </>
 }
 
 export default ParticipantSearch

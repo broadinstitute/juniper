@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,5 +84,14 @@ public class FamilyExtService {
             .responsibleAdminUserId(user.getId())
             .justification(justification)
             .build());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public List<Family> findAll(PortalStudyEnvAuthContext authContext) {
+    StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
+
+    return familyService.findByStudyEnvironmentId(studyEnvironment.getId()).stream()
+        .map(familyService::loadForAdminView)
+        .toList();
   }
 }

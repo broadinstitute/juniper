@@ -56,7 +56,7 @@ function ParticipantListTable({
   disablePagination?: boolean
   disableRowVisibilityCount?: boolean
   disableColumnFiltering?: boolean,
-  header?: string,
+  header?: React.ReactNode,
   tableClass?: string
 }) {
   const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
@@ -193,7 +193,7 @@ function ParticipantListTable({
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     <div className="d-flex align-items-center justify-content-between">
-      { header && <h5>{header}</h5>}
+      {header && <>{header}</>}
       {!disableRowVisibilityCount && <div className="d-flex">
         <RowVisibilityCount table={table}/>
       </div>}

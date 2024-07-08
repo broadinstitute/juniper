@@ -2,7 +2,7 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { EnrolleeSearchExpressionResult } from 'api/api'
+import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import {
   ColumnDef,
@@ -25,7 +25,6 @@ import {
   instantToDefaultString
 } from '@juniper/ui-core'
 import TableClientPagination from 'util/TablePagination'
-import { uniqBy } from 'lodash'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { getFamilyNames } from 'util/familyUtils'
 import { NavLink } from 'react-router-dom'
@@ -34,8 +33,10 @@ import {
   faChevronDown,
   faChevronUp
 } from '@fortawesome/free-solid-svg-icons'
+import { useLoadingEffect } from 'api/api-utils'
+import LoadingSpinner from 'util/LoadingSpinner'
 
-type FamilyWithMembers = Family & { members: EnrolleeSearchExpressionResult[] }
+type FamilyWithSearchResults = Family & { searchResults: EnrolleeSearchExpressionResult[] }
 
 /** Shows a list of (for now) enrollees */
 function ParticipantListGroupedByFamily({
@@ -48,8 +49,18 @@ function ParticipantListGroupedByFamily({
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
 
   const [sorting, setSorting] = useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+  const [families, setFamilies] = useState<Family[]>([])
 
-  const columns = useMemo<ColumnDef<FamilyWithMembers>[]>(() => [{
+  const { isLoading } = useLoadingEffect(async () => {
+    const loadedFamilies = await Api.getAllFamilies(
+      studyEnvContext.portal.shortcode,
+      studyEnvContext.study.shortcode,
+      studyEnvContext.currentEnv.environmentName)
+    setFamilies(loadedFamilies)
+    console.log(loadedFamilies)
+  })
+
+  const columns = useMemo<ColumnDef<FamilyWithSearchResults>[]>(() => [{
     header: '',
     accessorKey: 'expanded',
     enableColumnFilter: false,
@@ -90,27 +101,24 @@ function ParticipantListGroupedByFamily({
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }], [])
 
-  const families = useMemo<FamilyWithMembers[]>(() => {
-    return uniqBy<Family>(
-      participantList
-        .flatMap(participant => participant.families),
-      fam => fam.id)
-      .map<FamilyWithMembers>(family => {
-        return {
-          ...family,
-          members: participantList.filter(participant => participant.families.some(fam => fam.id === family.id))
-        }
-      })
-  }, [participantList])
+  const familiesWithSearchResults = useMemo<FamilyWithSearchResults[]>(() => {
+    return families.map(family => {
+      return {
+        ...family,
+        searchResults: participantList
+          .filter(participant =>
+            participant
+              .families
+              .some(participantFamily => participantFamily.shortcode === family.shortcode))
+      }
+    }).filter(family => family.searchResults.length > 0)
+  }, [participantList, families])
 
 
   const table = useReactTable({
-    data: families,
+    data: familiesWithSearchResults,
     columns,
     state: {
-
-    },
-    initialState: {
       pagination: paginationState,
       sorting
     },
@@ -123,27 +131,35 @@ function ParticipantListGroupedByFamily({
     getExpandedRowModel: getExpandedRowModel()
   })
 
-  const renderFamilyParticipantTable = (row: Row<FamilyWithMembers>) => {
+  const renderFamilyParticipantTable = (row: Row<FamilyWithSearchResults>) => {
     if (!row.getIsExpanded()) { return <></> }
-    return <tr >
+    return <tr>
       <td colSpan={row.getAllCells().length}>
         <div className={'border rounded-3 shadow-sm bg-light'}>
           <ParticipantListTable
-            participantList={row.original.members}
+            participantList={row.original.searchResults}
             studyEnvContext={studyEnvContext}
             familyId={row.original.id}
             disablePagination={true}
             disableRowVisibilityCount={true}
             disableColumnFiltering={true}
-            header={`${getFamilyNames(row.original)} Family`}
+            header={<div>
+              <h5>{getFamilyNames(row.original)} Family</h5>
+              {row.original.members?.length !== row.original.searchResults.length &&
+                  <p className="fst-italic">
+                      Showing {row.original.searchResults.length}/{row.original.members?.length || 0} members
+                  </p>}
+            </div>}
             tableClass={'table table-light'}
           />
-
         </div>
       </td>
     </tr>
   }
 
+  if (isLoading) {
+    return <LoadingSpinner/>
+  }
   return <div className="ParticipantList container-fluid px-4 py-2">
     {basicTableLayout(table, {
       filterable: true,
