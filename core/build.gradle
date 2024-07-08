@@ -101,7 +101,6 @@ jacocoTestReport {
 
 jacoco {
     toolVersion = "0.8.9"
-    reportsDirectory = layout.buildDirectory.dir('customJacocoReportDir')
 }
 
 // Explicitly run `@IntegrationTest`s that are excluded from default test runs: `./gradlew integrationTest`
