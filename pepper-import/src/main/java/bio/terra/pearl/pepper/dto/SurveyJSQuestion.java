@@ -19,7 +19,7 @@ public class SurveyJSQuestion {
     public String inputType;
     public Map<String, String> title;
     public boolean isRequired;
-    public Map<String, String> requiredText;
+    public Map<String, String> requiredErrorText;
     public List<Choice> choices;
     public String visibleIf;
     @Builder.Default

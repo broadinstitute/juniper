@@ -31,7 +31,7 @@ public class ValidationConverter {
             }
             if (ruleDef.getRuleType().equals(RuleType.REQUIRED)) {
                 targetQuestion.setRequired(true);
-                targetQuestion.setRequiredText(
+                targetQuestion.setRequiredErrorText(
                         ActivityImporter.getVariableTranslationsTxt(ruleDef.getHintTemplate().getTemplateText(),
                                 ruleDef.getHintTemplate().getVariables())
                 );
