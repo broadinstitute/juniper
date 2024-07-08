@@ -25,7 +25,11 @@ sonar {
         property 'sonar.projectKey', "broadinstitute_${rootProject.name}"
         property 'sonar.organization', 'dsp-appsec'
         property 'sonar.host.url', 'https://sonarcloud.io'
-        property 'sonar.coverage.jacoco.xmlReportPaths', "/home/runner/work/juniper/juniper/api-admin/build/reports/jacoco/test/jacocoTestReport.xml,/home/runner/work/juniper/juniper/api-participant/build/reports/jacoco/test/jacocoTestReport.xml"
+        def jacocoXmlReports = []
+        fileTree(dir: "${project.rootDir}", includes: ['**/build/reports/jacoco/test/jacocoTestReport.xml']).each { File file ->
+            jacocoXmlReports.add(file.absolutePath)
+        }
+        property 'sonar.coverage.jacoco.xmlReportPaths', jacocoXmlReports.join(',')
     }
 }
 
@@ -35,7 +39,11 @@ subprojects {
         println("Sonar xmlReportPath: ${project.buildDir}")
         properties {
             property 'sonar.sources', 'src/main/java,src/main/resources'
-            property 'sonar.coverage.jacoco.xmlReportPaths', '/home/runner/work/juniper/juniper/api-admin/build/reports/jacoco/test/jacocoTestReport.xml,/home/runner/work/juniper/juniper/api-participant/build/reports/jacoco/test/jacocoTestReport.xml'
+            def jacocoXmlReports = []
+            fileTree(dir: "${project.rootDir}", includes: ['**/build/reports/jacoco/test/jacocoTestReport.xml']).each { File file ->
+                jacocoXmlReports.add(file.absolutePath)
+            }
+            property 'sonar.coverage.jacoco.xmlReportPaths', jacocoXmlReports.join(',')
         }
     }
 }
