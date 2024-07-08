@@ -30,7 +30,7 @@ describe('updateI18nSurveyText', () => {
     expect(updateI18nSurveyText({
       oldValue: 'blah', valueText: 'blah2',
       languageCode: 'en', supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
-    })).toBe({ en: 'blah2', es: 'blah2' })
+    })).toStrictEqual({ en: 'blah2', es: 'blah' })
   })
   it('replaces a value in an object', () => {
     expect(updateI18nSurveyText({

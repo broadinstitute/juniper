@@ -4,9 +4,8 @@ import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
 import {
-  MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE,
-  mockExpressionApis, mockPortal, mockPortalEnvironment,
-  mockStudyEnvContext, renderInPortalRouter
+  mockExpressionApis,
+  mockStudyEnvContext, mockTwoLanguagePortal, renderInPortalRouter
 } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 import { select } from 'react-select-event'
@@ -111,15 +110,7 @@ describe('SurveyEditorView', () => {
   })
 
   test('toggles languages', async () => {
-    const portal = {
-      ...mockPortal(),
-      portalEnvironments: [
-        {
-          ...mockPortalEnvironment('sandbox'),
-          supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
-        }
-      ]
-    }
+    const portal = mockTwoLanguagePortal()
     renderInPortalRouter(portal,
       <SurveyEditorView
         studyEnvContext={mockStudyEnvContext()}

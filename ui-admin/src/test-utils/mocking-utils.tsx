@@ -57,6 +57,17 @@ export const mockPortal = (): Portal => ({
   ]
 })
 
+/** mock portal with two supported languages */
+export const mockTwoLanguagePortal = (): Portal => ({
+  ...mockPortal(),
+  portalEnvironments: [
+    {
+      ...mockPortalEnvironment('sandbox'),
+      supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+    }
+  ]
+})
+
 /** returns a simple portalContext, loosely modeled on OurHealth */
 export const mockPortalContext = (): LoadedPortalContextT => ({
   portal: mockPortal(),

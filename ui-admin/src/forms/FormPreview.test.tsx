@@ -147,9 +147,7 @@ describe('FormPreview', () => {
         ]
       }
 
-      it('can show to Spanish', async () => {
-        const user = userEvent.setup()
-
+      it('can show Spanish text', async () => {
         render(
           <MockI18nProvider>
             <FormPreview
@@ -157,10 +155,6 @@ describe('FormPreview', () => {
               currentLanguage={{ languageCode: 'es', id: '', languageName: 'Spanish' }}
             />
           </MockI18nProvider>)
-
-        const languageSelector = screen.getByLabelText('Language Preview')
-        await act(() => user.click(languageSelector))
-        await act(() => user.click(screen.getByText('Spanish')))
 
         waitFor(() => {
           screen.getByText('Nombre')

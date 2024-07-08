@@ -170,7 +170,7 @@ export const updateI18nSurveyText = ({
   supportedLanguages: PortalEnvironmentLanguage[],
   languageCode: string}): I18nSurveyElement => {
   if (typeof oldValue === 'string') {
-    if (supportedLanguages.length === 1) {
+    if (supportedLanguages.length <= 1) {
       // if we're just dealing with simple strings, and there's only one language, we can just return the string
       return valueText
     } else {
