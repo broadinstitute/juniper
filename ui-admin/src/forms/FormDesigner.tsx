@@ -193,6 +193,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 element={selectedElement as HtmlElement}
                 readOnly={readOnly}
                 addNextQuestion={addQuestion}
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, content))
                 }}

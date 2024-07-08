@@ -62,9 +62,7 @@ export const mockPortalContext = (): LoadedPortalContextT => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
-  updatePortalEnv: jest.fn(),
-  isError: false,
-  isLoading: false
+  updatePortalEnv: jest.fn()
 })
 
 /** mock with a mock portal and mock portalEnv */
@@ -539,7 +537,9 @@ export const MOCK_SPANISH_LANGUAGE = {
 export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, envName = 'sandbox') => {
   const portalContext: PortalContextT = {
     ...mockPortalContext(),
-    portal
+    portal,
+    isLoading: false,
+    isError: false
   }
   const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
   return renderWithRouter(

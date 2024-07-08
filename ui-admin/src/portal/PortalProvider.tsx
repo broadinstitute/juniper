@@ -15,10 +15,11 @@ export type PortalContextT = {
   isError: boolean
 }
 
-export type LoadedPortalContextT = PortalContextT & {
+export type LoadedPortalContextT = {
+  updatePortal: (portal: Portal) => void
+  reloadPortal: (shortcode: string) => Promise<Portal>
+  updatePortalEnv: (portalEnv: PortalEnvironment) => void
   portal: Portal
-  isLoading: false,
-  isError: false
 }
 
 export type PortalParams = {

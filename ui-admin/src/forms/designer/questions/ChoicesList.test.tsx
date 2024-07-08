@@ -5,6 +5,7 @@ import React from 'react'
 import { CheckboxQuestion, QuestionChoice } from '@juniper/ui-core'
 
 import { ChoicesList } from './ChoicesList'
+import { MOCK_ENGLISH_LANGUAGE } from '../../../test-utils/mocking-utils'
 
 describe('ChoicesList', () => {
   const question: CheckboxQuestion = {
@@ -19,7 +20,8 @@ describe('ChoicesList', () => {
   }
 
   it('renders list of choices with inputs for text and value', () => {
-    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={jest.fn()} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // for each table row (choice), confirm the text and stableId inputs are rendered
     const tableRows = screen.getAllByRole('row')
@@ -34,7 +36,8 @@ describe('ChoicesList', () => {
 
   it('allows changing choice labels', () => {
     const onChange = jest.fn()
-    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const barChoice = screen.getAllByRole('row')[2]
 
@@ -54,7 +57,8 @@ describe('ChoicesList', () => {
   it('allows changing choice values', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const barChoice = screen.getAllByRole('row')[2]
 
@@ -76,7 +80,8 @@ describe('ChoicesList', () => {
   it('automatically generates values based on text if question is new', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<ChoicesList question={question} isNewQuestion={true} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={true} readOnly={false} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const barChoice = screen.getAllByRole('row')[2]
 
@@ -100,7 +105,8 @@ describe('ChoicesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const barChoice = screen.getAllByRole('row')[2]
     const moveUpButton = getByLabelText(barChoice, 'Move this choice before the previous one')
@@ -138,7 +144,8 @@ describe('ChoicesList', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange} />)
+    render(<ChoicesList question={question} isNewQuestion={false} readOnly={false} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const barChoice = screen.getAllByRole('row')[2]
     const deleteButton = getByLabelText(barChoice, 'Delete this choice')
@@ -160,7 +167,8 @@ describe('ChoicesList', () => {
     render(<ChoicesList question={{
       ...question,
       choices: undefined as unknown as QuestionChoice[]
-    }} isNewQuestion={false} readOnly={false} onChange={jest.fn} />)
+    }} isNewQuestion={false} readOnly={false} onChange={jest.fn}
+    currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     expect(screen.queryByText('Choices')).not.toBeInTheDocument()
   })
