@@ -4,6 +4,7 @@ import { getByLabelText, render, screen, waitFor } from '@testing-library/react'
 import { FormDesigner } from './FormDesigner'
 import userEvent from '@testing-library/user-event'
 import { baseQuestions } from './designer/questions/questionTypes'
+import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 const formContent: FormContent = {
   title: 'Test survey',
@@ -27,10 +28,10 @@ const formContent: FormContent = {
   ]
 }
 
-const ENGLISH = { languageCode: 'en', languageName: 'English', id: '' }
 describe('FormDesigner', () => {
   it('renders form', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()} currentLanguage={ENGLISH}/>)
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     expect(screen.getByLabelText('test_firstName')).toBeInTheDocument()
     expect(screen.getByLabelText('test_lastName')).toBeInTheDocument()
@@ -39,8 +40,9 @@ describe('FormDesigner', () => {
   })
 
   it('shows elements based on the path', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()} currentLanguage={ENGLISH}/>,
-      ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>,
+    ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     // we should be showing the editor for the second question
     expect(screen.getByText('Last name')).toBeInTheDocument()
     expect(screen.getByText('Question text')).toBeInTheDocument()
@@ -52,7 +54,8 @@ describe('FormDesigner', () => {
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
     const { RoutedComponent, router } = setupRouterTest(
-      <FormDesigner content={formContent} onChange={updateValue} currentLanguage={ENGLISH}/>,
+      <FormDesigner content={formContent} onChange={updateValue}
+        currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     render(RoutedComponent)
     // we should be showing the editor for the second question
@@ -87,7 +90,7 @@ describe('FormDesigner', () => {
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
     const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent}
-      currentLanguage={ENGLISH} onChange={updateValue}/>,
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]} onChange={updateValue}/>,
     ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
     render(RoutedComponent)
     // we should be showing the page 1 summary

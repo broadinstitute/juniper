@@ -134,7 +134,6 @@ export type FormContentPage = BaseElement & {
  *  "default" is always present; the other languages are arbitrary.
  */
 export type I18nMap = {
-  default: string,
   [language: string]: string
 }
 
@@ -196,7 +195,7 @@ export type RadiogroupQuestion = WithOtherOption<TitledQuestion & {
 
 export type TemplatedQuestion = BaseQuestion & {
   name: string
-  title?: string
+  title?: I18nSurveyElement
   questionTemplateName: string
 }
 

@@ -135,18 +135,18 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               )
             </span>
           </h5>
-          { languageOptions.length > 1 && <div className="ms-2 d-flex align-items-center" style={{ width: 200 }}>
+          <div className="ms-2 d-flex align-items-center" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               aria-label={'Select a language'}
               onChange={languageOnChange}/>
-            <InfoPopup content={<p><p>
+            <InfoPopup placement="bottom" content={<p><p>
               The language to edit and preview the form in. If the language is not explicitly
               supported for this form, the default
               language for the form will be used. </p>
             <p>The values for this dropdown are taken from the supported languages
                 configurable in &quot;Site Settings&quot;.
             </p></p>}/>
-          </div> }
+          </div>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
         { !isEmpty(validationErrors) &&

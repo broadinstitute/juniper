@@ -512,3 +512,14 @@ export const mockExpressionApis = () => {
   jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
   jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue({})
 }
+
+export const MOCK_ENGLISH_LANGUAGE = {
+    languageCode: 'en',
+    languageName: 'English',
+    id: '1'
+}
+export const MOCK_SPANISH_LANGUAGE = {
+  languageCode: 'es',
+  languageName: 'Español',
+  id: '1'
+}

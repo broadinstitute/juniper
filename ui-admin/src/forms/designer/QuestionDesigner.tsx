@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { HtmlQuestion, Question } from '@juniper/ui-core'
+import { HtmlQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 
 import { BaseFields } from './questions/BaseFields'
 import { CheckboxFields } from './questions/CheckboxFields'
@@ -21,6 +21,8 @@ export type QuestionDesignerProps = {
   isNewQuestion: boolean
   readOnly: boolean
   showName: boolean
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: Question) => void
     addNextQuestion?: () => void
 }
@@ -61,6 +63,8 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
 
       <BaseFields
         disabled={readOnly}
+        currentLanguage={props.currentLanguage}
+        supportedLanguages={props.supportedLanguages}
         question={question}
         onChange={onChange}
       />

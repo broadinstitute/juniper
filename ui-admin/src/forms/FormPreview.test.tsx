@@ -6,6 +6,7 @@ import React from 'react'
 import { FormContent, MockI18nProvider } from '@juniper/ui-core'
 
 import { FormPreview } from './FormPreview'
+import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 const formContent: FormContent = {
   title: 'Test survey',
@@ -29,13 +30,12 @@ const formContent: FormContent = {
   ]
 }
 
-const ENGLISH = { languageCode: 'en', languageName: 'English', id: '' }
 describe('FormPreview', () => {
   it('renders form', () => {
     // Act
     render(
       <MockI18nProvider>
-        <FormPreview formContent={formContent} currentLanguage={ENGLISH}/>
+        <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
       </MockI18nProvider>)
 
     // Assert
@@ -77,7 +77,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} currentLanguage={ENGLISH}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -96,7 +96,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} currentLanguage={ENGLISH}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -195,7 +195,7 @@ describe('FormPreview', () => {
         // Act
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} currentLanguage={ENGLISH}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Assert
@@ -208,7 +208,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} currentLanguage={ENGLISH}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -245,7 +245,7 @@ describe('FormPreview', () => {
       const user = userEvent.setup()
       render(
         <MockI18nProvider>
-          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={ENGLISH}/>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
         </MockI18nProvider>)
       // with no values specified, the dynamic text should not be replaced
       expect(screen.getByText('Hello participant {profile.givenName} {profile.familyName}'))
@@ -269,7 +269,7 @@ describe('FormPreview', () => {
       const user = userEvent.setup()
       render(
         <MockI18nProvider>
-          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={ENGLISH}/>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
         </MockI18nProvider>)
       // with no values specified, the dynamic text should not be replaced
       expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))

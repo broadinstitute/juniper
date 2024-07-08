@@ -62,6 +62,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
               readOnly={readOnly}
               content={editedContent}
               currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
               onChange={(newContent, callback?: () => void) => {
                 setEditedContent(newContent, callback)
                 try {

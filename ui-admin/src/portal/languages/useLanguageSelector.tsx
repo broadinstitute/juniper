@@ -19,7 +19,10 @@ export default function useLanguageSelectorFromParam() {
     if (!language) {
       return
     }
-    setSearchParams({ ...searchParams, lang: language.languageCode })
+    setSearchParams(searchParams => {
+      searchParams.set(LANGUAGE_PARAM_KEY, language.languageCode)
+      return searchParams
+    })
   }
 
   const {

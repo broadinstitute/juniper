@@ -5,6 +5,7 @@ import React from 'react'
 import { Question } from '@juniper/ui-core'
 
 import { BaseFields } from './BaseFields'
+import { MOCK_ENGLISH_LANGUAGE } from '../../../test-utils/mocking-utils'
 
 describe('BaseFields', () => {
   const question: Question = {
@@ -17,7 +18,8 @@ describe('BaseFields', () => {
 
   it('shows question title', () => {
     // Act
-    render(<BaseFields disabled={false} question={question} onChange={jest.fn()} />)
+    render(<BaseFields disabled={false} question={question} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Assert
     const input = screen.getByLabelText('Question text*')
@@ -27,7 +29,8 @@ describe('BaseFields', () => {
   it('updates question title', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<BaseFields disabled={false} question={question} onChange={onChange} />)
+    render(<BaseFields disabled={false} question={question} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Act
     const input = screen.getByLabelText('Question text*')
@@ -42,7 +45,8 @@ describe('BaseFields', () => {
 
   it('shows question description', () => {
     // Act
-    render(<BaseFields disabled={false} question={question} onChange={jest.fn()} />)
+    render(<BaseFields disabled={false} question={question} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Assert
     const input = screen.getByLabelText('Description')
@@ -52,7 +56,8 @@ describe('BaseFields', () => {
   it('updates question description', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<BaseFields disabled={false} question={question} onChange={onChange} />)
+    render(<BaseFields disabled={false} question={question} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Act
     const input = screen.getByLabelText('Description')
@@ -67,7 +72,8 @@ describe('BaseFields', () => {
 
   it('shows required flag', () => {
     // Act
-    render(<BaseFields disabled={false} question={question} onChange={jest.fn()} />)
+    render(<BaseFields disabled={false} question={question} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Assert
     const input = screen.getByLabelText('Require response')
@@ -79,7 +85,8 @@ describe('BaseFields', () => {
     const user = userEvent.setup()
 
     const onChange = jest.fn()
-    render(<BaseFields disabled={false} question={question} onChange={onChange} />)
+    render(<BaseFields disabled={false} question={question} onChange={onChange}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Act
     const input = screen.getByLabelText('Require response')

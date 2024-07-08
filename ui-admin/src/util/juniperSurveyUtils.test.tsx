@@ -1,4 +1,5 @@
-import { i18nSurveyText } from './juniperSurveyUtils'
+import { i18nSurveyText, updateI18nSurveyText } from './juniperSurveyUtils'
+import { MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 describe('getI18nSurveyElement', () => {
   it('should return the value if it is just a string', () => {
@@ -15,5 +16,26 @@ describe('getI18nSurveyElement', () => {
 
   it('should return an empty string if the value is undefined', () => {
     expect(i18nSurveyText(undefined)).toBe('')
+  })
+})
+
+describe('updateI18nSurveyText', () => {
+  it('replaces a string with a string for the simplest case', () => {
+    expect(updateI18nSurveyText({
+      oldValue: 'blah', valueText: 'blah2',
+      languageCode: 'en', supportedLanguages: [MOCK_ENGLISH_LANGUAGE]
+    })).toBe('blah2')
+  })
+  it('replaces a string with an object if multiple languages supported', () => {
+    expect(updateI18nSurveyText({
+      oldValue: 'blah', valueText: 'blah2',
+      languageCode: 'en', supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+    })).toBe({ en: 'blah2', es: 'blah2' })
+  })
+  it('replaces a value in an object', () => {
+    expect(updateI18nSurveyText({
+      oldValue: { en: 'blah', es: 'blah' }, valueText: 'blah2',
+      languageCode: 'en', supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+    })).toStrictEqual({ en: 'blah2', es: 'blah' })
   })
 })
