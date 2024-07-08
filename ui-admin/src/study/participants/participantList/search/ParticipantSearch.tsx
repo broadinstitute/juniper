@@ -26,7 +26,7 @@ function ParticipantSearch({ studyEnvContext, searchState, updateSearchState, se
       <div className="align-items-center">
         <BasicSearch
           searchState={searchState}
-          updateSearchState={updateSearchState}/>
+          setSearchState={setSearchState}/>
       </div>
       <div className="ms-2">
         <Button variant="light" className="border btn-sm"

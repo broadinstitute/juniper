@@ -2,9 +2,13 @@ import { isEmpty } from 'lodash/fp'
 import { concatSearchExpressions } from './searchExpressionUtils'
 import {
   isArray,
-  isEqual
+  isEqual,
+  isNil
 } from 'lodash'
-import { useSearchParams } from 'react-router-dom'
+import {
+  SetURLSearchParams,
+  useSearchParams
+} from 'react-router-dom'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
@@ -45,22 +49,48 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (searchParamName='search') => {
-  const [searchParams, setSearchParams] = useSearchParams()
+export const useParticipantSearchState = ({
+  searchParamName = 'search',
+  searchParams: providedSearchParams,
+  setSearchParams: providedSetSearchParams
+}: {
+  searchParamName?: string,
+  searchParams?: URLSearchParams,
+  setSearchParams?: SetURLSearchParams
+
+} = {}) => {
+  const [searchParams, setSearchParams] = (!isNil(providedSearchParams) && !isNil(providedSetSearchParams))
+    ? [providedSearchParams, providedSetSearchParams]
+    : useSearchParams()
+
 
   const searchState = urlParamsToSearchState(searchParams, searchParamName)
   const searchExpression = toExpression(searchState)
 
-  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    setSearchState({ ...searchState, [field]: value })
-  }
-
   const setSearchState = (newSearchState: ParticipantSearchState) => {
-    setSearchParams(searchParams => {
-      console.log(searchParams)
-      return { ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) }
+    setSearchParams(params => {
+      console.log(Array.from(params.entries()).reduce(
+        (o, [key, value]) => ({ ...o, [key]: value }),
+        {}
+      ))
+      return {
+        ...Array.from(params.entries()).reduce(
+          (o, [key, value]) => ({ ...o, [key]: value }),
+          {}
+        ),
+        [searchParamName]: searchStateToUrlParam(newSearchState)
+      }
     })
   }
+
+  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
+    console.log(field, value)
+    setSearchState({
+      ...searchState,
+      [field]: value
+    })
+  }
+
 
   return { searchState, searchExpression, updateSearchState, setSearchState }
 }

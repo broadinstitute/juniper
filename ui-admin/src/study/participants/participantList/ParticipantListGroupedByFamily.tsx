@@ -35,8 +35,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
+import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 
-type FamilyWithSearchResults = Family & { searchResults: EnrolleeSearchExpressionResult[] }
+type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 
 /** Shows a list of (for now) enrollees */
 function ParticipantListGroupedByFamily({
@@ -57,8 +58,7 @@ function ParticipantListGroupedByFamily({
       studyEnvContext.study.shortcode,
       studyEnvContext.currentEnv.environmentName)
     setFamilies(loadedFamilies)
-    console.log(loadedFamilies)
-  })
+  }, [])
 
   const columns = useMemo<ColumnDef<FamilyWithSearchResults>[]>(() => [{
     header: '',
@@ -82,6 +82,9 @@ function ParticipantListGroupedByFamily({
       columnType: 'string'
     },
     cell: ({ row }) => {
+      if (!row.original.shortcode) {
+        return <span className="fst-italic">No family</span>
+      }
       return <NavLink to={`${studyEnvContext.currentEnvPath}/families/${row.original.shortcode}`}>
         {row.original.shortcode}
       </NavLink>
@@ -90,12 +93,22 @@ function ParticipantListGroupedByFamily({
   {
     header: 'Family Name',
     accessorKey: 'familyName',
-    accessorFn: family => `${getFamilyNames(family)} Family`
+    accessorFn: family => family.shortcode && `${getFamilyNames(family as Family)} Family`
   }, {
     header: '# Members',
     accessorKey: 'members',
     enableColumnFilter: true,
     accessorFn: family => family.members?.length
+  }, {
+    header: 'Proband',
+    accessorKey: 'proband',
+    enableColumnFilter: false,
+    cell: ({ row }) => {
+      if (!row.original.proband) {
+        return <></>
+      }
+      return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.proband}/>
+    }
   }, {
     header: 'Created At',
     accessorKey: 'createdAt',
@@ -107,7 +120,7 @@ function ParticipantListGroupedByFamily({
   }], [])
 
   const familiesWithSearchResults = useMemo<FamilyWithSearchResults[]>(() => {
-    return families.map(family => {
+    const familiesWithResults: FamilyWithSearchResults[] = families.map(family => {
       return {
         ...family,
         searchResults: participantList
@@ -117,6 +130,16 @@ function ParticipantListGroupedByFamily({
               .some(participantFamily => participantFamily.shortcode === family.shortcode))
       }
     }).filter(family => family.searchResults.length > 0)
+
+    const participantsWithoutFamily = participantList.filter(participant => !participant.families.length)
+
+    if (participantsWithoutFamily.length > 0) {
+      familiesWithResults.push({
+        searchResults: participantsWithoutFamily
+      })
+    }
+
+    return familiesWithResults
   }, [participantList, families])
 
 
@@ -146,11 +169,11 @@ function ParticipantListGroupedByFamily({
             participantList={row.original.searchResults}
             studyEnvContext={studyEnvContext}
             familyId={row.original.id}
-            disablePagination={true}
+            disablePagination={row.original.searchResults.length < 10}
             disableRowVisibilityCount={true}
             disableColumnFiltering={true}
-            header={<div>
-              <h5>{getFamilyNames(row.original)} Family</h5>
+            header={row.original.shortcode && <div>
+              <h5>{getFamilyNames(row.original as Family)} Family</h5>
               {row.original.members?.length !== row.original.searchResults.length &&
                   <p className="fst-italic">
                       Showing {row.original.searchResults.length}/{row.original.members?.length || 0} members

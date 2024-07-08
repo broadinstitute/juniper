@@ -26,7 +26,19 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   const groupByFamily = searchParams.get('groupByFamily') === 'true'
   const setGroupByFamily = (groupByFamily: boolean) => {
-    setSearchParams({ ...searchParams, groupByFamily: groupByFamily.toString() })
+    setSearchParams(params => {
+      console.log(Array.from(params.entries()).reduce(
+        (o, [key, value]) => ({ ...o, [key]: value }),
+        {}
+      ))
+      return {
+        ...Array.from(params.entries()).reduce(
+          (o, [key, value]) => ({ ...o, [key]: value }),
+          {}
+        ),
+        groupByFamily: groupByFamily.toString()
+      }
+    })
   }
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
@@ -36,7 +48,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     updateSearchState,
     setSearchState,
     searchExpression
-  } = useParticipantSearchState()
+  } = useParticipantSearchState({ searchParams, setSearchParams })
 
   const { isLoading } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
