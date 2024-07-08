@@ -138,6 +138,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           <div className="ms-2 d-flex align-items-center" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               aria-label={'Select a language'}
+              isDisabled={languageOptions.length < 2}
               onChange={languageOnChange}/>
             <InfoPopup placement="bottom" content={<p><p>
               The language to edit and preview the form in. If the language is not explicitly

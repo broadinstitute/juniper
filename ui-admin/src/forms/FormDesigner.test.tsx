@@ -39,7 +39,7 @@ describe('FormDesigner', () => {
     expect(screen.getAllByText('Pages')).toHaveLength(2)
   })
 
-  it('shows elements based on the path', () => {
+  it('shows elements based on the path', async () => {
     renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}
       currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>,
     ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
@@ -47,6 +47,8 @@ describe('FormDesigner', () => {
     expect(screen.getByText('Last name')).toBeInTheDocument()
     expect(screen.getByText('Question text')).toBeInTheDocument()
     expect(screen.queryByText('First name')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByText('test_firstName'))
+    expect(screen.queryByText('First name')).toBeInTheDocument()
   })
 
   it('adds questions after a current question', async () => {

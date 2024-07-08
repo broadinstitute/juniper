@@ -5,8 +5,8 @@ import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
 import {
   MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE,
-  mockExpressionApis,
-  mockStudyEnvContext
+  mockExpressionApis, mockPortal, mockPortalEnvironment,
+  mockStudyEnvContext, renderInPortalRouter
 } from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
 import { select } from 'react-select-event'
@@ -111,18 +111,35 @@ describe('SurveyEditorView', () => {
   })
 
   test('toggles languages', async () => {
-    jest.mock('portal/languages/usePortalLanguage', () => ({
-      defaultLanguage: { languageCode: 'en', languageName: 'English' },
-      supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
-    }))
-    renderWithRouter(<SurveyEditorView
-      studyEnvContext={mockStudyEnvContext()}
-      currentForm={{ ...mockForm(), content: '{}' }}
-      onCancel={jest.fn()}
-      onSave={jest.fn()}
-    />)
-    select(screen.getByLabelText('Select a language'), 'Spanish')
-    expect(screen.getByLabelText('Español')).toBeInTheDocument()
+    const portal = {
+      ...mockPortal(),
+      portalEnvironments: [
+        {
+          ...mockPortalEnvironment('sandbox'),
+          supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+        }
+      ]
+    }
+    renderInPortalRouter(portal,
+      <SurveyEditorView
+        studyEnvContext={mockStudyEnvContext()}
+        currentForm={{
+          ...mockForm(), content: JSON.stringify({
+            pages: [{
+              elements: [{
+                type: 'text', name: 'testQ', title: { 'en': 'English question', 'es': 'Español pregunta' }
+              }]
+            }]
+          })
+        }}
+        onCancel={jest.fn()}
+        onSave={jest.fn()}
+      />)
+    await userEvent.click(screen.getByText('testQ'))
+    expect(screen.getByText('English question')).toBeInTheDocument()
+    expect(screen.queryByText('Español pregunta')).not.toBeInTheDocument()
+    await select(screen.getByLabelText('Select a language'), 'Español')
+    expect(screen.queryByText('Español pregunta')).toBeInTheDocument()
   })
 })
 
