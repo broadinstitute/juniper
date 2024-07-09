@@ -10,6 +10,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
@@ -20,6 +22,10 @@ public class SiteMediaController implements SiteMediaApi {
   }
 
   @Override
+  @CrossOrigin(
+      origins = {"https://juniperdemodev.b2clogin.com", "https://junipercmidemo.b2clogin.com"},
+      maxAge = 3600,
+      methods = {RequestMethod.GET, RequestMethod.OPTIONS})
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteMedia> siteMediaOpt;

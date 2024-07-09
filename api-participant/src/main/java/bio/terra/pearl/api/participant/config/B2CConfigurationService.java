@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +34,17 @@ public class B2CConfigurationService {
   /** Get the B2C configuration for a portal. Returns null if B2C is not configured for portal */
   public Map<String, String> getB2CForPortal(String portalShortcode) {
     return portalToConfig.get(portalShortcode);
+  }
+
+  public List<String> getOrigins() {
+    // maps tthru the portalConfiguration looking for all tenant names
+    // and returns formats them all as https://{tenantName}.b2clogin.com
+
+    return portalConfiguration.getB2CProperties().values().stream()
+        .map(B2CPortalConfiguration.B2CProperties::getTenantName)
+        .filter(StringUtils::isNotBlank)
+        .map(tenantName -> "https://" + tenantName + ".b2clogin.com")
+        .collect(Collectors.toList());
   }
 
   /**
