@@ -114,3 +114,10 @@ tasks.register("integrationTest", Test) {
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs << "-parameters"
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}

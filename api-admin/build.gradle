@@ -4,7 +4,7 @@ plugins {
     id 'de.undercouch.download'
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
-
+    id "jacoco"
     id 'com.gorylenko.gradle-git-properties' version '2.3.1'
 }
 
@@ -64,6 +64,7 @@ jibDockerBuild.dependsOn('copyWebApp')
 
 test {
     useJUnitPlatform ()
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {

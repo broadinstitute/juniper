@@ -55,3 +55,10 @@ jacocoTestReport {
 jacoco {
     toolVersion = "0.8.9"
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled true
+    }
+}
