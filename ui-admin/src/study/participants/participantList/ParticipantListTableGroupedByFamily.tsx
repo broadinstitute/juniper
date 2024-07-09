@@ -68,7 +68,7 @@ function ParticipantListTableGroupedByFamily({
     enableColumnFilter: false,
     enableColumnSort: false,
     cell: ({ row }) => {
-      return <>
+      return <div>
         <button
           className="btn btn-link m-0 p-0"
           onClick={() => row.toggleExpanded()}>
@@ -77,7 +77,8 @@ function ParticipantListTableGroupedByFamily({
             : <FontAwesomeIcon icon={faChevronUp}/>
           }
         </button>
-        <span> ({row.original.searchResults.length})</span></>
+        <span> ({row.original.searchResults.length})</span>
+      </div>
     }
   }, {
     header: 'Shortcode',
@@ -97,11 +98,16 @@ function ParticipantListTableGroupedByFamily({
   {
     header: 'Family Name',
     accessorKey: 'familyName',
-    accessorFn: family => family.shortcode && `${getFamilyNames(family as Family)} Family`
+    accessorFn: family => family.shortcode && `${getFamilyNames(family as Family)} Family`,
+    cell: info => {
+      return <div style={{ maxWidth: '200px' }}>
+        {info.getValue() as string}
+      </div>
+    }
   }, {
     header: '# Members',
     accessorKey: 'members',
-    enableColumnFilter: true,
+    enableColumnFilter: false,
     accessorFn: family => family.members?.length
   }, {
     header: 'Proband',

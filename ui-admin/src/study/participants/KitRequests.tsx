@@ -1,11 +1,19 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable
+} from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
 import RequestKitModal from './RequestKitModal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Enrollee, instantToDefaultString, KitRequest } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDefaultString,
+  KitRequest
+} from '@juniper/ui-core'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
@@ -75,12 +83,15 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
   })
 
   return <div>
-    <h2 className="h4">Kit requests</h2>
-    {user?.superuser &&
-      <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
-        <FontAwesomeIcon icon={faPlus}/> Create a kit request
-      </button>
-    }
+    <div className="d-flex align-items-baseline">
+      <h2 className="h4">Kit requests</h2>
+      {user?.superuser &&
+          <button className='btn btn-secondary' onClick={() => setShowRequestKitModal(true)}>
+            <FontAwesomeIcon icon={faPlus}/> Create
+          </button>
+      }
+    </div>
+
     {showRequestKitModal && <RequestKitModal
       studyEnvContext={studyEnvContext}
       enrolleeShortcode={enrollee.shortcode}

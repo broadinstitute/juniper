@@ -1,4 +1,7 @@
-import React, { useId, useState } from 'react'
+import React, {
+  useId,
+  useState
+} from 'react'
 import Api, { AdminTask } from 'api/api'
 import { AdminUser } from 'api/adminUser'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
@@ -10,7 +13,10 @@ import { Store } from 'react-notifications-component'
 import { ParticipantNoteView } from './ParticipantNoteView'
 import AdminUserSelect from 'user/AdminUserSelect'
 import { useLoadingEffect } from 'api/api-utils'
-import { Enrollee, ParticipantNote } from '@juniper/ui-core'
+import {
+  Enrollee,
+  ParticipantNote
+} from '@juniper/ui-core'
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,
@@ -51,12 +57,16 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
   }
 
   return <div>
-    <h3 className="h4">Notes</h3>
-    <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
-      <FontAwesomeIcon icon={faPlus}/> Add
-    </button>
+    <div className="d-flex align-items-baseline">
+      <h3 className="h4">Notes</h3>
+      <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
+        <FontAwesomeIcon icon={faPlus}/> Add
+      </button>
+    </div>
+
     {showAdd && <div className="pb-3">
-      <textarea rows={5} cols={80} value={newNoteText} onChange={e => setNewNoteText(e.target.value)}/>
+      <textarea className={'form-control'} rows={5} cols={80} value={newNoteText}
+        onChange={e => setNewNoteText(e.target.value)}/>
       <div>
         <label htmlFor={userSelectId}>Assign to:</label>
         <AdminUserSelect selectedUser={newNoteAssignee} setSelectedUser={setNewNoteAssignee} users={users}

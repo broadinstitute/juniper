@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import {
-  AlertLevel,
-  ParticipantDashboardAlert,
-  AlertTrigger,
   Alert,
-  useI18n,
-  PortalEnvironment
+  AlertLevel,
+  AlertTrigger,
+  ParticipantDashboardAlert,
+  PortalEnvironment,
+  useI18n
 } from '@juniper/ui-core'
 import Api from 'api/api'
 import { Store } from 'react-notifications-component'
-import { failureNotification, successNotification } from '../util/notifications'
+import {
+  failureNotification,
+  successNotification
+} from '../util/notifications'
 import classNames from 'classnames'
 
 /**
@@ -140,7 +146,8 @@ export default function DashboardSettings({ portalContext, currentEnv }:
 
       setDashboardAlerts(alerts)
     } catch {
-      Store.addNotification(failureNotification('Error loading dashboard alerts'))
+      `      Store.addNotification(failureNotification('Error loading dashboard alerts'))
+`
     }
     setIsLoading(false)
   }

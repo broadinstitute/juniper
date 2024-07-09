@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.service.family.FamilyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Family;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,14 +18,17 @@ public class FamilyController implements FamilyApi {
   private final AuthUtilService authUtilService;
   private final FamilyExtService familyExtService;
   private final HttpServletRequest request;
+  private final ObjectMapper objectMapper;
 
   public FamilyController(
       AuthUtilService authUtilService,
       FamilyExtService familyExtService,
-      HttpServletRequest request) {
+      HttpServletRequest request,
+      ObjectMapper objectMapper) {
     this.authUtilService = authUtilService;
     this.familyExtService = familyExtService;
     this.request = request;
+    this.objectMapper = objectMapper;
   }
 
   @Override
@@ -80,6 +84,30 @@ public class FamilyController implements FamilyApi {
         justification);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Object> create(
+      String justification,
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      Object familyObj) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+
+    Family family = objectMapper.convertValue(familyObj, Family.class);
+
+    family =
+        familyExtService.create(
+            PortalStudyEnvAuthContext.of(
+                operator,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            family,
+            justification);
+
+    return ResponseEntity.ok(family);
   }
 
   @Override

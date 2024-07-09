@@ -142,8 +142,9 @@ function ParticipantListTable({
       if (isEmpty(row.original.families)) {
         return <span className='fst-italic'>None</span>
       }
-      return <>{row.original.families.map((family, idx) => <FamilyLink key={idx} family={family}
-        studyEnvContext={studyEnvContext}/>)}</>
+      return <>{row.original.families.map((family, idx) => <div key={idx}><FamilyLink family={family}
+        studyEnvContext={studyEnvContext}/>
+      </div>)}</>
     }
   }, {
     id: 'contactEmail',
