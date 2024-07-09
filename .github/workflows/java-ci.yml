@@ -116,7 +116,8 @@ jobs:
           -x spotlessJavaCheck
           -x spotlessCheck
           -x spotlessApply
-          build jacocoTestReport sonar -info
+          -x build
+          jacocoTestReport sonar -info
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
