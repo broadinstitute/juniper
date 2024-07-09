@@ -161,12 +161,13 @@ public class ActivityImporter {
                     .name(pepperQuestionDef.getStableId())
                     .type(questionType)
                     .title(titleMap)
-                    .required(false)
+                    .isRequired(false)
                     //.isRequired() //revisit
                     .inputType(inputType)
                     .choices(choices)
                     .visibleIf(blockDef.getShownExpr())
                     .build();
+            ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
 
             JsonNode questionNode = objectMapper.valueToTree(surveyJSQuestion);
             questionNodes.add(questionNode);
@@ -220,7 +221,7 @@ public class ActivityImporter {
      * so we need to replace the variable name with the translation text in the appropriate language,
      * but preserve the markup
      */
-    private Map<String, String> getVariableTranslationsTxt(String templateText, Collection<TemplateVariable> templateVariables) {
+    public static Map<String, String> getVariableTranslationsTxt(String templateText, Collection<TemplateVariable> templateVariables) {
         Map<String, String> textMap = new HashMap<>();
         // for each variable, get the translations and replace the variable name with the translation text in the appropriate language
         for (TemplateVariable var : templateVariables) {
