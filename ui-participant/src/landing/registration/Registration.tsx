@@ -4,7 +4,7 @@ import { useAuth } from 'react-oidc-context'
 import { useReturnToLanguage, useReturnToStudy } from 'browserPersistentState'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useI18n } from '@juniper/ui-core'
-import { getEnvSpec } from '../../api/api'
+import { getEnvSpec } from 'api/api'
 
 /** Show the B2C participant registration page */
 export default function Registration() {

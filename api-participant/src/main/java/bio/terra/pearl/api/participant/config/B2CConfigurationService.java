@@ -37,12 +37,8 @@ public class B2CConfigurationService {
   }
 
   public List<String> getOrigins() {
-    // maps tthru the portalConfiguration looking for all tenant names
-    // and returns formats them all as https://{tenantName}.b2clogin.com
-
     return portalConfiguration.getB2CProperties().values().stream()
         .map(B2CPortalConfiguration.B2CProperties::getTenantName)
-        .filter(StringUtils::isNotBlank)
         .map(tenantName -> "https://" + tenantName + ".b2clogin.com")
         .collect(Collectors.toList());
   }
