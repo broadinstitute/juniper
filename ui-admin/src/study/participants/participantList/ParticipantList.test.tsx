@@ -179,7 +179,7 @@ test('allows the user to group by family', async () => {
   await userEvent.click(screen.getByLabelText('Family view'))
 
   //Wait for results to be rendered
-  await screen.findAllByText('F_MOCK')
+  expect(screen.getAllByText('F_MOCK')[0]).toBeInTheDocument()
 })
 
 test('ensure cannot group by family if family linkage not enabled', async () => {
