@@ -126,6 +126,7 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
+  enrolleeId?: string,
   responsibleAdminUserId?: string,
   justification?: string
 }
@@ -747,9 +748,9 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string):
+  async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcodeOrId: string):
     Promise<Enrollee> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcodeOrId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1357,6 +1358,19 @@ export default {
       method: 'PATCH',
       headers: this.getInitHeaders()
     })
+    return await this.processJsonResponse(result)
+  },
+
+  async fetchFamilyChangeRecords(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, modelName?: string
+  ): Promise<DataChangeRecord[]> {
+    const params = queryString.stringify({ modelName })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/changeRecords?${params}`
+
+    const result = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(result)
   },
 

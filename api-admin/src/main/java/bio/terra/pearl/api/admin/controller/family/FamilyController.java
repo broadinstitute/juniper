@@ -124,4 +124,24 @@ public class FamilyController implements FamilyApi {
 
     return ResponseEntity.ok(family);
   }
+
+  @Override
+  public ResponseEntity<Object> listChangeRecords(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String familyShortcode,
+      String modelName) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+
+    return ResponseEntity.ok(
+        familyExtService.listChangeRecords(
+            PortalStudyEnvAuthContext.of(
+                operator,
+                portalShortcode,
+                studyShortcode,
+                EnvironmentName.valueOfCaseInsensitive(envName)),
+            familyShortcode,
+            modelName));
+  }
 }

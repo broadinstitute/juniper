@@ -10,7 +10,9 @@ import bio.terra.pearl.core.service.search.terms.SearchTerm;
 import java.util.UUID;
 
 /**
- * High level search expression which represents a boolean operation (AND, OR) between two other search expressions.
+ * Allows you to include a term (and related data) in the search result without
+ * doing any filtering on the term. For example, `include({family.shortcode})`
+ * would load family data without filtering on the family shortcode.
  */
 public class IncludeExpression implements EnrolleeSearchExpression {
     private final SearchTerm inner;

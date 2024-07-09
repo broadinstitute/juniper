@@ -31,6 +31,7 @@ public class DataAuditInfo {
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
+    private UUID familyId;
     private String justification; // if an admin changes a participant's data, a justification is needed
 
     // If one operation creates multiple DataChangeRecords, then

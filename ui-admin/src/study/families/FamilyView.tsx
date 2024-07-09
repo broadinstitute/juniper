@@ -25,6 +25,7 @@ import { FamilyOverview } from './FamilyOverview'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
 import { getFamilyNames } from 'util/familyUtils'
 import { useUser } from 'user/UserProvider'
+import { FamilyAuditTable } from 'study/families/FamilyAuditTable'
 
 
 export type SurveyWithResponsesT = {
@@ -77,6 +78,9 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                 <NavLink to="overview" className={getLinkCssClasses}>Overview<span
                   className='badge bg-primary fw-light ms-2'>BETA</span></NavLink>
               </li>}
+              <li style={navListItemStyle} className="ps-3">
+                <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
+              </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
@@ -95,6 +99,10 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                   family={family}
                   studyEnvContext={studyEnvContext}/>}
                 />}
+                <Route path="changeRecords" element={<FamilyAuditTable
+                  family={family}
+                  studyEnvContext={studyEnvContext}
+                />}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

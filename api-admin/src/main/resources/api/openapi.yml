@@ -639,16 +639,16 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcodeOrId}:
     get:
-      summary: Finds an enrollee by shortcode
+      summary: Finds an enrollee by shortcode or id
       tags: [ enrollee ]
       operationId: find
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcodeOrId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: Enrollee object
@@ -960,6 +960,23 @@ paths:
       responses:
         '200':
           description: Successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/changeRecords:
+    get:
+      summary: List of data change records for a family
+      tags: [ family ]
+      operationId: listChangeRecords
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: modelName, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
