@@ -6,7 +6,7 @@ import { getFamilyNames } from 'util/familyUtils'
 import { isEmpty } from 'lodash'
 
 /**
- *
+ * Links to a family, similar to the EnrolleeLink component.
  */
 export const FamilyLink = ({
   studyEnvContext,
@@ -25,7 +25,7 @@ export const FamilyLink = ({
   return <span>
     {familyNames} Family <Link
       to={path}>
-      <span className=" fst-italic">({family.shortcode})</span>
+      <span className="fst-italic">({family.shortcode})</span>
     </Link>
   </span>
 }

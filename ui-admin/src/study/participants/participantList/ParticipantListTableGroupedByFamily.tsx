@@ -39,8 +39,10 @@ import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
 
 type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 
-/** Shows a list of (for now) enrollees */
-function ParticipantListGroupedByFamily({
+/**
+ * Shows a table of participants grouped by their family.
+ */
+function ParticipantListTableGroupedByFamily({
   participantList,
   studyEnvContext
 }: {
@@ -66,14 +68,16 @@ function ParticipantListGroupedByFamily({
     enableColumnFilter: false,
     enableColumnSort: false,
     cell: ({ row }) => {
-      return <button
-        className="btn btn-link m-0 p-0"
-        onClick={() => row.toggleExpanded()}>
-        {row.getIsExpanded()
-          ? <FontAwesomeIcon icon={faChevronUp}/>
-          : <FontAwesomeIcon icon={faChevronDown}/>
-        }
-      </button>
+      return <>
+        <button
+          className="btn btn-link m-0 p-0"
+          onClick={() => row.toggleExpanded()}>
+          {row.getIsExpanded()
+            ? <FontAwesomeIcon icon={faChevronDown}/>
+            : <FontAwesomeIcon icon={faChevronUp}/>
+          }
+        </button>
+        <span> ({row.original.searchResults.length})</span></>
     }
   }, {
     header: 'Shortcode',
@@ -200,4 +204,4 @@ function ParticipantListGroupedByFamily({
 }
 
 
-export default ParticipantListGroupedByFamily
+export default ParticipantListTableGroupedByFamily

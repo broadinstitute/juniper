@@ -39,7 +39,10 @@ import { FamilyLink } from 'study/families/FamilyLink'
 import { isEmpty } from 'lodash'
 import TableClientPagination from 'util/TablePagination'
 
-/** Shows a list of (for now) enrollees */
+/**
+ * Participant table used by the participant list. Does not include searching functionality, just table
+ * rendering.
+ */
 function ParticipantListTable({
   participantList,
   studyEnvContext,

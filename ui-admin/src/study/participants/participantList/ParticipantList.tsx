@@ -8,7 +8,7 @@ import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
 import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
-import ParticipantListGroupedByFamily from 'study/participants/participantList/ParticipantListGroupedByFamily'
+import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -21,23 +21,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 
-
   const [searchParams, setSearchParams] = useSearchParams()
 
   const groupByFamily = searchParams.get('groupByFamily') === 'true'
   const setGroupByFamily = (groupByFamily: boolean) => {
     setSearchParams(params => {
-      console.log(Array.from(params.entries()).reduce(
-        (o, [key, value]) => ({ ...o, [key]: value }),
-        {}
-      ))
-      return {
-        ...Array.from(params.entries()).reduce(
-          (o, [key, value]) => ({ ...o, [key]: value }),
-          {}
-        ),
-        groupByFamily: groupByFamily.toString()
-      }
+      params.set('groupByFamily', groupByFamily.toString())
+      return params
     })
   }
 
@@ -48,7 +38,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     updateSearchState,
     setSearchState,
     searchExpression
-  } = useParticipantSearchState({ searchParams, setSearchParams })
+  } = useParticipantSearchState()
 
   const { isLoading } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
@@ -58,7 +48,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       // if families exist, adding these expression guarantees that we get all families.
       // might be a better way to do it, but this works for now
       familyLinkageEnabled
-        ? concatSearchExpressions([`(include({family.shortcode}))`, searchExpression])
+        ? concatSearchExpressions([`include({family.shortcode})`, searchExpression])
         : searchExpression)
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
@@ -76,11 +66,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
       />
       {
         familyLinkageEnabled && <div className="d-flex align-content-center ms-2">
-          <button className="btn-secondary btn-sm"
+          <button
+            className="btn-secondary btn-sm"
+            aria-label={groupByFamily ? 'Participant view' : 'Family view'}
             onClick={() => setGroupByFamily(!groupByFamily)}>
             {groupByFamily
-              ? <><FontAwesomeIcon size={'sm'} icon={faPerson}/> Ungroup Families</>
-              : <><FontAwesomeIcon size={'sm'} icon={faPeopleGroup}/> Group by family</>}
+              ? <><FontAwesomeIcon size={'sm'} icon={faPerson}/> Participant view</>
+              : <><FontAwesomeIcon size={'sm'} icon={faPeopleGroup}/> Family view</>}
           </button>
         </div>
       }
@@ -90,7 +82,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
     <LoadingSpinner isLoading={isLoading}>
       {groupByFamily
-        ? <ParticipantListGroupedByFamily participantList={participantList} studyEnvContext={studyEnvContext}/>
+        ? <ParticipantListTableGroupedByFamily participantList={participantList} studyEnvContext={studyEnvContext}/>
         : <ParticipantListTable participantList={participantList} studyEnvContext={studyEnvContext}/>}
     </LoadingSpinner>
   </div>

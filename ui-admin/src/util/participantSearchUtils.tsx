@@ -2,13 +2,9 @@ import { isEmpty } from 'lodash/fp'
 import { concatSearchExpressions } from './searchExpressionUtils'
 import {
   isArray,
-  isEqual,
-  isNil
+  isEqual
 } from 'lodash'
-import {
-  SetURLSearchParams,
-  useSearchParams
-} from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 // reminder: if you add a new field to the search state,
 // make sure to update the toExpression function
@@ -49,19 +45,8 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = ({
-  searchParamName = 'search',
-  searchParams: providedSearchParams,
-  setSearchParams: providedSetSearchParams
-}: {
-  searchParamName?: string,
-  searchParams?: URLSearchParams,
-  setSearchParams?: SetURLSearchParams
-
-} = {}) => {
-  const [searchParams, setSearchParams] = (!isNil(providedSearchParams) && !isNil(providedSetSearchParams))
-    ? [providedSearchParams, providedSetSearchParams]
-    : useSearchParams()
+export const useParticipantSearchState = (searchParamName = 'search') => {
+  const [searchParams, setSearchParams] = useSearchParams()
 
 
   const searchState = urlParamsToSearchState(searchParams, searchParamName)
@@ -69,17 +54,8 @@ export const useParticipantSearchState = ({
 
   const setSearchState = (newSearchState: ParticipantSearchState) => {
     setSearchParams(params => {
-      console.log(Array.from(params.entries()).reduce(
-        (o, [key, value]) => ({ ...o, [key]: value }),
-        {}
-      ))
-      return {
-        ...Array.from(params.entries()).reduce(
-          (o, [key, value]) => ({ ...o, [key]: value }),
-          {}
-        ),
-        [searchParamName]: searchStateToUrlParam(newSearchState)
-      }
+      params.set(searchParamName, searchStateToUrlParam(newSearchState))
+      return params
     })
   }
 
@@ -127,7 +103,8 @@ export const toExpression = (searchState: ParticipantSearchState) => {
   if (!isEmpty(searchState.keywordSearch)) {
     expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
       + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
-      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}')`)
+      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}' `
+      + `or {family.shortcode} contains '${searchState.keywordSearch}')`)
   }
 
   if (searchState.subject !== undefined) {

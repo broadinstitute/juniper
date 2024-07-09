@@ -10,10 +10,7 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.util.Objects;
->>>>>>> origin/development
 import org.springframework.stereotype.Service;
 
 @Service
@@ -96,8 +93,8 @@ public class FamilyExtService {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
     return familyService.findByStudyEnvironmentId(studyEnvironment.getId()).stream()
-            .map(familyService::loadForAdminView)
-            .toList();
+        .map(familyService::loadForAdminView)
+        .toList();
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
