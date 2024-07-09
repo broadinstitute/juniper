@@ -1,5 +1,8 @@
 package bio.terra.pearl.api.admin.service.family;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
@@ -15,15 +18,11 @@ import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FamilyExtServiceTest extends BaseSpringBootTest {
 
@@ -38,18 +37,18 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
     AuthTestUtils.assertAllMethodsAnnotated(
         familyExtService,
         Map.of(
-                "find",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
-                "addEnrollee",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
-                "removeEnrollee",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
-                "updateProband",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "find",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
+            "addEnrollee",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "removeEnrollee",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "updateProband",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
             "listChangeRecords",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
-                "findAll",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
+            "findAll",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
   }
 
   @Test
