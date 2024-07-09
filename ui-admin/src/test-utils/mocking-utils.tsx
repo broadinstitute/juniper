@@ -315,7 +315,7 @@ export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionR
 }
 
 /**
- *
+ * Mocks a family object.
  */
 export const mockFamily = (): Family => {
   return {
