@@ -1,7 +1,6 @@
 package bio.terra.pearl.api.participant.controller;
 
 import bio.terra.pearl.api.participant.api.PortalApi;
-import bio.terra.pearl.api.participant.config.B2CConfigurationService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -66,15 +65,13 @@ public class PortalController implements PortalApi {
       },
       maxAge = 3600,
       methods = {RequestMethod.GET, RequestMethod.OPTIONS})
-  public ResponseEntity<Object> getBranding(String portalShortcode, String envName) {
+  public ResponseEntity<Object> getBranding(
+      String portalShortcode, String envName, String language) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
-    Portal portal =
-        portalService.loadWithParticipantSiteContent(portalShortcode, environmentName, "en").get();
     PortalEnvironment portalEnv =
-        portal.getPortalEnvironments().stream()
-            .filter(env -> env.getEnvironmentName().equals(environmentName))
-            .findFirst()
+        portalEnvironmentService
+            .loadWithParticipantSiteContent(portalShortcode, environmentName, language)
             .orElseThrow(() -> new NotFoundException("Portal environment not found"));
 
     LocalizedSiteContent siteContent =
