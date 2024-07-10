@@ -84,4 +84,17 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
     public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
         return findAllByTwoProperties("family_id", familyId, "model_name", model);
     }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        // might not be complete, there could be some dangling records,
+        // but at the very least this cleans up any foreign key issues that might arise
+        jdbi.withHandle(handle ->
+                handle.createUpdate(
+                                "DELETE FROM data_change_record dcr " +
+                                        "WHERE dcr.enrollee_id IN (SELECT id FROM enrollee WHERE study_environment_id = :studyEnvironmentId) " +
+                                        "OR dcr.family_id IN (SELECT id FROM family WHERE study_environment_id = :studyEnvironmentId)")
+                        .bind("studyEnvironmentId", studyEnvironmentId)
+                        .execute()
+        );
+    }
 }
