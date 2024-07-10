@@ -11,10 +11,9 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
+import org.springframework.stereotype.Service;
 
 @Service
 public class FamilyExtService {
@@ -135,7 +134,7 @@ public class FamilyExtService {
     }
 
     AdminUser user = authContext.getOperator();
-    
+
     family.setShortcode(null);
     Family created =
         familyService.create(
