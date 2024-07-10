@@ -98,7 +98,6 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     id: 'lastLogin',
     header: 'Last login',
-    accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
     meta: {
       columnType: 'instant'
