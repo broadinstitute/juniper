@@ -13,6 +13,7 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
+  ParticipantUser,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -74,6 +75,7 @@ export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
   latestKit?: KitRequest
+  participantUser?: ParticipantUser
 }
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }

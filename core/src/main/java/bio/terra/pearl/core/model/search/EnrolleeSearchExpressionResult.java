@@ -4,6 +4,7 @@ import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
@@ -22,6 +23,7 @@ import java.util.List;
 public class EnrolleeSearchExpressionResult {
     private Enrollee enrollee;
     private Profile profile;
+    private ParticipantUser participantUser;
     private MailingAddress mailingAddress;
     private final List<Answer> answers = new ArrayList<>();
     private final List<ParticipantTask> tasks = new ArrayList<>();
