@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
-  private SiteMediaService siteMediaService;
+  private final SiteMediaService siteMediaService;
 
   public SiteMediaController(SiteMediaService siteMediaService) {
     this.siteMediaService = siteMediaService;
@@ -23,7 +23,16 @@ public class SiteMediaController implements SiteMediaApi {
 
   @Override
   @CrossOrigin(
-      origins = {"https://juniperdemodev.b2clogin.com", "https://junipercmidemo.b2clogin.com"},
+      origins = {
+        "https://juniperdemodev.b2clogin.com", // Heart (demo only)
+        "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+        "https://ourhealthdev.b2clogin.com", // OurHealth (prod)
+        "https://ourhealthstudy.b2clogin.com", // OurHealth (demo)
+        "https://hearthivedev.b2clogin.com", // HeartHive (prod)
+        "https://hearthive.b2clogin.com", // HeartHive (demo)
+        "https://gvascdev.b2clogin.com", // gVASC (demo)
+        "https://gvascprod.b2clogin.com" // gVASC (prod)
+      },
       maxAge = 3600,
       methods = {RequestMethod.GET, RequestMethod.OPTIONS})
   public ResponseEntity<Resource> get(

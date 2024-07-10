@@ -36,13 +36,6 @@ public class B2CConfigurationService {
     return portalToConfig.get(portalShortcode);
   }
 
-  public List<String> getOrigins() {
-    return portalConfiguration.getB2CProperties().values().stream()
-        .map(B2CPortalConfiguration.B2CProperties::getTenantName)
-        .map(tenantName -> "https://" + tenantName + ".b2clogin.com")
-        .collect(Collectors.toList());
-  }
-
   /**
    * Initialize B2C configuration from a yaml file. The file can be specified as an absolute path or
    * a relative path. If relative, it is loaded from the classpath.

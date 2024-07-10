@@ -22,17 +22,14 @@ public class PortalController implements PortalApi {
   private final PortalService portalService;
   private final PortalEnvironmentService portalEnvironmentService;
   private final PortalDashboardConfigService portalDashboardConfigService;
-  private final B2CConfigurationService b2CConfigurationService;
 
   public PortalController(
       PortalService portalService,
       PortalEnvironmentService portalEnvironmentService,
-      PortalDashboardConfigService portalDashboardConfigService,
-      B2CConfigurationService b2CConfigurationService) {
+      PortalDashboardConfigService portalDashboardConfigService) {
     this.portalService = portalService;
     this.portalEnvironmentService = portalEnvironmentService;
     this.portalDashboardConfigService = portalDashboardConfigService;
-    this.b2CConfigurationService = b2CConfigurationService;
   }
 
   @Override
@@ -57,7 +54,16 @@ public class PortalController implements PortalApi {
 
   @Override
   @CrossOrigin(
-      origins = {"https://juniperdemodev.b2clogin.com", "https://junipercmidemo.b2clogin.com"},
+      origins = {
+        "https://juniperdemodev.b2clogin.com", // Heart (demo only)
+        "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+        "https://ourhealthdev.b2clogin.com", // OurHealth (demo)
+        "https://ourhealthstudy.b2clogin.com", // OurHealth (prod)
+        "https://hearthivedev.b2clogin.com", // HeartHive (demo)
+        "https://hearthive.b2clogin.com", // HeartHive (prod)
+        "https://gvascdev.b2clogin.com", // gVASC (demo)
+        "https://gvascprod.b2clogin.com" // gVASC (prod)
+      },
       maxAge = 3600,
       methods = {RequestMethod.GET, RequestMethod.OPTIONS})
   public ResponseEntity<Object> getBranding(String portalShortcode, String envName) {
