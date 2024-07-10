@@ -18,7 +18,6 @@ import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import java.util.List;
 import java.util.UUID;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -95,32 +94,33 @@ public class ParticipantTaskExtServiceTests extends BaseSpringBootTest {
   public void testGetByStudyAuthsToStudy() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     when(mockAuthUtilService.authUserToStudy(user, "foo", "bar"))
-            .thenThrow(new PermissionDeniedException("test1"));
+        .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
-            PermissionDeniedException.class,
-            () ->
-                    participantTaskExtService.getByStudyEnvironment(
-                            "foo", "bar", EnvironmentName.irb, List.of(), user));
+        PermissionDeniedException.class,
+        () ->
+            participantTaskExtService.getByStudyEnvironment(
+                "foo", "bar", EnvironmentName.irb, List.of(), user));
   }
 
   @Test
   public void testGetByEnrolleeAuthsToEnrollee() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     when(mockAuthUtilService.authAdminUserToEnrollee(user, "code12"))
-            .thenThrow(new PermissionDeniedException("test1"));
+        .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
-            PermissionDeniedException.class, () -> participantTaskExtService.getByEnrollee("code12", user));
+        PermissionDeniedException.class,
+        () -> participantTaskExtService.getByEnrollee("code12", user));
   }
 
   @Test
   public void testUpdateAuthsToStudy() {
     AdminUser user = AdminUser.builder().superuser(false).build();
     when(mockAuthUtilService.authUserToStudy(user, "foo", "bar"))
-            .thenThrow(new PermissionDeniedException("test1"));
+        .thenThrow(new PermissionDeniedException("test1"));
     Assertions.assertThrows(
-            PermissionDeniedException.class,
-            () ->
-                    participantTaskExtService.update(
-                            "foo", "bar", EnvironmentName.irb, UUID.randomUUID(), new ParticipantTask(), user));
+        PermissionDeniedException.class,
+        () ->
+            participantTaskExtService.update(
+                "foo", "bar", EnvironmentName.irb, UUID.randomUUID(), new ParticipantTask(), user));
   }
 }
