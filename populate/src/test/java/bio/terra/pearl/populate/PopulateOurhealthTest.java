@@ -102,7 +102,7 @@ public class PopulateOurhealthTest extends BasePopulatePortalsTest {
     }
 
     private void checkAdminTasks(UUID sandboxStudyEnvId) {
-        ParticipantTaskService.AdminTaskListDto taskInfo = participantTaskService.findByStudyEnvironmentId(sandboxStudyEnvId,
+        ParticipantTaskService.ParticipantTaskTaskListDto taskInfo = participantTaskService.findByStudyEnvironmentId(sandboxStudyEnvId,
                 List.of("participantNote", "enrollee"));
         // check that 3 tasks from 2 enrollees, related to 3 notes
         assertThat(taskInfo.tasks(), hasSize(3));

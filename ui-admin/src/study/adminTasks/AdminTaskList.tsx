@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import Api, { AdminTaskListDto, StudyEnvironmentSurvey } from 'api/api'
+import Api, { ParticipantTaskListDto, StudyEnvironmentSurvey } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
@@ -27,7 +27,7 @@ import { renderPageHeader } from 'util/pageUtils'
 
 /** show the lists of the user's tasks and all tasks */
 export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const [taskData, setTaskData] = useState<AdminTaskListDto>({
+  const [taskData, setTaskData] = useState<ParticipantTaskListDto>({
     tasks: [], enrollees: [], participantNotes: []
   })
   const [sorting, setSorting] = useState<SortingState>([
@@ -112,7 +112,7 @@ export default function AdminTaskList({ studyEnvContext }: {studyEnvContext: Stu
 }
 
 const MyTaskList = ({ studyEnvContext, taskData }: {studyEnvContext: StudyEnvContextT,
-taskData: AdminTaskListDto}) => {
+taskData: ParticipantTaskListDto}) => {
   const { user } = useUser()
   const [sorting, setSorting] = useState<SortingState>([
     { id: 'status', desc: true },
@@ -156,7 +156,7 @@ taskData: AdminTaskListDto}) => {
 
 
 const taskDescription = (
-  task: ParticipantTask, studyEnvParams: StudyEnvParams, studyEnvContext: StudyEnvContextT, taskData: AdminTaskListDto
+  task: ParticipantTask, studyEnvParams: StudyEnvParams, studyEnvContext: StudyEnvContextT, taskData: ParticipantTaskListDto
 ) => {
   const matchedNote = task.participantNoteId ?
     taskData.participantNotes.find(note => note.id === task.participantNoteId) : undefined

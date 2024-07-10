@@ -143,7 +143,7 @@ export type PepperKit = {
   errorMessage: string
 }
 
-export type AdminTaskListDto = {
+export type ParticipantTaskListDto = {
   tasks: ParticipantTask[]
   enrollees: Enrollee[]
   participantNotes: ParticipantNote[]
@@ -1187,7 +1187,7 @@ export default {
   },
 
   async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
-    envName: string, include: string[]): Promise<AdminTaskListDto> {
+    envName: string, include: string[]): Promise<ParticipantTaskListDto> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
     if (include.length) {
       url = `${url}?include=${include.join(',')}`

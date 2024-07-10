@@ -15,7 +15,7 @@ test('can update a task', async () => {
   const task = mockAdminTask()
   render(<AdminTaskEditModal task={task} studyEnvContext={studyEnvContext} users={users} onDismiss={jest.fn()}/>)
   expect(screen.getByText('Update admin task')).toBeInTheDocument()
-  select(screen.getByLabelText('Status'), 'COMPLETE')
+  select(screen.getByLabelText('Status'), 'Complete')
   await userEvent.click(screen.getByText('Save'))
 
   expect(apiUpdateSpy).toHaveBeenCalledWith('portalCode', 'fakeStudy', 'sandbox', {
