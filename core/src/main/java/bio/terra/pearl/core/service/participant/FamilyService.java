@@ -1,8 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
-import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -26,8 +24,6 @@ import java.util.UUID;
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
     private final EnrolleeService enrolleeService;
-    private final EnrolleeRelationDao enrolleeRelationDao;
-    private final ProfileDao profileDao;
     private final FamilyEnrolleeService familyEnrolleeService;
     private final EnrolleeRelationService enrolleeRelationService;
 
@@ -36,14 +32,10 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
                          @Lazy EnrolleeService enrolleeService,
-                         EnrolleeRelationDao enrolleeRelationDao,
-                         ProfileDao profileDao,
                          FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.enrolleeService = enrolleeService;
-        this.enrolleeRelationDao = enrolleeRelationDao;
-        this.profileDao = profileDao;
         this.familyEnrolleeService = familyEnrolleeService;
         this.enrolleeRelationService = enrolleeRelationService;
     }
