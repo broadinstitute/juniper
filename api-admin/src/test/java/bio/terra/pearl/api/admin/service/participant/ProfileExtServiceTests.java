@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.service.participant;
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
 import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
-import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -15,13 +15,14 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
-import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
@@ -30,6 +31,15 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private ProfileService profileService;
   @Autowired private DataChangeRecordService dataChangeRecordService;
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
+
+  @Test
+  public void testAllAuthenticated() {
+    AuthTestUtils.assertAllMethodsAnnotated(
+            profileExtService,
+            Map.of(
+                    "updateProfileForEnrollee",
+                    AuthAnnotationSpec.withPortalEnrolleePerm("participant_data_edit")));
+  }
 
   @Test
   @Transactional
@@ -47,12 +57,12 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () -> {
           profileExtService.updateProfileForEnrollee(
-              PortalStudyEnvAuthContext.of(
+                  PortalEnrolleeAuthContext.of(
                   operator,
                   studyEnvBundle.getPortal().getShortcode(),
                   studyEnvBundle.getStudy().getShortcode(),
-                  EnvironmentName.irb),
-              enrollee.getShortcode(),
+                          EnvironmentName.irb,
+                          enrollee.getShortcode()),
               "Asdf",
               Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
         });
@@ -71,12 +81,12 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
 
     profileExtService.updateProfileForEnrollee(
-        PortalStudyEnvAuthContext.of(
+            PortalEnrolleeAuthContext.of(
             operator,
             studyEnvBundle.getPortal().getShortcode(),
             studyEnvBundle.getStudy().getShortcode(),
-            EnvironmentName.irb),
-        enrollee.getShortcode(),
+                    EnvironmentName.irb,
+                    enrollee.getShortcode()),
         "A good reason",
         Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
 
