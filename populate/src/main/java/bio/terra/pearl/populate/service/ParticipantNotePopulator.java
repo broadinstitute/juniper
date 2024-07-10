@@ -2,7 +2,6 @@ package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.dao.admin.AdminUserDao;
 import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
-import bio.terra.pearl.core.dao.participant.EnrolleeDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
@@ -12,8 +11,8 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import bio.terra.pearl.populate.dto.AdminTaskPopDto;
 import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
+import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -57,7 +56,7 @@ public class ParticipantNotePopulator {
         }
 
         if (notePopDto.getTask() != null) {
-            AdminTaskPopDto taskDto = notePopDto.getTask();
+            ParticipantTaskPopDto taskDto = notePopDto.getTask();
             AdminUser assignedUser = adminUserDao.findByUsername(taskDto.getAssignedToUsername()).get();
             UUID taskCreatingUserId = creatingUser.getId();
             if (taskDto.getCreatingAdminUsername() != null) {

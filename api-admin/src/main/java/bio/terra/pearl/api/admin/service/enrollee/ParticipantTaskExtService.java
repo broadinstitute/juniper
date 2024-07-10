@@ -93,7 +93,7 @@ public class ParticipantTaskExtService {
     return updatedTasks;
   }
 
-  public ParticipantTaskService.AdminTaskListDto getByStudyEnvironment(
+  public ParticipantTaskService.ParticipantTaskTaskListDto getByStudyEnvironment(
       String portalShortcode,
       String studyShortcode,
       EnvironmentName environmentName,

@@ -81,7 +81,7 @@ public class ParticipantTaskController implements ParticipantTaskApi {
     if (!StringUtils.isBlank(include)) {
       includedRelations = List.of(include.split(","));
     }
-    ParticipantTaskService.AdminTaskListDto tasks =
+    ParticipantTaskService.ParticipantTaskTaskListDto tasks =
         participantTaskExtService.getByStudyEnvironment(
             portalShortcode, studyShortcode, environmentName, includedRelations, user);
     return ResponseEntity.ok(tasks);

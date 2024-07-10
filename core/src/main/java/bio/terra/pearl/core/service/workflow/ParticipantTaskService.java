@@ -142,7 +142,7 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         return null;
     }
 
-    public AdminTaskListDto findByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
+    public ParticipantTaskTaskListDto findByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
         List<ParticipantTask> tasks = findByStudyEnvironmentId(studyEnvId).stream().filter(task -> task.getTaskType().equals(TaskType.ADMIN_NOTE) || task.getTaskType().equals(TaskType.ADMIN_FORM)).toList();
         List<Enrollee> enrollees = List.of();
         List<ParticipantNote> notes = List.of();
@@ -154,8 +154,8 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
             List<UUID> noteIds = tasks.stream().map(ParticipantTask::getParticipantNoteId).toList();
             notes = participantNoteService.findAll(noteIds);
         }
-        return new AdminTaskListDto(tasks, enrollees, notes);
+        return new ParticipantTaskTaskListDto(tasks, enrollees, notes);
     }
 
-    public record AdminTaskListDto(List<ParticipantTask> tasks, List<Enrollee> enrollees, List<ParticipantNote> participantNotes) {}
+    public record ParticipantTaskTaskListDto(List<ParticipantTask> tasks, List<Enrollee> enrollees, List<ParticipantNote> participantNotes) {}
 }
