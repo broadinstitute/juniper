@@ -161,7 +161,6 @@ export const toExpression = (searchState: ParticipantSearchState) => {
     expressions.push(`(${searchState.custom})`)
   }
 
-  expressions.push(`include({user.lastLogin})`)
   return concatSearchExpressions(expressions)
 }
 

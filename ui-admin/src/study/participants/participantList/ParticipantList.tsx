@@ -41,15 +41,17 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   } = useParticipantSearchState()
 
   const { isLoading } = useLoadingEffect(async () => {
+    const fullSearchExpression = concatSearchExpressions(
+      [searchExpression, 'include({user.lastLogin})']
+        .concat(familyLinkageEnabled ? ['include({family.shortcode})'] : [])
+    )
+
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      // if families exist, adding these expression guarantees that we get all families.
-      // might be a better way to do it, but this works for now
-      familyLinkageEnabled
-        ? concatSearchExpressions([`include({family.shortcode})`, searchExpression])
-        : searchExpression)
+      fullSearchExpression)
+
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 

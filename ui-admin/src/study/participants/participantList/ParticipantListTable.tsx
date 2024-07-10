@@ -167,9 +167,13 @@ function ParticipantListTable({
     cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }], [study.shortcode, currentEnv.environmentName])
 
+  const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
+
   const table = useReactTable({
     data: participantList,
-    columns,
+    columns: useMemo(
+      () => columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode'),
+      [columns, familyLinkageEnabled]),
     state: {
       sorting,
       rowSelection,
