@@ -173,7 +173,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
 
         UUID studyEnvId = enrollee.getStudyEnvironmentId();
         Family family = familyService.create(
-                Family.builder().studyEnvironmentId(studyEnvId).probandEnrolleeId(enrollee.getId()).build(),
+                Family.builder().studyEnvironmentId(studyEnvId).probandEnrolleeId(enrollee.getId()).shortcode("FAMILY1").build(),
                 getAuditInfo(testInfo));
 
         familyEnrolleeService.bulkCreate(
@@ -223,7 +223,7 @@ public class EnrolleeExportServiceTests extends BaseSpringBootTest {
         Map<String, String> targetExportMap = exportMaps.stream().filter(map -> map.get("enrollee.shortcode").equals(enrollee2.getShortcode())).findFirst().get();
         assertThat(targetExportMap.get("relation.relationshipType"), equalTo("FAMILY"));
         assertThat(targetExportMap.get("relation.familyRelationship"), equalTo("father"));
-        assertThat(targetExportMap.get("relation.family.shortcode"), equalTo(family.getShortcode()));
+        assertThat(targetExportMap.get("relation.family.shortcode"), equalTo("FAMILY1"));
 
     }
 

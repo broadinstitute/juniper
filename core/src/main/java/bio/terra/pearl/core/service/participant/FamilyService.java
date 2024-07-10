@@ -12,6 +12,7 @@ import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,9 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
     @Transactional
     public Family create(Family family, DataAuditInfo info) {
-        family.setShortcode(shortcodeService.generateShortcode("F", dao::findOneByShortcode));
+        if (StringUtils.isBlank(family.getShortcode())) {
+            family.setShortcode(shortcodeService.generateShortcode("F", dao::findOneByShortcode));
+        }
         family.setCreatedAt(Instant.now());
         family.setLastUpdatedAt(Instant.now());
         return super.create(family, info);
