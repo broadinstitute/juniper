@@ -15,14 +15,13 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
 
 public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private AdminUserFactory adminUserFactory;
@@ -104,5 +103,4 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     Assertions.assertTrue(profileUpdateRecord.getNewValue().contains("TEST"));
     Assertions.assertEquals("A good reason", profileUpdateRecord.getJustification());
   }
-  
 }
