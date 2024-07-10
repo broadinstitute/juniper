@@ -9,7 +9,6 @@ import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
 import bio.terra.pearl.core.service.survey.SurveyTaskDispatcher;
@@ -25,19 +24,16 @@ public class ParticipantTaskExtService {
   private final ParticipantTaskService participantTaskService;
   private final StudyEnvironmentService studyEnvironmentService;
   private final AuthUtilService authUtilService;
-  private final EnrolleeService enrolleeService;
   private final SurveyTaskDispatcher surveyTaskDispatcher;
 
   public ParticipantTaskExtService(
       ParticipantTaskService participantTaskService,
       StudyEnvironmentService studyEnvironmentService,
       AuthUtilService authUtilService,
-      EnrolleeService enrolleeService,
       SurveyTaskDispatcher surveyTaskDispatcher1) {
     this.participantTaskService = participantTaskService;
     this.studyEnvironmentService = studyEnvironmentService;
     this.authUtilService = authUtilService;
-    this.enrolleeService = enrolleeService;
     this.surveyTaskDispatcher = surveyTaskDispatcher1;
   }
 

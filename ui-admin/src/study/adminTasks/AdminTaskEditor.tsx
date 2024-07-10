@@ -10,8 +10,7 @@ import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { instantToDefaultString, ParticipantTask, ParticipantTaskStatus } from '@juniper/ui-core'
 
 
-/** Form for editing an admin task */
-export default function AdminTaskEditor({ task, workingTask, setWorkingTask, users }: {
+function AdminTaskEditor({ task, workingTask, setWorkingTask, users }: {
   task: ParticipantTask, workingTask: ParticipantTask,
   setWorkingTask: (task: ParticipantTask) => void, users: AdminUser[]}
 ) {
@@ -24,8 +23,11 @@ export default function AdminTaskEditor({ task, workingTask, setWorkingTask, use
       assignedAdminUserId: user?.id
     })
   })
-  const statusOpts: {label: string, value: ParticipantTaskStatus}[] = ['NEW', 'COMPLETE']
-    .map(status => ({ label: status, value: status as ParticipantTaskStatus }))
+  const statusOpts: {label: string, value: ParticipantTaskStatus}[] = [
+    { label: 'New', value: 'NEW' },
+    { label: 'In Progress', value: 'IN_PROGRESS' },
+    { label: 'Complete', value: 'COMPLETE' }
+  ]
   const statusValue = statusOpts.find(opt => opt.value === workingTask.status)
   return <div>
     <label className="mt-3" htmlFor={userSelectId}>Assigned to</label>

@@ -1,6 +1,12 @@
 import { AdminUser } from 'api/adminUser'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faClock, faPencil, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCircle as faEmptyCircle,
+  faCircleCheck,
+  faCircleHalfStroke,
+  faClock,
+  faUser
+} from '@fortawesome/free-solid-svg-icons'
 import {
   Enrollee,
   instantToDateString,
@@ -57,12 +63,17 @@ export function ParticipantNoteView({
       )}
       onClick={() => setShowTaskEdit(!showTaskEdit)}>
         { matchedTask.status === 'NEW' && <span>
+          <FontAwesomeIcon icon={faEmptyCircle} className="me-2"/>
           { matchedAssignedUser ?
               `Assigned: ${matchedAssignedUser.username}` : 'Unassigned' }
-          <FontAwesomeIcon icon={faPencil} className="ms-2"/>
+        </span> }
+        { matchedTask.status === 'IN_PROGRESS' && <span>
+          <FontAwesomeIcon icon={faCircleHalfStroke} className="me-2"/>
+          { matchedAssignedUser ?
+              `Assigned: ${matchedAssignedUser.username}` : 'Unassigned' }
         </span> }
         { isComplete && <span>
-          <FontAwesomeIcon icon={faCheck} className="me-2"/>
+          <FontAwesomeIcon icon={faCircleCheck} className="me-2"/>
             Resolved: {instantToDateString(matchedTask.completedAt)}
         </span> }
       </button>
