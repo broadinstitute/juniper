@@ -156,13 +156,14 @@ taskData: ParticipantTaskListDto}) => {
 
 
 const taskDescription = (
-  task: ParticipantTask, studyEnvParams: StudyEnvParams, studyEnvContext: StudyEnvContextT, taskData: ParticipantTaskListDto
+  task: ParticipantTask, studyEnvParams: StudyEnvParams,
+  studyEnvContext: StudyEnvContextT, taskData: ParticipantTaskListDto
 ) => {
   const matchedNote = task.participantNoteId ?
     taskData.participantNotes.find(note => note.id === task.participantNoteId) : undefined
   const matchedEnrollee = task.enrolleeId ?
     taskData.enrollees.find(enrollee => enrollee.id === task.enrolleeId) : undefined
-  const matchedForm = task.targetStableId ? studyEnvContext.currentEnv.configuredSurveys.find(survey =>
+  const matchedForm = task.targetStableId ?studyEnvContext.currentEnv.configuredSurveys.find(survey =>
     survey.survey.stableId === task.targetStableId) : undefined
 
   return <>
