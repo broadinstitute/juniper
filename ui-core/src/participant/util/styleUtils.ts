@@ -14,6 +14,18 @@ const allowedStyles = [
 
 export const sectionStyleConfigKeys = [...allowedStyles, 'backgroundImage'] as const
 
+/**
+ * Given a section config, return an style object with only the allowed styles.
+ */
+export const applyAllowedStyles = (config: SectionConfig, defaultStyles = {}): CSSProperties => {
+  return allowedStyles.reduce(
+    (acc, property) => Object.hasOwn(config, property)
+      ? { ...acc, [property]: config[property] }
+      : acc,
+    defaultStyles
+  )
+}
+
 /** From section configuration, get styles to apply to the section's container */
 export const getSectionStyle = (config: SectionConfig, getImageUrl: ImageUrlFunc): CSSProperties => {
   const defaultStyles = {
@@ -21,12 +33,7 @@ export const getSectionStyle = (config: SectionConfig, getImageUrl: ImageUrlFunc
     paddingTop: '3rem'
   }
 
-  const style: CSSProperties = allowedStyles.reduce(
-    (acc, property) => Object.hasOwn(config, property)
-      ? { ...acc, [property]: config[property] }
-      : acc,
-    defaultStyles
-  )
+  const style: CSSProperties = applyAllowedStyles(config, defaultStyles)
 
   // backgroundImage is not a pass-through style, so must be handled separately.
   if (isPlainObject(config.backgroundImage)) {
