@@ -19,7 +19,7 @@ import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
 import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardRow, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
-import { Button } from '../../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side

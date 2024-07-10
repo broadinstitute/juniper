@@ -9,7 +9,7 @@ import { Enrollee, instantToDefaultString, KitRequest } from '@juniper/ui-core'
 import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
