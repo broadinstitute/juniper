@@ -1,12 +1,10 @@
 import {
   Enrollee,
   EnrolleeRelation,
+  ParticipantUser,
   Portal
 } from '@juniper/ui-core'
-import {
-  ParticipantUser,
-  PortalParticipantUser
-} from 'api/api'
+import { PortalParticipantUser } from 'api/api'
 
 export const mockPortal: Portal = {
   id: 'portal-id',
@@ -73,7 +71,8 @@ export const mockPortal: Portal = {
 export const mockUser: ParticipantUser = {
   id: 'test-jsalk-user',
   username: 'jsalk',
-  token: ''
+  token: '',
+  lastLogin: 0
 }
 
 // 3 users, main proxy "Jonas Salk" with two dependents - "Peter Salk" and "Jonathan Salk"

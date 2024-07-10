@@ -6,13 +6,13 @@ import React, {
 import { useAuth } from 'react-oidc-context'
 import Api, {
   LoginResult,
-  ParticipantUser,
   PortalParticipantUser
 } from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import {
   Enrollee,
   EnrolleeRelation,
+  ParticipantUser,
   Profile
 } from '@juniper/ui-core'
 

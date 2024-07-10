@@ -1,4 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, {
+  useMemo,
+  useState
+} from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { Link } from 'react-router-dom'
@@ -23,15 +26,22 @@ import {
   useRoutableTablePaging
 } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faEnvelope
+} from '@fortawesome/free-solid-svg-icons'
 import AdHocEmailModal from '../AdHocEmailModal'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import {
+  currentIsoDate,
+  instantToDefaultString
+} from '@juniper/ui-core'
 import { useLoadingEffect } from 'api/api-utils'
 import TableClientPagination from 'util/TablePagination'
 import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
 import { useParticipantSearchState } from 'util/participantSearchUtils'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -88,11 +98,13 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
   }, {
     id: 'lastLogin',
     header: 'Last login',
-    accessorKey: 'participantUser.lastLogin',
     enableColumnFilter: false,
     meta: {
       columnType: 'instant'
     },
+    // if we don't use an accessorFn, tanstack will spam the logs with
+    // 'undefined' warnings
+    accessorFn: row => row.participantUser?.lastLogin,
     cell: info => instantToDefaultString(info.getValue() as unknown as number)
   }, {
     id: 'familyName',
@@ -152,7 +164,9 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   const { isLoading } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(portal.shortcode,
-      study.shortcode, currentEnv.environmentName, searchExpression)
+      study.shortcode,
+      currentEnv.environmentName,
+      concatSearchExpressions([searchExpression, 'include({user.lastLogin})']))
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 

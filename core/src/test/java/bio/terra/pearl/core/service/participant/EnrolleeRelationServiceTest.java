@@ -3,11 +3,9 @@ package bio.terra.pearl.core.service.participant;
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.factory.portal.PortalEnvironmentFactory;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeRelation;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import org.junit.jupiter.api.Assertions;
@@ -18,6 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
@@ -35,6 +36,12 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
     @Autowired
     ParticipantUserService participantUserService;
+
+    @Autowired
+    FamilyFactory familyFactory;
+
+    @Autowired
+    FamilyEnrolleeService familyEnrolleeService;
 
     @Test
     @Transactional
@@ -145,11 +152,11 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
                 proxyEnrollee.getId(),
                 RelationshipType.PROXY
         );
-        Assertions.assertEquals(1, validRelations.size());
+        assertEquals(1, validRelations.size());
         EnrolleeRelation validRelation = validRelations.get(0);
-        Assertions.assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), validRelation.getTargetEnrolleeId());
-        Assertions.assertEquals(enrolleeRelationValid.getEnrolleeId(), validRelation.getEnrolleeId());
-        Assertions.assertEquals(enrolleeRelationValid.getRelationshipType(), validRelation.getRelationshipType());
+        assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), validRelation.getTargetEnrolleeId());
+        assertEquals(enrolleeRelationValid.getEnrolleeId(), validRelation.getEnrolleeId());
+        assertEquals(enrolleeRelationValid.getRelationshipType(), validRelation.getRelationshipType());
     }
 
     @Test
@@ -189,13 +196,13 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         );
 
         List<EnrolleeRelation> targetEnrollee2ValidRelations = enrolleeRelationService.findByTargetEnrolleeId(targetEnrollee2.getId());
-        Assertions.assertEquals(1, targetEnrollee2ValidRelations.size());
-        Assertions.assertEquals(enrolleeRelationValid.getEnrolleeId(), targetEnrollee2ValidRelations.get(0).getEnrolleeId());
-        Assertions.assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), targetEnrollee2ValidRelations.get(0).getTargetEnrolleeId());
-        Assertions.assertEquals(enrolleeRelationValid.getRelationshipType(), targetEnrollee2ValidRelations.get(0).getRelationshipType());
+        assertEquals(1, targetEnrollee2ValidRelations.size());
+        assertEquals(enrolleeRelationValid.getEnrolleeId(), targetEnrollee2ValidRelations.get(0).getEnrolleeId());
+        assertEquals(enrolleeRelationValid.getTargetEnrolleeId(), targetEnrollee2ValidRelations.get(0).getTargetEnrolleeId());
+        assertEquals(enrolleeRelationValid.getRelationshipType(), targetEnrollee2ValidRelations.get(0).getRelationshipType());
 
         List<EnrolleeRelation> targetEnrollee1ValidRelations = enrolleeRelationService.findByTargetEnrolleeId(targetEnrollee1.getId());
-        Assertions.assertEquals(0, targetEnrollee1ValidRelations.size());
+        assertEquals(0, targetEnrollee1ValidRelations.size());
 
     }
 
@@ -206,8 +213,8 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         Enrollee proxyEnrollee = hubResponse.proxy();
         Enrollee governedEnrollee = hubResponse.governedEnrollee();
         List<Enrollee> targetEnrollees = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId());
-        Assertions.assertEquals(1, targetEnrollees.size());
-        Assertions.assertEquals(proxyEnrollee, targetEnrollees.get(0));
+        assertEquals(1, targetEnrollees.size());
+        assertEquals(proxyEnrollee, targetEnrollees.get(0));
 
         //now test that if proxy enrollee has multiple governed users, it is not returned
         Enrollee governed2 = enrolleeFactory.buildPersisted(getTestName(info));
@@ -224,7 +231,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         );
 
         List<Enrollee> targetEnrollees2 = enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId());
-        Assertions.assertEquals(0, targetEnrollees2.size());
+        assertEquals(0, targetEnrollees2.size());
 
         // create another exclusive proxy, make sure they are returned
         Enrollee proxy2 = enrolleeFactory.buildPersisted(getTestName(info));
@@ -241,7 +248,7 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
         );
 
 
-        Assertions.assertEquals(1,
+        assertEquals(1,
                 enrolleeRelationService.findExclusiveProxiesForTargetEnrollee(governedEnrollee.getId()).size());
 
     }
@@ -255,16 +262,95 @@ class EnrolleeRelationServiceTest extends BaseSpringBootTest {
 
         List<EnrolleeRelation> enrolleeRelations = enrolleeRelationService.findByTargetEnrolleeIdWithEnrolleesAndFamily(governedEnrollee.getId());
 
-        Assertions.assertEquals(1, enrolleeRelations.size());
+        assertEquals(1, enrolleeRelations.size());
 
         EnrolleeRelation relation = enrolleeRelations.get(0);
 
-        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrolleeId());
-        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrolleeId());
-        Assertions.assertEquals(RelationshipType.PROXY, relation.getRelationshipType());
-        Assertions.assertEquals(proxyEnrollee.getId(), relation.getEnrollee().getId());
-        Assertions.assertEquals(governedEnrollee.getId(), relation.getTargetEnrollee().getId());
+        assertEquals(proxyEnrollee.getId(), relation.getEnrolleeId());
+        assertEquals(governedEnrollee.getId(), relation.getTargetEnrolleeId());
+        assertEquals(RelationshipType.PROXY, relation.getRelationshipType());
+        assertEquals(proxyEnrollee.getId(), relation.getEnrollee().getId());
+        assertEquals(governedEnrollee.getId(), relation.getTargetEnrollee().getId());
         Assertions.assertNotNull(relation.getTargetEnrollee().getProfile());
         Assertions.assertNotNull(relation.getEnrollee().getProfile());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateFamilyRelationship(TestInfo info) {
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee proband = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        Enrollee member1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        Enrollee member2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        Family family = familyFactory.buildPersisted(getTestName(info), proband);
+        familyFactory.linkEnrolleeToFamily(member1, family);
+        familyFactory.linkEnrolleeToFamily(member2, family);
+
+        List<EnrolleeRelation> relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertEquals(0, relations.size());
+
+        enrolleeRelationService.createFamilyRelationship(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(member1.getId())
+                        .targetEnrolleeId(member2.getId())
+                        .familyId(family.getId())
+                        .familyRelationship("brother")
+                        .build(),
+                getAuditInfo(info)
+        );
+
+        relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertEquals(1, relations.size());
+
+        EnrolleeRelation relation = relations.get(0);
+        assertEquals(member1.getId(), relation.getEnrolleeId());
+        assertEquals(member2.getId(), relation.getTargetEnrolleeId());
+
+    }
+
+    @Test
+    @Transactional
+    public void testCreateFamilyRelationshipAddsToFamily(TestInfo info) {
+        StudyEnvironment studyEnvironment = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee proband = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        Family family = familyFactory.buildPersisted(getTestName(info), proband);
+
+        List<EnrolleeRelation> relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertEquals(0, relations.size());
+
+        List<FamilyEnrollee> members = familyEnrolleeService.findByFamilyId(family.getId());
+
+        assertEquals(1, members.size());
+        assertTrue(members.stream().anyMatch(fe -> fe.getEnrolleeId().equals(proband.getId())));
+
+
+        Enrollee nonMember1 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+        Enrollee nonMember2 = enrolleeFactory.buildPersisted(getTestName(info), studyEnvironment);
+
+        enrolleeRelationService.createFamilyRelationship(
+                EnrolleeRelation
+                        .builder()
+                        .enrolleeId(nonMember1.getId())
+                        .targetEnrolleeId(nonMember2.getId())
+                        .familyId(family.getId())
+                        .familyRelationship("brother")
+                        .build(),
+                getAuditInfo(info)
+        );
+
+        relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertEquals(1, relations.size());
+
+        EnrolleeRelation relation = relations.get(0);
+        assertEquals(nonMember1.getId(), relation.getEnrolleeId());
+        assertEquals(nonMember2.getId(), relation.getTargetEnrolleeId());
+
+        members = familyEnrolleeService.findByFamilyId(family.getId());
+
+        assertEquals(3, members.size());
+        assertTrue(members.stream().anyMatch(fe -> fe.getEnrolleeId().equals(nonMember1.getId())));
+        assertTrue(members.stream().anyMatch(fe -> fe.getEnrolleeId().equals(nonMember2.getId())));
+        assertTrue(members.stream().anyMatch(fe -> fe.getEnrolleeId().equals(proband.getId())));
     }
 }

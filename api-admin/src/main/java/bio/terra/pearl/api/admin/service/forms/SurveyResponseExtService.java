@@ -30,7 +30,7 @@ public class SurveyResponseExtService {
     this.surveyResponseService = surveyResponseService;
   }
 
-  @EnforcePortalStudyEnvPermission(permission = "survey_response_edit")
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public HubResponse updateResponse(
       PortalStudyEnvAuthContext authContext,
       AdminUser user,

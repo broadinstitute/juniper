@@ -4,10 +4,15 @@ import {
   ParticipantTask,
   ParticipantTaskStatus,
   ParticipantTaskType,
-  ParticipantUser,
   Survey
 } from 'api/api'
-import { defaultSurvey, Enrollee, HubResponse, Profile } from '@juniper/ui-core'
+import {
+  defaultSurvey,
+  Enrollee,
+  HubResponse,
+  ParticipantUser,
+  Profile
+} from '@juniper/ui-core'
 
 
 /** gets a mock ParticipantUser */
@@ -15,7 +20,8 @@ export const mockParticipantUser: () => ParticipantUser = () => {
   return {
     id: 'user1',
     username: 'mockUser1@mock.com',
-    token: 'fakeToken'
+    token: 'fakeToken',
+    lastLogin: 0
   }
 }
 

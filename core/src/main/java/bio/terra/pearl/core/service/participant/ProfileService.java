@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -78,5 +79,14 @@ public class ProfileService extends DataAuditedService<Profile, ProfileDao> {
     public Profile loadProfile(PortalParticipantUser ppUser) {
         return loadWithMailingAddress(ppUser.getProfileId())
                 .orElseThrow(IllegalStateException::new);
+    }
+
+    public List<Profile> findAllWithMailingAddressPreserveOrder(List<UUID> profileIds) {
+        List<Profile> profiles = dao.findAllPreserveOrder(profileIds);
+        List<MailingAddress> addresses = mailingAddressDao.findAllPreserveOrder(profiles.stream().map(Profile::getMailingAddressId).toList());
+        for (int i = 0; i < profiles.size(); i++) {
+            profiles.get(i).setMailingAddress(addresses.get(i));
+        }
+        return profiles;
     }
 }

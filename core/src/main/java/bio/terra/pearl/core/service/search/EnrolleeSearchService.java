@@ -67,11 +67,12 @@ public class EnrolleeSearchService {
         return fields;
     }
 
-    public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
+    public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression, EnrolleeSearchOptions opts) {
         try {
             return enrolleeSearchExpressionDao.executeSearch(
                     enrolleeSearchExpressionParser.parseRule(expression),
-                    studyEnvId
+                    studyEnvId,
+                    opts
             );
         } catch (UnableToExecuteStatementException e) {
             String message = e.getShortMessage();
@@ -90,6 +91,10 @@ public class EnrolleeSearchService {
             throw new IllegalArgumentException("Invalid search expression: " + e.getMessage());
         }
 
+    }
+
+    public List<EnrolleeSearchExpressionResult> executeSearchExpression(UUID studyEnvId, String expression) {
+        return executeSearchExpression(studyEnvId, expression, EnrolleeSearchOptions.builder().build());
     }
 
     public SearchValueTypeDefinition convertQuestionDefinitionToSearchType(SurveyQuestionDefinition def) {

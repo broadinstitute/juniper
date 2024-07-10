@@ -564,6 +564,7 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: expression, in: query, required: true, schema: { type: string } }
+        - { name: limit, in: query, required: false, schema: { type: integer } }
       responses:
         '200':
           description: List of results, including any linked objects that were searched upon
@@ -638,16 +639,16 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcodeOrId}:
     get:
-      summary: Finds an enrollee by shortcode
+      summary: Finds an enrollee by shortcode or id
       tags: [ enrollee ]
       operationId: find
       parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcodeOrId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: Enrollee object
@@ -720,7 +721,7 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/changeRecords:
     get:
-      summary: List the notifications sent/pending for an enrollee
+      summary: List of data change records for an enrollee
       tags: [ enrollee ]
       operationId: listChangeRecords
       parameters:
@@ -728,6 +729,7 @@ paths:
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
         - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: modelName, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: List of DataChangeRecords
@@ -752,6 +754,43 @@ paths:
         '200':
           description: Updated profile
           content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations:
+    post:
+      summary: Creates a new relation between two enrollees; if creating a family relation,
+        then they will also be added to the family (if not already).
+      tags: [ enrolleeRelation ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: enrollee relation
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: List of DataChangeRecords
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations/{enrolleeRelationId}:
+    delete:
+      summary: Deletes a relation between two enrollees
+      tags: [ enrolleeRelation ]
+      operationId: delete
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeRelationId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful deletion
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/events:
@@ -854,6 +893,74 @@ paths:
       responses:
         '200':
           description: Family object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/proband/{enrolleeShortcode}:
+    patch:
+      summary: Updates the family's proband
+      tags: [ family ]
+      operationId: updateProband
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          content: { application/json: { schema: { type: object } } }
+          description: Successfully updated proband
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/members/{enrolleeShortcode}:
+    put:
+      summary: Adds a new member to the family
+      tags: [ family ]
+      operationId: addEnrollee
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful addition
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Removes enrollee from the family
+      tags: [ family ]
+      operationId: removeEnrollee
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/changeRecords:
+    get:
+      summary: List of data change records for a family
+      tags: [ family ]
+      operationId: listChangeRecords
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: modelName, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: List of DataChangeRecords
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'

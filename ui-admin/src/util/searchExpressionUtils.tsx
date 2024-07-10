@@ -3,6 +3,7 @@ import {
   isBooleanSearchExpression,
   isComparisonSearchFacet,
   isFunctionTerm,
+  isIncludeExpression,
   isNotExpression,
   isSearchVariable,
   SearchExpression,
@@ -57,6 +58,10 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
     throw new Error('Not expressions are not supported in react-querybuilder')
   }
 
+  if (isIncludeExpression(expression)) {
+    throw new Error('Include expressions are not supported in react-querybuilder')
+  }
+
   if (isComparisonSearchFacet(expression)) {
     return [{
       field: termToString(expression.left)?.toString() || '',
@@ -64,7 +69,7 @@ const _toReactQueryBuilderState = (operator: BooleanOperator, expression: Search
       operator: expression.comparisonOperator
     }]
   }
-  throw new Error('')
+  throw new Error('Unknown expression type')
 }
 
 // Converts a Term object into a string representation.

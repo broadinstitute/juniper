@@ -31,6 +31,6 @@ public class SurveyResponseExtServiceTests extends BaseSpringBootTest {
         .authUserToPortalWithPermission(
             emptyAuthContext.getOperator(),
             emptyAuthContext.getPortalShortcode(),
-            "survey_response_edit");
+            "participant_data_edit");
   }
 }

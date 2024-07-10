@@ -3,10 +3,7 @@ package bio.terra.pearl.core.service.search;
 import bio.terra.pearl.core.antlr.CohortRuleLexer;
 import bio.terra.pearl.core.antlr.CohortRuleParser;
 import bio.terra.pearl.core.dao.kit.KitRequestDao;
-import bio.terra.pearl.core.dao.participant.EnrolleeDao;
-import bio.terra.pearl.core.dao.participant.FamilyDao;
-import bio.terra.pearl.core.dao.participant.MailingAddressDao;
-import bio.terra.pearl.core.dao.participant.ProfileDao;
+import bio.terra.pearl.core.dao.participant.*;
 import bio.terra.pearl.core.dao.survey.AnswerDao;
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.service.rule.RuleParsingErrorListener;
@@ -39,8 +36,9 @@ public class EnrolleeSearchExpressionParser {
     private final ParticipantTaskDao participantTaskDao;
     private final KitRequestDao kitRequestDao;
     private final FamilyDao familyDao;
+    private final ParticipantUserDao participantUserDao;
 
-    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao) {
+    public EnrolleeSearchExpressionParser(EnrolleeDao enrolleeDao, AnswerDao answerDao, ProfileDao profileDao, MailingAddressDao mailingAddressDao, ParticipantTaskDao participantTaskDao, KitRequestDao kitRequestDao, FamilyDao familyDao, ParticipantUserDao participantUserDao) {
         this.enrolleeDao = enrolleeDao;
         this.answerDao = answerDao;
         this.profileDao = profileDao;
@@ -48,6 +46,7 @@ public class EnrolleeSearchExpressionParser {
         this.participantTaskDao = participantTaskDao;
         this.kitRequestDao = kitRequestDao;
         this.familyDao = familyDao;
+        this.participantUserDao = participantUserDao;
     }
 
 
@@ -80,6 +79,12 @@ public class EnrolleeSearchExpressionParser {
             } else {
                 return new DefaultSearchExpression(enrolleeDao, profileDao);
             }
+        }
+        if (ctx.INCLUDE() != null) {
+            if (ctx.term().size() != 1) {
+                throw new IllegalArgumentException("Include expression requires one term");
+            }
+            return new IncludeExpression(profileDao, enrolleeDao, parseTerm(ctx.term(0)));
         }
         if (ctx.PAR_OPEN() != null && ctx.PAR_CLOSE() != null) {
             if (!ctx.expr().isEmpty()) {
@@ -178,18 +183,18 @@ public class EnrolleeSearchExpressionParser {
         String trimmedVar = variable.substring(1, variable.length() - 1).trim();
         String model = parseModel(trimmedVar);
 
-
         switch (model) {
             case "profile":
                 String profileField = parseField(trimmedVar);
-                return parseProfileTerm(profileField);
+
+                return new ProfileTerm(profileDao, mailingAddressDao, profileField);
             case "answer":
                 String[] answerFields = parseFields(trimmedVar);
                 if (answerFields.length != 2) {
                     throw new IllegalArgumentException("Invalid answer variable");
                 }
 
-                return parseAnswerTerm(answerFields[0], answerFields[1]);
+                return new AnswerTerm(answerDao, answerFields[0], answerFields[1]);
             case "age":
                 if (!trimmedVar.equals(model)) {
                     throw new IllegalArgumentException("Invalid age variable");
@@ -199,22 +204,26 @@ public class EnrolleeSearchExpressionParser {
             case "enrollee":
                 String enrolleeField = parseField(trimmedVar);
 
-                return parseEnrolleeTerm(enrolleeField);
+                return new EnrolleeTerm(enrolleeField);
             case "task":
                 String[] taskFields = parseFields(trimmedVar);
                 if (taskFields.length != 2) {
                     throw new IllegalArgumentException("Invalid answer variable");
                 }
 
-                return parseTaskTerm(taskFields[0], taskFields[1]);
+                return new TaskTerm(participantTaskDao, taskFields[0], taskFields[1]);
             case "latestKit":
                 String latestKitField = parseField(trimmedVar);
 
-                return parseLatestKitTerm(latestKitField);
+                return new LatestKitTerm(kitRequestDao, latestKitField);
             case "family":
                 String familyField = parseField(trimmedVar);
 
-                return parseFamilyTerm(familyField);
+                return new FamilyTerm(familyDao, familyField);
+            case "user":
+                String userField = parseField(trimmedVar);
+
+                return new UserTerm(participantUserDao, userField);
             default:
                 throw new IllegalArgumentException("Unknown model " + model);
         }
@@ -239,29 +248,5 @@ public class EnrolleeSearchExpressionParser {
             return variable.substring(variable.indexOf(".") + 1).split("\\.");
         }
         throw new IllegalArgumentException("No field in variable");
-    }
-
-    private ProfileTerm parseProfileTerm(String field) {
-        return new ProfileTerm(profileDao, mailingAddressDao, field);
-    }
-
-    private EnrolleeTerm parseEnrolleeTerm(String field) {
-        return new EnrolleeTerm(field);
-    }
-
-    private TaskTerm parseTaskTerm(String targetStableId, String field) {
-        return new TaskTerm(participantTaskDao, targetStableId, field);
-    }
-
-    private AnswerTerm parseAnswerTerm(String surveyStableId, String questionStableId) {
-        return new AnswerTerm(answerDao, surveyStableId, questionStableId);
-    }
-
-    private LatestKitTerm parseLatestKitTerm(String field) {
-        return new LatestKitTerm(kitRequestDao, field);
-    }
-
-    private FamilyTerm parseFamilyTerm(String field) {
-        return new FamilyTerm(familyDao, field);
     }
 }

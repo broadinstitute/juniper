@@ -1,6 +1,8 @@
 package bio.terra.pearl.api.admin.service.participant;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -21,8 +23,13 @@ public class ProfileExtService {
   /**
    * Updates the profile on behalf of the enrollee; requires a justification for auditing purposes.
    */
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public Profile updateProfileForEnrollee(
-      AdminUser operator, String enrolleeShortcode, String justification, Profile profile) {
+      PortalStudyEnvAuthContext authContext,
+      String enrolleeShortcode,
+      String justification,
+      Profile profile) {
+    AdminUser operator = authContext.getOperator();
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return this.profileService.updateWithMailingAddress(
         profile,

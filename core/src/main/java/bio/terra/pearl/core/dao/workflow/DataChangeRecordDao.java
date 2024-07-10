@@ -37,6 +37,21 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
         );
     }
 
+    public List<DataChangeRecord> findAllRecordsForEnrolleeAndModelName(UUID enrolleeId, UUID portalParticipantUserId, String modelName) {
+        return jdbi.withHandle(handle ->
+                handle
+                        .createQuery("SELECT * FROM data_change_record" +
+                                "    WHERE enrollee_id = :enrolleeId" +
+                                "    AND model_name = :modelName" +
+                                "    OR portal_participant_user_id = :portalParticipantUserId;")
+                        .bind("enrolleeId", enrolleeId)
+                        .bind("modelName", modelName)
+                        .bind("portalParticipantUserId", portalParticipantUserId)
+                        .mapTo(clazz)
+                        .list()
+        );
+    }
+
 
     public List<DataChangeRecord> findByModelId(UUID modelId) {
         return findAllByProperty("model_id", modelId);
@@ -60,5 +75,13 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
 
     public void deleteByEnrolleeId(UUID enrolleeId) {
         deleteByProperty("enrollee_id", enrolleeId);
+    }
+
+    public List<DataChangeRecord> findByFamilyId(UUID familyId) {
+        return findAllByProperty("family_id", familyId);
+    }
+
+    public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
+        return findAllByTwoProperties("family_id", familyId, "model_name", model);
     }
 }

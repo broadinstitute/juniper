@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { IconProp } from '@fortawesome/fontawesome-svg-core'
 import { faLightbulb, faUsersViewfinder } from '@fortawesome/free-solid-svg-icons'
 import { FormOptions } from './FormOptionsModal'
+import { useUser } from '../../user/UserProvider'
 
 const QUESTIONNAIRE_TEMPLATE = '{"pages":[]}'
 const randomSuffix = Math.random().toString(36).substring(2, 15)
@@ -22,7 +23,7 @@ const HTML_TEMPLATE = `{"pages":[{"elements":[{"type":"html","name":"outreach_co
 const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
                                {studyEnvContext: StudyEnvContextT, onDismiss: () => void, type: SurveyType}) => {
   const [isLoading, setIsLoading] = useState(false)
-
+  const { user } = useUser()
   const portalContext = useContext(PortalContext) as PortalContextT
   const navigate = useNavigate()
   // Screeners and research surveys default to an empty form, but marketing
@@ -134,6 +135,23 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
                 setForm({ ...form, blurb: event.target.value })}/>
           </div>
         </>}
+        { user?.superuser && <div className="p-3">
+          Import JSON <InfoPopup content="Paste a full JSON Survey model (such as produced by ActivityImporter)."/>
+          <input type="text" className="form-control" onChange={e => {
+            const importForm: Survey & { jsonContent: string}  = JSON.parse(e.target.value)
+            setForm({
+              ...defaultSurvey,
+              surveyType: type,
+              id: '',
+              createdAt: Date.now(),
+              lastUpdatedAt: Date.now(),
+              stableId: importForm.stableId,
+              version: importForm.version ?? 1,
+              name: importForm.name,
+              content: JSON.stringify(importForm.jsonContent)
+            })
+          }}/>
+        </div>}
       </form>
     </Modal.Body>
     <Modal.Footer>

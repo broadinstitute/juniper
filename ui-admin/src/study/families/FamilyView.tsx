@@ -24,6 +24,8 @@ import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
 import { uniq } from 'lodash/fp'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
+import { useUser } from 'user/UserProvider'
+import { FamilyAuditTable } from 'study/families/FamilyAuditTable'
 
 
 export type SurveyWithResponsesT = {
@@ -39,14 +41,16 @@ export default function FamilyView({ studyEnvContext }: { studyEnvContext: Study
   return <>
     {isLoading && <LoadingSpinner/>}
     {!isLoading && family && <LoadedFamilyView family={family} studyEnvContext={studyEnvContext}
-      onUpdate={reload}/>}
+      reloadFamily={reload}/>}
   </>
 }
 
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
-export function LoadedFamilyView({ family, studyEnvContext }:
-                                     { family: Family, studyEnvContext: StudyEnvContextT, onUpdate: () => void }) {
+export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
+                                   { family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void }) {
   const { currentEnvPath } = studyEnvContext
+
+  const { user } = useUser()
 
 
   return <div className="ParticipantView mt-3 ps-4">
@@ -68,19 +72,37 @@ export function LoadedFamilyView({ family, studyEnvContext }:
           <div style={navDivStyle}>
             <ul className="list-unstyled">
               <li style={navListItemStyle} className="ps-3">
-                <NavLink end to="." className={getLinkCssClasses}>Overview</NavLink>
+                <NavLink end to="." className={getLinkCssClasses}>Members & Relations</NavLink>
               </li>
+              {user?.superuser && <li style={navListItemStyle} className="ps-3">
+                <NavLink to="overview" className={getLinkCssClasses}>Overview<span
+                  className='badge bg-primary fw-light ms-2'>BETA</span></NavLink>
+              </li>}
               <li style={navListItemStyle} className="ps-3">
-                <NavLink to="membersAndRelations" className={getLinkCssClasses}>Members & Relations</NavLink>
+                <NavLink to="changeRecords" className={getLinkCssClasses}>Audit history</NavLink>
               </li>
             </ul>
           </div>
           <div className="participantTabContent flex-grow-1 bg-white p-3 pt-0">
             <ErrorBoundary>
               <Routes>
-                <Route index element={<FamilyOverview family={family} studyEnvContext={studyEnvContext}/>}/>
-                <Route path="membersAndRelations"
-                  element={<FamilyMembersAndRelations family={family} studyEnvContext={studyEnvContext}/>}/>
+                <Route index
+                  element={<FamilyMembersAndRelations family={family}
+                    studyEnvContext={studyEnvContext}
+                    reloadFamily={reloadFamily}/>}/>
+                {/**
+                 * eventually, we would want overview to be the index element
+                 * so that there could be a readonly view for those without edit
+                 * permissions
+                 */}
+                {user?.superuser && <Route path="overview" element={<FamilyOverview
+                  family={family}
+                  studyEnvContext={studyEnvContext}/>}
+                />}
+                <Route path="changeRecords" element={<FamilyAuditTable
+                  family={family}
+                  studyEnvContext={studyEnvContext}
+                />}/>
                 <Route path="*" element={<div>unknown enrollee route</div>}/>
               </Routes>
             </ErrorBoundary>

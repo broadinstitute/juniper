@@ -1,35 +1,39 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
 import {
-  createAddressValidator,
+  createAddressValidator, Enrollee,
   makeSurveyJsData,
   PortalEnvironment,
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
 } from '@juniper/ui-core'
-import Api, { Answer, Survey } from 'api/api'
+import Api, { Answer, DataChangeRecord, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
 import PrintFormModal from './PrintFormModal'
 import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { doApiLoad } from 'api/api-utils'
+import { AnswerEditHistory } from './AnswerEditHistory'
 
 type SurveyFullDataViewProps = {
+  responseId?: string,
   answers: Answer[],
   survey: Survey,
   resumeData?: string,
-  userId?: string,
+  enrollee?: Enrollee,
   studyEnvContext: StudyEnvContextT
 }
 
 /** renders every item in a survey response */
 export default function SurveyFullDataView({
-  answers, resumeData, survey, userId, studyEnvContext
+  responseId, answers, resumeData, survey, enrollee, studyEnvContext
 }: SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
-  const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
+  const [changeRecords, setChangeRecords] = useState<DataChangeRecord[]>([])
+  const surveyJsData = makeSurveyJsData(resumeData, answers, enrollee?.participantUserId)
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
   surveyJsModel.data = surveyJsData!.data
@@ -45,6 +49,20 @@ export default function SurveyFullDataView({
   const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
     env.environmentName === studyEnvContext.currentEnv.environmentName)
   const supportedLanguages = portalEnv?.supportedLanguages ?? []
+
+  useEffect(() => {
+    if (responseId && enrollee) {
+      doApiLoad(async () => {
+        const changeRecords = await Api.fetchEnrolleeChangeRecords(
+          studyEnvContext.portal.shortcode,
+          studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName,
+          enrollee.shortcode,
+          survey.stableId)
+        setChangeRecords(changeRecords)
+      })
+    }
+  }, [responseId])
 
   return <div>
     <div className="d-flex d-print-none">
@@ -74,7 +92,7 @@ export default function SurveyFullDataView({
       <Route index element={<dl>
         {questions.map((question, index) =>
           <ItemDisplay key={index} question={question} answerMap={answerMap} supportedLanguages={supportedLanguages}
-            surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
+            surveyVersion={survey.version} showFullQuestions={showFullQuestions} editHistory={changeRecords}/>)}
       </dl>}/>
     </Routes>
   </div>
@@ -85,7 +103,8 @@ type ItemDisplayProps = {
   answerMap: Record<string, Answer>,
   surveyVersion: number,
   showFullQuestions: boolean,
-  supportedLanguages: PortalEnvironmentLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[],
+  editHistory?: DataChangeRecord[]
 }
 
 /**
@@ -93,10 +112,13 @@ type ItemDisplayProps = {
  * with stableId and the viewed language (if applicable)
  */
 export const ItemDisplay = ({
-  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages
+  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages, editHistory = []
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
   const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
+  const editHistoryForQuestion = editHistory
+    .filter(changeRecord => changeRecord.fieldName === question.name)
+    .sort((a, b) => b.createdAt - a.createdAt)
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -105,15 +127,20 @@ export const ItemDisplay = ({
   if ((question as CalculatedValue).expression) {
     stableIdText += ' -- derived'
   }
+
   return <>
     <dt className="fw-normal">
-      {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">
+      <div className="d-flex align-items-center">
+        {renderQuestionText(answer, question, showFullQuestions)}
+        <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
-      </span>
+        </span>
+      </div>
     </dt>
     <dl>
-      <pre className="fw-bold">{displayValue}</pre>
+      { answer ?
+        <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> :
+        <pre className="fw-bold">{displayValue}</pre>}
     </dl>
   </>
 }

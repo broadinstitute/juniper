@@ -656,4 +656,39 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         assertEquals(1, results.get(0).getFamilies().size());
         assertEquals(family.getId(), results.get(0).getFamilies().get(0).getId());
     }
+
+
+    @Test
+    @Transactional
+    public void testInclude(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        Family family = familyFactory.buildPersisted(getTestName(info), enrollee);
+
+        EnrolleeSearchExpression defaultExp = enrolleeSearchExpressionParser.parseRule(
+                ""
+        );
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({family.shortcode})"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(defaultExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+
+        EnrolleeSearchExpressionResult result = results.get(0);
+        assertEquals(enrollee.getId(), result.getEnrollee().getId());
+        assertEquals(0, result.getFamilies().size());
+
+
+        results = enrolleeSearchExpressionDao.executeSearch(includeExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+
+        result = results.get(0);
+
+        assertEquals(enrollee.getId(), result.getEnrollee().getId());
+        assertEquals(1, result.getFamilies().size());
+        assertEquals(family.getId(), result.getFamilies().get(0).getId());
+    }
 }

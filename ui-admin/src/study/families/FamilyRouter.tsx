@@ -17,8 +17,8 @@ import {
 export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { user } = useUser()
 
-  if (!userHasPermission(user, studyEnvContext.portal.id, 'prototype')) {
-    return <p>You do not have the appropriate permissions to access this prototype feature.</p>
+  if (!userHasPermission(user, studyEnvContext.portal.id, 'participant_data_edit')) {
+    return <div>Permission denied</div>
   }
 
   return <>
