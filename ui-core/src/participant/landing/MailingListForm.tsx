@@ -7,11 +7,13 @@ import { useApiContext } from '../../participant/ApiProvider'
 
 type MailingListFormProps = {
   onJoin?: () => void
+  title?: React.ReactNode
+  body?: React.ReactNode
 }
 
 /** shows a form for entering name and email to join the portal mailing list */
 export function MailingListForm(props: MailingListFormProps) {
-  const { onJoin } = props
+  const { onJoin, body, title } = props
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -36,8 +38,8 @@ export function MailingListForm(props: MailingListFormProps) {
       color: 'var(--brand-color)',
       backgroundColor: 'var(--brand-color-shift-90)'
     }}/>
-    <h2 className="h4">Join Mailing List</h2>
-    <p>Stay updated with news about the study</p>
+    <h2 className="h4">{title ? title : 'Join Mailing List'}</h2>
+    {body ? body : <p>Stay updated with news about the study</p>}
     {!joined && <form onSubmit={submit} style={{ maxWidth: 300 }}>
       <input className="form-control my-3" size={30} style={inputStyle} type="text" placeholder="Your name"
         value={name} onChange={e => setName(e.target.value)}/>

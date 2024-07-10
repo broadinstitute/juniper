@@ -15,17 +15,17 @@ export default function StudyIneligible(props: StudyIneligibleProps) {
   return (
     <div className="flex-grow-1" style={{ background: '#f2f2f2' }}>
       <div className="container col-md-6 mt-5">
-        <h1 className="h3 mb-3">Sorry, you are not eligible to enroll right now</h1>
+        <h1 className="h3 mb-3">Thank you for your interest in {studyName}</h1>
         <p>
-          The {studyName} study can only accept participants who meet all of the conditions.
-        </p>
-        <p>
-          Over time, we may be able to expand the participation requirements of this project.
-          If you join our mailing list below, we can contact you with updates.
+          Unfortunately, you do not meet the eligibility criteria to participate in {studyName} at this time.
         </p>
         <div className="card mt-4">
           <div className="card-body py-5">
-            <MailingListForm/>
+            <MailingListForm
+              title='Stay informed'
+              body={<p>
+                Provide your email below and we’ll keep you up-to-date on developments. You can unsubscribe at any time.
+              </p>}/>
           </div>
         </div>
         <p className="text-center mt-3">
