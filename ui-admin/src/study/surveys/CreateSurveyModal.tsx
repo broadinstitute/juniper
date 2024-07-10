@@ -135,9 +135,9 @@ const CreateSurveyModal = ({ studyEnvContext, onDismiss, type }:
                 setForm({ ...form, blurb: event.target.value })}/>
           </div>
         </>}
-        { user?.superuser && <div>
-          Import JSON
-          <input type="text" onChange={e => {
+        { user?.superuser && <div className="p-3">
+          Import JSON <InfoPopup content="Paste a full JSON Survey model (such as produced by ActivityImporter)."/>
+          <input type="text" className="form-control" onChange={e => {
             const importForm: Survey & { jsonContent: string}  = JSON.parse(e.target.value)
             setForm({
               ...defaultSurvey,
