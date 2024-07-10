@@ -3,6 +3,11 @@ import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faPeopleGroup,
+  faPerson
+} from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
@@ -10,11 +15,6 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faPeopleGroup,
-  faPerson
-} from '@fortawesome/free-solid-svg-icons'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {

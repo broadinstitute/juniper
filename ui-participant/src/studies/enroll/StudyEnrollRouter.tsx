@@ -1,19 +1,41 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { useUser } from 'providers/UserProvider'
-import { Route, Routes, useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams,
+  useSearchParams
+} from 'react-router-dom'
 import { usePortalEnv } from 'providers/PortalProvider'
-import Api, { ParticipantUser, Portal, StudyEnvironment, Survey } from 'api/api'
+import Api, {
+  Portal,
+  StudyEnvironment,
+  Survey
+} from 'api/api'
 import NavBar from 'Navbar'
 import PreEnrollView from './PreEnroll'
 import StudyIneligible from './StudyIneligible'
 import { HubUpdate } from 'hub/hubUpdates'
 import PortalRegistrationRouter from 'landing/registration/PortalRegistrationRouter'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { useHasProvidedStudyPassword, usePreEnrollResponseId } from 'browserPersistentState'
+import {
+  useHasProvidedStudyPassword,
+  usePreEnrollResponseId
+} from 'browserPersistentState'
 
 import { StudyEnrollPasswordGate } from './StudyEnrollPasswordGate'
-import { useI18n } from '@juniper/ui-core'
-import { enrollCurrentUserInStudy, enrollProxyUserInStudy } from 'util/enrolleeUtils'
+import {
+  ParticipantUser,
+  useI18n
+} from '@juniper/ui-core'
+import {
+  enrollCurrentUserInStudy,
+  enrollProxyUserInStudy
+} from 'util/enrolleeUtils'
 import { logError } from 'util/loggingUtils'
 
 export type StudyEnrollContext = {

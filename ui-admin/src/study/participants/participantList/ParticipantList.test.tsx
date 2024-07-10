@@ -120,8 +120,8 @@ test('keyword search sends search api request', async () => {
     'or {profile.contactEmail} contains \'foo\' ' +
     'or {enrollee.shortcode} contains \'foo\' ' +
     'or {family.shortcode} contains \'foo\') ' +
-    'and {enrollee.subject} = true'
-  )
+    'and {enrollee.subject} = true ' +
+    'and include({user.lastLogin})')
 })
 
 test('allows the user to cycle pages', async () => {

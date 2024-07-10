@@ -6,6 +6,7 @@ import {
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
+  ParticipantUser,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
@@ -47,12 +48,6 @@ export type {
   Survey,
   SurveyResponse
 } from '@juniper/ui-core'
-
-export type ParticipantUser = {
-  id: string,
-  username: string,
-  token: string
-};
 
 export type LoginResult = {
   user: ParticipantUser,

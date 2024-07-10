@@ -1,5 +1,4 @@
 import Api, {
-  ParticipantUser,
   Portal,
   PortalParticipantUser
 } from '../api/api'
@@ -11,6 +10,7 @@ import ActiveUserProvider from '../providers/ActiveUserProvider'
 import {
   Enrollee,
   EnrolleeRelation,
+  ParticipantUser,
   Profile
 } from '@juniper/ui-core'
 
@@ -155,7 +155,8 @@ const _ProvideTestUser = ({
       user: user || {
         id: '',
         username: '',
-        token: ''
+        token: '',
+        lastLogin: 0
       },
       enrollees,
       proxyRelations
