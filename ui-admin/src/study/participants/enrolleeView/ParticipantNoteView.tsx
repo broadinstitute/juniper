@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faCircleCheck,
   faCircleHalfStroke,
-  faClock,
+  faClock, faEdit,
   faUser
 } from '@fortawesome/free-solid-svg-icons'
 import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons'
@@ -66,15 +66,18 @@ export function ParticipantNoteView({
           <FontAwesomeIcon icon={faEmptyCircle} className="me-2"/>
           { matchedAssignedUser ?
               `Assigned: ${matchedAssignedUser.username}` : 'Unassigned' }
+          <FontAwesomeIcon icon={faEdit} className="ms-2"/>
         </span> }
         { matchedTask.status === 'IN_PROGRESS' && <span>
           <FontAwesomeIcon icon={faCircleHalfStroke} className="me-2"/>
           { matchedAssignedUser ?
               `Assigned: ${matchedAssignedUser.username}` : 'Unassigned' }
+          <FontAwesomeIcon icon={faEdit} className="ms-2"/>
         </span> }
         { isComplete && <span>
           <FontAwesomeIcon icon={faCircleCheck} className="me-2"/>
             Resolved: {instantToDateString(matchedTask.completedAt)}
+          <FontAwesomeIcon icon={faEdit} className="ms-2"/>
         </span> }
       </button>
       }

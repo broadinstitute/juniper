@@ -143,7 +143,7 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
     }
 
     public ParticipantTaskTaskListDto findByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
-        List<ParticipantTask> tasks = findByStudyEnvironmentId(studyEnvId).stream().filter(task -> task.getTaskType().equals(TaskType.ADMIN_NOTE) || task.getTaskType().equals(TaskType.ADMIN_FORM)).toList();
+        List<ParticipantTask> tasks = dao.findByStudyEnvironmentIdAndTaskType(studyEnvId, List.of(TaskType.ADMIN_NOTE, TaskType.ADMIN_FORM)).stream().toList();
         List<Enrollee> enrollees = List.of();
         List<ParticipantNote> notes = List.of();
         if (includedRelations.contains("enrollee")) {
