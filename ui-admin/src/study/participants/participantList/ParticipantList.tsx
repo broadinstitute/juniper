@@ -15,6 +15,7 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
+import { Button } from 'components/forms/Button'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -67,15 +68,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         setSearchState={setSearchState}
       />
       {
-        familyLinkageEnabled && <div className="d-flex align-content-center ms-2">
-          <button
-            className="btn-secondary btn-sm"
+        familyLinkageEnabled && <div className="d-flex align-content-center p-2">
+          <Button
+            variant="light" className="border btn-sm"
             aria-label={groupByFamily ? 'Participant view' : 'Family view'}
             onClick={() => setGroupByFamily(!groupByFamily)}>
             {groupByFamily
-              ? <><FontAwesomeIcon size={'sm'} icon={faPerson}/> Participant view</>
-              : <><FontAwesomeIcon size={'sm'} icon={faPeopleGroup}/> Family view</>}
-          </button>
+              ? <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPerson}/> Participant view</>
+              : <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPeopleGroup}/> Family view</>}
+          </Button>
         </div>
       }
 

@@ -172,17 +172,17 @@ function ParticipantListTableGroupedByFamily({
           <ParticipantListTable
             participantList={row.original.searchResults}
             studyEnvContext={studyEnvContext}
-            familyId={row.original.id}
+            familyId={row.original.id || 'no-family'}
             disablePagination={row.original.searchResults.length < 10}
             disableRowVisibilityCount={true}
             disableColumnFiltering={true}
-            header={row.original.shortcode && <div>
+            header={row.original.shortcode ? <div>
               <h5>{getFamilyNames(row.original as Family)} Family</h5>
               {row.original.members?.length !== row.original.searchResults.length &&
                   <p className="fst-italic">
                       Showing {row.original.searchResults.length}/{row.original.members?.length || 0} members
                   </p>}
-            </div>}
+            </div> : <h5>No family</h5>}
             tableClass={'table table-light'}
           />
         </div>
