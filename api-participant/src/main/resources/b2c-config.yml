@@ -12,8 +12,8 @@ b2c:
   demo:
     tenantName: juniperdemodev
     clientId: 37d95cc4-7c71-465e-9fc2-66be9a54c202
-    policyName: B2C_1A_ddp_participant_signup_signin_demo-dev-mbemis
-    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_demo-dev-mbemis
+    policyName: B2C_1A_ddp_participant_signup_signin_demo-dev-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_demo-dev-dev
   gvasc:
     tenantName: gvascdev
     clientId: 441d57d2-5f17-473b-8b19-a2ed523c09bf
@@ -22,5 +22,5 @@ b2c:
   cmi:
     tenantName: junipercmidemo
     clientId: 0cdfdafd-75fb-4e36-b6a2-c00e79c86bb0
-    policyName: B2C_1A_ddp_participant_signup_signin_cmi-dev-mbemis
-    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_cmi-dev-mbemis
+    policyName: B2C_1A_ddp_participant_signup_signin_cmi-dev-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_cmi-dev-dev
