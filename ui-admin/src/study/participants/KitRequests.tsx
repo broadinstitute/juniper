@@ -10,6 +10,7 @@ import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
 import { Button } from 'components/forms/Button'
+import { InfoCard, InfoCardHeader } from 'components/InfoCard'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -75,8 +76,8 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
     getCoreRowModel: getCoreRowModel()
   })
 
-  return <div className="card w-75 border shadow-sm mb-3">
-    <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
+  return <InfoCard>
+    <InfoCardHeader>
       <div className="d-flex justify-content-between align-items-center w-100">
         <div className="fw-bold lead my-1">Kit Requests</div>
         {user?.superuser &&
@@ -86,14 +87,16 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
             </Button>
         }
       </div>
-    </div>
+    </InfoCardHeader>
     {showRequestKitModal && <RequestKitModal
       studyEnvContext={studyEnvContext}
       enrolleeShortcode={enrollee.shortcode}
       onDismiss={() => setShowRequestKitModal(false)}
       onSubmit={onSubmit}
     />}
-    {basicTableLayout(table)}
-    {<div className='my-3'>{renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}</div>}
-  </div>
+    {basicTableLayout(table, { tableClass: 'table m-0' })}
+    {<div className='my-3'>
+      {renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}
+    </div>}
+  </InfoCard>
 }

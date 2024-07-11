@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import Api from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { ParticipantNoteView } from './ParticipantNoteView'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import { Enrollee, ParticipantNote, ParticipantTask } from '@juniper/ui-core'
 import { ParticipantNoteModal } from './ParticipantNoteModal'
@@ -10,6 +9,8 @@ import { renderEmptyMessage } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
+import { InfoCard, InfoCardHeader } from 'components/InfoCard'
+import { ParticipantNoteView } from './ParticipantNoteView'
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,
@@ -31,8 +32,8 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
     setLinkedTasks(tasks)
   }, [enrollee.shortcode])
 
-  return <div className="card w-75 border shadow-sm mb-3">
-    <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
+  return <InfoCard>
+    <InfoCardHeader>
       <div className="d-flex align-items-center justify-content-between w-100">
         <div className="fw-bold lead my-1">Notes</div>
         <Button onClick={() => setShowAdd(!showAdd)}
@@ -40,7 +41,7 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
           <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Create new note
         </Button>
       </div>
-    </div>
+    </InfoCardHeader>
     {sortedNotes.length > 0 && sortedNotes.map((note, index) => (<div key={index}>
       <div className='p-3'>
         <ParticipantNoteView enrollee={enrollee} note={note}
@@ -60,7 +61,7 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
         onUpdate()
         setShowAdd(false)
       }} studyEnvContext={studyEnvContext} />}
-  </div>
+  </InfoCard>
 }
 
 export default ParticipantNotesView
