@@ -35,6 +35,12 @@ public class SiteMediaController implements SiteMediaApi {
       },
       maxAge = 3600,
       methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+  /*
+   * This method is used to get the branding information for a portal environment.
+   * Since this is only returning publicly available assets (logos, css attributes, etc),
+   * this is allowed to be accessed from other domains. Additionally, the domains are
+   * limited to b2c origins that we control.
+   */
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteMedia> siteMediaOpt;
