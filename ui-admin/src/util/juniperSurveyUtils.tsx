@@ -1,9 +1,7 @@
 import _camelCase from 'lodash/camelCase'
-import { QuestionChoice } from '@juniper/ui-core/src/types/forms'
+import { QuestionChoice, I18nSurveyElement, SurveyQuestionAddressValidation } from '@juniper/ui-core'
 import { ReactQuestionFactory } from 'survey-react-ui'
 import React from 'react'
-import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
-import { I18nSurveyElement } from '@juniper/ui-core/build/types/forms'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with

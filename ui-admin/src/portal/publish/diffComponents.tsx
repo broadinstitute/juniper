@@ -7,8 +7,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
-import { Trigger, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
-import { PortalEnvironmentLanguage } from '@juniper/ui-core'
+import { Trigger, StudyEnvironmentSurvey, PortalEnvironmentLanguage } from '@juniper/ui-core'
 
 /**
  * returns html for displaying the differences in versions.  this does not yet include support

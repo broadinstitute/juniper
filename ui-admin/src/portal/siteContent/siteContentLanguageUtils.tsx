@@ -1,5 +1,4 @@
-import { SiteContent, allSectionProps, HtmlSection } from '@juniper/ui-core'
-import { SectionProp } from '@juniper/ui-core/build/participant/landing/sections/SectionProp'
+import { SiteContent, allSectionProps, HtmlSection, SectionProp } from '@juniper/ui-core'
 import _union from 'lodash/union'
 import { escapeCsvValue } from 'util/downloadUtils'
 

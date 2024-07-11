@@ -28,17 +28,15 @@ import {
   ParticipantTaskType,
   StudyEnvParams,
   Survey,
-  SurveyType
+  SurveyType,
+  EmailTemplate,
+  StudyEnvironmentSurvey
+  , PortalEnvironment
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import {
-  EmailTemplate,
-  StudyEnvironmentSurvey
-} from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT } from '../portal/PortalProvider'
-import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
 
 const randomString = (length: number) => {

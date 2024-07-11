@@ -5,11 +5,10 @@ import { useNavContext } from './navbar/NavContextProvider'
 import Api, { getMediaUrl } from './api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faExternalLink, faList, faSearch, faTableCellsLarge } from '@fortawesome/free-solid-svg-icons'
-import { Portal } from '@juniper/ui-core/build/types/portal'
+import { Portal, instantToDateString } from '@juniper/ui-core'
 import { basicTableLayout } from './util/tableUtils'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { useConfig } from './providers/ConfigProvider'
-import { instantToDateString } from '@juniper/ui-core'
 
 /** Shows a user the list of portals available to them */
 function HomePage() {
@@ -24,7 +23,7 @@ function HomePage() {
   [portalList, portalSearch])
 
   return <div className="container" style={{ minHeight: '100vh' }}>
-    <h1 className="h2 d-flex justify-content-center pb-2">Select a portal</h1>
+    <h1 className="h2 d-flex justify-content-center pb-2">Select a Vite 2 portal</h1>
     <div className="d-flex align-items-center pb-2">
       <form className="rounded-5 m-auto" onSubmit={e => {
         e.preventDefault()

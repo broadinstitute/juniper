@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "src",
-    "baseUrl": "./",
+    "baseUrl": "",
     "paths": {
       "src/*": ["src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }

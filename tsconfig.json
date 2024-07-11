@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
-    "target": "es5"
+    "types": ["vite/client", "vite-plugin-svgr/client"],
+    "target": "es6"
   }
 }

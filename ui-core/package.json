@@ -2,6 +2,7 @@
   "name": "@juniper/ui-core",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.5.1",
     "@fortawesome/react-fontawesome": "^0.2.0",
@@ -35,14 +36,20 @@
     "surveyjs-widgets": "1.9.75"
   },
   "main": "./build/index.js",
-  "scripts": {
-    "build": "NODE_ENV=production babel src --copy-files --extensions .js,.jsx,.ts,.tsx --out-dir build && tsc --declaration --emitDeclarationOnly",
-    "start": "chokidar 'src/**/*' -c 'npm run build'",
-    "test": "react-scripts test",
-    "tsc": "tsc"
-  },
   "eslintConfig": {
     "extends": "../.eslintrc.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/es/index.js",
+      "types": "./build/es/types/forms.js"
+    }
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview",
+    "tsc": "tsc"
   },
   "jest": {
     "moduleNameMapper": {
