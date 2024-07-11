@@ -1,4 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import React from 'react'
 
 import {
@@ -6,15 +9,28 @@ import {
   NavbarItemExternal,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
-  NavbarItemMailingList, PortalStudy
+  NavbarItemMailingList,
+  PortalStudy
 } from 'api/api'
 
-import Navbar, { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
-import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import Navbar, {
+  AccountOptionsDropdown,
+  CustomNavLink,
+  getMainJoinLink,
+  LanguageDropdown
+} from './Navbar'
+import {
+  asMockedFn,
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
-import { mockPortalEnvironmentConfig, mockUsePortalEnv } from './test-utils/test-portal-factory'
+import {
+  mockPortalEnvironmentConfig,
+  mockUsePortalEnv
+} from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
 
 jest.mock('oidc-client-ts')
@@ -97,7 +113,7 @@ describe('CustomNavLink', () => {
     }
 
     // Act
-    render(<CustomNavLink navLink={navbarItem} />)
+    render(<MockI18nProvider><CustomNavLink navLink={navbarItem}/></MockI18nProvider>)
 
     // Assert
     const link = screen.getByText('Mailing list link')
