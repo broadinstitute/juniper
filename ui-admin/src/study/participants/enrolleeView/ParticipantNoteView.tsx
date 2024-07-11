@@ -1,12 +1,12 @@
 import { AdminUser } from 'api/adminUser'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCircle as faEmptyCircle,
   faCircleCheck,
   faCircleHalfStroke,
   faClock,
   faUser
 } from '@fortawesome/free-solid-svg-icons'
+import { faCircle as faEmptyCircle } from '@fortawesome/free-regular-svg-icons'
 import {
   Enrollee,
   instantToDateString,
