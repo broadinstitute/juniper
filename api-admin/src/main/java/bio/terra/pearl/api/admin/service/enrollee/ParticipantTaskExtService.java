@@ -129,7 +129,8 @@ public class ParticipantTaskExtService {
     }
     taskToUpdate.setAssignedAdminUserId(updatedTask.getAssignedAdminUserId());
     taskToUpdate.setStatus(updatedTask.getStatus());
-    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(operator.getId()).build();
+    DataAuditInfo auditInfo =
+        DataAuditInfo.builder().responsibleAdminUserId(operator.getId()).build();
     return participantTaskService.update(taskToUpdate, auditInfo);
   }
 }
