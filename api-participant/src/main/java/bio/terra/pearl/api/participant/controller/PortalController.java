@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.participant.controller;
 
 import bio.terra.pearl.api.participant.api.PortalApi;
+import bio.terra.pearl.api.participant.models.dto.PortalBrandingDto;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -9,7 +10,6 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import java.util.HashMap;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -85,11 +85,13 @@ public class PortalController implements PortalApi {
             .findFirst()
             .orElseThrow(() -> new NotFoundException("Site content not found"));
 
-    HashMap<String, String> branding = new HashMap<>();
-    branding.put("dashboardBackgroundColor", siteContent.getDashboardBackgroundColor());
-    branding.put("navLogoCleanFileName", siteContent.getNavLogoCleanFileName());
-    branding.put("navLogoVersion", String.valueOf(siteContent.getNavLogoVersion()));
-    branding.put("primaryBrandColor", siteContent.getPrimaryBrandColor());
+    PortalBrandingDto branding =
+        PortalBrandingDto.builder()
+            .dashboardBackgroundColor(siteContent.getDashboardBackgroundColor())
+            .navLogoCleanFileName(siteContent.getNavLogoCleanFileName())
+            .navLogoVersion(siteContent.getNavLogoVersion())
+            .primaryBrandColor(siteContent.getPrimaryBrandColor())
+            .build();
 
     return ResponseEntity.ok(branding);
   }
