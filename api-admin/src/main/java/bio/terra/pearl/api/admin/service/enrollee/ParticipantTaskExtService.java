@@ -98,16 +98,16 @@ public class ParticipantTaskExtService {
       String studyShortcode,
       EnvironmentName environmentName,
       List<String> includedRelations,
-      AdminUser user) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-    return participantTaskService.findByStudyEnvironmentId(
+    return participantTaskService.findAdminTasksByStudyEnvironmentId(
         studyEnvironment.getId(), includedRelations);
   }
 
-  public List<ParticipantTask> getByEnrollee(String enrolleeShortcode, AdminUser user) {
-    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(user, enrolleeShortcode);
+  public List<ParticipantTask> getByEnrollee(String enrolleeShortcode, AdminUser operator) {
+    Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
     return participantTaskService.findByEnrolleeId(enrollee.getId()).stream()
         .filter(task -> task.getTaskType().equals(TaskType.ADMIN_NOTE))
         .toList();
@@ -119,8 +119,8 @@ public class ParticipantTaskExtService {
       EnvironmentName envName,
       UUID taskId,
       ParticipantTask updatedTask,
-      AdminUser user) {
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
+      AdminUser operator) {
+    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
     StudyEnvironment studyEnvironment =
         studyEnvironmentService.findByStudy(studyShortcode, envName).get();
     ParticipantTask taskToUpdate = participantTaskService.find(taskId).get();
@@ -129,7 +129,7 @@ public class ParticipantTaskExtService {
     }
     taskToUpdate.setAssignedAdminUserId(updatedTask.getAssignedAdminUserId());
     taskToUpdate.setStatus(updatedTask.getStatus());
-    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(user.getId()).build();
+    DataAuditInfo auditInfo = DataAuditInfo.builder().responsibleAdminUserId(operator.getId()).build();
     return participantTaskService.update(taskToUpdate, auditInfo);
   }
 }

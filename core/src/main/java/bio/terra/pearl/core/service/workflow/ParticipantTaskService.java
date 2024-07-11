@@ -41,7 +41,7 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         return dao.findByEnrolleeIds(enrolleeIds);
     }
 
-    public List<ParticipantTask> findByStudyEnvironmentId(UUID studyEnvId) {
+    public List<ParticipantTask> findAdminTasksByStudyEnvironmentId(UUID studyEnvId) {
         return dao.findByStudyEnvironmentId(studyEnvId);
     }
 
@@ -142,7 +142,7 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         return null;
     }
 
-    public ParticipantTaskTaskListDto findByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
+    public ParticipantTaskTaskListDto findAdminTasksByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
         List<ParticipantTask> tasks = dao.findByStudyEnvironmentIdAndTaskType(studyEnvId, List.of(TaskType.ADMIN_NOTE, TaskType.ADMIN_FORM)).stream().toList();
         List<Enrollee> enrollees = List.of();
         List<ParticipantNote> notes = List.of();
