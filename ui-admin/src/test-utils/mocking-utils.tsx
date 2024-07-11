@@ -1,6 +1,5 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api, {
-  AdminTask,
   Answer,
   DatasetDetails,
   EnrolleeSearchExpressionResult,
@@ -419,11 +418,16 @@ export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
 
 
 /** mock admin task */
-export const mockAdminTask = (): AdminTask => {
+export const mockAdminTask = (): ParticipantTask => {
   return {
     id: 'taskId1',
+    blocksHub: false,
+    enrolleeId: 'enrolleeId1',
+    portalParticipantUserId: 'ppUserId1',
     assignedAdminUserId: 'userId1',
     createdAt: 0,
+    taskOrder: 1,
+    taskType: 'ADMIN_FORM',
     status: 'NEW',
     creatingAdminUserId: 'userId2',
     studyEnvironmentId: 'studyEnvId1'

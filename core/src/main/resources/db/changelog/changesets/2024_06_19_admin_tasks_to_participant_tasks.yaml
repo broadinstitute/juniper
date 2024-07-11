@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: admin_tasks_to_participant_tasks
+      author: mbemis
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO participant_task
+                (created_at, last_updated_at, status, completed_at, task_type, study_environment_id, enrollee_id, blocks_hub, portal_participant_user_id, participant_note_id, assigned_admin_user_id)
+              SELECT 
+                at.created_at, 
+                at.last_updated_at, 
+                at.status, 
+                at.completed_at, 
+                'ADMIN_NOTE', 
+                at.study_environment_id, 
+                pn.enrollee_id,
+                false, 
+                ppu.id, 
+                at.participant_note_id, 
+                at.assigned_admin_user_id
+              FROM admin_task at
+              JOIN participant_note pn ON at.participant_note_id = pn.id
+              JOIN enrollee e ON pn.enrollee_id = e.id
+              JOIN portal_participant_user ppu ON e.participant_user_id = ppu.participant_user_id;

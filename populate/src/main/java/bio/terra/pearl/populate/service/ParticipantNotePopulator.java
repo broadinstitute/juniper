@@ -5,34 +5,41 @@ import bio.terra.pearl.core.dao.dataimport.TimeShiftPopulateDao;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantNote;
-import bio.terra.pearl.core.model.workflow.AdminTask;
+import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.participant.ParticipantNoteService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
-import bio.terra.pearl.populate.dto.AdminTaskPopDto;
+import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.dto.participant.ParticipantNotePopDto;
+import bio.terra.pearl.populate.dto.participant.ParticipantTaskPopDto;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 public class ParticipantNotePopulator {
-    private AdminUserDao adminUserDao;
-    private ParticipantNoteService participantNoteService;
-    private TimeShiftPopulateDao timeShiftPopulateDao;
-    private AdminTaskService adminTaskService;
+    private final ParticipantTaskService participantTaskService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final AdminUserDao adminUserDao;
+    private final ParticipantNoteService participantNoteService;
+    private final TimeShiftPopulateDao timeShiftPopulateDao;
 
     public ParticipantNotePopulator(AdminUserDao adminUserDao,
                                     ParticipantNoteService participantNoteService,
                                     TimeShiftPopulateDao timeShiftPopulateDao,
-                                    AdminTaskService adminTaskService) {
+                                    ParticipantTaskService participantTaskService,
+                                    PortalParticipantUserService portalParticipantUserService) {
         this.adminUserDao = adminUserDao;
         this.participantNoteService = participantNoteService;
         this.timeShiftPopulateDao = timeShiftPopulateDao;
-        this.adminTaskService = adminTaskService;
+        this.participantTaskService = participantTaskService;
+        this.portalParticipantUserService = portalParticipantUserService;
     }
 
     public ParticipantNote populate(Enrollee enrollee, ParticipantNotePopDto notePopDto) {
         AdminUser creatingUser = adminUserDao.findByUsername(notePopDto.getCreatingAdminUsername()).orElseThrow();
+        PortalParticipantUser portalParticipantUser = portalParticipantUserService.findForEnrollee(enrollee);
         UUID kitRequestId = null;
         if (notePopDto.getKitRequestIndex() != null) {
             kitRequestId = enrollee.getKitRequests().get(notePopDto.getKitRequestIndex()).getId();
@@ -49,21 +56,22 @@ public class ParticipantNotePopulator {
         }
 
         if (notePopDto.getTask() != null) {
-            AdminTaskPopDto taskDto = notePopDto.getTask();
+            ParticipantTaskPopDto taskDto = notePopDto.getTask();
             AdminUser assignedUser = adminUserDao.findByUsername(taskDto.getAssignedToUsername()).get();
             UUID taskCreatingUserId = creatingUser.getId();
             if (taskDto.getCreatingAdminUsername() != null) {
                 taskCreatingUserId = adminUserDao.findByUsername(taskDto.getCreatingAdminUsername()).get().getId();
             }
-            AdminTask adminTask = AdminTask.builder()
+            ParticipantTask adminTask = ParticipantTask.builder()
                     .studyEnvironmentId(enrollee.getStudyEnvironmentId())
-                    .creatingAdminUserId(taskCreatingUserId)
                     .assignedAdminUserId(assignedUser.getId())
                     .participantNoteId(participantNote.getId())
+                    .portalParticipantUserId(portalParticipantUser.getId())
                     .enrolleeId(enrollee.getId())
+                    .taskType(TaskType.ADMIN_NOTE)
                     .status(taskDto.getStatus())
                     .build();
-            adminTask = adminTaskService.create(adminTask, null);
+            adminTask = participantTaskService.create(adminTask, null);
             if (notePopDto.isTimeShifted() && !taskDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeAdminTaskCreationTime(participantNote.getId(), notePopDto.shiftedInstant());
             }

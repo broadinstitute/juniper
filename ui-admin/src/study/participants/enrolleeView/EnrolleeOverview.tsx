@@ -75,7 +75,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
         })}
 
 
-    <div className="mb-5">
+    <div>
       <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
         studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
     </div>
