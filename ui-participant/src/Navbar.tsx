@@ -301,6 +301,8 @@ export const AccountOptionsDropdown = () => {
     userManager.signinRedirect({
       redirectMethod: 'replace',
       extraQueryParams: {
+        originUrl: window.location.origin,
+        portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
         ui_locales: selectedLanguage
