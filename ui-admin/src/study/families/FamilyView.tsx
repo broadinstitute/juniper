@@ -51,8 +51,6 @@ export default function FamilyView({ studyEnvContext }: { studyEnvContext: Study
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                                    { family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void }) {
-  const { currentEnvPath } = studyEnvContext
-
   const { user } = useUser()
 
 
