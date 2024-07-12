@@ -150,21 +150,28 @@ public class ActivityImporter {
     }
 
     private JsonNode convertQuestionToSurveyJsFormat(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.COMPOSITE)) {
+            // composite questions are not 'questions' in surveyjs, rather panels.
+            // so, they need to be handled totally differently
+            return convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef);
+        }
+
         Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
         String questionType = getQuestionType(pepperQuestionDef);
         String inputType = null;
 
         Map<String, String> placeholder = null;
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("DATE")) {
-            inputType = "DATE";
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.DATE)) {
+            inputType = "date";
             DateQuestionDef dateQuestionDef = (DateQuestionDef) pepperQuestionDef;
             if (Objects.nonNull(dateQuestionDef.getPlaceholderTemplate())) {
                 placeholder = getVariableTranslationsTxt(dateQuestionDef.getPlaceholderTemplate().getTemplateText(),
                         dateQuestionDef.getPlaceholderTemplate().getVariables());
             }
         }
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("NUMERIC")) {
-            inputType = "NUMBER";
+
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.NUMERIC)) {
+            inputType = "number";
             NumericQuestionDef numericQuestionDef = (NumericQuestionDef) pepperQuestionDef;
             if (Objects.nonNull(numericQuestionDef.getPlaceholderTemplate())) {
                 placeholder = getVariableTranslationsTxt(numericQuestionDef.getPlaceholderTemplate().getTemplateText(),
@@ -172,7 +179,7 @@ public class ActivityImporter {
             }
         }
 
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("TEXT")) {
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
             TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
             if (Objects.nonNull(textQuestionDef.getPlaceholderTemplate())) {
                 placeholder = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getTemplateText(),
@@ -180,21 +187,10 @@ public class ActivityImporter {
             }
         }
 
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("COMPOSITE")) {
-            // composite questions are not 'questions' in surveyjs, rather panels.
-            // so, they need to be formatted differently
-            return convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef);
-        }
-
         List<SurveyJSQuestion.Choice> choices = null;
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.PICKLIST)) {
             PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
             choices = getPicklistChoices(picklistQuestionDef, allLangMap);
-            if (picklistQuestionDef.getSelectMode().equals(PicklistSelectMode.SINGLE)) {
-                inputType = "radiogroup";
-            } else {
-                inputType = "checkbox";
-            }
         }
 
         Map<String, String> labelTrue = null;
@@ -202,7 +198,6 @@ public class ActivityImporter {
         String valueTrue = null;
         String valueFalse = null;
         if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
-            inputType = "boolean";
             BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
 
             labelTrue = translatePepperTemplate(boolQuestionDef.getTrueTemplate());
@@ -210,8 +205,6 @@ public class ActivityImporter {
             valueTrue = "true";
             valueFalse = "false";
         } else if (pepperQuestionDef.getQuestionType().equals(QuestionType.AGREEMENT)) {
-            inputType = "boolean";
-
             valueTrue = "true";
             valueFalse = "false";
         }
@@ -226,9 +219,11 @@ public class ActivityImporter {
         if (titleMap.isEmpty() && placeholder != null) {
             // in certain cases, pepper likes to put the title in the
             // placeholder where the placeholder would be invisible
-            // in surveyjs, e.g. date
+            // in surveyjs, e.g. date, so let's put it in both to be safe
             titleMap = placeholder;
         }
+
+        // todo: handle tooltips
 
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                 .name(pepperQuestionDef.getStableId())
@@ -288,38 +283,37 @@ public class ActivityImporter {
     }
 
     private String getQuestionType(QuestionDef pepperQuestionDef) {
-        String questionType = pepperQuestionDef.getQuestionType().name();
-        if (questionType.equalsIgnoreCase("DATE") || questionType.equalsIgnoreCase("NUMERIC")) {
-            questionType = "TEXT";
+        QuestionType questionType = pepperQuestionDef.getQuestionType();
+        String surveyJsType = "text";
+        if (questionType.equals(QuestionType.DATE) || questionType.equals(QuestionType.NUMERIC)) {
+            surveyJsType = "text";
         }
-        if (questionType.equalsIgnoreCase("AGREEMENT")) {
-            questionType = "boolean";
+        if (questionType.equals(QuestionType.AGREEMENT)) {
+            surveyJsType = "boolean";
         }
-        List<SurveyJSQuestion.Choice> choices = null;
-        if (questionType.equalsIgnoreCase("PICKLIST")) {
-            questionType = "dropdown";
+        if (questionType.equals(QuestionType.PICKLIST)) {
+            surveyJsType = "dropdown";
             PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
-            if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST
-                    && picklistQuestionDef.getSelectMode() == PicklistSelectMode.SINGLE
-                    && picklistQuestionDef.getRenderMode() != PicklistRenderMode.DROPDOWN) {
-                questionType = "radiogroup";
-            }
-            if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST && picklistQuestionDef.getSelectMode() == PicklistSelectMode.MULTIPLE) {
-                questionType = "checkbox";
+            if (picklistQuestionDef.getRenderMode().equals(PicklistRenderMode.LIST)) {
+                if (picklistQuestionDef.getSelectMode().equals(PicklistSelectMode.SINGLE)) {
+                    surveyJsType = "radiogroup";
+                } else {
+                    surveyJsType = "checkbox";
+                }
             }
         }
 
-        if (questionType.equals("TEXT") && pepperQuestionDef.getClass().equals(TextQuestionDef.class)) {
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
             TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
             if (textQuestionDef.getInputType().equals(TextInputType.SIGNATURE)) {
-                questionType = "signaturepad";
+                surveyJsType = "signaturepad";
             }
             if (textQuestionDef.getInputType().equals(TextInputType.ESSAY)) {
-                questionType = "comment";
+                surveyJsType = "comment";
             }
         }
 
-        return questionType;
+        return surveyJsType;
 
     }
 
