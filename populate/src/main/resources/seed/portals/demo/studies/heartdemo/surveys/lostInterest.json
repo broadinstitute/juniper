@@ -6,7 +6,7 @@
   "eligibilityRule": "{answer.hd_hd_mental.hd_hd_mental_phq9LostInterest} = '3'",
   "jsonContent": {
     "title": {
-      "default": "Lost interests survey",
+      "en": "Lost interests survey",
       "es": "Interes perdido",
       "dev": "DEV_Lost interests survey"
     },

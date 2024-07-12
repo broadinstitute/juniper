@@ -6,6 +6,7 @@ import React from 'react'
 import { FormContent, MockI18nProvider } from '@juniper/ui-core'
 
 import { FormPreview } from './FormPreview'
+import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 const formContent: FormContent = {
   title: 'Test survey',
@@ -34,7 +35,7 @@ describe('FormPreview', () => {
     // Act
     render(
       <MockI18nProvider>
-        <FormPreview formContent={formContent} supportedLanguages={[]}/>
+        <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
       </MockI18nProvider>)
 
     // Assert
@@ -76,7 +77,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -95,7 +96,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -146,50 +147,19 @@ describe('FormPreview', () => {
         ]
       }
 
-      it('defaults to English', () => {
-        render(<MockI18nProvider>
-          <FormPreview formContent={localizedFormContent as unknown as FormContent}
-            supportedLanguages={[]}/>
-        </MockI18nProvider>)
-
-        screen.getByText('First name')
-        screen.getByText('Last name')
-      })
-
-      it('can switch to Spanish', async () => {
-        const user = userEvent.setup()
-
+      it('can show Spanish text', async () => {
         render(
           <MockI18nProvider>
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
-              supportedLanguages={[
-                { languageCode: 'en', languageName: 'English', id: '1' },
-                { languageCode: 'es', languageName: 'Spanish', id: '2' }
-              ]}
+              currentLanguage={{ languageCode: 'es', id: '', languageName: 'Spanish' }}
             />
           </MockI18nProvider>)
-
-        const languageSelector = screen.getByLabelText('Language Preview')
-        await act(() => user.click(languageSelector))
-        await act(() => user.click(screen.getByText('Spanish')))
 
         waitFor(() => {
           screen.getByText('Nombre')
           screen.getByText('Apellido')
         })
-      })
-
-      it('does not render when there is only one language', () => {
-        render(
-          <MockI18nProvider>
-            <FormPreview
-              formContent={localizedFormContent as unknown as FormContent}
-              supportedLanguages={[{ languageCode: 'en', languageName: 'English', id: '1' }]}
-            />
-          </MockI18nProvider>)
-
-        expect(screen.queryByLabelText('Language')).not.toBeInTheDocument()
       })
     })
 
@@ -219,7 +189,7 @@ describe('FormPreview', () => {
         // Act
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Assert
@@ -232,7 +202,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -269,7 +239,7 @@ describe('FormPreview', () => {
       const user = userEvent.setup()
       render(
         <MockI18nProvider>
-          <FormPreview formContent={dyanmicTextFormContent} supportedLanguages={[]}/>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
         </MockI18nProvider>)
       // with no values specified, the dynamic text should not be replaced
       expect(screen.getByText('Hello participant {profile.givenName} {profile.familyName}'))
@@ -293,7 +263,7 @@ describe('FormPreview', () => {
       const user = userEvent.setup()
       render(
         <MockI18nProvider>
-          <FormPreview formContent={dyanmicTextFormContent} supportedLanguages={[]}/>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
         </MockI18nProvider>)
       // with no values specified, the dynamic text should not be replaced
       expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))

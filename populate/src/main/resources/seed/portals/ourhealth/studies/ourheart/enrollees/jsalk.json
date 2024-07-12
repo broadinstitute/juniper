@@ -126,14 +126,16 @@
     "text": "Reviewed survey responses, many are incomplete, send additional reminder email",
     "submittedHoursAgo": 20,
     "task": {
-      "assignedToUsername": "staff2@ourhealth.org"
+      "assignedToUsername": "staff2@ourhealth.org",
+      "status": "NEW"
     }
   },{
     "creatingAdminUsername": "staff@ourhealth.org",
     "text": "Needs address change, call to confirm",
     "submittedHoursAgo": 25,
     "task": {
-      "assignedToUsername": "staff2@ourhealth.org"
+      "assignedToUsername": "staff2@ourhealth.org",
+      "status": "NEW"
     }
   }]
 }

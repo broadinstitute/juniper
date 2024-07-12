@@ -198,7 +198,7 @@
               {
                 "type": "regex",
                 "text": "Enter a number between 1 and 300.",
-                  "regex": "^([1-9][0-9]?|[1-2]\\d\\d|300)$"
+                "regex": "^([1-9][0-9]?|[1-2]\\d\\d|300)$"
               }
             ],
             "inputType": "number"

@@ -127,14 +127,16 @@
     "text": "Reviewed survey responses, many are incomplete, send additional reminder email",
     "submittedHoursAgo": 20,
     "task": {
-      "assignedToUsername": "staff@heartdemo.org"
+      "assignedToUsername": "staff@heartdemo.org",
+      "status": "NEW"
     }
   },{
     "creatingAdminUsername": "staff@heartdemo.org",
     "text": "Needs address change, call to confirm",
     "submittedHoursAgo": 25,
     "task": {
-      "assignedToUsername": "staff@heartdemo.org"
+      "assignedToUsername": "staff@heartdemo.org",
+      "status": "NEW"
     }
   }]
 }

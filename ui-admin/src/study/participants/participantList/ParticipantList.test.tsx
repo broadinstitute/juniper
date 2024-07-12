@@ -99,7 +99,8 @@ test('keyword search sends search api request', async () => {
     '({profile.name} contains \'foo\' ' +
     'or {profile.contactEmail} contains \'foo\' ' +
     'or {enrollee.shortcode} contains \'foo\') ' +
-    'and {enrollee.subject} = true'
+    'and {enrollee.subject} = true ' +
+    'and include({user.lastLogin})'
   )
 })
 

@@ -46,9 +46,8 @@
     }
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite build --watch",
     "build": "tsc && vite build",
-    "serve": "vite preview",
     "tsc": "tsc"
   },
   "jest": {

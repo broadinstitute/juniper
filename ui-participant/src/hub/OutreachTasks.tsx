@@ -51,7 +51,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       surveyId: task.id,
       complete: false
     } as SurveyResponse
-    await Api.updateSurveyResponse({
+    task.targetStableId && task.targetAssignedVersion && await Api.updateSurveyResponse({
       studyEnvParams,
       enrolleeShortcode: enrollee.shortcode,
       stableId: task.targetStableId,

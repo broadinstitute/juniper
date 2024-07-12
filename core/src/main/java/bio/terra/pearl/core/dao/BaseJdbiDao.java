@@ -532,12 +532,15 @@ public abstract class BaseJdbiDao<T extends BaseEntity> {
         );
     }
 
-    protected void deleteByParentUuid(String parentColumnName, UUID parentUUID, BaseJdbiDao parentDao) {
+    protected void deleteByTwoProperties(String columnName, Object columnValue, String column2Name, Object column2Value) {
         jdbi.withHandle(handle ->
-                handle.createUpdate("delete from " + tableName + " using  " + parentDao.tableName
-                        + " where " + tableName + ".id = " + parentDao.tableName + "." + parentColumnName
-                        + " and " + parentColumnName + " = :parentUUID;")
-                        .bind("parentUUID", parentUUID)
+                handle.createUpdate("""
+                            delete from %s 
+                            where %s = :propertyValue 
+                            AND %s = :property2value;
+                            """.formatted(tableName, columnName, column2Name))
+                        .bind("propertyValue", columnValue)
+                        .bind("property2value", column2Value)
                         .execute()
         );
     }

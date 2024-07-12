@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: "admin_task_refactor"
+      author: mbemis
+      changes:
+        - addColumn:
+            tableName: participant_task
+            columns:
+              - column: { name: assigned_admin_user_id, type: uuid, constraints:
+                { foreignKeyName: fk_participant_task_admin_user_id, references: admin_user(id) }
+              }
+              - column:  { name: participant_note_id, type: uuid, constraints:
+                { foreignKeyName: fk_participant_task_participant_note_id, references: participant_note(id) }
+              }
+        - dropNotNullConstraint:
+            tableName: participant_task
+            columnName: target_name
+        - dropColumn:
+            tableName: participant_task
+            columnName: participant_actionable
+        # we'll keep the table around for now, but remove the FKs to allow for repopulating a portal that still has admin_tasks
+        - dropForeignKeyConstraint:
+            baseTableName: admin_task
+            constraintName: fk_admin_task_participant_note
+        - dropForeignKeyConstraint:
+            baseTableName: admin_task
+            constraintName: fk_admin_task_enrollee
+        - dropForeignKeyConstraint:
+            baseTableName: admin_task
+            constraintName: fk_admin_task_assigned_admin_user
+        - dropForeignKeyConstraint:
+            baseTableName: admin_task
+            constraintName: fk_admin_task_creating_admin_user
+        - dropForeignKeyConstraint:
+            baseTableName: admin_task
+            constraintName: fk_admin_task_study_env
