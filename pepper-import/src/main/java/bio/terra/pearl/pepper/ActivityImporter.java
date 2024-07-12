@@ -76,13 +76,25 @@ public class ActivityImporter {
     }
 
     public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Map<String, Object>> allLangMap) {
+        Map<String, String> translatedSurveyTitles = fromPepperTranslations(activityDef.getTranslatedNames());
+
         SurveyPopDto survey = SurveyPopDto.builder()
                 .stableId(activityDef.getActivityCode())
                 .version(1)
-                .name(activityDef.getTag()) // TODO: grab from "translatedNames"
+                .name(translatedSurveyTitles.get("en"))
                 .build();
 
         ObjectNode root = objectMapper.createObjectNode();
+
+        // it seems like in pepper, they redefine the title in multiple places
+        // for example, medical_title and medical_name are the same thing.
+        // I can't find any surveys that define them differently so we're
+        // just using the one here.
+        root.set("title", objectMapper.valueToTree(translatedSurveyTitles));
+
+        // there are other properties, e.g. description, that we could set here
+        // but they seem to be unused in pepper
+
         ArrayNode pages = root.putArray("pages");
         for (FormSectionDef section : activityDef.getAllSections()) {
             ObjectNode page = objectMapper.createObjectNode();
@@ -150,9 +162,8 @@ public class ActivityImporter {
         }
 
         if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("COMPOSITE")) {
-            // composite questions are not questions in surveyjs, they need to
-            // be formatted differently
-
+            // composite questions are not 'questions' in surveyjs, rather panels.
+            // so, they need to be formatted differently
             return convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef);
         }
 
@@ -173,7 +184,6 @@ public class ActivityImporter {
                 .type(questionType)
                 .title(titleMap)
                 .isRequired(false)
-                //.isRequired() //revisit
                 .inputType(inputType)
                 .choices(choices)
                 .visibleIf(blockDef.getShownExpr())
@@ -185,31 +195,28 @@ public class ActivityImporter {
 
     private JsonNode convertCompositeQuestion(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, CompositeQuestionDef pepperQuestionDef) {
 
-        // steps:
-        // get all questions, convert to surveyJSQuestions and
-        // put them to field: templateElements
-
-        // title -> title
-        // type: paneldynamic
-        // addButtonTemplate -> panelAddText
-
+        // add button template is the text of the add button
         Map<String, String> addButtonTemplate = null;
         if (Objects.nonNull(pepperQuestionDef.getAddButtonTemplate())) {
             addButtonTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAddButtonTemplate().getTemplateText(),
                     pepperQuestionDef.getAddButtonTemplate().getVariables());
         }
-        // additionalItemTemplate -> templateTitle
+
+        // additional item template is the title above every new item the user
+        // adds, e.g. "Other Medication" in the Medication question
         Map<String, String> additionalItemTemplate = null;
         if (Objects.nonNull(pepperQuestionDef.getAdditionalItemTemplate())) {
             additionalItemTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAdditionalItemTemplate().getTemplateText(),
                     pepperQuestionDef.getAdditionalItemTemplate().getVariables());
         }
-        // children -> templateElements
+
+        // find all subquestions for the composite question
         List<JsonNode> subQuestions = pepperQuestionDef.getChildren().stream()
                 .map(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child))
                 .collect(Collectors.toList());
 
 
+        // construct as surveyjs panel dynamic section
         Map<String, Object> compositeQuestionMap = new HashMap<>();
         compositeQuestionMap.put("name", pepperQuestionDef.getStableId());
         compositeQuestionMap.put("type", "paneldynamic");
@@ -299,6 +306,11 @@ public class ActivityImporter {
             choices.add(new SurveyJSQuestion.Choice(choiceTranslations, option.getStableId()));
         }
         return choices;
+    }
+
+    private Map<String, String> fromPepperTranslations(List<Translation> translations) {
+        return translations.stream()
+                .collect(Collectors.toMap(Translation::getLanguageCode, Translation::getText));
     }
 
 
