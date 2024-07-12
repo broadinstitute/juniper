@@ -4,6 +4,7 @@ import { ReactQuestionFactory } from 'survey-react-ui'
 import React from 'react'
 import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
 import { I18nSurveyElement } from '@juniper/ui-core/build/types/forms'
+import { PortalEnvironmentLanguage } from '@juniper/ui-core'
 
 /**
  * A set of utilities for processing "Pearl" surveys, which are currently defined as SurveyJS surveys but with
@@ -148,9 +149,39 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
  * internationalized format), or the string itself (if I18nSurveyElement is a simple string).'
  * Once the survey designer is fully
  */
-export const i18nSurveyText = (element?: I18nSurveyElement, language = 'default') => {
+export const i18nSurveyText = (element?: I18nSurveyElement, languageCode = 'default') => {
   if (element === undefined) {
     return ''
   }
-  return typeof element === 'string' ? element : element[language]
+  return typeof element === 'string' ? element : element[languageCode]
+}
+
+/**
+ * Updates a surveyJS text element with handling for either simple string or i18n map cases
+ */
+export const updateI18nSurveyText = ({
+  oldValue, // the full prior value
+  valueText, // the text of the new value for the given language,
+  languageCode, // the language code of the new value
+  supportedLanguages
+}: {
+  oldValue: I18nSurveyElement | undefined,
+  valueText: string,
+  supportedLanguages: PortalEnvironmentLanguage[],
+  languageCode: string}): I18nSurveyElement => {
+  if (typeof oldValue === 'string') {
+    if (supportedLanguages.length <= 1) {
+      // if we're just dealing with simple strings, and there's only one language, we can just return the string
+      return valueText
+    } else {
+      // otherwise, we need to convert what was simple string to an I18nMap
+      const langMap: I18nSurveyElement = {}
+      supportedLanguages.forEach(lang => {
+        langMap[lang.languageCode] = oldValue
+      })
+      langMap[languageCode] = valueText
+      return langMap
+    }
+  }
+  return { ...(oldValue as object), [languageCode]: valueText }
 }

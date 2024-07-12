@@ -2,11 +2,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
 import React, { useId } from 'react'
 
-import { CheckboxQuestion, DropdownQuestion, RadiogroupQuestion } from '@juniper/ui-core'
+import { CheckboxQuestion, DropdownQuestion, PortalEnvironmentLanguage, RadiogroupQuestion } from '@juniper/ui-core'
 
 import { Button, IconButton } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'
-import { getValueForChoice, i18nSurveyText } from 'util/juniperSurveyUtils'
+import { getValueForChoice, i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
 
 type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
@@ -15,11 +15,13 @@ type ChoicesListProps = {
   isNewQuestion: boolean
   readOnly: boolean
   onChange: (newValue: QuestionWithChoices) => void
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
 }
 
 /** UI for editing the list of choices for a question. */
 export const ChoicesList = (props: ChoicesListProps) => {
-  const { question, isNewQuestion, readOnly, onChange } = props
+  const { question, isNewQuestion, readOnly, onChange, currentLanguage, supportedLanguages } = props
 
   const labelId = useId()
   if (!question.choices) {
@@ -39,7 +41,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
         <tbody>
           {question.choices.map((choice, i) => {
             const enableAutoFillValue: boolean =
-                isNewQuestion && choice.value == getValueForChoice(i18nSurveyText(choice.text))
+                isNewQuestion && choice.value == getValueForChoice(i18nSurveyText(choice.text,
+                  currentLanguage.languageCode))
 
             return (
               <tr key={i}>
@@ -49,13 +52,19 @@ export const ChoicesList = (props: ChoicesListProps) => {
                     disabled={readOnly}
                     required={true}
                     aria-label="text"
-                    value={i18nSurveyText(choice.text)}
+                    value={i18nSurveyText(choice.text, currentLanguage.languageCode)}
                     onChange={value => {
                       onChange({
                         ...question,
                         choices: [
                           ...question.choices.slice(0, i), {
-                            text: value, value: enableAutoFillValue ?
+                            text: updateI18nSurveyText({
+                              valueText: value,
+                              oldValue: choice.text,
+                              languageCode: currentLanguage.languageCode,
+                              supportedLanguages
+                            }),
+                            value: enableAutoFillValue ?
                               getValueForChoice(value) :
                               question.choices[i].value
                           },

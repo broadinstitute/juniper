@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Question, QuestionType, TemplatedQuestion } from '@juniper/ui-core'
+import { PortalEnvironmentLanguage, Question, QuestionType, TemplatedQuestion } from '@juniper/ui-core'
 
 import { Button } from 'components/forms/Button'
 import { QuestionDesigner } from './QuestionDesigner'
@@ -13,9 +13,11 @@ import { Checkbox } from '../../components/forms/Checkbox'
 import Select from 'react-select'
 
 type NewQuestionFormProps = {
-    onCreate: (newQuestion: Question) => void
-    questionTemplates: Question[]
-    readOnly: boolean
+  onCreate: (newQuestion: Question) => void
+  questionTemplates: Question[]
+  readOnly: boolean
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
 }
 
 /** UI for creating a new question. */
@@ -141,6 +143,8 @@ export const NewQuestionForm = (props: NewQuestionFormProps) => {
         isNewQuestion={true}
         showName={false}
         readOnly={readOnly}
+        currentLanguage={props.currentLanguage}
+        supportedLanguages={props.supportedLanguages}
         onChange={updatedElement => {
           setQuestion(updatedElement)
         }}

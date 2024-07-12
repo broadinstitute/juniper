@@ -1,14 +1,16 @@
 import React from 'react'
 
-import { HtmlQuestion, InteractiveQuestion, Question } from '@juniper/ui-core'
+import { HtmlQuestion, InteractiveQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
-import { i18nSurveyText } from 'util/juniperSurveyUtils'
+import { i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
 
 type BaseFieldsProps = {
   disabled: boolean
   question: Question
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: Question) => void
 }
 
@@ -27,11 +29,16 @@ export const BaseFields = (props: BaseFieldsProps) => {
           label="Question text"
           required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
           rows={2}
-          value={i18nSurveyText(regularQuestion.title)}
-          onChange={value => {
+          value={i18nSurveyText(regularQuestion.title, props.currentLanguage.languageCode)}
+          onChange={valueText => {
             onChange({
               ...regularQuestion,
-              title: value
+              title: updateI18nSurveyText({
+                valueText,
+                oldValue: regularQuestion.title,
+                languageCode: props.currentLanguage.languageCode,
+                supportedLanguages: props.supportedLanguages
+              })
             })
           }}
         />

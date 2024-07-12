@@ -6,7 +6,7 @@ import Api, {
   Notification,
   NotificationEventDetails,
   PepperKit,
-  Portal,
+  Portal, PortalEnvironmentConfig,
   PortalStudy,
   SiteMediaMetadata,
   StudyEnvironment,
@@ -24,7 +24,7 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType,
+  ParticipantTaskType, renderWithRouter,
   StudyEnvParams,
   Survey,
   SurveyType
@@ -36,16 +36,17 @@ import {
   EmailTemplate,
   StudyEnvironmentSurvey
 } from '@juniper/ui-core/build/types/study'
-import { LoadedPortalContextT } from '../portal/PortalProvider'
+import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
 import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
+import React from 'react'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
 }
 
 /** returns a mock portal */
-export const mockPortal: () => Portal = () => ({
+export const mockPortal = (): Portal => ({
   id: 'fakeportalid1',
   name: 'mock portal',
   shortcode: 'mock4u',
@@ -55,18 +56,27 @@ export const mockPortal: () => Portal = () => ({
   ]
 })
 
+/** mock portal with two supported languages */
+export const mockTwoLanguagePortal = (): Portal => ({
+  ...mockPortal(),
+  portalEnvironments: [
+    {
+      ...mockPortalEnvironment('sandbox'),
+      supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+    }
+  ]
+})
+
 /** returns a simple portalContext, loosely modeled on OurHealth */
-export const mockPortalContext: () => LoadedPortalContextT = () => ({
+export const mockPortalContext = (): LoadedPortalContextT => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
-  updatePortalEnv: jest.fn(),
-  isError: false,
-  isLoading: false
+  updatePortalEnv: jest.fn()
 })
 
 /** mock with a mock portal and mock portalEnv */
-export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envName => ({
+export const mockPortalEnvContext = (envName: string): PortalEnvContext => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
@@ -75,14 +85,8 @@ export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envNa
 })
 
 /** returns simple mock portal environment */
-export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (envName: string) => ({
-  portalEnvironmentConfig: {
-    initialized: true,
-    password: 'broad_institute',
-    passwordProtected: false,
-    acceptingRegistration: true,
-    defaultLanguage: 'en'
-  },
+export const mockPortalEnvironment = (envName: string): PortalEnvironment => ({
+  portalEnvironmentConfig: mockPortalEnvironmentConfig(),
   environmentName: envName,
   supportedLanguages: [
     { languageCode: 'en', languageName: 'English', id: '1' },
@@ -90,6 +94,19 @@ export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (en
   ],
   createdAt: 0
 })
+
+/**
+ *
+ */
+export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
+  return {
+    initialized: true,
+    password: 'broad_institute',
+    passwordProtected: false,
+    acceptingRegistration: true,
+    defaultLanguage: 'en'
+  }
+}
 
 
 /** returns a simple survey object for use/extension in tests */
@@ -515,4 +532,34 @@ export const mockExpressionApis = () => {
   jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
   jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue({})
+}
+
+export const MOCK_ENGLISH_LANGUAGE = {
+  languageCode: 'en',
+  languageName: 'English',
+  id: '1'
+}
+export const MOCK_SPANISH_LANGUAGE = {
+  languageCode: 'es',
+  languageName: 'Español',
+  id: '1'
+}
+
+/**
+ * renders the children in a PortalProvider context and simulating appropriate routes
+ * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now
+ * */
+export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, envName = 'sandbox') => {
+  const portalContext: PortalContextT = {
+    ...mockPortalContext(),
+    portal,
+    isLoading: false,
+    isError: false
+  }
+  const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
+  return renderWithRouter(
+    <PortalContext.Provider value={portalContext}>
+      { children }
+    </PortalContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${envName}`],
+    ':portalShortcode/studies/:studyShortcode/:studyEnv')
 }
