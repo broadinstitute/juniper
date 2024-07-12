@@ -2,9 +2,10 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "baseUrl": "src",
-    "outDir": "lib",
-    "rootDir": "src"
+    "outDir": "build",
+    "rootDir": "."
   },
+  "composite": true,
   "references": [
     {
       "path": "../ui-core"
