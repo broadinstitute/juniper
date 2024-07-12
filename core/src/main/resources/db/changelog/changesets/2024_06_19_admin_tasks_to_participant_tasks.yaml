@@ -22,4 +22,4 @@ databaseChangeLog:
               FROM admin_task at
               JOIN participant_note pn ON at.participant_note_id = pn.id
               JOIN enrollee e ON pn.enrollee_id = e.id
-              JOIN portal_participant_user ppu ON e.participant_user_id = ppu.participant_user_id;
+              JOIN portal_participant_user ppu ON e.profile_id = ppu.profile_id;
