@@ -1,13 +1,16 @@
 package bio.terra.pearl.core.service.survey;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
+import bio.terra.pearl.core.dao.i18n.LanguageTextDao;
 import bio.terra.pearl.core.factory.DaoTestUtils;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.portal.PortalFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.i18n.LanguageText;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.survey.*;
+import bio.terra.pearl.core.service.CascadeProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,6 +40,8 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     private AdminUserFactory adminUserFactory;
     @Autowired
     private PortalFactory portalFactory;
+    @Autowired
+    private LanguageTextDao languageTextDao;
 
     @Mock
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -372,6 +377,7 @@ public class SurveyServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    @Transactional
     void createStripsWhitespace(TestInfo info) {
 
         Portal portal = portalFactory.buildPersisted(getTestName(info));
@@ -392,6 +398,36 @@ public class SurveyServiceTests extends BaseSpringBootTest {
         Survey savedSurvey = surveyService.create(survey);
 
         assertEquals("survey_1", savedSurvey.getStableId());
+    }
+
+    @Test
+    @Transactional
+    public void testCreateDeleteWithLanguageTexts(TestInfo info) {
+        Portal portal = portalFactory.buildPersisted(getTestName(info));
+        Survey survey = Survey
+                .builder()
+                .stableId("survey" + getTestName(info))
+                .content("""
+                        {
+                          "title": {
+                            "default": "The Basics",
+                            "es": "Los Basicos",
+                            "dev": "DEV_The Basics"
+                          },
+                          "showQuestionNumbers": "off",
+                          "showProgressBar": "bottom",
+                          "pages": []
+                        }""")
+                .portalId(portal.getId())
+                .eligibilityRule("")
+                .build();
+        survey = surveyService.create(survey);
+        List<LanguageText> languageTexts = languageTextDao.findByPortalIdOrNullPortalId(portal.getId(), "es");
+        assertThat(languageTexts, hasSize(1));
+        assertThat(languageTexts.get(0).getKeyName(), equalTo(survey.getStableId() + ":1"));
+        surveyService.delete(survey.getId(), CascadeProperty.EMPTY_SET);
+
+        assertThat(languageTextDao.findByPortalIdOrNullPortalId(portal.getId(), "es"), hasSize(0));
     }
 
 }

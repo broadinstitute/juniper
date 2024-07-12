@@ -221,6 +221,15 @@ public class SurveyParseUtils {
         return questionStableIdNode != null ? questionStableIdNode.asText() : null;
     }
 
+    /** extracts LanguageTexts suitable for rendering the survey title in the participant UI from the survey content */
+    public static List<LanguageText> extractLanguageTexts(Survey survey) {
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(survey.getContent(), survey.getName());
+        return SurveyParseUtils.titlesToLanguageTexts(
+                SurveyParseUtils.formToLanguageTextKey(survey.getStableId(),survey.getVersion()),
+                survey.getPortalId(),
+                parsedTitles);
+    }
+
     //Returns a Map of languageCode -> title for the survey
     public static Map<String, String> parseSurveyTitle(String formContent, String formName) {
         if(formContent == null) {
@@ -277,16 +286,14 @@ public class SurveyParseUtils {
     }
 
     public static List<LanguageText> titlesToLanguageTexts(String keyName, UUID portalId, Map<String, String> titles) {
-        List<LanguageText> texts = new ArrayList<>();
-        for (Map.Entry<String, String> entry : titles.entrySet()) {
+        return titles.entrySet().stream().map(entry -> {
             LanguageText text = new LanguageText();
             text.setKeyName(keyName);
             text.setLanguage(entry.getKey());
             text.setText(entry.getValue());
             text.setPortalId(portalId);
-            texts.add(text);
-        }
-        return texts;
+            return text;
+        }).toList();
     }
 
     public static String formToLanguageTextKey(String stableId, Integer version) {

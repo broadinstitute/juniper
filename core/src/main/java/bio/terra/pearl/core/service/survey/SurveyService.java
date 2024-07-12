@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.survey.SurveyQuestionDefinition;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.VersionedEntityService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -63,7 +64,9 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
         answerMappingDao.deleteBySurveyId(surveyId);
         surveyQuestionDefinitionDao.deleteBySurveyId(surveyId);
         eventDao.deleteBySurveyId(surveyId);
-
+        Survey survey = dao.find(surveyId).orElseThrow(() -> new NotFoundException("Survey not found"));
+        List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
+        texts.stream().forEach(text -> languageTextDao.deleteByKeyNameAndPortal(text.getKeyName(), survey.getPortalId()));
         dao.delete(surveyId);
     }
 
@@ -81,13 +84,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             AnswerMapping savedMapping = answerMappingDao.create(answerMapping);
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
-
-        // parse the survey content to get the titles and create the language texts
-        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(savedSurvey.getContent(), savedSurvey.getName());
-        List<LanguageText> texts = SurveyParseUtils.titlesToLanguageTexts(
-                SurveyParseUtils.formToLanguageTextKey(savedSurvey.getStableId(),savedSurvey.getVersion()),
-                savedSurvey.getPortalId(),
-                parsedTitles);
+        List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
         languageTextDao.bulkCreate(texts);
 
         // parse the survey content to get the questions and create the question definitions
@@ -96,6 +93,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
 
         return savedSurvey;
     }
+
 
     public List<SurveyQuestionDefinition> getSurveyQuestionDefinitions(Survey survey) {
         ObjectMapper objectMapper = new ObjectMapper();
