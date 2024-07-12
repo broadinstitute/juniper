@@ -18,10 +18,9 @@ import org.broadinstitute.ddp.content.I18nContentRenderer;
 import org.broadinstitute.ddp.model.activity.definition.*;
 import org.broadinstitute.ddp.model.activity.definition.i18n.Translation;
 import org.broadinstitute.ddp.model.activity.definition.question.*;
+import org.broadinstitute.ddp.model.activity.definition.template.Template;
 import org.broadinstitute.ddp.model.activity.definition.template.TemplateVariable;
-import org.broadinstitute.ddp.model.activity.types.BlockType;
-import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
-import org.broadinstitute.ddp.model.activity.types.PicklistSelectMode;
+import org.broadinstitute.ddp.model.activity.types.*;
 import org.broadinstitute.ddp.util.ConfigUtil;
 import org.broadinstitute.ddp.util.GsonUtil;
 import org.springframework.stereotype.Service;
@@ -154,11 +153,31 @@ public class ActivityImporter {
         Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
         String questionType = getQuestionType(pepperQuestionDef);
         String inputType = null;
+
+        Map<String, String> placeholder = null;
         if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("DATE")) {
             inputType = "DATE";
+            DateQuestionDef dateQuestionDef = (DateQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(dateQuestionDef.getPlaceholderTemplate())) {
+                placeholder = getVariableTranslationsTxt(dateQuestionDef.getPlaceholderTemplate().getTemplateText(),
+                        dateQuestionDef.getPlaceholderTemplate().getVariables());
+            }
         }
         if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("NUMERIC")) {
             inputType = "NUMBER";
+            NumericQuestionDef numericQuestionDef = (NumericQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(numericQuestionDef.getPlaceholderTemplate())) {
+                placeholder = getVariableTranslationsTxt(numericQuestionDef.getPlaceholderTemplate().getTemplateText(),
+                        numericQuestionDef.getPlaceholderTemplate().getVariables());
+            }
+        }
+
+        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("TEXT")) {
+            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(textQuestionDef.getPlaceholderTemplate())) {
+                placeholder = getVariableTranslationsTxt(textQuestionDef.getPlaceholderTemplate().getTemplateText(),
+                        textQuestionDef.getPlaceholderTemplate().getVariables());
+            }
         }
 
         if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("COMPOSITE")) {
@@ -169,7 +188,32 @@ public class ActivityImporter {
 
         List<SurveyJSQuestion.Choice> choices = null;
         if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
-            choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
+            PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
+            choices = getPicklistChoices(picklistQuestionDef, allLangMap);
+            if (picklistQuestionDef.getSelectMode().equals(PicklistSelectMode.SINGLE)) {
+                inputType = "radiogroup";
+            } else {
+                inputType = "checkbox";
+            }
+        }
+
+        Map<String, String> labelTrue = null;
+        Map<String, String> labelFalse = null;
+        String valueTrue = null;
+        String valueFalse = null;
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
+            inputType = "boolean";
+            BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
+
+            labelTrue = translatePepperTemplate(boolQuestionDef.getTrueTemplate());
+            labelFalse = translatePepperTemplate(boolQuestionDef.getFalseTemplate());
+            valueTrue = "true";
+            valueFalse = "false";
+        } else if (pepperQuestionDef.getQuestionType().equals(QuestionType.AGREEMENT)) {
+            inputType = "boolean";
+
+            valueTrue = "true";
+            valueFalse = "false";
         }
 
         //expression  revisit and try this
@@ -179,10 +223,22 @@ public class ActivityImporter {
         //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
         //works only for picklist/choices though
 
+        if (titleMap.isEmpty() && placeholder != null) {
+            // in certain cases, pepper likes to put the title in the
+            // placeholder where the placeholder would be invisible
+            // in surveyjs, e.g. date
+            titleMap = placeholder;
+        }
+
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                 .name(pepperQuestionDef.getStableId())
                 .type(questionType)
                 .title(titleMap)
+                .placeholder(placeholder)
+                .labelTrue(labelTrue)
+                .labelFalse(labelFalse)
+                .valueFalse(valueTrue)
+                .valueFalse(valueFalse)
                 .isRequired(false)
                 .inputType(inputType)
                 .choices(choices)
@@ -198,16 +254,14 @@ public class ActivityImporter {
         // add button template is the text of the add button
         Map<String, String> addButtonTemplate = null;
         if (Objects.nonNull(pepperQuestionDef.getAddButtonTemplate())) {
-            addButtonTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAddButtonTemplate().getTemplateText(),
-                    pepperQuestionDef.getAddButtonTemplate().getVariables());
+            addButtonTemplate = translatePepperTemplate(pepperQuestionDef.getAddButtonTemplate());
         }
 
         // additional item template is the title above every new item the user
         // adds, e.g. "Other Medication" in the Medication question
         Map<String, String> additionalItemTemplate = null;
         if (Objects.nonNull(pepperQuestionDef.getAdditionalItemTemplate())) {
-            additionalItemTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAdditionalItemTemplate().getTemplateText(),
-                    pepperQuestionDef.getAdditionalItemTemplate().getVariables());
+            additionalItemTemplate = translatePepperTemplate(pepperQuestionDef.getAdditionalItemTemplate());
         }
 
         // find all subquestions for the composite question
@@ -228,10 +282,14 @@ public class ActivityImporter {
         return objectMapper.valueToTree(compositeQuestionMap);
     }
 
+    public static Map<String, String> translatePepperTemplate(Template template) {
+        return getVariableTranslationsTxt(template.getTemplateText(),
+                template.getVariables());
+    }
+
     private String getQuestionType(QuestionDef pepperQuestionDef) {
         String questionType = pepperQuestionDef.getQuestionType().name();
-        if (questionType.equalsIgnoreCase("DATE") || questionType.equalsIgnoreCase("NUMERIC")
-                || questionType.equalsIgnoreCase("COMPOSITE")) {
+        if (questionType.equalsIgnoreCase("DATE") || questionType.equalsIgnoreCase("NUMERIC")) {
             questionType = "TEXT";
         }
         if (questionType.equalsIgnoreCase("AGREEMENT")) {
@@ -248,6 +306,16 @@ public class ActivityImporter {
             }
             if (picklistQuestionDef.getRenderMode() == PicklistRenderMode.LIST && picklistQuestionDef.getSelectMode() == PicklistSelectMode.MULTIPLE) {
                 questionType = "checkbox";
+            }
+        }
+
+        if (questionType.equals("TEXT") && pepperQuestionDef.getClass().equals(TextQuestionDef.class)) {
+            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+            if (textQuestionDef.getInputType().equals(TextInputType.SIGNATURE)) {
+                questionType = "signaturepad";
+            }
+            if (textQuestionDef.getInputType().equals(TextInputType.ESSAY)) {
+                questionType = "comment";
             }
         }
 

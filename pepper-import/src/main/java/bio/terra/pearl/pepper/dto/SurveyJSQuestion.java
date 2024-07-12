@@ -17,7 +17,18 @@ public class SurveyJSQuestion {
     public String name;
     public String type;
     public String inputType;
+    public Map<String, String> placeholder;
     public Map<String, String> title;
+    public Map<String, String> labelTrue;
+    public Map<String, String> labelFalse;
+    public String valueTrue;
+    public String valueFalse;
+    public String min;
+    public Map<String, String> minErrorText;
+    public String max;
+    public Map<String, String> maxErrorText;
+    public String minValueExpression;
+    public String maxValueExpression;
     public boolean isRequired;
     public Map<String, String> requiredErrorText;
     public List<Choice> choices;
