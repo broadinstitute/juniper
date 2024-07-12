@@ -20,13 +20,10 @@ import {
   renderEmptyMessage,
   useRoutableTablePaging
 } from 'util/tableUtils'
-import {
-  Family,
-  instantToDefaultString
-} from '@juniper/ui-core'
+import { Family } from '@juniper/ui-core'
 import TableClientPagination from 'util/TablePagination'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { getFamilyNames } from 'util/familyUtils'
+import { getFamilyNameString } from 'util/familyUtils'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -36,6 +33,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
+import { createCreatedAtColumn } from 'util/tableColumnUtils'
 
 type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 
@@ -97,7 +95,7 @@ function ParticipantListTableGroupedByFamily({
   {
     header: 'Family Name',
     accessorKey: 'familyName',
-    accessorFn: family => family.shortcode && `${getFamilyNames(family as Family)} Family`
+    accessorFn: family => family.shortcode && `${getFamilyNameString(family as Family)} Family`
   }, {
     header: '# Members',
     accessorKey: 'members',
@@ -113,15 +111,8 @@ function ParticipantListTableGroupedByFamily({
       }
       return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.proband}/>
     }
-  }, {
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }], [])
+  },
+  createCreatedAtColumn()], [])
 
   const familiesWithSearchResults = useMemo<FamilyWithSearchResults[]>(() => {
     const familiesWithResults: FamilyWithSearchResults[] = families.map(family => {
@@ -177,7 +168,7 @@ function ParticipantListTableGroupedByFamily({
             disableRowVisibilityCount={true}
             disableColumnFiltering={true}
             header={row.original.shortcode ? <div>
-              <h5>{getFamilyNames(row.original as Family)} Family</h5>
+              <h5>{getFamilyNameString(row.original as Family)} Family</h5>
               {row.original.members?.length !== row.original.searchResults.length &&
                   <p className="fst-italic">
                       Showing {row.original.searchResults.length}/{row.original.members?.length || 0} members

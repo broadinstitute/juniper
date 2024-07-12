@@ -4,7 +4,10 @@ import {
   StudyEnvironmentSurvey,
   SurveyResponse
 } from 'api/api'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  familyPath,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import {
   Link,
   NavLink,
@@ -23,7 +26,7 @@ import {
 import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
-import { getFamilyNames } from 'util/familyUtils'
+import { getFamilyNameString } from 'util/familyUtils'
 import { useUser } from 'user/UserProvider'
 import { FamilyAuditTable } from 'study/families/FamilyAuditTable'
 
@@ -55,13 +58,15 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={family?.shortcode || ''}>
-      <Link to={`${currentEnvPath}/families/${family.shortcode}`}>
+      <Link to={`${familyPath(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName)}/${family.shortcode}`}>
         {family?.shortcode}</Link>
     </NavBreadcrumb>
     <div className="row">
       <div className="col-12">
         <h4>
-          {getFamilyNames(family)} Family&nbsp;
+          {getFamilyNameString(family)} Family&nbsp;
           <span className="detail" title="Participant shortcode"> ({family.shortcode})</span>
         </h4>
       </div>

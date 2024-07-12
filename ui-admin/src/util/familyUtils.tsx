@@ -7,7 +7,7 @@ import { isEmpty } from 'lodash'
  * For example, a family with the members 'Alice Tester', 'Bob Reviewer', and 'Charlie Examiner'
  * would return 'Tester, Reviewer and Examiner'.
  */
-export const getFamilyNames = (family: Family) : string => {
+export const getFamilyNameString = (family: Family): string => {
   const familyNames = family
     ?.members
     ?.filter(enrollee => !isEmpty(enrollee?.profile?.familyName))

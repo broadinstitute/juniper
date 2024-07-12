@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -16,21 +15,15 @@ import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { Button } from 'components/forms/Button'
+import { useSingleSearchParam } from 'util/searchParamsUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const groupByFamily = searchParams.get('groupByFamily') === 'true'
-  const setGroupByFamily = (groupByFamily: boolean) => {
-    setSearchParams(params => {
-      params.set('groupByFamily', groupByFamily.toString())
-      return params
-    })
-  }
+  const [groupByFamilyString, setGroupByFamily] = useSingleSearchParam('groupByFamily')
+  const groupByFamily = groupByFamilyString === 'true'
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
@@ -41,17 +34,20 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     searchExpression
   } = useParticipantSearchState()
 
-  const { isLoading } = useLoadingEffect(async () => {
-    const fullSearchExpression = concatSearchExpressions(
-      [searchExpression, 'include({user.lastLogin})']
-        .concat(familyLinkageEnabled ? ['include({family.shortcode})'] : [])
-    )
+  const generateFullSearchExpression = () => {
+    const expressions: string[] = [searchExpression, 'include({user.lastLogin})']
+    if (familyLinkageEnabled) {
+      expressions.push('include({family.shortcode})')
+    }
+    return concatSearchExpressions(expressions)
+  }
 
+  const { isLoading } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      fullSearchExpression)
+      generateFullSearchExpression())
 
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
@@ -72,7 +68,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           <Button
             variant="light" className="border btn-sm"
             aria-label={groupByFamily ? 'Participant view' : 'Family view'}
-            onClick={() => setGroupByFamily(!groupByFamily)}>
+            onClick={() => setGroupByFamily(groupByFamily ? 'false' : 'true')}>
             {groupByFamily
               ? <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPerson}/> Participant view</>
               : <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPeopleGroup}/> Family view</>}

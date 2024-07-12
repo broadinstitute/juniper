@@ -1,8 +1,11 @@
 import React from 'react'
 import { Family } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { getFamilyNames } from 'util/familyUtils'
+import {
+  familyPath,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
+import { getFamilyNameString } from 'util/familyUtils'
 import { isEmpty } from 'lodash'
 
 /**
@@ -15,15 +18,19 @@ export const FamilyLink = ({
   studyEnvContext: StudyEnvContextT,
   family: Family
 }) => {
-  const path = `${studyEnvContext.currentEnvPath}/families/${family.shortcode}`
-  const familyNames = getFamilyNames(family)
-  if (isEmpty(familyNames)) {
+  const path = `${familyPath(
+    studyEnvContext.portal.shortcode,
+    studyEnvContext.study.shortcode,
+    studyEnvContext.currentEnv.environmentName
+  )}/${family.id}`
+  const familyNameString = getFamilyNameString(family)
+  if (isEmpty(familyNameString)) {
     return <Link to={path}>
       {family.shortcode}
     </Link>
   }
   return <span>
-    {familyNames} Family <Link
+    {familyNameString} Family <Link
       to={path}>
       <span className="fst-italic">({family.shortcode})</span>
     </Link>

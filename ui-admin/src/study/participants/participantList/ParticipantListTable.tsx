@@ -76,104 +76,108 @@ function ParticipantListTable({
 
 
   const { paginationState, preferredNumRowsKey } = useRoutableTablePaging(
-    `participantList${  familyId ? `-${familyId}` : ''}`
+    `participantList${familyId ? `-${familyId}` : ''}`
   )
-
-  const columns = useMemo<ColumnDef<EnrolleeSearchExpressionResult, string>[]>(() => [{
-    id: 'select',
-    header: ({ table }) => <IndeterminateCheckbox
-      checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
-      onChange={table.getToggleAllRowsSelectedHandler()}/>,
-    cell: ({ row }) => (
-      <div className="px-1">
-        <IndeterminateCheckbox
-          checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
-          onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
-      </div>
-    )
-  }, {
-    header: 'Shortcode',
-    accessorKey: 'enrollee.shortcode',
-    meta: {
-      columnType: 'string'
-    },
-    cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
-  }, {
-    header: 'Created',
-    id: 'createdAt',
-    accessorKey: 'enrollee.createdAt',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }, {
-    id: 'lastLogin',
-    header: 'Last login',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    accessorFn: row => row.participantUser?.lastLogin,
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }, {
-    id: 'familyName',
-    header: 'Family name',
-    accessorFn: row => row.profile?.familyName,
-    meta: {
-      columnType: 'string'
-    }
-  }, {
-    id: 'givenName',
-    header: 'Given name',
-    accessorFn: row => row.profile?.givenName,
-    meta: {
-      columnType: 'string'
-    }
-  }, {
-    id: 'familyShortcode',
-    header: 'Family shortcode',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'string'
-    },
-    accessorFn: row => row.families.map(family => family.shortcode),
-    cell: ({ row }) => {
-      if (isEmpty(row.original.families)) {
-        return <span className='fst-italic'>None</span>
-      }
-      return <>{row.original.families.map((family, idx) => <div key={idx}><FamilyLink family={family}
-        studyEnvContext={studyEnvContext}/>
-      </div>)}</>
-    }
-  }, {
-    id: 'contactEmail',
-    header: 'Contact email',
-    accessorKey: 'profile.contactEmail',
-    meta: {
-      columnType: 'string'
-    }
-  }, {
-    header: 'Consented',
-    accessorKey: 'enrollee.consented',
-    meta: {
-      columnType: 'boolean',
-      filterOptions: [
-        { value: true, label: 'Consented' },
-        { value: false, label: 'Not Consented' }
-      ]
-    },
-    filterFn: 'equals',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }], [study.shortcode, currentEnv.environmentName])
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
+  const columns = useMemo<ColumnDef<EnrolleeSearchExpressionResult>[]>(() => {
+    const columns: ColumnDef<EnrolleeSearchExpressionResult>[] = [{
+      id: 'select',
+      header: ({ table }) => <IndeterminateCheckbox
+        checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
+        onChange={table.getToggleAllRowsSelectedHandler()}/>,
+      cell: ({ row }) => (
+        <div className="px-1">
+          <IndeterminateCheckbox
+            checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
+            onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
+        </div>
+      )
+    }, {
+      header: 'Shortcode',
+      accessorKey: 'enrollee.shortcode',
+      meta: {
+        columnType: 'string'
+      },
+      cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue() as string}</Link>
+    },
+    {
+      header: 'Created',
+      id: 'createdAt',
+      accessorKey: 'enrollee.createdAt',
+      enableColumnFilter: false,
+      meta: {
+        columnType: 'instant'
+      },
+      cell: info => instantToDefaultString(info.getValue() as unknown as number)
+    },
+    {
+      id: 'lastLogin',
+      header: 'Last login',
+      enableColumnFilter: false,
+      meta: {
+        columnType: 'instant'
+      },
+      accessorFn: row => row.participantUser?.lastLogin,
+      cell: info => instantToDefaultString(info.getValue() as unknown as number)
+    }, {
+      id: 'familyName',
+      header: 'Family name',
+      accessorFn: row => row.profile?.familyName,
+      meta: {
+        columnType: 'string'
+      }
+    }, {
+      id: 'givenName',
+      header: 'Given name',
+      accessorFn: row => row.profile?.givenName,
+      meta: {
+        columnType: 'string'
+      }
+    }, {
+      id: 'familyShortcode',
+      header: 'Family shortcode',
+      enableColumnFilter: false,
+      meta: {
+        columnType: 'string'
+      },
+      accessorFn: row => row.families.map(family => family.shortcode),
+      cell: ({ row }) => {
+        if (isEmpty(row.original.families)) {
+          return <span className='fst-italic'>None</span>
+        }
+        return <>{row.original.families.map((family, idx) => <div key={idx}><FamilyLink family={family}
+          studyEnvContext={studyEnvContext}/>
+        </div>)}</>
+      }
+    }, {
+      id: 'contactEmail',
+      header: 'Contact email',
+      accessorKey: 'profile.contactEmail',
+      meta: {
+        columnType: 'string'
+      }
+    }, {
+      header: 'Consented',
+      accessorKey: 'enrollee.consented',
+      meta: {
+        columnType: 'boolean',
+        filterOptions: [
+          { value: true, label: 'Consented' },
+          { value: false, label: 'Not Consented' }
+        ]
+      },
+      filterFn: 'equals',
+      cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+    }]
+
+    return columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode')
+  }, [study.shortcode, currentEnv.environmentName, familyLinkageEnabled])
+
   const table = useReactTable({
     data: participantList,
-    columns: useMemo(
-      () => columns.filter(col => familyLinkageEnabled ? true : col.id !== 'familyShortcode'),
-      [columns, familyLinkageEnabled]),
+    columns,
     state: {
       sorting,
       rowSelection,
@@ -213,13 +217,13 @@ function ParticipantListTable({
         </Button>
         <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
         <ColumnVisibilityControl table={table}/>
-        { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
+        {showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
           studyEnvContext={studyEnvContext}
-          onDismiss={() => setShowEmailModal(false)}/> }
+          onDismiss={() => setShowEmailModal(false)}/>}
       </div>
     </div>
     {basicTableLayout(table, { filterable: !disableColumnFiltering, tableClass })}
-    { renderEmptyMessage(participantList, 'No participants') }
+    {renderEmptyMessage(participantList, 'No participants')}
     {!disablePagination && <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>}
   </div>
 }
