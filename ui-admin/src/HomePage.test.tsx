@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { it, describe, expect } from 'vitest'
 import HomePage from './HomePage'
 import { makeMockPortal } from './test-utils/mocking-utils'
 import { useNavContext } from './navbar/NavContextProvider'

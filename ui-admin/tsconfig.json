@@ -3,7 +3,10 @@
   "compilerOptions": {
     "baseUrl": "src",
     "outDir": "build",
-    "rootDir": "."
+    "rootDir": ".",
+    "paths": {
+      "@juniper/ui-core": ["../ui-core/src"]
+    }
   },
   "composite": true,
   "references": [

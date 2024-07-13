@@ -1,6 +1,7 @@
 import { defineConfig, ConfigEnv, PluginOption, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import typescript from '@rollup/plugin-typescript'
 
 // https://vitejs.dev/config/
 /**
@@ -31,24 +32,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       lib: {
         entry: 'src/index.ts',
         // Build ES Module as CommonJS versions.
-        formats: ['es'],
-        fileName: (format, entryName) => {
-          // Narrow type of format to 'es' or 'cjs'.
-          // This should never throw because those are the only formats listed in `build.lib.formats`.
-          if (!(format === 'es' || format === 'cjs')) {
-            throw new Error(`Unsupported module format: ${format}`)
-          }
-
-          // Since package.json contains `type: "module"`, .js files will be interpreted as ES Modules.
-          // CommonJS modules must be distinguished with a .cjs extension.
-          const extension = {
-            es: 'js',
-            cjs: 'cjs'
-          }[format]
-          // Base output directory on the the module format.
-          // ES Modules are written to lib/es, CommonJS to lib/cjs.
-          return `${format}/${entryName}.${extension}`
-        }
+        formats: ['es']
       },
       // Leave minification to consumers.
       // This makes the distributed code easier to read and stack traces easier to relate
@@ -69,7 +53,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           chunkFileNames: '[name].js',
           preserveModules: true,
           preserveModulesRoot: 'src'
-        }
+        },
         // Check types and emit type declarations.
         // Because the library is built in two different formats, this results in the type declarations
         // being written twice. This isn't ideal, but it's acceptable to keep the build within Vite
@@ -80,14 +64,14 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         // emitDeclarationOnly is specified here because putting it in tsconfig.json breaks check-dts.
         // noEmitOnError causes the Vite build to fail if there are type errors. This is disabled in
         // the `dev` package.json script.
-        // plugins: [
-        //   typescript({
-        //     compilerOptions: {
-        //       emitDeclarationOnly: true,
-        //       noEmitOnError: mode !== 'development'
-        //     }
-        //   })
-        // ]
+        plugins: [
+          typescript({
+            compilerOptions: {
+              emitDeclarationOnly: true,
+              noEmitOnError: mode !== 'development'
+            }
+          })
+        ]
       }
     },
     plugins: [

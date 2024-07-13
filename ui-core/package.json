@@ -35,7 +35,8 @@
     "survey-react-ui": "1.9.75",
     "surveyjs-widgets": "1.9.75"
   },
-  "main": "./build/index.js",
+  "main": "./build/es/index.js",
+  "types": "./build-types/index.d.ts",
   "eslintConfig": {
     "extends": "../.eslintrc.js"
   },
@@ -47,7 +48,7 @@
   },
   "scripts": {
     "start": "vite build --watch",
-    "build": "tsc && vite build",
+    "build": "tsc --build --force ./tsconfig.json && vite build",
     "tsc": "tsc"
   },
   "jest": {

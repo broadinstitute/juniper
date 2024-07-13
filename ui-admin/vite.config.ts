@@ -1,4 +1,5 @@
-import { defineConfig, PluginOption } from 'vite'
+import { defineConfig } from 'vitest/config'
+import { PluginOption } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import * as path from 'path'
@@ -34,6 +35,14 @@ export default defineConfig({
       '/api': 'http://localhost:8080',
       '/config': 'http://localhost:8080'
     }
+  },
+  test: {
+    setupFiles: './vitest-setup.ts',
+    environment: 'jsdom',
+    coverage: {
+      reporter: ['lcov', 'text']
+    },
+    outputFile: 'coverage/sonar-report.xml'
   },
   resolve: {
     alias: {

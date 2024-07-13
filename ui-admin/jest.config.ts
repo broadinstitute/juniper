@@ -1,15 +1,17 @@
 export default {
-  preset: 'ts-jest',
-  testEnvironment: 'jest-environment-jsdom',
+  preset: 'ts-jest/presets/default-esm',
+  testEnvironment: 'node',
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest'
+    '^.+\\.(tsx|ts|js|jsx)?$': ['ts-jest', { useESM: true }]
     // process `*.tsx` files with `ts-jest`
   },
   setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
-  modulePaths: ['src'],
+  moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
     '\\.(gif|ttf|eot|svg|png|css)$': '<rootDir>/../ui-core/src/test-utils/mockFile.js',
     'react-markdown': '<rootDir>/../node_modules/react-markdown/react-markdown.min.js',
-    'micromark': '<rootDir>/../ui-core/src/test-utils/micromark-mock.js'
+    'micromark': '<rootDir>/../ui-core/src/test-utils/micromark-mock.js',
+    '@juniper/ui-core': '<rootDir>/../ui-core/build/es/index.js'
   }
 }

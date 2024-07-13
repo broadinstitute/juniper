@@ -23,7 +23,7 @@ function HomePage() {
   [portalList, portalSearch])
 
   return <div className="container" style={{ minHeight: '100vh' }}>
-    <h1 className="h2 d-flex justify-content-center pb-2">Select a Vite 2 portal</h1>
+    <h1 className="h2 d-flex justify-content-center pb-2">Select a portal</h1>
     <div className="d-flex align-items-center pb-2">
       <form className="rounded-5 m-auto" onSubmit={e => {
         e.preventDefault()
