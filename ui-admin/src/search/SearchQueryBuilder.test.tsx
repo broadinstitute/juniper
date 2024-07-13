@@ -9,6 +9,7 @@ import {
 import { SearchQueryBuilder } from './SearchQueryBuilder'
 import userEvent from '@testing-library/user-event'
 import Api, { SearchValueTypeDefinition } from 'api/api'
+import clearAllMocks = jest.clearAllMocks
 
 
 const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition } = {
@@ -59,6 +60,7 @@ describe('SearchQueryBuilder', () => {
   })
 
   it('should render advanced', async () => {
+    jest.clearAllMocks()
     jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
 
     const onSearchExpressionChange = jest.fn()

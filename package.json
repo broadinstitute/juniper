@@ -42,7 +42,7 @@
     "vite-plugin-dts": "^3.9.1",
     "vite-plugin-mkcert": "^1.17.5",
     "vite-tsconfig-paths": "^4.3.2",
-    "vitest": "^2.0.2"
+    "whatwg-fetch": "^3.6.20"
   },
   "scripts": {
     "lint": "eslint --max-warnings=0 e2e-tests/src ui-admin/src ui-core/src ui-participant/src"
