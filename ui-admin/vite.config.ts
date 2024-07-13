@@ -36,14 +36,6 @@ export default defineConfig({
       '/config': 'http://localhost:8080'
     }
   },
-  test: {
-    setupFiles: './vitest-setup.ts',
-    environment: 'jsdom',
-    coverage: {
-      reporter: ['lcov', 'text']
-    },
-    outputFile: 'coverage/sonar-report.xml'
-  },
   resolve: {
     alias: {
       '~bootstrap': path.resolve(__dirname, '../node_modules/bootstrap'),

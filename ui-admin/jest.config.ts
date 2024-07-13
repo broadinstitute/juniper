@@ -1,9 +1,9 @@
 export default {
   preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\\.(tsx|ts|js|jsx)?$': ['ts-jest', { useESM: true }]
+    '^.+\\.(tsx|ts|js|jsx)?$': ['babel-jest']
     // process `*.tsx` files with `ts-jest`
   },
   setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],

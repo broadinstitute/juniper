@@ -11,7 +11,7 @@
       "dom.iterable",
       "esnext"
     ],
-    "module": "esnext",
+    "module": "es6",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
