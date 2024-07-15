@@ -5,6 +5,7 @@ import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
@@ -32,12 +33,25 @@ public class ProfileExtService {
       PortalEnrolleeAuthContext authContext, String justification, Profile profile) {
     AdminUser operator = authContext.getOperator();
 
+    verifyProfileBelongsToEnrollee(authContext.getEnrollee(), profile);
+
+    return this.profileService.updateWithMailingAddress(
+        profile,
+        DataAuditInfo.builder()
+            .responsibleAdminUserId(operator.getId())
+            .enrolleeId(authContext.getEnrollee().getId())
+            .justification(justification)
+            .build());
+  }
+
+  private void verifyProfileBelongsToEnrollee(Enrollee enrollee, Profile profile) {
+
     Profile existingProfile =
         profileService
-            .loadWithMailingAddress(authContext.getEnrollee().getProfileId())
+            .loadWithMailingAddress(enrollee.getProfileId())
             .orElseThrow(() -> new IllegalStateException("Invalid enrollee profile"));
 
-    // make sure the profile is for the enrollee
+    // make sure the profile id is the profile id for the enrollee
     if (Objects.nonNull(profile.getId())) {
       if (!profile.getId().equals(existingProfile.getId())) {
         throw new IllegalArgumentException("Profile does not belong to the enrollee");
@@ -46,6 +60,7 @@ public class ProfileExtService {
       profile.setId(existingProfile.getId());
     }
 
+    // make sure the mailing address id is the mailing address id for the enrollee
     if (Objects.nonNull(profile.getMailingAddress())) {
       if (Objects.nonNull(profile.getMailingAddress().getId())) {
         if (!profile.getMailingAddress().getId().equals(existingProfile.getMailingAddressId())) {
@@ -55,13 +70,5 @@ public class ProfileExtService {
         profile.getMailingAddress().setId(existingProfile.getMailingAddressId());
       }
     }
-
-    return this.profileService.updateWithMailingAddress(
-        profile,
-        DataAuditInfo.builder()
-            .responsibleAdminUserId(operator.getId())
-            .enrolleeId(authContext.getEnrollee().getId())
-            .justification(justification)
-            .build());
   }
 }
