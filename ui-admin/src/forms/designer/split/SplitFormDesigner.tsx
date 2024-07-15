@@ -83,7 +83,7 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
           type: 'panel',
           elements: []
         } :
-          baseQuestions['dropdown']
+          baseQuestions['text']
         )
         onChange(newContent)
       }}>

@@ -78,8 +78,6 @@ export const SplitFormElementDesigner = memo(({
           onChange={onChange}
           currentLanguage={currentLanguage}
           supportedLanguages={supportedLanguages}
-          isStableIdLocked={isStableIdLocked}
-          setIsStableIdLocked={setIsStableIdLocked}
         /> :
         <FormElementJsonEditor
           question={element as Question}

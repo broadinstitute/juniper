@@ -5,20 +5,20 @@ import { faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
 import QuestionTypeSelector from './QuestionTypeSelector'
 import { QuestionDesigner } from '../QuestionDesigner'
 import { PanelEditor } from './PanelEditor'
-import React from 'react'
+import React, { useState } from 'react'
 
 /**
  * An editor for a form element (question or panel).
  */
 export const FormElementEditor = ({
   element, elementIndex, currentPageNo, editedContent, onChange, currentLanguage,
-  supportedLanguages, isStableIdLocked, setIsStableIdLocked
+  supportedLanguages
 }: {
-    element: FormElement, elementIndex: number, currentPageNo: number,
-    currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[],
-    editedContent: FormContent, onChange: (newContent: FormContent) => void,
-    isStableIdLocked: boolean, setIsStableIdLocked: (isLocked: boolean) => void
+  element: FormElement, elementIndex: number, currentPageNo: number,
+  currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[],
+  editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
+  const [isStableIdLocked, setIsStableIdLocked] = useState(true)
   // @ts-ignore
   const elementType = element.type === 'panel' ? 'panel' : 'question'
 
@@ -51,6 +51,8 @@ export const FormElementEditor = ({
             />
           </div>
           <QuestionTypeSelector
+            // @ts-ignore
+            key={element.name}
             // @ts-ignore
             questionType={(element as Question).type}
             onChange={newType => {
