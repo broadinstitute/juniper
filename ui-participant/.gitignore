@@ -8,6 +8,9 @@
 # testing
 /coverage
 
+#generated
+vite.config.js
+
 # production
 /build
 /dist

@@ -116,7 +116,7 @@ describe('ChoicesList', () => {
     await act(() => user.click(moveUpButton))
 
     // Assert
-    expect(onChange).toBeCalledWith({
+    expect(onChange).toHaveBeenCalledWith({
       ...question,
       choices: [
         { value: 'bar', text: 'Bar' },
@@ -129,7 +129,7 @@ describe('ChoicesList', () => {
     await act(() => user.click(moveDownButton))
 
     // Assert
-    expect(onChange).toBeCalledWith({
+    expect(onChange).toHaveBeenCalledWith({
       ...question,
       choices: [
         { value: 'foo', text: 'Foo' },
@@ -154,7 +154,7 @@ describe('ChoicesList', () => {
     await act(() => user.click(deleteButton))
 
     // Assert
-    expect(onChange).toBeCalledWith({
+    expect(onChange).toHaveBeenCalledWith({
       ...question,
       choices: [
         { value: 'foo', text: 'Foo' },

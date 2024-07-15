@@ -17,7 +17,7 @@ export default function InvitationPage() {
   const [, setInvitationType] = useInvitationType()
 
   const createAccount = async () => {
-    if (import.meta.env.REACT_APP_UNAUTHED_LOGIN) {
+    if (import.meta.env.VITE_UNAUTHED_LOGIN) {
       // we don't need to create a b2c account, just log the user in
       const result = await Api.unauthedLogin(accountName)
       loginUser(result, result.user.token)

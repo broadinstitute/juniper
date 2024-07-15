@@ -9,8 +9,6 @@ import {
 import { SearchQueryBuilder } from './SearchQueryBuilder'
 import userEvent from '@testing-library/user-event'
 import Api, { SearchValueTypeDefinition } from 'api/api'
-import clearAllMocks = jest.clearAllMocks
-
 
 const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition } = {
   'profile.mailingAddress.country': {
@@ -22,7 +20,6 @@ const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition }
     allowOtherDescription: false
   }
 }
-
 
 describe('SearchQueryBuilder', () => {
   it('should render with basic options', async () => {

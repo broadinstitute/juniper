@@ -133,7 +133,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
         >
           {!!title && (
             <h2 className={classNames('fs-1 fw-normal lh-sm', hasContentFollowingTitle ? 'mb-4' : 'mb-0')}>
-              <InlineMarkdown>{`${title  } `}</InlineMarkdown>
+              <InlineMarkdown>{title}</InlineMarkdown>
             </h2>
           )}
           {hasBlurb && (
