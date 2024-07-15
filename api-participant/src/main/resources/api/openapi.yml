@@ -74,6 +74,21 @@ paths:
           content: { application/json: { schema: { type: object }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/portals/v1/{portalShortcode}/env/{envName}/branding:
+    get:
+      summary: Gets the branding information for the portal environment and language (if specified)
+      tags: [ portal ]
+      operationId: getBranding
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: {type: string} }
+        - { name: envName, in: path, required: true, schema: {type: string} }
+        - { name: language, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: branding object
+          content: { application/json: { schema: { type: object }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/i18n/v1:
     get:
       summary: Lists the application texts for a given language

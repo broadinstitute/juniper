@@ -89,6 +89,15 @@ public class FamilyExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public List<Family> findAll(PortalStudyEnvAuthContext authContext) {
+    StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
+
+    return familyService.findByStudyEnvironmentId(studyEnvironment.getId()).stream()
+        .map(familyService::loadForAdminView)
+        .toList();
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
   public List<DataChangeRecord> listChangeRecords(
       PortalStudyEnvAuthContext authContext, String familyShortcode, String modelName) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();

@@ -12,7 +12,7 @@ test('renders kit requests', async () => {
     <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
   render(RoutedComponent)
   await waitFor(() => {
-    expect(screen.getByText('Kit requests')).toBeInTheDocument()
+    expect(screen.getByText('Kit Requests')).toBeInTheDocument()
   })
   expect(screen.getByText('Test kit')).toBeInTheDocument()
   expect(screen.getByText('CREATED')).toBeInTheDocument()

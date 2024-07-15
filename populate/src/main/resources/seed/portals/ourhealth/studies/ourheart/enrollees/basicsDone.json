@@ -47,7 +47,8 @@
     "text": "lost computer access, needs to complete surveys over the phone",
     "submittedHoursAgo": 1,
     "task": {
-      "assignedToUsername": "staff2@ourhealth.org"
+      "assignedToUsername": "staff2@ourhealth.org",
+      "status": "NEW"
     }
   }]
 }

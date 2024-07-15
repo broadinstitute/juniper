@@ -18,7 +18,7 @@ export default function AdminUserSelect(
     ...users.map(user => ({ label: user.username, value: user }))
   ]
   const selectedOpt = userOpts.find(opt => opt.value === selectedUser)
-  return <Select styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}
+  return <Select
     options={userOpts} isDisabled={readOnly} inputId={id}
     value={selectedOpt}
 

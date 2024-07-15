@@ -1,7 +1,14 @@
 import { flow, identity, set, update } from 'lodash/fp'
 import React, { useState } from 'react'
 
-import { FormContent, FormContentPage, FormPanel, HtmlElement, Question } from '@juniper/ui-core'
+import {
+  FormContent,
+  FormContentPage,
+  FormPanel,
+  HtmlElement,
+  PortalEnvironmentLanguage,
+  Question
+} from '@juniper/ui-core'
 
 import { HtmlDesigner } from './designer/HtmlDesigner'
 import { PageDesigner } from './designer/PageDesigner'
@@ -19,6 +26,8 @@ import { getContainerElementPath, getCurrentElementIndex, getSurveyElementFromPa
 type FormDesignerProps = {
   readOnly?: boolean
   content: FormContent
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (editedContent: FormContent, callback?: () => void) => void
 }
 
@@ -26,7 +35,7 @@ type SelectedElementType = 'pages' | 'questionTemplates' | 'page' | 'panel' | 'q
 
 /** UI for editing forms. */
 export const FormDesigner = (props: FormDesignerProps) => {
-  const { readOnly = false, content, onChange } = props
+  const { readOnly = false, content, onChange, currentLanguage, supportedLanguages } = props
   const [showCreateQuestionModal, setShowCreateQuestionModal] = useState(false)
   const [searchParams, setSearchParams] = useSearchParams()
   const selectedElementPath = searchParams.get('selectedElementPath') ?? 'pages'
@@ -108,6 +117,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
           if (selectedElementType === 'questionTemplates') {
             return (
               <QuestionTemplatesDesigner
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
                 formContent={content}
                 readOnly={readOnly}
                 onChange={onChange}
@@ -182,6 +193,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
                 element={selectedElement as HtmlElement}
                 readOnly={readOnly}
                 addNextQuestion={addQuestion}
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
                 onChange={updatedElement => {
                   onChange(set(selectedElementPath, updatedElement, content))
                 }}
@@ -195,6 +208,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
               isNewQuestion={false}
               readOnly={readOnly}
               showName={true}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
               addNextQuestion={addQuestion}
               onChange={updatedElement => {
                 onChange(set(selectedElementPath, updatedElement, content))
@@ -209,6 +224,8 @@ export const FormDesigner = (props: FormDesignerProps) => {
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
               questionTemplates={content.questionTemplates || []}
               onCreate={newQuestion => {
                 setShowCreateQuestionModal(false)

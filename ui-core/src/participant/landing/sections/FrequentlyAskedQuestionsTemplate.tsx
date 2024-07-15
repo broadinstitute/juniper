@@ -7,12 +7,12 @@ import _ from 'lodash'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../util/styleUtils'
+import { applyAllowedStyles, getSectionStyle } from '../../util/styleUtils'
 import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
   from '../../util/validationUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
-import { Markdown } from '../Markdown'
+import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -90,10 +90,11 @@ type FrequentlyAskedQuestionProps = {
   question: string
   answer: string
   onToggle: (isExpanded: boolean) => void
+  style: React.CSSProperties
 }
 
 const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
-  const { question, answer, onToggle } = props
+  const { question, answer, onToggle, style } = props
 
   const collapseRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -110,10 +111,12 @@ const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
           'btn btn-link btn-lg',
           'w-100 py-3 px-0 px-sm-2',
           'd-flex',
-          'text-black fw-bold text-start text-decoration-none'
+          'fw-bold text-start text-decoration-none',
+          style.color? '' : 'text-dark'
         )}
         data-bs-target={targetFor(question)}
         data-bs-toggle="collapse"
+        style={style}
       >
         <span className="me-2 text-center" style={{ width: 20 }}>
           <FontAwesomeIcon className="hidden-when-expanded" icon={faPlus} />
@@ -172,7 +175,9 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config, getImageUrl)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
-        <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>
+        <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">
+          <InlineMarkdown>{title}</InlineMarkdown>
+        </h2>
       )}
       {!!blurb && (
         <Markdown className="fs-4 mb-4 text-center">
@@ -197,7 +202,10 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
           questions.map(({ question, answer }, i) => {
             return (
               <li key={i} className="border-bottom">
-                <FrequentlyAskedQuestion question={question} answer={answer} onToggle={onToggleQuestion} />
+                <FrequentlyAskedQuestion
+                  question={question} answer={answer}
+                  onToggle={onToggleQuestion} style={applyAllowedStyles(config)}
+                />
               </li>
             )
           })

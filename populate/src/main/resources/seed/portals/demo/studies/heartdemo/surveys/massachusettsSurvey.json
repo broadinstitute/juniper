@@ -6,7 +6,7 @@
   "eligibilityRule": "{profile.mailingAddress.state} = 'MA'",
   "jsonContent": {
     "title": {
-      "default": "Massachusetts Survey",
+      "en": "Massachusetts Survey",
       "es": "Massachusetts encuesta",
       "dev": "DEV_Massachusetts"
     },

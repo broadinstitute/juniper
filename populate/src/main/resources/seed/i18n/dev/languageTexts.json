@@ -85,5 +85,16 @@
   {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "DEV_This user is already enrolled in ${studyName}.", "language": "dev"},
   {"keyName": "cookieAlertTitle", "text": "DEV_Cookies", "language": "dev"},
   {"keyName": "cookieAlertDetail", "text": "DEV_This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "dev"},
-  {"keyName": "joinStudy", "text": "DEV_Join Study", "language": "dev"}
+  {"keyName": "joinStudy", "text": "DEV_Join Study", "language": "dev"},
+  {"keyName": "ineligibleThankYou", "text": "DEV_Thank you for your interest in ${studyName}", "language": "dev" },
+  {"keyName": "ineligibleDescription", "text": "DEV_Unfortunately, you do not meet the eligibility criteria to participate in ${studyName} at this time.", "language": "dev"},
+  {"keyName": "ineligibleProvideYourEmail", "text": "DEV_Provide your email below and we’ll keep you up-to-date on developments. You can unsubscribe at any time.", "language": "dev"},
+  {"keyName": "ineligibleStayInformed", "text": "DEV_Stay informed", "language": "dev"},
+  {"keyName": "backToPortalHomepage", "text": "DEV_Back to ${portalName} homepage", "language": "dev"},
+  {"keyName": "joinMailingList", "text": "DEV_Join Mailing List", "language": "dev"},
+  {"keyName": "mailingFormStayUpdated", "text":  "DEV_Stay updated with news about the study", "language": "dev"},
+  {"keyName": "yourName", "text": "DEV_Your name", "language": "dev"},
+  {"keyName": "yourEmail", "text": "DEV_Your email", "language": "dev"},
+  {"keyName": "join", "text":  "DEV_Join", "language": "dev"},
+  {"keyName": "thanksForJoining", "text": "DEV_Thanks for joining!", "language": "dev"}
 ]

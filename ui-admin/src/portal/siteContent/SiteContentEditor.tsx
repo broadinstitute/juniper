@@ -12,9 +12,9 @@ import {
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
-  ApiContextT, HtmlSectionView, SiteFooter, PortalEnvironmentLanguage
+  ApiContextT, HtmlSectionView, SiteFooter
 } from '@juniper/ui-core'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { Button } from 'components/forms/Button'
 import AddNavbarItemModal, { NavItemProps } from './AddNavbarItemModal'
@@ -28,10 +28,9 @@ import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
 
-import { useNonNullReactSingleSelect } from 'util/react-select-utils'
-import { usePortalLanguage } from '../languages/usePortalLanguage'
 import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
+import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -64,32 +63,14 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showTranslationModal, setShowTranslationModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
   const zoneConfig = useConfig()
-  const [searchParams, setSearchParams] = useSearchParams()
-  const { defaultLanguage } = usePortalLanguage()
-  const selectedLanguageCode = searchParams.get('lang') ?? defaultLanguage.languageCode
-  const selectedLanguage = portalEnvContext.portalEnv.supportedLanguages.find(portalLang =>
-    portalLang.languageCode === selectedLanguageCode)
-
+  const {
+    defaultLanguage, languageOnChange, selectedLanguageOption,
+    selectLanguageInputId, languageOptions
+  } = useLanguageSelectorFromParam()
+  const selectedLanguage = selectedLanguageOption?.value
   const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
 
   const navBarItems = localContent?.navbarItems ?? []
-  const setSelectedLanguage = (language: PortalEnvironmentLanguage | undefined) => {
-    if (!language) {
-      return
-    }
-    setSearchParams({ ...searchParams, lang: language.languageCode })
-  }
-
-  const {
-    onChange: languageOnChange, options: languageOptions,
-    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
-  } =
-    useNonNullReactSingleSelect(
-      portalEnvContext.portalEnv.supportedLanguages,
-      language => ({ label: language?.languageName, value: language }),
-      setSelectedLanguage,
-      selectedLanguage
-    )
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -104,7 +85,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     setWorkingContent(newWorkingContent)
   }
 
-  /** updates the global SiteContent object with the given LocalSiteContent */
+  /** creates a new local site content for the current language based on the content for the default language */
   const addLocalContent = () => {
     const defaultContent = workingContent.localizedSiteContents
       .find(lsc => lsc.language === defaultLanguage.languageCode)
@@ -306,7 +287,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             onClick={() => setShowDeletePageModal(!showAddPageModal)}>
             <FontAwesomeIcon icon={faTrash}/> Delete
           </Button>
-          { portalEnvContext.portalEnv.supportedLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
+          { languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
             <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
               isDisabled={hasInvalidSection} aria-label={'Select a language'}
               onChange={languageOnChange}/>
