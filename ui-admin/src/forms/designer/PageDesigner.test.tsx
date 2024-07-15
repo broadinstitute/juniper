@@ -14,6 +14,7 @@ describe('PageDesigner', () => {
         { name: 'q2', title: '2?', type: 'text' },
         { name: 'q3', type: 'html', html: '3' },
         {
+          title: 'My panel',
           type: 'panel',
           elements: [
             { name: 'q4', title: '4?', type: 'text' },

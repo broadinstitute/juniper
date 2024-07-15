@@ -10,10 +10,10 @@ import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
-import useStateCallback from '../util/useStateCallback'
-import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
-import { SideBySideFormDesigner } from './designer/SideBySideFormDesigner'
-import { userHasPermission, useUser } from '../user/UserProvider'
+import useStateCallback from 'util/useStateCallback'
+import AnswerMappingEditor from 'study/surveys/AnswerMappingEditor'
+import { SplitFormDesigner } from './designer/split/SplitFormDesigner'
+import { userHasPermission, useUser } from 'user/UserProvider'
 
 type FormContentEditorProps = {
   portal: Portal
@@ -87,7 +87,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
         >
           <ErrorBoundary>
-            <SideBySideFormDesigner
+            <SplitFormDesigner
               content={editedContent}
               currentLanguage={currentLanguage}
               supportedLanguages={supportedLanguages}
