@@ -4,7 +4,10 @@ import {
   StudyEnvironmentSurvey,
   SurveyResponse
 } from 'api/api'
-import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import {
+  familyPath,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
 import {
   Link,
   NavLink,
@@ -22,8 +25,8 @@ import {
 } from 'util/subNavStyles'
 import useRoutedFamily from './useRoutedFamily'
 import { FamilyOverview } from './FamilyOverview'
-import { uniq } from 'lodash/fp'
 import { FamilyMembersAndRelations } from 'study/families/FamilyMembersAndRelations'
+import { getFamilyNameString } from 'util/familyUtils'
 import { useUser } from 'user/UserProvider'
 import { FamilyAuditTable } from 'study/families/FamilyAuditTable'
 
@@ -48,14 +51,14 @@ export default function FamilyView({ studyEnvContext }: { studyEnvContext: Study
 /** shows a master-detail view for an enrollee with sub views on surveys, tasks, etc... */
 export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
                                    { family: Family, studyEnvContext: StudyEnvContextT, reloadFamily: () => void }) {
-  const { currentEnvPath } = studyEnvContext
-
   const { user } = useUser()
 
 
   return <div className="ParticipantView mt-3 ps-4">
     <NavBreadcrumb value={family?.shortcode || ''}>
-      <Link to={`${currentEnvPath}/family/${family.shortcode}`}>
+      <Link to={`${familyPath(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName)}/${family.shortcode}`}>
         {family?.shortcode}</Link>
     </NavBreadcrumb>
     <div className="row">
@@ -118,15 +121,4 @@ function getLinkCssClasses({ isActive }: { isActive: boolean }) {
   return `${isActive ? 'fw-bold' : ''} d-flex align-items-center`
 }
 
-const getFamilyNameString = (family: Family) => {
-  const familyNames = family.members?.map(enrollee => enrollee.profile.familyName) || ''
-  const uniqNames = uniq(familyNames)
-  if (uniqNames.length === 1) {
-    return uniqNames[0]
-  } else if (uniqNames.length === 2) {
-    return `${uniqNames[0]} and ${uniqNames[1]}`
-  } else {
-    return `${uniqNames.slice(0, uniqNames.length - 1).join(', ')}, and ${uniqNames[uniqNames.length - 1]}`
-  }
-}
 

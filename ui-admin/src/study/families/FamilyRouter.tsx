@@ -4,7 +4,10 @@ import {
   Route,
   Routes
 } from 'react-router-dom'
-import { StudyEnvContextT } from '../StudyEnvironmentRouter'
+import {
+  participantListPath,
+  StudyEnvContextT
+} from '../StudyEnvironmentRouter'
 import { NavBreadcrumb } from 'navbar/AdminNavbar'
 import { StudyEnvParams } from '@juniper/ui-core'
 import FamilyView from './FamilyView'
@@ -23,7 +26,11 @@ export default function FamilyRouter({ studyEnvContext }: {studyEnvContext: Stud
 
   return <>
     <NavBreadcrumb value={studyEnvContext.currentEnvPath}>
-      <Link to={`${studyEnvContext.currentEnvPath}/participants`} className="me-1">
+      <Link to={`${participantListPath(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName
+      )}?groupByFamily=true`} className="me-1">
         families</Link>
     </NavBreadcrumb>
     <Routes>
