@@ -6,13 +6,13 @@ export default {
     '^.+\\.(tsx|ts|js|jsx)?$': ['babel-jest']
     // process `*.tsx` files with `ts-jest`
   },
-  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect', '<rootDir>../ui-core/src/test-utils/setupTests.ts'],
-  moduleDirectories: ['node_modules', 'src'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect', '<rootDir>/src/test-utils/setupTests.ts'],
+  moduleDirectories: ['node_modules', '<rootDir>'],
+  modulePaths: ['<rootDir>/src'],
   moduleNameMapper: {
     '\\.(gif|ttf|eot|svg|png|css|scss)$': '<rootDir>/../ui-core/src/test-utils/mockFile.js',
     'react-markdown': '<rootDir>/../node_modules/react-markdown/react-markdown.min.js',
-    'micromark': '<rootDir>/../ui-core/src/test-utils/micromark-mock.js',
-    '@juniper/ui-core': '<rootDir>/../ui-core/build/es/index.js',
-    'authConfig': '<rootDir>/../ui-core/src/test-utils/mockAuthConfig.js'
+    'micromark': '<rootDir>/src/test-utils/micromark-mock.js',
+    'authConfig': '<rootDir>/src/test-utils/mockFile.js'
   }
 }

@@ -74,7 +74,7 @@ export default function PortalRegistrationRouter({
     updatePreRegResponseId
   }
 
-  const registrationComponent = process.env.REACT_APP_UNAUTHED_LOGIN ?
+  const registrationComponent = import.meta.env.VITE_UNAUTHED_LOGIN ?
     <RegistrationUnauthed registrationContext={registrationContext} returnTo={returnTo}/> :
     <Registration/>
 

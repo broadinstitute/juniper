@@ -49,7 +49,7 @@ dependencies {
 
 task copyWebApp(type: Copy) {
     dependsOn(rootProject.bundleParticipantUI)
-    from "$rootDir/ui-participant/build"
+    from "$rootDir/ui-participant/dist"
     into "$rootDir/api-participant/build/resources/main/static"
 }
 

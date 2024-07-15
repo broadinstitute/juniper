@@ -118,7 +118,7 @@ export type LogEvent = {
 }
 
 let bearerToken: string | null = null
-const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
+const API_ROOT = `${import.meta.env.VITE_API_ROOT}`
 
 export default {
   getInitHeaders() {

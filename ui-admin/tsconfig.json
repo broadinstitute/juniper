@@ -8,7 +8,6 @@
       "@juniper/ui-core": ["../ui-core/src"]
     }
   },
-  "composite": true,
   "references": [
     {
       "path": "../ui-core"

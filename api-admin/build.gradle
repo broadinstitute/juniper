@@ -51,7 +51,7 @@ dependencies {
 }
 
 task copyWebApp(type: Copy) {
-    from "$rootDir/ui-admin/build"
+    from "$rootDir/ui-admin/dist"
     into "$rootDir/api-admin/build/resources/main/static"
 }
 

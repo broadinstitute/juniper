@@ -10,7 +10,7 @@ import LoginUnauthed from './LoginUnauthed'
 export const ProtectedRoute = ({ children }: { children?: ReactNode }) => {
   const { user } = useUser()
 
-  const loginComponent = process.env.REACT_APP_UNAUTHED_LOGIN ? <LoginUnauthed/> : <Login/>
+  const loginComponent = import.meta.env.VITE_UNAUTHED_LOGIN ? <LoginUnauthed/> : <Login/>
 
   if (!user) {
     return loginComponent

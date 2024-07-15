@@ -99,7 +99,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
     await Api.logout()
-    if (!process.env.REACT_APP_UNAUTHED_LOGIN) {
+    if (!import.meta.env.VITE_UNAUTHED_LOGIN) {
       // eslint-disable-next-line camelcase
       auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
     } else {
