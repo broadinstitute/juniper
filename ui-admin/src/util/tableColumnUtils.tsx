@@ -4,7 +4,7 @@ import { ColumnDef } from '@tanstack/react-table'
 /**
  * Creates a column definition for a "created at" column.
  */
-export function createCreatedAtColumn<T>(): ColumnDef<T> {
+export function createdAtColumn<T>(): ColumnDef<T> {
   return {
     header: 'Created At',
     accessorKey: 'createdAt',

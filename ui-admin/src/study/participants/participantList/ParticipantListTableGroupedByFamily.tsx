@@ -33,7 +33,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
-import { createCreatedAtColumn } from 'util/tableColumnUtils'
+import { createdAtColumn } from 'util/tableColumnUtils'
 
 type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 
@@ -112,7 +112,7 @@ function ParticipantListTableGroupedByFamily({
       return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.proband}/>
     }
   },
-  createCreatedAtColumn()], [])
+  createdAtColumn()], [])
 
   const familiesWithSearchResults = useMemo<FamilyWithSearchResults[]>(() => {
     const familiesWithResults: FamilyWithSearchResults[] = families.map(family => {
