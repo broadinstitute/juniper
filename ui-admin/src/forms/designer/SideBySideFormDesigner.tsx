@@ -4,9 +4,9 @@ import {
   Question, surveyJSModelFromFormContent
 } from '@juniper/ui-core'
 import React, { memo, useEffect, useState } from 'react'
-import { Button } from '../../components/forms/Button'
+import { Button, IconButton } from '../../components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowLeft, faArrowRight, faArrowUp, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft, faArrowRight, faArrowUp, faCode, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from '../../portal/siteContent/designer/components/ListElementController'
 import { QuestionDesigner } from './QuestionDesigner'
 import { Survey as SurveyComponent } from 'survey-react-ui'
@@ -43,7 +43,7 @@ export const SideBySideFormDesigner = ({ content, onChange, currentLanguage, sup
       {currentPage.elements.map((element, elementIndex) => (
         // @ts-ignore
         <div key={element.name || elementIndex} className="container">
-          <QuestionModelComponent currentPageNo={currentPageNo}
+          <SideBySideQuestionDesigner currentPageNo={currentPageNo}
             elementIndex={elementIndex} editedContent={content}
             currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
             onChange={onChange}/>
@@ -101,7 +101,7 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
 }
 
 
-const QuestionModelComponent = ({
+const SideBySideQuestionDesigner = ({
   elementIndex, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
 }: {
     elementIndex: number, currentPageNo: number,
@@ -109,8 +109,9 @@ const QuestionModelComponent = ({
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
   const element = editedContent.pages[currentPageNo].elements[elementIndex]
+  const [showJsonEditor, setShowJsonEditor] = useState(false)
 
-  const [oneQuestionSurvey, setOneQuestionSurvey] = useState<FormContent>({
+  const [surveyQuestion, setSurveyQuestion] = useState<FormContent>({
     title: 'Question Preview',
     pages: [
       {
@@ -120,23 +121,22 @@ const QuestionModelComponent = ({
     questionTemplates: editedContent.questionTemplates
   })
 
-  const [surveyModel, setSurveyModel] = useState(surveyJSModelFromFormContent(oneQuestionSurvey))
+  const [surveyModel, setSurveyModel] = useState(surveyJSModelFromFormContent(surveyQuestion))
 
   useEffect(() => {
-    setOneQuestionSurvey({
-      ...oneQuestionSurvey,
+    const updatedSurveyQuestion = {
+      ...surveyQuestion,
       pages: [
         {
           elements: [element]
         }
       ],
       questionTemplates: editedContent.questionTemplates
-    })
-  }, [element])
+    }
 
-  useEffect(() => {
-    setSurveyModel(surveyJSModelFromFormContent(oneQuestionSurvey))
-  }, [oneQuestionSurvey])
+    setSurveyQuestion(updatedSurveyQuestion)
+    setSurveyModel(surveyJSModelFromFormContent(updatedSurveyQuestion))
+  }, [element])
 
 
   surveyModel.showInvisibleElements = true
@@ -147,28 +147,66 @@ const QuestionModelComponent = ({
       style={{ backgroundColor: '#f3f3f3', borderRight: '1px solid #fff' }}>
       <div className="d-flex justify-content-between">
         <span className="h5">Edit question</span>
-        <ListElementController
-          index={elementIndex}
-          items={editedContent.pages[currentPageNo].elements}
-          updateItems={newItems => {
+        <div className="d-flex justify-content-end">
+          <IconButton icon={faCode}
+            aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
+            className="ms-2"
+            onClick={() => setShowJsonEditor(!showJsonEditor)}
+          />
+          <ListElementController
+            index={elementIndex}
+            items={editedContent.pages[currentPageNo].elements}
+            updateItems={newItems => {
+              const newContent = { ...editedContent }
+              newContent.pages[currentPageNo].elements = newItems
+              onChange(newContent)
+            }}
+          />
+        </div>
+      </div>
+      { !showJsonEditor ? <>
+        <label className="form-label fw-bold" htmlFor="questionType">Question type</label>
+        <select id="questionType"
+          disabled={false}
+          className="form-select mb-2"
+          // @ts-ignore
+          value={element.type}
+          onChange={e => {
             const newContent = { ...editedContent }
-            newContent.pages[currentPageNo].elements = newItems
+            // @ts-ignore
+            newContent.pages[currentPageNo].elements[elementIndex].type = e.target.value
+            onChange(newContent)
+          }}>
+          <option hidden>Select a question type</option>
+          <option value="text">Text</option>
+          <option value="checkbox">Checkbox</option>
+          <option value="dropdown">Dropdown</option>
+          <option value="medications">Medications</option>
+          <option value="radiogroup">Radio group</option>
+          <option value="signaturepad">Signature</option>
+          <option value="html">Html</option>
+        </select><QuestionDesigner
+          question={element as Question}
+          isNewQuestion={false}
+          showName={false}
+          showQuestionTypeHeader={false}
+          readOnly={false}
+          onChange={newQuestion => {
+            const newContent = { ...editedContent }
+            newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
+            onChange(newContent)
+          }}
+          currentLanguage={currentLanguage}
+          supportedLanguages={supportedLanguages}/></> :
+        <QuestionJsonEditor
+          question={element as Question}
+          onChange={newQuestion => {
+            const newContent = { ...editedContent }
+            newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
             onChange(newContent)
           }}
         />
-      </div>
-      <QuestionDesigner
-        question={element as Question}
-        isNewQuestion={true}
-        showName={false}
-        readOnly={false}
-        onChange={newQuestion => {
-          const newContent = { ...editedContent }
-          newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
-          onChange(newContent)
-        }}
-        currentLanguage={currentLanguage}
-        supportedLanguages={supportedLanguages}/>
+      }
     </div>
     <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
@@ -178,14 +216,36 @@ const QuestionModelComponent = ({
 }
 
 /* This component uses the 'memo' higher-order component that's built into React.
- * This means that the component will only re-render if the props change, which
- * is very important in this case because the SurveyJS survey component is expensive
- * to re-render.
+      * This means that the component will only re-render if the props change, which
+      * is very important in this case because the SurveyJS survey component is expensive
+      * to re-render and we don't want to re-render every other question preview when the
+      * parent state changes.
  */
 const QuestionPreview = memo(({ surveyModel }: { surveyModel: SurveyModel }) => {
   return (
-    <SurveyComponent model={surveyModel} readOnly={false} />
+    <SurveyComponent model={surveyModel} readOnly={false}/>
   )
 })
 
 QuestionPreview.displayName = 'QuestionPreview'
+
+const QuestionJsonEditor = ({ question, onChange }: {
+  question: Question, onChange: (newQuestion: Question) => void
+}) => {
+  const [editedContent, setEditedContent] = useState(JSON.stringify(question, null, 2))
+  return <div>
+    <textarea
+      className="form-control"
+      value={editedContent}
+      rows={12}
+      onChange={updatedContent => {
+        try {
+          onChange(JSON.parse(updatedContent.target.value))
+          setEditedContent(updatedContent.target.value)
+        } catch (e) {
+          setEditedContent(updatedContent.target.value)
+        }
+      }}
+    />
+  </div>
+}
