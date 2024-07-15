@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -209,13 +210,6 @@ public class ActivityImporter {
             valueFalse = "false";
         }
 
-        //expression  revisit and try this
-        //parse the pepper expression for stableID and value/option and generate Juniper expression
-        //EX: user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
-        //parse value after questions[] and hasOption and generate
-        //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
-        //works only for picklist/choices though
-
         if (titleMap.isEmpty() && placeholder != null) {
             // in certain cases, pepper likes to put the title in the
             // placeholder where the placeholder would be invisible
@@ -237,7 +231,7 @@ public class ActivityImporter {
                 .isRequired(false)
                 .inputType(inputType)
                 .choices(choices)
-                .visibleIf(blockDef.getShownExpr())
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
                 .build();
         ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
 
@@ -273,7 +267,7 @@ public class ActivityImporter {
         compositeQuestionMap.put("templateElements", subQuestions);
         compositeQuestionMap.put("panelAddText", addButtonTemplate);
         compositeQuestionMap.put("templateTitle", additionalItemTemplate);
-        compositeQuestionMap.put("visibleIf", blockDef.getShownExpr());
+        compositeQuestionMap.put("visibleIf", convertVisibilityExpressions(blockDef.getShownExpr()));
         return objectMapper.valueToTree(compositeQuestionMap);
     }
 
@@ -289,6 +283,9 @@ public class ActivityImporter {
             surveyJsType = "text";
         }
         if (questionType.equals(QuestionType.AGREEMENT)) {
+            surveyJsType = "boolean";
+        }
+        if (questionType.equals(QuestionType.BOOLEAN)) {
             surveyJsType = "boolean";
         }
         if (questionType.equals(QuestionType.PICKLIST)) {
@@ -399,6 +396,40 @@ public class ActivityImporter {
                 .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
                 .build();
         return objectMapper.valueToTree(surveyJSContent);
+    }
+
+    public String convertVisibilityExpressions(String pepperExpr) {
+        if (pepperExpr == null) {
+            return null;
+        }
+        // example:
+        // user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
+        // should become:
+        // {REGISTRATION_COUNTRY} contains 'AF'
+
+        Pattern matchAllPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.answers\\.(.*?)\\((.*?)\\)");
+        return matchAllPattern.matcher(pepperExpr).replaceAll(matchResult -> {
+
+            String study = matchResult.group(1);
+            String form = matchResult.group(2);
+            String question = matchResult.group(3);
+            String pepperOperation = matchResult.group(4);
+            String value = matchResult.group(5);
+            String stableId = "{" + question + "}";
+            switch (pepperOperation.toLowerCase().trim()) {
+                case "hasoption":
+                    pepperOperation = "contains";
+                    break;
+                case "hastrue":
+                    return stableId + " = true";
+                default:
+                    throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+            }
+            if (value.startsWith("\"") && value.endsWith("\"")) {
+                value = value.substring(1, value.length() - 1);
+            }
+            return stableId + " " + pepperOperation + " '" + value + "'";
+        }).replace("&&", "and").replace("\n", "").trim();
     }
 
     /** maps pepper replacement vars to Juniper vars, and html markup to markdown.
