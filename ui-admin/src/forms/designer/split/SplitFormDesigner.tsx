@@ -38,8 +38,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   return <div className="mt-3 container w-100">
     <>
       {currentPage.elements.map((element, elementIndex) => (
-        // @ts-ignore
-        <div key={element.name || elementIndex} className="container">
+        <div key={elementIndex} className="container">
           <SplitQuestionDesigner currentPageNo={currentPageNo}
             elementIndex={elementIndex} editedContent={content}
             element={content.pages[currentPageNo].elements[elementIndex]}

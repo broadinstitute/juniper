@@ -9,13 +9,14 @@ import {
 } from '@juniper/ui-core'
 import React, { memo, useEffect, useState } from 'react'
 import { IconButton } from 'components/forms/Button'
-import { faCode } from '@fortawesome/free-solid-svg-icons'
+import { faCode, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
 import { QuestionDesigner } from '../QuestionDesigner'
 import { PanelDesigner } from './PanelDesigner'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { isEqual } from 'lodash'
 import QuestionTypeSelector from './QuestionTypeSelector'
+import { TextInput } from 'components/forms/TextInput'
 
 /* Note that this component is memoized using React.memo
  * Since survey pages can contain many questions, we need to be mindful of
@@ -33,6 +34,7 @@ export const SplitQuestionDesigner = memo(({
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
   const [showJsonEditor, setShowJsonEditor] = useState(false)
+  const [isStableIdLocked, setIsStableIdLocked] = useState(true)
 
   // Chop the survey down to just the specific question that we're editing, so we can display
   // a preview using the SurveyJS survey component
@@ -87,6 +89,26 @@ export const SplitQuestionDesigner = memo(({
       { !showJsonEditor ?
         <>
           {elementType === 'question' ? <>
+            <label className={'form-label fw-semibold'}>Stable ID</label>
+            <div className="d-flex align-items-center">
+              <div className="w-100">
+                <TextInput className={'mb-2'} value={(element as Question).name}
+                  disabled={isStableIdLocked}
+                  onChange={name => {
+                    const newContent = { ...editedContent }
+                    newContent.pages[currentPageNo].elements[elementIndex] = {
+                      ...newContent.pages[currentPageNo].elements[elementIndex],
+                      name
+                    } as Question
+                    onChange(newContent)
+                  }}
+                />
+              </div>
+              <IconButton className="mb-2" icon={isStableIdLocked ? faLock : faUnlock}
+                aria-label={isStableIdLocked ? 'Unlock stable ID' : 'Lock stable ID'}
+                onClick={() => setIsStableIdLocked(!isStableIdLocked)}
+              />
+            </div>
             {/* @ts-ignore */}
             <QuestionTypeSelector questionType={(element as Question).type}
               onChange={newType => {
