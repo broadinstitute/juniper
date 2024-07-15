@@ -11,6 +11,7 @@ import { ListElementController } from '../../portal/siteContent/designer/compone
 import { QuestionDesigner } from './QuestionDesigner'
 import { Survey as SurveyComponent } from 'survey-react-ui'
 import { SurveyModel } from 'survey-core'
+import { Textarea } from '../../components/forms/Textarea'
 
 /**
  *
@@ -101,13 +102,15 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
 }
 
 
-const SideBySideQuestionDesigner = ({
+const SideBySideQuestionDesigner = memo(({
   elementIndex, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
 }: {
     elementIndex: number, currentPageNo: number,
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[],
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
+  console.log('rerendering SideBySideQuestionDesigner')
+
   const element = editedContent.pages[currentPageNo].elements[elementIndex]
   const [showJsonEditor, setShowJsonEditor] = useState(false)
 
@@ -164,40 +167,42 @@ const SideBySideQuestionDesigner = ({
           />
         </div>
       </div>
-      { !showJsonEditor ? <>
-        <label className="form-label fw-bold" htmlFor="questionType">Question type</label>
-        <select id="questionType"
-          disabled={false}
-          className="form-select mb-2"
-          // @ts-ignore
-          value={element.type}
-          onChange={e => {
-            const newContent = { ...editedContent }
+      { !showJsonEditor ?
+        <>
+          <label className="form-label fw-bold" htmlFor="questionType">Question type</label>
+          <select id="questionType"
+            disabled={false}
+            className="form-select mb-2"
             // @ts-ignore
-            newContent.pages[currentPageNo].elements[elementIndex].type = e.target.value
-            onChange(newContent)
-          }}>
-          <option hidden>Select a question type</option>
-          <option value="text">Text</option>
-          <option value="checkbox">Checkbox</option>
-          <option value="dropdown">Dropdown</option>
-          <option value="medications">Medications</option>
-          <option value="radiogroup">Radio group</option>
-          <option value="signaturepad">Signature</option>
-          <option value="html">Html</option>
-        </select><QuestionDesigner
-          question={element as Question}
-          isNewQuestion={false}
-          showName={false}
-          showQuestionTypeHeader={false}
-          readOnly={false}
-          onChange={newQuestion => {
-            const newContent = { ...editedContent }
-            newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
-            onChange(newContent)
-          }}
-          currentLanguage={currentLanguage}
-          supportedLanguages={supportedLanguages}/></> :
+            value={element.type}
+            onChange={e => {
+              const newContent = { ...editedContent }
+              // @ts-ignore
+              newContent.pages[currentPageNo].elements[elementIndex].type = e.target.value
+              onChange(newContent)
+            }}>
+            <option hidden>Select a question type</option>
+            <option value="text">Text</option>
+            <option value="checkbox">Checkbox</option>
+            <option value="dropdown">Dropdown</option>
+            <option value="medications">Medications</option>
+            <option value="radiogroup">Radio group</option>
+            <option value="signaturepad">Signature</option>
+            <option value="html">Html</option>
+          </select><QuestionDesigner
+            question={element as Question}
+            isNewQuestion={false}
+            showName={false}
+            showQuestionTypeHeader={false}
+            readOnly={false}
+            onChange={newQuestion => {
+              const newContent = { ...editedContent }
+              newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
+              onChange(newContent)
+            }}
+            currentLanguage={currentLanguage}
+            supportedLanguages={supportedLanguages}/>
+        </> :
         <QuestionJsonEditor
           question={element as Question}
           onChange={newQuestion => {
@@ -213,7 +218,11 @@ const SideBySideQuestionDesigner = ({
       <QuestionPreview surveyModel={surveyModel}/>
     </div>
   </div>
-}
+}, (prevProps, nextProps) => {
+  return prevProps.elementIndex === nextProps.elementIndex
+})
+
+SideBySideQuestionDesigner.displayName = 'SideBySideQuestionDesigner'
 
 /* This component uses the 'memo' higher-order component that's built into React.
       * This means that the component will only re-render if the props change, which
@@ -222,6 +231,7 @@ const SideBySideQuestionDesigner = ({
       * parent state changes.
  */
 const QuestionPreview = memo(({ surveyModel }: { surveyModel: SurveyModel }) => {
+  console.log('rerendering QuestionPreview')
   return (
     <SurveyComponent model={surveyModel} readOnly={false}/>
   )
@@ -233,19 +243,19 @@ const QuestionJsonEditor = ({ question, onChange }: {
   question: Question, onChange: (newQuestion: Question) => void
 }) => {
   const [editedContent, setEditedContent] = useState(JSON.stringify(question, null, 2))
-  return <div>
-    <textarea
-      className="form-control"
-      value={editedContent}
-      rows={12}
-      onChange={updatedContent => {
-        try {
-          onChange(JSON.parse(updatedContent.target.value))
-          setEditedContent(updatedContent.target.value)
-        } catch (e) {
-          setEditedContent(updatedContent.target.value)
-        }
-      }}
-    />
-  </div>
+  return <Textarea
+    className="form-control"
+    value={editedContent}
+    rows={15}
+    onChange={updatedContent => {
+      try {
+        onChange(JSON.parse(updatedContent))
+        setEditedContent(updatedContent)
+      } catch (e) {
+        setEditedContent(updatedContent)
+      }
+    }}
+    label={'Question JSON'}
+    infoContent={'Edit the question JSON directly. Learn more about SurveyJS JSON here.'}
+  />
 }
