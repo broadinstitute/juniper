@@ -71,6 +71,7 @@ describe('PageDesigner', () => {
           { name: 'q2', title: '2?', type: 'text' },
           {
             type: 'panel',
+            title: '',
             elements: [
               { name: 'q3', type: 'html', html: '3' },
               { name: 'q6', title: '6?', type: 'text' }
@@ -78,6 +79,7 @@ describe('PageDesigner', () => {
           },
           {
             type: 'panel',
+            title: 'My panel',
             elements: [
               { name: 'q4', title: '4?', type: 'text' },
               { name: 'q5', title: '5?', type: 'text' }

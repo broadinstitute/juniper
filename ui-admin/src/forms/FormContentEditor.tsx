@@ -42,7 +42,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     onAnswerMappingChange
   } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('split')
+  const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
   const { user } = useUser()
 
