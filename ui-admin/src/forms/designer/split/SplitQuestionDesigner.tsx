@@ -7,7 +7,7 @@ import {
   Question,
   surveyJSModelFromFormContent
 } from '@juniper/ui-core'
-import React, { memo, useEffect, useState } from 'react'
+import React, { memo, useState } from 'react'
 import { IconButton } from 'components/forms/Button'
 import { faCode, faLock, faUnlock } from '@fortawesome/free-solid-svg-icons'
 import { ListElementController } from 'portal/siteContent/designer/components/ListElementController'
@@ -37,26 +37,13 @@ export const SplitQuestionDesigner = memo(({
   const [isStableIdLocked, setIsStableIdLocked] = useState(true)
 
   // Chop the survey down to just the specific question that we're editing, so we can display
-  // a preview using the SurveyJS survey component
-  const [surveyQuestion, setSurveyQuestion] = useState<FormContent>({
+  // a preview using the SurveyJS survey component.
+  const surveyFromQuestion = {
     title: 'Question Preview',
     pages: [{ elements: [element] }],
     questionTemplates: editedContent.questionTemplates
-  })
-
-  const [surveyModel, setSurveyModel] = useState(surveyJSModelFromFormContent(surveyQuestion))
-
-  useEffect(() => {
-    const updatedSurveyQuestion = {
-      ...surveyQuestion,
-      pages: [{ elements: [element] }],
-      questionTemplates: editedContent.questionTemplates
-    }
-
-    setSurveyQuestion(updatedSurveyQuestion)
-    setSurveyModel(surveyJSModelFromFormContent(updatedSurveyQuestion))
-  }, [element])
-
+  }
+  const surveyModel = surveyJSModelFromFormContent(surveyFromQuestion)
 
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
