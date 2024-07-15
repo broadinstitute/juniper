@@ -9,10 +9,13 @@ export type ParticipantTask = {
   status: ParticipantTaskStatus
   studyEnvironmentId: string
   taskType: string
-  targetName: string
-  targetStableId: string
-  targetAssignedVersion: number
+  targetName?: string
+  targetStableId?: string
+  targetAssignedVersion?: number
   taskOrder: number
+  participantNoteId?: string
+  creatingAdminUserId?: string
+  assignedAdminUserId?: string
 
   // Tasks have one of these fields, depending on the task type.
   // TODO: Make this type a union of subtypes for each task type.
@@ -33,5 +36,6 @@ export type ParticipantTaskType =
   | 'OUTREACH'
   | 'KIT_REQUEST'
   | 'ADMIN_FORM'
+  | 'ADMIN_NOTE'
 
 export {}

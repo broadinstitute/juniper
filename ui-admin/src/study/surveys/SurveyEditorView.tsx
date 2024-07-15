@@ -16,8 +16,11 @@ import { isEmpty, isEqual } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
 import { ApiProvider } from '@juniper/ui-core'
 import { previewApi } from 'util/apiContextUtils'
-import { saveBlobAsDownload } from '../../util/downloadUtils'
+import { saveBlobAsDownload } from 'util/downloadUtils'
 import FormHistoryModal from './FormHistoryModal'
+import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
+import Select from 'react-select'
+import InfoPopup from 'components/forms/InfoPopup'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -60,7 +63,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
   const isSurvey = !!(currentForm as Survey).surveyType
   const portalEnv = portal.portalEnvironments.find((env: PortalEnvironment) =>
-    env.environmentName === currentEnv.environmentName)
+    env.environmentName === currentEnv.environmentName)!
+  const {
+    currentLanguage, languageOnChange, selectedLanguageOption,
+    selectLanguageInputId, languageOptions
+  } = useLanguageSelectorFromParam()
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -116,7 +123,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   return (
     <div className="SurveyView d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
-        <div className="d-flex flex-grow-1">
+        <div className="d-flex flex-grow-1 align-items-center">
           <h5>{currentForm.name}
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
               (<span>{currentForm.stableId} v{currentForm.version}</span>
@@ -126,6 +133,19 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               )
             </span>
           </h5>
+          <div className="ms-2 d-flex align-items-center" style={{ width: 200 }}>
+            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+              aria-label={'Select a language'}
+              isDisabled={languageOptions.length < 2}
+              onChange={languageOnChange}/>
+            <InfoPopup placement="bottom" content={<p><p>
+              The language to edit and preview the form in. If the language is not explicitly
+              supported for this form, the default
+              language for the form will be used. </p>
+            <p>The values for this dropdown are taken from the supported languages
+                configurable in &quot;Site Settings&quot;.
+            </p></p>}/>
+          </div>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
         { !isEmpty(validationErrors) &&
@@ -233,6 +253,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           initialAnswerMappings={draft?.answerMappings || currentForm.answerMappings || []}
           visibleVersionPreviews={visibleVersionPreviews}
           supportedLanguages={portalEnv?.supportedLanguages || []}
+          currentLanguage={currentLanguage}
           readOnly={readOnly}
           onFormContentChange={(newValidationErrors, newContent) => {
             if (isEmpty(newValidationErrors)) {

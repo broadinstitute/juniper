@@ -273,3 +273,10 @@ export const datasetDashboardPath = (datasetName: string, currentEnvPath: string
 export const adminTasksPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/adminTasks`
 }
+
+/**
+ * helper for getting paths to family pages
+ */
+export const familyPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/families`
+}

@@ -18,7 +18,6 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import bio.terra.pearl.core.service.survey.SurveyService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.populate.service.BaseSeedPopulator;
 import bio.terra.pearl.populate.service.FamilyPopulator;
@@ -60,8 +59,6 @@ public abstract class BasePopulatePortalsTest extends BaseSpringBootTest {
     protected AnswerService answerService;
     @Autowired
     protected ParticipantTaskService participantTaskService;
-    @Autowired
-    protected AdminTaskService adminTaskService;
     @Autowired
     protected PortalService portalService;
     @Autowired

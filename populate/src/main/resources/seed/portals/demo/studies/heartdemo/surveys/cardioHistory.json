@@ -6,7 +6,7 @@
   "required": true,
   "jsonContent": {
     "title": {
-      "default": "Cardiometabolic Medical History",
+      "en": "Cardiometabolic Medical History",
       "es": "Historial Médico Cardiometabólico",
       "dev": "DEV_Cardiometabolic Medical History"
     },

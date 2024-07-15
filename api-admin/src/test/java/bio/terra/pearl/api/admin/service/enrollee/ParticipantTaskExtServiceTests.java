@@ -2,8 +2,10 @@ package bio.terra.pearl.api.admin.service.enrollee;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.Mockito.when;
 
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.PortalAdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
@@ -11,15 +13,20 @@ import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ParticipantTaskExtServiceTests extends BaseSpringBootTest {
+  @MockBean private AuthUtilService mockAuthUtilService;
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
   @Autowired private EnrolleeFactory enrolleeFactory;
   @Autowired private ParticipantTaskFactory participantTaskFactory;
@@ -81,5 +88,39 @@ public class ParticipantTaskExtServiceTests extends BaseSpringBootTest {
     ParticipantTask unaffectedTaskUpdate =
         participantTaskService.find(differentSurveyTask.getId()).orElseThrow();
     assertThat(unaffectedTaskUpdate.getTargetAssignedVersion(), equalTo(1));
+  }
+
+  @Test
+  public void testGetByStudyAuthsToStudy() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToStudy(user, "foo", "bar"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            participantTaskExtService.getByStudyEnvironment(
+                "foo", "bar", EnvironmentName.irb, List.of(), user));
+  }
+
+  @Test
+  public void testGetByEnrolleeAuthsToEnrollee() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authAdminUserToEnrollee(user, "code12"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () -> participantTaskExtService.getByEnrollee("code12", user));
+  }
+
+  @Test
+  public void testUpdateAuthsToStudy() {
+    AdminUser user = AdminUser.builder().superuser(false).build();
+    when(mockAuthUtilService.authUserToStudy(user, "foo", "bar"))
+        .thenThrow(new PermissionDeniedException("test1"));
+    Assertions.assertThrows(
+        PermissionDeniedException.class,
+        () ->
+            participantTaskExtService.update(
+                "foo", "bar", EnvironmentName.irb, UUID.randomUUID(), new ParticipantTask(), user));
   }
 }
