@@ -102,16 +102,7 @@ public class ActivityImporter {
             ArrayNode elements = objectMapper.createArrayNode();
             page.set("elements", elements);
             for (FormBlockDef blockDef : section.getBlocks()) {
-                //content blocks
-                if (blockDef.getBlockType().equals(BlockType.CONTENT)) {
-                    JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef);
-                    elements.add(contentNode);
-                }
-
-                elements.addAll(getNestedContent(allLangMap, blockDef));
-
-                //need to handle expressions / calculatedValues .. dynamic text.. conditional logic.
-                elements.addAll(convertBlockQuestions(allLangMap, blockDef));
+                elements.addAll(convertBlock(allLangMap, blockDef));
             }
         }
         try {
@@ -126,25 +117,132 @@ public class ActivityImporter {
         return survey;
     }
 
-    private List<JsonNode> getNestedContent(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
-        List<JsonNode> contentNodes = new ArrayList<>();
+    private List<JsonNode> convertBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+        List<JsonNode> elements = new ArrayList<>();
+
+        switch (blockDef.getBlockType()) {
+            case QUESTION:
+                elements.addAll(convertBlockQuestions(allLangMap, blockDef));
+                break;
+            case CONTENT:
+                elements.add(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
+                break;
+            case GROUP:
+                elements.addAll(convertGroupBlock(allLangMap, blockDef));
+                break;
+            case CONDITIONAL:
+                elements.addAll(convertConditionalBlock(allLangMap, (ConditionalBlockDef) blockDef));
+                break;
+            default:
+                log.warn("Unsupported block type: " + blockDef.getBlockType());
+        }
+        return elements;
+    }
+
+    private List<JsonNode> convertGroupBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+        List<JsonNode> nodes = new ArrayList<>();
         if (blockDef.getBlockType().equals(BlockType.GROUP)) {
             GroupBlockDef groupBlockDef = ((GroupBlockDef) blockDef);
             List<FormBlockDef> nestedBlockdefs = groupBlockDef.getNested();
             for (FormBlockDef nestedBlockDef : nestedBlockdefs) {
-                if (nestedBlockDef.getBlockType().equals(BlockType.CONTENT)) {
-                    JsonNode contentNode = getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) nestedBlockDef);
-                    contentNodes.add(contentNode);
-                }
+                nestedBlockDef.setShownExpr(concatShownExpr(blockDef.getShownExpr(), nestedBlockDef.getShownExpr()));
+                nodes.addAll(convertBlock(allLangMap, nestedBlockDef));
             }
         }
-        return contentNodes;
+        return nodes;
+    }
+
+    private List<JsonNode> convertConditionalBlock(Map<String, Map<String, Object>> allLangMap, ConditionalBlockDef blockDef) {
+        List<JsonNode> elements = new ArrayList<>();
+        if (blockDef.getBlockType().equals(BlockType.CONDITIONAL)) {
+
+            elements.addAll(convertQuestionToSurveyJsFormat(blockDef, allLangMap, blockDef.getControl()));
+
+            for (FormBlockDef formBlockDef : blockDef.getNested()) {
+                formBlockDef.setShownExpr(concatShownExpr(blockDef.getShownExpr(), formBlockDef.getShownExpr()));
+                elements.addAll(convertBlock(allLangMap, formBlockDef));
+            }
+        }
+        return elements;
+    }
+
+    private String concatShownExpr(String... shownExprs) {
+        return Arrays.stream(shownExprs)
+                .filter(StringUtils::isNotEmpty)
+                .collect(Collectors.joining(" && "));
     }
 
     private List<JsonNode> convertBlockQuestions(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
         List<JsonNode> questionNodes = new ArrayList<>();
-        for (QuestionDef pepperQuestionDef : blockDef.getQuestions().toList()) {
-            questionNodes.add(convertQuestionToSurveyJsFormat(blockDef, allLangMap, pepperQuestionDef));
+        if (blockDef.getBlockType().equals(BlockType.QUESTION)) {
+            questionNodes.addAll(convertQuestionToSurveyJsFormat(blockDef, allLangMap, ((QuestionBlockDef) blockDef).getQuestion()));
+            return questionNodes;
+        }
+
+        return questionNodes;
+    }
+
+    private List<JsonNode> convertQuestionToSurveyJsFormat(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.COMPOSITE)) {
+            // composite questions are not 'questions' in surveyjs, rather panels.
+            // so, they need to be handled totally differently
+            return List.of(convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef));
+        }
+
+        Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
+        String questionType = getQuestionType(pepperQuestionDef);
+        String inputType = null;
+
+        Map<String, String> placeholder = null;
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.DATE)) {
+            inputType = "date";
+            DateQuestionDef dateQuestionDef = (DateQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(dateQuestionDef.getPlaceholderTemplate())) {
+                placeholder = translatePepperTemplate(dateQuestionDef.getPlaceholderTemplate());
+            }
+        }
+
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.NUMERIC)) {
+            inputType = "number";
+            NumericQuestionDef numericQuestionDef = (NumericQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(numericQuestionDef.getPlaceholderTemplate())) {
+                placeholder = translatePepperTemplate(numericQuestionDef.getPlaceholderTemplate());
+            }
+        }
+
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.TEXT)) {
+            TextQuestionDef textQuestionDef = (TextQuestionDef) pepperQuestionDef;
+            if (Objects.nonNull(textQuestionDef.getPlaceholderTemplate())) {
+                placeholder = translatePepperTemplate(textQuestionDef.getPlaceholderTemplate());
+            }
+        }
+
+        List<SurveyJSQuestion.Choice> choices = null;
+
+        List<JsonNode> otherQuestions = new ArrayList<>();
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.PICKLIST)) {
+            PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
+            choices = getPicklistChoices(picklistQuestionDef, allLangMap);
+
+            // surveyjs only supports 1 other question at a time, but pepper often has many other
+            // questions to just one picklist
+            otherQuestions = createOtherQuestions(picklistQuestionDef, allLangMap, choices);
+        }
+
+        Map<String, String> labelTrue = null;
+        Map<String, String> labelFalse = null;
+        String valueTrue = null;
+        String valueFalse = null;
+        if (pepperQuestionDef.getQuestionType().equals(QuestionType.BOOLEAN)) {
+            BoolQuestionDef boolQuestionDef = (BoolQuestionDef) pepperQuestionDef;
+
+            labelTrue = translatePepperTemplate(boolQuestionDef.getTrueTemplate());
+            labelFalse = translatePepperTemplate(boolQuestionDef.getFalseTemplate());
+            valueTrue = "true";
+            valueFalse = "false";
+        } else if (pepperQuestionDef.getQuestionType().equals(QuestionType.AGREEMENT)) {
+            valueTrue = "true";
+            valueFalse = "false";
         }
 
         if (titleMap.isEmpty() && placeholder != null) {
@@ -154,7 +252,10 @@ public class ActivityImporter {
             titleMap = placeholder;
         }
 
-        // todo: handle tooltips
+        // todo: handle tooltips - this is not natively
+        //       supported in surveyjs, so maybe we should
+        //       make an html block if there's a tooltip?
+
 
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                 .name(pepperQuestionDef.getStableId())
@@ -172,7 +273,33 @@ public class ActivityImporter {
                 .build();
         ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
 
-        return objectMapper.valueToTree(surveyJSQuestion);
+
+        JsonNode node = objectMapper.valueToTree(surveyJSQuestion);
+        if (!otherQuestions.isEmpty()) {
+            List<JsonNode> out = new ArrayList<>();
+            out.add(node);
+            out.addAll(otherQuestions);
+            return out;
+        }
+        return List.of(node);
+    }
+
+    private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
+        List<JsonNode> otherQuestions = new ArrayList<>();
+        for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
+            if (option.isDetailsAllowed()) {
+                Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
+                SurveyJSQuestion otherQuestion = SurveyJSQuestion.builder()
+                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_details")
+                        .type("text")
+                        .title(otherTitle)
+                        .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
+                        .build();
+                otherQuestions.add(objectMapper.valueToTree(otherQuestion));
+
+            }
+        }
+        return otherQuestions;
     }
 
     private JsonNode convertCompositeQuestion(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, CompositeQuestionDef pepperQuestionDef) {
@@ -192,7 +319,7 @@ public class ActivityImporter {
 
         // find all subquestions for the composite question
         List<JsonNode> subQuestions = pepperQuestionDef.getChildren().stream()
-                .map(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child))
+                .flatMap(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child).stream())
                 .collect(Collectors.toList());
 
 
@@ -211,84 +338,6 @@ public class ActivityImporter {
     public static Map<String, String> translatePepperTemplate(Template template) {
         return getVariableTranslationsTxt(template.getTemplateText(),
                 template.getVariables());
-    }
-
-    private JsonNode convertQuestionToSurveyJsFormat(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
-        Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
-        String questionType = getQuestionType(pepperQuestionDef);
-        String inputType = null;
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("DATE")) {
-            inputType = "DATE";
-        }
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("NUMERIC")) {
-            inputType = "NUMBER";
-        }
-
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("COMPOSITE")) {
-            // composite questions are not 'questions' in surveyjs, rather panels.
-            // so, they need to be formatted differently
-            return convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef);
-        }
-
-        List<SurveyJSQuestion.Choice> choices = null;
-        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
-            choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
-        }
-
-        //expression  revisit and try this
-        //parse the pepper expression for stableID and value/option and generate Juniper expression
-        //EX: user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
-        //parse value after questions[] and hasOption and generate
-        //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
-        //works only for picklist/choices though
-
-        SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
-                .name(pepperQuestionDef.getStableId())
-                .type(questionType)
-                .title(titleMap)
-                .isRequired(false)
-                .inputType(inputType)
-                .choices(choices)
-                .visibleIf(blockDef.getShownExpr())
-                .build();
-        ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
-
-        return objectMapper.valueToTree(surveyJSQuestion);
-    }
-
-    private JsonNode convertCompositeQuestion(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, CompositeQuestionDef pepperQuestionDef) {
-
-        // add button template is the text of the add button
-        Map<String, String> addButtonTemplate = null;
-        if (Objects.nonNull(pepperQuestionDef.getAddButtonTemplate())) {
-            addButtonTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAddButtonTemplate().getTemplateText(),
-                    pepperQuestionDef.getAddButtonTemplate().getVariables());
-        }
-
-        // additional item template is the title above every new item the user
-        // adds, e.g. "Other Medication" in the Medication question
-        Map<String, String> additionalItemTemplate = null;
-        if (Objects.nonNull(pepperQuestionDef.getAdditionalItemTemplate())) {
-            additionalItemTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAdditionalItemTemplate().getTemplateText(),
-                    pepperQuestionDef.getAdditionalItemTemplate().getVariables());
-        }
-
-        // find all subquestions for the composite question
-        List<JsonNode> subQuestions = pepperQuestionDef.getChildren().stream()
-                .map(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child))
-                .collect(Collectors.toList());
-
-
-        // construct as surveyjs panel dynamic section
-        Map<String, Object> compositeQuestionMap = new HashMap<>();
-        compositeQuestionMap.put("name", pepperQuestionDef.getStableId());
-        compositeQuestionMap.put("type", "paneldynamic");
-        compositeQuestionMap.put("title", getQuestionTxt(pepperQuestionDef));
-        compositeQuestionMap.put("templateElements", subQuestions);
-        compositeQuestionMap.put("panelAddText", addButtonTemplate);
-        compositeQuestionMap.put("templateTitle", additionalItemTemplate);
-        compositeQuestionMap.put("visibleIf", blockDef.getShownExpr());
-        return objectMapper.valueToTree(compositeQuestionMap);
     }
 
     private String getQuestionType(QuestionDef pepperQuestionDef) {
@@ -361,6 +410,7 @@ public class ActivityImporter {
     }
 
 
+    // TODO: check "detailsAllowed" to & generate questions from it
     private List<SurveyJSQuestion.Choice> getPicklistChoices(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap) {
         List<SurveyJSQuestion.Choice> choices = new ArrayList<>();
         for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
@@ -422,7 +472,7 @@ public class ActivityImporter {
         // should become:
         // {REGISTRATION_COUNTRY} contains 'AF'
 
-        Pattern matchAllPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.answers\\.(.*?)\\((.*?)\\)");
+        Pattern matchAllPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
         return matchAllPattern.matcher(pepperExpr).replaceAll(matchResult -> {
 
             String study = matchResult.group(1);
@@ -432,11 +482,13 @@ public class ActivityImporter {
             String value = matchResult.group(5);
             String stableId = "{" + question + "}";
             switch (pepperOperation.toLowerCase().trim()) {
-                case "hasoption":
+                case "answers.hasoption":
                     pepperOperation = "contains";
                     break;
-                case "hastrue":
+                case "answers.hastrue":
                     return stableId + " = true";
+                case "isanswered":
+                    return stableId + " notempty";
                 default:
                     throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
             }
@@ -445,6 +497,7 @@ public class ActivityImporter {
             }
             return stableId + " " + pepperOperation + " '" + value + "'";
         }).replace("&&", "and").replace("\n", "").trim();
+
     }
 
     /** maps pepper replacement vars to Juniper vars, and html markup to markdown.
