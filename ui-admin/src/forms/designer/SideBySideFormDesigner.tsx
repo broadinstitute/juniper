@@ -1,5 +1,5 @@
 import {
-  FormContent,
+  FormContent, FormElement,
   PortalEnvironmentLanguage,
   Question, surveyJSModelFromFormContent
 } from '@juniper/ui-core'
@@ -10,8 +10,8 @@ import { faArrowLeft, faArrowRight, faArrowUp, faCode, faPlus } from '@fortaweso
 import { ListElementController } from '../../portal/siteContent/designer/components/ListElementController'
 import { QuestionDesigner } from './QuestionDesigner'
 import { Survey as SurveyComponent } from 'survey-react-ui'
-import { SurveyModel } from 'survey-core'
 import { Textarea } from '../../components/forms/Textarea'
+import { isEqual } from 'lodash'
 
 /**
  *
@@ -46,6 +46,7 @@ export const SideBySideFormDesigner = ({ content, onChange, currentLanguage, sup
         <div key={element.name || elementIndex} className="container">
           <SideBySideQuestionDesigner currentPageNo={currentPageNo}
             elementIndex={elementIndex} editedContent={content}
+            element={content.pages[currentPageNo].elements[elementIndex]}
             currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
             onChange={onChange}/>
           <div className="d-flex">
@@ -103,15 +104,15 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
 
 
 const SideBySideQuestionDesigner = memo(({
-  elementIndex, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
+  elementIndex, element, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
 }: {
-    elementIndex: number, currentPageNo: number,
+    elementIndex: number, element: FormElement, currentPageNo: number,
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[],
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
   console.log('rerendering SideBySideQuestionDesigner')
 
-  const element = editedContent.pages[currentPageNo].elements[elementIndex]
+  // const element = editedContent.pages[currentPageNo].elements[elementIndex]
   const [showJsonEditor, setShowJsonEditor] = useState(false)
 
   const [surveyQuestion, setSurveyQuestion] = useState<FormContent>({
@@ -215,29 +216,16 @@ const SideBySideQuestionDesigner = memo(({
     </div>
     <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
-      <QuestionPreview surveyModel={surveyModel}/>
+      <SurveyComponent model={surveyModel} readOnly={false}/>
     </div>
   </div>
 }, (prevProps, nextProps) => {
-  return prevProps.elementIndex === nextProps.elementIndex
+  // Only re-render if the question has changed. Note that React.memo only does a shallow object comparison
+  // by default, which is why we have custom prop-comparison here.
+  return isEqual(prevProps.element, nextProps.element)
 })
 
 SideBySideQuestionDesigner.displayName = 'SideBySideQuestionDesigner'
-
-/* This component uses the 'memo' higher-order component that's built into React.
-      * This means that the component will only re-render if the props change, which
-      * is very important in this case because the SurveyJS survey component is expensive
-      * to re-render and we don't want to re-render every other question preview when the
-      * parent state changes.
- */
-const QuestionPreview = memo(({ surveyModel }: { surveyModel: SurveyModel }) => {
-  console.log('rerendering QuestionPreview')
-  return (
-    <SurveyComponent model={surveyModel} readOnly={false}/>
-  )
-})
-
-QuestionPreview.displayName = 'QuestionPreview'
 
 const QuestionJsonEditor = ({ question, onChange }: {
   question: Question, onChange: (newQuestion: Question) => void

@@ -42,11 +42,13 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     onAnswerMappingChange
   } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('designer')
+  const [activeTab, setActiveTab] = useState<string | null>('designer-v2')
   const [tabsEnabled, setTabsEnabled] = useState(true)
   const { user } = useUser()
 
   const [editedContent, setEditedContent] = useStateCallback(() => JSON.parse(initialContent) as FormContent)
+
+  console.log(editedContent)
 
   return (
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
