@@ -21,7 +21,6 @@ import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,7 +57,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
-                                   AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
+                                   StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
                                    ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService, DataChangeRecordService dataChangeRecordService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;

@@ -16,7 +16,7 @@ import {
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import Api from 'api/api'
 import { useLoadingEffect } from 'api/api-utils'
-import { getFamilyNames } from 'util/familyUtils'
+import { getFamilyNameString } from 'util/familyUtils'
 import Select from 'react-select'
 import { isNil } from 'lodash'
 import LoadingSpinner from 'util/LoadingSpinner'
@@ -59,7 +59,7 @@ export const AddFamilyModal = (
     .map(family => {
       return {
         value: family.shortcode,
-        label: `${getFamilyNames(family)} (${family.shortcode})`
+        label: `${getFamilyNameString(family)} (${family.shortcode})`
       }
     })
 

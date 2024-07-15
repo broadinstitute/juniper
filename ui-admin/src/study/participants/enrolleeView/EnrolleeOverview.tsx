@@ -83,7 +83,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     </div>
 
     {
-      familyLinkageEnabled && <div className="mb-5">
+      familyLinkageEnabled && <div>
         <Families enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
       </div>
     }

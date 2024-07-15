@@ -1,10 +1,11 @@
 import React from 'react'
 import { Family } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
-import { 
-      familyPath,
-      StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import { getFamilyNames } from 'util/familyUtils'
+import {
+  familyPath,
+  StudyEnvContextT
+} from 'study/StudyEnvironmentRouter'
+import { getFamilyNameString } from 'util/familyUtils'
 import { isEmpty } from 'lodash'
 
 /**

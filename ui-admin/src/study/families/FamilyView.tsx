@@ -64,7 +64,7 @@ export function LoadedFamilyView({ family, studyEnvContext, reloadFamily }:
     <div className="row">
       <div className="col-12">
         <h4>
-          {getFamilyNames(family)} Family&nbsp;
+          {getFamilyNameString(family)} Family&nbsp;
           <span className="detail" title="Participant shortcode"> ({family.shortcode})</span>
         </h4>
       </div>

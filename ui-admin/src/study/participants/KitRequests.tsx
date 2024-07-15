@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable
+} from '@tanstack/react-table'
+import {
+  basicTableLayout,
+  renderEmptyMessage
+} from 'util/tableUtils'
 import RequestKitModal from './RequestKitModal'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -14,7 +21,10 @@ import { useUser } from 'user/UserProvider'
 import InfoPopup from 'components/forms/InfoPopup'
 import KitStatusCell from './KitStatusCell'
 import { Button } from 'components/forms/Button'
-import { InfoCard, InfoCardHeader } from 'components/InfoCard'
+import {
+  InfoCard,
+  InfoCardHeader
+} from 'components/InfoCard'
 
 /** Component for rendering the address a kit was sent to based on JSON captured at the time of the kit request. */
 function KitRequestAddress({ sentToAddressJson }: { sentToAddressJson: string }) {
@@ -99,7 +109,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
       onSubmit={onSubmit}
     />}
     {basicTableLayout(table, { tableClass: 'table m-0' })}
-    {<div className='my-3'>
+    {enrollee.kitRequests.length === 0 && <div className='my-3'>
       {renderEmptyMessage(enrollee.kitRequests, 'No kit requests')}
     </div>}
   </InfoCard>

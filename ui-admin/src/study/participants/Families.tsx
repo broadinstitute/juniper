@@ -5,8 +5,14 @@ import {
   getCoreRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
-import { faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+  basicTableLayout,
+  renderEmptyMessage
+} from 'util/tableUtils'
+import {
+  faCheck,
+  faPlus
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Enrollee,
@@ -24,6 +30,11 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 import InfoPopup from 'components/forms/InfoPopup'
 import classNames from 'classnames'
+import {
+  InfoCard,
+  InfoCardHeader
+} from 'components/InfoCard'
+import { Button } from 'components/forms/Button'
 
 
 /** Shows a list of all kit requests for an enrollee. */
@@ -66,9 +77,17 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
       {row.original.shortcode}
     </Link>
   }, {
-    header: 'Created',
-    accessorKey: 'createdAt',
-    accessorFn: data => instantToDefaultString(data.createdAt)
+    header: 'Date Added',
+    accessorKey: 'dateAdded',
+    accessorFn: data => {
+      const familyEnrollee = enrollee.familyEnrollees?.find(familyEnrollee => familyEnrollee.familyId === data.id)
+      return familyEnrollee ? instantToDefaultString(familyEnrollee.createdAt) : ''
+    }
+  }, {
+    header: 'Proband',
+    accessorKey: 'proband',
+    accessorFn: data => data.probandEnrolleeId === enrollee.id,
+    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
   }, {
     header: 'Actions',
     cell: ({ row }) => {
@@ -95,18 +114,26 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
     getCoreRowModel: getCoreRowModel()
   })
 
-  return <div>
+  return <InfoCard>
 
-    <div className="d-flex align-middle align-items-baseline">
-      <h2 className="h4">Families</h2>
+    <InfoCardHeader>
+      <div className="d-flex align-items-center justify-content-between w-100">
 
-      <button className={'btn btn-secondary '} onClick={() => setAddFamily(true)}>
-        <FontAwesomeIcon icon={faPlus}/> Add
-      </button>
-    </div>
+        <div className="fw-bold lead my-1">Families</div>
+
+        <Button onClick={() => setAddFamily(true)}
+          variant="light" className="border m-1">
+          <FontAwesomeIcon icon={faPlus}/> Add family
+        </Button>
+      </div>
+    </InfoCardHeader>
 
 
-    {basicTableLayout(table)}
+    {basicTableLayout(table, { tableClass: 'table m-0' })}
+
+    {enrollee.families?.length === 0 && <div className='my-3'>
+      {renderEmptyMessage(enrollee.families || [], 'No families')}
+    </div>}
 
     {addFamily && <AddFamilyModal
       enrollee={enrollee}
@@ -127,5 +154,5 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
         /></span>?
       </p>}
       onDismiss={() => setFamilySelectedForRemoval(undefined)}/>}
-  </div>
+  </InfoCard>
 }

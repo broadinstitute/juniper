@@ -5,7 +5,10 @@ import {
   SurveyResponse
 } from 'src/types/forms'
 import { MailingAddress } from 'src/types/address'
-import { Family } from 'src/types/family'
+import {
+  Family,
+  FamilyEnrollee
+} from 'src/types/family'
 
 export type ParticipantNote = {
     id: string
@@ -43,6 +46,7 @@ export type Enrollee = {
     studyEnvironmentId: string
     surveyResponses: SurveyResponse[]
     families?: Family[]
+    familyEnrollees?: FamilyEnrollee[]
 }
 
 export type HubResponse = {
