@@ -6,11 +6,11 @@ import React, { useState } from 'react'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faArrowLeft, faArrowRight, faArrowUp, faPlus } from '@fortawesome/free-solid-svg-icons'
-import { SplitQuestionDesigner } from './SplitQuestionDesigner'
+import { SplitFormElementDesigner } from './SplitFormElementDesigner'
 import { baseQuestions } from '../questions/questionTypes'
 
 /**
- *
+ * A split-view form designer that allows editing content on the left and previewing it on the right.
  */
 export const SplitFormDesigner = ({ content, onChange, currentLanguage, supportedLanguages }: {
     content: FormContent, onChange: (newContent: FormContent) => void,
@@ -39,7 +39,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
     <>
       {currentPage.elements.map((element, elementIndex) => (
         <div key={elementIndex} className="container">
-          <SplitQuestionDesigner currentPageNo={currentPageNo}
+          <SplitFormElementDesigner currentPageNo={currentPageNo}
             elementIndex={elementIndex} editedContent={content}
             element={content.pages[currentPageNo].elements[elementIndex]}
             currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
@@ -57,7 +57,7 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
         onClick={() => handlePageChange('previous')}>
         <FontAwesomeIcon icon={faArrowLeft}/> Previous page
       </Button>
-      <Button className="border m-1" variant="light" onClick={() => window.scrollTo(0, 0)}>
+      <Button className="border m-1" variant="light" onClick={() => handleScrollToTop()}>
         <FontAwesomeIcon icon={faArrowUp}/> Scroll to top
       </Button>
       <Button variant="light" className="border m-1"

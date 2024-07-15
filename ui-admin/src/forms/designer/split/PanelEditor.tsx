@@ -7,8 +7,8 @@ import { TextInput } from 'components/forms/TextInput'
 /**
  *
  */
-export const PanelDesigner = ({ currentPageNo, panel, onChange, currentLanguage, supportedLanguages }: {
-    panel: FormPanel, onChange: (newPanel: FormElement) => void, currentPageNo: number,
+export const PanelEditor = ({ panel, onChange, currentLanguage, supportedLanguages }: {
+    panel: FormPanel, onChange: (newPanel: FormElement) => void,
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
 }) => {
   return (
