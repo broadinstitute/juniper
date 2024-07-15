@@ -40,7 +40,7 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "test": "jest",
     "tsc": "tsc"
   },
   "browserslist": {

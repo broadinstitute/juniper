@@ -13,6 +13,7 @@ export default {
     'react-markdown': '<rootDir>/../node_modules/react-markdown/react-markdown.min.js',
     'micromark': '<rootDir>/../ui-core/src/test-utils/micromark-mock.js',
     '@juniper/ui-core': '<rootDir>/../ui-core/build/ui-core.js',
-    'authConfig': '<rootDir>/../ui-core/src/test-utils/mockAuthConfig.js'
+    'authConfig': '<rootDir>/../ui-core/src/test-utils/mockAuthConfig.js',
+    'util/envVars': '<rootDir>/../ui-core/src/test-utils/mockFile.js'
   }
 }
