@@ -3,8 +3,12 @@ import { screen } from '@testing-library/react'
 import SurveyEditorView from './SurveyEditorView'
 import { getFormDraftKey } from 'forms/designer/utils/formDraftUtils'
 import { defaultSurvey, renderWithRouter, Survey } from '@juniper/ui-core'
-import { mockExpressionApis, mockStudyEnvContext } from 'test-utils/mocking-utils'
+import {
+  mockExpressionApis,
+  mockStudyEnvContext, mockTwoLanguagePortal, renderInPortalRouter
+} from 'test-utils/mocking-utils'
 import userEvent from '@testing-library/user-event'
+import { select } from 'react-select-event'
 
 describe('SurveyEditorView', () => {
   const mockForm = ():Survey => ({
@@ -103,6 +107,30 @@ describe('SurveyEditorView', () => {
     />)
     expect(screen.getByText('testStableId v12')).toBeInTheDocument()
     expect(screen.getByText('- published v2')).toBeInTheDocument()
+  })
+
+  test('toggles languages', async () => {
+    const portal = mockTwoLanguagePortal()
+    renderInPortalRouter(portal,
+      <SurveyEditorView
+        studyEnvContext={mockStudyEnvContext()}
+        currentForm={{
+          ...mockForm(), content: JSON.stringify({
+            pages: [{
+              elements: [{
+                type: 'text', name: 'testQ', title: { 'en': 'English question', 'es': 'Español pregunta' }
+              }]
+            }]
+          })
+        }}
+        onCancel={jest.fn()}
+        onSave={jest.fn()}
+      />)
+    await userEvent.click(screen.getByText('testQ'))
+    expect(screen.getByText('English question')).toBeInTheDocument()
+    expect(screen.queryByText('Español pregunta')).not.toBeInTheDocument()
+    await select(screen.getByLabelText('Select a language'), 'Español')
+    expect(screen.queryByText('Español pregunta')).toBeInTheDocument()
   })
 })
 

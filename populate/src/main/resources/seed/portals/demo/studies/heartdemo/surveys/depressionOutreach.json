@@ -7,7 +7,7 @@
   "eligibilityRule": "{answer.hd_hd_mental.hd_hd_mental_phq9LostInterest} = '3'",
   "jsonContent": {
     "title": {
-      "default": "Depression sleep study",
+      "en": "Depression sleep study",
       "es": "Estudio del sueño de depresión",
       "dev": "Depression sleep study"
     },

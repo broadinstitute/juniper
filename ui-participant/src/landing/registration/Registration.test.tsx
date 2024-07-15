@@ -25,6 +25,9 @@ describe('Registration', () => {
       redirectMethod: 'replace',
       extraQueryParams: {
         option: 'signup',
+        originUrl: 'http://localhost',
+        portalEnvironment: 'live',
+        portalShortcode: undefined,
         // eslint-disable-next-line camelcase
         ui_locales: 'dev'
       }

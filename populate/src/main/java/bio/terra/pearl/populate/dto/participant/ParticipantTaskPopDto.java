@@ -1,6 +1,10 @@
 package bio.terra.pearl.populate.dto.participant;
 
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.populate.dto.TimeShiftable;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Note there was a choice here between "synthetic patients are populated by specifying exact task states"
@@ -11,7 +15,13 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
  * of allowing exact task specification for representing various states of completion and change.
   */
 
-public class ParticipantTaskPopDto extends ParticipantTask {
+@Getter
+@Setter
+@NoArgsConstructor
+public class ParticipantTaskPopDto extends ParticipantTask implements TimeShiftable {
     // e.g. now-1d
     private String completedAtOffset;
+    private Integer submittedHoursAgo;
+    private String assignedToUsername;
+    private String creatingAdminUsername;
 }

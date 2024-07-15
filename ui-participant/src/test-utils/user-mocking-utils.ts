@@ -1,12 +1,12 @@
-import { UserContextT } from '../providers/UserProvider'
-import { ActiveUserContextT } from '../providers/ActiveUserProvider'
+import { UserContextT } from 'providers/UserProvider'
+import { ActiveUserContextT } from 'providers/ActiveUserProvider'
 
 /**
  * Returns a mock object that can be returned by the useUser hook
  */
 export const mockUseUser = (isAnonymous: boolean): UserContextT => {
   return {
-    user: isAnonymous ? null : { id: '', token: '', username: isAnonymous ? 'anonymous' : 'testUser' },
+    user: isAnonymous ? null : { id: '', token: '', username: isAnonymous ? 'anonymous' : 'testUser', lastLogin: 0 },
     logoutUser: jest.fn(),
     updateProfile: jest.fn(),
     updateEnrollee: jest.fn(),

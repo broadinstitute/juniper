@@ -1,8 +1,5 @@
-import React, { useState } from 'react'
-import { PortalEnvironmentLanguage, Profile } from '@juniper/ui-core'
-import Select from 'react-select'
-import useReactSingleSelect from 'util/react-select-utils'
-import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
+import React from 'react'
+import { Profile } from '@juniper/ui-core'
 import InfoPopup from '../components/forms/InfoPopup'
 import { TextInput } from '../components/forms/TextInput'
 
@@ -16,26 +13,12 @@ type FormPreviewOptions = {
 
 type FormPreviewOptionsProps = {
   value: FormPreviewOptions
-  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: FormPreviewOptions) => void
 }
 
 /** Controls for configuring the form editor's preview tab. */
 export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
-  const { value, supportedLanguages, onChange } = props
-  const { defaultLanguage } = usePortalLanguage()
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(defaultLanguage)
-
-  const {
-    onChange: languageOnChange, options: languageOptions,
-    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
-  } =
-    useReactSingleSelect(
-      supportedLanguages,
-      (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
-      setSelectedLanguage,
-      selectedLanguage
-    )
+  const { value, onChange } = props
 
   return (
     <div>
@@ -75,23 +58,6 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           Show all questions, regardless of their visibility. Use this to review questions that
           would be hidden by survey branching logic.
         </p>}/>
-      </div>
-      <div className="form-group mt-3">
-        <label htmlFor={selectLanguageInputId}>Language Preview</label>
-        <InfoPopup content={<p><p>
-          The language to use when rendering the form. If the language is not supported for this form, the default
-          language for the form will be used. </p>
-        <p>The values for this dropdown are taken from the supported languages
-          configurable in &quot;Site Settings&quot;.
-        </p></p>}/>
-        <Select
-          inputId={selectLanguageInputId}
-          options={languageOptions}
-          value={selectedLanguageOption}
-          onChange={language => {
-            languageOnChange(language)
-            onChange({ ...value, locale: language?.value.languageCode ?? 'default' })
-          }}/>
       </div>
       <div className="mt-4">
         <div data-testid="profileInfoFields">

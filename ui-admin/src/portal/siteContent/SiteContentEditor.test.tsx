@@ -4,7 +4,7 @@ import SiteContentEditor from './SiteContentEditor'
 import { render, screen, waitFor } from '@testing-library/react'
 import { emptyApi, mockSiteContent } from 'test-utils/mock-site-content'
 import userEvent from '@testing-library/user-event'
-import { mockPortalEnvContext } from 'test-utils/mocking-utils'
+import { mockPortal, mockPortalEnvContext, mockTwoLanguagePortal, renderInPortalRouter } from 'test-utils/mocking-utils'
 import { MockI18nProvider, NavbarItemExternal, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { select } from 'react-select-event'
 import { Store } from 'react-notifications-component'
@@ -19,11 +19,10 @@ jest.spyOn(Store, 'addNotification').mockImplementation(() => '')
 test('enables live-preview json editing', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc} switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
-  render(RoutedComponent)
 
   expect(screen.getByText('Landing page')).toBeInTheDocument()
 
@@ -54,19 +53,18 @@ test('enables live-preview json editing', async () => {
 test('readOnly hides save button', async () => {
   const siteContent = mockSiteContent()
   const createNewVersionFunc = jest.fn()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={true}
       loadSiteContent={jest.fn()} createNewVersion={createNewVersionFunc}
       switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
-  render(RoutedComponent)
   expect(screen.getByText('Landing page')).toBeInTheDocument()
   expect(screen.queryByText('Save')).not.toBeInTheDocument()
 })
 
 test('clicking on the Preview tab shows full page preview', async () => {
   const siteContent = mockSiteContent()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <MockI18nProvider>
       <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
         loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
@@ -74,7 +72,6 @@ test('clicking on the Preview tab shows full page preview', async () => {
         portalEnvContext={mockPortalEnvContext('sandbox')}/>
     </MockI18nProvider>
   )
-  render(RoutedComponent)
 
   await userEvent.click(screen.getByText('Preview'))
   expect(screen.queryByText('Insert section')).not.toBeInTheDocument()
@@ -84,11 +81,10 @@ test('clicking on the Preview tab shows full page preview', async () => {
 test('invalid site JSON disables Save button', async () => {
   //Arrange
   const siteContent = mockSiteContent()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
       switchToVersion={jest.fn()} portalEnvContext={mockPortalEnvContext('sandbox')}/>)
-  render(RoutedComponent)
 
   const jsonEditorTab = screen.getByText('JSON Editor')
   await userEvent.click(jsonEditorTab)
@@ -104,12 +100,11 @@ test('invalid site JSON disables Save button', async () => {
 test('invalid site JSON disables Add navbar button', async () => {
   //Arrange
   const siteContent = mockSiteContent()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()}
       switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
-  render(RoutedComponent)
 
   const jsonEditorTab = screen.getByText('JSON Editor')
   await userEvent.click(jsonEditorTab)
@@ -126,11 +121,10 @@ test('invalid site JSON disables Add navbar button', async () => {
 test('invalid site JSON disables page selector', async () => {
   //Arrange
   const siteContent = mockSiteContent()
-  const { RoutedComponent } = setupRouterTest(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={mockPortalEnvContext('sandbox')}/>)
-  render(RoutedComponent)
 
   const jsonEditorTab = screen.getByText('JSON Editor')
   await userEvent.click(jsonEditorTab)
@@ -161,7 +155,7 @@ test('delete page button is disabled when Landing page is selected', async () =>
 test('renders a language selector when there are multiple languages', async () => {
   const siteContent = mockSiteContent()
   const portalEnvContext = mockPortalEnvContext('sandbox')
-  renderWithRouter(
+  renderInPortalRouter(mockTwoLanguagePortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={portalEnvContext}/>)
@@ -173,12 +167,12 @@ test('renders a language selector when there are multiple languages', async () =
 test('shows no content if nothing for a selected language', async () => {
   const siteContent = mockSiteContent()
   const portalEnvContext = mockPortalEnvContext('sandbox')
-  renderWithRouter(
+  renderInPortalRouter(mockTwoLanguagePortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={portalEnvContext}/>)
   expect(screen.queryByText('No content has been configured for this language.')).not.toBeInTheDocument()
-  await select(screen.getByLabelText('Select a language'), 'Spanish')
+  await select(screen.getByLabelText('Select a language'), 'Español')
   expect(screen.getByText('No content has been configured for this language.')).toBeInTheDocument()
 
   await userEvent.click(screen.getByText('Clone from default'))
@@ -232,7 +226,7 @@ test('renders href editor for external links', async () => {
   }
   const mockContext = mockPortalEnvContext('sandbox')
 
-  renderWithRouter(
+  renderInPortalRouter(mockPortal(),
     <SiteContentEditor siteContent={siteContent} previewApi={emptyApi} readOnly={false}
       loadSiteContent={jest.fn()} createNewVersion={jest.fn()} switchToVersion={jest.fn()}
       portalEnvContext={mockContext}/>)

@@ -37,17 +37,16 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final FamilyEnrolleeService familyEnrolleeService;
     private final EnrolleeRelationService enrolleeRelationService;
     private final DataChangeRecordService dataChangeRecordService;
-    private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
-    private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    private EnrolleeService enrolleeService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private TriggerService triggerService;
-    private DatasetService datasetService;
-    private DataRepoJobService dataRepoJobService;
-    private WithdrawnEnrolleeDao withdrawnEnrolleeDao;
-    private AdminTaskService adminTaskService;
-    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
-    private ImportService importService;
+    private final StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    private final StudyEnvironmentConfigService studyEnvironmentConfigService;
+    private final EnrolleeService enrolleeService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final TriggerService triggerService;
+    private final DatasetService datasetService;
+    private final DataRepoJobService dataRepoJobService;
+    private final WithdrawnEnrolleeDao withdrawnEnrolleeDao;
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    private final ImportService importService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -70,7 +69,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.datasetService = datasetService;
         this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeDao = withdrawnEnrolleeDao;
-        this.adminTaskService = adminTaskService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
         this.importService = importService;
         this.familyService = familyService;
@@ -133,7 +131,6 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
         importService.deleteByStudyEnvId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);

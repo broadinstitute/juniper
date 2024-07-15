@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faPeopleGroup,
+  faPerson
+} from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
@@ -10,26 +14,16 @@ import { useParticipantSearchState } from 'util/participantSearchUtils'
 import { concatSearchExpressions } from 'util/searchExpressionUtils'
 import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-  faPeopleGroup,
-  faPerson
-} from '@fortawesome/free-solid-svg-icons'
+import { Button } from 'components/forms/Button'
+import { useSingleSearchParam } from 'util/searchParamsUtils'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
   const { portal, study, currentEnv } = studyEnvContext
   const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
 
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const groupByFamily = searchParams.get('groupByFamily') === 'true'
-  const setGroupByFamily = (groupByFamily: boolean) => {
-    setSearchParams(params => {
-      params.set('groupByFamily', groupByFamily.toString())
-      return params
-    })
-  }
+  const [groupByFamilyString, setGroupByFamily] = useSingleSearchParam('groupByFamily')
+  const groupByFamily = groupByFamilyString === 'true'
 
   const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
@@ -40,16 +34,21 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
     searchExpression
   } = useParticipantSearchState()
 
+  const generateFullSearchExpression = () => {
+    const expressions: string[] = [searchExpression, 'include({user.lastLogin})']
+    if (familyLinkageEnabled) {
+      expressions.push('include({family.shortcode})')
+    }
+    return concatSearchExpressions(expressions)
+  }
+
   const { isLoading } = useLoadingEffect(async () => {
     const results = await Api.executeSearchExpression(
       portal.shortcode,
       study.shortcode,
       currentEnv.environmentName,
-      // if families exist, adding these expression guarantees that we get all families.
-      // might be a better way to do it, but this works for now
-      familyLinkageEnabled
-        ? concatSearchExpressions([`include({family.shortcode})`, searchExpression])
-        : searchExpression)
+      generateFullSearchExpression())
+
     setParticipantList(results)
   }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
@@ -65,15 +64,15 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
         setSearchState={setSearchState}
       />
       {
-        familyLinkageEnabled && <div className="d-flex align-content-center ms-2">
-          <button
-            className="btn-secondary btn-sm"
+        familyLinkageEnabled && <div className="d-flex align-content-center p-2">
+          <Button
+            variant="light" className="border btn-sm"
             aria-label={groupByFamily ? 'Participant view' : 'Family view'}
-            onClick={() => setGroupByFamily(!groupByFamily)}>
+            onClick={() => setGroupByFamily(groupByFamily ? 'false' : 'true')}>
             {groupByFamily
-              ? <><FontAwesomeIcon size={'sm'} icon={faPerson}/> Participant view</>
-              : <><FontAwesomeIcon size={'sm'} icon={faPeopleGroup}/> Family view</>}
-          </button>
+              ? <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPerson}/> Participant view</>
+              : <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPeopleGroup}/> Family view</>}
+          </Button>
         </div>
       }
 

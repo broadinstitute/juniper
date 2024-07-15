@@ -85,5 +85,17 @@
   {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "Este usuario ya está inscrito en ${studyName}.", "language": "es"},
   {"keyName": "cookieAlertTitle", "text": "Galletas", "language": "es"},
   {"keyName": "cookieAlertDetail", "text": "Este sitio utiliza tokens de Internet llamados &quot;cookies&quot; para permitir el correcto funcionamiento y seguridad de nuestro sitio web, y para mejorar su experiencia mientras lo utiliza. Todas las cookies que utilizamos son cookies estrictamente necesarias. Este tipo de cookie no recopila ninguna información de identificación personal sobre usted y no rastrea sus hábitos de navegación. Para obtener más información, [lea nuestra Política de privacidad](/privacy).", "language": "es"},
-  {"keyName": "joinStudy", "text": "Unirse al Estudio", "language": "es"}
+  {"keyName": "joinStudy", "text": "Unirse al Estudio", "language": "es"},
+  {"keyName": "ineligibleThankYou", "text": "Gracias por su interés en ${studyName}", "language": "es"},
+  {"keyName": "ineligibleDescription", "text": "Desafortunadamente, no cumple con los criterios de elegibilidad para participar en ${studyName} en este momento.", "language": "es"},
+  {"keyName": "ineligibleProvideYourEmail", "text": "Proporcione su correo electrónico a continuación y lo mantendremos actualizado sobre los desarrollos. Puede darse de baja en cualquier momento.", "language": "es"},
+  {"keyName": "ineligibleStayInformed", "text": "Mantente informado", "language": "es"},
+  {"keyName": "backToPortalHomepage", "text": "Volver a la página principal de ${portalName}", "language": "es"},
+  {"keyName": "joinMailingList", "text": "Unirse a la Lista de Correos", "language": "es"},
+  {"keyName": "mailingFormStayUpdated", "text": "Manténgase actualizado con las noticias sobre el estudio", "language": "es"},
+  {"keyName": "yourName", "text": "Tu nombre", "language": "es"},
+  {"keyName": "yourEmail", "text": "Tu correo electrónico", "language": "es"},
+  {"keyName": "join", "text": "Unirse", "language": "es"},
+  {"keyName": "thanksForJoining", "text": "¡Gracias por unirse!", "language": "es"}
+
 ]

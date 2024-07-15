@@ -60,7 +60,6 @@ export const useParticipantSearchState = (searchParamName = 'search') => {
   }
 
   const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    console.log(field, value)
     setSearchState({
       ...searchState,
       [field]: value

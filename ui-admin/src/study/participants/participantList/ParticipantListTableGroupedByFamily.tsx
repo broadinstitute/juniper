@@ -20,13 +20,10 @@ import {
   renderEmptyMessage,
   useRoutableTablePaging
 } from 'util/tableUtils'
-import {
-  Family,
-  instantToDefaultString
-} from '@juniper/ui-core'
+import { Family } from '@juniper/ui-core'
 import TableClientPagination from 'util/TablePagination'
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
-import { getFamilyNames } from 'util/familyUtils'
+import { getFamilyNameString } from 'util/familyUtils'
 import { NavLink } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -36,6 +33,7 @@ import {
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { EnrolleeLink } from 'study/participants/enrolleeView/EnrolleeLink'
+import { createdAtColumn } from 'util/tableColumnUtils'
 
 type FamilyWithSearchResults = Partial<Family> & { searchResults: EnrolleeSearchExpressionResult[] }
 
@@ -68,7 +66,7 @@ function ParticipantListTableGroupedByFamily({
     enableColumnFilter: false,
     enableColumnSort: false,
     cell: ({ row }) => {
-      return <div>
+      return <>
         <button
           className="btn btn-link m-0 p-0"
           onClick={() => row.toggleExpanded()}>
@@ -77,8 +75,7 @@ function ParticipantListTableGroupedByFamily({
             : <FontAwesomeIcon icon={faChevronUp}/>
           }
         </button>
-        <span> ({row.original.searchResults.length})</span>
-      </div>
+        <span> ({row.original.searchResults.length})</span></>
     }
   }, {
     header: 'Shortcode',
@@ -98,16 +95,11 @@ function ParticipantListTableGroupedByFamily({
   {
     header: 'Family Name',
     accessorKey: 'familyName',
-    accessorFn: family => family.shortcode && `${getFamilyNames(family as Family)} Family`,
-    cell: info => {
-      return <div style={{ maxWidth: '200px' }}>
-        {info.getValue() as string}
-      </div>
-    }
+    accessorFn: family => family.shortcode && `${getFamilyNameString(family as Family)} Family`
   }, {
     header: '# Members',
     accessorKey: 'members',
-    enableColumnFilter: false,
+    enableColumnFilter: true,
     accessorFn: family => family.members?.length
   }, {
     header: 'Proband',
@@ -119,15 +111,8 @@ function ParticipantListTableGroupedByFamily({
       }
       return <EnrolleeLink studyEnvContext={studyEnvContext} enrollee={row.original.proband}/>
     }
-  }, {
-    header: 'Created At',
-    accessorKey: 'createdAt',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }], [])
+  },
+  createdAtColumn()], [])
 
   const familiesWithSearchResults = useMemo<FamilyWithSearchResults[]>(() => {
     const familiesWithResults: FamilyWithSearchResults[] = families.map(family => {
@@ -178,17 +163,17 @@ function ParticipantListTableGroupedByFamily({
           <ParticipantListTable
             participantList={row.original.searchResults}
             studyEnvContext={studyEnvContext}
-            familyId={row.original.id}
+            familyId={row.original.id || 'no-family'}
             disablePagination={row.original.searchResults.length < 10}
             disableRowVisibilityCount={true}
             disableColumnFiltering={true}
-            header={row.original.shortcode && <div>
-              <h5>{getFamilyNames(row.original as Family)} Family</h5>
+            header={row.original.shortcode ? <div>
+              <h5>{getFamilyNameString(row.original as Family)} Family</h5>
               {row.original.members?.length !== row.original.searchResults.length &&
                   <p className="fst-italic">
                       Showing {row.original.searchResults.length}/{row.original.members?.length || 0} members
                   </p>}
-            </div>}
+            </div> : <h5>No family</h5>}
             tableClass={'table table-light'}
           />
         </div>

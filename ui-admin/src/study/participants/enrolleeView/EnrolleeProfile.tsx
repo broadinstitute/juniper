@@ -19,6 +19,7 @@ import { successNotification } from 'util/notifications'
 import { doApiLoad } from 'api/api-utils'
 import EditMailingAddress from 'address/EditMailingAddress'
 import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardRow, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
+import { Button } from 'components/forms/Button'
 
 /**
  * Shows the enrollee profile and allows editing from the admin side
@@ -62,18 +63,20 @@ export default function EnrolleeProfile({ enrollee, studyEnvContext, onUpdate }:
   return <div>
     <InfoCard>
       <InfoCardHeader>
-        <InfoCardTitle title={editMode ? 'Edit Profile' : 'Profile'}/>
-        {!editMode && <button className="mx-2 btn btn-light text-primary" onClick={() => setEditMode(true)}>
-          <FontAwesomeIcon icon={faPencil} className={'me-2'}/>
-          Edit
-        </button>}
-        {editMode && <div className="flex-grow-1 d-flex justify-content-end">
-          <button className="btn btn-primary mx-2 " disabled={!isDirty}
-            onClick={() => setShowJustifyAndSaveModal(true)}>
-            Next: Add Justification
-          </button>
-          <button className="btn btn-outline-primary" onClick={() => setEditMode(false)}>Cancel</button>
-        </div>}
+        <div className="d-flex align-items-center justify-content-between w-100">
+          <InfoCardTitle title={editMode ? 'Edit Profile' : 'Profile'}/>
+          {!editMode && <Button variant="light" className="border m-1" onClick={() => setEditMode(true)}>
+            <FontAwesomeIcon icon={faPencil} className={'fa-lg me-2'}/>
+            Edit
+          </Button>}
+          {editMode && <div className="flex-grow-1 d-flex justify-content-end">
+            <Button variant='primary' className="border m-1" disabled={!isDirty}
+              onClick={() => setShowJustifyAndSaveModal(true)}>
+              Next: Add Justification
+            </Button>
+            <Button variant='secondary' className="border m-1" onClick={() => setEditMode(false)}>Cancel</Button>
+          </div>}
+        </div>
       </InfoCardHeader>
       <InfoCardBody>
         {editMode

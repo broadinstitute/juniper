@@ -1,5 +1,5 @@
 import React, { useId, useState } from 'react'
-import Api, { AdminTask, AdminTaskStatus } from 'api/api'
+import Api from 'api/api'
 import { AdminUser } from 'api/adminUser'
 import { Modal } from 'react-bootstrap'
 import Select from 'react-select'
@@ -7,24 +7,27 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import AdminUserSelect from 'user/AdminUserSelect'
 import { doApiLoad } from 'api/api-utils'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { instantToDefaultString } from '@juniper/ui-core'
+import { instantToDefaultString, ParticipantTask, ParticipantTaskStatus } from '@juniper/ui-core'
 
 
-/** Form for editing an admin task */
-export default function AdminTaskEditor({ task, workingTask, setWorkingTask, users }:
-{ task: AdminTask, workingTask: AdminTask, setWorkingTask: (task: AdminTask) => void, users: AdminUser[]}) {
+function AdminTaskEditor({ task, workingTask, setWorkingTask, users }: {
+  task: ParticipantTask, workingTask: ParticipantTask,
+  setWorkingTask: (task: ParticipantTask) => void, users: AdminUser[]}
+) {
   const selectedUser = users.find(user => user.id === workingTask.assignedAdminUserId)
   const statusSelectId = useId()
   const userSelectId = useId()
-  const noteTextAreaId = useId()
   const setSelectedUser = ((user: AdminUser | undefined) => {
     setWorkingTask({
       ...workingTask,
       assignedAdminUserId: user?.id
     })
   })
-  const statusOpts: {label: string, value: AdminTaskStatus}[] = ['NEW', 'COMPLETE']
-    .map(status => ({ label: status, value: status as AdminTaskStatus }))
+  const statusOpts: {label: string, value: ParticipantTaskStatus}[] = [
+    { label: 'New', value: 'NEW' },
+    { label: 'In Progress', value: 'IN_PROGRESS' },
+    { label: 'Complete', value: 'COMPLETE' }
+  ]
   const statusValue = statusOpts.find(opt => opt.value === workingTask.status)
   return <div>
     <label className="mt-3" htmlFor={userSelectId}>Assigned to</label>
@@ -34,24 +37,14 @@ export default function AdminTaskEditor({ task, workingTask, setWorkingTask, use
     { task.status !== 'COMPLETE' && <div className="mt-3">
       <label htmlFor={statusSelectId}>Status</label>
       <Select options={statusOpts} value={statusValue} inputId={statusSelectId}
-        styles={{ control: baseStyles => ({ ...baseStyles, width: '400px' }) }}
+        styles={{ control: baseStyles => ({ ...baseStyles }) }}
         onChange={opt => setWorkingTask({
           ...workingTask, status: opt?.value ?? 'NEW'
         })}/>
     </div> }
     { task.status === 'COMPLETE' && <div className="mt-3">
-            Completed {instantToDefaultString(task.completedAt)}
+      Completed {instantToDefaultString(task.completedAt)}
     </div> }
-
-    <div className="mt-3">
-      <label htmlFor={noteTextAreaId} className="d-block">Note</label>
-      <textarea rows={2} cols={45} value={workingTask.dispositionNote} id={noteTextAreaId}
-        onChange={e => setWorkingTask({
-          ...workingTask,
-          dispositionNote: e.target.value
-        })}/>
-    </div>
-
   </div>
 }
 
@@ -59,16 +52,19 @@ export default function AdminTaskEditor({ task, workingTask, setWorkingTask, use
  * shows a modal for editing the passed-in task.  this handles saving the task to the server.
  * If the task was saved, the updated task will be passed to the onDismiss handler
  */
-export const AdminTaskEditModal = ({ task, users, onDismiss, studyEnvContext }:
-                                       { task: AdminTask, users: AdminUser[], onDismiss: (task?: AdminTask) => void
-                                         studyEnvContext: StudyEnvContextT}) => {
-  const [workingTask, setWorkingTask] = useState<AdminTask>(task)
+export const AdminTaskEditModal = ({ task, users, onDismiss, studyEnvContext }: {
+  task: ParticipantTask, users: AdminUser[], onDismiss: (task?: ParticipantTask) => void,
+  studyEnvContext: StudyEnvContextT
+}) => {
+  const [workingTask, setWorkingTask] = useState<ParticipantTask>(task)
   const [isLoading, setIsLoading] = useState(false)
 
   const saveTask = () => {
     doApiLoad(async () => {
-      const updatedTask = await Api.updateAdminTask(studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, workingTask)
+      const updatedTask = await Api.updateAdminTask(
+        studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName, workingTask
+      )
       onDismiss(updatedTask)
     }, { setIsLoading })
   }

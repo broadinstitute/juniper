@@ -17,6 +17,7 @@ describe('FormContentEditor', () => {
     jest.spyOn(console, 'error').mockImplementation(jest.fn())
     const { container } = render(<FormContentEditor
       initialAnswerMappings={[]}
+      currentLanguage={{ languageCode: 'en', languageName: 'English', id: '' }}
       supportedLanguages={[]}
       initialContent={formContent} visibleVersionPreviews={[]} readOnly={false}
       onFormContentChange={jest.fn()}

@@ -17,6 +17,13 @@ export type ParticipantNote = {
     creatingAdminUserId: string
 }
 
+export type ParticipantUser = {
+    id: string,
+    username: string,
+    token: string,
+    lastLogin: number
+}
+
 export type Enrollee = {
     id: string
     consented: boolean

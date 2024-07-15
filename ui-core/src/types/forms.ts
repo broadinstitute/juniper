@@ -131,10 +131,8 @@ export type FormContentPage = BaseElement & {
 /**
  *  Certain SurveyJS elements can take on multiple forms. For example, the "title" field
  *  for a question could either be a string, or an object mapping language codes to strings.
- *  "default" is always present; the other languages are arbitrary.
  */
 export type I18nMap = {
-  default: string,
   [language: string]: string
 }
 
@@ -196,7 +194,7 @@ export type RadiogroupQuestion = WithOtherOption<TitledQuestion & {
 
 export type TemplatedQuestion = BaseQuestion & {
   name: string
-  title?: string
+  title?: I18nSurveyElement
   questionTemplateName: string
 }
 

@@ -13,6 +13,7 @@ import {
   ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
+  ParticipantUser,
   Portal,
   PortalEnvironment,
   PortalEnvironmentConfig,
@@ -75,6 +76,7 @@ export type EnrolleeSearchExpressionResult = {
   profile: Profile,
   latestKit?: KitRequest,
   families: Family[]
+  participantUser?: ParticipantUser
 }
 
 export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
@@ -142,26 +144,10 @@ export type PepperKit = {
   errorMessage: string
 }
 
-export type AdminTaskListDto = {
-  tasks: AdminTask[]
+export type ParticipantTaskListDto = {
+  tasks: ParticipantTask[]
   enrollees: Enrollee[]
   participantNotes: ParticipantNote[]
-}
-
-export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
-
-export type AdminTask = {
-  id: string
-  createdAt: number
-  completedAt?: number
-  status: AdminTaskStatus
-  studyEnvironmentId: string
-  enrolleeId?: string
-  participantNoteId?: string
-  creatingAdminUserId?: string
-  assignedAdminUserId?: string
-  description?: string
-  dispositionNote?: string
 }
 
 export type SiteMediaMetadata = {
@@ -795,7 +781,7 @@ export default {
   },
 
   async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<AdminTask[]> {
+    enrolleeShortcode: string): Promise<ParticipantTask[]> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
@@ -1202,7 +1188,7 @@ export default {
   },
 
   async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
-    envName: string, include: string[]): Promise<AdminTaskListDto> {
+    envName: string, include: string[]): Promise<ParticipantTaskListDto> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
     if (include.length) {
       url = `${url}?include=${include.join(',')}`
@@ -1212,7 +1198,7 @@ export default {
   },
 
   async updateAdminTask(portalShortcode: string, studyShortcode: string,
-    envName: string, task: AdminTask): Promise<AdminTask> {
+    envName: string, task: ParticipantTask): Promise<ParticipantTask> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks/${task.id}`
     const response = await fetch(url, {
       method: 'PATCH',
