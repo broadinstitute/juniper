@@ -12,6 +12,8 @@ import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
 import useStateCallback from '../util/useStateCallback'
 import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
+import { SideBySideFormDesigner } from './designer/SideBySideFormDesigner'
+import { useUser } from '../user/UserProvider'
 
 type FormContentEditorProps = {
   initialContent: string
@@ -40,6 +42,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
+  const { user } = useUser()
 
   const [editedContent, setEditedContent] = useStateCallback(() => JSON.parse(initialContent) as FormContent)
 
@@ -76,6 +79,29 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             />
           </ErrorBoundary>
         </Tab>
+        { user?.superuser && <Tab
+          disabled={activeTab !== 'designerv2' && !tabsEnabled}
+          eventKey="designerv2"
+          title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+        >
+          <ErrorBoundary>
+            <SideBySideFormDesigner
+              content={editedContent}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
+              onChange={(newContent: FormContent) => {
+                setEditedContent(newContent)
+                try {
+                  const errors = validateFormContent(newContent)
+                  onFormContentChange(errors, newContent)
+                } catch (err) {
+                  //@ts-ignore
+                  onFormContentChange([err.message], undefined)
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </Tab> }
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
