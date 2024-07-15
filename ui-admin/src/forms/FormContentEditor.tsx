@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { AnswerMapping, FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
+import { AnswerMapping, FormContent, Portal, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeAnswerMappings, OnChangeFormContent } from './formEditorTypes'
@@ -13,9 +13,10 @@ import { isEmpty } from 'lodash'
 import useStateCallback from '../util/useStateCallback'
 import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
 import { SideBySideFormDesigner } from './designer/SideBySideFormDesigner'
-import { useUser } from '../user/UserProvider'
+import { userHasPermission, useUser } from '../user/UserProvider'
 
 type FormContentEditorProps = {
+  portal: Portal
   initialContent: string
   initialAnswerMappings: AnswerMapping[]
   visibleVersionPreviews: VersionedForm[]
@@ -30,6 +31,7 @@ type FormContentEditorProps = {
 // eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
   const {
+    portal,
     initialContent,
     initialAnswerMappings,
     visibleVersionPreviews,
@@ -79,9 +81,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             />
           </ErrorBoundary>
         </Tab>
-        { user?.superuser && <Tab
-          disabled={activeTab !== 'designerv2' && !tabsEnabled}
-          eventKey="designerv2"
+        {userHasPermission(user, portal.id, 'prototype_tester') && <Tab
+          disabled={activeTab !== 'designer-v2' && !tabsEnabled}
+          eventKey="designer-v2"
           title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
         >
           <ErrorBoundary>

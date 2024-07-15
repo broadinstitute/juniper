@@ -47,7 +47,10 @@ export const SideBySideFormDesigner = ({ content, onChange, currentLanguage, sup
             elementIndex={elementIndex} editedContent={content}
             currentLanguage={currentLanguage} supportedLanguages={supportedLanguages}
             onChange={onChange}/>
-          {renderAddQuestionButton(content, onChange, elementIndex, currentPageNo)}
+          <div className="d-flex">
+            {renderNewElementButton(content, onChange, elementIndex, currentPageNo, 'question')}
+            {renderNewElementButton(content, onChange, elementIndex, currentPageNo, 'panel')}
+          </div>
         </div>
       ))}
     </>
@@ -69,27 +72,34 @@ export const SideBySideFormDesigner = ({ content, onChange, currentLanguage, sup
   </div>
 }
 
-const renderAddQuestionButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
-  elementIndex: number, pageIndex: number) => {
+const renderNewElementButton = (formContent: FormContent, onChange: (newContent: FormContent) => void,
+  elementIndex: number, pageIndex: number, elementType: 'question' | 'panel') => {
   return <div className="my-2">
     <Button variant="secondary"
-      aria-label={'Insert a new question'}
-      tooltip={'Insert a new question'}
+      aria-label={`Insert a new ${elementType}`}
+      tooltip={`Insert a new ${elementType}`}
       disabled={false}
       onClick={() => {
         const newContent = { ...formContent }
-        newContent.pages[pageIndex].elements.splice(elementIndex + 1, 0, {
-          type: 'text',
-          name: '',
-          title: '',
-          isRequired: false
-        })
+        newContent.pages[pageIndex].elements.splice(elementIndex + 1, 0, (elementType == 'panel') ? {
+          type: 'panel',
+          elements: []
+        } :
+          {
+            type: 'text',
+            name: '',
+            title: '',
+            isRequired: false
+          }
+
+        )
         onChange(newContent)
       }}>
-      <FontAwesomeIcon icon={faPlus}/> Insert question
+      <FontAwesomeIcon icon={faPlus}/> Insert {elementType}
     </Button>
   </div>
 }
+
 
 const QuestionModelComponent = ({
   elementIndex, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
@@ -111,7 +121,6 @@ const QuestionModelComponent = ({
   })
 
   const [surveyModel, setSurveyModel] = useState(surveyJSModelFromFormContent(oneQuestionSurvey))
-
 
   useEffect(() => {
     setOneQuestionSurvey({
@@ -150,7 +159,7 @@ const QuestionModelComponent = ({
       </div>
       <QuestionDesigner
         question={element as Question}
-        isNewQuestion={false}
+        isNewQuestion={true}
         showName={false}
         readOnly={false}
         onChange={newQuestion => {
@@ -163,14 +172,19 @@ const QuestionModelComponent = ({
     </div>
     <div className="col-md-6 p-3 rounded-end-3 survey-hide-complete"
       style={{ backgroundColor: '#f3f3f3', borderLeft: '1px solid #fff' }}>
-      <QuestionPreview model={surveyModel}/>
+      <QuestionPreview surveyModel={surveyModel}/>
     </div>
   </div>
 }
 
-const QuestionPreview = memo(({ model }: { model: SurveyModel }) => {
+/* This component uses the 'memo' higher-order component that's built into React.
+ * This means that the component will only re-render if the props change, which
+ * is very important in this case because the SurveyJS survey component is expensive
+ * to re-render.
+ */
+const QuestionPreview = memo(({ surveyModel }: { surveyModel: SurveyModel }) => {
   return (
-    <SurveyComponent model={model} readOnly={false} />
+    <SurveyComponent model={surveyModel} readOnly={false} />
   )
 })
 
