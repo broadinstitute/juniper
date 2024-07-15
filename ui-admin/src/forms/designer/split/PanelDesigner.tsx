@@ -1,8 +1,8 @@
 import { FormElement, FormPanel, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 import { QuestionDesigner } from '../QuestionDesigner'
 import React, { useId } from 'react'
-import { CollapsibleSectionButton } from '../../../portal/siteContent/designer/components/CollapsibleSectionButton'
-import { TextInput } from '../../../components/forms/TextInput'
+import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
+import { TextInput } from 'components/forms/TextInput'
 
 /**
  *

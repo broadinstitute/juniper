@@ -2,7 +2,7 @@ import { render } from '@testing-library/react'
 import React from 'react'
 
 import { FormContentEditor } from './FormContentEditor'
-import { mockPortal } from '../test-utils/mocking-utils'
+import { mockPortal } from 'test-utils/mocking-utils'
 
 //This is valid JSON, but invalid survey JSON
 const formContent: string = JSON.stringify({
