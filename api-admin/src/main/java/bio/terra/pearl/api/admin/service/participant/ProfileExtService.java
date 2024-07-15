@@ -31,13 +31,29 @@ public class ProfileExtService {
   public Profile updateProfileForEnrollee(
       PortalEnrolleeAuthContext authContext, String justification, Profile profile) {
     AdminUser operator = authContext.getOperator();
+
+    Profile existingProfile =
+        profileService
+            .loadWithMailingAddress(authContext.getEnrollee().getProfileId())
+            .orElseThrow(() -> new IllegalStateException("Invalid enrollee profile"));
+
     // make sure the profile is for the enrollee
-    profile.setId(authContext.getEnrollee().getProfileId());
+    if (Objects.nonNull(profile.getId())) {
+      if (!profile.getId().equals(existingProfile.getId())) {
+        throw new IllegalArgumentException("Profile does not belong to the enrollee");
+      }
+    } else {
+      profile.setId(existingProfile.getId());
+    }
+
     if (Objects.nonNull(profile.getMailingAddress())) {
-      // make sure we're updating the mailing address for the enrollee
-      profile
-          .getMailingAddress()
-          .setId(authContext.getEnrollee().getProfile().getMailingAddressId());
+      if (Objects.nonNull(profile.getMailingAddress().getId())) {
+        if (!profile.getMailingAddress().getId().equals(existingProfile.getMailingAddressId())) {
+          throw new IllegalArgumentException("Mailing address does not belong to the enrollee");
+        }
+      } else {
+        profile.getMailingAddress().setId(existingProfile.getMailingAddressId());
+      }
     }
 
     return this.profileService.updateWithMailingAddress(
