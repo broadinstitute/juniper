@@ -42,13 +42,11 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     onAnswerMappingChange
   } = props
 
-  const [activeTab, setActiveTab] = useState<string | null>('designer-v2')
+  const [activeTab, setActiveTab] = useState<string | null>('split')
   const [tabsEnabled, setTabsEnabled] = useState(true)
   const { user } = useUser()
 
   const [editedContent, setEditedContent] = useStateCallback(() => JSON.parse(initialContent) as FormContent)
-
-  console.log(editedContent)
 
   return (
     <div className="FormContentEditor d-flex flex-column flex-grow-1">
@@ -84,9 +82,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           </ErrorBoundary>
         </Tab>
         {userHasPermission(user, portal.id, 'prototype_tester') && <Tab
-          disabled={activeTab !== 'designer-v2' && !tabsEnabled}
-          eventKey="designer-v2"
-          title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+          disabled={activeTab !== 'split' && !tabsEnabled}
+          eventKey="split"
+          title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
         >
           <ErrorBoundary>
             <SideBySideFormDesigner

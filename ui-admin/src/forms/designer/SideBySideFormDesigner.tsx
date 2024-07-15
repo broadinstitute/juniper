@@ -1,5 +1,5 @@
 import {
-  FormContent, FormElement,
+  FormContent, FormElement, FormPanel,
   PortalEnvironmentLanguage,
   Question, surveyJSModelFromFormContent
 } from '@juniper/ui-core'
@@ -102,7 +102,13 @@ const renderNewElementButton = (formContent: FormContent, onChange: (newContent:
   </div>
 }
 
-
+/* Note that this component is memoized using React.memo
+ * Since survey pages can contain many questions, we need to be mindful of
+ * how many times we re-render these components. Since the parent component state
+ * is updated with every keystroke, we memoize this to minimize the number
+ * of re-renders that take place. SurveyComponent from SurveyJS in particular
+ * is sluggish when undergoing many simultaneous re-renders.
+ */
 const SideBySideQuestionDesigner = memo(({
   elementIndex, element, currentPageNo, editedContent, onChange, currentLanguage, supportedLanguages
 }: {
@@ -110,11 +116,10 @@ const SideBySideQuestionDesigner = memo(({
     currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[],
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
-  console.log('rerendering SideBySideQuestionDesigner')
-
-  // const element = editedContent.pages[currentPageNo].elements[elementIndex]
   const [showJsonEditor, setShowJsonEditor] = useState(false)
 
+  // Cut down the survey to just the specific question that we're editing, so we can display
+  // a preview using the SurveyJS survey component
   const [surveyQuestion, setSurveyQuestion] = useState<FormContent>({
     title: 'Question Preview',
     pages: [
@@ -146,11 +151,14 @@ const SideBySideQuestionDesigner = memo(({
   surveyModel.showInvisibleElements = true
   surveyModel.showQuestionNumbers = false
 
+  // @ts-ignore
+  const elementType = element.type === 'panel' ? 'panel' : 'question'
+
   return <div key={elementIndex} className="row">
     <div className="col-md-6 p-3 rounded-start-3"
       style={{ backgroundColor: '#f3f3f3', borderRight: '1px solid #fff' }}>
       <div className="d-flex justify-content-between">
-        <span className="h5">Edit question</span>
+        <span className="h5">Edit {elementType}</span>
         <div className="d-flex justify-content-end">
           <IconButton icon={faCode}
             aria-label={showJsonEditor ? 'Switch to designer' : 'Switch to JSON editor'}
@@ -170,39 +178,54 @@ const SideBySideQuestionDesigner = memo(({
       </div>
       { !showJsonEditor ?
         <>
-          <label className="form-label fw-bold" htmlFor="questionType">Question type</label>
-          <select id="questionType"
-            disabled={false}
-            className="form-select mb-2"
-            // @ts-ignore
-            value={element.type}
-            onChange={e => {
-              const newContent = { ...editedContent }
+          {elementType === 'question' ? <>
+            <label className="form-label fw-bold" htmlFor="questionType">Question type</label>
+            <select id="questionType"
+              disabled={false}
+              className="form-select mb-2"
               // @ts-ignore
-              newContent.pages[currentPageNo].elements[elementIndex].type = e.target.value
-              onChange(newContent)
-            }}>
-            <option hidden>Select a question type</option>
-            <option value="text">Text</option>
-            <option value="checkbox">Checkbox</option>
-            <option value="dropdown">Dropdown</option>
-            <option value="medications">Medications</option>
-            <option value="radiogroup">Radio group</option>
-            <option value="signaturepad">Signature</option>
-            <option value="html">Html</option>
-          </select><QuestionDesigner
-            question={element as Question}
-            isNewQuestion={false}
-            showName={false}
-            showQuestionTypeHeader={false}
-            readOnly={false}
-            onChange={newQuestion => {
-              const newContent = { ...editedContent }
-              newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
-              onChange(newContent)
-            }}
-            currentLanguage={currentLanguage}
-            supportedLanguages={supportedLanguages}/>
+              value={element.type}
+              onChange={e => {
+                const newContent = { ...editedContent }
+                // @ts-ignore
+                newContent.pages[currentPageNo].elements[elementIndex].type = e.target.value
+                onChange(newContent)
+              }}>
+              <option hidden>Select a question type</option>
+              <option value="text">Text</option>
+              <option value="checkbox">Checkbox</option>
+              <option value="dropdown">Dropdown</option>
+              <option value="medications">Medications</option>
+              <option value="radiogroup">Radio group</option>
+              <option value="signaturepad">Signature</option>
+              <option value="html">Html</option>
+            </select>
+            <QuestionDesigner
+              question={element as Question}
+              isNewQuestion={false}
+              showName={false}
+              showQuestionTypeHeader={false}
+              readOnly={false}
+              onChange={newQuestion => {
+                const newContent = { ...editedContent }
+                newContent.pages[currentPageNo].elements[elementIndex] = newQuestion
+                onChange(newContent)
+              }}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}/>
+          </> :
+            <PanelDesigner
+              panel={element as FormPanel}
+              currentPageNo={currentPageNo}
+              onChange={newPanel => {
+                const newContent = { ...editedContent }
+                newContent.pages[currentPageNo].elements[elementIndex] = newPanel
+                onChange(newContent)
+              }}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
+            />
+          }
         </> :
         <QuestionJsonEditor
           question={element as Question}
@@ -246,4 +269,34 @@ const QuestionJsonEditor = ({ question, onChange }: {
     label={'Question JSON'}
     infoContent={'Edit the question JSON directly. Learn more about SurveyJS JSON here.'}
   />
+}
+
+const PanelDesigner = ({ currentPageNo, panel, onChange, currentLanguage, supportedLanguages }: {
+    panel: FormPanel, onChange: (newPanel: FormElement) => void, currentPageNo: number,
+  currentLanguage: PortalEnvironmentLanguage, supportedLanguages: PortalEnvironmentLanguage[]
+    }) => {
+  return (
+    <>
+      {panel.elements.map((element, elementIndex) => (
+        <QuestionDesigner
+          key={elementIndex}
+          question={element as Question}
+          isNewQuestion={false}
+          showName={false}
+          showQuestionTypeHeader={false}
+          readOnly={false}
+          onChange={(newQuestion: Question) => {
+            const updatedElements = [...panel.elements]
+            updatedElements[elementIndex] = newQuestion
+            onChange({
+              ...panel,
+              elements: updatedElements
+            })
+          }}
+          currentLanguage={currentLanguage}
+          supportedLanguages={supportedLanguages}
+        />
+      ))}
+    </>
+  )
 }
