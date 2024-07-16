@@ -10,7 +10,7 @@ export default {
   moduleDirectories: ['node_modules', '<rootDir>'],
   modulePaths: ['<rootDir>/src'],
   moduleNameMapper: {
-    '\\.(gif|ttf|eot|svg|png|css|scss)$': '<rootDir>/../ui-core/src/test-utils/mockFile.js',
+    '\\.(gif|ttf|eot|svg|png|css|scss)$': '<rootDir>/src/test-utils/mockFile.js',
     'react-markdown': '<rootDir>/../node_modules/react-markdown/react-markdown.min.js',
     'micromark': '<rootDir>/src/test-utils/micromark-mock.js',
     'authConfig': '<rootDir>/src/test-utils/mockFile.js'

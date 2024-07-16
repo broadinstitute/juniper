@@ -49,12 +49,7 @@
   "scripts": {
     "start": "vite build --watch",
     "build": "tsc --build --force ./tsconfig.json && vite build",
-    "tsc": "tsc"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "react-markdown": "<rootDir>/../node_modules/react-markdown/react-markdown.min.js",
-      "micromark": "<rootDir>/src/test-utils/micromark-mock.js"
-    }
+    "tsc": "tsc",
+    "test": "jest"
   }
 }

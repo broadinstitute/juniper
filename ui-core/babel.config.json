@@ -1,3 +1,7 @@
 {
-  "presets": [["react-app", { "absoluteRuntime": false, "typescript": true, "useESModules": true }]]
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ]
 }
