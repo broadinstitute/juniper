@@ -30,7 +30,6 @@ export const SplitFormElementDesigner = memo(({
     editedContent: FormContent, onChange: (newContent: FormContent) => void
 }) => {
   const [showJsonEditor, setShowJsonEditor] = useState(false)
-  const [isStableIdLocked, setIsStableIdLocked] = useState(true)
 
   // Chop the survey down to just the specific question that we're editing, so we can display
   // a preview using the SurveyJS survey component.
