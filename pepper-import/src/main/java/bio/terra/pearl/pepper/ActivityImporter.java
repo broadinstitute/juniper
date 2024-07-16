@@ -118,6 +118,10 @@ public class ActivityImporter {
     }
 
     private List<JsonNode> convertBlock(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
+        // originally, we just used the "getQuestions" method on the blockDef
+        // to handle nested questions, but this doesn't surface any of the
+        // nested conditional visibility expressions, so we have to
+        // manually search through the question tree
         List<JsonNode> elements = new ArrayList<>();
 
         switch (blockDef.getBlockType()) {
@@ -223,6 +227,11 @@ public class ActivityImporter {
         if (pepperQuestionDef.getQuestionType().equals(QuestionType.PICKLIST)) {
             PicklistQuestionDef picklistQuestionDef = (PicklistQuestionDef) pepperQuestionDef;
             choices = getPicklistChoices(picklistQuestionDef, allLangMap);
+
+            // confusingly, label is placeholder for picklists
+            if (Objects.nonNull(picklistQuestionDef.getPicklistLabelTemplate())) {
+                placeholder = translatePepperTemplate(picklistQuestionDef.getPicklistLabelTemplate());
+            }
 
             // surveyjs only supports 1 other question at a time, but pepper often has many other
             // questions to just one picklist
@@ -410,27 +419,19 @@ public class ActivityImporter {
     }
 
 
-    // TODO: check "detailsAllowed" to & generate questions from it
     private List<SurveyJSQuestion.Choice> getPicklistChoices(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap) {
+
         List<SurveyJSQuestion.Choice> choices = new ArrayList<>();
         for (PicklistOptionDef option : picklistQuestionDef.getPicklistOptions()) {
             ObjectNode choiceNode = objectMapper.createObjectNode();
             choiceNode.put("value", option.getStableId());
-            Map<String, String> choiceTranslations = new HashMap<>();
-            for (String lang : allLangMap.keySet()) {
-                String optTxt = i18nContentRenderer.renderToString(option.getOptionLabelTemplate().getTemplateText(), allLangMap.get(lang));
-                if (optTxt != null && optTxt.startsWith("$")) {
-                    Translation translation = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).orElse(null);
-                    if (translation != null) {
-                        optTxt = option.getOptionLabelTemplate().getVariables().stream().findAny().get().getTranslation(lang).get().getText();
-                        choiceTranslations.put(lang, optTxt);
-                    }
-                }
-            }
+
+            Map<String, String> choiceTranslations = translatePepperTemplate(option.getOptionLabelTemplate());
             choices.add(new SurveyJSQuestion.Choice(choiceTranslations, option.getStableId()));
         }
         return choices;
     }
+
 
     private Map<String, String> fromPepperTranslations(List<Translation> translations) {
         return translations.stream()
