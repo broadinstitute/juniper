@@ -1,7 +1,6 @@
-import { defineConfig, ConfigEnv, PluginOption, UserConfig } from 'vite'
+import { defineConfig, ConfigEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import typescript from '@rollup/plugin-typescript'
 
 // https://vitejs.dev/config/
 /**

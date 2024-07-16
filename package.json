@@ -51,6 +51,6 @@
   },
   "scripts": {
     "test": "npm -w ui-core test && npm -w ui-admin test && npm -w ui-participant test",
-    "lint": "eslint --max-warnings=0 e2e-tests/src ui-admin/src ui-core/src ui-participant/src"
+    "lint": "npm -w ui-core run build && eslint --max-warnings=0 e2e-tests/src ui-admin/src ui-core/src ui-participant/src"
   }
 }
