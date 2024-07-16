@@ -8,7 +8,7 @@ import { requireOptionalArray, requireOptionalString, requirePlainObject, requir
   from '../../util/validationUtils'
 
 import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
-import { Markdown } from '../Markdown'
+import { InlineMarkdown, Markdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -94,7 +94,7 @@ function PhotoBlurbGrid(props: PhotoBlurbGridProps) {
   return <div id={anchorRef} style={getSectionStyle(config, getImageUrl)}>
     {!!title && (
       <h2 className="fs-1 fw-normal lh-sm text-center mb-4">
-        {title}
+        <InlineMarkdown>{title}</InlineMarkdown>
       </h2>
     )}
     {(subGrids ?? []).map((subGrid, index) => {
