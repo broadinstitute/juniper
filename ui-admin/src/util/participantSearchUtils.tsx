@@ -45,21 +45,27 @@ export const ParticipantSearchStateLabels: { [key in keyof ParticipantSearchStat
 /**
  * Hook for managing the participant search state from the page URL.
  */
-export const useParticipantSearchState = (searchParamName='search') => {
+export const useParticipantSearchState = (searchParamName = 'search') => {
   const [searchParams, setSearchParams] = useSearchParams()
+
 
   const searchState = urlParamsToSearchState(searchParams, searchParamName)
   const searchExpression = toExpression(searchState)
 
-  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
-    setSearchState({ ...searchState, [field]: value })
-  }
-
   const setSearchState = (newSearchState: ParticipantSearchState) => {
-    setSearchParams(searchParams => {
-      return { ...searchParams, [searchParamName]: searchStateToUrlParam(newSearchState) }
+    setSearchParams(params => {
+      params.set(searchParamName, searchStateToUrlParam(newSearchState))
+      return params
     })
   }
+
+  const updateSearchState = (field: keyof ParticipantSearchState, value: unknown) => {
+    setSearchState({
+      ...searchState,
+      [field]: value
+    })
+  }
+
 
   return { searchState, searchExpression, updateSearchState, setSearchState }
 }
@@ -96,7 +102,8 @@ export const toExpression = (searchState: ParticipantSearchState) => {
   if (!isEmpty(searchState.keywordSearch)) {
     expressions.push(`({profile.name} contains '${searchState.keywordSearch}' `
       + `or {profile.contactEmail} contains '${searchState.keywordSearch}' `
-      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}')`)
+      + `or {enrollee.shortcode} contains '${searchState.keywordSearch}' `
+      + `or {family.shortcode} contains '${searchState.keywordSearch}')`)
   }
 
   if (searchState.subject !== undefined) {

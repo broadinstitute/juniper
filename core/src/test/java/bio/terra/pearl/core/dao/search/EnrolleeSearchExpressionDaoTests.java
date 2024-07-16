@@ -657,7 +657,6 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         assertEquals(family.getId(), results.get(0).getFamilies().get(0).getId());
     }
 
-
     @Test
     @Transactional
     public void testInclude(TestInfo info) {

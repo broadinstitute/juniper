@@ -406,6 +406,7 @@ export type BasicTableConfig<T> = {
   tdClass?: string,
   trClass?: string,
   customRowHeader?: (row: Row<T>) => React.ReactNode,
+  customRowFooter?: (row: Row<T>) => React.ReactNode,
   useSize?: boolean
 }
 
@@ -417,7 +418,7 @@ const defaultBasicTableConfig = {
 /** helper function for simple table layouts */
 export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T> = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
-  return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
+  return <table className={config.tableClass ? config.tableClass : 'table'}>
     <thead>
       <tr>
         {table
@@ -435,12 +436,13 @@ export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T>
             <tr className={classNames(config.trClass)}>
               {row.getVisibleCells().map(cell => {
                 return (
-                  <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
+                  <td key={cell.id} className={config.tdClass ? config.tdClass : 'align-middle'}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 )
               })}
             </tr>
+            {!isNil(config.customRowFooter) && config.customRowFooter(row)}
           </Fragment>
         )
       })}

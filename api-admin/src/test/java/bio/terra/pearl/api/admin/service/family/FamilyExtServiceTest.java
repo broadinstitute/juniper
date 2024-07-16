@@ -37,12 +37,18 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
     AuthTestUtils.assertAllMethodsAnnotated(
         familyExtService,
         Map.of(
-            "find", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
-            "addEnrollee", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
-            "removeEnrollee", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
-            "updateProband", AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "find",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
+            "addEnrollee",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "removeEnrollee",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
+            "updateProband",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_edit"),
             "listChangeRecords",
-                AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view"),
+            "findAll",
+            AuthAnnotationSpec.withPortalStudyEnvPerm("participant_data_view")));
   }
 
   @Test

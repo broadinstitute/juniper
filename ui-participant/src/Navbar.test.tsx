@@ -290,6 +290,8 @@ describe('AccountOptionsDropdown', () => {
     expect(mockSigninRedirect).toHaveBeenCalledWith({
       redirectMethod: 'replace',
       extraQueryParams: {
+        originUrl: 'http://localhost',
+        portalEnvironment: 'live',
         portalShortcode: undefined,
         // eslint-disable-next-line camelcase
         ui_locales: 'es'

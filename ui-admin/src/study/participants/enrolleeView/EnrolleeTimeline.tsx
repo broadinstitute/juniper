@@ -1,17 +1,36 @@
 import React, { useState } from 'react'
-import Api, { Event, Notification, Trigger } from 'api/api'
-import { StudyEnvContextT, triggerPath } from '../../StudyEnvironmentRouter'
+import Api, {
+  Event,
+  Notification,
+  Trigger
+} from 'api/api'
+import {
+  StudyEnvContextT,
+  triggerPath
+} from '../../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Enrollee, instantToDefaultString } from '@juniper/ui-core'
+import {
+  Enrollee,
+  instantToDefaultString
+} from '@juniper/ui-core'
 import TriggerTypeDisplay from '../../notifications/TriggerTypeDisplay'
 import { Link } from 'react-router-dom'
 import _capitalize from 'lodash/capitalize'
 import _startCase from 'lodash/startCase'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
 import { basicTableLayout } from 'util/tableUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEnvelope, faEnvelopeOpen } from '@fortawesome/free-solid-svg-icons'
+import {
+  faEnvelope,
+  faEnvelopeOpen
+} from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
 
 

@@ -14,7 +14,8 @@ describe('toExpression', () => {
     const result = toExpression(keywordSearch)
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
-      + 'or {enrollee.shortcode} contains \'test\') '
+      + 'or {enrollee.shortcode} contains \'test\' '
+      + 'or {family.shortcode} contains \'test\') '
       + 'and {enrollee.subject} = true')
   })
   it('filters subject, consented', () => {
@@ -106,7 +107,8 @@ describe('toExpression', () => {
     const result = toExpression(searchState)
     expect(result).toEqual('({profile.name} contains \'test\' '
       + 'or {profile.contactEmail} contains \'test\' '
-      + 'or {enrollee.shortcode} contains \'test\') '
+      + 'or {enrollee.shortcode} contains \'test\' '
+      + 'or {family.shortcode} contains \'test\') '
       + 'and {enrollee.subject} = false and {enrollee.consented} = true '
       + 'and {age} >= 10 and {age} <= 20 and ({profile.sexAtBirth} = \'female\') '
       + 'and ({task.my_task.status} = \'COMPLETE\') and ({latestKit.status} = \'ERRORED\') '

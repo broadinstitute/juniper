@@ -74,7 +74,8 @@ export type StudyEnvironmentUpdate = {
 export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
-  latestKit?: KitRequest
+  latestKit?: KitRequest,
+  families: Family[]
   participantUser?: ParticipantUser
 }
 
@@ -1286,6 +1287,14 @@ export default {
     portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcode: string
   ): Promise<Family> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcode}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getAllFamilies(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName
+  ): Promise<Family[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },

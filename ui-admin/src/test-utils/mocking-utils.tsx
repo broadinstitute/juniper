@@ -17,6 +17,7 @@ import {
   AlertTrigger,
   defaultSurvey,
   Enrollee,
+  Family,
   KitRequest,
   KitType,
   LocalizedEmailTemplate,
@@ -322,7 +323,25 @@ export const mockEnrollee: () => Enrollee = () => {
 export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
   return {
     enrollee: mockEnrollee(),
-    profile: mockEnrollee().profile
+    profile: mockEnrollee().profile,
+    families: [mockFamily(), mockFamily()]
+  }
+}
+
+/**
+ * Mocks a family object.
+ */
+export const mockFamily = (): Family => {
+  return {
+    id: 'familyId1',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    shortcode: 'F_MOCK',
+    members: [mockEnrollee()],
+    studyEnvironmentId: 'studyEnvId1',
+    relations: [],
+    proband: mockEnrollee(),
+    probandEnrolleeId: 'proband'
   }
 }
 
