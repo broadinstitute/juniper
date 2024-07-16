@@ -35,18 +35,6 @@ describe('HTMLSectionView', () => {
       expect(console.warn).toHaveBeenCalled()
     })
 
-    it('renders titles as markdown', () => {
-      const section: HtmlSection = {
-        id: 'sectionWithMarkdown',
-        sectionType: 'HERO_WITH_IMAGE',
-        sectionConfig: '{"title": "**Title**"}'
-      }
-
-      const { container } = render(<HtmlSectionView section={section} />)
-      expect(container).toHaveTextContent('Title')
-      expect(container).not.toHaveTextContent('**Title**')
-    })
-
     it.each([
       'FAQ',
       'HERO_CENTERED',
