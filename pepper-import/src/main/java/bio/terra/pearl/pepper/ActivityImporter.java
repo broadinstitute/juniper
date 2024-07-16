@@ -460,6 +460,7 @@ public class ActivityImporter {
                 .type("html")
                 .html(htmlTxtMap)
                 .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
                 .build();
         return objectMapper.valueToTree(surveyJSContent);
     }
