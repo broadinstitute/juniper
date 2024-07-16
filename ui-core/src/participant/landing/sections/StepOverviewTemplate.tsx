@@ -9,7 +9,7 @@ import { requireOptionalArray, requireOptionalBoolean, requireOptionalString, re
 
 import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
 import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
-import { InlineMarkdown, Markdown } from '../Markdown'
+import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -95,7 +95,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
               { showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p> }
               <p className="text-uppercase fs-6">{duration}</p>
               <p className="fs-4 mb-0">
-                <Markdown>{blurb}</Markdown>
+                <InlineMarkdown>{blurb}</InlineMarkdown>
               </p>
             </div>
           </div>

@@ -14,7 +14,7 @@ import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } f
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
 import { blurbProp, titleProp } from './SectionProp'
-import { InlineMarkdown, Markdown } from '../../../participant/landing/Markdown'
+import { InlineMarkdown } from '../../../participant/landing/Markdown'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
@@ -102,7 +102,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
         </h2>
         <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
         { blurb && <p className={classNames('fs-4', actionButton ? 'mb-4' : 'mb-0')}>
-          <Markdown>{blurb}</Markdown>
+          <InlineMarkdown>{blurb}</InlineMarkdown>
         </p> }
         {actionButton && <ConfiguredButton config={actionButton} />}
       </div>
