@@ -57,19 +57,19 @@ task copyWebApp(type: Copy) {
 task createUnfingerprintedJs(type: Copy) {
     dependsOn('copyWebApp')
     dependsOn('processResources')
-    from "$rootDir/api-participant/build/resources/main/static/static/js"
-    into "$rootDir/api-participant/build/resources/main/static/static/js"
-    rename("main.([0-9a-f]{8}).js", "main.js")
-    rename('(.*).([0-9a-f]{8}).chunk.js', '$1.chunk.js')
+    from "$rootDir/api-participant/build/resources/main/static/assets"
+    into "$rootDir/api-participant/build/resources/main/static/assets"
+    rename("index-([^.]{8}).js", "index.js")
+    rename('(.*)-([^.]{8}).js', '$1.chunk.js')
 }
 
 // creates copies of the fingerprinted CSS files without the asset fingerprint
 task createUnfingerprintedCss(type: Copy) {
     dependsOn('copyWebApp')
     dependsOn('processResources')
-    from "$rootDir/api-participant/build/resources/main/static/static/css"
-    into "$rootDir/api-participant/build/resources/main/static/static/css"
-    rename("main.*.css", "main.css")
+    from "$rootDir/api-participant/build/resources/main/static/assets"
+    into "$rootDir/api-participant/build/resources/main/static/assets"
+    rename("index-([^.]{8}).css", "index.css")
 }
 
 // See comment in PublicApiController.java for why we want unfingerprinted versions of assets.  We still keep the fingerprinted
