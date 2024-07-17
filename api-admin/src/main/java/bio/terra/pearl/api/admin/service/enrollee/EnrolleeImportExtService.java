@@ -1,14 +1,11 @@
 package bio.terra.pearl.api.admin.service.enrollee;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.dataimport.Import;
-import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
-import bio.terra.pearl.core.model.study.PortalStudy;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.dataimport.ImportFileFormat;
 import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
@@ -45,97 +42,57 @@ public class EnrolleeImportExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public List<Import> list(
-      String portalShortcode, String studyShortcode, EnvironmentName envName, AdminUser operator) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, envName)
-            .orElseThrow(() -> new NotFoundException("Study environment not found"));
-    return importService.findByStudyEnvWithItems(studyEnv.getId());
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public List<Import> list(PortalStudyEnvAuthContext authContext) {
+    return importService.findByStudyEnvWithItems(authContext.getStudyEnvironment().getId());
   }
 
-  public Import get(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      AdminUser operator,
-      UUID id) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService
-            .findByStudy(studyShortcode, envName)
-            .orElseThrow(() -> new NotFoundException("Study environment not found"));
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
+  public Import get(PortalStudyEnvAuthContext authContext, UUID id) {
     Import dataImport =
         importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
-    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
-      throw new PermissionDeniedException(
-          "Import Id does not belong to the given study environment");
-    }
+    assertImportInStudyEnv(authContext, dataImport);
     importItemService.attachImportItems(dataImport);
     return dataImport;
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public Import importData(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      InputStream tsvData,
-      AdminUser operator,
-      ImportFileFormat fileFormat) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+      PortalStudyEnvAuthContext authContext, InputStream tsvData, ImportFileFormat fileFormat) {
     return enrolleImportService.importEnrollees(
-        portalShortcode, studyShortcode, studyEnv, tsvData, operator.getId(), fileFormat);
+        authContext.getPortalShortcode(),
+        authContext.getStudyShortcode(),
+        authContext.getStudyEnvironment(),
+        tsvData,
+        authContext.getOperator().getId(),
+        fileFormat);
   }
 
   @Transactional
-  public void delete(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      UUID id,
-      AdminUser operator) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
+  public void delete(PortalStudyEnvAuthContext authContext, UUID id) {
     Import dataImport =
         importService.find(id).orElseThrow(() -> new NotFoundException("Import not found"));
-    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
-      throw new PermissionDeniedException(
-          "Import Id does not belong to the given study environment");
-    }
+    assertImportInStudyEnv(authContext, dataImport);
     importService.deleteEnrolleesByImportId(id);
     importService.updateStatus(id, ImportStatus.DELETED);
   }
 
   @Transactional
-  public void deleteImportItem(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      UUID importId,
-      UUID id,
-      AdminUser operator) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.verifyStudy(studyShortcode, environmentName);
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
+  public void deleteImportItem(PortalStudyEnvAuthContext authContext, UUID importId, UUID id) {
     Import dataImport =
         importService.find(importId).orElseThrow(() -> new NotFoundException("Import not found"));
-    if (!dataImport.getStudyEnvironmentId().equals(studyEnv.getId())) {
+    assertImportInStudyEnv(authContext, dataImport);
+    importItemService.find(id).orElseThrow(() -> new NotFoundException("ImportItem not found"));
+    importItemService.deleteEnrolleeByItemId(id);
+    importItemService.updateStatus(id, ImportItemStatus.DELETED);
+  }
+
+  private void assertImportInStudyEnv(PortalStudyEnvAuthContext authContext, Import dataImport) {
+    if (!dataImport.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
       throw new PermissionDeniedException(
           "Import Id does not belong to the given study environment");
     }
-    ImportItem importItem =
-        importItemService.find(id).orElseThrow(() -> new NotFoundException("ImportItem not found"));
-    importItemService.deleteEnrolleeById(id);
-    importItemService.updateStatus(id, ImportItemStatus.DELETED);
   }
 }
