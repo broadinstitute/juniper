@@ -2,9 +2,8 @@ import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Api from 'api/api'
-import { Study } from '@juniper/ui-core/build/types/study'
-import { Portal } from '@juniper/ui-core/build/types/portal'
-import { doApiLoad } from '../../api/api-utils'
+import { Study, Portal } from '@juniper/ui-core'
+import { doApiLoad } from 'api/api-utils'
 
 /** renders a modal that allows deleting a survey */
 const DeleteStudyModal = ({

@@ -1,12 +1,15 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "composite": true,
     "outDir": "./build",
     "rootDir": "src",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
       "src/*": ["src/*"]
-    }
+    },
+    "declarationDir": "./build-types"
   },
-  "include": ["src"]
+  "include": ["src/**/*",
+    "src/**/*.json"]
 }

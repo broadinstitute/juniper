@@ -2,6 +2,7 @@
   "name": "@juniper/ui-participant",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
@@ -36,10 +37,10 @@
     "@types/react-router-hash-link": "^2.4.5"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "jest",
     "tsc": "tsc"
   },
   "browserslist": {
@@ -56,11 +57,5 @@
   },
   "eslintConfig": {
     "extends": "../.eslintrc.js"
-  },
-  "jest": {
-    "moduleNameMapper": {
-      "react-markdown": "<rootDir>/../node_modules/react-markdown/react-markdown.min.js",
-      "micromark": "<rootDir>/../ui-core/src/test-utils/micromark-mock.js"
-    }
   }
 }
