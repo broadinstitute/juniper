@@ -187,19 +187,19 @@ public class PublicApiController implements PublicApi {
    * site not appearing as down during deploys. Eventually, we should upgrade our deployment/hosting
    * infrastructure to solve this problem in a more robust way
    */
-  @GetMapping(value = "/assets/index.{hash}.js")
+  @GetMapping(value = "/assets/index-{hash}.js")
   public String getFingerprintedJs() {
     return "forward:/assets/index.js";
   }
 
-  @GetMapping(value = "/assets/index.{hash}.css")
+  @GetMapping(value = "/assets/index-{hash}.css")
   public String getFingerprintedCss() {
     return "forward:/assets/index.css";
   }
 
-  @GetMapping(value = "/assets/{chunkId}.{hash}.chunk.js")
+  @GetMapping(value = "/assets/{chunkId}-{hash}.js")
   public String getFingerprintedJsChunks(@PathVariable("chunkId") String chunkId) {
-    return "forward:/assets/%s.chunk.js".formatted(chunkId);
+    return "forward:/assets/%s.js".formatted(chunkId);
   }
 
   private Optional<PortalEnvironmentDescriptor> getPortalDescriptorForRequest(
