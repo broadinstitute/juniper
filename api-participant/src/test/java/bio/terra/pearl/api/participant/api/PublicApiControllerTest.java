@@ -88,22 +88,22 @@ class PublicApiControllerTest {
   @Test
   void testHandlesMismatchedJSFingerprint() throws Exception {
     this.mockMvc
-        .perform(get("/static/js/main.12345678.js"))
-        .andExpect(forwardedUrl("/static/js/main.js"));
+        .perform(get("/assets/index-12345678.js"))
+        .andExpect(forwardedUrl("/assets/index.js"));
   }
 
   @Test
   void testHandlesMismatchedCSSFingerprint() throws Exception {
     this.mockMvc
-        .perform(get("/static/css/main.12345678.css"))
-        .andExpect(forwardedUrl("/static/css/main.css"));
+        .perform(get("/assets/index-12345678.css"))
+        .andExpect(forwardedUrl("/assets/index.css"));
   }
 
   @Test
   void testHandlesMismatchedJsChunkFingerprint() throws Exception {
     this.mockMvc
-        .perform(get("/static/js/111.12345678.chunk.js"))
-        .andExpect(forwardedUrl("/static/js/111.chunk.js"));
+        .perform(get("/assets/someChunk-12345678.js"))
+        .andExpect(forwardedUrl("/assets/someChunk.js"));
   }
 
   @Test
