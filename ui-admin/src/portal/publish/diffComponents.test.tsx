@@ -7,7 +7,7 @@ import {
   ListChange,
   VersionedConfigChange
 } from 'api/api'
-import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 import { mockConfiguredSurvey, mockSurvey } from 'test-utils/mocking-utils'
 
 const noopUpdate = () => 1

@@ -1,6 +1,6 @@
 import React from 'react'
 import { ReactQuestionFactory } from 'survey-react-ui'
-import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
+import { SurveyQuestionAddressValidation } from '@juniper/ui-core'
 import ThemedModal from './ThemedModal'
 import { ModalProps } from 'react-bootstrap'
 

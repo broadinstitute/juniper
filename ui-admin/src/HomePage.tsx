@@ -5,11 +5,10 @@ import { useNavContext } from './navbar/NavContextProvider'
 import Api, { getMediaUrl } from './api/api'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircle, faExternalLink, faList, faSearch, faTableCellsLarge } from '@fortawesome/free-solid-svg-icons'
-import { Portal } from '@juniper/ui-core/build/types/portal'
+import { Portal, instantToDateString } from '@juniper/ui-core'
 import { basicTableLayout } from './util/tableUtils'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
 import { useConfig } from './providers/ConfigProvider'
-import { instantToDateString } from '@juniper/ui-core'
 
 /** Shows a user the list of portals available to them */
 function HomePage() {

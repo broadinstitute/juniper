@@ -1,6 +1,5 @@
 import { SiteContent, LocalSiteContent, HtmlPage, NavbarItem, AddressValidationResult, SectionType } from 'api/api'
-import { HtmlSection } from '@juniper/ui-core/build/types/landingPageConfig'
-import { HubResponse } from '@juniper/ui-core'
+import { HtmlSection, HubResponse } from '@juniper/ui-core'
 
 /** mock site content */
 export const mockSiteContent = (): SiteContent => {

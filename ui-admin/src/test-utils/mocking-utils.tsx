@@ -28,17 +28,15 @@ import {
   ParticipantTaskType, renderWithRouter,
   StudyEnvParams,
   Survey,
-  SurveyType
+  SurveyType,
+  EmailTemplate,
+  StudyEnvironmentSurvey,
+  PortalEnvironment
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import {
-  EmailTemplate,
-  StudyEnvironmentSurvey
-} from '@juniper/ui-core/build/types/study'
 import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
-import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import React from 'react'
 

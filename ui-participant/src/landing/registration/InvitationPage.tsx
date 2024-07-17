@@ -5,6 +5,7 @@ import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { useUser } from 'providers/UserProvider'
 import Api, { getEnvSpec } from 'api/api'
 import { useInvitationType } from 'browserPersistentState'
+import envVars from 'util/envVars'
 
 /** Page for participants who already have enrollee data in Juniper (from a migration or admin action), and need
  * to join to link their account */
@@ -18,7 +19,7 @@ export default function InvitationPage() {
   const envSpec = getEnvSpec()
 
   const createAccount = async () => {
-    if (process.env.REACT_APP_UNAUTHED_LOGIN) {
+    if (envVars.unauthedLogin) {
       // we don't need to create a b2c account, just log the user in
       const result = await Api.unauthedLogin(accountName)
       loginUser(result, result.user.token)

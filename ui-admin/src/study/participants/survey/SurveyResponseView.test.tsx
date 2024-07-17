@@ -21,6 +21,7 @@ jest.mock('user/UserProvider', () => ({
 jest.spyOn(Api, 'fetchEnrolleeChangeRecords').mockResolvedValue([])
 
 describe('RawEnrolleeSurveyView', () => {
+  jest.clearAllMocks()
   const mockResponseWithAnswer = {
     ...mockSurveyResponse(),
     answers: [
