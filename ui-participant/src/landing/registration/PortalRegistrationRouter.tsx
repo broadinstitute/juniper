@@ -7,6 +7,7 @@ import PreRegistration from './Preregistration'
 import Registration from './Registration'
 import { usePreRegResponseId } from 'browserPersistentState'
 import RegistrationUnauthed from './RegistrationUnauthed'
+import envVars from 'util/envVars'
 
 export type RegistrationContextT = {
   preRegSurvey?: Survey,
@@ -74,7 +75,7 @@ export default function PortalRegistrationRouter({
     updatePreRegResponseId
   }
 
-  const registrationComponent = process.env.REACT_APP_UNAUTHED_LOGIN ?
+  const registrationComponent = envVars.unauthedLogin ?
     <RegistrationUnauthed registrationContext={registrationContext} returnTo={returnTo}/> :
     <Registration/>
 

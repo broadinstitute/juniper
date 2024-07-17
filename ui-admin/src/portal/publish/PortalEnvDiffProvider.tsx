@@ -5,9 +5,9 @@ import { Store } from 'react-notifications-component'
 import { successNotification } from 'util/notifications'
 import LoadingSpinner from 'util/LoadingSpinner'
 import PortalEnvDiffView from './PortalEnvDiffView'
-import { Portal } from '@juniper/ui-core/build/types/portal'
-import { studyPublishingPath } from '../../study/StudyRouter'
-import { doApiLoad } from '../../api/api-utils'
+import { Portal } from '@juniper/ui-core'
+import { studyPublishingPath } from 'study/StudyRouter'
+import { doApiLoad } from 'api/api-utils'
 
 type PortalEnvDiffProviderProps = {
   portal: Portal,

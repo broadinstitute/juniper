@@ -126,6 +126,12 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: true,
+      'alias': {
+        'map': [
+          ['@juniper/ui-core', './ui-core']
+        ],
+        'extensions': ['.js', '.ts', '.jsx', '.tsx']
+      },
       typescript: {
         project: [
           'ui-admin/tsconfig.json',

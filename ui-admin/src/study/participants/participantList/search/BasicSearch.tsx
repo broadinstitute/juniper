@@ -16,10 +16,10 @@ const BasicSearch = ({ searchState, setSearchState }: {
   searchState: ParticipantSearchState,
   setSearchState: (searchState: ParticipantSearchState) => void
 }) => {
-  const [search, setSearch] = useState(searchState.keywordSearch)
+  const [searchText, setSearchText] = useState(searchState.keywordSearch)
 
   useEffect(() => {
-    setSearch(searchState.keywordSearch)
+    setSearchText(searchState.keywordSearch)
   }, [searchState.keywordSearch])
 
   const debouncedUpdate = useMemo(
@@ -31,19 +31,22 @@ const BasicSearch = ({ searchState, setSearchState }: {
   // downloading all the participant data is expensive, so debounce the searchbar
   const handleChange = useCallback(debouncedUpdate, [debouncedUpdate])
 
-  return <form className="rounded-5"
-    style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
+  return <form className="rounded-5" onSubmit={e => {
+    e.preventDefault()
+    setSearchState({ ...searchState, keywordSearch: searchText })
+  }}
+  style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
     <button type="submit" title="submit search" className="btn btn-secondary">
       <FontAwesomeIcon icon={faSearch}/>
     </button>
     <input
       type="text"
-      value={search}
+      value={searchText}
       size={40}
       style={{ border: 'none', outline: 'none' }}
       placeholder={'Search by name, email, or shortcode'}
       onChange={e => {
-        setSearch(e.target.value)
+        setSearchText(e.target.value)
         handleChange(e.target.value)
       }}/>
   </form>

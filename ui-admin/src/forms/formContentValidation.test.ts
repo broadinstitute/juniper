@@ -12,7 +12,7 @@ describe('validateFormContent', () => {
       title: 'test'
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllElements(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrow(
       `Error parsing form. Please ensure that the form has a 'pages' property.`
     )
   })
@@ -38,7 +38,7 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllElements(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrow(
       `Error parsing form. Please ensure that all panels have an 'elements' property.`
     )
   })
@@ -64,7 +64,7 @@ describe('validateFormContent', () => {
       ]
     } as unknown as FormContent //cast in order to simulate invalid form content
 
-    expect(() => getAllElements(formContent)).toThrowError(
+    expect(() => getAllElements(formContent)).toThrow(
       `Error parsing form. Please ensure that all pages have an 'elements' property.`
     )
   })
