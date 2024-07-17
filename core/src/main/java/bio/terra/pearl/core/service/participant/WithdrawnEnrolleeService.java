@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.With;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,11 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    /** Returns a list of WithdrawnEnrollees for the given study environment, but without the enrollee data. */
+    public List<WithdrawnEnrollee> findByStudyEnvironmentIdNoData(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironmentIdNoData(studyEnvironmentId);
     }
 
     public int countByStudyEnvironmentId(UUID studyEnvironmentId) {

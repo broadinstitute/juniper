@@ -671,6 +671,21 @@ paths:
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/withdrawnEnrollees:
+    get:
+      summary: gets list of withdrawn participants (with no data attached)
+      tags: [ withdrawnEnrollee ]
+      operationId: getAll
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: withdrawnEnrollee list
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations/byTarget/{enrolleeShortcode}:
     get:
       summary: Finds all of the relations that the given enrollee is a target of. Includes the full enrollee objects.
