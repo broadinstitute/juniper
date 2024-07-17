@@ -350,7 +350,7 @@ export type SearchValueTypeDefinition = {
 export type WithdrawnEnrollee = {
   createdAt: number
   shortcode: string
-  userData: { username: string, createdAt: number }
+  userData: string
 }
 
 let bearerToken: string | null = null
