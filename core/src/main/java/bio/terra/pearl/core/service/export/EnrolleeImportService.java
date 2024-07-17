@@ -309,6 +309,8 @@ public class EnrolleeImportService {
                                     ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
         ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
         Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        // we still don't want to send emails during the import process
+        profile.setDoNotEmail(true);
         profile.setId(registrationProfile.getId());
         profile.setMailingAddressId(registrationProfile.getMailingAddressId());
         profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
