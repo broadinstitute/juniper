@@ -18,7 +18,7 @@ import { Store } from 'react-notifications-component'
 import {
   failureNotification,
   successNotification
-} from '../util/notifications'
+} from 'util/notifications'
 import classNames from 'classnames'
 
 /**
