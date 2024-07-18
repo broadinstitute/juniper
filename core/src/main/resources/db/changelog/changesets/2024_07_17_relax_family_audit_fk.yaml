@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: "relax_family_audit_fk"
+      author: connorlbark
+      changes:
+        - dropForeignKeyConstraint:
+            baseTableName: data_change_record
+            constraintName: fk_family_enrollee_family_id,
