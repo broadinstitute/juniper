@@ -11,12 +11,18 @@ import {
 } from '@testing-library/react'
 import { setupRouterTest } from '@juniper/ui-core'
 import Families from 'study/participants/Families'
+import Api from 'api/api'
 
 test('renders families', async () => {
   const enrollee = mockEnrollee()
-  enrollee.families = [
-    mockFamily()
+  enrollee.familyEnrollees = [
+    { enrolleeId: 'asdf', familyId: 'asdf', createdAt: 0 }
   ]
+
+  const family = mockFamily()
+
+  jest.spyOn(Api, 'getFamily').mockResolvedValue(family)
+
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(
     <Families enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={jest.fn()}/>)
@@ -24,5 +30,5 @@ test('renders families', async () => {
   await waitFor(() => {
     expect(screen.getByText('Families')).toBeInTheDocument()
   })
-  expect(screen.getByText(enrollee.families[0].shortcode)).toBeInTheDocument()
+  expect(screen.getByText(family.shortcode)).toBeInTheDocument()
 })
