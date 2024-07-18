@@ -56,31 +56,14 @@ task copyWebApp(type: Copy) {
 }
 
 // creates copies of the fingerprinted js files without the asset fingerprint.
-task createUnfingerprintedJs(type: Copy) {
+task createUnfingerprintedAssets(type: Copy) {
     dependsOn('copyWebApp')
     dependsOn('processResources')
     from "$rootDir/api-participant/build/resources/main/static/assets"
     into "$rootDir/api-participant/build/resources/main/static/assets"
-    rename("index-([^.]{8}).js", "index.js")
-    rename('(.*)-([^.]{8}).js', '$1.chunk.js')
+    rename('(.+)-([a-zA-Z0-9-_]+)\\.js', '$1.js')
+    rename("index-([a-zA-Z0-9-_]+).css", "index.css")
     duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
-}
-
-// creates copies of the fingerprinted CSS files without the asset fingerprint
-task createUnfingerprintedCss(type: Copy) {
-    dependsOn('copyWebApp')
-    dependsOn('processResources')
-    from "$rootDir/api-participant/build/resources/main/static/assets"
-    into "$rootDir/api-participant/build/resources/main/static/assets"
-    rename("index-([^.]{8}).css", "index.css")
-    duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
-}
-
-// See comment in PublicApiController.java for why we want unfingerprinted versions of assets.  We still keep the fingerprinted
-// versions for reference to help in determining which version of a file the server *actually* has
-task createUnfingerprintedAssets() {
-    dependsOn('createUnfingerprintedJs')
-    dependsOn('createUnfingerprintedCss')
 }
 
 // for now, only jib depends on copyWebApp (via createUnfingerprintedAssets),
