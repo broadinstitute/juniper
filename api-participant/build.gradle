@@ -51,6 +51,8 @@ task copyWebApp(type: Copy) {
     dependsOn(rootProject.bundleParticipantUI)
     from "$rootDir/ui-participant/dist"
     into "$rootDir/api-participant/build/resources/main/static"
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
+
 }
 
 // creates copies of the fingerprinted js files without the asset fingerprint.
@@ -61,6 +63,7 @@ task createUnfingerprintedJs(type: Copy) {
     into "$rootDir/api-participant/build/resources/main/static/assets"
     rename("index-([^.]{8}).js", "index.js")
     rename('(.*)-([^.]{8}).js', '$1.chunk.js')
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
 }
 
 // creates copies of the fingerprinted CSS files without the asset fingerprint
@@ -70,6 +73,7 @@ task createUnfingerprintedCss(type: Copy) {
     from "$rootDir/api-participant/build/resources/main/static/assets"
     into "$rootDir/api-participant/build/resources/main/static/assets"
     rename("index-([^.]{8}).css", "index.css")
+    duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
 }
 
 // See comment in PublicApiController.java for why we want unfingerprinted versions of assets.  We still keep the fingerprinted
