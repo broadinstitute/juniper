@@ -85,6 +85,7 @@ public class SurveyService extends VersionedEntityService<Survey, SurveyDao> {
             savedSurvey.getAnswerMappings().add(savedMapping);
         }
         List<LanguageText> texts = SurveyParseUtils.extractLanguageTexts(survey);
+        System.out.println(texts.size());
         languageTextDao.bulkCreate(texts);
 
         // parse the survey content to get the questions and create the question definitions
