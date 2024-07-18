@@ -17,10 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.broadinstitute.ddp.content.I18nContentRenderer;
 import org.broadinstitute.ddp.model.activity.definition.*;
 import org.broadinstitute.ddp.model.activity.definition.i18n.Translation;
-import org.broadinstitute.ddp.model.activity.definition.question.PicklistOptionDef;
-import org.broadinstitute.ddp.model.activity.definition.question.PicklistQuestionDef;
-import org.broadinstitute.ddp.model.activity.definition.question.QuestionDef;
-import org.broadinstitute.ddp.model.activity.definition.question.TextQuestionDef;
+import org.broadinstitute.ddp.model.activity.definition.question.*;
 import org.broadinstitute.ddp.model.activity.definition.template.TemplateVariable;
 import org.broadinstitute.ddp.model.activity.types.BlockType;
 import org.broadinstitute.ddp.model.activity.types.PicklistRenderMode;
@@ -79,13 +76,25 @@ public class ActivityImporter {
     }
 
     public SurveyPopDto convert(FormActivityDef activityDef, Map<String, Map<String, Object>> allLangMap) {
+        Map<String, String> translatedSurveyTitles = fromPepperTranslations(activityDef.getTranslatedNames());
+
         SurveyPopDto survey = SurveyPopDto.builder()
                 .stableId(activityDef.getActivityCode())
                 .version(1)
-                .name(activityDef.getTag())
+                .name(translatedSurveyTitles.get("en"))
                 .build();
 
         ObjectNode root = objectMapper.createObjectNode();
+
+        // it seems like in pepper, they redefine the title in multiple places
+        // for example, medical_title and medical_name are the same thing.
+        // I can't find any surveys that define them differently so we're
+        // just using the one here.
+        root.set("title", objectMapper.valueToTree(translatedSurveyTitles));
+
+        // there are other properties, e.g. description, that we could set here
+        // but they seem to be unused in pepper
+
         ArrayNode pages = root.putArray("pages");
         for (FormSectionDef section : activityDef.getAllSections()) {
             ObjectNode page = objectMapper.createObjectNode();
@@ -135,44 +144,88 @@ public class ActivityImporter {
     private List<JsonNode> convertBlockQuestions(Map<String, Map<String, Object>> allLangMap, FormBlockDef blockDef) {
         List<JsonNode> questionNodes = new ArrayList<>();
         for (QuestionDef pepperQuestionDef : blockDef.getQuestions().toList()) {
-            Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
-            String questionType = getQuestionType(pepperQuestionDef);
-            String inputType = null;
-            if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("DATE")) {
-                inputType = "DATE";
-            }
-            if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("NUMERIC")) {
-                inputType = "NUMBER";
-            }
-            //todo handle COMPOSITE questions
-            List<SurveyJSQuestion.Choice> choices = null;
-            if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
-                choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
-            }
 
-            //expression  revisit and try this
-            //parse the pepper expression for stableID and value/option and generate Juniper expression
-            //EX: user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
-            //parse value after questions[] and hasOption and generate
-            //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
-            //works only for picklist/choices though
-
-            SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
-                    .name(pepperQuestionDef.getStableId())
-                    .type(questionType)
-                    .title(titleMap)
-                    .isRequired(false)
-                    //.isRequired() //revisit
-                    .inputType(inputType)
-                    .choices(choices)
-                    .visibleIf(blockDef.getShownExpr())
-                    .build();
-            ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
-
-            JsonNode questionNode = objectMapper.valueToTree(surveyJSQuestion);
-            questionNodes.add(questionNode);
+            questionNodes.add(convertQuestionToSurveyJsFormat(blockDef, allLangMap, pepperQuestionDef));
         }
         return questionNodes;
+    }
+
+    private JsonNode convertQuestionToSurveyJsFormat(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, QuestionDef pepperQuestionDef) {
+        Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
+        String questionType = getQuestionType(pepperQuestionDef);
+        String inputType = null;
+        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("DATE")) {
+            inputType = "DATE";
+        }
+        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("NUMERIC")) {
+            inputType = "NUMBER";
+        }
+
+        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("COMPOSITE")) {
+            // composite questions are not 'questions' in surveyjs, rather panels.
+            // so, they need to be formatted differently
+            return convertCompositeQuestion(blockDef, allLangMap, (CompositeQuestionDef) pepperQuestionDef);
+        }
+
+        List<SurveyJSQuestion.Choice> choices = null;
+        if (pepperQuestionDef.getQuestionType().name().equalsIgnoreCase("PICKLIST")) {
+            choices = getPicklistChoices((PicklistQuestionDef) pepperQuestionDef, allLangMap);
+        }
+
+        //expression  revisit and try this
+        //parse the pepper expression for stableID and value/option and generate Juniper expression
+        //EX: user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
+        //parse value after questions[] and hasOption and generate
+        //"visibleIf": "{REGISTRATION_COUNTRY} contains 'AF'"
+        //works only for picklist/choices though
+
+        SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
+                .name(pepperQuestionDef.getStableId())
+                .type(questionType)
+                .title(titleMap)
+                .isRequired(false)
+                .inputType(inputType)
+                .choices(choices)
+                .visibleIf(blockDef.getShownExpr())
+                .build();
+        ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
+
+        return objectMapper.valueToTree(surveyJSQuestion);
+    }
+
+    private JsonNode convertCompositeQuestion(FormBlockDef blockDef, Map<String, Map<String, Object>> allLangMap, CompositeQuestionDef pepperQuestionDef) {
+
+        // add button template is the text of the add button
+        Map<String, String> addButtonTemplate = null;
+        if (Objects.nonNull(pepperQuestionDef.getAddButtonTemplate())) {
+            addButtonTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAddButtonTemplate().getTemplateText(),
+                    pepperQuestionDef.getAddButtonTemplate().getVariables());
+        }
+
+        // additional item template is the title above every new item the user
+        // adds, e.g. "Other Medication" in the Medication question
+        Map<String, String> additionalItemTemplate = null;
+        if (Objects.nonNull(pepperQuestionDef.getAdditionalItemTemplate())) {
+            additionalItemTemplate = getVariableTranslationsTxt(pepperQuestionDef.getAdditionalItemTemplate().getTemplateText(),
+                    pepperQuestionDef.getAdditionalItemTemplate().getVariables());
+        }
+
+        // find all subquestions for the composite question
+        List<JsonNode> subQuestions = pepperQuestionDef.getChildren().stream()
+                .map(child -> convertQuestionToSurveyJsFormat(blockDef, allLangMap, child))
+                .collect(Collectors.toList());
+
+
+        // construct as surveyjs panel dynamic section
+        Map<String, Object> compositeQuestionMap = new HashMap<>();
+        compositeQuestionMap.put("name", pepperQuestionDef.getStableId());
+        compositeQuestionMap.put("type", "paneldynamic");
+        compositeQuestionMap.put("title", getQuestionTxt(pepperQuestionDef));
+        compositeQuestionMap.put("templateElements", subQuestions);
+        compositeQuestionMap.put("panelAddText", addButtonTemplate);
+        compositeQuestionMap.put("templateTitle", additionalItemTemplate);
+        compositeQuestionMap.put("visibleIf", blockDef.getShownExpr());
+        return objectMapper.valueToTree(compositeQuestionMap);
     }
 
     private String getQuestionType(QuestionDef pepperQuestionDef) {
@@ -253,6 +306,11 @@ public class ActivityImporter {
             choices.add(new SurveyJSQuestion.Choice(choiceTranslations, option.getStableId()));
         }
         return choices;
+    }
+
+    private Map<String, String> fromPepperTranslations(List<Translation> translations) {
+        return translations.stream()
+                .collect(Collectors.toMap(Translation::getLanguageCode, Translation::getText));
     }
 
 

@@ -19,6 +19,6 @@ fi
 APP_NAME=api-$1
 IMAGE_NAME=$APP_NAME:ci
 
-REACT_APP_UNAUTHED_LOGIN=true ./gradlew $APP_NAME:jibDockerBuild -Djib.to.image=$IMAGE_NAME
+VITE_UNAUTHED_LOGIN=true ./gradlew $APP_NAME:jibDockerBuild -Djib.to.image=$IMAGE_NAME
 
 docker run -d -p $targetport:8080 --net=host $IMAGE_NAME

@@ -113,7 +113,7 @@ test('allows deletion of notification config', async () => {
   await waitFor(
     () =>
       expect(Api.deleteTrigger)
-        .toBeCalledWith(
+        .toHaveBeenCalledWith(
           studyEnvContext.portal.shortcode,
           studyEnvContext.study.shortcode,
           studyEnvContext.currentEnv.environmentName,

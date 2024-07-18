@@ -1,5 +1,6 @@
 package bio.terra.pearl.api.admin;
 
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyPermission;
@@ -32,6 +33,10 @@ public record AuthAnnotationSpec(
 
   public static AuthAnnotationSpec withPortalStudyEnvPerm(String permissionName) {
     return new AuthAnnotationSpec(EnforcePortalStudyEnvPermission.class, permissionName, List.of());
+  }
+
+  public static AuthAnnotationSpec withPortalEnrolleePerm(String permissionName) {
+    return new AuthAnnotationSpec(EnforcePortalEnrolleePermission.class, permissionName, List.of());
   }
 
   public static AuthAnnotationSpec withPortalStudyEnvPerm(

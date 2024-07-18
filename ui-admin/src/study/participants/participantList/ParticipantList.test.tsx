@@ -100,6 +100,7 @@ test('send email is toggled depending on participants selected', async () => {
 })
 
 test('keyword search sends search api request', async () => {
+  jest.clearAllMocks()
   const searchSpy = mockSearchApi(1)
   const studyEnvContext = mockStudyEnvContext()
   const { RoutedComponent } = setupRouterTest(<ParticipantList studyEnvContext={studyEnvContext}/>)

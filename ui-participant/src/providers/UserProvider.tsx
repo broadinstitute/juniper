@@ -15,6 +15,7 @@ import {
   ParticipantUser,
   Profile
 } from '@juniper/ui-core'
+import envVars from 'util/envVars'
 
 /**
  * The user provide contains the _raw_ user context, which is more or less directly derived
@@ -99,7 +100,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
     await Api.logout()
-    if (!process.env.REACT_APP_UNAUTHED_LOGIN) {
+    if (!envVars.unauthedLogin) {
       // eslint-disable-next-line camelcase
       auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
     } else {

@@ -4,7 +4,7 @@ plugins {
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
     id "io.freefair.lombok" version "6.5.1"
-    id 'com.gorylenko.gradle-git-properties' version '2.3.1'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
 }
 
 apply from: 'generators.gradle'
@@ -49,7 +49,7 @@ dependencies {
 
 task copyWebApp(type: Copy) {
     dependsOn(rootProject.bundleParticipantUI)
-    from "$rootDir/ui-participant/build"
+    from "$rootDir/ui-participant/dist"
     into "$rootDir/api-participant/build/resources/main/static"
 }
 
@@ -57,19 +57,19 @@ task copyWebApp(type: Copy) {
 task createUnfingerprintedJs(type: Copy) {
     dependsOn('copyWebApp')
     dependsOn('processResources')
-    from "$rootDir/api-participant/build/resources/main/static/static/js"
-    into "$rootDir/api-participant/build/resources/main/static/static/js"
-    rename("main.([0-9a-f]{8}).js", "main.js")
-    rename('(.*).([0-9a-f]{8}).chunk.js', '$1.chunk.js')
+    from "$rootDir/api-participant/build/resources/main/static/assets"
+    into "$rootDir/api-participant/build/resources/main/static/assets"
+    rename("index-([^.]{8}).js", "index.js")
+    rename('(.*)-([^.]{8}).js', '$1.chunk.js')
 }
 
 // creates copies of the fingerprinted CSS files without the asset fingerprint
 task createUnfingerprintedCss(type: Copy) {
     dependsOn('copyWebApp')
     dependsOn('processResources')
-    from "$rootDir/api-participant/build/resources/main/static/static/css"
-    into "$rootDir/api-participant/build/resources/main/static/static/css"
-    rename("main.*.css", "main.css")
+    from "$rootDir/api-participant/build/resources/main/static/assets"
+    into "$rootDir/api-participant/build/resources/main/static/assets"
+    rename("index-([^.]{8}).css", "index.css")
 }
 
 // See comment in PublicApiController.java for why we want unfingerprinted versions of assets.  We still keep the fingerprinted

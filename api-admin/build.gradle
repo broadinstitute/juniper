@@ -5,7 +5,7 @@ plugins {
     id 'com.google.cloud.tools.jib'
     id 'com.srcclr.gradle'
 
-    id 'com.gorylenko.gradle-git-properties' version '2.3.1'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.2'
 }
 
 apply from: 'generators.gradle'
@@ -51,7 +51,7 @@ dependencies {
 }
 
 task copyWebApp(type: Copy) {
-    from "$rootDir/ui-admin/build"
+    from "$rootDir/ui-admin/dist"
     into "$rootDir/api-admin/build/resources/main/static"
 }
 
