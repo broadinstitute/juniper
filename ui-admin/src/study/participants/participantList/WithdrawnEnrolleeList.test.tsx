@@ -12,7 +12,8 @@ test('renders list', async () => {
   ])
   renderInPortalRouter(studyEnvContext.portal,
     <WithdrawnEnrolleeList studyEnvContext={studyEnvContext}  />)
-  await waitFor(() => expect(screen.queryByTestId('loading-spinner')))
+  await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
   expect(screen.getByText('BLEH')).toBeInTheDocument()
-  expect(screen.getByText('foo@bar.com')).toBeInTheDocument()
+  // email should be hidden by default
+  expect(screen.queryByText('foo@bar.com')).not.toBeInTheDocument()
 })
