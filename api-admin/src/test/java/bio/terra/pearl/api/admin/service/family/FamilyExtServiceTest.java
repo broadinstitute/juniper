@@ -72,6 +72,7 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
 
     Family family = familyFactory.buildPersisted(getTestName(info), enrollee);
 
+    // works with shortcode
     assertEquals(
         family.getId(),
         familyExtService
@@ -84,6 +85,20 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
                 family.getShortcode())
             .getId());
 
+    // works with id
+    assertEquals(
+        family.getId(),
+        familyExtService
+            .find(
+                PortalStudyEnvAuthContext.of(
+                    operator,
+                    bundle.getPortal().getShortcode(),
+                    bundle.getStudy().getShortcode(),
+                    EnvironmentName.sandbox),
+                family.getId().toString())
+            .getId());
+
+    // throws with shortcode
     assertThrows(
         NotFoundException.class,
         () ->
@@ -94,6 +109,18 @@ class FamilyExtServiceTest extends BaseSpringBootTest {
                     otherBundle.getStudy().getShortcode(),
                     EnvironmentName.sandbox),
                 family.getShortcode()));
+
+    // throws with id
+    assertThrows(
+        NotFoundException.class,
+        () ->
+            familyExtService.find(
+                PortalStudyEnvAuthContext.of(
+                    operator,
+                    otherBundle.getPortal().getShortcode(),
+                    otherBundle.getStudy().getShortcode(),
+                    EnvironmentName.sandbox),
+                family.getId().toString()));
   }
 
   @Test

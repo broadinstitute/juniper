@@ -38,8 +38,6 @@ public class Enrollee extends BaseEntity {
     @Builder.Default
     private List<FamilyEnrollee> familyEnrollees = new ArrayList<>();
     @Builder.Default
-    private List<Family> families = new ArrayList<>();
-    @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default
     private List<ParticipantTask> participantTasks = new ArrayList<>();

@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -26,11 +27,19 @@ public class FamilyExtService {
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public Family find(PortalStudyEnvAuthContext authContext, String familyShortcode) {
+  public Family find(PortalStudyEnvAuthContext authContext, String familyShortcodeOrId) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
+    if (familyShortcodeOrId.length() > 16) {
+      return familyService
+          .find(UUID.fromString(familyShortcodeOrId))
+          .filter(family -> family.getStudyEnvironmentId().equals(studyEnvironment.getId()))
+          .map(familyService::loadForAdminView)
+          .orElseThrow(() -> new NotFoundException("Family not found"));
+    }
+
     return familyService
-        .findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvironment.getId())
+        .findOneByShortcodeAndStudyEnvironmentId(familyShortcodeOrId, studyEnvironment.getId())
         .map(familyService::loadForAdminView)
         .orElseThrow(() -> new NotFoundException("Family not found"));
   }
@@ -120,9 +129,7 @@ public class FamilyExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
   public Family create(PortalStudyEnvAuthContext authContext, Family family, String justification) {
-    if (!family.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
-      throw new NotFoundException("Study environment not found");
-    }
+    family.setStudyEnvironmentId(authContext.getStudyEnvironment().getId());
 
     Enrollee proband =
         enrolleeService
@@ -133,14 +140,12 @@ public class FamilyExtService {
       throw new NotFoundException("Proband not found");
     }
 
-    AdminUser user = authContext.getOperator();
-
     family.setShortcode(null);
     Family created =
         familyService.create(
             family,
             DataAuditInfo.builder()
-                .responsibleAdminUserId(user.getId())
+                .responsibleAdminUserId(authContext.getOperator().getId())
                 .justification(justification)
                 .build());
 

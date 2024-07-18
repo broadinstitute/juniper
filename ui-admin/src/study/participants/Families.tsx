@@ -35,6 +35,8 @@ import {
   InfoCardHeader
 } from 'components/InfoCard'
 import { Button } from 'components/forms/Button'
+import { useLoadingEffect } from 'api/api-utils'
+import LoadingSpinner from 'util/LoadingSpinner'
 
 
 /** Shows a list of all kit requests for an enrollee. */
@@ -44,9 +46,23 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
                                         studyEnvContext: StudyEnvContextT,
                                         onUpdate: () => void
                                       }) {
+  const [families, setFamilies] = React.useState<Family[]>([])
   const [addFamily, setAddFamily] = React.useState<boolean>(false)
 
   const [familySelectedForRemoval, setFamilySelectedForRemoval] = React.useState<Family>()
+
+  const { isLoading: isLoadingFamilies } = useLoadingEffect(async () => {
+    const families = await Promise.all(enrollee.familyEnrollees?.map(async familyEnrollee => {
+      return await Api.getFamily(
+        studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode,
+        studyEnvContext.currentEnv.environmentName,
+        familyEnrollee.familyId
+      )
+    }) || [])
+
+    setFamilies(families)
+  })
 
   const removeFromFamily = async (justification: string) => {
     if (!familySelectedForRemoval) {
@@ -109,13 +125,16 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
   }]
 
   const table = useReactTable({
-    data: enrollee.families || [],
+    data: families,
     columns,
     getCoreRowModel: getCoreRowModel()
   })
 
-  return <InfoCard>
+  if (isLoadingFamilies) {
+    return <LoadingSpinner/>
+  }
 
+  return <InfoCard>
     <InfoCardHeader>
       <div className="d-flex align-items-center justify-content-between w-100">
 
@@ -131,8 +150,8 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
 
     {basicTableLayout(table, { tableClass: 'table m-0' })}
 
-    {enrollee.families?.length === 0 && <div className='my-3'>
-      {renderEmptyMessage(enrollee.families || [], 'No families')}
+    {families.length === 0 && <div className='my-3'>
+      {renderEmptyMessage(families, 'No families')}
     </div>}
 
     {addFamily && <AddFamilyModal

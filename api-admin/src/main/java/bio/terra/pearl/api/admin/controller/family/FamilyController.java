@@ -36,7 +36,7 @@ public class FamilyController implements FamilyApi {
       String portalShortcode,
       String studyShortcode,
       String environmentName,
-      String familyShortcode) {
+      String familyShortcodeOrId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
 
     Family family =
@@ -46,7 +46,7 @@ public class FamilyController implements FamilyApi {
                 portalShortcode,
                 studyShortcode,
                 EnvironmentName.valueOfCaseInsensitive(environmentName)),
-            familyShortcode);
+            familyShortcodeOrId);
 
     return ResponseEntity.ok(family);
   }

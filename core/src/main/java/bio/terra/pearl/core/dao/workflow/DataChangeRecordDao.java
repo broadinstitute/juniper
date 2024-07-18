@@ -86,8 +86,7 @@ public class DataChangeRecordDao extends BaseJdbiDao<DataChangeRecord> {
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
-        // might not be complete, there could be some dangling records,
-        // but at the very least this cleans up any foreign key issues that might arise
+        // delete records from enrollees and families in this study environment.
         jdbi.withHandle(handle ->
                 handle.createUpdate(
                                 "DELETE FROM data_change_record dcr " +
