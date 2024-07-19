@@ -53,7 +53,7 @@ export default function LogEventViewer() {
     { value: '30', label: 'Last Month' }
   ]
   const [selectedEventTypes, setSelectedEventTypes] = useState<{ value: string, label: string }[]>(
-    [{ value: 'ERROR', label: 'Error' }])
+    eventTypes.filter(e => e.value != 'STATS'))
   const [selectedDateRange, setSelectedDateRange] = useState<{ value: string, label: string }>(
     { value: '7', label: 'Last Week' })
   const [logEvents, setLogEvents] = useState<LogEvent[]>([])
