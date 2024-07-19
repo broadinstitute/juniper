@@ -99,11 +99,11 @@ export default function LogEventViewer() {
   }, {
     header: 'Stacktrace',
     accessorKey: 'stacktrace',
-    cell: info => collapsibleJsonView(info.getValue() as string)
+    cell: info => viewFullJsonButton(info.getValue() as string)
   }, {
     header: 'Detail',
     accessorKey: 'eventDetail',
-    cell: info => collapsibleJsonView(info.getValue() as string)
+    cell: info => viewFullJsonButton(info.getValue() as string)
   }, {
     header: 'Portal Shortcode',
     accessorKey: 'portalShortcode'
@@ -175,7 +175,7 @@ export default function LogEventViewer() {
   )
 }
 
-const collapsibleJsonView = (json: string) => {
+const viewFullJsonButton = (json: string) => {
   const [open, setOpen] = useState(false)
 
   if (!json) { return <span className="fst-italic text-muted">No value</span> }
