@@ -20,8 +20,6 @@ public class LoggingController implements LoggingApi {
 
   @Override
   public ResponseEntity<Object> get(String days, String eventTypes) {
-    // parses array of event types into a list of LogEventType
-
     if (StringUtils.isBlank(eventTypes)) {
       return ResponseEntity.ok(List.of());
     }

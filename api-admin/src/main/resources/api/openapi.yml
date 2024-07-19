@@ -1888,7 +1888,7 @@ paths:
 
   /api/logs:
     get:
-      summary: Get logs
+      summary: Get log events. Filterable by event type and number of days.
       tags: [ logging ]
       operationId: get
       parameters:
