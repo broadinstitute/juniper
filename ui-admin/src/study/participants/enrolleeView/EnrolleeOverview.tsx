@@ -55,7 +55,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
       relations
         .filter(relation => relation.relationshipType === 'PROXY')
         .map(relation => {
-          return <InfoCard>
+          return <InfoCard key={relation.id}>
             <InfoCardHeader>
               <InfoCardTitle title={'Proxy'}/>
             </InfoCardHeader>
