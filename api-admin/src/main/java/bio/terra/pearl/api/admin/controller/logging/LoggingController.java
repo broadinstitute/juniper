@@ -6,10 +6,9 @@ import bio.terra.pearl.api.admin.service.logging.LoggingExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.log.LogEventType;
 import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -20,7 +19,10 @@ public class LoggingController implements LoggingApi {
   private final AuthUtilService authUtilService;
   private final HttpServletRequest request;
 
-  public LoggingController(LoggingExtService loggingExtService, AuthUtilService authUtilService, HttpServletRequest request) {
+  public LoggingController(
+      LoggingExtService loggingExtService,
+      AuthUtilService authUtilService,
+      HttpServletRequest request) {
     this.loggingExtService = loggingExtService;
     this.authUtilService = authUtilService;
     this.request = request;
@@ -30,8 +32,9 @@ public class LoggingController implements LoggingApi {
   public ResponseEntity<Object> get(String days, String eventTypes) {
     AdminUser operator = authUtilService.requireAdminUser(request);
 
-    if(!operator.isSuperuser()) {
-      return ResponseEntity.status(404).body("You do not have access to this resource or it does not exist.");
+    if (!operator.isSuperuser()) {
+      return ResponseEntity.status(404)
+          .body("You do not have access to this resource or it does not exist.");
     }
 
     if (StringUtils.isBlank(eventTypes)) {
