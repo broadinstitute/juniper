@@ -64,8 +64,14 @@ const AdminSidebar = ({ config }: { config: Config }) => {
           <li className="mb-2">
             <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
           </li>
-          <li>
+          <li className="mb-2">
             <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
+          </li>
+          <li className="mb-2">
+            <NavLink to="/logEvents" className={sidebarNavLinkClasses}>Log Events</NavLink>
+          </li>
+          <li>
+            <NavLink to="/sendgridEvents" className={sidebarNavLinkClasses}>SendGrid Events</NavLink>
           </li>
         </ul>}/>}
     </>}

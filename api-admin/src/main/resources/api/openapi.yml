@@ -1886,6 +1886,21 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/logs:
+    get:
+      summary: Get logs
+      tags: [ logging ]
+      operationId: get
+      parameters:
+        - { name: eventTypes, in: query, required: false, schema: { type: string } }
+        - { name: days, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: logs
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+
 
 components:
   responses:
