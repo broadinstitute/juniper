@@ -2,6 +2,7 @@ package bio.terra.pearl.pepper;
 
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.pepper.dto.SurveyJSContent;
+import bio.terra.pearl.pepper.dto.SurveyJSPanel;
 import bio.terra.pearl.pepper.dto.SurveyJSQuestion;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -153,7 +154,14 @@ public class ActivityImporter {
                 nodes.addAll(convertBlock(allLangMap, nestedBlockDef));
             }
         }
-        return nodes;
+
+        SurveyJSPanel panel = SurveyJSPanel.builder()
+                .type("panel")
+                .elements(nodes)
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                .build();
+
+        return List.of(objectMapper.valueToTree(panel));
     }
 
     private List<JsonNode> convertConditionalBlock(Map<String, Map<String, Object>> allLangMap, ConditionalBlockDef blockDef) {
@@ -275,7 +283,6 @@ public class ActivityImporter {
                 .labelFalse(labelFalse)
                 .valueFalse(valueTrue)
                 .valueFalse(valueFalse)
-                .isRequired(false)
                 .inputType(inputType)
                 .choices(choices)
                 .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
@@ -303,6 +310,8 @@ public class ActivityImporter {
                         .type("text")
                         .title(otherTitle)
                         .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
+                        .required(true)
+                        .validators(null)
                         .build();
                 otherQuestions.add(objectMapper.valueToTree(otherQuestion));
 
@@ -333,15 +342,17 @@ public class ActivityImporter {
 
 
         // construct as surveyjs panel dynamic section
-        Map<String, Object> compositeQuestionMap = new HashMap<>();
-        compositeQuestionMap.put("name", pepperQuestionDef.getStableId());
-        compositeQuestionMap.put("type", "paneldynamic");
-        compositeQuestionMap.put("title", getQuestionTxt(pepperQuestionDef));
-        compositeQuestionMap.put("templateElements", subQuestions);
-        compositeQuestionMap.put("panelAddText", addButtonTemplate);
-        compositeQuestionMap.put("templateTitle", additionalItemTemplate);
-        compositeQuestionMap.put("visibleIf", convertVisibilityExpressions(blockDef.getShownExpr()));
-        return objectMapper.valueToTree(compositeQuestionMap);
+        SurveyJSPanel panel = SurveyJSPanel
+                .builder()
+                .name(pepperQuestionDef.getStableId())
+                .type("paneldynamic")
+                .title(getQuestionTxt(pepperQuestionDef))
+                .templateElements(subQuestions)
+                .panelAddText(addButtonTemplate)
+                .templateTitle(additionalItemTemplate)
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                .build();
+        return objectMapper.valueToTree(panel);
     }
 
     public static Map<String, String> translatePepperTemplate(Template template) {
@@ -466,7 +477,7 @@ public class ActivityImporter {
     }
 
     public String convertVisibilityExpressions(String pepperExpr) {
-        if (pepperExpr == null) {
+        if (StringUtils.isEmpty(pepperExpr)) {
             return null;
         }
         // example:

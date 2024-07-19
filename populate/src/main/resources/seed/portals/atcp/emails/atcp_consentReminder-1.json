@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707344628.314072000,
+  "lastUpdatedAt" : 1718050903.985529000,
+  "stableId" : "atcp_consentReminder",
+  "name" : "Consent Reminder",
+  "version" : 2,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1707344628.314072000,
+    "lastUpdatedAt" : 1707344628.314071000,
+    "language" : "en",
+    "subject" : "Reminder: Please complete the ${study.name} Consent form",
+    "bodyPopulateFile" : "en/atcp_consentReminder-1.html"
+  } ]
+}

@@ -52,8 +52,8 @@ public class ValidationConverter {
                 IntRangeRuleDef intRangeRuleDef = (IntRangeRuleDef) ruleDef;
                 validators.add(SurveyJsValidator.builder()
                         .type("numeric")
-                        .minValue(intRangeRuleDef.getMin())
-                        .maxValue(intRangeRuleDef.getMax())
+                        .minValue(intRangeRuleDef.getMin().toString())
+                        .maxValue(intRangeRuleDef.getMax().toString())
                         .text(ActivityImporter.getVariableTranslationsTxt(ruleDef.getHintTemplate().getTemplateText(),
                                 ruleDef.getHintTemplate().getVariables()))
                         .build());
@@ -89,6 +89,10 @@ public class ValidationConverter {
             }
 
             targetQuestion.setValidators(validators);
+        }
+
+        if (targetQuestion.getValidators().isEmpty()) {
+            targetQuestion.setValidators(null);
         }
     }
 }

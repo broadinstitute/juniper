@@ -1,4 +1,7 @@
-import { set, unset } from 'lodash/fp'
+import {
+  set,
+  unset
+} from 'lodash/fp'
 import React from 'react'
 
 import { TextQuestion } from '@juniper/ui-core'
@@ -43,7 +46,7 @@ export const TextFields = (props: TextFieldsProps) => {
               description="Minimum value accepted for this question."
               disabled={disabled}
               label="Minimum"
-              placeholder="Undefined"
+              placeholder="Minimum"
               value={question.min}
               onChange={value => {
                 const update = value === undefined ? unset('min') : set('min', value)
@@ -57,7 +60,7 @@ export const TextFields = (props: TextFieldsProps) => {
               description="Maximum value accepted for this question."
               disabled={disabled}
               label="Maximum"
-              placeholder="Undefined"
+              placeholder="Maximum"
               value={question.max}
               onChange={value => {
                 const update = value === undefined ? unset('max') : set('max', value)

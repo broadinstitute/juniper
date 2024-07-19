@@ -29,7 +29,7 @@ public class SurveyJSQuestion {
     public Map<String, String> maxErrorText;
     public String minValueExpression;
     public String maxValueExpression;
-    public boolean isRequired;
+    public Boolean required;
     public Map<String, String> requiredErrorText;
     public List<Choice> choices;
     public String visibleIf;

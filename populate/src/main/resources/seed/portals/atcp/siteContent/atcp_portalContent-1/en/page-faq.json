@@ -1,0 +1,36 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "FAQ",
+  "htmlPageId" : "59171d0d-be12-4b21-ac09-ac44b43a0515",
+  "htmlPageDto" : {
+    "title" : "FAQ",
+    "sections" : [ ],
+    "path" : "faq",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Frequently Asked Questions",
+        "background" : "linear-gradient(to left, #C3C2C2 0%, #F2F2F2 100%)"
+      }
+    }, {
+      "sectionType" : "FAQ",
+      "anchorRef" : "faq",
+      "sectionConfigJson" : {
+        "title" : "",
+        "questions" : [ {
+          "question" : "What is this study?",
+          "answer" : "Briefly describe your study here."
+        }, {
+          "question" : "Why are we doing this study?",
+          "answer" : "Provide information about the inspiration or purpose of this study here."
+        }, {
+          "question" : "How can I participate?",
+          "answer" : "If you meet the enrollment criteria for this study, you can sign up by clicking [“Join”](/studies/example/join)."
+        }, {
+          "question" : "What will researchers do with the data collected through this study?",
+          "answer" : "Describe how participant reported data and genomic data collected through this study will be used and secured."
+        } ]
+      }
+    } ]
+  }
+}

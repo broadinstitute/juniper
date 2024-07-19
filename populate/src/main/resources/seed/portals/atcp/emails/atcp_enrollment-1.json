@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707343139.618698000,
+  "lastUpdatedAt" : 1718052166.692537000,
+  "stableId" : "atcp_enrollment",
+  "name" : "Enrollment",
+  "version" : 10,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1714762194.604888000,
+    "lastUpdatedAt" : 1714762194.604888000,
+    "language" : "en",
+    "subject" : "Welcome to ${study.name}!",
+    "bodyPopulateFile" : "en/atcp_enrollment-1.html"
+  } ]
+}

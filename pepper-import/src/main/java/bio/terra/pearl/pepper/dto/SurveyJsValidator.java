@@ -15,6 +15,6 @@ public class SurveyJsValidator {
     @Builder.Default
     Map<String, String> text = new HashMap<>();
     String regex;
-    Long minValue;
-    Long maxValue;
+    String minValue;
+    String maxValue;
 }
