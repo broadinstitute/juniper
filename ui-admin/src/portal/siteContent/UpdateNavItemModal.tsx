@@ -74,11 +74,6 @@ const UpdateNavItemModal = ({ portalEnv, portalShortcode, navItem, updateNavItem
                 path: newPath
               }
             })
-          } else {
-            updateNavItem({
-              ...navItem,
-              text: newTitle
-            })
           }
           onDismiss()
         }}
