@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/api'
+import Api, { HtmlSection, NavbarItem, NavbarItemExternal, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -31,7 +31,7 @@ import Modal from 'react-bootstrap/Modal'
 import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
-import RenameNavItemModal from './RenameNavItemModal'
+import UpdateNavItemModal from './UpdateNavItemModal'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -59,7 +59,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
   const [showDeletePageModal, setShowDeletePageModal] = useState(false)
-  const [showRenamePageModal, setShowRenamePageModal] = useState(false)
+  const [showUpdatePageModal, setShowUpdatePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [showTranslationModal, setShowTranslationModal] = useState(false)
@@ -157,22 +157,22 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     setSelectedNavOpt(landingPageOption)
   }
 
-  const renameNavItem = (newText: string) => {
+  const updateNavItem = (navItem: NavbarItem) => {
     if (!localContent) {
       return
     }
     const updatedNavBarItems = [...localContent.navbarItems]
-    const matchedNavItem = updatedNavBarItems.find(navItem => navItem.text === selectedNavOpt.value)
+    const matchedNavItem = updatedNavBarItems.find(item => item.itemOrder === navItem.itemOrder)
     if (!matchedNavItem) {
       return
     }
-    matchedNavItem.text = newText
+    updatedNavBarItems[matchedNavItem.itemOrder] = navItem
     const updatedLocalContent = {
       ...localContent,
       navbarItems: updatedNavBarItems
     }
+    setSelectedNavOpt({ label: navItem.text, value: navItem.text })
     updateLocalContent(updatedLocalContent)
-    setSelectedNavOpt({ label: newText, value: newText })
   }
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
@@ -302,10 +302,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             <FontAwesomeIcon icon={faPlus}/> Add
           </Button>
           <Button className="btn btn-secondary"
-            tooltip={!isLandingPage ? 'Rename this page' : 'You cannot rename the landing page'}
+            tooltip={!isLandingPage ? 'Edit page configuration' : 'You cannot edit configuration for the landing page'}
             disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
-            onClick={() => setShowRenamePageModal(!showRenamePageModal)}>
-            <FontAwesomeIcon icon={faPencil}/> Rename
+            onClick={() => setShowUpdatePageModal(!showUpdatePageModal)}>
+            <FontAwesomeIcon icon={faPencil}/> Edit config
           </Button>
           <Button className="btn btn-secondary"
             tooltip={!isLandingPage ? 'Delete this page' : 'You cannot delete the landing page'}
@@ -429,9 +429,9 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             insertNewNavItem={insertNewNavItem}
             onDismiss={() => setShowAddPageModal(false)}/>
         }
-        { (showRenamePageModal && currentNavBarItem) &&
-          <RenameNavItemModal navItem={currentNavBarItem} renameNavItem={renameNavItem}
-            onDismiss={() => setShowRenamePageModal(false)}/>
+        { (showUpdatePageModal && currentNavBarItem) &&
+          <UpdateNavItemModal navItem={currentNavBarItem} updateNavItem={updateNavItem}
+            onDismiss={() => setShowUpdatePageModal(false)}/>
         }
         { (showDeletePageModal && currentNavBarItem) &&
           <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
