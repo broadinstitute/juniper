@@ -3,7 +3,7 @@ import React from 'react'
 import KitIntegrationDashboard from './KitIntegrationDashboard'
 import AddressValidationIntegrationDashboard from './AddressValidationIntegrationDashboard'
 import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyles'
-import { renderPageHeader } from '../util/pageUtils'
+import { renderPageHeader } from 'util/pageUtils'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function IntegrationDashboard() {
