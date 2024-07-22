@@ -7,7 +7,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import React from 'react'
 import DashboardSettings, { AlertEditorView, AlertPreview } from './DashboardSettings'
 import Api from 'api/api'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { MockI18nProvider } from '@juniper/ui-core'
 
 test('DashboardSettings renders a list of AlertEditorViews', async () => {

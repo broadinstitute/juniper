@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { ApiContextT, ApiProvider, emptyApi } from 'src/participant/ApiProvider'
 import { useAutosaveEffect } from 'src/autoSaveUtils'
 import { setupRouterTest } from 'src/test-utils/router-testing-utils'

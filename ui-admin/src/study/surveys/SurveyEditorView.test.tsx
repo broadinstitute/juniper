@@ -7,7 +7,7 @@ import {
   mockExpressionApis,
   mockStudyEnvContext, mockTwoLanguagePortal, renderInPortalRouter
 } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { select } from 'react-select-event'
 import clearAllMocks = jest.clearAllMocks
 

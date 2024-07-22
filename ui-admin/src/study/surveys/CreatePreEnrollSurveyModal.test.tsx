@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockStudyEnvContext } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import CreatePreEnrollSurveyModal from './CreatePreEnrollSurveyModal'
 import { setupRouterTest } from '@juniper/ui-core'
 

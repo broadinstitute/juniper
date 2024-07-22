@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { mockAdminUser } from 'test-utils/user-mocking-utils'
 import { select } from 'react-select-event'
 import { AdminTaskEditModal } from './AdminTaskEditor'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import Api from 'api/api'
 
 

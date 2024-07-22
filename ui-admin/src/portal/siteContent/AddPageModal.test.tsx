@@ -1,4 +1,4 @@
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { mockPortalEnvironment } from 'test-utils/mocking-utils'
 import AddNavbarItemModal from './AddNavbarItemModal'
 import { render, screen } from '@testing-library/react'

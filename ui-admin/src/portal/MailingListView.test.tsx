@@ -7,7 +7,7 @@ import {
 
 import Api, { MailingListContact } from 'api/api'
 import { mockPortalContext } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import MailingListView from './MailingListView'
 import {
   MockI18nProvider,

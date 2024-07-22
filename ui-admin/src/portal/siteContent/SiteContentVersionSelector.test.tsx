@@ -3,7 +3,7 @@ import Api from 'api/api'
 import { render, screen, waitFor } from '@testing-library/react'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
 import { select } from 'react-select-event'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { mockPortalEnvironment } from '../../test-utils/mocking-utils'
 
 const mockSiteContents = [

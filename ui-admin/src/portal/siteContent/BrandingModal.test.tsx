@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { mockLocalSiteContent } from 'test-utils/mock-site-content'
 import Api from 'api/api'
 import BrandingModal from './BrandingModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { select } from 'react-select-event'
 
 describe('BrandingModal', () => {

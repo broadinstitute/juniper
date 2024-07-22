@@ -2,7 +2,7 @@ import React from 'react'
 import Api from 'api/api'
 import { render, screen } from '@testing-library/react'
 import PopulateSiteContent from './PopulateSiteContent'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { Store } from 'react-notifications-component'
 
 test('populate control can set params', async () => {

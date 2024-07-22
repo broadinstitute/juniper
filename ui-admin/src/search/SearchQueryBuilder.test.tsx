@@ -1,5 +1,5 @@
 import React from 'react'
-import { setupRouterTest } from '@juniper/ui-core'
+import { renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { mockStudyEnvContext } from '../test-utils/mocking-utils'
 import {
   render,
@@ -7,7 +7,7 @@ import {
   waitFor
 } from '@testing-library/react'
 import { SearchQueryBuilder } from './SearchQueryBuilder'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import Api, { SearchValueTypeDefinition } from 'api/api'
 
 const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition } = {
@@ -61,16 +61,13 @@ describe('SearchQueryBuilder', () => {
     jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue(mailingAddressCountryFacet)
 
     const onSearchExpressionChange = jest.fn()
-    const { RoutedComponent } = setupRouterTest(
-      <SearchQueryBuilder
-        studyEnvContext={mockStudyEnvContext()}
-        onSearchExpressionChange={onSearchExpressionChange}
-        searchExpression={''}
-      />)
-    render(RoutedComponent)
+    renderWithRouter(<SearchQueryBuilder
+      studyEnvContext={mockStudyEnvContext()}
+      onSearchExpressionChange={onSearchExpressionChange}
+      searchExpression={''}
+    />)
 
     await waitFor(() => expect(screen.getByText('+Rule')).toBeInTheDocument())
-
 
     await waitFor(() => expect(screen.getByText('(switch to advanced view)')).not.toBeDisabled())
     await userEvent.click(screen.getByText('(switch to advanced view)'))
@@ -78,7 +75,6 @@ describe('SearchQueryBuilder', () => {
     await userEvent.type(
       screen.getByLabelText('Search expression'),
       '{{profile.mailingAddress.country} = \'US\'')
-
 
     await waitFor(() => {
       expect(onSearchExpressionChange).toHaveBeenLastCalledWith(`{profile.mailingAddress.country} = 'US'`)
