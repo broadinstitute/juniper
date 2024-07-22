@@ -6,7 +6,7 @@ export default {
     '^.+\\.(tsx|ts|js|jsx)?$': ['babel-jest']
     // process `*.tsx` files with `ts-jest`
   },
-  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect', '<rootDir>../ui-core/src/test-utils/setupTests.ts'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom', '<rootDir>../ui-core/src/test-utils/setupTests.ts'],
   moduleDirectories: ['node_modules', 'src'],
   moduleNameMapper: {
     '\\.(gif|ttf|eot|svg|png|css|scss)$': '<rootDir>/../ui-core/src/test-utils/mockFile.js',
