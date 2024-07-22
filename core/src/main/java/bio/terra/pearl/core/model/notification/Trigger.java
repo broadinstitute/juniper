@@ -3,6 +3,7 @@ package bio.terra.pearl.core.model.notification;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.Versioned;
 import bio.terra.pearl.core.model.publishing.VersionedEntityConfig;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import java.time.Duration;
 import java.util.UUID;
@@ -29,19 +30,27 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig {
     private boolean active = true;
 
     private TriggerType triggerType;
+    private TriggerEventType eventType; // for notificationTypes of EVENT
+    @Builder.Default
+    private TriggerActionType actionType = TriggerActionType.NOTIFICATION;
+
+    // fields below are for triggerActionType of TASK_STATUS_CHANGE
+    @Builder.Default
+    private TriggerScope actionScope = TriggerScope.STUDY;
+    private TaskStatus statusToUpdateTo;
+    private String taskTargetStableId; // will update any tasks with this stableId
+
+    // fields below are for triggerActionType of NOTIFICATION
     @Builder.Default
     private NotificationDeliveryType deliveryType = NotificationDeliveryType.EMAIL;
     private UUID emailTemplateId;
     private EmailTemplate emailTemplate;
     private String rule;
-
-    private TriggerEventType eventType; // for notificationTypes of EVENT
     /**
      * notificationTypes of TASK_REMINDER, if specified, will limit to one type of task.  if null,
      * will apply to all tasks.
      */
     private TaskType taskType;
-    private UUID surveyId; // a specific survey the trigger is attached to
     /**
      * for notificationTypes of TASK_REMINDER -- if specified
         this will delay sending until the specified number of minutes have passed while the task is in an incomplete state
@@ -52,7 +61,6 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig {
     private int reminderIntervalMinutes = (int) Duration.ofHours(72).toMinutes();
     @Builder.Default
     private int maxNumReminders = 5; // -1 means to keep reminding indefinitely
-
     @Override
     public Versioned versionedEntity() {
         return emailTemplate;
