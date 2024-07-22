@@ -104,7 +104,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
         { blurb && <p className={classNames('fs-4', actionButton ? 'mb-4' : 'mb-0')}>
           <InlineMarkdown>{blurb}</InlineMarkdown>
         </p> }
-        {actionButton && <ConfiguredButton config={actionButton} />}
+        {actionButton && <ConfiguredButton config={actionButton} className="btn-lg"/>}
       </div>
     </div>
   </div>
