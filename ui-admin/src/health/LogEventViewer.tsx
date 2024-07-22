@@ -10,33 +10,16 @@ import {
   useReactTable,
   VisibilityState
 } from '@tanstack/react-table'
-import { instantToDefaultString } from '@juniper/ui-core'
-import { basicTableLayout, ColumnVisibilityControl } from '../util/tableUtils'
-import { useUser } from '../user/UserProvider'
-import { renderPageHeader } from '../util/pageUtils'
+import { instantToDefaultString, LogEvent } from '@juniper/ui-core'
+import { basicTableLayout, ColumnVisibilityControl } from 'util/tableUtils'
+import { useUser } from 'user/UserProvider'
+import { renderPageHeader } from 'util/pageUtils'
 import Modal from 'react-bootstrap/Modal'
-import { Button } from '../components/forms/Button'
+import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import pluralize from 'pluralize'
-
-
-//todo de-dupe and move to ui-core
-export type LogEvent = {
-    id?: string,
-    eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS' | 'INFO'
-    eventName: string,
-    stackTrace?: string,
-    eventDetail?: string,
-    eventSource?: string,
-    studyShortcode?: string,
-    portalShortcode?: string,
-    environmentName?: string,
-    enrolleeShortcode?: string,
-    operatorId?: string,
-    createdAt?: number
-}
 
 /** shows controls and debug info for testing kit request (Pepper) integrations */
 export default function LogEventViewer() {

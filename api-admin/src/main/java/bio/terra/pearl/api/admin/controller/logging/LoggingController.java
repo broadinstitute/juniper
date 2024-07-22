@@ -5,10 +5,11 @@ import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.logging.LoggingExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.log.LogEventType;
-import io.micrometer.common.util.StringUtils;
+import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -33,8 +34,7 @@ public class LoggingController implements LoggingApi {
     AdminUser operator = authUtilService.requireAdminUser(request);
 
     if (!operator.isSuperuser()) {
-      return ResponseEntity.status(404)
-          .body("You do not have access to this resource or it does not exist.");
+      throw new PermissionDeniedException("You do not have permission for this operation");
     }
 
     if (StringUtils.isBlank(eventTypes)) {
@@ -43,7 +43,6 @@ public class LoggingController implements LoggingApi {
 
     List<LogEventType> logEventTypes =
         Arrays.stream(eventTypes.split(",")).map(LogEventType::valueOf).toList();
-    System.out.println(logEventTypes);
     return ResponseEntity.ok(loggingExtService.listLogEvents(days, logEventTypes));
   }
 }

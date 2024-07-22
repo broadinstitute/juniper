@@ -1886,7 +1886,7 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
-  /api/logs:
+  /api/logEvents:
     get:
       summary: Get log events. Filterable by event type and number of days.
       tags: [ logging ]
