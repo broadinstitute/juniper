@@ -5,6 +5,7 @@ import Api from 'api/api'
 import { useConfig } from 'providers/ConfigProvider'
 import { useNonNullReactSingleSelect } from '../../util/react-select-utils'
 import Select from 'react-select'
+import InfoPopup from '../../components/forms/InfoPopup'
 
 const ITEM_TYPE_OPTIONS: {label: string, value: NavBarItemType}[] = [{
   label: 'Page', value: 'INTERNAL'
@@ -87,12 +88,17 @@ const AddNavbarItemModal = ({ portalEnv, portalShortcode, insertNewNavItem, onDi
           </div>
         </div>}
         { navbarItem.itemType === 'INTERNAL' && <div>
-          <label htmlFor="inputPagePath">Page Path</label>
+          <label htmlFor="inputPagePath">Page Path
+            <InfoPopup title="Page Path" content={
+              <div>
+                The path to the page within your portal. For example, a path of&nbsp;
+                <code>my-path</code> will be available at the URL:&nbsp;
+                <br/><br/>
+                <code>{portalUrl}/my-path</code>.
+              </div>
+            }/>
+          </label>
           <div className="input-group">
-            <div className="input-group-prepend">
-              <span className="input-group-text" style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-                id="pathPrefix">{portalUrl}/</span>
-            </div>
             <input type="text" className="form-control" id="inputPagePath"
               value={navbarItem.href} aria-describedby="pathPrefix"
               onChange={event => {

@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faClockRotateLeft, faGlobe,
   faImage,
-  faPalette,
+  faPalette, faPencil,
   faPlus,
   faTrash
 } from '@fortawesome/free-solid-svg-icons'
@@ -31,6 +31,7 @@ import Modal from 'react-bootstrap/Modal'
 import _cloneDeep from 'lodash/cloneDeep'
 import TranslationModal from './TranslationModal'
 import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
+import RenameNavItemModal from './RenameNavItemModal'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -58,6 +59,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
   const [showDeletePageModal, setShowDeletePageModal] = useState(false)
+  const [showRenamePageModal, setShowRenamePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
   const [showTranslationModal, setShowTranslationModal] = useState(false)
@@ -153,6 +155,24 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
     updateLocalContent(updatedLocalContent)
     setSelectedNavOpt(landingPageOption)
+  }
+
+  const renameNavItem = (newText: string) => {
+    if (!localContent) {
+      return
+    }
+    const updatedNavBarItems = [...localContent.navbarItems]
+    const matchedNavItem = updatedNavBarItems.find(navItem => navItem.text === selectedNavOpt.value)
+    if (!matchedNavItem) {
+      return
+    }
+    matchedNavItem.text = newText
+    const updatedLocalContent = {
+      ...localContent,
+      navbarItems: updatedNavBarItems
+    }
+    updateLocalContent(updatedLocalContent)
+    setSelectedNavOpt({ label: newText, value: newText })
   }
 
   /** updates the global SiteContent object with the given HtmlPage, which may be associated with a navItem */
@@ -282,6 +302,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             <FontAwesomeIcon icon={faPlus}/> Add
           </Button>
           <Button className="btn btn-secondary"
+            tooltip={!isLandingPage ? 'Rename this page' : 'You cannot rename the landing page'}
+            disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
+            onClick={() => setShowRenamePageModal(!showRenamePageModal)}>
+            <FontAwesomeIcon icon={faPencil}/> Rename
+          </Button>
+          <Button className="btn btn-secondary"
             tooltip={!isLandingPage ? 'Delete this page' : 'You cannot delete the landing page'}
             disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
             onClick={() => setShowDeletePageModal(!showAddPageModal)}>
@@ -402,6 +428,10 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
             insertNewNavItem={insertNewNavItem}
             onDismiss={() => setShowAddPageModal(false)}/>
+        }
+        { (showRenamePageModal && currentNavBarItem) &&
+          <RenameNavItemModal navItem={currentNavBarItem} renameNavItem={renameNavItem}
+            onDismiss={() => setShowRenamePageModal(false)}/>
         }
         { (showDeletePageModal && currentNavBarItem) &&
           <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
