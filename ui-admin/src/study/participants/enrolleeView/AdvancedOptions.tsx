@@ -31,7 +31,7 @@ export default function AdvancedOptions({ enrollee, studyEnvContext }:
       <div>contact email: {enrollee.profile.contactEmail}</div>
       <div className="my-3">
         <strong>Withdrawal is permanent!</strong>  Read more about the
-        <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawl process</ZendeskLink>.
+        <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.
       </div>
       <div className="my-3">
         <label>
