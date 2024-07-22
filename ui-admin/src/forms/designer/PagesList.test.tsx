@@ -1,5 +1,5 @@
 import { act, getByLabelText, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { FormContent } from '@juniper/ui-core'

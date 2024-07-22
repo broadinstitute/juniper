@@ -1,6 +1,6 @@
 /* eslint-disable jest/expect-expect */
 import { act, render, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { FormContent, MockI18nProvider } from '@juniper/ui-core'

@@ -8,7 +8,7 @@ import { screen } from '@testing-library/react'
 import { renderWithRouter, StudyEnvironmentSurveyNamed } from '@juniper/ui-core'
 import SurveyEnvironmentTable from './SurveyEnvironmentTable'
 import { getTableCell } from '../../test-utils/table-testing-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 describe('SurveyEnvironmentTest', () => {
   test('shows survey name and versions', async () => {

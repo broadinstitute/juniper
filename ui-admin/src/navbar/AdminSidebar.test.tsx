@@ -3,7 +3,7 @@ import React from 'react'
 import { mockAdminUser, MockUserProvider } from 'test-utils/user-mocking-utils'
 import { render, screen, waitFor } from '@testing-library/react'
 import AdminSidebar from './AdminSidebar'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { Config } from '../api/api'
 import { setupRouterTest } from '@juniper/ui-core'
 

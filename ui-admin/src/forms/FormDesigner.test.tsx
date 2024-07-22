@@ -2,7 +2,7 @@ import React from 'react'
 import { FormContent, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { getByLabelText, render, screen, waitFor } from '@testing-library/react'
 import { FormDesigner } from './FormDesigner'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { baseQuestions } from './designer/questions/questionTypes'
 import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 

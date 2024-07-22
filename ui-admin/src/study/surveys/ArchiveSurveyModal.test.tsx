@@ -2,7 +2,7 @@ import React from 'react'
 import { mockConfiguredSurvey, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen } from '@testing-library/react'
 import ArchiveSurveyModal from './ArchiveSurveyModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 describe('ArchiveSurveyModal', () => {

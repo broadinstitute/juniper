@@ -4,7 +4,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { mockPortalContext, mockPortalEnvironment } from 'test-utils/mocking-utils'
 import SiteMediaList from './SiteMediaList'
 import Api from 'api/api'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 test('renders empty table', async () => {

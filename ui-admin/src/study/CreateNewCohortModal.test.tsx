@@ -1,5 +1,5 @@
 import React from 'react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { render, screen } from '@testing-library/react'
 import CreateNewCohortModal from './CreateNewCohortModal'
 import { makeMockPortal, makeMockPortalStudy } from '../test-utils/mocking-utils'

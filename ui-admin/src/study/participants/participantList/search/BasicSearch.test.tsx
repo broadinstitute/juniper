@@ -5,7 +5,7 @@ import {
   waitFor
 } from '@testing-library/react'
 import BasicSearch from './BasicSearch'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
 

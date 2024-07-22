@@ -1,6 +1,6 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import SearchCriteriaView from './SearchCriteriaView'
 import { setupRouterTest } from '@juniper/ui-core'
 import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
