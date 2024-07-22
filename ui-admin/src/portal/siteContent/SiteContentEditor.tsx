@@ -430,7 +430,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             onDismiss={() => setShowAddPageModal(false)}/>
         }
         { (showUpdatePageModal && currentNavBarItem) &&
-          <UpdateNavItemModal navItem={currentNavBarItem} updateNavItem={updateNavItem}
+          <UpdateNavItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+            navItem={currentNavBarItem} updateNavItem={updateNavItem}
             onDismiss={() => setShowUpdatePageModal(false)}/>
         }
         { (showDeletePageModal && currentNavBarItem) &&
