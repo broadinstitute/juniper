@@ -9,7 +9,7 @@ databaseChangeLog:
               - column: { name: action_scope, type: text }
               - column: { name: action_type, type: text }
               - column: { name: status_to_update_to, type: text }
-              - column: { name: task_target_stable_id, type: text }
+              - column: { name: update_task_target_stable_id, type: text }
         - dropColumn:
             tableName: trigger
             columnName: survey_id

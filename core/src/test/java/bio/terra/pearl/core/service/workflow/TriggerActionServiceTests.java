@@ -38,18 +38,28 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory
                 .buildWithPortalUser(getTestName(testInfo));
         ParticipantTask task = createTask(enrolleeBundle, "exampleTask", TaskStatus.NEW);
+        ParticipantTask otherTask = createTask(enrolleeBundle, "otherTask", TaskStatus.NEW);
+        EnrolleeFactory.EnrolleeBundle otherEnrollee = enrolleeFactory
+                .buildWithPortalUser(getTestName(testInfo));
+        ParticipantTask otherEnrolleeTask = createTask(otherEnrollee, "exampleTask", TaskStatus.NEW);
 
+        // simulate updating an survey task on completion of a kit request
         Trigger config = createStatusTrigger(enrolleeBundle, TriggerEventType.KIT_SENT);
         config.setStatusToUpdateTo(TaskStatus.COMPLETE);
-        config.setTaskTargetStableId("exampleTask");
+        config.setUpdateTaskTargetStableId("exampleTask");
         triggerService.update(config);
 
         KitRequest kitRequest = createKitRequest(enrolleeBundle, getTestName(testInfo));
         eventService.publishKitStatusEvent(kitRequest, enrolleeBundle.enrollee(), enrolleeBundle.portalParticipantUser(),
                 KitRequestStatus.SENT);
 
+        // target task should be updated, other tasks should not
         task = participantTaskService.find(task.getId()).orElseThrow();
         assertThat(task.getStatus(), equalTo(TaskStatus.COMPLETE));
+        otherTask = participantTaskService.find(otherTask.getId()).orElseThrow();
+        assertThat(otherTask.getStatus(), equalTo(TaskStatus.NEW));
+        otherEnrolleeTask = participantTaskService.find(otherEnrolleeTask.getId()).orElseThrow();
+        assertThat(otherEnrolleeTask.getStatus(), equalTo(TaskStatus.NEW));
     }
 
     private ParticipantTask createTask(EnrolleeFactory.EnrolleeBundle enrolleeBundle, String taskStableId, TaskStatus status ) {
@@ -65,7 +75,6 @@ public class TriggerActionServiceTests extends BaseSpringBootTest {
         task = participantTaskService.create(task, null);
         return task;
     }
-
 
     private Trigger createStatusTrigger(EnrolleeFactory.EnrolleeBundle enrolleeBundle, TriggerEventType eventType) {
         Enrollee enrollee = enrolleeBundle.enrollee();

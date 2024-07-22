@@ -38,7 +38,7 @@ public class Trigger extends BaseEntity implements VersionedEntityConfig {
     @Builder.Default
     private TriggerScope actionScope = TriggerScope.STUDY;
     private TaskStatus statusToUpdateTo;
-    private String taskTargetStableId; // will update any tasks with this stableId
+    private String updateTaskTargetStableId; // will update any tasks with this stableId
 
     // fields below are for triggerActionType of NOTIFICATION
     @Builder.Default

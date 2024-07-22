@@ -3,7 +3,7 @@ import { NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom'
 import TriggerTypeDisplay, { deliveryTypeDisplayMap } from './TriggerTypeDisplay'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons/faPlus'
-import { paramsFromContext, StudyEnvContextT } from '../StudyEnvironmentRouter'
+import { paramsFromContext, StudyEnvContextT, triggerPath } from '../StudyEnvironmentRouter'
 import TriggerView from './TriggerView'
 import { renderPageHeader } from 'util/pageUtils'
 import { LoadedPortalContextT } from '../../portal/PortalProvider'
@@ -16,7 +16,7 @@ import { navDivStyle, navLinkStyleFunc, navListItemStyle } from 'util/subNavStyl
 import CollapsableMenu from 'navbar/CollapsableMenu'
 import TriggerNotifications from './TriggerNotifications'
 
-const CONFIG_GROUPS = [
+const TRIGGER_GROUPS = [
   { title: 'Events', type: 'EVENT' },
   { title: 'Participant Reminders', type: 'TASK_REMINDER' },
   { title: 'Ad-hoc', type: 'AD_HOC' }
@@ -27,14 +27,14 @@ export default function TriggerList({ studyEnvContext, portalContext }:
   {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const currentEnv = studyEnvContext.currentEnv
   const navigate = useNavigate()
-  const [configList, setConfigList] = useState<Trigger[]>([])
+  const [triggers, setTriggers] = useState<Trigger[]>([])
   const [previousEnv, setPreviousEnv] = useState<string>(currentEnv.environmentName)
   const [showCreateModal, setShowCreateModal] = useState(false)
 
   const { isLoading, reload } = useLoadingEffect(async () => {
-    const configList = await Api.findTriggersForStudyEnv(portalContext.portal.shortcode,
+    const triggerList = await Api.findTriggersForStudyEnv(portalContext.portal.shortcode,
       studyEnvContext.study.shortcode, currentEnv.environmentName)
-    setConfigList(configList)
+    setTriggers(triggerList)
   }, [currentEnv.environmentName, studyEnvContext.study.shortcode])
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function TriggerList({ studyEnvContext, portalContext }:
 
   const onCreate = (createdConfig: Trigger) => {
     reload()
-    navigate(`configs/${createdConfig.id}`)
+    navigate(triggerPath(createdConfig, studyEnvContext.currentEnvPath))
     setShowCreateModal(false)
   }
 
@@ -62,17 +62,17 @@ export default function TriggerList({ studyEnvContext, portalContext }:
       {isLoading && <LoadingSpinner/>}
       {!isLoading && <div style={navDivStyle}>
         <ul className="list-unstyled">
-          { CONFIG_GROUPS.map(group => <li style={navListItemStyle} key={group.title}>
+          { TRIGGER_GROUPS.map(group => <li style={navListItemStyle} key={group.title}>
             <CollapsableMenu header={group.title} headerClass="text-black" content={
               <ul className="list-unstyled p-2">
-                { configList
-                  .filter(config => config.triggerType === group.type)
-                  .map(config => <li key={config.id} className="mb-2">
+                { triggers
+                  .filter(trigger => trigger.triggerType === group.type)
+                  .map(trigger => <li key={trigger.id} className="mb-2">
                     <div className="d-flex">
-                      <NavLink to={`configs/${config.id}`} style={navLinkStyleFunc}>
-                        <TriggerTypeDisplay config={config}/>
+                      <NavLink to={`triggers/${trigger.id}`} style={navLinkStyleFunc}>
+                        <TriggerTypeDisplay config={trigger}/>
                         <span
-                          className="text-muted fst-italic"> ({deliveryTypeDisplayMap[config.deliveryType]})</span>
+                          className="text-muted fst-italic"> ({deliveryTypeDisplayMap[trigger.deliveryType]})</span>
                       </NavLink>
                     </div>
                   </li>
@@ -89,10 +89,10 @@ export default function TriggerList({ studyEnvContext, portalContext }:
       </div> }
       <div className="flex-grow-1 bg-white p-3">
         <Routes>
-          <Route path="configs/:configId"
+          <Route path="triggers/:triggerId"
             element={<TriggerView studyEnvContext={studyEnvContext}
               portalContext={portalContext} onDelete={onDelete}/>}/>
-          <Route path="configs/:configId/notifications" element={
+          <Route path="triggers/:triggerId/notifications" element={
             <TriggerNotifications studyEnvContext={studyEnvContext}/>}/>
         </Routes>
         <Outlet/>

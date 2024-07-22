@@ -63,11 +63,11 @@ public class TriggerActionService {
         List<ParticipantTask> tasks;
         // find the task(s) to update
         if (TriggerScope.STUDY.equals(trigger.getActionScope())) {
-            tasks = participantTaskService.findTasksByStudyAndTarget(trigger.getStudyEnvironmentId(), List.of(trigger.getTaskTargetStableId()));
+            tasks = participantTaskService.findTasksByStudyAndTarget(trigger.getStudyEnvironmentId(), List.of(trigger.getUpdateTaskTargetStableId()));
         } else {
             tasks = participantTaskService.findByPortalParticipantUserId(event.getPortalParticipantUser().getId());
         }
-        tasks = tasks.stream().filter(task -> Objects.equals(task.getTargetStableId(), trigger.getTaskTargetStableId())).toList();
+        tasks = tasks.stream().filter(task -> Objects.equals(task.getTargetStableId(), trigger.getUpdateTaskTargetStableId())).toList();
         tasks.stream().forEach(task -> {
             task.setStatus(trigger.getStatusToUpdateTo());
             participantTaskService.update(task, createAuditInfo(event,"updateTaskStatus"));
