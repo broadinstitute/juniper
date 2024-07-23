@@ -45,7 +45,7 @@
   }],
   "kitRequestDtos": [
     {
-      "creatingAdminUsername": "staff@heartdemo.org",
+      "creatingAdminUsername": "heartdemostaff@gmail.com",
       "kitTypeName": "SALIVA",
       "status": "SENT",
       "skipAddressValidation": true,
