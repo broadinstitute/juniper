@@ -50,7 +50,6 @@ const EVENT_TYPES = [{
 }, {
   value: 'event',
   label: 'Events'
-
 }]
 
 /** loads the list of notifications and events for a given enrollee and displays them in the UI */
