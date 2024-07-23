@@ -37,7 +37,7 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
       <div className="d-flex align-items-center justify-content-between w-100">
         <div className="fw-bold lead my-1">Notes</div>
         <Button onClick={() => setShowAdd(!showAdd)}
-          variant="light" className="border m-1">
+          variant="light" className="border">
           <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Create new note
         </Button>
       </div>

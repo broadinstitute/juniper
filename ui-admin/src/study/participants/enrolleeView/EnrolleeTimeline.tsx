@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Api, {
   Event,
   Notification,
@@ -8,7 +8,6 @@ import {
   StudyEnvContextT,
   triggerPath
 } from '../../StudyEnvironmentRouter'
-import LoadingSpinner from 'util/LoadingSpinner'
 import {
   Enrollee,
   instantToDefaultString
@@ -24,7 +23,7 @@ import {
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { basicTableLayout } from 'util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import { useLoadingEffect } from 'api/api-utils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
@@ -32,6 +31,9 @@ import {
   faEnvelopeOpen
 } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
+import { InfoCard, InfoCardHeader } from '../../../components/InfoCard'
+import LoadingSpinner from '../../../util/LoadingSpinner'
+import Select from 'react-select'
 
 
 const isEvent = (val: Event | Notification): val is Event => {
@@ -42,17 +44,28 @@ const isNotification = (val: Event | Notification): val is Notification => {
   return Object.keys(val).includes('triggerId')
 }
 
+const EVENT_TYPES = [{
+  value: 'notification',
+  label: 'Notifications'
+}, {
+  value: 'event',
+  label: 'Events'
+
+}]
+
 /** loads the list of notifications and events for a given enrollee and displays them in the UI */
 export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
                                            { enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal, currentEnvPath } = studyEnvContext
   const [tableData, setTableData] = useState<(Event | Notification)[]>([])
+  const [filteredTableData, setFilteredTableData] = useState<(Event | Notification)[]>(tableData)
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
+  const [selectedEventTypes, setSelectedEventTypes] = useState<{ value: string, label: string }[]>(EVENT_TYPES)
 
   const columns: ColumnDef<Event | Notification>[] = [
     {
       id: 'name',
-      header: 'notification/event',
+      header: 'Notification/Event',
       cell: ({ row }) => {
         return <div>
           {isNotification(row.original) && <TriggerTypeDisplay config={row.original.trigger}/>}
@@ -61,18 +74,18 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       }
     },
     {
-      header: 'delivery type',
+      header: 'Delivery Type',
       accessorKey: 'deliveryType'
     },
     {
-      header: 'delivery status',
+      header: 'Delivery Status',
       accessorKey: 'deliveryStatus'
     },
     {
       id: 'opened',
       header: () =>
         <div className={'d-flex align-items-center'}>
-          <span>opened</span>
+          <span>Opened</span>
           <div onClick={e => e.stopPropagation()}><InfoPopup
             content={
             `Email activity may be unavailable due to a participant's email privacy
@@ -88,12 +101,12 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       }
     },
     {
-      header: 'time',
+      header: 'Time',
       accessorKey: 'createdAt',
       cell: info => instantToDefaultString(info.getValue() as number)
     },
     {
-      header: 'trigger',
+      header: 'Trigger',
       accessorKey: 'trigger',
       cell: info => info.getValue() && <Link
         to={triggerPath(info.getValue() as Trigger, currentEnvPath)}> config </Link>
@@ -117,9 +130,26 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     setTableData([...notifications, ...events])
   }, [enrollee.shortcode])
 
+  useEffect(() => {
+    setFilteredTableData(tableData.filter(row => {
+      if (selectedEventTypes.length === 0) {
+        return false
+      }
+      return selectedEventTypes.some(type => {
+        if (type.value === 'notification') {
+          return isNotification(row)
+        }
+        if (type.value === 'event') {
+          return isEvent(row)
+        }
+        return false
+      })
+    }))
+  }, [tableData, selectedEventTypes])
+
 
   const table = useReactTable({
-    data: tableData,
+    data: filteredTableData,
     columns,
     state: {
       sorting
@@ -129,12 +159,25 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
     getSortedRowModel: getSortedRowModel()
   })
 
-  return <div>
-    <h5>Timeline</h5>
+  return <InfoCard>
+    <InfoCardHeader>
+      <div className="d-flex justify-content-between align-items-center w-100">
+        <div className="fw-bold lead my-1">Timeline</div>
+        <Select className="m-1"
+          placeholder={'Filter by event type...'}
+          options={EVENT_TYPES} isMulti={true} value={selectedEventTypes}
+          onChange={selected => setSelectedEventTypes(selected as { value: string, label: string }[])}
+        />
+      </div>
+    </InfoCardHeader>
     <LoadingSpinner isLoading={isLoading}>
-      {basicTableLayout(table)}
+      {basicTableLayout(table, { tableClass: 'table m-0' })}
     </LoadingSpinner>
-  </div>
+    {<div className='my-3'>
+      {renderEmptyMessage(tableData, 'No timeline events')}
+      {renderEmptyMessage(filteredTableData, 'No timeline events. Are your filters correct?')}
+    </div>}
+  </InfoCard>
 }
 
 /**

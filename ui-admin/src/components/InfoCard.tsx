@@ -47,7 +47,7 @@ import { isEmpty } from 'lodash'
  * ```
  */
 export function InfoCard({ children }: { children: React.ReactNode }) {
-  return <div className="card w-75 border shadow-sm mb-3">
+  return <div className="card border shadow-sm mb-3">
     {children}
   </div>
 }

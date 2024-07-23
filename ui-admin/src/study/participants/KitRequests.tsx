@@ -82,7 +82,7 @@ export default function KitRequests({ enrollee, studyEnvContext, onUpdate }:
         <div className="fw-bold lead my-1">Kit Requests</div>
         {user?.superuser &&
             <Button onClick={() => setShowRequestKitModal(true)}
-              variant="light" className="border m-1">
+              variant="light" className="border">
               <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Request a kit
             </Button>
         }
