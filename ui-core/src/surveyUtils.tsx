@@ -1,11 +1,25 @@
 import './surveyjs'
 
-import { cloneDeep, get, set } from 'lodash'
+import {
+  cloneDeep,
+  get,
+  isNil,
+  set
+} from 'lodash'
 import { SurveyModel } from 'survey-core'
 
-import { Answer, FormContent, FormElement, Survey, VersionedForm } from './types/forms'
+import {
+  Answer,
+  FormContent,
+  FormElement,
+  Survey,
+  VersionedForm
+} from './types/forms'
 import { useSearchParams } from 'react-router-dom'
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import _union from 'lodash/union'
 import _keys from 'lodash/keys'
 import _isEqual from 'lodash/isEqual'
@@ -320,6 +334,7 @@ export function useSurveyJSModel(
     newSurveyModel.currentPageNo = pageNumber
     newSurveyModel.setVariable('profile', profile)
     newSurveyModel.setVariable('proxyProfile', proxyProfile)
+    newSurveyModel.setVariable('isGovernedUser', !isNil(proxyProfile))
     newSurveyModel.setVariable('portalEnvironmentName', envName)
     Object.keys(extraVariables).forEach(key => {
       newSurveyModel.setVariable(key, extraVariables[key])

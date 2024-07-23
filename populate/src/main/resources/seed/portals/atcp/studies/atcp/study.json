@@ -2,8 +2,10 @@
   "name" : "A-T Global Family",
   "shortcode" : "atcp",
   "studyPortals" : [ ],
-  "surveyFiles" : [ ],
-  "consentFormFiles" : [ ],
+  "surveyFiles" : [
+  ],
+  "consentFormFiles" : [
+  ],
   "emailTemplateFiles" : [ ],
   "studyEnvironmentDtos" : [ {
     "environmentName" : "sandbox",
@@ -18,6 +20,9 @@
       "useDevDsmRealm" : true
     },
     "triggers" : [ ],
+    "preEnrollSurveyDto": {
+      "populateFileName": "../../surveys/prequal.conf"
+    },
     "configuredSurveyDtos" : [ {
       "active" : true,
       "surveyOrder" : 0,
@@ -25,17 +30,17 @@
       "populateFileName" : "../../surveys/assent.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 1,
+      "surveyOrder" : 7,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/blood-type.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 2,
+      "surveyOrder" : 3,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/contacting-physician.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 3,
+      "surveyOrder" : 6,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/genome-study.conf"
     }, {
@@ -45,35 +50,20 @@
       "populateFileName" : "../../surveys/medical-history.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 5,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/prequal.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 6,
+      "surveyOrder" : 2,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/registration.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 7,
+      "surveyOrder" : 8,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/review-and-submission.conf"
     }, {
       "active" : true,
-      "surveyOrder" : 8,
+      "surveyOrder" : 1,
       "surveyVersion" : 0,
       "populateFileName" : "../../surveys/self-consent.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 9,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/self-consent-edit.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 10,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/stay-informed.conf"
-    } ],
+    }],
     "triggerDtos" : [ {
       "active" : true,
       "triggerType" : "TASK_REMINDER",

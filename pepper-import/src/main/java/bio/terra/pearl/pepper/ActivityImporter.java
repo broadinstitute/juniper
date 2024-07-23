@@ -499,9 +499,10 @@ public class ActivityImporter {
         // should become:
         // {REGISTRATION_COUNTRY} contains 'AF'
 
-        Pattern matchAllPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
-        return matchAllPattern.matcher(pepperExpr).replaceAll(matchResult -> {
-
+        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
+        // study e.g.: !user.studies["atcp"].isGovernedParticipant()
+        Pattern studyPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.(.*?)\\(\\)");
+        String out = questionPattern.matcher(pepperExpr).replaceAll(matchResult -> {
             String study = matchResult.group(1);
             String form = matchResult.group(2);
             String question = matchResult.group(3);
@@ -523,7 +524,20 @@ public class ActivityImporter {
                 value = value.substring(1, value.length() - 1);
             }
             return stableId + " " + pepperOperation + " '" + value + "'";
-        }).replace("&&", "and").replace("\n", "").trim();
+        });
+
+        out = studyPattern.matcher(out).replaceAll(matchResult -> {
+            String study = matchResult.group(1);
+            String pepperOperation = matchResult.group(2);
+            switch (pepperOperation.toLowerCase().trim()) {
+                case "isgovernedparticipant":
+                    return "{isGovernedUser} = true";
+                default:
+                    throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+            }
+        });
+
+        return out.replace("&&", "and").replace("\n", "").trim();
 
     }
 
