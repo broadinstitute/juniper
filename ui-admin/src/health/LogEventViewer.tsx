@@ -21,7 +21,7 @@ import { faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icon
 import Select from 'react-select'
 import pluralize from 'pluralize'
 
-/** shows controls and debug info for testing kit request (Pepper) integrations */
+/** displays a filterable and sortable table of recent Log Events */
 export default function LogEventViewer() {
   const eventTypes = [
     { value: 'ERROR', label: 'Error' },
