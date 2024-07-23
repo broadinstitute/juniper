@@ -9,10 +9,7 @@ import {
   basicTableLayout,
   renderEmptyMessage
 } from 'util/tableUtils'
-import {
-  faCheck,
-  faPlus
-} from '@fortawesome/free-solid-svg-icons'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   Enrollee,
@@ -103,7 +100,7 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
     header: 'Proband',
     accessorKey: 'proband',
     accessorFn: data => data.probandEnrolleeId === enrollee.id,
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
+    cell: info => info.getValue() ? 'Yes' : 'No'
   }, {
     header: 'Actions',
     cell: ({ row }) => {
@@ -111,7 +108,6 @@ export default function Families({ enrollee, studyEnvContext, onUpdate }:
       return <div>
         <button
           disabled={isProband}
-
           className={classNames('btn btn-secondary', isProband && 'btn-outline-secondary')}
           onClick={() => setFamilySelectedForRemoval(row.original)}>
           <FontAwesomeIcon icon={faTrashCan}/>
