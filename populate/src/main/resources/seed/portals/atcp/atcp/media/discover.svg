@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="329px" height="330px" viewBox="0 0 329 330" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>discover.2537a355@1x</title>
+    <defs>
+        <circle id="path-1" cx="164.32" cy="164.32" r="164.32"></circle>
+    </defs>
+    <g id="Feb-2023" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="About-Us" transform="translate(-98.000000, -1266.000000)">
+            <g id="discover.2537a355" transform="translate(98.020000, 1266.770000)">
+                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" opacity="0.25" cx="164.32" cy="164.32" r="164.32"></circle>
+                <g id="Clipped">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Oval"></g>
+                    <g id="Group" mask="url(#mask-2)">
+                        <g transform="translate(28.720790, -12.210000)">
+                            <g id="Group" opacity="0.5" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(124.519210, 88.870000)">
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="43.18" cy="9.4" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="43.18" cy="113.76" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="9.4" y="78.84" width="68.92" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="9.4" cy="82.33" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="77.27" cy="82.33" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="9.4" y="36.85" width="68.92" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="9.4" cy="40.34" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="77.27" cy="40.34" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="24.69" y="94.81" width="38.97" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="24.69" cy="98.29" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="61.98" cy="98.29" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="24.69" y="21.05" width="37.29" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="24.69" cy="24.53" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="61.98" cy="24.53" r="9.4"></circle>
+                            </g>
+                            <rect id="Rectangle" fill="#9A2584" fill-rule="nonzero" x="126.49921" y="145.82" width="82.26" height="6.97"></rect>
+                            <circle id="Oval" fill="#9A2584" fill-rule="nonzero" cx="126.95921" cy="149.3" r="9.4"></circle>
+                            <path d="M137.22921,149.3 C137.196699,154.920787 132.659826,159.475469 127.03921,159.53 L127.03921,159.53 C124.312895,159.556636 121.688091,158.497045 119.744321,156.585171 C117.800551,154.673297 116.697681,152.066383 116.67921,149.34 L116.67921,149.26 C116.829438,143.708388 121.361827,139.279776 126.915429,139.258076 C132.469031,139.236536 137.035763,143.629726 137.22921,149.18 L137.22921,149.3 Z M118.42921,149.3 L118.42921,149.37 C118.445048,151.633156 119.360681,153.797016 120.974092,155.384162 C122.587503,156.971308 124.766098,157.851306 127.02921,157.83 L127.02921,157.83 C131.706643,157.780706 135.473992,153.97769 135.47921,149.3 L135.47921,149.23 C135.089898,144.812901 131.381211,141.430723 126.947026,141.448908 C122.512842,141.46724 118.832133,144.879845 118.47921,149.3 L118.42921,149.3 Z" id="Shape" fill="#9A2584" fill-rule="nonzero"></path>
+                            <circle id="Oval" fill="#9A2584" fill-rule="nonzero" cx="208.75921" cy="149.3" r="9.4"></circle>
+                            <path d="M219.029288,149.3 L219.029288,149.38 C219.007118,155.051964 214.391174,159.632091 208.71921,159.61008 C203.047245,159.587909 198.467118,154.971964 198.48913,149.3 L198.48913,149.22 C198.5035,145.550882 200.474156,142.168102 203.658851,140.345919 C206.843545,138.523736 210.758447,138.538984 213.928851,140.385919 C217.099254,142.232854 219.0435,145.630882 219.029288,149.3 Z M200.22921,149.3 C200.234486,153.981547 204.007865,157.786148 208.68921,157.830152 L208.68921,157.830152 C213.395791,157.857784 217.239748,154.076403 217.289282,149.37 L217.289282,149.3 C217.301714,146.252525 215.68746,143.42987 213.054521,141.895303 C210.421582,140.360737 207.169964,140.347395 204.524521,141.860303 C201.879077,143.373212 200.241714,146.182525 200.22921,149.23 L200.22921,149.3 Z" id="Shape" fill="#9A2584" fill-rule="nonzero"></path>
+                            <g id="Group" opacity="0.25" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(117.559210, 0.000000)">
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="50.14" cy="306.6" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="31.65" y="319.61" width="37.29" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="31.65" cy="323.1" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="68.94" cy="323.1" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="16.36" y="272.07" width="67.87" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="16.36" cy="275.56" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="84.23" cy="275.56" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="16.36" y="63.72" width="68.92" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="16.36" cy="67.2" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="84.23" cy="67.2" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="31.65" y="79.67" width="38.97" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="31.65" cy="83.16" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="68.94" cy="83.16" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="16.36" y="335.42" width="68.92" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="16.36" cy="338.91" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="84.23" cy="338.91" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="16.36" y="230.08" width="67.87" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="16.36" cy="233.57" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="84.23" cy="233.57" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="31.65" y="288.04" width="37.29" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="31.65" cy="291.52" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="68.94" cy="291.52" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="32.42" y="5.91" width="36.53" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="31.65" cy="9.4" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="68.94" cy="9.4" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="16.36" y="21.72" width="68.92" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="16.36" cy="25.21" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="84.23" cy="25.21" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="9.4" y="42.04" width="81.8" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="9.4" cy="45.52" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="91.2" cy="45.52" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="31.65" y="214.28" width="38.97" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="31.65" cy="217.76" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="68.94" cy="217.76" r="9.4"></circle>
+                                <rect id="Rectangle" fill="#FFFFFF" fill-rule="nonzero" x="8.94" y="250.4" width="82.26" height="6.97"></rect>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="9.4" cy="253.88" r="9.4"></circle>
+                                <circle id="Oval" fill="#FFFFFF" fill-rule="nonzero" cx="91.2" cy="253.88" r="9.4"></circle>
+                            </g>
+                            <path d="M109.11921,186.45 C90.1192097,154.45 102.28921,112.26 134.23921,94.39 C163.532574,77.9955744 200.426187,85.6719706 220.74921,112.39 C240.96921,138.96 238.08921,176.72 214.57921,200.28 C188.09921,226.83 143.26921,226.01 118.93921,199.53 C115.02921,202.38 111.11921,205.18 107.28921,208.08 C106.71942,208.590946 106.386417,209.314866 106.36921,210.08 C106.53921,212.77 105.00921,214.22 103.07921,215.72 C74.5392097,237.926667 46.0192097,260.163333 17.5192097,282.43 C11.3892097,287.21 1.24920973,283.34 0.11920973,275.63 C-0.113128661,273.067086 -0.0055293084,270.484702 0.43920973,267.95 C0.699704718,267.028345 1.27688692,266.22808 2.06920973,265.69 C31.6958764,242.55 61.3625431,219.446667 91.0692097,196.38 C92.1184654,195.618658 93.4080937,195.263389 94.6992097,195.38 C96.6355264,195.705819 98.6137775,195.118987 100.05921,193.79 C102.98921,191.29 106.07921,188.9 109.11921,186.45 Z M106.06921,145.38 C101.90921,178.6 125.86921,209.52 158.99921,213.7 C193.18921,218.01 224.18921,194.42 228.36921,160.89 C232.60921,126.82 208.92921,95.96 175.27921,91.71 C158.965866,89.5416488 142.463665,93.9975367 129.458881,104.082304 C116.454097,114.167071 108.030302,129.040445 106.06921,145.38 Z M95.0692097,208.44 L5.69920973,277.94 C8.15920973,280.94 10.5792097,281.24 13.3392097,279.1 C33.4192097,263.48 53.5058764,247.853333 73.5992097,232.22 C81.9292097,225.7 90.0692097,218.92 98.3392097,212.22 L95.0692097,208.44 Z M104.52921,212.04 L105.22921,211.73 C104.91921,210.84 104.88921,209.59 104.22921,209.11 C100.670272,206.246836 97.9425526,202.483273 96.3292097,198.21 C96.0292097,197.5 95.1192097,197.04 94.4892097,196.47 C95.4692097,203.53 99.1592097,208.35 104.49921,212.04 L104.52921,212.04 Z M116.06921,195.98 L103.87921,206.11 L104.27921,207.11 C105.150671,207.047127 106.002343,206.819788 106.78921,206.44 C110.21921,203.79 113.55921,201.01 116.90921,198.27 C117.095906,198.061118 117.26014,197.833201 117.39921,197.59 L116.06921,195.98 Z" id="Shape" fill="#BF862C" fill-rule="nonzero"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

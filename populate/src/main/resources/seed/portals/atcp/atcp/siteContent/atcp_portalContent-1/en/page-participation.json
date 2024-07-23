@@ -1,0 +1,91 @@
+{
+  "itemType" : "INTERNAL",
+  "text" : "Participation",
+  "htmlPageId" : "72a73e7c-4e9d-4a15-beaa-580a79cb8f26",
+  "htmlPageDto" : {
+    "title" : "Participation",
+    "sections" : [ ],
+    "path" : "participation",
+    "sectionDtos" : [ {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "Participation",
+        "background" : "linear-gradient(to left, #C3C2C2 0%, #F2F2F2 100%)"
+      }
+    }, {
+      "sectionType" : "PARTICIPATION_DETAIL",
+      "sectionConfigJson" : {
+        "title" : "Provide consent for the study",
+        "timeIndication" : "5 minutes",
+        "stepNumberText" : "STEP 1",
+        "blurb" : "This section consists of several pages, but feel free to take your time.  Your progress will be automatically saved so you can come back to it later.",
+        "image" : {
+          "cleanFileName" : "consent_step.png",
+          "version" : 1,
+          "alt" : ""
+        },
+        "imagePosition" : "right"
+      }
+    }, {
+      "sectionType" : "PARTICIPATION_DETAIL",
+      "sectionConfigJson" : {
+        "title" : "Respond to surveys about yourself",
+        "timeIndication" : "15-20 minutes",
+        "stepNumberText" : "STEP 2",
+        "blurb" : "In these surveys, we ask questions about your background, lifestyle, and medical history, among others. Your progress will be automatically saved so please feel free to finish at your convenience.",
+        "background" : "#F2F2F2",
+        "image" : {
+          "cleanFileName" : "survey_step.png",
+          "version" : 1,
+          "alt" : ""
+        },
+        "imagePosition" : "left"
+      }
+    }, {
+      "sectionType" : "PARTICIPATION_DETAIL",
+      "sectionConfigJson" : {
+        "title" : "Provide a saliva sample",
+        "timeIndication" : "10 minutes",
+        "stepNumberText" : "STEP 3",
+        "blurb" : "We may send you a kit to collect a sample of your saliva. We will study these samples to help improve our understanding of this disease.",
+        "image" : {
+          "cleanFileName" : "saliva_step.png",
+          "version" : 1,
+          "alt" : ""
+        },
+        "imagePosition" : "right"
+      }
+    }, {
+      "sectionType" : "PARTICIPATION_DETAIL",
+      "sectionConfigJson" : {
+        "title" : "Stay involved",
+        "timeIndication" : "Ongoing",
+        "stepNumberText" : "STEP 4",
+        "blurb" : "Over time, we will provide you with regular updates about the status of the research and share any discoveries that you have enabled us to make. We may also ask you additional questions about your experience to aid with future studies – we want to hear what’s important to you.",
+        "image" : {
+          "cleanFileName" : "engagement_step.png",
+          "version" : 1,
+          "alt" : ""
+        },
+        "imagePosition" : "left",
+        "background" : "#F2F2F2",
+        "actionButton" : {
+          "type" : "mailingList",
+          "text" : "Join Mailing List"
+        }
+      }
+    }, {
+      "sectionType" : "HERO_CENTERED",
+      "sectionConfigJson" : {
+        "title" : "You can make an impact",
+        "blurb" : "With your help, patients can be the driving force behind transformative research.",
+        "buttons" : [ {
+          "type" : "join",
+          "text" : "Join this Study",
+          "studyShortcode" : "template"
+        } ],
+        "background" : "linear-gradient(to left, #C3C2C2 0%, #F2F2F2 100%)"
+      }
+    } ]
+  }
+}

@@ -1,6 +1,7 @@
 package bio.terra.pearl.pepper;
 
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.pepper.dto.SurveyJSContent;
 import bio.terra.pearl.pepper.dto.SurveyJSPanel;
 import bio.terra.pearl.pepper.dto.SurveyJSQuestion;
@@ -83,6 +84,7 @@ public class ActivityImporter {
                 .stableId(activityDef.getActivityCode())
                 .version(1)
                 .name(translatedSurveyTitles.get("en"))
+                .surveyType(getSurveyType(activityDef))
                 .build();
 
         ObjectNode root = objectMapper.createObjectNode();
@@ -130,7 +132,7 @@ public class ActivityImporter {
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
                 break;
             case CONTENT:
-                elements.add(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
+                elements.addAll(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
                 break;
             case GROUP:
                 elements.addAll(convertGroupBlock(allLangMap, blockDef));
@@ -450,7 +452,7 @@ public class ActivityImporter {
     }
 
 
-    private JsonNode getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
+    private List<JsonNode> getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
         String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null; //where to set this title txt ?
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
@@ -466,15 +468,27 @@ public class ActivityImporter {
         }
 
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
+
+        List<JsonNode> out = new ArrayList<>();
+        if (!titleTxtMap.isEmpty()) {
+            SurveyJSContent titleContent = SurveyJSContent.builder()
+                    .name(name + "_title")
+                    .type("html")
+                    .html(titleTxtMap)
+                    .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                    .build();
+            out.add(objectMapper.valueToTree(titleContent));
+        }
         SurveyJSContent surveyJSContent = SurveyJSContent.builder()
                 .name(name)
                 .type("html")
                 .html(htmlTxtMap)
-                .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
                 .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
                 .build();
-        return objectMapper.valueToTree(surveyJSContent);
+        out.add(objectMapper.valueToTree(surveyJSContent));
+        return out;
     }
+
 
     public String convertVisibilityExpressions(String pepperExpr) {
         if (StringUtils.isEmpty(pepperExpr)) {
@@ -511,6 +525,14 @@ public class ActivityImporter {
             return stableId + " " + pepperOperation + " '" + value + "'";
         }).replace("&&", "and").replace("\n", "").trim();
 
+    }
+
+    SurveyType getSurveyType(FormActivityDef activityDef) {
+        if (Objects.requireNonNull(activityDef.getFormType()).equals(FormType.CONSENT)) {
+            return SurveyType.CONSENT;
+        }
+
+        return SurveyType.RESEARCH;
     }
 
     /** maps pepper replacement vars to Juniper vars, and html markup to markdown.

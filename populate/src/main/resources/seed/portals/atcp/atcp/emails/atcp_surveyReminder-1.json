@@ -1,0 +1,16 @@
+{
+  "createdAt" : 1707344980.512164000,
+  "lastUpdatedAt" : 1718052166.768273000,
+  "stableId" : "atcp_surveyReminder",
+  "name" : "Survey Reminder",
+  "version" : 3,
+  "publishedVersion" : 1,
+  "localizedEmailTemplates" : [ ],
+  "localizedEmailTemplateDtos" : [ {
+    "createdAt" : 1714762194.395345000,
+    "lastUpdatedAt" : 1714762194.395345000,
+    "language" : "en",
+    "subject" : "Reminder: please complete your ${study.name} survey",
+    "bodyPopulateFile" : "en/atcp_surveyReminder-1.html"
+  } ]
+}
