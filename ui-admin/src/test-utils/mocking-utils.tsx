@@ -564,19 +564,28 @@ export const MOCK_SPANISH_LANGUAGE = {
 
 /**
  * renders the children in a PortalProvider context and simulating appropriate routes
- * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now
+ * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now.
+ *
+ * By default, this mocks window alert since many of our contexts use window alert for error handling.
  * */
-export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, envName = 'sandbox') => {
+export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, opts = {
+  envName: 'sandbox',
+  mockWindowAlert: true
+}) => {
   const portalContext: PortalContextT = {
     ...mockPortalContext(),
     portal,
     isLoading: false,
     isError: false
   }
+
+  if (opts.mockWindowAlert) {
+    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  }
   const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
   return renderWithRouter(
     <PortalContext.Provider value={portalContext}>
       { children }
-    </PortalContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${envName}`],
+    </PortalContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv')
 }

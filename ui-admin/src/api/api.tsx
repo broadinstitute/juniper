@@ -347,6 +347,12 @@ export type SearchValueTypeDefinition = {
   allowOtherDescription: boolean
 }
 
+export type WithdrawnEnrollee = {
+  createdAt: number
+  shortcode: string
+  userData: string
+}
+
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
 
@@ -768,6 +774,12 @@ export default {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
     }/enrollees/${enrolleeShortcode}/withdraw`
     const response = await fetch(url, { method: 'POST', headers: this.getInitHeaders() })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchWithdrawnEnrollees(studyEnvParams: StudyEnvParams): Promise<WithdrawnEnrollee[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/withdrawnEnrollees`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

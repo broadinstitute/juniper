@@ -16,6 +16,7 @@ import ParticipantListTableGroupedByFamily from 'study/participants/participantL
 import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
 import { Button } from 'components/forms/Button'
 import { useSingleSearchParam } from 'util/searchParamsUtils'
+import { Link } from 'react-router-dom'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
@@ -55,7 +56,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
 
   return <div className="ParticipantList container-fluid px-4 py-2">
     {renderPageHeader('Participant List')}
-    <div className="d-flex align-content-center">
+    <div className="d-flex align-content-center align-items-center">
       <ParticipantSearch
         key={currentEnv.environmentName}
         studyEnvContext={studyEnvContext}
@@ -75,7 +76,7 @@ function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT
           </Button>
         </div>
       }
-
+      <div><Link to={`withdrawn`}>Withdrawn</Link></div>
     </div>
 
 
