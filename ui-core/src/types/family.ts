@@ -14,3 +14,9 @@ export type Family = {
     proband?: Enrollee
     relations?: EnrolleeRelation[]
 }
+
+export type FamilyEnrollee = {
+    familyId: string
+    enrolleeId: string
+    createdAt: number
+}

@@ -8,7 +8,7 @@ import {
 import { render, screen, waitFor } from '@testing-library/react'
 import Api from 'api/api'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { Store } from 'react-notifications-component'
 
 describe('SurveyEnvironmentDetailModal', () => {

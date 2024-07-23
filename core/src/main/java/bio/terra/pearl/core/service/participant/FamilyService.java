@@ -1,8 +1,6 @@
 package bio.terra.pearl.core.service.participant;
 
-import bio.terra.pearl.core.dao.participant.EnrolleeRelationDao;
 import bio.terra.pearl.core.dao.participant.FamilyDao;
-import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -12,10 +10,12 @@ import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jooq.tools.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,8 +24,6 @@ import java.util.UUID;
 public class FamilyService extends DataAuditedService<Family, FamilyDao> {
     private final ShortcodeService shortcodeService;
     private final EnrolleeService enrolleeService;
-    private final EnrolleeRelationDao enrolleeRelationDao;
-    private final ProfileDao profileDao;
     private final FamilyEnrolleeService familyEnrolleeService;
     private final EnrolleeRelationService enrolleeRelationService;
 
@@ -34,23 +32,21 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
                          ObjectMapper objectMapper,
                          ShortcodeService shortcodeService,
                          @Lazy EnrolleeService enrolleeService,
-                         EnrolleeRelationDao enrolleeRelationDao,
-                         ProfileDao profileDao,
                          FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService) {
         super(familyDao, dataChangeRecordService, objectMapper);
         this.shortcodeService = shortcodeService;
         this.enrolleeService = enrolleeService;
-        this.enrolleeRelationDao = enrolleeRelationDao;
-        this.profileDao = profileDao;
         this.familyEnrolleeService = familyEnrolleeService;
         this.enrolleeRelationService = enrolleeRelationService;
     }
 
     @Transactional
     public Family create(Family family, DataAuditInfo info) {
-        if (family.getShortcode() == null) {
+        if (StringUtils.isBlank(family.getShortcode())) {
             family.setShortcode(shortcodeService.generateShortcode("F", dao::findOneByShortcode));
         }
+        family.setCreatedAt(Instant.now());
+        family.setLastUpdatedAt(Instant.now());
         return super.create(family, info);
     }
 
@@ -191,5 +187,12 @@ public class FamilyService extends DataAuditedService<Family, FamilyDao> {
 
     public List<DataChangeRecord> findDataChangeRecordsByFamilyIdAndModelName(UUID familyId, String model) {
         return dataChangeRecordService.findByFamilyIdAndModelName(familyId, model);
+    }
+
+    @Override
+    protected DataChangeRecord makeCreationChangeRecord(Family model, DataAuditInfo auditInfo) {
+        DataChangeRecord changeRecord = super.makeCreationChangeRecord(model, auditInfo);
+        changeRecord.setFamilyId(model.getId());
+        return changeRecord;
     }
 }

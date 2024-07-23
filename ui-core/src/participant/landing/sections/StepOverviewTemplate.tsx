@@ -106,7 +106,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
       <div className="d-grid gap-2 d-md-flex justify-content-center mt-4">
         {
           _.map(buttons, (button, i) => {
-            return <ConfiguredButton key={i} config={button} className="px-4 me-md-2" />
+            return <ConfiguredButton key={i} config={button} className="btn-lg px-4 me-md-2" />
           })
         }
       </div>

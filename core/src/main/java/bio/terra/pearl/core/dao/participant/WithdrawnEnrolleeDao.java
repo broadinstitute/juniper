@@ -21,17 +21,17 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
   private final ParticipantTaskDao participantTaskDao;
   private final PreEnrollmentResponseDao preEnrollmentResponseDao;
   private final EnrolleeRelationDao enrolleeRelationDao;
-  private final FamilyDao familyDao;
+  private final FamilyEnrolleeDao familyEnrolleeDao;
 
   public WithdrawnEnrolleeDao(Jdbi jdbi, ProfileDao profileDao, SurveyResponseDao surveyResponseDao, ParticipantTaskDao participantTaskDao,
-                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao, FamilyDao familyDao) {
+                              PreEnrollmentResponseDao preEnrollmentResponseDao, EnrolleeRelationDao enrolleeRelationDao, FamilyEnrolleeDao familyEnrolleeDao) {
     super(jdbi);
     this.profileDao = profileDao;
     this.surveyResponseDao = surveyResponseDao;
     this.participantTaskDao = participantTaskDao;
     this.preEnrollmentResponseDao = preEnrollmentResponseDao;
     this.enrolleeRelationDao = enrolleeRelationDao;
-    this.familyDao = familyDao;
+    this.familyEnrolleeDao = familyEnrolleeDao;
   }
 
   @Override
@@ -66,7 +66,7 @@ public class WithdrawnEnrolleeDao extends BaseJdbiDao<WithdrawnEnrollee> {
     if (enrollee.getPreEnrollmentResponseId() != null) {
       enrollee.setPreEnrollmentResponse(preEnrollmentResponseDao.find(enrollee.getPreEnrollmentResponseId()).get());
     }
-    enrollee.setFamilies(familyDao.findByEnrolleeId(enrollee.getId()));
+    enrollee.setFamilyEnrollees(familyEnrolleeDao.findByFamilyId(enrollee.getId()));
     List<EnrolleeRelation> relationsByEnrollee = enrolleeRelationDao.findAllByEnrolleeId(enrollee.getId());
     List<EnrolleeRelation> relationsByTargetEnrollee = enrolleeRelationDao.findByTargetEnrolleeId(enrollee.getId());
     enrollee.getRelations().addAll(relationsByEnrollee);

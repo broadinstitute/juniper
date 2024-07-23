@@ -51,6 +51,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     private final EnrolleeRelationService enrolleeRelationService;
     private final FamilyService familyService;
     private final ShortcodeService shortcodeService;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -70,7 +71,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
                            PortalParticipantUserService portalParticipantUserService,
-                           FamilyService familyService, ShortcodeService shortcodeService) {
+                           FamilyService familyService, ShortcodeService shortcodeService, FamilyEnrolleeService familyEnrolleeService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -91,6 +92,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.portalParticipantUserService = portalParticipantUserService;
         this.familyService = familyService;
         this.shortcodeService = shortcodeService;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -136,7 +138,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
-        enrollee.setFamilies(familyService.findByEnrolleeId(enrollee.getId()));
+        enrollee.setFamilyEnrollees(familyEnrolleeService.findByEnrolleeId(enrollee.getId()));
         enrollee.setRelations(enrolleeRelationService.findAllByEnrolleeOrTargetId(enrollee.getId()));
         return enrollee;
     }

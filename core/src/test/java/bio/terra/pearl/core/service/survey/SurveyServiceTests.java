@@ -422,12 +422,12 @@ public class SurveyServiceTests extends BaseSpringBootTest {
                 .eligibilityRule("")
                 .build();
         survey = surveyService.create(survey);
-        List<LanguageText> languageTexts = languageTextDao.findByPortalIdOrNullPortalId(portal.getId(), "es");
+        List<LanguageText> languageTexts = languageTextDao.findByPortalId(portal.getId(), "es");
         assertThat(languageTexts, hasSize(1));
         assertThat(languageTexts.get(0).getKeyName(), equalTo(survey.getStableId() + ":1"));
         surveyService.delete(survey.getId(), CascadeProperty.EMPTY_SET);
 
-        assertThat(languageTextDao.findByPortalIdOrNullPortalId(portal.getId(), "es"), hasSize(0));
+        assertThat(languageTextDao.findByPortalId(portal.getId(), "es"), hasSize(0));
     }
 
 }

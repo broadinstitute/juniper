@@ -5,6 +5,7 @@ import {
   SurveyResponse
 } from 'src/types/forms'
 import { MailingAddress } from 'src/types/address'
+import { FamilyEnrollee } from 'src/types/family'
 
 export type ParticipantNote = {
     id: string
@@ -41,6 +42,7 @@ export type Enrollee = {
     shortcode: string
     studyEnvironmentId: string
     surveyResponses: SurveyResponse[]
+    familyEnrollees?: FamilyEnrollee[]
 }
 
 export type HubResponse = {

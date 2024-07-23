@@ -2,7 +2,7 @@ import React from 'react'
 import Api from 'api/api'
 import { render, screen } from '@testing-library/react'
 import IntegrationDashboard from './IntegrationDashboard'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 test('routes to integration paths', async () => {

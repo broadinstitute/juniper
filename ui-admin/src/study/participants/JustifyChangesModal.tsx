@@ -14,13 +14,15 @@ export default function JustifyChangesModal({
   onDismiss,
   changes,
   bodyText,
-  confirmText
+  confirmText,
+  animated = true
 }: {
   saveWithJustification: (justification: string) => void,
   onDismiss: () => void,
   changes?: ObjectDiff[],
   bodyText?: React.ReactNode,
-  confirmText?: string
+  confirmText?: string,
+  animated?: boolean
 }) {
   const [justification, setJustification] = useState<string>('')
 
@@ -30,7 +32,7 @@ export default function JustifyChangesModal({
     }
   }
 
-  return <Modal show={true} onHide={onDismiss} size={'lg'}>
+  return <Modal show={true} onHide={onDismiss} size={'lg'} animation={animated}>
     <Modal.Header closeButton>
       <Modal.Title>
         Add Justification

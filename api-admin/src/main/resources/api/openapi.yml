@@ -865,16 +865,34 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}:
+    post:
+      summary: Creates a new family
+      tags: [ family ]
+      operationId: create
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object } } }
+      responses:
+        '200':
+          description: New family object
+          content: { application/json: { schema: { type: object } } }
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcodeOrId}:
     get:
-      summary: Finds a family by shortcode
+      summary: Finds a family by shortcode or id
       tags: [ family ]
       operationId: find
       parameters:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: familyShortcodeOrId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: Family object

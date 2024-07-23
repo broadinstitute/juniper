@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockExpressionApis, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
 import FormOptionsModal from './FormOptionsModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 
 describe('FormOptions', () => {

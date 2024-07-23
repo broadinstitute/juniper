@@ -1284,9 +1284,9 @@ export default {
   },
 
   async getFamily(
-    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcode: string
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcodeOrId: string
   ): Promise<Family> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcode}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcodeOrId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -1343,6 +1343,23 @@ export default {
     const result = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(result)
+  },
+
+  async createFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    family: Family, justification: string
+  ): Promise<Family> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families?${params}`
+
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(family)
     })
     return await this.processJsonResponse(result)
   },

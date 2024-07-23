@@ -100,7 +100,7 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
+    {"username": "heartdemostaff@gmail.com", "roleNames": ["study_admin"]},
     {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester", "power_user"]}
   ],
   "siteMediaDtos": [

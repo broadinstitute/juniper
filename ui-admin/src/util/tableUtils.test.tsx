@@ -10,7 +10,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { basicTableLayout, checkboxColumnCell, ColumnVisibilityControl, DownloadControl } from './tableUtils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 const SAMPLE_INITIAL_DATA = [{ consented: true, name: 'Fred' }, { consented: false, name: 'James' }]
 

@@ -5,7 +5,7 @@ import PortalEnvConfigView from './PortalEnvConfigView'
 import { mockPortalContext } from 'test-utils/mocking-utils'
 import { MockRegularUserProvider, MockSuperuserProvider } from 'test-utils/user-mocking-utils'
 import { PortalEnvironment } from '@juniper/ui-core'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 test('renders a portal env. config', async () => {
   const portalContext = mockPortalContext()

@@ -4,7 +4,7 @@ import { screen } from '@testing-library/react'
 import { PortalEnvironmentLanguage, renderWithRouter } from '@juniper/ui-core'
 import PortalEnvLanguageEditor from './PortalEnvLanguageEditor'
 import { getTableCell } from 'test-utils/table-testing-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { select } from 'react-select-event'
 
 
