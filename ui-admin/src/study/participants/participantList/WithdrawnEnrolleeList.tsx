@@ -81,7 +81,7 @@ export default function WithdrawnEnrolleeList({ studyEnvContext }: { studyEnvCon
     { renderPageHeader('Withdrawn enrollees') }
     <NavBreadcrumb value={'withdrawnList'}>Withdrawn</NavBreadcrumb>
     <FontAwesomeIcon icon={faInfoCircle}/> More information about the
-    <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawl process</ZendeskLink>.
+    <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.
     <LoadingSpinner isLoading={isLoading}>
       <div className="d-flex justify-content-end">
         <ColumnVisibilityControl table={table}/>

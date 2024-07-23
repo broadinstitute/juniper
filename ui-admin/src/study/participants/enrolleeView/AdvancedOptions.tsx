@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { Enrollee } from '@juniper/ui-core'
-import { DocsKey, ZendeskLink } from '../../../util/zendeskUtils'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 
 /** shows not-commonly-used enrollee functionality */
 export default function AdvancedOptions({ enrollee, studyEnvContext }:
