@@ -27,7 +27,7 @@ import { Store } from 'react-notifications-component'
 import { failureNotification } from 'util/notifications'
 
 /**
- *
+ * Modal for adding an enrollee to a family or creating a new family with the enrollee as the proband.
  */
 export const AddFamilyModal = (
   {

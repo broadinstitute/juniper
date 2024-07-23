@@ -146,8 +146,7 @@ export default function DashboardSettings({ portalContext, currentEnv }:
 
       setDashboardAlerts(alerts)
     } catch {
-      `      Store.addNotification(failureNotification('Error loading dashboard alerts'))
-`
+      Store.addNotification(failureNotification('Error loading dashboard alerts'))
     }
     setIsLoading(false)
   }
