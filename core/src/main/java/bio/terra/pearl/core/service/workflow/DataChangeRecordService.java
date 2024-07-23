@@ -83,4 +83,8 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
         return dao.findByFamilyIdAndModelName(familyId, model);
     }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
 }

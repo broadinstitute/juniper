@@ -3,13 +3,20 @@ import Api from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
-import { Enrollee, ParticipantNote, ParticipantTask } from '@juniper/ui-core'
+import {
+  Enrollee,
+  ParticipantNote,
+  ParticipantTask
+} from '@juniper/ui-core'
 import { ParticipantNoteModal } from './ParticipantNoteModal'
 import { renderEmptyMessage } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'components/forms/Button'
-import { InfoCard, InfoCardHeader } from 'components/InfoCard'
+import {
+  InfoCard,
+  InfoCardHeader
+} from 'components/InfoCard'
 import { ParticipantNoteView } from './ParticipantNoteView'
 
 type ParticipantNotesViewProps = {
@@ -54,7 +61,7 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
       <hr className='m-0'/>
     </div>
     ))}
-    { <div className='my-3'>{renderEmptyMessage(sortedNotes, 'No notes')}</div>}
+    {sortedNotes.length === 0 && <div className='my-3'>{renderEmptyMessage(sortedNotes, 'No notes')}</div>}
     { showAdd && <ParticipantNoteModal enrollee={enrollee} users={users}
       onDismiss={async () => {
         await reloadTasks()

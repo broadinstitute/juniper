@@ -36,7 +36,7 @@ public class Enrollee extends BaseEntity {
     private boolean consented;
 
     @Builder.Default
-    private List<Family> families = new ArrayList<>();
+    private List<FamilyEnrollee> familyEnrollees = new ArrayList<>();
     @Builder.Default
     private List<SurveyResponse> surveyResponses = new ArrayList<>();
     @Builder.Default

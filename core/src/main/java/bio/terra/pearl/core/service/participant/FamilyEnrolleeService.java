@@ -83,4 +83,8 @@ public class FamilyEnrolleeService extends DataAuditedService<FamilyEnrollee, Fa
                                 .build(),
                         auditInfo));
     }
+
+    public List<FamilyEnrollee> findByEnrolleeId(UUID id) {
+        return dao.findByEnrolleeId(id);
+    }
 }

@@ -21,6 +21,7 @@ import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,6 +35,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     private final FamilyService familyService;
     private final FamilyEnrolleeService familyEnrolleeService;
     private final EnrolleeRelationService enrolleeRelationService;
+    private final DataChangeRecordService dataChangeRecordService;
     private final StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
     private final StudyEnvironmentConfigService studyEnvironmentConfigService;
     private final EnrolleeService enrolleeService;
@@ -56,7 +58,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
                                    StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
-                                   ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService) {
+                                   ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService, DataChangeRecordService dataChangeRecordService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -71,6 +73,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.familyService = familyService;
         this.familyEnrolleeService = familyEnrolleeService;
         this.enrolleeRelationService = enrolleeRelationService;
+        this.dataChangeRecordService = dataChangeRecordService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -118,6 +121,7 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
         enrolleeRelationService.deleteByStudyEnvironmentId(studyEnvironmentId);
         familyEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        dataChangeRecordService.deleteByStudyEnvironmentId(studyEnvironmentId);
         familyService.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);

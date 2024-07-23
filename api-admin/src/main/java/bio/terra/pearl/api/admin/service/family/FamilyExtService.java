@@ -5,28 +5,41 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.exception.NotFoundException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.FamilyService;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 @Service
 public class FamilyExtService {
   private final FamilyService familyService;
+  private final EnrolleeService enrolleeService;
 
-  public FamilyExtService(FamilyService familyService) {
+  public FamilyExtService(FamilyService familyService, EnrolleeService enrolleeService) {
     this.familyService = familyService;
+    this.enrolleeService = enrolleeService;
   }
 
   @EnforcePortalStudyEnvPermission(permission = "participant_data_view")
-  public Family find(PortalStudyEnvAuthContext authContext, String familyShortcode) {
+  public Family find(PortalStudyEnvAuthContext authContext, String familyShortcodeOrId) {
     StudyEnvironment studyEnvironment = authContext.getStudyEnvironment();
 
+    if (familyShortcodeOrId.length() > 16) {
+      return familyService
+          .find(UUID.fromString(familyShortcodeOrId))
+          .filter(family -> family.getStudyEnvironmentId().equals(studyEnvironment.getId()))
+          .map(familyService::loadForAdminView)
+          .orElseThrow(() -> new NotFoundException("Family not found"));
+    }
+
     return familyService
-        .findOneByShortcodeAndStudyEnvironmentId(familyShortcode, studyEnvironment.getId())
+        .findOneByShortcodeAndStudyEnvironmentId(familyShortcodeOrId, studyEnvironment.getId())
         .map(familyService::loadForAdminView)
         .orElseThrow(() -> new NotFoundException("Family not found"));
   }
@@ -112,5 +125,34 @@ public class FamilyExtService {
     }
 
     return familyService.findDataChangeRecordsByFamilyId(family.getId());
+  }
+
+  @EnforcePortalStudyEnvPermission(permission = "participant_data_edit")
+  public Family create(PortalStudyEnvAuthContext authContext, Family family, String justification) {
+    family.setStudyEnvironmentId(authContext.getStudyEnvironment().getId());
+
+    Enrollee proband =
+        enrolleeService
+            .find(family.getProbandEnrolleeId())
+            .orElseThrow(() -> new NotFoundException("Proband not found"));
+
+    if (!proband.getStudyEnvironmentId().equals(family.getStudyEnvironmentId())) {
+      throw new NotFoundException("Proband not found");
+    }
+
+    family.setShortcode(null);
+    Family created =
+        familyService.create(
+            family,
+            DataAuditInfo.builder()
+                .responsibleAdminUserId(authContext.getOperator().getId())
+                .justification(justification)
+                .build());
+
+    // if we don't also add the enrollee to the family, then
+    // the family will be created without any enrollees
+    this.addEnrollee(authContext, created.getShortcode(), proband.getShortcode(), justification);
+
+    return find(authContext, created.getShortcode());
   }
 }
