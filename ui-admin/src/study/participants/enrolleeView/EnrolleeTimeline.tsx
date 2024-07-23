@@ -31,8 +31,8 @@ import {
   faEnvelopeOpen
 } from '@fortawesome/free-solid-svg-icons'
 import InfoPopup from 'components/forms/InfoPopup'
-import { InfoCard, InfoCardHeader } from '../../../components/InfoCard'
-import LoadingSpinner from '../../../util/LoadingSpinner'
+import { InfoCard, InfoCardHeader } from 'components/InfoCard'
+import LoadingSpinner from 'util/LoadingSpinner'
 import Select from 'react-select'
 
 
