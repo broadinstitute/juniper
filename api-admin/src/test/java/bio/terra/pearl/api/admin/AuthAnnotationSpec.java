@@ -1,9 +1,6 @@
 package bio.terra.pearl.api.admin;
 
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalEnrolleePermission;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
-import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyPermission;
+import bio.terra.pearl.api.admin.service.auth.*;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
