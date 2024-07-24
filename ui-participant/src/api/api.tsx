@@ -3,6 +3,7 @@ import {
   Enrollee,
   EnrolleeRelation,
   HubResponse,
+  LogEvent,
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
@@ -102,19 +103,6 @@ export type Config = {
   b2cClientId: string,
   b2cPolicyName: string,
   b2cChangePasswordPolicyName: string,
-}
-
-export type LogEvent = {
-  id?: string,
-  eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS' | 'INFO'
-  eventName: string,
-  stackTrace?: string,
-  eventDetail?: string,
-  studyShortcode?: string,
-  portalShortcode?: string,
-  environmentName?: string,
-  enrolleeShortcode?: string,
-  operatorId?: string,
 }
 
 let bearerToken: string | null = null
