@@ -17,8 +17,6 @@ public class SuperuserOnlyAspect {
     OperatorAuthContext authContext =
         BaseEnforcePermissionAspect.extractAuthContext(
             joinPoint, OperatorAuthContext.class, "SuperuserOnly");
-    System.out.println(
-        "authContext.getOperator().isSuperuser() = " + authContext.getOperator().isSuperuser());
     if (!authContext.getOperator().isSuperuser()) {
       throw new PermissionDeniedException("You do not have permission for this operation");
     }
