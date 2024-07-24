@@ -1,18 +1,37 @@
 import React, { useState } from 'react'
 
-import { PortalEnvironment, Survey, VersionedForm } from 'api/api'
+import {
+  PortalEnvironment,
+  Survey,
+  VersionedForm
+} from 'api/api'
 
-import { Button, EllipsisDropdownButton } from 'components/forms/Button'
+import {
+  Button,
+  EllipsisDropdownButton
+} from 'components/forms/Button'
 import { FormContentEditor } from 'forms/FormContentEditor'
 import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
-import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
-import { useAutosaveEffect, ApiProvider } from '@juniper/ui-core'
+import {
+  deleteDraft,
+  FormDraft,
+  getDraft,
+  getFormDraftKey,
+  saveDraft
+} from 'forms/designer/utils/formDraftUtils'
+import {
+  ApiProvider,
+  useAutosaveEffect
+} from '@juniper/ui-core'
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FormOptionsModal from './FormOptionsModal'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
-import { isEmpty, isEqual } from 'lodash'
+import {
+  isEmpty,
+  isEqual
+} from 'lodash'
 import { SaveableFormProps } from './SurveyView'
 import { previewApi } from 'util/apiContextUtils'
 import { saveBlobAsDownload } from 'util/downloadUtils'
@@ -90,6 +109,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     }
     setSaving(true)
     try {
+      console.log('onsave', draft)
       await onSave(draft)
       //Once we've persisted the form draft to the database, there's no need to keep it in local storage.
       //Future drafts will have different FORM_DRAFT_KEYs anyway, as they're based on the form version number.
@@ -263,6 +283,12 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           }}
           onAnswerMappingChange={(newValidationErrors, newAnswerMappings) => {
             if (isEmpty(newValidationErrors)) {
+              console.log({
+                ...draft,
+                content: draft?.content || currentForm.content,
+                answerMappings: newAnswerMappings,
+                date: Date.now()
+              })
               setDraft({
                 ...draft,
                 content: draft?.content || currentForm.content,

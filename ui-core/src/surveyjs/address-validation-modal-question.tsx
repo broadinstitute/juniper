@@ -2,11 +2,21 @@
  * A SurveyJS question that enables address validation.
  */
 import React from 'react'
-import { ElementFactory, Question, Serializer } from 'survey-core'
+import {
+  ElementFactory,
+  Question,
+  Serializer
+} from 'survey-core'
 import { SurveyQuestionElementBase } from 'survey-react-ui'
-import { AddressValidationResult, MailingAddress } from '../types/address'
+import {
+  AddressValidationResult,
+  MailingAddress
+} from '../types/address'
 import { SuggestBetterAddressModal } from '../components/SuggestBetterAddressModal'
-import { isEmpty, isNil } from 'lodash'
+import {
+  isEmpty,
+  isNil
+} from 'lodash'
 import Modal from 'react-bootstrap/Modal'
 import { ModalProps } from 'react-bootstrap'
 
@@ -139,9 +149,12 @@ export class SurveyQuestionAddressValidation extends SurveyQuestionElementBase {
   }
 
   renderElement() {
+    console.log(this.value)
     if (isNil(this.value?.addressValidationResult)) {
       return null
     }
+
+    console.log(this.value.addressValidationResult.suggestedAddress)
 
     return (
       <>

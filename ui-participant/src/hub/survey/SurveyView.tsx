@@ -1,12 +1,26 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import 'survey-core/survey.i18n'
 
-import Api, { Portal, SurveyWithResponse } from 'api/api'
+import Api, {
+  Portal,
+  SurveyWithResponse
+} from 'api/api'
+import { ReactQuestionFactory } from 'survey-react-ui'
 
 import {
-  ApiProvider, Enrollee, EnvironmentName, PagedSurveyView,
-  useI18n, useTaskIdParam
+  ApiProvider,
+  Enrollee,
+  EnvironmentName,
+  PagedSurveyView,
+  useI18n,
+  useTaskIdParam
 } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
@@ -15,6 +29,12 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import { HubUpdate } from 'hub/hubUpdates'
+import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
+
+// register themed address validation type
+ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
+  return React.createElement(ThemedSurveyQuestionAddressValidation, props)
+})
 
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {

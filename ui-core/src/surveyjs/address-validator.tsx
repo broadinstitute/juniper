@@ -1,7 +1,16 @@
-import { Question, SurveyModel } from 'survey-core'
-import { AddressValidationResult, MailingAddress } from 'src/types/address'
+import {
+  Question,
+  SurveyModel
+} from 'survey-core'
+import {
+  AddressValidationResult,
+  MailingAddress
+} from 'src/types/address'
 import { AddressValidationQuestionValue } from 'src/surveyjs/address-validation-modal-question'
-import { getErrorsByField, isSameAddress } from '../addressUtils'
+import {
+  getErrorsByField,
+  isSameAddress
+} from '../addressUtils'
 
 /**
  * Creates SurveyJS address validator using the provided async function
@@ -76,6 +85,7 @@ export const validateSurveyJsAddress = async (
     return Promise.resolve()
   }
 
+
   // hit API
   const results = await validateAddress(mailingAddress)
 
@@ -114,6 +124,11 @@ const clearExistingValidationErrors = (sender: SurveyModel, addressValidationQue
 }
 
 const findAddressValidationQuestionsOnThisPage = (sender: SurveyModel) => {
+  console.log(sender.getAllQuestions(false)
+    .filter(q => q.getType() === 'addressvalidation'))
+  console.log(sender.getAllQuestions(false)
+    .filter(q => q.getType() === 'addressvalidation')
+    .filter(q => sender.getPageByQuestion(q).num === sender.currentPage?.num))
   return sender
     .getAllQuestions(false)
     .filter(q => q.getType() === 'addressvalidation')

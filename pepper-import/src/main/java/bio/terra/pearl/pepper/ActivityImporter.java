@@ -271,9 +271,16 @@ public class ActivityImporter {
             titleMap = placeholder;
         }
 
-        // todo: handle tooltips - this is not natively
-        //       supported in surveyjs, so maybe we should
-        //       make an html block if there's a tooltip?
+        SurveyJSContent tooltip = null;
+        if (Objects.nonNull(pepperQuestionDef.getTooltipTemplate())) {
+            // let's just render it so we get translations - if we need to use it,
+            // we can figure out where this goes in the future, but at least we have it.
+            tooltip = SurveyJSContent.builder()
+                    .name(pepperQuestionDef.getStableId() + "_TOOLTIP")
+                    .type("html")
+                    .html(translatePepperTemplate(pepperQuestionDef.getTooltipTemplate()))
+                    .build();
+        }
 
 
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
@@ -292,14 +299,17 @@ public class ActivityImporter {
         ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
 
 
-        JsonNode node = objectMapper.valueToTree(surveyJSQuestion);
-        if (!otherQuestions.isEmpty()) {
-            List<JsonNode> out = new ArrayList<>();
-            out.add(node);
-            out.addAll(otherQuestions);
-            return out;
+        List<JsonNode> out = new ArrayList<>();
+        if (Objects.nonNull(tooltip)) {
+            out.add(objectMapper.valueToTree(tooltip));
         }
-        return List.of(node);
+        out.add(objectMapper.valueToTree(surveyJSQuestion));
+
+        if (!otherQuestions.isEmpty()) {
+            out.addAll(otherQuestions);
+        }
+
+        return out;
     }
 
     private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
@@ -308,7 +318,8 @@ public class ActivityImporter {
             if (option.isDetailsAllowed()) {
                 Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
                 SurveyJSQuestion otherQuestion = SurveyJSQuestion.builder()
-                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_details")
+                        // similar naming convention as in dsm
+                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_DETAIL")
                         .type("text")
                         .title(otherTitle)
                         .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
