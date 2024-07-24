@@ -27,6 +27,7 @@ import InvitationPage from './landing/registration/InvitationPage'
 import AuthError from './login/AuthError'
 import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
+import PageNotFound from './PageNotFound'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -140,7 +141,7 @@ function App() {
                               <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
                               <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
                               <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>
-                              <Route path="*" element={<div>unmatched route</div>}/>
+                              <Route path="*" element={<PageNotFound/>}/>
                             </Routes>
                           </Suspense>
                           {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}
