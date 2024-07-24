@@ -9,6 +9,7 @@ type FormPreviewOptions = {
   locale: string
   profile?: Profile
   proxyProfile?: Profile
+  isGovernedUser: boolean
 }
 
 type FormPreviewOptionsProps = {
@@ -89,14 +90,31 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           unboldLabel={true}
           value={value.profile?.familyName ?? ''} />
         </div>
-        <div data-testid="proxyInfoFields">
+        <div>
           <h4 className="h6 mt-3">
-            Proxy profile <InfoPopup content={<p>
+            Proxy Settings <InfoPopup content={<p>
             Change the values below to test how your survey appears to different participants
-            due to branching logic or dynamic texts.  The proxy profile is the profile of the
-            person the user is taking the survey on behalf of.
+            due to branching logic or dynamic texts. The proxy is the
+            person that is taking the survey on behalf of a governed user.
             </p>}/>
           </h4>
+
+          <div className="form-check">
+            <label className="form-check-label" htmlFor="form-is-governed-user">
+              <input
+                checked={value.isGovernedUser}
+                className="form-check-input"
+                id="form-is-governed-user"
+                type="checkbox"
+                onChange={e => {
+                  onChange({ ...value, isGovernedUser: e.target.checked })
+                }}
+              />
+              Is governed user
+            </label>
+          </div>
+        </div>
+        <div data-testid="proxyInfoFields">
           <TextInput onChange={text => onChange({
             ...value,
             proxyProfile: {
@@ -107,7 +125,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           label={'Given name'}
           data-testid="proxyGivenName"
           unboldLabel={true}
-          value={value.proxyProfile?.givenName ?? ''} />
+          value={value.proxyProfile?.givenName ?? ''}/>
           <TextInput onChange={text => onChange({
             ...value,
             proxyProfile: {
@@ -117,10 +135,9 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           })}
           label={'Family name'}
           unboldLabel={true}
-          value={value.proxyProfile?.familyName ?? ''} />
+          value={value.proxyProfile?.familyName ?? ''}/>
         </div>
       </div>
-
     </div>
   )
 }

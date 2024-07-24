@@ -4,14 +4,15 @@ package bio.terra.pearl.populate.service.contexts;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.populate.dto.FilePopulatable;
+import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Stores the path and current filename to populate from.
@@ -88,6 +89,7 @@ public class FilePopulateContext {
     public <T extends BaseEntity> Optional<T> fetchFromPopDto(FilePopulatable popDto, ImmutableEntityService<T, ?> service) {
         if (popDto.getPopulateFileName() != null) {
             String fullName = getBasePath() + "/" + popDto.getPopulateFileName();
+            System.out.println("fullName: " + fullName);
             String normalizedName = Paths.get(fullName).normalize().toString();
             if (isAlreadyPopulated(normalizedName)) {
                 return service.find(getUUIDForFileName(normalizedName));

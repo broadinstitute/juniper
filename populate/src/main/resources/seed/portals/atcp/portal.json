@@ -1,19 +1,7 @@
 {
   "name" : "atcp",
   "shortcode" : "atcp",
-  "surveyFiles" : [
-    "surveys/blood-type.conf",
-    "surveys/contacting-physician.conf",
-    "surveys/genome-study.conf",
-    "surveys/medical-history.conf",
-    "surveys/prequal.conf",
-    "surveys/registration.conf",
-    "surveys/review-and-submission.conf"
-  ],
-  "consentFormFiles" : [
-    "surveys/assent.conf",
-    "surveys/self-consent.conf"
-  ],
+
   "populateStudyFiles" : [ "studies/atcp/study.json" ],
   "siteContentFiles" : [ "siteContent/atcp_portalContent-1/siteContent.json" ],
   "portalEnvironmentDtos" : [ {

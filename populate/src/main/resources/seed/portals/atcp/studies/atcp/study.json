@@ -3,8 +3,15 @@
   "shortcode" : "atcp",
   "studyPortals" : [ ],
   "surveyFiles" : [
-  ],
-  "consentFormFiles" : [
+    "surveys/blood-type.conf",
+    "surveys/contacting-physician.conf",
+    "surveys/genome-study.conf",
+    "surveys/medical-history.conf",
+    "surveys/prequal.conf",
+    "surveys/registration.conf",
+    "surveys/review-and-submission.conf",
+    "surveys/assent.conf",
+    "surveys/self-consent.conf"
   ],
   "emailTemplateFiles" : [ ],
   "studyEnvironmentDtos" : [ {
@@ -21,48 +28,40 @@
     },
     "triggers" : [ ],
     "preEnrollSurveyDto": {
-      "populateFileName": "../../surveys/prequal.conf"
+      "populateFileName": "surveys/prequal.conf"
     },
     "configuredSurveyDtos" : [ {
       "active" : true,
       "surveyOrder" : 0,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/assent.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 7,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/blood-type.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 3,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/contacting-physician.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 6,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/genome-study.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 4,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/medical-history.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 2,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/registration.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 8,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/review-and-submission.conf"
+      "populateFileName" : "surveys/assent.conf"
     }, {
       "active" : true,
       "surveyOrder" : 1,
-      "surveyVersion" : 0,
-      "populateFileName" : "../../surveys/self-consent.conf"
+      "populateFileName" : "surveys/self-consent.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 2,
+      "populateFileName" : "surveys/registration.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 3,
+      "populateFileName" : "surveys/contacting-physician.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 4,
+      "populateFileName" : "surveys/medical-history.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 6,
+      "populateFileName" : "surveys/genome-study.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 7,
+      "populateFileName" : "surveys/blood-type.conf"
+    }, {
+      "active" : true,
+      "surveyOrder" : 8,
+      "populateFileName" : "surveys/review-and-submission.conf"
     }],
     "triggerDtos" : [ {
       "active" : true,
