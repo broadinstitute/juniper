@@ -7,8 +7,6 @@ import Api from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const DeleteDatasetModal = ({ studyEnvContext, datasetName, show, setShow, loadDatasets }: {
     studyEnvContext: StudyEnvContextT, datasetName: string, show: boolean,
     setShow:  React.Dispatch<React.SetStateAction<boolean>>, loadDatasets: () => void }) => {

@@ -1,8 +1,6 @@
 // Taken from https://github.com/DataBiosphere/terra-ui/blob/6ee212abfc572d75ba6e22b788cf11730219dbff/.eslintrc.js#L4
 /* eslint-env node */
 
-const isFix = process.argv.includes('--fix')
-
 module.exports = {
   env: {
     browser: true,
@@ -28,7 +26,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module'
   },
-  plugins: ['react', 'jsx-a11y', 'import', 'jest', 'jsdoc', 'unused-imports'],
+  plugins: ['react', 'jsx-a11y', 'import', 'jest', 'unused-imports'],
   rules: {
     'array-bracket-newline': ['warn', 'consistent'],
     'array-bracket-spacing': 'warn',
@@ -110,17 +108,7 @@ module.exports = {
 
     // TypeScript
     '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
-
-    // JSDoc
-    'jsdoc/require-jsdoc': [isFix ? 'off' : 'warn', {
-      publicOnly: true,
-      require: {
-        FunctionDeclaration: true,
-        FunctionExpression: true,
-        ArrowFunctionExpression: true
-      }
-    }]
+    '@typescript-eslint/no-non-null-assertion': 'off'
   },
   overrides: [],
   settings: {

@@ -11,8 +11,6 @@ const uninitializedConfig = {
 
 const ConfigContext = React.createContext<Config>(uninitializedConfig)
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useConfig = () => useContext(ConfigContext)
 
 export const ConfigConsumer = ConfigContext.Consumer
