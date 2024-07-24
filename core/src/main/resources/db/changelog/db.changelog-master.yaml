@@ -296,6 +296,9 @@ databaseChangeLog:
   - include:
       file: changesets/2024_07_17_relax_family_audit_fk.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_07_19_trigger_actions.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements
