@@ -81,7 +81,7 @@ export default function LogEventViewer() {
     accessorKey: 'eventSource'
   }, {
     header: 'Stacktrace',
-    accessorKey: 'stacktrace',
+    accessorKey: 'stackTrace',
     cell: info => viewFullJsonButton(info.getValue() as string)
   }, {
     header: 'Detail',
@@ -178,6 +178,14 @@ const viewFullJsonButton = (json: string) => {
 const EventDetailModal = ({ json, onDismiss }: { json: string,
     onDismiss: () => void
 }) => {
+  const stringValue = (() => {
+    try {
+      return JSON.stringify(JSON.parse(json), null, 2)
+    } catch (e) {
+      return json
+    }
+  })()
+
   return <Modal show={true}
     onHide={onDismiss}
   >
@@ -186,7 +194,7 @@ const EventDetailModal = ({ json, onDismiss }: { json: string,
     </Modal.Header>
     <Modal.Body>
       <pre>
-        {JSON.stringify(JSON.parse(json), null, 2)}
+        {stringValue}
       </pre>
     </Modal.Body>
     <Modal.Footer>
