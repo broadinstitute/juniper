@@ -34,8 +34,6 @@ export const mediaConfigProps: SectionProp[] = [
   { name: 'videoLink', translated: false, subProps: [] }
 ]
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const validateMediaConfig = (imageConfig: unknown): MediaConfig => {
   const message = 'Invalid image config'
   const config = requirePlainObject(imageConfig, message)

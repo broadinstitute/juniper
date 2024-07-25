@@ -28,8 +28,6 @@ import { failureNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import { buildFilter } from 'util/exportUtils'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const ExportDataBrowser = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [data, setData] = useState<ExportData | null>(null)
   const [showExportModal, setShowExportModal] = useState(false)

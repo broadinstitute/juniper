@@ -14,8 +14,6 @@ type StudyEnvDiffProps = {
   setSelectedChanges: (update: StudyEnvironmentChange) => void
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const StudyEnvDiff = ({ studyName, studyEnvChange, selectedChanges, setSelectedChanges }: StudyEnvDiffProps) => {
   return <div className="px-3 my-2 py-2" style={{ backgroundColor: '#ededed' }}>
     <h2 className="h5 pb-2">{studyName}</h2>

@@ -1,13 +1,9 @@
 import { isPlainObject as _isPlainObject } from 'lodash'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const isPlainObject = (config: unknown): config is Record<string, unknown> => {
   return _isPlainObject(config)
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requirePlainObject = (value: unknown, prefix = ''): Record<string, unknown> => {
   if (!isPlainObject(value)) {
     const messagePrefix = prefix ? `${prefix}: ` : ''
@@ -16,8 +12,6 @@ export const requirePlainObject = (value: unknown, prefix = ''): Record<string, 
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireString = (
   config: Record<string, unknown>,
   key: string,
@@ -32,8 +26,6 @@ export const requireString = (
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireOptionalString = (
   config: Record<string, unknown>,
   key: string,
@@ -48,8 +40,6 @@ export const requireOptionalString = (
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireNumber = (
   config: Record<string, unknown>,
   key: string,
@@ -64,8 +54,6 @@ export const requireNumber = (
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireOptionalNumber = (
   config: Record<string, unknown>,
   key: string,
@@ -80,8 +68,6 @@ export const requireOptionalNumber = (
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireOptionalBoolean = (
   config: Record<string, unknown>,
   key: string,
@@ -95,8 +81,6 @@ export const requireOptionalBoolean = (
   return value
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const requireOptionalArray = <ElementType>(
   config: Record<string, unknown>,
   key: string,

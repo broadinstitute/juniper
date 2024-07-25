@@ -3,8 +3,6 @@ import { useAuth } from 'react-oidc-context'
 import { useUser } from 'user/UserProvider'
 import Api from 'api/api'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
   const { user } = useUser()

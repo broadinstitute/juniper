@@ -38,8 +38,6 @@ export const buttonConfigProps: SectionProp[] = [
   textProp
 ]
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   const message = 'Invalid button config'
   const config = requirePlainObject(buttonConfig, message)
