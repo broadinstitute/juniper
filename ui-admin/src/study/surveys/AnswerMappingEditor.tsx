@@ -1,5 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import { faCheck, faPlus, faX } from '@fortawesome/free-solid-svg-icons'
+import React, {
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
+import {
+  faCheck,
+  faPlus,
+  faX
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Select from 'react-select'
 import Creatable from 'react-select/creatable'
@@ -10,10 +18,23 @@ import {
   FormContent,
   getFormElements
 } from '@juniper/ui-core'
-import { isEmpty, isNil } from 'lodash'
-import { Modal, ModalBody, ModalFooter, ModalHeader, ModalTitle } from 'react-bootstrap'
+import {
+  isEmpty,
+  isNil
+} from 'lodash'
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalTitle
+} from 'react-bootstrap'
 import { OnChangeAnswerMappings } from '../../forms/formEditorTypes'
-import { ColumnDef, getCoreRowModel, useReactTable } from '@tanstack/react-table'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  useReactTable
+} from '@tanstack/react-table'
 import { basicTableLayout } from '../../util/tableUtils'
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons/faTrashCan'
 
@@ -102,7 +123,10 @@ export default function AnswerMappingEditor(
   const [newAnswerMapping, setNewAnswerMapping] = useState<EditableAnswerMapping>({ isEditing: false })
 
   const elements = getFormElements(formContent)
-  const names = elements.filter(e => 'name' in e).map(e => 'name' in e ? e.name : '')
+  const names = elements
+    .filter(e => 'name' in e)
+    .map(e => 'name' in e ? e.name : '')
+    .concat(formContent.calculatedValues?.map(cv => cv.name) || [])
 
   useEffect(() => {
     // automatically set map type

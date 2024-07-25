@@ -2,14 +2,21 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import {  StudyParams } from 'study/StudyRouter'
-import { StudyEnvContextT, studyEnvFormsPath } from 'study/StudyEnvironmentRouter'
+import { StudyParams } from 'study/StudyRouter'
+import {
+  StudyEnvContextT,
+  studyEnvFormsPath
+} from 'study/StudyEnvironmentRouter'
 import Api, { Survey } from 'api/api'
 
 import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useLoadedSurvey, useSurveyParams } from './SurveyView'
+import {
+  SaveableFormProps,
+  useLoadedSurvey,
+  useSurveyParams
+} from './SurveyView'
 import { doApiLoad } from '../../api/api-utils'
 
 
@@ -27,10 +34,10 @@ function RawPreEnrollView({ studyEnvContext, survey, readOnly = false }:
   const [currentSurvey, setCurrentSurvey] = useState(survey)
 
   /** saves as a new version and updates the study environment accordingly */
-  async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
-    survey.content = updatedContent
+  async function createNewVersion(changes: SaveableFormProps): Promise<void> {
+    const newSurvey = { ...currentSurvey, ...changes }
     doApiLoad(async () => {
-      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, newSurvey)
       Store.addNotification(successNotification(`Survey saved successfully`))
       setCurrentSurvey(updatedSurvey)
       const updatedEnv = { ...currentEnv, preEnrollSurveyId: updatedSurvey.id }

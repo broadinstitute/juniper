@@ -36,6 +36,7 @@ export const FormPreview = (props: FormPreviewProps) => {
     model.setVariable('portalEnvironmentName', 'sandbox')
     model.setVariable('profile', { })
     model.setVariable('proxyProfile', { })
+    model.setVariable('isGovernedUser', false)
     model.ignoreValidation = true
     model.locale = currentLanguage.languageCode
     model.onTextMarkdown.add(applyMarkdown)
@@ -60,13 +61,15 @@ export const FormPreview = (props: FormPreviewProps) => {
             showInvisibleElements: surveyModel.showInvisibleElements,
             locale: surveyModel.locale,
             profile: surveyModel.getVariable('profile'),
-            proxyProfile: surveyModel.getVariable('proxyProfile')
+            proxyProfile: surveyModel.getVariable('proxyProfile'),
+            isGovernedUser: surveyModel.getVariable('isGovernedUser')
           }}
-          onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile }) => {
+          onChange={({ ignoreValidation, showInvisibleElements, profile, proxyProfile, isGovernedUser }) => {
             surveyModel.ignoreValidation = ignoreValidation
             surveyModel.showInvisibleElements = showInvisibleElements
             surveyModel.setVariable('profile', profile)
             surveyModel.setVariable('proxyProfile', proxyProfile)
+            surveyModel.setVariable('isGovernedUser', isGovernedUser)
             forceUpdate()
           }}
         />

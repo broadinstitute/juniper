@@ -118,6 +118,13 @@ export type FormContent = {
   title: I18nSurveyElement
   pages: FormContentPage[]
   questionTemplates?: Question[]
+  calculatedValues?: CalculatedValue[]
+}
+
+export type CalculatedValue = {
+  name: string,
+  expression: string,
+  includeIntoResult: boolean
 }
 
 type BaseElement = {
