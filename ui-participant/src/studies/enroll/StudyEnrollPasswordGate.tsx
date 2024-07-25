@@ -11,8 +11,6 @@ type StudyEnrollPasswordGateProps = {
   onSubmitCorrectPassword: () => void
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const StudyEnrollPasswordGate = (props: StudyEnrollPasswordGateProps) => {
   const { studyEnv, studyName, onSubmitCorrectPassword } = props
   const { password: studyPassword } = studyEnv.studyEnvironmentConfig

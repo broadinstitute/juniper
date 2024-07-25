@@ -6,8 +6,6 @@ import Api from 'api/api'
 import { failureNotification, successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const CreateDatasetModal = ({ studyEnvContext, show, setShow, loadDatasets }: {studyEnvContext: StudyEnvContextT,
   show: boolean, setShow:  React.Dispatch<React.SetStateAction<boolean>>, loadDatasets: () => void }) => {
   const [isLoading, setIsLoading] = useState(false)

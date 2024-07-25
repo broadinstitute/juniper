@@ -24,8 +24,6 @@ type FormContentEditorProps = {
   onAnswerMappingChange: OnChangeAnswerMappings
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
   const {
     initialContent,

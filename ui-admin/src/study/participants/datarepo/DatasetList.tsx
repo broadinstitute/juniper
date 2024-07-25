@@ -41,8 +41,6 @@ const datasetColumns = (currentEnvPath: string): ColumnDef<DatasetDetails>[] => 
   accessorKey: 'status'
 }]
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const DatasetList = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const { currentEnvPath } = studyEnvContext
   const [showCreateDatasetModal, setShowCreateDatasetModal] = useState(false)

@@ -40,8 +40,6 @@ const columns: ColumnDef<DatasetJobHistory>[] = [{
   >View job in Terra Data Repo <FontAwesomeIcon icon={faExternalLink}/></a>
 }]
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const DatasetDashboard = ({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) => {
   const [showDeleteDatasetModal, setShowDeleteDatasetModal] = useState(false)
   const [datasetDetails, setDatasetDetails] = useState<DatasetDetails | undefined>(undefined)
