@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
@@ -13,7 +12,6 @@ import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 
 /**
@@ -56,7 +50,11 @@ public class AnswerProcessingService {
             return;
         }
         processProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
-        processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
+        // if the ppUser is not the same as the enrollee, we're in a proxy environment,
+        // so we should check proxy profile mappings. otherwise, ignore them.
+        if (!ppUser.getProfileId().equals(enrollee.getProfileId())) {
+            processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
+        }
     }
 
     /**

@@ -107,8 +107,18 @@ public class SearchValue {
 
     public boolean greaterThan(SearchValue right) {
         return switch (this.searchValueType) {
-            case NUMBER -> this.numberValue > right.numberValue;
-            case INSTANT -> this.instantValue.isAfter(right.instantValue);
+            case NUMBER -> {
+                if (right.numberValue == null) {
+                    yield false;
+                }
+                yield this.numberValue > right.numberValue;
+            }
+            case INSTANT -> {
+                if (right.instantValue == null) {
+                    yield false;
+                }
+                yield this.instantValue.isAfter(right.instantValue);
+            }
             default -> false;
         };
     }

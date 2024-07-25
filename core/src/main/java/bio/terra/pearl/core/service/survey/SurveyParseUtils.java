@@ -201,7 +201,12 @@ public class SurveyParseUtils {
      * in the answerField of the node
      * */
     protected static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
-        String objectValueString = node.get(answerField).asText();
+        String objectValueString;
+        if (Objects.nonNull(answerField)) {
+            objectValueString = node.get(answerField).asText();
+        } else {
+            objectValueString = getAnswerValue(node);
+        }
         // Direct conversion for String
         if (returnClass == String.class) {
             return returnClass.cast(objectValueString);
@@ -214,6 +219,16 @@ public class SurveyParseUtils {
         } catch (Exception e) {
             throw new IllegalArgumentException("The provided returnClass does not have a String constructor that we can use.", e);
         }
+    }
+
+    private static String getAnswerValue(JsonNode node) {
+        for (String value : List.of("stringValue", "booleanValue", "objectValue", "numberValue")) {
+            JsonNode valueNode = node.get(value);
+            if (valueNode != null) {
+                return valueNode.asText();
+            }
+        }
+        throw new IllegalArgumentException("Could not find a value in the answer node");
     }
 
     protected static String getQuestionStableId(JsonNode node) {

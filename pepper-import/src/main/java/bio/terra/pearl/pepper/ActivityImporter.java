@@ -204,6 +204,8 @@ public class ActivityImporter {
         }
 
         Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
+        boolean titleIsEmpty = titleMap.isEmpty() || titleMap.values().stream().allMatch(StringUtils::isEmpty);
+
         String questionType = getQuestionType(pepperQuestionDef);
         String inputType = null;
 
@@ -286,6 +288,7 @@ public class ActivityImporter {
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                 .name(pepperQuestionDef.getStableId())
                 .type(questionType)
+                .titleLocation(titleIsEmpty ? "hidden" : null)
                 .title(titleMap)
                 .placeholder(placeholder)
                 .labelTrue(labelTrue)
@@ -565,6 +568,8 @@ public class ActivityImporter {
             "\\$ddp.participantFirstName\\(\\)", "{profile.givenName}",
             "\\<p.*?\\>", "",
             "\\</p\\>", "\\\\n",
+            "\\<span.*?\\>", "",
+            "\\</span\\>", "",
             "\\<em.*?\\>", "**",
             "\\</em\\>", "**",
             " +", " "

@@ -253,7 +253,7 @@ public class EnrollmentService {
             return false;
         }
         String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
-        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, "stringValue");
+        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, null);
         if (proxyAnswer == null) {
             return false;
         }
