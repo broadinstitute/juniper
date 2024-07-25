@@ -4,7 +4,7 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from './providers/PortalProvider'
 import Navbar from './Navbar'
 import { Link } from 'react-router-dom'
-import {useI18n} from "@juniper/ui-core";
+import { useI18n } from '@juniper/ui-core'
 
 /**
  * Displays when there is an unmatched participant route.

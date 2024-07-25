@@ -3,7 +3,7 @@ import Navbar from '../Navbar'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { usePortalEnv } from '../providers/PortalProvider'
-import {useI18n} from "@juniper/ui-core";
+import { useI18n } from '@juniper/ui-core'
 
 /**
  * Displays when there is an error from b2c.
