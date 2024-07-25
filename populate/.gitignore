@@ -1,2 +1,3 @@
-resources/seed/atcp
-resources/seed/atcp/*
+src/resources/seed/atcp
+src/resources/seed/atcp/*
+src/resources/seed/atcp/**/*
