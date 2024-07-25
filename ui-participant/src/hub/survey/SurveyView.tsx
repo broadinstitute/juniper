@@ -28,7 +28,15 @@ import { DocumentTitle } from 'util/DocumentTitle'
 import { useUser } from 'providers/UserProvider'
 import { HubUpdate } from 'hub/hubUpdates'
 import { useActiveUser } from 'providers/ActiveUserProvider'
+import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
+import { ReactQuestionFactory } from 'survey-react-ui'
 
+// register themed address validation type
+ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
+  return React.createElement(ThemedSurveyQuestionAddressValidation, props)
+})
+
+]
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()

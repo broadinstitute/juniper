@@ -149,6 +149,7 @@ export type I18nSurveyElement = string | I18nMap
 export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
+  title: string
   type: 'panel'
   elements: (HtmlElement | Question)[]
 }
