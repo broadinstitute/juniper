@@ -157,7 +157,8 @@ public class AnswerProcessingService {
     public static final Map<AnswerMappingMapType, BiFunction<Answer, AnswerMapping, Object>> JSON_MAPPERS = Map.of(
             AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> StringUtils.trim(answer.getStringValue()),
             AnswerMappingMapType.STRING_TO_LOCAL_DATE, (Answer answer, AnswerMapping mapping) ->
-                    mapToDate(answer.getStringValue(), mapping)
+                    mapToDate(answer.getStringValue(), mapping),
+            AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> Boolean.parseBoolean(answer.getStringValue())
     );
 
     public static LocalDate mapToDate(String dateString, AnswerMapping mapping) {
