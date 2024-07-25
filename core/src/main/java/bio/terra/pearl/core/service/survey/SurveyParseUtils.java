@@ -176,6 +176,7 @@ public class SurveyParseUtils {
      * @param returnClass the class to return the answer as
      *                    The method assumes the returnClass is a valid class that can be used to convert the answer to
      * @param objectMapper the object mapper to use to convert the answer to the returnClass
+     * @param answerField the field to get the answer from in the question node. If null, it will attempt to get the answer from the first non-null field.
      * @param <T> the class to return the answer as
      * @return the answer to the question with the stableId questionStableId as the class returnClass
      * */
@@ -222,8 +223,8 @@ public class SurveyParseUtils {
     }
 
     private static String getAnswerValue(JsonNode node) {
-        for (String value : List.of("stringValue", "booleanValue", "objectValue", "numberValue")) {
-            JsonNode valueNode = node.get(value);
+        for (String valueField : List.of("stringValue", "booleanValue", "objectValue", "numberValue")) {
+            JsonNode valueNode = node.get(valueField);
             if (valueNode != null) {
                 return valueNode.asText();
             }

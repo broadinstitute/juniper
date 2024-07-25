@@ -423,7 +423,6 @@ public class ActivityImporter {
                     textQuestionDef.getPlaceholderTemplate().getVariables());
         }
 
-
         return txtMap;
     }
 
@@ -438,7 +437,8 @@ public class ActivityImporter {
         for (TemplateVariable var : templateVariables) {
             for (Translation translation : var.getTranslations()) {
                 String languageText = textMap.getOrDefault(translation.getLanguageCode(), StringUtils.trim(templateText));
-                textMap.put(translation.getLanguageCode(), languageText.replace( "$" + var.getName(), translation.getText()));
+                languageText = languageText.replace("$" + var.getName(), translation.getText());
+                textMap.put(translation.getLanguageCode(), languageText);
             }
         }
         return textMap;
@@ -507,10 +507,6 @@ public class ActivityImporter {
         if (StringUtils.isEmpty(pepperExpr)) {
             return null;
         }
-        // example:
-        // user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
-        // should become:
-        // {REGISTRATION_COUNTRY} contains 'AF'
 
         Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
         // study e.g.: !user.studies["atcp"].isGovernedParticipant()
@@ -564,15 +560,23 @@ public class ActivityImporter {
 
     /** maps pepper replacement vars to Juniper vars, and html markup to markdown.
      * After testing some more surveys, we might want to upgrade this to use a html->markdown parsing library */
-    Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
-            "\\$ddp.participantFirstName\\(\\)", "{profile.givenName}",
-            "\\<p.*?\\>", "",
-            "\\</p\\>", "\\\\n",
-            "\\<span.*?\\>", "",
-            "\\</span\\>", "",
-            "\\<em.*?\\>", "**",
-            "\\</em\\>", "**",
-            " +", " "
+    static Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.ofEntries(
+            Map.entry("\\$ddp.participantFirstName\\(\\)", "{profile.givenName}"),
+            Map.entry("\\<p.*?\\>", ""),
+            Map.entry("\\</p\\>", "\\\\n"),
+            Map.entry("\\<span.*?\\>", ""),
+            Map.entry("\\</span\\>", ""),
+            Map.entry("\\<b.*?\\>", "**"),
+            Map.entry("\\</b\\>", "**"),
+            Map.entry("<b.*?>", "**"),
+            Map.entry("</b>", "**"),
+            Map.entry("\\<i.*?\\>", "_"),
+            Map.entry("\\</i\\>", "_"),
+            Map.entry("<i.*?>", "_"),
+            Map.entry("</i>", "_"),
+            Map.entry("\\<em.*?\\>", "**"),
+            Map.entry("\\</em\\>", "**"),
+            Map.entry(" +", " ")
     );
 
 }
