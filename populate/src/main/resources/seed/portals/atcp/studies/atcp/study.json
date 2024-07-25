@@ -8,7 +8,6 @@
     "surveys/genome-study.conf",
     "surveys/medical-history.conf",
     "surveys/prequal.conf",
-    "surveys/registration.conf",
     "surveys/review-and-submission.conf",
     "surveys/assent.conf",
     "surveys/self-consent.conf"
@@ -38,10 +37,6 @@
       "active" : true,
       "surveyOrder" : 1,
       "populateFileName" : "surveys/self-consent.conf"
-    }, {
-      "active" : true,
-      "surveyOrder" : 2,
-      "populateFileName" : "surveys/registration.conf"
     }, {
       "active" : true,
       "surveyOrder" : 3,

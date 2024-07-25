@@ -3,8 +3,6 @@ package bio.terra.pearl.api.participant.controller;
 import bio.terra.pearl.api.participant.api.SiteMediaApi;
 import bio.terra.pearl.core.model.site.SiteMedia;
 import bio.terra.pearl.core.service.site.SiteMediaService;
-import java.net.URLConnection;
-import java.util.Optional;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -12,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.net.URLConnection;
+import java.util.Optional;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
@@ -45,7 +46,7 @@ public class SiteMediaController implements SiteMediaApi {
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteMedia> siteMediaOpt;
 
-    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName, version);
+    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName.toLowerCase(), version);
     return convertToResourceResponse(siteMediaOpt);
   }
 
