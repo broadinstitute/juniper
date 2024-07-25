@@ -24,8 +24,9 @@ public class SiteMediaController implements SiteMediaApi {
   @Override
   @CrossOrigin(
       origins = {
-        "https://juniperdemodev.b2clogin.com", // Heart (demo only)
+        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo only)
         "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+        "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
         "https://ourhealthdev.b2clogin.com", // OurHealth (prod)
         "https://ourhealthstudy.b2clogin.com", // OurHealth (demo)
         "https://hearthivedev.b2clogin.com", // HeartHive (prod)
