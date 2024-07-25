@@ -158,8 +158,19 @@ public class AnswerProcessingService {
             AnswerMappingMapType.STRING_TO_STRING, (Answer answer, AnswerMapping mapping) -> StringUtils.trim(answer.getStringValue()),
             AnswerMappingMapType.STRING_TO_LOCAL_DATE, (Answer answer, AnswerMapping mapping) ->
                     mapToDate(answer.getStringValue(), mapping),
-            AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> Boolean.parseBoolean(answer.getStringValue())
+            AnswerMappingMapType.STRING_TO_BOOLEAN, (Answer answer, AnswerMapping mapping) -> mapToBoolean(answer.getStringValue(), mapping)
     );
+
+    public static Boolean mapToBoolean(String booleanString, AnswerMapping mapping) {
+        try {
+            return Boolean.parseBoolean(booleanString);
+        } catch (Exception e) {
+            if (mapping.isErrorOnFail()) {
+                throw new IllegalArgumentException("Could not parse boolean " + booleanString);
+            }
+        }
+        return null;
+    }
 
     public static LocalDate mapToDate(String dateString, AnswerMapping mapping) {
         try {
