@@ -27,7 +27,6 @@
       "targetField": "givenName",
       "mapType": "STRING_TO_STRING"
     },
-
     {
       "questionStableId": "governed_family_name",
       "targetType": "PROFILE",
