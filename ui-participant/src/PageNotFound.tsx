@@ -24,9 +24,7 @@ export default function PageNotFound() {
         <div className="fs-2 fw-light d-flex justify-content-center text-center">
           <div>
             <span>
-              The page you requested was not found.
-
-              If the problem persists, please
+              If you believe this is an error, please
               contact <a href={`mailto:${supportEmail}`}>{supportEmail}</a>.
             </span>
             <div className="d-flex justify-content-center mt-3">
