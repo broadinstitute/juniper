@@ -96,6 +96,10 @@
   {"keyName": "yourName", "text": "Tu nombre", "language": "es"},
   {"keyName": "yourEmail", "text": "Tu correo electrónico", "language": "es"},
   {"keyName": "join", "text": "Unirse", "language": "es"},
-  {"keyName": "thanksForJoining", "text": "¡Gracias por unirse!", "language": "es"}
-
+  {"keyName": "thanksForJoining", "text": "¡Gracias por unirse!", "language": "es"},
+  {"keyName": "pageNotFoundTitle", "text": "Página no encontrada", "language": "es"},
+  {"keyName": "pageNotFoundMessage", "text": "Si cree que se trata de un error, comuníquese con ${studyContactEmail}", "language": "es"},
+  {"keyName": "pageNotFoundReturnHome", "text": "Regresar a la página de inicio", "language": "es"},
+  {"keyName": "authErrorPageTitle", "text": "Algo salió mal", "language": "es"},
+  {"keyName": "authErrorPageMessage", "text": "Hubo un problema con nuestro servicio de autenticación. Inténtalo de nuevo. Si el problema persiste, por favor contacte ${studyContactEmail}", "language": "es"}
 ]
