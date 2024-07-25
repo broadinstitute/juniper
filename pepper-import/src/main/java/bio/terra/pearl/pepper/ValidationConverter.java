@@ -40,7 +40,7 @@ public class ValidationConverter {
                     }
                 }
 
-                targetQuestion.setRequired(true);
+                targetQuestion.setIsRequired(true);
                 targetQuestion.setRequiredErrorText(
                         ActivityImporter.getVariableTranslationsTxt(ruleDef.getHintTemplate().getTemplateText(),
                                 ruleDef.getHintTemplate().getVariables())

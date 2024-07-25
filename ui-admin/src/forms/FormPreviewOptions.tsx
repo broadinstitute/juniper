@@ -105,7 +105,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           </label>
         </div>
       </div>
-      <div data-testid="proxyInfoFields">
+      <div>
         <div data-testid="proxyInfoFields">
           <h4 className="h6 mt-3">
             Proxy profile <InfoPopup content={<p>
