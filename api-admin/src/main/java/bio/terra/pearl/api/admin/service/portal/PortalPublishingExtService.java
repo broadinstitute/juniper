@@ -1,6 +1,8 @@
 package bio.terra.pearl.api.admin.service.portal;
 
 import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalPermission;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -25,15 +27,13 @@ public class PortalPublishingExtService {
     this.portalPublishingService = portalPublishingService;
   }
 
+  /** anyone can see the difference between two environments */
+  @EnforcePortalPermission(permission = "BASE")
   public PortalEnvironmentChange diff(
-      String portalShortcode, EnvironmentName destEnv, EnvironmentName sourceEnv, AdminUser user) {
-    authUtilService.authUserToPortal(user, portalShortcode);
-    try {
-      return portalDiffService.diffPortalEnvs(portalShortcode, destEnv, sourceEnv);
-    } catch (Exception e) {
-      throw new IllegalArgumentException(e);
-    }
+          PortalAuthContext authContext, EnvironmentName destEnv, EnvironmentName sourceEnv) {
+    return portalDiffService.diffPortalEnvs(authContext.getPortalShortcode(), destEnv, sourceEnv);
   }
+
 
   public PortalEnvironment update(
       String portalShortcode,

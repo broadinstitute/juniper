@@ -18,21 +18,18 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class PortalEnvironmentController implements PortalEnvironmentApi {
-  private HttpServletRequest request;
-  private AuthUtilService authUtilService;
-  private PortalPublishingExtService portalPublishingExtService;
-  private PortalExtService portalExtService;
-  private ObjectMapper objectMapper;
+  private final HttpServletRequest request;
+  private final AuthUtilService authUtilService;
+  private final PortalExtService portalExtService;
+  private final ObjectMapper objectMapper;
 
   public PortalEnvironmentController(
       HttpServletRequest request,
       AuthUtilService authUtilService,
-      PortalPublishingExtService portalPublishingExtService,
       PortalExtService portalExtService,
       ObjectMapper objectMapper) {
     this.request = request;
     this.authUtilService = authUtilService;
-    this.portalPublishingExtService = portalPublishingExtService;
     this.portalExtService = portalExtService;
     this.objectMapper = objectMapper;
   }
@@ -56,26 +53,5 @@ public class PortalEnvironmentController implements PortalEnvironmentApi {
     updatedLanguages =
         portalExtService.setLanguages(portalShortcode, environmentName, updatedLanguages, user);
     return ResponseEntity.ok(updatedLanguages);
-  }
-
-  @Override
-  public ResponseEntity<Object> diff(String portalShortcode, String destEnv, String sourceEnv) {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(
-        portalPublishingExtService.diff(
-            portalShortcode,
-            EnvironmentName.valueOfCaseInsensitive(sourceEnv),
-            EnvironmentName.valueOfCaseInsensitive(destEnv),
-            user));
-  }
-
-  @Override
-  public ResponseEntity<Object> apply(
-      String portalShortcode, String destEnv, String sourceEnv, Object body) {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    PortalEnvironmentChange change = objectMapper.convertValue(body, PortalEnvironmentChange.class);
-    return ResponseEntity.ok(
-        portalPublishingExtService.update(
-            portalShortcode, EnvironmentName.valueOfCaseInsensitive(destEnv), change, user));
   }
 }

@@ -1384,10 +1384,10 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff:
+  /api/portals/v1/{portalShortcode}/publish/diff/{sourceEnv}/{targetEnv}:
     get:
       summary: Gets the diff between one environment and another
-      tags: [ portalEnvironment ]
+      tags: [ portalPublishing ]
       operationId: diff
       parameters:
         - *portalShortcodeParam
@@ -1399,10 +1399,10 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff/apply:
+  /api/portals/v1/{portalShortcode}/publish/apply/{targetEnv}:
     post:
       summary: Updates a portal environment according to the update object obtained from a diff operation
-      tags: [ portalEnvironment ]
+      tags: [ portalPublishing ]
       operationId: apply
       parameters:
         - *portalShortcodeParam
@@ -1414,6 +1414,19 @@ paths:
       responses:
         '200':
           description: PortalEnvironment object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/publish/changeRecords:
+    post:
+      summary: Gets the change records for a portal environment
+      tags: [ portalPublishing ]
+      operationId: changeRecords
+      parameters:
+        - *portalShortcodeParam
+      responses:
+        '200':
+          description: List of PortalEnvironmentChangeRecords
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
