@@ -21,6 +21,7 @@ export type QuestionDesignerProps = {
   isNewQuestion: boolean
   readOnly: boolean
   showName: boolean
+  showQuestionTypeHeader?: boolean
   currentLanguage: PortalEnvironmentLanguage
   supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: Question) => void
@@ -30,7 +31,7 @@ export type QuestionDesignerProps = {
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
   const {
-    question, isNewQuestion, readOnly, showName,
+    question, isNewQuestion, readOnly, showName, showQuestionTypeHeader = true,
     onChange, addNextQuestion, currentLanguage, supportedLanguages
   } = props
 
@@ -46,7 +47,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
           </Button>
         </div>}
       </div>
-      {!isTemplated && (
+      {!isTemplated && showQuestionTypeHeader && (
         <>
           <p className="fs-4">{questionTypeLabels[question.type]} question
             <InfoPopup content={questionTypeDescriptions[question.type]}/>

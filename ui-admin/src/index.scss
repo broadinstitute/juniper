@@ -45,3 +45,7 @@ code {
 [aria-expanded="true"] .hidden-when-expanded {
   display: none;
 }
+
+.survey-hide-complete #sv-nav-complete {
+  display: none;
+}

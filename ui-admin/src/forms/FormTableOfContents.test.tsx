@@ -14,6 +14,7 @@ const formContent: FormContent = {
           html: '<h1>Name</h1>'
         },
         {
+          title: 'My panel',
           type: 'panel',
           elements: [
             {
