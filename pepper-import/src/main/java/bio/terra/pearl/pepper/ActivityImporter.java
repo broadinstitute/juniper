@@ -570,12 +570,12 @@ public class ActivityImporter {
             Map.entry("\\</b\\>", "**"),
             Map.entry("<b.*?>", "**"),
             Map.entry("</b>", "**"),
-            Map.entry("\\<i.*?\\>", "_"),
-            Map.entry("\\</i\\>", "_"),
-            Map.entry("<i.*?>", "_"),
-            Map.entry("</i>", "_"),
-            Map.entry("\\<em.*?\\>", "**"),
-            Map.entry("\\</em\\>", "**"),
+            Map.entry("\\<i.*?\\>", "*"),
+            Map.entry("\\</i\\>", "*"),
+            Map.entry("<i.*?>", "*"),
+            Map.entry("</i>", "*"),
+            Map.entry("\\<em.*?\\>", "*"),
+            Map.entry("\\</em\\>", "*"),
             Map.entry(" +", " ")
     );
 
