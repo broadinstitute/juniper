@@ -12,6 +12,7 @@ import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
@@ -160,6 +161,22 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 .emailTemplateId(emailTemplate.getId())
                 .deliveryType(NotificationDeliveryType.EMAIL)
                 .triggerType(TriggerType.EVENT),
+                enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
+
+        testSendProfile(enrolleeEmailService, enrolleeBundle, config);
+        testDoNotSendProfile(enrolleeEmailService, enrolleeBundle, config);
+    }
+
+    @Test
+    @Transactional
+    public void testEmailSendOrSkipSolicit(TestInfo info) {
+        EnrolleeFactory.EnrolleeBundle enrolleeBundle = enrolleeFactory.buildWithPortalUser(getTestName(info));
+        EmailTemplate emailTemplate = emailTemplateFactory.buildPersisted(getTestName(info), enrolleeBundle.portalId());
+        Trigger config = triggerFactory.buildPersisted(Trigger.builder()
+                .emailTemplateId(emailTemplate.getId())
+                .deliveryType(NotificationDeliveryType.EMAIL)
+                .triggerType(TriggerType.EVENT)
+                .taskType(TaskType.OUTREACH),
                 enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
 
         testSendProfile(enrolleeEmailService, enrolleeBundle, config);

@@ -8,6 +8,7 @@ import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationSender;
 import bio.terra.pearl.core.service.notification.NotificationService;
@@ -151,6 +152,12 @@ public class EnrolleeEmailService implements NotificationSender {
                                    NotificationContextInfo contextInfo) {
         if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmail()) {
             log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
+                    ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+            return false;
+        }
+        if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
+            System.out.println("SKIPPING!!!");
+            log.info("skipping email, enrollee {} is doNotEmailSolicit: triggerId: {}, portalEnv: {}",
                     ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
