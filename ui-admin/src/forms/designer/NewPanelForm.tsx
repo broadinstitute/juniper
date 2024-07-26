@@ -51,6 +51,7 @@ export const NewPanelForm = (props: NewPanelFormProps) => {
           variant="primary"
           onClick={() => {
             onCreate({
+              title: '',
               type: 'panel',
               elements: availableElements.filter(element => selectedElements.includes(element.name))
             })

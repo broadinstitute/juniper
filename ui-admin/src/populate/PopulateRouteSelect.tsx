@@ -12,7 +12,7 @@ import PopulateHome from './PopulateHome'
 
 /** shows links to the populate control panels, and handles the routing for them */
 export default function PopulateRouteSelect({ portalShortcode }: {portalShortcode?: string}) {
-  return <div className="container-fluid">
+  return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Populate') }
     <div className="d-flex">
       <div style={navDivStyle}>

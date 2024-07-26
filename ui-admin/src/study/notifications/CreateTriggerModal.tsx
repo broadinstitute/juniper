@@ -9,7 +9,7 @@ import { doApiLoad } from 'api/api-utils'
 import Api from 'api/api'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import { TriggerBaseForm } from './TriggerView'
+import TriggerBaseForm from './TriggerBaseForm'
 
 /** gets a default config -- eventually we'll want this to load from a template study instead of being in source code */
 const getDefaultConfig = (): Trigger => {
@@ -18,6 +18,8 @@ const getDefaultConfig = (): Trigger => {
     triggerType: 'EVENT',
     deliveryType: 'EMAIL',
     eventType: 'STUDY_ENROLLMENT',
+    actionType: 'NOTIFICATION',
+    actionScope: 'STUDY',
     active: true,
     portalEnvironmentId: '',
     studyEnvironmentId: '',
@@ -74,7 +76,7 @@ export default function CreateTriggerModal({ studyEnvParams, onDismiss, onCreate
               localizedEmailTemplates: [{ ...localizedEmailTemplate }]
             }
           })}/>
-        <TriggerBaseForm config={config} setConfig={setConfig}/>
+        <TriggerBaseForm trigger={config} setTrigger={setConfig}/>
       </form>
     </Modal.Body>
     <Modal.Footer>

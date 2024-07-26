@@ -4,6 +4,8 @@ import bio.terra.pearl.core.dao.BaseJdbiDao;
 import bio.terra.pearl.core.model.log.LogEvent;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import bio.terra.pearl.core.model.log.LogEventType;
 import org.jdbi.v3.core.Jdbi;
 import org.jdbi.v3.core.mapper.reflect.BeanMapper;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,16 @@ public class LogEventDao {
             .executeAndReturnGeneratedKeys()
             .mapTo(LogEvent.class)
             .one()
+    );
+  }
+
+  public List<LogEvent> listLogEvents(String days, List<LogEventType> eventTypes) {
+    return jdbi.withHandle(handle ->
+        handle.createQuery("SELECT * FROM log_event WHERE event_type IN (<eventTypes>) AND created_at > now() - (:days || ' day')::interval")
+            .bindList("eventTypes", eventTypes)
+            .bind("days", days)
+            .mapTo(LogEvent.class)
+            .list()
     );
   }
 

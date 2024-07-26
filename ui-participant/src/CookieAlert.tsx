@@ -6,8 +6,6 @@ type CookieAlertProps = {
   onDismiss: () => void
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const CookieAlert = (props: CookieAlertProps) => {
   const { onDismiss } = props
   const { i18n } = useI18n()

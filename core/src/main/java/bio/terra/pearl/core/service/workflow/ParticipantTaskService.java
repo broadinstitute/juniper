@@ -41,6 +41,10 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         return dao.findByEnrolleeIds(enrolleeIds);
     }
 
+    public List<ParticipantTask> findByPortalParticipantUserId(UUID ppUserId) {
+        return dao.findByPortalParticipantUserId(ppUserId);
+    }
+
     public List<ParticipantTask> findAdminTasksByStudyEnvironmentId(UUID studyEnvId) {
         return dao.findByStudyEnvironmentId(studyEnvId);
     }

@@ -11,8 +11,6 @@ const aadb2cPolicyName = import.meta.env.VITE_B2C_POLICY_NAME ? import.meta.env.
 
 // TODO: This is a modified copy of code from Terra UI. It could use some clean-up.
 /* eslint-disable camelcase, max-len */
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const getOidcConfig = (
   b2cTenantName: string = aadB2cName,
   b2cClientId: string = aadb2cClientId,

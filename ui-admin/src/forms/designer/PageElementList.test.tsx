@@ -93,10 +93,12 @@ describe('PageElementList', () => {
     const elements: FormElement[] = [
       { name: 'q1', title: 'q1', type: 'text' },
       {
+        title: 'My panel',
         type: 'panel',
         elements: []
       },
       {
+        title: 'My panel',
         type: 'panel',
         elements: [
           { name: 'q2', title: 'q2', type: 'text' },

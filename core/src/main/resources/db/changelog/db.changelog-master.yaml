@@ -297,6 +297,9 @@ databaseChangeLog:
       file: changesets/2024_07_17_relax_family_audit_fk.yaml
       relativeToChangelogFile: true
   - include:
+      file: changesets/2024_07_19_trigger_actions.yaml
+      relativeToChangelogFile: true
+  - include:
       file: changesets/2024_07_25_portal_change_record_fields.yaml
       relativeToChangelogFile: true
 

@@ -8,7 +8,7 @@ import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
 import { setupRouterTest } from '@juniper/ui-core'
 
-test('renders routable config list', async () => {
+test('renders routable trigger list', async () => {
   const studyEnvContext = mockStudyEnvContext()
   const enrollEmailConfig = {
     ...mockTrigger(),
@@ -48,7 +48,7 @@ test('renders routable config list', async () => {
   expect(screen.getByText('Reminder: SURVEY')).toBeInTheDocument()
 
   await userEvent.click(screen.getByText('Study enrollment'))
-  expect(router.state.location.pathname).toEqual(`/configs/${enrollEmailConfig.id}`)
+  expect(router.state.location.pathname).toEqual(`/triggers/${enrollEmailConfig.id}`)
 })
 
 test('allows deletion of notification config', async () => {

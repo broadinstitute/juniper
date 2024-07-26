@@ -22,7 +22,7 @@ test('enables updating of email templates', async () => {
     <ReactNotifications />
     <TriggerView studyEnvContext={studyEnvContext} portalContext={mockPortalContext()}
       onDelete={jest.fn()}/>
-  </div>, [`/${trigger.id}`], ':configId')
+  </div>, [`/${trigger.id}`], ':triggerId')
 
   await waitFor(() => expect(findSpy).toHaveBeenCalledTimes(1))
   expect(findSpy).toHaveBeenCalledWith(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,

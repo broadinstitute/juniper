@@ -14,6 +14,6 @@ public class DispatcherOrder {
     public static final int CONSENT_PROCESSOR = 5;
     public static final int SURVEY_TASK = 10;
     public static final int KIT_TASK = 20;
-    // notifications should be processed last so they can include all previous processing
-    public static final int NOTIFICATION = 100;
+    // actions should be processed last so they can include all previous processing
+    public static final int ACTION = 100;
 }

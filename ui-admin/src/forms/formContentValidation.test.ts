@@ -81,6 +81,7 @@ describe('validateFormContent', () => {
               title: 'test title'
             },
             {
+              title: 'My panel',
               type: 'panel',
               elements: [
                 {
