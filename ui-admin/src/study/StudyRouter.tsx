@@ -95,5 +95,5 @@ export const studyPublishingPath = (portalShortcode: string, studyShortcode: str
 /** path for showing the diff between two study environments */
 export const studyDiffPath = (portalShortcode: string, studyShortcode: string,
   srcEnvName: string, destEnvName: string) => {
-  return `/${portalShortcode}/studies/${studyShortcode}/diff/${srcEnvName}/${destEnvName}`
+  return `/${portalShortcode}/studies/${studyShortcode}/publishing/diff/${srcEnvName}/${destEnvName}`
 }

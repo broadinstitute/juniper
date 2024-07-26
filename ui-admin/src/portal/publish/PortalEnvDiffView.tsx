@@ -17,6 +17,7 @@ import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _cloneDeep from 'lodash/cloneDeep'
 import { userHasPermission, useUser } from 'user/UserProvider'
+import { Button } from 'components/forms/Button'
 
 export const emptyChangeSet: PortalEnvironmentChange = {
   siteContentChange: { changed: false },
@@ -228,7 +229,9 @@ export default function PortalEnvDiffView(
     </div>
     <div className="d-flex justify-content-center mt-2 pb-5">
       { userHasPermission(user, portal.id, 'publish') && <>
-        <button className="btn btn-primary" onClick={() => applyChanges(selectedChanges)}>Publish changes</button>
+        <Button variant="primary" onClick={() => applyChanges(selectedChanges)}>
+          Publish changes to {destEnvName}
+        </Button>
         {
           // eslint-disable-next-line
           // @ts-ignore  Link to type also supports numbers for back operations
