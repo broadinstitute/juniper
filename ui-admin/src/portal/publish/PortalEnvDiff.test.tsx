@@ -73,7 +73,8 @@ describe('PortalEnvDiff', () => {
       ...defaultRenderOpts,
       permissions: ['somethingElse']
     })
-    expect(screen.queryByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`)).not.toBeInTheDocument()
+    expect(screen.queryByText(`Publish changes to ${portal.portalEnvironments[0].environmentName}`))
+      .not.toBeInTheDocument()
   })
 
   it('handles changes with siteContent', async () => {
