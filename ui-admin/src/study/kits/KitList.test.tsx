@@ -4,7 +4,7 @@ import { mockEnrollee, mockKitRequest, mockStudyEnvContext } from 'test-utils/mo
 import KitList from './KitList'
 import { BrowserRouter } from 'react-router-dom'
 
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
 import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'

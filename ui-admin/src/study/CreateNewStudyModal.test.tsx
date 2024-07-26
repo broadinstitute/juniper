@@ -2,7 +2,7 @@
 import { render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateNewStudyModal from './CreateNewStudyModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { mockPortal } from '../test-utils/mocking-utils'
 
 describe('CreateNewStudyModal', () => {

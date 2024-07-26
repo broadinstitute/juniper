@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React from 'react'
 import { mockPortalContext, mockPortalEnvironment } from '../test-utils/mocking-utils'
 import { AddMailingListUsersModal, parseContactCsv } from './AddMailingListUsersModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 describe('AddMailingListUsersModal', () => {
   it('renders a modal with contact fields', () => {

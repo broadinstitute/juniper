@@ -1,7 +1,7 @@
 import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import { NewQuestionForm } from './NewQuestionForm'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { MOCK_ENGLISH_LANGUAGE } from '../../test-utils/mocking-utils'
 
 describe('NewQuestionForm', () => {

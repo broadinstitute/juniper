@@ -7,7 +7,7 @@ import {
   waitFor
 } from '@testing-library/react'
 import { SearchQueryBuilder } from './SearchQueryBuilder'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import Api, { SearchValueTypeDefinition } from 'api/api'
 
 const mailingAddressCountryFacet: { [index: string]: SearchValueTypeDefinition } = {

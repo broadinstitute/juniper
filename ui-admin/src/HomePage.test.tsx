@@ -4,7 +4,7 @@ import HomePage from './HomePage'
 import { makeMockPortal } from './test-utils/mocking-utils'
 import { useNavContext } from './navbar/NavContextProvider'
 import { setupRouterTest } from '@juniper/ui-core'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 jest.mock('./navbar/NavContextProvider')
 

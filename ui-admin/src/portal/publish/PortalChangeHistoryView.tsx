@@ -6,10 +6,10 @@ import Api, { PortalEnvironmentChangeRecord } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout, renderEmptyMessage } from '../../util/tableUtils'
+import { basicTableLayout, renderEmptyMessage } from 'util/tableUtils'
 import Modal from 'react-bootstrap/Modal'
 import _truncate from 'lodash/truncate'
-import { Button } from '../../components/forms/Button'
+import { Button } from 'components/forms/Button'
 
 /** shows the list of PortalEnvironmentChangeRecords for a portal */
 export default function PortalChangeHistoryView({ portal }: {portal: Portal}) {
@@ -32,6 +32,9 @@ export default function PortalChangeHistoryView({ portal }: {portal: Portal}) {
       columnType: 'instant'
     },
     cell: info => instantToDefaultString(info.getValue() as number)
+  }, {
+    header: 'Environment',
+    accessorKey: 'environmentName'
   }, {
     header: 'Operator',
     accessorKey: 'adminUserId',

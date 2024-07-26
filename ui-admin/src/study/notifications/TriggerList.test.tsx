@@ -3,7 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 
 import { mockTrigger, mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import TriggerList from './TriggerList'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import Api from 'api/api'
 import { ReactNotifications } from 'react-notifications-component'
 import { setupRouterTest } from '@juniper/ui-core'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { PhotoBioView } from 'src/participant/landing/sections/PhotoBlurbGrid'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 
 describe('PhotoBlurbGrid', () => {

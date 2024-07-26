@@ -4,7 +4,7 @@ import { defaultRenderOpts, mockPortalContext, renderInPortalRouter } from 'test
 import PortalEnvDiffView, { emptyChangeSet } from './PortalEnvDiffView'
 
 import { PortalEnvironmentChange } from 'api/api'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 
 describe('PortalEnvDiff', () => {

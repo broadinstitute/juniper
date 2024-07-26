@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react'
 import React, { useState } from 'react'
 
 import DocumentTitle from './DocumentTitle'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 
 
 const DocTitleTestComponent = () => {

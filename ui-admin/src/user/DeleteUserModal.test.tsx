@@ -2,7 +2,7 @@ import React from 'react'
 import { mockPortal } from 'test-utils/mocking-utils'
 import { render, screen } from '@testing-library/react'
 import DeleteUserModal from './DeleteUserModal'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { mockAdminUser } from '../test-utils/user-mocking-utils'
 import { setupRouterTest } from '@juniper/ui-core'
 
