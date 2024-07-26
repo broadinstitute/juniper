@@ -31,7 +31,8 @@ export default function AuthError() {
               {i18n('authErrorPageMessage', {
                 substitutions: {
                   studyContactEmail: supportEmail
-                }})}
+                }
+              })}
             </span>
           </div>
         </div>

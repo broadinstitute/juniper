@@ -30,7 +30,8 @@ export default function PageNotFound() {
               {i18n('pageNotFoundMessage', {
                 substitutions: {
                   studyContactEmail
-              }})}
+                }
+              })}
             </span>
             <div className="d-flex justify-content-center mt-3">
               <Link className="btn btn-outline-primary" to={'/'}>
