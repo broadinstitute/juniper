@@ -38,6 +38,12 @@
       "targetType": "PROFILE",
       "targetField": "mailingAddress.country",
       "mapType": "STRING_TO_STRING"
+    },
+    {
+      "questionStableId": "do_not_email_solicit",
+      "targetType": "PROFILE",
+      "targetField": "doNotEmailSolicit",
+      "mapType": "STRING_TO_BOOLEAN"
     }
   ],
   "jsonContent": {
@@ -244,6 +250,35 @@
                   "es": "No",
                   "dev": "DEV_No"
                 }
+              }
+            ]
+          },
+          {
+            "type": "radiogroup",
+            "name": "do_not_email_solicit",
+            "title": {
+              "en": "I would like to receive marketing communications to the email address that I provide during registration.",
+              "es": "Me gustaría recibir comunicaciones de marketing a la dirección de correo electrónico que proporcioné durante el registro.",
+              "dev": "I would like to receive marketing communications to the email address that I provide during registration."
+            },
+            "description": "",
+            "isRequired": true,
+            "choices": [
+              {
+                "text": {
+                  "en": "Yes",
+                  "es": "Sí",
+                  "dev": "DEV_Yes"
+                },
+                "value": "false"
+              },
+              {
+                "text": {
+                  "en": "No",
+                  "es": "No",
+                  "dev": "DEV_No"
+                },
+                "value": "true"
               }
             ]
           }
