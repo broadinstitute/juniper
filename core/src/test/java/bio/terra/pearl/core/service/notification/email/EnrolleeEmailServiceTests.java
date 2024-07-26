@@ -180,7 +180,7 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
                 enrolleeBundle.enrollee().getStudyEnvironmentId(), enrolleeBundle.portalParticipantUser().getPortalEnvironmentId());
 
         testSendProfile(enrolleeEmailService, enrolleeBundle, config);
-        testDoNotSendProfile(enrolleeEmailService, enrolleeBundle, config);
+        testDoNotSendSolicitProfile(enrolleeEmailService, enrolleeBundle, config);
     }
 
     private void testSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
@@ -196,6 +196,15 @@ public class EnrolleeEmailServiceTests extends BaseSpringBootTest {
     private void testDoNotSendProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
         Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
         EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(true).build(), null);
+        NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
+        enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
+        Notification updatedNotification = notificationService.find(notification.getId()).get();
+        assertThat(updatedNotification.getDeliveryStatus(), equalTo(NotificationDeliveryStatus.SKIPPED));
+    }
+
+    private void testDoNotSendSolicitProfile(EnrolleeEmailService enrolleeEmailService, EnrolleeFactory.EnrolleeBundle enrolleeBundle, Trigger config) {
+        Notification notification = notificationFactory.buildPersisted(enrolleeBundle, config);
+        EnrolleeContext ruleData = new EnrolleeContext(enrolleeBundle.enrollee(), Profile.builder().doNotEmail(false).doNotEmailSolicit(true).build(), null);
         NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, null);
         enrolleeEmailService.processNotification(notification, config, ruleData, contextInfo);
         Notification updatedNotification = notificationService.find(notification.getId()).get();

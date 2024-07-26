@@ -156,7 +156,6 @@ public class EnrolleeEmailService implements NotificationSender {
             return false;
         }
         if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
-            System.out.println("SKIPPING!!!");
             log.info("skipping email, enrollee {} is doNotEmailSolicit: triggerId: {}, portalEnv: {}",
                     ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
