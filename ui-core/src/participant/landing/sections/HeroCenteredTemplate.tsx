@@ -5,11 +5,25 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalString } from '../../util/validationUtils'
+import {
+  requireOptionalArray,
+  requireOptionalString
+} from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
-import { InlineMarkdown, Markdown } from '../Markdown'
+import ConfiguredButton, {
+  ButtonConfig,
+  buttonConfigProps,
+  validateButtonConfig
+} from '../ConfiguredButton'
+import ConfiguredMedia, {
+  MediaConfig,
+  mediaConfigProps,
+  validateMediaConfig
+} from '../ConfiguredMedia'
+import {
+  InlineMarkdown,
+  Markdown
+} from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -17,6 +31,7 @@ import { useApiContext } from '../../../participant/ApiProvider'
 export type HeroCenteredTemplateConfig = {
   blurb?: string, //  text below the title
   blurbAlign?: 'left' | 'right' | 'center' // left|right|center  where to align the blurb text.  default is 'center'
+  blurbSize?: string
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   title?: string, // large heading text
   image?: MediaConfig   // image to display under blurb
@@ -31,6 +46,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
     throw new Error(`${message}: if provided, blurbAlign must be one of "left", "right", or "center"`)
   }
 
+  const blurbSize = requireOptionalString(config, 'blurbSize', message)
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig)
   const title = requireOptionalString(config, 'title', message)
   const image = config.image ? validateMediaConfig(config.image) : undefined
@@ -38,6 +54,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
   return {
     blurb,
     blurbAlign,
+    blurbSize,
     buttons,
     title,
     image
@@ -47,6 +64,7 @@ const validateHeroCenteredTemplateConfig = (config: SectionConfig): HeroCentered
 export const heroCenteredTemplateConfigProps = [
   { name: 'blurb', translated: true },
   { name: 'blurbAlign' },
+  { name: 'blurbSize' },
   { name: 'buttons', subProps: buttonConfigProps, isArray: true },
   { name: 'title', translated: true },
   { name: 'image', subProps: mediaConfigProps }
@@ -59,7 +77,7 @@ type HeroCenteredTemplateProps = TemplateComponentProps<HeroCenteredTemplateConf
  */
 function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
   const { anchorRef, config } = props
-  const { blurb, blurbAlign, buttons, title, image } = config
+  const { blurb, blurbAlign, buttons, title, image, blurbSize } = config
   const { getImageUrl } = useApiContext()
   const hasTitle = !!title
   const hasBlurb = !!blurb
@@ -79,7 +97,7 @@ function HeroCenteredTemplate(props: HeroCenteredTemplateProps) {
       )}
       {hasBlurb && (
         <Markdown
-          className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}
+          className={classNames(blurbSize ? blurbSize : 'fs-4', { 'mb-4': hasContentFollowingBlurb })}
           style={{ textAlign: blurbAlign || 'center' }}
         >
           {blurb}

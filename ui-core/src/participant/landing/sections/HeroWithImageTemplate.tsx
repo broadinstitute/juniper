@@ -5,24 +5,48 @@ import React from 'react'
 import { SectionConfig } from 'src/types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalNumber, requireOptionalString }
-  from '../../util/validationUtils'
+import {
+  requireOptionalArray,
+  requireOptionalNumber,
+  requireOptionalString
+} from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
-import { InlineMarkdown, Markdown } from '../Markdown'
+import './websiteStyles.scss'
+
+import ConfiguredButton, {
+  ButtonConfig,
+  buttonConfigProps,
+  validateButtonConfig
+} from '../ConfiguredButton'
+import ConfiguredMedia, {
+  ImageConfig,
+  MediaConfig,
+  mediaConfigProps,
+  validateMediaConfig
+} from '../ConfiguredMedia'
+import {
+  InlineMarkdown,
+  Markdown
+} from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../ApiProvider'
-import { blurbProp, SectionProp, titleProp } from './SectionProp'
+import {
+  blurbProp,
+  SectionProp,
+  titleProp
+} from './SectionProp'
 
 export type HeroWithImageTemplateConfig = {
   blurb?: string, //  text below the title
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   fullWidth?: boolean, // span the full page width or not
   image?: MediaConfig, // image
+  imageAsBackground?: boolean, // use image as background image
+  aspectRatio?: string, // aspect ratio of the image
   imagePosition?: 'left' | 'right', // left or right.  Default is right
   imageWidthPercentage?: number, // number between 0 and 100. Percentage of row width given to image.
+  blurbSize?: string, // size of the blurb text
   logos?: MediaConfig[],
   title?: string // large heading text
 }
@@ -30,8 +54,11 @@ export type HeroWithImageTemplateConfig = {
 export const heroWithImageTemplateConfigProps: SectionProp[] = [
   titleProp,
   blurbProp,
+  { name: 'blurbSize' },
   { name: 'buttons', subProps: buttonConfigProps, isArray: true },
   { name: 'fullWidth' },
+  { name: 'imageAsBackground' },
+  { name: 'aspectRatio' },
   { name: 'image', subProps: mediaConfigProps },
   { name: 'imagePosition' },
   { name: 'imageWidthPercentage' },
@@ -43,8 +70,11 @@ export const heroWithImageTemplateConfigProps: SectionProp[] = [
 const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithImageTemplateConfig => {
   const message = 'Invalid HeroWithImageTemplateConfig'
   const blurb = requireOptionalString(config, 'blurb', message)
+  const blurbSize = requireOptionalString(config, 'blurbSize', message)
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const fullWidth = !!config.fullWidth
+  const imageAsBackground = !!config.imageAsBackground
+  const aspectRatio = requireOptionalString(config, 'aspectRatio', message)
   const image = config.image ? validateMediaConfig(config.image) : undefined
   const imagePosition = requireOptionalString(config, 'imagePosition', message)
   if (!(imagePosition === undefined || imagePosition === 'left' || imagePosition === 'right')) {
@@ -58,8 +88,11 @@ const validateHeroWithImageTemplateConfig = (config: SectionConfig): HeroWithIma
   const title = requireOptionalString(config, 'title', message)
   return {
     blurb,
+    blurbSize,
     buttons,
     fullWidth,
+    imageAsBackground,
+    aspectRatio,
     image,
     imagePosition,
     imageWidthPercentage,
@@ -77,8 +110,11 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
   const { anchorRef, config } = props
   const {
     blurb,
+    blurbSize,
     buttons,
     fullWidth = false,
+    imageAsBackground = false,
+    aspectRatio,
     image,
     imagePosition,
     imageWidthPercentage: configuredImageWidthPercentage,
@@ -111,8 +147,19 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           'row',
           'col-12',
           fullWidth ? 'mx-0' : 'col-sm-10 mx-auto',
-          isLeftImage ? 'flex-row' : 'flex-row-reverse'
+          isLeftImage ? 'flex-row' : 'flex-row-reverse',
+          imageAsBackground ? 'responsive-bg-image' : ''
         )}
+        style={imageAsBackground ? {
+          backgroundImage: `url(${
+            getImageUrl((image as ImageConfig).cleanFileName, (image as ImageConfig).version)
+          })`,
+          backgroundSize: 'cover',
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: '50% 50%',
+          width: '100%',
+          aspectRatio: aspectRatio ? aspectRatio : undefined
+        } : {}}
       >
         {!!image && (
           <div
@@ -121,14 +168,14 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
               'd-flex justify-content-center align-items-center p-0'
             )}
           >
-            <ConfiguredMedia media={image} className="img-fluid"/>
+            {!imageAsBackground && <ConfiguredMedia media={image} className="img-fluid"/>}
           </div>
         )}
         <div
           className={classNames(
             'col-12', `col-lg-${12 - imageCols}`,
             'py-3 p-sm-3 p-lg-5',
-            'd-flex flex-column flex-grow-1 justify-content-around'
+            'd-flex flex-column flex-grow-1 justify-content-center'
           )}
         >
           {!!title && (
@@ -137,7 +184,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
             </h2>
           )}
           {hasBlurb && (
-            <Markdown className={classNames('fs-4', { 'mb-4': hasContentFollowingBlurb })}>
+            <Markdown className={classNames(blurbSize ? blurbSize : 'fs-4', { 'mb-4': hasContentFollowingBlurb })}>
               {blurb}
             </Markdown>
           )}
