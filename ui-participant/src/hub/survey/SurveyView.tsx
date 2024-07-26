@@ -36,7 +36,6 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
   return React.createElement(ThemedSurveyQuestionAddressValidation, props)
 })
 
-]
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
