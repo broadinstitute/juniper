@@ -61,8 +61,8 @@ task createUnfingerprintedAssets(type: Copy) {
     dependsOn('processResources')
     from "$rootDir/api-participant/build/resources/main/static/assets"
     into "$rootDir/api-participant/build/resources/main/static/assets"
-    rename('(.+)-([a-zA-Z0-9-_]+)\\.js', '$1.js')
-    rename("index-([a-zA-Z0-9-_]+).css", "index.css")
+    rename('(.+)-([a-zA-Z0-9-_]{8})\\.js', '$1.js')
+    rename("index-([a-zA-Z0-9-_]{8}).css", "index.css")
     duplicatesStrategy(DuplicatesStrategy.INCLUDE) // overwrite with the more recent version if the file already exists
 }
 
