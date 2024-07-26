@@ -4,7 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { StudyEnvConfigView } from './StudySettings'
 import { mockPortalContext, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { MockSuperuserProvider } from 'test-utils/user-mocking-utils'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import { EnvironmentName } from '@juniper/ui-core'
 
 test('renders a study env. config', async () => {

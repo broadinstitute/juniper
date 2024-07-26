@@ -13,6 +13,14 @@
     ]
   },
   {
+    "name": "publisher",
+    "displayName": "Study publisher",
+    "description": "publish changes to irb and live environments",
+    "permissionNames": [
+      "publish"
+    ]
+  },
+  {
     "name": "prototype_tester",
     "displayName": "Prototype access",
     "description": "Use features being prototyped",

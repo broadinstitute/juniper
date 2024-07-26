@@ -198,6 +198,15 @@ export type DataImportItem = {
   lastUpdatedAt?: number
 }
 
+export type PortalEnvironmentChangeRecord = {
+  createdAt: number
+  portalId?: string
+  environmentName: string
+  adminUserId: string
+  portalEnvironmentChange: string
+  parsedChange?: PortalEnvironmentChange
+}
+
 export type PortalEnvironmentChange = {
   siteContentChange: VersionedEntityChange
   configChanges: ConfigChange[]
@@ -1391,19 +1400,26 @@ export default {
 
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
+    const url = `${basePortalUrl(portalShortcode)}/publish/diff/${sourceEnvName}/${destEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
     Promise<PortalEnvironment> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff/apply`
+    const url = `${basePortalUrl(portalShortcode)}/publish/apply/${destEnvName}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(changes)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchPortalEnvChangeRecords(portalShortcode: string):
+    Promise<PortalEnvironmentChangeRecord[]> {
+    const url = `${basePortalUrl(portalShortcode)}/publish/changeRecords`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 

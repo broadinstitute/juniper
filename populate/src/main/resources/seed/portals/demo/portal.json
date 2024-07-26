@@ -101,7 +101,7 @@
   ],
   "adminUsers": [
     {"username": "heartdemostaff@gmail.com", "roleNames": ["study_admin"]},
-    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester", "power_user"]}
+    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester", "power_user", "publisher"]}
   ],
   "siteMediaDtos": [
     {
@@ -158,5 +158,20 @@
       "populateFileName": "media/globe_and_hearts.png"
   }, {
       "populateFileName": "media/favicon.ico"
-  }]
+  }],
+  "portalEnvironmentChangeRecordPopDtos": [
+    {
+      "submittedHoursAgo": 48,
+      "adminUsername": "power_user@heartdemo.org",
+      "environmentName": "irb",
+      "portalEnvironmentChangeJson": {
+        "configChanges": [
+          {
+            "propertyName": "acceptingRegistration",
+            "oldValue": false,
+            "newValue": true
+          }]
+      }
+    }
+  ]
 }

@@ -8,7 +8,7 @@ export type AdminUserContextT = {
   isLoading: boolean
 }
 
-const AdminUserContext = React.createContext<AdminUserContextT>({
+export const AdminUserContext = React.createContext<AdminUserContextT>({
   users: [],
   isLoading: true
 })

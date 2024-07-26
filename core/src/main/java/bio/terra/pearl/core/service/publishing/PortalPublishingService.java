@@ -112,7 +112,7 @@ public class PortalPublishingService {
             PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
                     .adminUserId(operator.getId())
                     .portalId(destEnv.getPortalId())
-                    .targetEnvName(destEnv.getEnvironmentName())
+                    .environmentName(destEnv.getEnvironmentName())
                     .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
                     .build();
             portalEnvironmentChangeRecordDao.create(changeRecord);

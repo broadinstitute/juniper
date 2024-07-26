@@ -39,6 +39,8 @@ import _random from 'lodash/random'
 import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import React from 'react'
+import { AdminUserContext } from '../providers/AdminUserProvider'
+import { AdminUser } from '../api/adminUser'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -562,15 +564,23 @@ export const MOCK_SPANISH_LANGUAGE = {
   id: '1'
 }
 
+export type RenderInPortalRouterOpts = {
+    envName?: string,
+    mockWindowAlert?: boolean,
+    adminUsers?: AdminUser[]
+}
+
 /**
  * renders the children in a PortalProvider context and simulating appropriate routes
  * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now.
+ * Also includes AdminUserContext for showing admin user names
  *
  * By default, this mocks window alert since many of our contexts use window alert for error handling.
  * */
-export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, opts = {
+export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, opts: RenderInPortalRouterOpts = {
   envName: 'sandbox',
-  mockWindowAlert: true
+  mockWindowAlert: true,
+  adminUsers: []
 }) => {
   const portalContext: PortalContextT = {
     ...mockPortalContext(),
@@ -584,8 +594,10 @@ export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, 
   }
   const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
   return renderWithRouter(
-    <PortalContext.Provider value={portalContext}>
-      { children }
-    </PortalContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
+    <AdminUserContext.Provider value={{ users: opts.adminUsers ?? [], isLoading: false }}>
+      <PortalContext.Provider value={portalContext}>
+        { children }
+      </PortalContext.Provider>,
+    </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv')
 }

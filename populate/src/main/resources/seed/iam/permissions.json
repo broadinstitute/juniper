@@ -40,7 +40,7 @@
     "description": "Allows user to view participant data (e.g., survey responses)"
   },
   {
-    "name": "publish_portal",
+    "name": "publish",
     "displayName": "Publish changes to portal content and configs",
     "description": "Allows publishing updates to IRB and Live environments"
   }

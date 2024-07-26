@@ -89,13 +89,13 @@ public class PortalService extends CrudService<Portal, PortalDao> {
         for (PortalEnvironment portalEnvironment : portalEnvironments) {
             portalEnvironmentService.delete(portalEnvironment.getId(), cascades);
         }
+        portalEnvironmentChangeRecordService.deleteByPortalId(portalId);
         surveyService.deleteByPortalId(portalId);
         siteContentService.deleteByPortalId(portalId);
         emailTemplateService.deleteByPortalId(portalId);
         languageTextService.deleteByPortalId(portalId);
         siteMediaService.deleteByPortalShortcode(portal.getShortcode());
         portalAdminUserService.deleteByPortalId(portalId);
-        portalEnvironmentChangeRecordService.deleteByPortalId(portalId);
         dao.delete(portalId);
     }
 

@@ -1391,23 +1391,22 @@ paths:
       operationId: diff
       parameters:
         - *portalShortcodeParam
+        - { name: sourceEnv, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: PortalEnvironmentChangeRecord object
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/publish/apply/{targetEnv}:
+  /api/portals/v1/{portalShortcode}/publish/apply/{envName}:
     post:
       summary: Updates a portal environment according to the update object obtained from a diff operation
       tags: [ portalPublishing ]
-      operationId: apply
+      operationId: publish
       parameters:
         - *portalShortcodeParam
-        - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: false
         content: *jsonContent
@@ -1418,10 +1417,10 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/publish/changeRecords:
-    post:
+    get:
       summary: Gets the change records for a portal environment
       tags: [ portalPublishing ]
-      operationId: changeRecords
+      operationId: getChangeRecords
       parameters:
         - *portalShortcodeParam
       responses:

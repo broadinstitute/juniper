@@ -13,7 +13,7 @@ import {
   screen,
   waitFor
 } from '@testing-library/react'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import { AuthProvider } from 'react-oidc-context'
 import { setupRouterTest } from '@juniper/ui-core'
 

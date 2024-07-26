@@ -12,7 +12,7 @@ import {
   mockFamily,
   mockStudyEnvContext
 } from 'test-utils/mocking-utils'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import {
   Family,
   setupRouterTest

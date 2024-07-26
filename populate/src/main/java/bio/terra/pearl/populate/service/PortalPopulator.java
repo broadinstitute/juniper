@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
@@ -17,8 +18,10 @@ import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserPopDto;
+import bio.terra.pearl.populate.dto.PortalEnvironmentChangeRecordPopDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
@@ -52,6 +55,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
     private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
+    private final PortalEnvironmentChangeRecordPopulator portalEnvironmentChangeRecordPopulator;
 
 
     public PortalPopulator(PortalService portalService,
@@ -65,7 +69,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
                            EmailTemplatePopulator emailTemplatePopulator,
-                           PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
+                           PortalEnvironmentLanguageService portalEnvironmentLanguageService,
+                           PortalEnvironmentChangeRecordPopulator portalEnvironmentChangeRecordPopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -79,6 +84,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.adminUserPopulator = adminUserPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
         this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
+        this.portalEnvironmentChangeRecordPopulator = portalEnvironmentChangeRecordPopulator;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) {
@@ -210,6 +216,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String studyFileName : popDto.getPopulateStudyFiles()) {
             populateStudy(studyFileName, portalPopContext, portal, overwrite);
+        }
+
+        for (PortalEnvironmentChangeRecordPopDto changeRecordPopDto : popDto.getPortalEnvironmentChangeRecordPopDtos()) {
+            portalEnvironmentChangeRecordPopulator.populateFromDto(changeRecordPopDto, portalPopContext, overwrite);
         }
 
         return portal;

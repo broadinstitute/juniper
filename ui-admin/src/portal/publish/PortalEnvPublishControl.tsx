@@ -29,18 +29,18 @@ const PortalEnvPublishControl = ({ destEnvName, portal, studyShortcode }:
   if (allowedSourceNames.length == 1) {
     envSelector = <Link to={studyDiffPath(portal.shortcode, studyShortcode, sourceEnvName, destEnvName)}
       className="btn btn-outline-primary">
-      Copy from {sourceEnvName}
+      Compare to {sourceEnvName}
     </Link>
   }
 
   if (allowedSourceNames.length > 1) {
-    envSelector = <> Copy from&nbsp;
+    envSelector = <> Compare to&nbsp;
       <Select options={opts} value={currentVal}
         onChange={(opt: SelectOptionType | null) =>
           setSourceEnvName(opt?.value ? opt?.value : allowedSourceNames[0])} />
       <Link to={studyDiffPath(portal.shortcode, studyShortcode, sourceEnvName, destEnvName)}
         className="btn btn-outline-primary ms-2">
-        Copy
+        Compare
       </Link>
     </>
   }

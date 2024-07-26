@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 public class PortalEnvironmentChangeRecord extends BaseEntity {
     private UUID adminUserId;
     private UUID portalId;
-    private EnvironmentName targetEnvName;
+    private EnvironmentName environmentName;
     // json blob stored as string for convenience
     private String portalEnvironmentChange;
 }

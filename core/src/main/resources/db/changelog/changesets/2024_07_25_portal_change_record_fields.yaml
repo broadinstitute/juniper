@@ -14,9 +14,7 @@ databaseChangeLog:
                     references: portal(id)
                     nullable: true  # needs to be nullable for legacy records
               - column:
-                  name: target_env_name
+                  name: environment_name
                   type: text
                   constraints:
-                    foreignKeyName: fk_portal_environment_change_record_portal_id,
-                    references: portal(id)
                     nullable: true  # needs to be nullable for legacy records

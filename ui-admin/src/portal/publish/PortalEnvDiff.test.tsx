@@ -4,7 +4,7 @@ import { mockPortalContext } from 'test-utils/mocking-utils'
 import PortalEnvDiffView, { emptyChangeSet } from './PortalEnvDiffView'
 
 import { PortalEnvironmentChange } from 'api/api'
-import { userEvent } from '@testing-library/user-event'
+import userEvent from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 
