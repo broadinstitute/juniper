@@ -96,5 +96,10 @@
   {"keyName": "yourName", "text": "Your name", "language": "en"},
   {"keyName": "yourEmail", "text": "Your email", "language": "en"},
   {"keyName": "join", "text":  "Join", "language": "en"},
-  {"keyName": "thanksForJoining", "text": "Thanks for joining!", "language": "en"}
+  {"keyName": "thanksForJoining", "text": "Thanks for joining!", "language": "en"},
+  {"keyName": "pageNotFoundTitle", "text": "Page not found", "language": "en"},
+  {"keyName": "pageNotFoundMessage", "text": "If you believe this is an error, please contact ${studyContactEmail}", "language": "en"},
+  {"keyName": "pageNotFoundReturnHome", "text": "Return to the home page", "language": "en"},
+  {"keyName": "authErrorPageTitle", "text": "Something went wrong", "language": "en"},
+  {"keyName": "authErrorPageMessage", "text": "There was an issue with our authentication service. Please try again. If the problem persists, please contact ${studyContactEmail}.", "language": "en"}
 ]
