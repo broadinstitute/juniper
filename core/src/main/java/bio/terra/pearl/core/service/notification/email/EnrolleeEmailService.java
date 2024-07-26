@@ -148,16 +148,19 @@ public class EnrolleeEmailService implements NotificationSender {
     }
 
     public boolean shouldSendEmail(Trigger config,
-                                   EnrolleeContext ruleData,
+                                   EnrolleeContext enrolleeContext,
                                    NotificationContextInfo contextInfo) {
-        if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmail()) {
+        if (enrolleeContext.getProfile() == null) {
+            return false;  // no address to send email to
+        }
+        if (enrolleeContext.getProfile().isDoNotEmail()) {
             log.info("skipping email, enrollee {} is doNotEmail: triggerId: {}, portalEnv: {}",
-                    ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                    enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
-        if (ruleData.getProfile() != null && ruleData.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
+        if (enrolleeContext.getProfile().isDoNotEmailSolicit() && config.getTaskType().equals(TaskType.OUTREACH)) {
             log.info("skipping email, enrollee {} is doNotEmailSolicit: triggerId: {}, portalEnv: {}",
-                    ruleData.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
+                    enrolleeContext.getEnrollee().getShortcode(), config.getId(), config.getPortalEnvironmentId());
             return false;
         }
         if (config.getEmailTemplateId() == null) {
