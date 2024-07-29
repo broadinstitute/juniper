@@ -48,8 +48,9 @@ export const BaseFields = (props: BaseFieldsProps) => {
         />
       </div>
 
-      <>
-        <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`} sectionLabel={'Additional options'}/>
+      <div className="bg-white rounded-3 p-2 mb-2">
+        <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
+          sectionLabel={'Additional options'}/>
         <div className="mb-3 collapse hide" id={additionalFieldsTargetId}>
           <Textarea
             infoContent="Optional additional context for the question.
@@ -66,9 +67,9 @@ export const BaseFields = (props: BaseFieldsProps) => {
             }}
           />
         </div>
-      </>
+      </div>
 
-      { showIsRequired && <div className="mb-3">
+      {showIsRequired && <div className="mb-3">
         <Checkbox
           checked={!!regularQuestion.isRequired}
           infoContent="If checked, participants will be required to enter a response
@@ -82,7 +83,7 @@ export const BaseFields = (props: BaseFieldsProps) => {
             })
           }}
         />
-      </div> }
+      </div>}
     </>
   )
 }

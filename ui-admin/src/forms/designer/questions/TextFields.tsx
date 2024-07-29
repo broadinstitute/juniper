@@ -18,7 +18,7 @@ export const TextFields = (props: TextFieldsProps) => {
   const targetId = useId()
 
   return (
-    <>
+    <div className="bg-white rounded-3 p-2 mb-2">
       <CollapsibleSectionButton targetSelector={`#${targetId}`} sectionLabel={'Input options'}/>
       <div className="collapse hide mb-3" id={targetId}>
         <>
@@ -71,6 +71,6 @@ export const TextFields = (props: TextFieldsProps) => {
           </fieldset>
         )}
       </div>
-    </>
+    </div>
   )
 }

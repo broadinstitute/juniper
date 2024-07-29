@@ -31,8 +31,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
     return null
   }
   return (
-    <div>
-      <CollapsibleSectionButton targetSelector={`#${labelId}`} sectionLabel={`Choices (${question.choices.length})`} />
+    <div className="bg-white rounded-3 p-2 mb-2">
+      <CollapsibleSectionButton targetSelector={`#${labelId}`} sectionLabel={`Choices (${question.choices.length})`}/>
       <div className="collapse hide" id={labelId}>
         <table className="ms-2 table">
           <thead>
@@ -45,8 +45,8 @@ export const ChoicesList = (props: ChoicesListProps) => {
           <tbody>
             {question.choices.map((choice, i) => {
               const enableAutoFillValue: boolean =
-                    isNewQuestion && choice.value == getValueForChoice(i18nSurveyText(choice.text,
-                      currentLanguage.languageCode))
+                  isNewQuestion && choice.value == getValueForChoice(i18nSurveyText(choice.text,
+                    currentLanguage.languageCode))
 
               return (
                 <tr key={i}>
@@ -169,7 +169,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
             })
           }}
         >
-          <FontAwesomeIcon icon={faPlus} /> Add a choice
+          <FontAwesomeIcon icon={faPlus}/> Add a choice
         </Button>
         <OtherOptionFields
           disabled={readOnly}
