@@ -133,18 +133,21 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
             )
           }
           {
-            question.type === 'html' && <Textarea
-              disabled={readOnly}
-              label="HTML"
-              rows={5}
-              value={i18nSurveyText((question as HtmlQuestion)?.html)}
-              onChange={value => {
-                onChange({
-                  ...question,
-                  html: value
-                })
-              }}
-            />
+            question.type === 'html' &&
+              <div className="mb-3">
+                <Textarea
+                  disabled={readOnly}
+                  label="HTML"
+                  rows={5}
+                  value={i18nSurveyText((question as HtmlQuestion)?.html)}
+                  onChange={value => {
+                    onChange({
+                      ...question,
+                      html: value
+                    })
+                  }}
+                />
+              </div>
           }
         </>
       )}
