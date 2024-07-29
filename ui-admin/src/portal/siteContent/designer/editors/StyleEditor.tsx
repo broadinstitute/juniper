@@ -40,19 +40,6 @@ export const StyleEditor = ({ section, updateSection }: {
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, color: value }) })
           }}/>
-        {
-          Object.hasOwnProperty.call(config, 'steps') && <Checkbox label={'Vertical'} className="mb-2"
-            checked={config.vertical as boolean == undefined ? false : config.vertical as boolean}
-            onChange={value => {
-              updateSection({
-                ...section,
-                sectionConfig: JSON.stringify({
-                  ...config,
-                  vertical: value
-                })
-              })
-            }}/>
-        }
         { Object.hasOwnProperty.call(config, 'image') &&
             <div className='my-2'>
               <label className='form-label fw-semibold'>Image Position</label>
@@ -68,7 +55,7 @@ export const StyleEditor = ({ section, updateSection }: {
           onChange={value => {
             updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, fullWidth: value }) })
           }}/>}
-        {Object.hasOwnProperty.call(config, 'image') && <Checkbox label={'Image As Background'} className="mb-2"
+        {section.sectionType === 'HERO_WITH_IMAGE' && <Checkbox label={'Image As Background'} className="mb-2"
           checked={config.imageAsBackground as boolean == undefined ? false : config.imageAsBackground as boolean}
           onChange={value => {
             updateSection({
@@ -79,8 +66,10 @@ export const StyleEditor = ({ section, updateSection }: {
               })
             })
           }}/>}
-        {Object.hasOwnProperty.call(config, 'image') && config.imageAsBackground as boolean && <TextInput
+        {section.sectionType === 'HERO_WITH_IMAGE' && config.imageAsBackground as boolean && <TextInput
           label="Aspect Ratio"
+          infoContent={'Fixes the size of this section to a specific aspect ratio. '
+            + 'If set correctly, your background image will not be cropped. For example: 16/9, 4/3, 1/1.'}
           className="mb-2"
           value={config.aspectRatio as string}
           onChange={value => {

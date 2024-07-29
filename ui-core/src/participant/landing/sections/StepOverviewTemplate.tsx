@@ -25,7 +25,7 @@ import ConfiguredMedia, {
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import { useApiContext } from '../../../participant/ApiProvider'
+import { useApiContext } from 'src/participant/ApiProvider'
 import classNames from 'classnames'
 import {
   blurbProp,
@@ -36,7 +36,6 @@ export type StepConfig = {
   image: MediaConfig,
   duration: string,
   blurb: string,
-  vertical?: boolean
 }
 
 export type StepOverviewTemplateConfig = {
@@ -44,7 +43,6 @@ export type StepOverviewTemplateConfig = {
   steps: StepConfig[]
   showStepNumbers?: boolean, // whether to show step numbers, default true
   title?: string, // large heading text
-  vertical?: boolean
 }
 
 export const stepOverviewTemplateConfigProps = [
@@ -57,7 +55,6 @@ export const stepOverviewTemplateConfigProps = [
     ]
   },
   { name: 'showStepNumbers' },
-  { name: 'vertical' },
   titleProp
 ]
 
@@ -75,10 +72,9 @@ export const validateStepOverviewTemplateConfig = (config: SectionConfig): StepO
   const message = 'Invalid StepOverviewTemplateConfig'
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const title = requireOptionalString(config, 'title', message)
-  const vertical = requireOptionalBoolean(config, 'vertical', message)
   const steps = requireOptionalArray(config, 'steps', validateStepConfig, message)
   const showStepNumbers = requireOptionalBoolean(config, 'showStepNumbers', message)
-  return { buttons, steps, title, showStepNumbers, vertical }
+  return { buttons, steps, title, showStepNumbers }
 }
 
 type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConfig>
@@ -88,9 +84,8 @@ type StepOverviewTemplateProps = TemplateComponentProps<StepOverviewTemplateConf
  */
 function StepOverviewTemplate(props: StepOverviewTemplateProps) {
   const { anchorRef, config } = props
-  const { buttons, steps, title, showStepNumbers = true, vertical = false } = config
+  const { buttons, steps, title, showStepNumbers = true } = config
 
-  console.log(vertical)
   const hasButtons = (buttons || []).length > 0
   const { getImageUrl } = useApiContext()
   let lgWidthClass = 'col-lg-3'
@@ -109,10 +104,8 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i}
-            className={classNames('col-12 d-flex flex-column align-items-center mt-4',
-              vertical ? '' : lgWidthClass)}>
-            <div className={classNames('w-75 d-flex flex-column align-items-center align-items-lg-start',
-              vertical ? 'flex-lg-row' : '')}>
+            className={classNames('col-12 d-flex flex-column align-items-center mt-4', lgWidthClass)}>
+            <div className={classNames('w-75 d-flex flex-column align-items-center align-items-lg-start')}>
               <ConfiguredMedia media={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
               <div>{showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>}
                 <p className="text-uppercase fs-6">{duration}</p>
