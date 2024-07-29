@@ -128,7 +128,7 @@ function HeroWithImageTemplate(props: HeroWithImageTemplateProps) {
           className={classNames(
             'col-12', `col-lg-${12 - imageCols}`,
             'py-3 p-sm-3 p-lg-5',
-            'd-flex flex-column flex-grow-1 justify-content-around'
+            'd-flex flex-column flex-grow-1 justify-content-center'
           )}
         >
           {!!title && (
