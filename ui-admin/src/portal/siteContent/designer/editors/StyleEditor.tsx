@@ -7,6 +7,7 @@ import { TextInput } from 'components/forms/TextInput'
 import { Checkbox } from 'components/forms/Checkbox'
 import Select from 'react-select'
 import { CollapsibleSectionButton } from '../components/CollapsibleSectionButton'
+import useReactSingleSelect from 'util/react-select-utils'
 
 /**
  * Returns an editor for the style options of a website section
@@ -24,6 +25,20 @@ export const StyleEditor = ({ section, updateSection }: {
   const blurbAlignOptions = [
     { label: 'Left', value: 'left' }, { label: 'Center', value: 'center' }, { label: 'Right', value: 'right' }
   ]
+
+  const {
+    selectInputId: blurbSizeSelectInputId,
+    onChange: blurbSizeOnChange,
+    selectedOption: blurbSizeSelectedOption,
+    options: blurbSizeOptions
+  } = useReactSingleSelect<string>(
+    ['fs-1', 'fs-2', 'fs-3', 'fs-4', 'fs-5', 'fs-6'],
+    (val: string) => ({ label: val, value: val }),
+    (opt: string | undefined) => {
+      updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, blurbSize: opt }) })
+    },
+    config.blurbSize ? config.blurbSize as string : undefined
+  )
 
   return (
     <div>
@@ -86,22 +101,12 @@ export const StyleEditor = ({ section, updateSection }: {
                 }}/>
             </div>}
         {Object.hasOwnProperty.call(config, 'blurb') && <div>
-          <label className="form-label fw-semibold">Blurb Text Size</label>
+          <label className="form-label fw-semibold" htmlFor={blurbSizeSelectInputId}>Blurb Text Size</label>
           <Select
-            options={[
-              { label: 'fs-1', value: 'fs-1' },
-              { label: 'fs-2', value: 'fs-2' },
-              { label: 'fs-3', value: 'fs-3' },
-              { label: 'fs-4', value: 'fs-4' },
-              { label: 'fs-5', value: 'fs-5' },
-              { label: 'fs-6', value: 'fs-6' }
-            ]}
-            value={config.blurbSize ? { label: config.blurbSize, value: config.blurbSize } : undefined}
-            onChange={
-              opt => {
-                updateSection({ ...section, sectionConfig: JSON.stringify({ ...config, blurbSize: opt?.value }) })
-              }
-            }
+            options={blurbSizeOptions}
+            value={blurbSizeSelectedOption}
+            onChange={blurbSizeOnChange}
+            inputId={blurbSizeSelectInputId}
           />
         </div>}
       </div>
