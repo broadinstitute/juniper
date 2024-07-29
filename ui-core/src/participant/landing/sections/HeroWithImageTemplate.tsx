@@ -11,7 +11,7 @@ import {
   requireOptionalString
 } from '../../util/validationUtils'
 
-import './websiteStyles.scss'
+import './HeroWithImageTemplate.scss'
 
 import ConfiguredButton, {
   ButtonConfig,
