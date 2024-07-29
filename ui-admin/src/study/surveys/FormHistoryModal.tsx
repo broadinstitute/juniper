@@ -67,20 +67,20 @@ export default function FormHistoryModal({
       </LoadingSpinner>
     </Modal.Body>
     <Modal.Footer className="d-flex justify-content-center">
-      {selectedVersion && <div className="d-flex justify-content-between w-100">
+      {selectedVersion && <div className="d-flex flex-column w-100">
         <a href={`${studyEnvFormsPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
           studyEnvContext.currentEnv.environmentName
-        )}/surveys/${stableId}/${selectedVersion.version}?readOnly=true`}
-        className="btn btn-secondary outline"
+        )}/surveys/${stableId}/${selectedVersion.version}`}
+        className="btn btn-primary"
         aria-disabled={!selectedVersion}
         style={{ pointerEvents: selectedVersion ? undefined : 'none' }}
         onClick={onDismiss}
         target="_blank"
         >
-            View <FontAwesomeIcon icon={faArrowRightFromBracket}/>
+            View/Edit version {selectedVersion.version} <FontAwesomeIcon icon={faArrowRightFromBracket}/>
         </a>
         {studyEnvContext.currentEnv.environmentName === 'sandbox' &&
-            <Button type="button" variant="secondary" onClick={doVersionSwitch} outline={true}>
+            <Button type="button" variant="link" onClick={doVersionSwitch} outline={true}>
               Switch sandbox to version { selectedVersion.version } <FontAwesomeIcon icon={faRotate}/>
             </Button>}
       </div>

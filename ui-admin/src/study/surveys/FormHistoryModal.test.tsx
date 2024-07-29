@@ -20,11 +20,11 @@ describe('VersionSelector', () => {
 
     await waitFor(() => expect(screen.queryByTestId('loading-spinner')).not.toBeInTheDocument())
     await select(screen.getByLabelText('Other versions'), ['1'])
-    const openPreviewButton = screen.getByText('View')
+    const openPreviewButton = screen.getByText('View/Edit version 1')
     const switchVersionButton = screen.getByText('Switch sandbox to version 1')
     expect(openPreviewButton).toBeEnabled()
     expect(switchVersionButton).toBeEnabled()
     expect(openPreviewButton)
-      .toHaveAttribute('href', '/portalCode/studies/fakeStudy/env/sandbox/forms/surveys/survey1/1?readOnly=true')
+      .toHaveAttribute('href', '/portalCode/studies/fakeStudy/env/sandbox/forms/surveys/survey1/1')
   })
 })
