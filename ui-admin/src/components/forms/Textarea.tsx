@@ -27,7 +27,7 @@ export const Textarea = (props: TextareaProps) => {
         htmlFor={inputId}
       >
         {label}
-        {required && <span className="text-danger">*</span>}
+        {required && <span className="text-danger ms-1">*</span>}
       </label>}
       {infoContent && <InfoPopup content={infoContent}/>}
       <textarea

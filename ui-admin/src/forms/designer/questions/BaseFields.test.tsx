@@ -22,7 +22,7 @@ describe('BaseFields', () => {
       currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Assert
-    const input = screen.getByLabelText('Question text*')
+    const input = screen.getByLabelText('Text*')
     expect((input as HTMLInputElement).value).toBe('What?')
   })
 
@@ -33,7 +33,7 @@ describe('BaseFields', () => {
       currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Act
-    const input = screen.getByLabelText('Question text*')
+    const input = screen.getByLabelText('Text*')
     fireEvent.change(input, { target: { value: 'Why?' } })
 
     // Assert
