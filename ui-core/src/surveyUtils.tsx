@@ -83,13 +83,24 @@ export const surveyJSModelFromForm = (form: VersionedForm): SurveyModel => {
 
 /** convert a list of answers and resumeData into the resume data format surveyJs expects */
 export function makeSurveyJsData(resumeData: string | undefined,
-  answers: Answer[] | undefined, userId: string | undefined):
+  answers: Answer[] | undefined, userId: string | undefined, alertFn?: (msg: React.ReactNode) => void):
   SurveyJsResumeData {
   answers = answers ?? []
   const answerHash = answers.reduce(
     (hash: Record<string, SurveyJsValueType>, answer: Answer) => {
       if (answer.objectValue) {
-        hash[answer.questionStableId] = JSON.parse(answer.objectValue)
+        try {
+          hash[answer.questionStableId] = JSON.parse(answer.objectValue)
+        } catch (e) {
+          if (alertFn) {
+            alertFn(<div className="text-danger">
+              Parse error <br/>
+              question {answer.questionStableId}<br/>
+              value: {answer.objectValue} <br/>
+              Saving this survey may overwrite this value.
+            </div>)
+          }
+        }
       } else {
         hash[answer.questionStableId] = answer.stringValue ?? answer.numberValue ?? null
       }

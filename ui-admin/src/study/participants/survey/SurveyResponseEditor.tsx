@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Survey, SurveyResponse } from 'api/api'
 import DocumentTitle from 'util/DocumentTitle'
 
 import _cloneDeep from 'lodash/cloneDeep'
-import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam } from '@juniper/ui-core'
+import { AutosaveStatus, Enrollee, PagedSurveyView, useTaskIdParam, makeSurveyJsData } from '@juniper/ui-core'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
 import { Store } from 'react-notifications-component'
 import { failureNotification, successNotification } from 'util/notifications'
@@ -29,6 +29,13 @@ export default function SurveyResponseEditor({
     envName: studyEnvContext.currentEnv.environmentName,
     portalShortcode: studyEnvContext.portal.shortcode
   }
+
+  useEffect(() => {
+    // do an initial test parse to identify errors
+    makeSurveyJsData(undefined, workingResponse.answers, undefined, (msg: React.ReactNode) => {
+      Store.addNotification(failureNotification(msg))
+    })
+  }, [])
 
   return <div>
     <DocumentTitle title={`${enrollee.shortcode} - ${survey.name}`}/>
