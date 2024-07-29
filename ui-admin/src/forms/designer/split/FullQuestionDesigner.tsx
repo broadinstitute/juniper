@@ -62,21 +62,21 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
           aria-label={isStableIdLocked ? 'Edit stable ID' : 'Lock stable ID'}
           onClick={() => setIsStableIdLocked(!isStableIdLocked)}
         />
-        <IconButton
-          className={classNames('mb-2', { 'text-danger': question.isRequired })}
-          icon={faAsterisk}
-          aria-label={'Toggle required'}
-          onClick={() => {
-            onChange({
-              ...question,
-              isRequired: !question.isRequired
-            })
-          }}
-        />
+        { (!isTemplated && question.type !== 'html') &&
+            <IconButton
+              className={classNames('mb-2', question.isRequired ? 'text-danger' : 'text-muted')}
+              icon={faAsterisk}
+              aria-label={'Toggle required'}
+              onClick={() => {
+                onChange({
+                  ...question,
+                  isRequired: !question.isRequired
+                })
+              }}
+            /> }
       </div>
-      <QuestionTypeSelector
+      { !isTemplated && <QuestionTypeSelector
         key={question.name}
-        // @ts-ignore
         questionType={question.type}
         onChange={newType => {
           onChange({
@@ -86,7 +86,7 @@ export const FullQuestionDesigner = (props: QuestionDesignerProps) => {
             type: newType
           })
         }}
-      />
+      /> }
 
       {isTemplated && (
         <>
