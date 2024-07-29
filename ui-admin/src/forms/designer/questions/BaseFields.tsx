@@ -48,6 +48,22 @@ export const BaseFields = (props: BaseFieldsProps) => {
         />
       </div>
 
+      {showIsRequired && <div className="mb-3">
+        <Checkbox
+          checked={!!regularQuestion.isRequired}
+          infoContent="If checked, participants will be required to enter a response
+          before they can continue to the next page of the form."
+          disabled={disabled}
+          label="Require response"
+          onChange={checked => {
+            onChange({
+              ...regularQuestion,
+              isRequired: checked
+            })
+          }}
+        />
+      </div>}
+
       <div className="bg-white rounded-3 p-2 mb-2">
         <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
           sectionLabel={'Additional options'}/>
@@ -68,22 +84,6 @@ export const BaseFields = (props: BaseFieldsProps) => {
           />
         </div>
       </div>
-
-      {showIsRequired && <div className="mb-3">
-        <Checkbox
-          checked={!!regularQuestion.isRequired}
-          infoContent="If checked, participants will be required to enter a response
-          before they can continue to the next page of the form."
-          disabled={disabled}
-          label="Require response"
-          onChange={checked => {
-            onChange({
-              ...regularQuestion,
-              isRequired: checked
-            })
-          }}
-        />
-      </div>}
     </>
   )
 }
