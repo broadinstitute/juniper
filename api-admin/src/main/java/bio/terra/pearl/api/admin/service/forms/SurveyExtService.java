@@ -192,31 +192,35 @@ public class SurveyExtService {
   }
 
   /**
-   * deactivates the studyEnvironmentSurvey with studyEnvrionmentSurveyId, and adds a new config as
-   * specified in the update object. Note that the portalEnvironmentId and studyEnvironmentId will
-   * be set from the portalShortcode and studyShortcode params.
+   * deactivates any existing active studyEnvironmentSurvey for the given stableId, and adds a new
+   * config as specified in the update object. Note that the portalEnvironmentId and
+   * studyEnvironmentId will be set from the portalShortcode and studyShortcode params.
+   *
+   * <p>If studyEnvironmentSurveyId is null, this will deactivate the existing active config
    */
   @SandboxOnly
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   @Transactional
   public StudyEnvironmentSurvey replace(
-      PortalStudyEnvAuthContext authContext,
-      UUID studyEnvironmentSurveyId,
-      StudyEnvironmentSurvey update) {
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey update) {
     SurveyAuthEntities authEntities = authConfiguredSurveyRequest(authContext, update);
-    StudyEnvironmentSurvey existing =
-        studyEnvironmentSurveyService
-            .find(studyEnvironmentSurveyId)
-            .orElseThrow(
-                () ->
-                    new NotFoundException(
-                        "No existing StudyEnvironmentSurvey with id " + studyEnvironmentSurveyId));
-    verifyStudyEnvironmentSurvey(existing, authContext.getStudyEnvironment());
+    List<StudyEnvironmentSurvey> existingActives =
+        studyEnvironmentSurveyService.findActiveBySurvey(
+            authContext.getStudyEnvironment().getId(), authEntities.survey().getStableId());
+    if (existingActives.size() == 0) {
+      throw new NotFoundException("No active survey found for the given stableId");
+    }
+    existingActives.forEach(
+        existing -> {
+          existing.setActive(false);
+          studyEnvironmentSurveyService.update(existing);
+        });
+    // preserve the surveyOrder from the existing active config
+    update.setSurveyOrder(existingActives.get(0).getSurveyOrder());
+
     StudyEnvironmentSurvey newConfig =
         studyEnvironmentSurveyService.create(update.cleanForCopying());
-    // after creating the new config, deactivate the old config
-    existing.setActive(false);
-    studyEnvironmentSurveyService.update(existing);
+
     eventService.publishSurveyPublishedEvent(
         authEntities.portalEnv.getId(),
         authContext.getStudyEnvironment().getId(),

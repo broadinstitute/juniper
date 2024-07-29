@@ -110,7 +110,6 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getStudyEnv().getEnvironmentName()),
-        studyEnvSurvey1.getId(),
         StudyEnvironmentSurvey.builder()
             .surveyId(survey2.getId())
             .studyEnvironmentId(bundle.getStudyEnv().getId())
@@ -122,7 +121,7 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
     List<StudyEnvironmentSurvey> studyEnvSurveys =
         studyEnvironmentSurveyService.findAllByStudyEnvId(bundle.getStudyEnv().getId(), null);
     StudyEnvironmentSurvey activeEnvSurvey =
-        studyEnvSurveys.stream().filter(ses -> ses.isActive()).findFirst().orElseThrow();
+        studyEnvSurveys.stream().filter(StudyEnvironmentSurvey::isActive).findFirst().orElseThrow();
     assertThat(activeEnvSurvey.getSurveyId(), equalTo(survey2.getId()));
 
     StudyEnvironmentSurvey inactiveEnvSurvey =

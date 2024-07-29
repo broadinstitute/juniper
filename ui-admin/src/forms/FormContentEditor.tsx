@@ -32,7 +32,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
     portal,
     initialContent,
     initialAnswerMappings,
-    visibleVersionPreviews,
     supportedLanguages,
     currentLanguage,
     readOnly,
@@ -143,18 +142,6 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormPreview formContent={editedContent} currentLanguage={currentLanguage} />
           </ErrorBoundary>
         </Tab>
-        { visibleVersionPreviews.map(form =>
-          <Tab
-            key={`preview${form.version}`}
-            eventKey={`preview${form.version}`}
-            title={`Version ${form.version}`}
-          >
-            <FormPreview
-              formContent={JSON.parse(form.content) as FormContent}
-              currentLanguage={currentLanguage}
-            />
-          </Tab>
-        )}
       </Tabs>
     </div>
   )

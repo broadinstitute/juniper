@@ -527,6 +527,12 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getStudyEnvSurveys(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}/studyEnvSurveys`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async createNewSurvey(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys`
 
@@ -558,10 +564,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string, oldId: string,
-    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurvey: { surveyId: string, studyEnvironmentId: string }): Promise<StudyEnvironmentSurvey> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}`
-      + `/configuredSurveys/${oldId}/replace`
+      + `/configuredSurveys/replace`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),

@@ -27,6 +27,7 @@ type SurveyEditorViewProps = {
   readOnly?: boolean
   onCancel: () => void
   onSave: (update: SaveableFormProps) => Promise<void>
+  replaceSurvey: (updatedSurvey: Survey) => void
 }
 
 /** renders a survey for editing/viewing */
@@ -36,6 +37,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     studyEnvContext: { portal, currentEnv },
     currentForm,
     readOnly = false,
+    replaceSurvey,
     onCancel,
     onSave
   } = props
@@ -52,7 +54,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
-  const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
   const [showErrors, setShowErrors] = useState(false)
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
@@ -231,10 +232,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </ul>
         </div>
         { showVersionSelector && <FormHistoryModal
-          studyEnvContext={studyEnvContext} visibleVersionPreviews={visibleVersionPreviews}
-          setVisibleVersionPreviews={setVisibleVersionPreviews}
+          studyEnvContext={studyEnvContext}
           workingForm={{ ...currentForm, ...draft }}
-          isConsentForm={!isSurvey}
+          replaceSurvey={replaceSurvey}
           onDismiss={() => setShowVersionSelector(false)}
         />}
         { showAdvancedOptions && <FormOptionsModal
@@ -251,7 +251,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           portal={portal}
           initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
           initialAnswerMappings={draft?.answerMappings || currentForm.answerMappings || []}
-          visibleVersionPreviews={visibleVersionPreviews}
           supportedLanguages={portalEnv?.supportedLanguages || []}
           currentLanguage={currentLanguage}
           readOnly={readOnly}
