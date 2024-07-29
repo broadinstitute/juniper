@@ -1,10 +1,10 @@
 package bio.terra.pearl.api.admin.service.logging;
 
-import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
+import bio.terra.pearl.api.admin.service.auth.context.OperatorAuthContext;
 import bio.terra.pearl.core.model.log.LogEvent;
 import bio.terra.pearl.core.model.log.LogEventType;
 import bio.terra.pearl.core.service.LoggingService;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +16,9 @@ public class LoggingExtService {
     this.loggingService = loggingService;
   }
 
+  @SuperuserOnly
   public List<LogEvent> listLogEvents(
-      String days, List<LogEventType> eventTypes, AdminUser operator) {
-    if (!operator.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permission for this operation");
-    }
-
+      OperatorAuthContext authContext, String days, List<LogEventType> eventTypes) {
     if (eventTypes.isEmpty()) {
       return List.of();
     }

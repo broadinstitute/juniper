@@ -10,8 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-public class PortalAuthContext {
-  private AdminUser operator;
+public class PortalAuthContext extends OperatorAuthContext {
   private String portalShortcode;
   private Portal portal;
 
