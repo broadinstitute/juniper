@@ -38,5 +38,10 @@
     "name": "participant_data_view",
     "displayName": "Participant data view",
     "description": "Allows user to view participant data (e.g., survey responses)"
+  },
+  {
+    "name": "publish",
+    "displayName": "Publish changes to portal content and configs",
+    "description": "Allows publishing updates to IRB and Live environments"
   }
 ]

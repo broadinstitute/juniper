@@ -87,16 +87,16 @@ public class PortalPublishingService {
      * updates the dest environment with the given changes
      */
     @Transactional
-    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) {
+    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser operator) {
         PortalEnvironment destEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, dest);
-        return applyUpdate(destEnv, change, user);
+        return applyUpdate(destEnv, change, operator);
     }
 
     /**
      * applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
      * returns the updated environment
      */
-    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) {
+    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser operator) {
         applyChangesToEnvConfig(destEnv, envChanges.getConfigChanges());
 
         applyChangesToPreRegSurvey(destEnv, envChanges.getPreRegSurveyChanges());
@@ -110,7 +110,9 @@ public class PortalPublishingService {
         }
         try {
             PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
-                    .adminUserId(user.getId())
+                    .adminUserId(operator.getId())
+                    .portalId(destEnv.getPortalId())
+                    .environmentName(destEnv.getEnvironmentName())
                     .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
                     .build();
             portalEnvironmentChangeRecordDao.create(changeRecord);

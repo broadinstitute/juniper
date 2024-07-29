@@ -66,13 +66,13 @@ public class PortalDiffService {
         this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     }
 
-    public PortalEnvironmentChange diffPortalEnvs(String shortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
+    public PortalEnvironmentChange diffPortalEnvs(String shortcode, EnvironmentName source, EnvironmentName dest) {
         PortalEnvironment sourceEnv = loadPortalEnvForProcessing(shortcode, source);
         PortalEnvironment destEnv = loadPortalEnvForProcessing(shortcode, dest);
         return diffPortalEnvs(sourceEnv, destEnv);
     }
 
-    public PortalEnvironmentChange diffPortalEnvs(PortalEnvironment sourceEnv, PortalEnvironment destEnv) throws Exception {
+    public PortalEnvironmentChange diffPortalEnvs(PortalEnvironment sourceEnv, PortalEnvironment destEnv) {
         VersionedEntityChange<Survey> preRegRecord = new VersionedEntityChange<Survey>(sourceEnv.getPreRegSurvey(), destEnv.getPreRegSurvey());
         VersionedEntityChange<SiteContent> siteContentRecord = new VersionedEntityChange<SiteContent>(sourceEnv.getSiteContent(), destEnv.getSiteContent());
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(sourceEnv.getPortalEnvironmentConfig(),
@@ -106,7 +106,7 @@ public class PortalDiffService {
 
     protected List<ParticipantDashboardAlertChange> diffAlertLists(
             List<ParticipantDashboardAlert> sourceAlerts,
-            List<ParticipantDashboardAlert> destAlerts) throws ReflectiveOperationException, IntrospectionException {
+            List<ParticipantDashboardAlert> destAlerts) {
         Map<AlertTrigger, ParticipantDashboardAlert> unmatchedDestAlerts = new HashMap<>();
         for (ParticipantDashboardAlert destAlert : destAlerts) {
             unmatchedDestAlerts.put(destAlert.getTrigger(), destAlert);
@@ -152,13 +152,13 @@ public class PortalDiffService {
     }
 
 
-    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) throws Exception {
+    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, EnvironmentName source, EnvironmentName dest) {
         StudyEnvironment sourceEnv = loadStudyEnvForProcessing(studyShortcode, source);
         StudyEnvironment destEnv = loadStudyEnvForProcessing(studyShortcode, dest);
         return diffStudyEnvs(studyShortcode, sourceEnv, destEnv);
     }
 
-    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, StudyEnvironment sourceEnv, StudyEnvironment destEnv) throws Exception {
+    public StudyEnvironmentChange diffStudyEnvs(String studyShortcode, StudyEnvironment sourceEnv, StudyEnvironment destEnv) {
         List<ConfigChange> envConfigChanges = ConfigChange.allChanges(
                 sourceEnv.getStudyEnvironmentConfig(),
                 destEnv.getStudyEnvironmentConfig(),

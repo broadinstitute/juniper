@@ -41,10 +41,10 @@ test('renders a copy link', () => {
   const { RoutedComponent } = setupRouterTest(<PortalEnvPublishControl
     portal={portal} studyShortcode={'bar'}  destEnvName={'irb'} />)
   render(RoutedComponent)
-  const copyLink = screen.getByText('Copy from sandbox')
+  const copyLink = screen.getByText('Compare to sandbox')
   expect(copyLink).toBeInTheDocument()
   expect(copyLink).toHaveAttribute('href',
     studyDiffPath(portal.shortcode, 'bar', 'sandbox', 'irb'))
   // irb link shouldn't exist since irb env isn't initialized
-  expect(screen.queryByText('Copy from irb')).toBeNull()
+  expect(screen.queryByText('Compare to irb')).toBeNull()
 })

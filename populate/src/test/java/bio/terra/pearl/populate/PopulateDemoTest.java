@@ -5,6 +5,7 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -12,14 +13,18 @@ import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -58,6 +63,7 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         checkLostInterestEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
         checkFamilies(sandboxEnvironmentId);
+        checkPortalChangeRecords(portal);
     }
 
     private void checkFamilies(UUID sandboxEnvironmentId) {
@@ -202,6 +208,14 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
     }
 
+    private void checkPortalChangeRecords(Portal portal) {
+        List<PortalEnvironmentChangeRecord> changeRecords = portalEnvironmentChangeRecordService.findByPortalId(portal.getId());
+        assertThat(changeRecords, hasSize(1));
+        PortalEnvironmentChangeRecord changeRecord = changeRecords.get(0);
+        assertThat(changeRecord.getPortalId(), equalTo(portal.getId()));
+        assertThat(changeRecord.getAdminUserId(), equalTo(adminUserService.findByUsername("power_user@heartdemo.org").orElseThrow().getId()));
+    }
+
     @Test
     @Transactional
     public void testPopulateWithShortcodeOverride() {
@@ -224,4 +238,9 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
             assertThat(emailTemplate.getStableId(), Matchers.startsWith(newShortcode));
         });
     }
+
+    @Autowired
+    private PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService;
+    @Autowired
+    private AdminUserService adminUserService;
 }

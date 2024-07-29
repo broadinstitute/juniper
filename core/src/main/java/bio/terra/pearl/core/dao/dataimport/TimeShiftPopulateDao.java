@@ -99,4 +99,13 @@ public class TimeShiftPopulateDao {
         );
     }
 
+    public void changePortalEnvChangeCreationTime(UUID changeRecordId, Instant creationTime) {
+        jdbi.withHandle(handle ->
+                handle.createUpdate("update portal_environment_change_record set created_at = :creationTime where id = :changeRecordId;")
+                        .bind("changeRecordId", changeRecordId)
+                        .bind("creationTime", creationTime)
+                        .execute()
+        );
+    }
+
 }

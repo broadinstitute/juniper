@@ -1384,36 +1384,48 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff:
+  /api/portals/v1/{portalShortcode}/publish/diff/{sourceEnv}/{targetEnv}:
     get:
       summary: Gets the diff between one environment and another
-      tags: [ portalEnvironment ]
+      tags: [ portalPublishing ]
       operationId: diff
       parameters:
         - *portalShortcodeParam
+        - { name: sourceEnv, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: PortalEnvironmentChangeRecord object
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff/apply:
+  /api/portals/v1/{portalShortcode}/publish/apply/{envName}:
     post:
       summary: Updates a portal environment according to the update object obtained from a diff operation
-      tags: [ portalEnvironment ]
-      operationId: apply
+      tags: [ portalPublishing ]
+      operationId: publish
       parameters:
         - *portalShortcodeParam
-        - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: false
         content: *jsonContent
       responses:
         '200':
           description: PortalEnvironment object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/publish/changeRecords:
+    get:
+      summary: Gets the change records for a portal environment
+      tags: [ portalPublishing ]
+      operationId: getChangeRecords
+      parameters:
+        - *portalShortcodeParam
+      responses:
+        '200':
+          description: List of PortalEnvironmentChangeRecords
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'

@@ -39,6 +39,10 @@ import _random from 'lodash/random'
 import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
 import { PortalEnvContext } from '../portal/PortalRouter'
 import React from 'react'
+import { AdminUserContext } from '../providers/AdminUserProvider'
+import { AdminUser } from '../api/adminUser'
+import { mockAdminUser } from './user-mocking-utils'
+import { UserContext } from '../user/UserProvider'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
@@ -563,16 +567,31 @@ export const MOCK_SPANISH_LANGUAGE = {
   id: '1'
 }
 
+export type RenderInPortalRouterOpts = {
+  envName?: string,
+  mockWindowAlert?: boolean,
+  adminUsers?: AdminUser[], // will be put in the AdminUserContext
+  user: AdminUser, // will be put in the UserContext
+  permissions?: string[] // convenience for setting permissions without setting a full user with portalPermissions
+}
+
+export const defaultRenderOpts = {
+  envName: 'sandbox',
+  mockWindowAlert: true,
+  adminUsers: [],
+  user: mockAdminUser(false),
+  permissions: undefined
+}
+
 /**
  * renders the children in a PortalProvider context and simulating appropriate routes
  * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now.
+ * Also includes AdminUserContext for showing admin user names
  *
  * By default, this mocks window alert since many of our contexts use window alert for error handling.
  * */
-export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, opts = {
-  envName: 'sandbox',
-  mockWindowAlert: true
-}) => {
+export const renderInPortalRouter = (portal: Portal,
+  children: React.ReactNode, opts: RenderInPortalRouterOpts = defaultRenderOpts) => {
   const portalContext: PortalContextT = {
     ...mockPortalContext(),
     portal,
@@ -583,10 +602,20 @@ export const renderInPortalRouter = (portal: Portal, children: React.ReactNode, 
   if (opts.mockWindowAlert) {
     jest.spyOn(window, 'alert').mockImplementation(jest.fn())
   }
+
+  if (opts.permissions) {
+    opts.user.portalPermissions = { [portal.id]: opts.permissions }
+  }
+
   const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
   return renderWithRouter(
-    <PortalContext.Provider value={portalContext}>
-      { children }
-    </PortalContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
+    <AdminUserContext.Provider value={{ users: opts.adminUsers ?? [], isLoading: false }}>
+      <UserContext.Provider
+        value={{ user: opts.user, logoutUser: jest.fn(), loginUser: jest.fn(), loginUserUnauthed: jest.fn() }}>
+        <PortalContext.Provider value={portalContext}>
+          { children }
+        </PortalContext.Provider>
+      </UserContext.Provider>
+    </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
     ':portalShortcode/studies/:studyShortcode/:studyEnv')
 }

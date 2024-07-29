@@ -33,7 +33,7 @@ import DatasetList from './participants/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
-import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
+import { ENVIRONMENT_ICON_MAP } from './publishing/PortalPublishingView'
 import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
@@ -259,9 +259,7 @@ export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortc
 
 /** helper for pre registration survey path */
 export const studyEnvPreRegPath = (studyEnvParams: StudyEnvParams) => {
-  return `${studyEnvPath(studyEnvParams.portalShortcode,
-    studyEnvParams.studyShortcode,
-    studyEnvParams.envName)}/forms/preReg`
+  return `${baseStudyEnvPath(studyEnvParams)}/forms/preReg`
 }
 
 /** helper for path for particular dataset route */
@@ -279,4 +277,17 @@ export const adminTasksPath = (portalShortcode: string, studyShortcode: string, 
  */
 export const familyPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/families`
+}
+
+/**
+ * viewing publishing history
+ */
+export const portalPublishHistoryPath = (portalShortcode: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/publishing/history`
+}
+
+const baseStudyEnvPath = (params: StudyEnvParams) => {
+  return `${studyEnvPath(params.portalShortcode,
+    params.studyShortcode,
+    params.envName)}`
 }

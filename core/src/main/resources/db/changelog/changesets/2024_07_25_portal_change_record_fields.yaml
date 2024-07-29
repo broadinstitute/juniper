@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: "portal_change_record_fields"
+      author: dbush
+      changes:
+        - addColumn:
+            tableName: portal_environment_change_record
+            columns:
+              - column:
+                  name: portal_id
+                  type: uuid
+                  constraints:
+                    foreignKeyName: fk_portal_environment_change_record_portal_id,
+                    references: portal(id)
+                    nullable: true  # needs to be nullable for legacy records
+              - column:
+                  name: environment_name
+                  type: text
+                  constraints:
+                    nullable: true  # needs to be nullable for legacy records
