@@ -87,6 +87,11 @@ public class SearchValue {
             // flip the comparison if the right side is an array so that we hit the array comparison logic
             return right.equals(this);
         }
+
+        if (this.searchValueType != right.searchValueType && !this.searchValueType.equals(SearchValueType.ARRAY)) {
+            return false;
+        }
+
         return switch (this.searchValueType) {
             case STRING -> this.stringValue.equals(right.stringValue);
             case NUMBER -> this.numberValue.equals(right.numberValue);
@@ -106,6 +111,9 @@ public class SearchValue {
     }
 
     public boolean greaterThan(SearchValue right) {
+        if (this.searchValueType != right.searchValueType) {
+            return false;
+        }
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue > right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue);
@@ -114,6 +122,9 @@ public class SearchValue {
     }
 
     public boolean greaterThanOrEqualTo(SearchValue right) {
+        if (this.searchValueType != right.searchValueType) {
+            return false;
+        }
         return switch (this.searchValueType) {
             case NUMBER -> this.numberValue >= right.numberValue;
             case INSTANT -> this.instantValue.isAfter(right.instantValue) || this.instantValue.equals(right.instantValue);

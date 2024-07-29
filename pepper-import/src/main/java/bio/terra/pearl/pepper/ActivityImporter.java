@@ -1,7 +1,9 @@
 package bio.terra.pearl.pepper;
 
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.survey.SurveyType;
 import bio.terra.pearl.pepper.dto.SurveyJSContent;
+import bio.terra.pearl.pepper.dto.SurveyJSPanel;
 import bio.terra.pearl.pepper.dto.SurveyJSQuestion;
 import bio.terra.pearl.populate.dto.survey.SurveyPopDto;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -82,6 +84,7 @@ public class ActivityImporter {
                 .stableId(activityDef.getActivityCode())
                 .version(1)
                 .name(translatedSurveyTitles.get("en"))
+                .surveyType(getSurveyType(activityDef))
                 .build();
 
         ObjectNode root = objectMapper.createObjectNode();
@@ -129,7 +132,7 @@ public class ActivityImporter {
                 elements.addAll(convertBlockQuestions(allLangMap, blockDef));
                 break;
             case CONTENT:
-                elements.add(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
+                elements.addAll(getJsonNodeForContentBlock(allLangMap, (ContentBlockDef) blockDef));
                 break;
             case GROUP:
                 elements.addAll(convertGroupBlock(allLangMap, blockDef));
@@ -153,7 +156,14 @@ public class ActivityImporter {
                 nodes.addAll(convertBlock(allLangMap, nestedBlockDef));
             }
         }
-        return nodes;
+
+        SurveyJSPanel panel = SurveyJSPanel.builder()
+                .type("panel")
+                .elements(nodes)
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                .build();
+
+        return List.of(objectMapper.valueToTree(panel));
     }
 
     private List<JsonNode> convertConditionalBlock(Map<String, Map<String, Object>> allLangMap, ConditionalBlockDef blockDef) {
@@ -194,6 +204,8 @@ public class ActivityImporter {
         }
 
         Map<String, String> titleMap = getQuestionTxt(pepperQuestionDef);
+        boolean titleIsEmpty = titleMap.isEmpty() || titleMap.values().stream().allMatch(StringUtils::isEmpty);
+
         String questionType = getQuestionType(pepperQuestionDef);
         String inputType = null;
 
@@ -261,21 +273,28 @@ public class ActivityImporter {
             titleMap = placeholder;
         }
 
-        // todo: handle tooltips - this is not natively
-        //       supported in surveyjs, so maybe we should
-        //       make an html block if there's a tooltip?
+        SurveyJSContent tooltip = null;
+        if (Objects.nonNull(pepperQuestionDef.getTooltipTemplate())) {
+            // let's just render it so we get translations - if we need to use it,
+            // we can figure out where this goes in the future, but at least we have it.
+            tooltip = SurveyJSContent.builder()
+                    .name(pepperQuestionDef.getStableId() + "_TOOLTIP")
+                    .type("html")
+                    .html(translatePepperTemplate(pepperQuestionDef.getTooltipTemplate()))
+                    .build();
+        }
 
 
         SurveyJSQuestion surveyJSQuestion = SurveyJSQuestion.builder()
                 .name(pepperQuestionDef.getStableId())
                 .type(questionType)
+                .titleLocation(titleIsEmpty ? "hidden" : null)
                 .title(titleMap)
                 .placeholder(placeholder)
                 .labelTrue(labelTrue)
                 .labelFalse(labelFalse)
                 .valueFalse(valueTrue)
                 .valueFalse(valueFalse)
-                .isRequired(false)
                 .inputType(inputType)
                 .choices(choices)
                 .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
@@ -283,14 +302,17 @@ public class ActivityImporter {
         ValidationConverter.applyValidation(pepperQuestionDef, surveyJSQuestion);
 
 
-        JsonNode node = objectMapper.valueToTree(surveyJSQuestion);
-        if (!otherQuestions.isEmpty()) {
-            List<JsonNode> out = new ArrayList<>();
-            out.add(node);
-            out.addAll(otherQuestions);
-            return out;
+        List<JsonNode> out = new ArrayList<>();
+        if (Objects.nonNull(tooltip)) {
+            out.add(objectMapper.valueToTree(tooltip));
         }
-        return List.of(node);
+        out.add(objectMapper.valueToTree(surveyJSQuestion));
+
+        if (!otherQuestions.isEmpty()) {
+            out.addAll(otherQuestions);
+        }
+
+        return out;
     }
 
     private List<JsonNode> createOtherQuestions(PicklistQuestionDef picklistQuestionDef, Map<String, Map<String, Object>> allLangMap, List<SurveyJSQuestion.Choice> choices) {
@@ -299,10 +321,12 @@ public class ActivityImporter {
             if (option.isDetailsAllowed()) {
                 Map<String, String> otherTitle = translatePepperTemplate(option.getDetailLabelTemplate());
                 SurveyJSQuestion otherQuestion = SurveyJSQuestion.builder()
-                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_details")
+                        // similar naming convention as in dsm
+                        .name(picklistQuestionDef.getStableId() + "_" + option.getStableId() + "_DETAIL")
                         .type("text")
                         .title(otherTitle)
                         .visibleIf("{" + picklistQuestionDef.getStableId() + "} contains '" + option.getStableId() + "'")
+                        .validators(null)
                         .build();
                 otherQuestions.add(objectMapper.valueToTree(otherQuestion));
 
@@ -333,15 +357,17 @@ public class ActivityImporter {
 
 
         // construct as surveyjs panel dynamic section
-        Map<String, Object> compositeQuestionMap = new HashMap<>();
-        compositeQuestionMap.put("name", pepperQuestionDef.getStableId());
-        compositeQuestionMap.put("type", "paneldynamic");
-        compositeQuestionMap.put("title", getQuestionTxt(pepperQuestionDef));
-        compositeQuestionMap.put("templateElements", subQuestions);
-        compositeQuestionMap.put("panelAddText", addButtonTemplate);
-        compositeQuestionMap.put("templateTitle", additionalItemTemplate);
-        compositeQuestionMap.put("visibleIf", convertVisibilityExpressions(blockDef.getShownExpr()));
-        return objectMapper.valueToTree(compositeQuestionMap);
+        SurveyJSPanel panel = SurveyJSPanel
+                .builder()
+                .name(pepperQuestionDef.getStableId())
+                .type("paneldynamic")
+                .title(getQuestionTxt(pepperQuestionDef))
+                .templateElements(subQuestions)
+                .panelAddText(addButtonTemplate)
+                .templateTitle(additionalItemTemplate)
+                .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                .build();
+        return objectMapper.valueToTree(panel);
     }
 
     public static Map<String, String> translatePepperTemplate(Template template) {
@@ -397,7 +423,6 @@ public class ActivityImporter {
                     textQuestionDef.getPlaceholderTemplate().getVariables());
         }
 
-
         return txtMap;
     }
 
@@ -412,7 +437,8 @@ public class ActivityImporter {
         for (TemplateVariable var : templateVariables) {
             for (Translation translation : var.getTranslations()) {
                 String languageText = textMap.getOrDefault(translation.getLanguageCode(), StringUtils.trim(templateText));
-                textMap.put(translation.getLanguageCode(), languageText.replace( "$" + var.getName(), translation.getText()));
+                languageText = languageText.replace("$" + var.getName(), translation.getText());
+                textMap.put(translation.getLanguageCode(), languageText);
             }
         }
         return textMap;
@@ -439,7 +465,7 @@ public class ActivityImporter {
     }
 
 
-    private JsonNode getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
+    private List<JsonNode> getJsonNodeForContentBlock(Map<String, Map<String, Object>> allLangMap, ContentBlockDef blockDef) {
         ContentBlockDef contentBlockDef = blockDef;
         String titleTemplateTxt = contentBlockDef.getTitleTemplate() != null ? contentBlockDef.getTitleTemplate().getTemplateText() : null; //where to set this title txt ?
         String bodyTemplateTxt = contentBlockDef.getBodyTemplate() != null ? contentBlockDef.getBodyTemplate().getTemplateText() : null;
@@ -455,28 +481,37 @@ public class ActivityImporter {
         }
 
         String name = contentBlockDef.getBodyTemplate().getVariables().stream().findAny().get().getName();
+
+        List<JsonNode> out = new ArrayList<>();
+        if (!titleTxtMap.isEmpty()) {
+            SurveyJSContent titleContent = SurveyJSContent.builder()
+                    .name(name + "_title")
+                    .type("html")
+                    .html(titleTxtMap)
+                    .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
+                    .build();
+            out.add(objectMapper.valueToTree(titleContent));
+        }
         SurveyJSContent surveyJSContent = SurveyJSContent.builder()
                 .name(name)
                 .type("html")
                 .html(htmlTxtMap)
-                .title(titleTxtMap.isEmpty() ? null : titleTxtMap)
                 .visibleIf(convertVisibilityExpressions(blockDef.getShownExpr()))
                 .build();
-        return objectMapper.valueToTree(surveyJSContent);
+        out.add(objectMapper.valueToTree(surveyJSContent));
+        return out;
     }
 
+
     public String convertVisibilityExpressions(String pepperExpr) {
-        if (pepperExpr == null) {
+        if (StringUtils.isEmpty(pepperExpr)) {
             return null;
         }
-        // example:
-        // user.studies[\"atcp\"].forms[\"REGISTRATION\"].questions[\"REGISTRATION_COUNTRY\"].answers.hasOption (\"AF\")
-        // should become:
-        // {REGISTRATION_COUNTRY} contains 'AF'
 
-        Pattern matchAllPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
-        return matchAllPattern.matcher(pepperExpr).replaceAll(matchResult -> {
-
+        Pattern questionPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.forms\\[\"(.*?)\"\\]\\.questions\\[\"(.*?)\"\\]\\.(.*?)\\((.*?)\\)");
+        // study e.g.: !user.studies["atcp"].isGovernedParticipant()
+        Pattern studyPattern = Pattern.compile("user\\.studies\\[\"(.*?)\"\\]\\.(.*?)\\(\\)");
+        String out = questionPattern.matcher(pepperExpr).replaceAll(matchResult -> {
             String study = matchResult.group(1);
             String form = matchResult.group(2);
             String question = matchResult.group(3);
@@ -498,19 +533,50 @@ public class ActivityImporter {
                 value = value.substring(1, value.length() - 1);
             }
             return stableId + " " + pepperOperation + " '" + value + "'";
-        }).replace("&&", "and").replace("\n", "").trim();
+        });
 
+        out = studyPattern.matcher(out).replaceAll(matchResult -> {
+            String study = matchResult.group(1);
+            String pepperOperation = matchResult.group(2);
+            switch (pepperOperation.toLowerCase().trim()) {
+                case "isgovernedparticipant":
+                    return "{isGovernedUser} = true";
+                default:
+                    throw new RuntimeException("Unsupported pepper operation: " + pepperOperation);
+            }
+        });
+
+        return out.replace("&&", "and").replace("\n", "").trim();
+
+    }
+
+    SurveyType getSurveyType(FormActivityDef activityDef) {
+        if (Objects.requireNonNull(activityDef.getFormType()).equals(FormType.CONSENT)) {
+            return SurveyType.CONSENT;
+        }
+
+        return SurveyType.RESEARCH;
     }
 
     /** maps pepper replacement vars to Juniper vars, and html markup to markdown.
      * After testing some more surveys, we might want to upgrade this to use a html->markdown parsing library */
-    Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.of(
-            "\\$ddp.participantFirstName\\(\\)", "{proxyProfile.givenName}",
-            "\\<p.*?\\>", "",
-            "\\</p\\>", "\\\\n",
-            "\\<em.*?\\>", "**",
-            "\\</em\\>", "**",
-            " +", " "
+    static Map<String, String> JUNIPER_PEPPER_STRING_MAP = Map.ofEntries(
+            Map.entry("\\$ddp.participantFirstName\\(\\)", "{profile.givenName}"),
+            Map.entry("\\<p.*?\\>", ""),
+            Map.entry("\\</p\\>", "\\\\n"),
+            Map.entry("\\<span.*?\\>", ""),
+            Map.entry("\\</span\\>", ""),
+            Map.entry("\\<b.*?\\>", "**"),
+            Map.entry("\\</b\\>", "**"),
+            Map.entry("<b.*?>", "**"),
+            Map.entry("</b>", "**"),
+            Map.entry("\\<i.*?\\>", "*"),
+            Map.entry("\\</i\\>", "*"),
+            Map.entry("<i.*?>", "*"),
+            Map.entry("</i>", "*"),
+            Map.entry("\\<em.*?\\>", "*"),
+            Map.entry("\\</em\\>", "*"),
+            Map.entry(" +", " ")
     );
 
 }

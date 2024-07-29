@@ -19,6 +19,7 @@ public class SurveyJSQuestion {
     public String inputType;
     public Map<String, String> placeholder;
     public Map<String, String> title;
+    public String titleLocation;
     public Map<String, String> labelTrue;
     public Map<String, String> labelFalse;
     public String valueTrue;
@@ -29,7 +30,7 @@ public class SurveyJSQuestion {
     public Map<String, String> maxErrorText;
     public String minValueExpression;
     public String maxValueExpression;
-    public boolean isRequired;
+    public Boolean isRequired;
     public Map<String, String> requiredErrorText;
     public List<Choice> choices;
     public String visibleIf;

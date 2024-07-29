@@ -1,6 +1,5 @@
 package bio.terra.pearl.core.service.survey;
 
-import bio.terra.pearl.core.dao.workflow.DataChangeRecordDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
@@ -13,7 +12,6 @@ import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
 import bio.terra.pearl.core.service.participant.ProfileService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,11 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 
 import static java.lang.Boolean.parseBoolean;
@@ -95,6 +89,12 @@ public class AnswerProcessingService {
             List<AnswerMapping> mappings,
             PortalParticipantUser operator,
             DataAuditInfo auditInfo) {
+
+        // if the ppUser is the same as the enrollee, we're not in a proxy environment
+        if (operator.getProfileId().equals(enrollee.getProfileId())) {
+            return;
+        }
+
         List<AnswerMapping> proxyProfileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROXY_PROFILE)).toList();
         if (proxyProfileMappings.isEmpty() || !hasTargetedChanges(proxyProfileMappings, answers, AnswerMappingTargetType.PROXY_PROFILE)) {

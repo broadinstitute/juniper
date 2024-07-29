@@ -29,3 +29,8 @@ b2c:
     clientId: 42445bb9-7ab2-48e9-b7a7-c5f84258e87b
     policyName: B2C_1A_ddp_participant_signup_signin_rgp-dev
     changePasswordPolicyName: B2C_1A_ddp_participant_change_password_rgp-dev
+  atcp:
+    tenantName: none
+    clientId: none
+    policyName: none
+    changePasswordPolicyName: none

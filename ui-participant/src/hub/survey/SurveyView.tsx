@@ -25,9 +25,9 @@ import { usePortalEnv } from 'providers/PortalProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from 'util/ErrorBoundary'
 import { DocumentTitle } from 'util/DocumentTitle'
-import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import { HubUpdate } from 'hub/hubUpdates'
+import { useActiveUser } from 'providers/ActiveUserProvider'
 import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
 import { ReactQuestionFactory } from 'survey-react-ui'
 
@@ -36,19 +36,20 @@ ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
   return React.createElement(ThemedSurveyQuestionAddressValidation, props)
 })
 
-
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useActiveUser()
-  const { user, updateEnrollee, updateProfile } = useUser()
+  const { user, updateEnrollee, updateProfile, enrollees: allEnrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const studyShortcode = params.studyShortcode
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
 
-  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
+  const proxyProfile = allEnrollees
+    .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
+    ?.profile
 
   const { i18n, selectedLanguage } = useI18n()
   const taskId = useTaskIdParam() ?? ''

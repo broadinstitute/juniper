@@ -46,7 +46,7 @@ public class SiteMediaController implements SiteMediaApi {
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteMedia> siteMediaOpt;
 
-    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName, version);
+    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName.toLowerCase(), version);
     return convertToResourceResponse(siteMediaOpt);
   }
 

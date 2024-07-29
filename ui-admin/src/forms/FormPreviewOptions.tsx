@@ -9,6 +9,7 @@ type FormPreviewOptions = {
   locale: string
   profile?: Profile
   proxyProfile?: Profile
+  isGovernedUser: boolean
 }
 
 type FormPreviewOptionsProps = {
@@ -62,10 +63,10 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
       <div className="mt-4">
         <div data-testid="profileInfoFields">
           <h4 className="h6">
-          Participant profile <InfoPopup content={<p>
-          Change the values below to test how your survey appears to different participants
-          due to branching logic or dynamic texts.  The participant profile is the profile of the
-          user taking the survey.
+            Participant profile <InfoPopup content={<p>
+            Change the values below to test how your survey appears to different participants
+            due to branching logic or dynamic texts. The participant profile is the profile of the
+            user taking the survey.
             </p>}/>
           </h4>
           <TextInput onChange={text => onChange({
@@ -77,7 +78,7 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           })}
           label={'Given name'}
           unboldLabel={true}
-          value={value.profile?.givenName ?? ''} />
+          value={value.profile?.givenName ?? ''}/>
           <TextInput onChange={text => onChange({
             ...value,
             profile: {
@@ -87,13 +88,29 @@ export const FormPreviewOptions = (props: FormPreviewOptionsProps) => {
           })}
           label={'Family name'}
           unboldLabel={true}
-          value={value.profile?.familyName ?? ''} />
+          value={value.profile?.familyName ?? ''}/>
         </div>
+        <div className="form-check mt-2">
+          <label className="form-check-label" htmlFor="form-is-governed-user">
+            <input
+              checked={value.isGovernedUser}
+              className="form-check-input"
+              id="form-is-governed-user"
+              type="checkbox"
+              onChange={e => {
+                onChange({ ...value, isGovernedUser: e.target.checked })
+              }}
+            />
+            Is governed user
+          </label>
+        </div>
+      </div>
+      <div>
         <div data-testid="proxyInfoFields">
           <h4 className="h6 mt-3">
             Proxy profile <InfoPopup content={<p>
             Change the values below to test how your survey appears to different participants
-            due to branching logic or dynamic texts.  The proxy profile is the profile of the
+            due to branching logic or dynamic texts. The proxy profile is the profile of the
             person the user is taking the survey on behalf of.
             </p>}/>
           </h4>

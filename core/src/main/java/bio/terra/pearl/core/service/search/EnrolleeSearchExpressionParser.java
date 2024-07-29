@@ -142,6 +142,8 @@ public class EnrolleeSearchExpressionParser {
             return new UserInputTerm(new SearchValue(Double.parseDouble(ctx.NUMBER().getText())));
         } else if (ctx.VARIABLE() != null) {
             return parseVariableTerm(ctx.VARIABLE().getText());
+        } else if (ctx.NULL() != null) {
+            return new UserInputTerm(new SearchValue());
         } else {
             throw new IllegalArgumentException("Unknown term type");
         }
