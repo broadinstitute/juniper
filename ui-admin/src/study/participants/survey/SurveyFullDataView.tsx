@@ -3,7 +3,6 @@ import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
 import {
   createAddressValidator, Enrollee,
-  makeSurveyJsData,
   PortalEnvironment,
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
@@ -33,10 +32,8 @@ export default function SurveyFullDataView({
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
   const [changeRecords, setChangeRecords] = useState<DataChangeRecord[]>([])
-  const surveyJsData = makeSurveyJsData(resumeData, answers, enrollee?.participantUserId)
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
-  surveyJsModel.data = surveyJsData!.data
   const answerMap: Record<string, Answer> = {}
   answers.forEach(answer => {
     answerMap[answer.questionStableId] = answer
@@ -161,15 +158,26 @@ export const getDisplayValue = (answer: Answer,
   let displayValue: React.ReactNode = answerValue
   if ((question as Question).choices) {
     if (answer.objectValue) {
-      const valueArray = JSON.parse(answer.objectValue)
-      const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question as Question))
-      displayValue = JSON.stringify(textArray)
+      try {
+        const valueArray = JSON.parse(answer.objectValue)
+        const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question as Question))
+        displayValue = JSON.stringify(textArray)
+      } catch (e) {
+        displayValue = renderParseError(answer.objectValue)
+      }
     } else {
       displayValue = getTextForChoice(answerValue, question as Question)
     }
   }
   if (answer.booleanValue !== undefined) {
     displayValue = answer.booleanValue ? 'True' : 'False'
+  }
+  if (answer.objectValue !== undefined) {
+    try {
+      JSON.parse(answer.objectValue)
+    } catch (e) {
+      displayValue = renderParseError(answer.objectValue)
+    }
   }
   if (question.getType() === 'signaturepad') {
     displayValue = <img src={answer.stringValue}/>
@@ -178,6 +186,12 @@ export const getDisplayValue = (answer: Answer,
     displayValue = `${displayValue} - ${answer.otherDescription}`
   }
   return displayValue
+}
+
+const renderParseError = (value: string) => {
+  return <span className={'text-danger'}>[[ parse error ]]
+    <InfoPopup content={`value is not JSON: ${value}`}/>
+  </span>
 }
 
 /**
