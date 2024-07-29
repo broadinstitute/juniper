@@ -122,6 +122,18 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     }
 
     @Test
+    public void mapStringToBoolean() {
+        AnswerMapping mapping = new AnswerMapping();
+        Object result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
+                .apply(Answer.builder().stringValue("true").build(), mapping);
+        assertThat((Boolean) result, equalTo(true));
+
+        result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
+                .apply(Answer.builder().stringValue("false").build(), mapping);
+        assertThat((Boolean) result, equalTo(false));
+    }
+
+    @Test
     public void mapToDateHandlesFormatString() {
         AnswerMapping mapping = AnswerMapping.builder().formatString("MM/dd/yyyy").build();
         LocalDate result = AnswerProcessingService.mapToDate("11/12/1987", mapping);
