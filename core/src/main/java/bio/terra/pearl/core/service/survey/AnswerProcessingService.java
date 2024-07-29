@@ -50,11 +50,7 @@ public class AnswerProcessingService {
             return;
         }
         processProfileAnswerMappings(enrollee, answers, mappings, operator, auditInfo);
-        // if the ppUser is not the same as the enrollee, we're in a proxy environment,
-        // so we should check proxy profile mappings. otherwise, ignore them.
-        if (!ppUser.getProfileId().equals(enrollee.getProfileId())) {
-            processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
-        }
+        processProxyProfileAnswerMappings(enrollee, answers, mappings, ppUser, auditInfo);
     }
 
     /**
@@ -91,6 +87,12 @@ public class AnswerProcessingService {
             List<AnswerMapping> mappings,
             PortalParticipantUser operator,
             DataAuditInfo auditInfo) {
+
+        // if the ppUser is the same as the enrollee, we're not in a proxy environment
+        if (operator.getProfileId().equals(enrollee.getProfileId())) {
+            return;
+        }
+
         List<AnswerMapping> proxyProfileMappings = mappings.stream().filter(mapping ->
                 mapping.getTargetType().equals(AnswerMappingTargetType.PROXY_PROFILE)).toList();
         if (proxyProfileMappings.isEmpty() || !hasTargetedChanges(proxyProfileMappings, answers, AnswerMappingTargetType.PROXY_PROFILE)) {

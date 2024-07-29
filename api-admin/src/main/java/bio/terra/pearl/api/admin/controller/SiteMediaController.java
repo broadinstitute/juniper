@@ -40,6 +40,7 @@ public class SiteMediaController implements SiteMediaApi {
   @Override
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, String version) {
+    cleanFileName = cleanFileName.toLowerCase();
     if (version.equalsIgnoreCase("latest")) {
       Optional<SiteMedia> siteMediaOpt =
           siteMediaExtService.findLatest(portalShortcode, cleanFileName);
