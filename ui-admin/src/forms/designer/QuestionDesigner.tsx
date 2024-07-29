@@ -5,7 +5,6 @@ import { HtmlQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-c
 import { BaseFields } from './questions/BaseFields'
 import { CheckboxFields } from './questions/CheckboxFields'
 import { ChoicesList } from './questions/ChoicesList'
-import { OtherOptionFields } from './questions/OtherOptionFields'
 import { questionTypeDescriptions, questionTypeLabels } from './questions/questionTypes'
 import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
@@ -77,21 +76,14 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
         <>
           {
             (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (
-              <>
-                <ChoicesList
-                  question={question}
-                  isNewQuestion={isNewQuestion}
-                  currentLanguage={currentLanguage}
-                  supportedLanguages={supportedLanguages}
-                  readOnly={readOnly}
-                  onChange={onChange}
-                />
-                <OtherOptionFields
-                  disabled={readOnly}
-                  question={question}
-                  onChange={onChange}
-                />
-              </>
+              <ChoicesList
+                question={question}
+                isNewQuestion={isNewQuestion}
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
+                readOnly={readOnly}
+                onChange={onChange}
+              />
             )
           }
           {

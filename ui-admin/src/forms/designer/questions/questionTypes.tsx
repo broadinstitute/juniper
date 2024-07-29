@@ -28,7 +28,10 @@ export const baseQuestions: Record<QuestionType, Question> = {
     title: '',
     description: '',
     isRequired: false,
-    choices: [],
+    choices: [{
+      value: '',
+      text: ''
+    }],
     showNoneItem: undefined,
     noneText: undefined,
     noneValue: undefined,

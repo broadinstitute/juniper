@@ -8,6 +8,8 @@ import { Button, IconButton } from 'components/forms/Button'
 import { TextInput } from 'components/forms/TextInput'
 import { getValueForChoice, i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
 import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
+import { OtherOptionFields } from './OtherOptionFields'
+import { CheckboxFields } from './CheckboxFields'
 
 type QuestionWithChoices = CheckboxQuestion | DropdownQuestion | RadiogroupQuestion
 
@@ -29,7 +31,7 @@ export const ChoicesList = (props: ChoicesListProps) => {
     return null
   }
   return (
-    <div className="mb-3 mt-4">
+    <div>
       <CollapsibleSectionButton targetSelector={`#${labelId}`} sectionLabel={`Choices (${question.choices.length})`} />
       <div className="collapse hide" id={labelId}>
         <table className="ms-2 table">
@@ -169,6 +171,20 @@ export const ChoicesList = (props: ChoicesListProps) => {
         >
           <FontAwesomeIcon icon={faPlus} /> Add a choice
         </Button>
+        <OtherOptionFields
+          disabled={readOnly}
+          question={question}
+          onChange={onChange}
+        />
+        {
+          question.type === 'checkbox' && (
+            <CheckboxFields
+              disabled={readOnly}
+              question={question}
+              onChange={onChange}
+            />
+          )
+        }
       </div>
     </div>
   )

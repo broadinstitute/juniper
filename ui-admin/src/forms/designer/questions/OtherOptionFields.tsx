@@ -20,7 +20,7 @@ export const OtherOptionFields = (props: OtherOptionFieldsProps) => {
 
   return (
     <>
-      <div className="mb-3">
+      <div className="mt-3 mb-3">
         <Checkbox
           checked={!!question.showOtherItem}
           disabled={disabled}

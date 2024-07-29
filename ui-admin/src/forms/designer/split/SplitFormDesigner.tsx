@@ -19,7 +19,6 @@ export const SplitFormDesigner = ({ content, onChange, currentLanguage, supporte
   const [currentPageNo, setCurrentPageNo] = useState(0)
   const [currentPage, setCurrentPage] = useState(content.pages[currentPageNo])
 
-
   const handlePageChange = (direction: 'next' | 'previous') => {
     if (direction === 'next') {
       setCurrentPageNo(currentPageNo + 1)
