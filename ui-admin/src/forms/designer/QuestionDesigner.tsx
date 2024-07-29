@@ -85,15 +85,6 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
               />
             )
           }
-          {/*{*/}
-          {/*  question.type === 'checkbox' && (*/}
-          {/*    <CheckboxFields*/}
-          {/*      disabled={readOnly}*/}
-          {/*      question={question}*/}
-          {/*      onChange={onChange}*/}
-          {/*    />*/}
-          {/*  )*/}
-          {/*}*/}
           {
             question.type === 'text' && (
               <TextFields
