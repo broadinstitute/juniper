@@ -194,9 +194,8 @@ public class SurveyExtService {
   /**
    * deactivates any existing active studyEnvironmentSurvey for the given stableId, and adds a new
    * config as specified in the update object. Note that the portalEnvironmentId and
-   * studyEnvironmentId will be set from the portalShortcode and studyShortcode params.
-   *
-   * <p>If studyEnvironmentSurveyId is null, this will deactivate the existing active config
+   * studyEnvironmentId will be set from the portalShortcode and studyShortcode params, and the order will be
+   * pulled from the prior active version.
    */
   @SandboxOnly
   @EnforcePortalStudyEnvPermission(permission = "survey_edit")
