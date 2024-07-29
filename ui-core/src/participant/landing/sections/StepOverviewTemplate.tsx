@@ -25,7 +25,7 @@ import ConfiguredMedia, {
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import { useApiContext } from 'src/participant/ApiProvider'
+import { useApiContext } from '../../ApiProvider'
 import classNames from 'classnames'
 import {
   blurbProp,
