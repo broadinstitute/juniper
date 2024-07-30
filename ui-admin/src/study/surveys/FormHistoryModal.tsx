@@ -1,95 +1,90 @@
-import React, { useId, useState } from 'react'
+import React, { useState } from 'react'
 import Modal from 'react-bootstrap/Modal'
-import InfoPopup from 'components/forms/InfoPopup'
 import LoadingSpinner from 'util/LoadingSpinner'
 import Select from 'react-select'
-import { instantToDefaultString, VersionedForm } from '@juniper/ui-core'
+import { instantToDefaultString, Survey, VersionedForm } from '@juniper/ui-core'
 import { StudyEnvContextT, studyEnvFormsPath } from '../StudyEnvironmentRouter'
 import { useLoadingEffect } from 'api/api-utils'
 import Api from 'api/api'
 import { Button } from 'components/forms/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRightFromBracket, faRotate } from '@fortawesome/free-solid-svg-icons'
+import useReactSingleSelect from '../../util/react-select-utils'
 
 /**
  * Shows past versions of a form and controls for slecting them
  */
 export default function FormHistoryModal({
-  studyEnvContext, workingForm, visibleVersionPreviews, setVisibleVersionPreviews, isConsentForm = false, onDismiss
+  studyEnvContext, workingForm, onDismiss, replaceSurvey
 }:
   {studyEnvContext: StudyEnvContextT, workingForm: VersionedForm,
-    visibleVersionPreviews: VersionedForm[],
-    setVisibleVersionPreviews: (versions: VersionedForm[]) => void,
-    isConsentForm?: boolean, onDismiss: () => void}) {
-  const [versionList, setVersionList] = useState<VersionedForm[]>([])
-  const [selectedVersion, setSelectedVersion] = useState<number>()
+    replaceSurvey: (survey: Survey) => void, onDismiss: () => void}) {
+  const [versionList, setVersionList] = useState<Survey[]>([])
+  const [selectedVersion, setSelectedVersion] = useState<Survey>()
   const stableId = workingForm.stableId
-  const selectId = useId()
 
   const { isLoading } = useLoadingEffect(async () => {
     const result = await Api.getSurveyVersions(studyEnvContext.portal.shortcode, stableId)
-    setVersionList(result.sort((a, b) => b.version - a.version))
+    setVersionList(
+      result.sort((a, b) => b.version - a.version)
+        .filter(s => s.version !== workingForm.version)
+    )
   }, [stableId])
 
-  async function loadVersion(version: number) {
-    const result =  await Api.getSurvey(studyEnvContext.portal.shortcode, stableId, version)
-    setVisibleVersionPreviews([...visibleVersionPreviews, result])
+  const doVersionSwitch = async () => {
+    if (selectedVersion) {
+      await replaceSurvey(selectedVersion)
+      onDismiss()
+    }
   }
 
-  const versionOpts = versionList.map(formVersion => ({
+  const {  onChange, options, selectedOption, selectInputId } = useReactSingleSelect(versionList, formVersion => ({
     label: <span>
             Version <strong>{ formVersion.version }</strong>
       <span className="text-muted fst-italic ms-2">
                 ({instantToDefaultString(formVersion.createdAt)})
       </span>
     </span>,
-    value: formVersion.version
-  })).filter(opt => visibleVersionPreviews.every(previewedVersion => previewedVersion.version !== opt.value))
-
-  const selectedOpt = versionOpts.find(opt => opt.value === selectedVersion)
+    value: formVersion
+  }), setSelectedVersion, selectedVersion)
 
   return <Modal show={true}
     onHide={() => {
       onDismiss()
     }}>
     <Modal.Header closeButton>
-      <Modal.Title>{workingForm.name} - history</Modal.Title>
+      <Modal.Title>
+        <h2 className="h4">Version history</h2>
+        <span className="fs-5">{workingForm.name}</span>
+      </Modal.Title>
     </Modal.Header>
     <Modal.Body>
       <LoadingSpinner isLoading={isLoading}>
         <div className="d-flex align-items-baseline">
-          <label htmlFor={selectId} className="mt-3 d-block">Other versions</label>
-          <InfoPopup content={<span>Viewing as a preview will open a new tab in the current editor.
-        Opening in read-only mode will allow you to view the full editor in an entirely new browser tab.</span>}/>
+          <label htmlFor={selectInputId} className="mt-3 d-block">Other versions</label>
         </div>
-        <Select inputId={selectId} options={versionOpts} value={selectedOpt} onChange={opt =>
-          setSelectedVersion(opt?.value)}/>
+        <Select inputId={selectInputId} options={options} value={selectedOption} onChange={onChange}/>
       </LoadingSpinner>
     </Modal.Body>
-    <Modal.Footer>
-      <Button
-        variant="secondary"
-        disabled={!selectedVersion}
-        onClick={() => {
-          if (selectedVersion) {
-            loadVersion(selectedVersion)
-          }
-          onDismiss()
-        }}
-      >
-        View preview
-      </Button>
-      <a href={`${studyEnvFormsPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName
-      )}/${isConsentForm ? 'consentForms' : 'surveys'}/${stableId}/${selectedVersion}?readOnly=true`}
-      className="btn btn-secondary"
-      aria-disabled={!selectedVersion}
-      style={{ pointerEvents: selectedVersion ? undefined : 'none' }}
-      onClick={onDismiss}
-      target="_blank"
-      >
-        Open read-only editor <FontAwesomeIcon icon={faArrowRightFromBracket}/>
-      </a>
+    <Modal.Footer className="d-flex justify-content-center">
+      {selectedVersion && <div className="d-flex flex-column w-100">
+        <a href={`${studyEnvFormsPath(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName
+        )}/surveys/${stableId}/${selectedVersion.version}`}
+        className="btn btn-primary"
+        aria-disabled={!selectedVersion}
+        style={{ pointerEvents: selectedVersion ? undefined : 'none' }}
+        onClick={onDismiss}
+        target="_blank"
+        >
+            View/Edit version {selectedVersion.version} <FontAwesomeIcon icon={faArrowRightFromBracket}/>
+        </a>
+        {studyEnvContext.currentEnv.environmentName === 'sandbox' &&
+            <Button type="button" variant="link" onClick={doVersionSwitch} outline={true}>
+              Switch sandbox to version { selectedVersion.version } <FontAwesomeIcon icon={faRotate}/>
+            </Button>}
+      </div>
+      }
     </Modal.Footer>
   </Modal>
 }

@@ -43,11 +43,30 @@ public class StudyEnvironmentSurveyService extends CrudService<StudyEnvironmentS
         return dao.update(ses);
     }
 
-    public Optional<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String stableId) {
-        List<StudyEnvironmentSurvey> configs = dao.findActiveBySurvey(studyEnvId, stableId);
-        // we don't yet have robust support for having multiple surveys with the same stableId configured for an
-        // environment.  For now, just pick one
-        return configs.stream().findFirst();
+    @Transactional
+    @Override
+    public StudyEnvironmentSurvey create(StudyEnvironmentSurvey studyEnvSurvey) {
+        validateSurveyNotAlreadyActive(studyEnvSurvey);
+        return super.create(studyEnvSurvey);
+    }
+
+    @Transactional
+    @Override
+    public StudyEnvironmentSurvey update(StudyEnvironmentSurvey studyEnvSurvey) {
+        validateSurveyNotAlreadyActive(studyEnvSurvey);
+        return super.update(studyEnvSurvey);
+    }
+
+    public void validateSurveyNotAlreadyActive(StudyEnvironmentSurvey studyEnvSurvey) {
+        if (studyEnvSurvey.isActive() &&
+            dao.isSurveyActiveInEnv(studyEnvSurvey.getSurveyId(), studyEnvSurvey.getStudyEnvironmentId(), studyEnvSurvey.getId())
+        ) {
+            throw new IllegalArgumentException("Cannot save -- another version of the survey is already active, likely due to multiple saves overlapping.  Confirm no one else is working on the survey and then retry.");
+        }
+    }
+
+    public List<StudyEnvironmentSurvey> findActiveBySurvey(UUID studyEnvId, String stableId) {
+        return dao.findActiveBySurvey(studyEnvId, stableId);
     }
 
     public List<StudyEnvironmentSurvey> findBySurveyId(UUID surveyId) {

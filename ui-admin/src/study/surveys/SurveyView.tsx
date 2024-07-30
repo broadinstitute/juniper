@@ -44,11 +44,18 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
         portal.shortcode,
         { ...currentSurvey, ...saveableProps }
       )
-      const configuredSurvey = currentEnv.configuredSurveys
-        .find(s => s.survey.stableId === updatedSurvey.stableId) as StudyEnvironmentSurvey
-      const updatedConfig = { ...configuredSurvey, surveyId: updatedSurvey.id, survey: updatedSurvey }
+      replaceSurvey(updatedSurvey)
+    })
+  }
+
+  async function replaceSurvey(updatedSurvey: Survey) {
+    doApiLoad(async () => {
+      const updatedConfig = {
+        studyEnvironmentId: currentEnv.id,
+        surveyId: updatedSurvey.id
+      }
       const updatedConfiguredSurvey = await Api.replaceConfiguredSurvey(portal.shortcode,
-        study.shortcode, currentEnv.environmentName, configuredSurvey.id, updatedConfig)
+        study.shortcode, currentEnv.environmentName, updatedConfig)
       Store.addNotification(successNotification(
         `Updated ${currentEnv.environmentName} to version ${updatedSurvey.version}`
       ))
@@ -72,6 +79,7 @@ function RawSurveyView({ studyEnvContext, survey, readOnly = false }:
       readOnly={readOnly}
       onCancel={() => navigate(studyEnvFormsPath(portal.shortcode, study.shortcode, currentEnv.environmentName))}
       onSave={createNewVersion}
+      replaceSurvey={replaceSurvey}
     />
   )
 }

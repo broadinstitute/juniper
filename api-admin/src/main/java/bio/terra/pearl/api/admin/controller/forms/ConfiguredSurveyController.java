@@ -79,11 +79,7 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
 
   @Override
   public ResponseEntity<Object> replace(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      UUID studyEnvSurveyId,
-      Object body) {
+      String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey newStudyEnvSurvey =
@@ -92,7 +88,6 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
         surveyExtService.replace(
             PortalStudyEnvAuthContext.of(
                 operator, portalShortcode, studyShortcode, environmentName),
-            studyEnvSurveyId,
             newStudyEnvSurvey);
     return ResponseEntity.ok(newStudyEnvSurvey);
   }

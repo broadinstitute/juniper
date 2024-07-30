@@ -109,6 +109,25 @@ public class StudyEnvironmentSurveyDao extends BaseMutableJdbiDao<StudyEnvironme
         }
     }
 
+    /** we only want one version of a given survey to be active in an environment at a time */
+    public boolean isSurveyActiveInEnv(UUID surveyId, UUID studyEnvId, UUID excludeId) {
+        String exclusionQuery = excludeId != null ? " and a.id != :excludeId" : "";
+        return jdbi.withHandle(handle ->
+                handle.createQuery("""
+                                select count(*) from %s a
+                                    join survey on survey.id = a.survey_id
+                                    where a.study_environment_id = :studyEnvId
+                                    and stable_id = (select stable_id from survey where id = :surveyId)                                 
+                                    and a.active = true
+                                    %s;
+                                """.formatted(tableName, exclusionQuery))
+                        .bind("studyEnvId", studyEnvId)
+                        .bind("surveyId", surveyId)
+                        .bind("excludeId", excludeId)
+                        .mapTo(Integer.class)
+                        .one()) > 0;
+    }
+
     protected enum ATTACH_SURVEY {
         WITH_CONTENT, // include the content json of the survey
         WITHOUT_CONTENT  // exclude the content from the retrieval

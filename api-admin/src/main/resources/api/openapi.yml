@@ -261,6 +261,24 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/replace:
+    post:
+      summary: Sets a configured survey on the environment, deactivating any existing configured surveys with the same stableId.
+      tags: [ configuredSurvey ]
+      operationId: replace
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: saved new configuredSurvey object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
     delete:
       summary: Removes a configured survey from a study environment
@@ -291,25 +309,6 @@ paths:
       responses:
         '200':
           description: saved configuredSurvey object
-          content: *jsonContent
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}/replace:
-    post:
-      summary: Replaces a configured survey with a different one, deactivates the old one
-      tags: [ configuredSurvey ]
-      operationId: replace
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
-      requestBody:
-        required: true
-        content: *jsonContent
-      responses:
-        '200':
-          description: saved new configuredSurvey object
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
