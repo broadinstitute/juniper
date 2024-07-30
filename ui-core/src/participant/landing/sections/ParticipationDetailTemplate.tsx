@@ -8,17 +8,29 @@ import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 import { requireOptionalString } from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, buttonConfigProps, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, mediaConfigProps, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, {
+  ButtonConfig,
+  buttonConfigProps,
+  validateButtonConfig
+} from '../ConfiguredButton'
+import ConfiguredMedia, {
+  MediaConfig,
+  mediaConfigProps,
+  validateMediaConfig
+} from '../ConfiguredMedia'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
-import { blurbProp, titleProp } from './SectionProp'
+import {
+  blurbProp,
+  titleProp
+} from './SectionProp'
 import { InlineMarkdown } from '../../../participant/landing/Markdown'
 
 type ParticipationDetailTemplateConfig = {
   actionButton?: ButtonConfig, // button
   blurb?: string, //  text below the title
+  blurbSize?: string, // size of the blurb text
   image?: MediaConfig, // image
   imagePosition?: 'left' | 'right' // left or right.  Default is right
   stepNumberText?: string, // e.g. STEP 1
@@ -29,6 +41,7 @@ type ParticipationDetailTemplateConfig = {
 export const participationDetailTemplateConfigProps = [
   titleProp,
   blurbProp,
+  { name: 'blurbSize' },
   { name: 'actionButton', subProps: buttonConfigProps },
   { name: 'image', subProps: mediaConfigProps },
   { name: 'imagePosition' },
@@ -49,10 +62,12 @@ const validateParticipationDetailTemplateConfig = (config: SectionConfig): Parti
   const stepNumberText = requireOptionalString(config, 'stepNumberText', message)
   const timeIndication = requireOptionalString(config, 'timeIndication', message)
   const title = requireOptionalString(config, 'title', message)
+  const blurbSize = requireOptionalString(config, 'blurbSize', message)
 
   return {
     actionButton,
     blurb,
+    blurbSize,
     image,
     imagePosition,
     stepNumberText,
@@ -70,6 +85,7 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
   const { anchorRef, config } = props
   const {
     blurb,
+    blurbSize,
     actionButton,
     stepNumberText,
     timeIndication,
@@ -100,8 +116,8 @@ function ParticipationDetailTemplate(props: ParticipationDetailTemplateProps) {
           <div className="h4">{stepNumberText}</div>
           {title && <InlineMarkdown>{title}</InlineMarkdown>}
         </h2>
-        <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>
-        { blurb && <p className={classNames('fs-4', actionButton ? 'mb-4' : 'mb-0')}>
+        {timeIndication && <p><FontAwesomeIcon icon={faClock}/> {timeIndication}</p>}
+        {blurb && <p className={classNames(blurbSize ? blurbSize : 'fs-4', actionButton ? 'mb-4' : 'mb-0')}>
           <InlineMarkdown>{blurb}</InlineMarkdown>
         </p> }
         {actionButton && <ConfiguredButton config={actionButton} className="btn-lg"/>}

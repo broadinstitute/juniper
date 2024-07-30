@@ -4,15 +4,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import _ from 'lodash'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { applyAllowedStyles, getSectionStyle } from '../../util/styleUtils'
-import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
-  from '../../util/validationUtils'
+import {
+  applyAllowedStyles,
+  getSectionStyle
+} from '../../util/styleUtils'
+import {
+  requireOptionalBoolean,
+  requireOptionalString,
+  requirePlainObject,
+  requireString
+} from '../../util/validationUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
-import { InlineMarkdown, Markdown } from '../Markdown'
+import {
+  InlineMarkdown,
+  Markdown
+} from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -36,7 +51,8 @@ export type FrequentlyAskedQuestionsConfig = {
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
   title?: string, // large heading text
   collapseAllText?: string,
-  expandAllText?: string
+  expandAllText?: string,
+  blurbSize?: string
 }
 
 const faqQuestionProps = [
@@ -50,7 +66,8 @@ export const frequentlyAskedQuestionsConfigProps = [
   { name: 'questions', isArray: true, subProps: faqQuestionProps },
   { name: 'showToggleAllButton' },
   { name: 'collapseAllText' },
-  { name: 'expandAllText' }
+  { name: 'expandAllText' },
+  { name: 'blurbSize' }
 ]
 
 
@@ -70,6 +87,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   const showToggleAllButton = requireOptionalBoolean(config, 'showToggleAllButton', message)
   const collapseAllText = requireOptionalString(config, 'collapseAllText', message)
   const expandAllText = requireOptionalString(config, 'expandAllText', message)
+  const blurbSize = requireOptionalString(config, 'blurbSize', message)
 
   const questions = config.questions
   if (!Array.isArray(questions)) {
@@ -78,6 +96,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
 
   return {
     blurb,
+    blurbSize,
     questions: questions.map(validateFaqQuestion),
     showToggleAllButton,
     title,
@@ -146,7 +165,8 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     showToggleAllButton = true,
     title = 'Frequently Asked Questions',
     collapseAllText = 'Collapse All',
-    expandAllText = 'Expand All'
+    expandAllText = 'Expand All',
+    blurbSize
   } = config
 
   const { getImageUrl } = useApiContext()
@@ -180,7 +200,7 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
         </h2>
       )}
       {!!blurb && (
-        <Markdown className="fs-4 mb-4 text-center">
+        <Markdown className={classNames(blurbSize ? blurbSize : 'fs-4', 'mb-4 text-center')}>
           {blurb}
         </Markdown>
       )}
