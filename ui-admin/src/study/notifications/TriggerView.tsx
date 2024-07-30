@@ -143,18 +143,18 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
           <label className="form-label mt-3" htmlFor="triggerScope">Action scope</label> <InfoPopup content={
             'Whether the action is confined to the study, or can impact tasks in the portal.'}/>
           <Select options={scopeOptions} inputId="triggerScope"
-            value={scopeOptions.find(opt => opt.value === trigger?.actionScope)}
+            value={scopeOptions.find(opt => opt.value === workingTrigger?.actionScope)}
             onChange={opt =>
-              setTrigger({ ...workingTrigger, actionScope: opt?.value ?? scopeOptions[0].value })}
+              setWorkingTrigger({ ...workingTrigger, actionScope: opt?.value ?? scopeOptions[0].value })}
           />
         </div>
         <div>
           <label className="form-label mt-3" htmlFor="updateToStatus">Updated status</label> <InfoPopup content={
             'The status the task will be updated to when the trigger is activated.'}/>
           <Select options={statusOptions} inputId="updateToStatus"
-            value={statusOptions.find(opt => opt.value === trigger?.statusToUpdateTo)}
+            value={statusOptions.find(opt => opt.value === workingTrigger?.statusToUpdateTo)}
             onChange={opt =>
-              setTrigger({ ...workingTrigger, statusToUpdateTo: opt?.value ?? statusOptions[0].value })}
+              setWorkingTrigger({ ...workingTrigger, statusToUpdateTo: opt?.value ?? statusOptions[0].value })}
           />
         </div>
         <div>
