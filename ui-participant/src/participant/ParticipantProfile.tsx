@@ -29,6 +29,7 @@ import {
   useParams
 } from 'react-router-dom'
 import { useUser } from '../providers/UserProvider'
+import mixpanel from 'mixpanel-browser'
 
 /**
  * Shows the Participant's profile as a series of cards. Each property is a row
@@ -252,7 +253,10 @@ function ProfileRow(
       <div className="flex-shrink m-0 pb-3 pt-3">
         <button
           className="btn btn-outline-primary float-end"
-          onClick={onEdit}
+          onClick={() => {
+            mixpanel.track('editProfileField', { field: title })
+            onEdit()
+          }}
           aria-label={editLabel}
         >
           <FontAwesomeIcon icon={faPencil} className={''}/>

@@ -121,6 +121,7 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
+                  onClick={() => mixpanel.track('userLogin')}
                   to="/hub"
                 >
                   {i18n('navbarLogin')}
@@ -360,10 +361,16 @@ export const AccountOptionsDropdown = () => {
               {i18n('manageProfiles')}
             </button>
           </NavLink>}
-          <button className="dropdown-item" aria-label="change password" onClick={doChangePassword}>
+          <button className="dropdown-item" aria-label="change password" onClick={() => {
+            mixpanel.track('changePassword')
+            doChangePassword()
+          }}>
             {i18n('navbarChangePassword')}
           </button>
-          <button className="dropdown-item" aria-label="log out" onClick={doLogout}>
+          <button className="dropdown-item" aria-label="log out" onClick={() => {
+            mixpanel.track('userLogout')
+            doLogout()
+          }}>
             {i18n('navbarLogout')}
           </button>
         </div>

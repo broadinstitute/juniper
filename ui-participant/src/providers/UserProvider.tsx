@@ -86,13 +86,13 @@ export default function UserProvider({ children }: { children: React.ReactNode }
    */
   const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
-    mixpanel.identify(loginResult.user.username)
+    mixpanel.identify(loginResult.user.id)
     localStorage.setItem(OAUTH_ACCESS_TOKEN_KEY, accessToken)
   }
 
   const loginUserInternal = (loginResult: LoginResult) => {
     setLoginState(loginResult)
-    mixpanel.identify(loginResult.user.username)
+    mixpanel.identify(loginResult.user.id)
     localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
   }
 

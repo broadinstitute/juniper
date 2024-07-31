@@ -59,9 +59,9 @@ function App() {
     'api_payload_format': 'json',
     'api_host': `https://${window.location.host}`,
     'api_routes': {
-      track: 'api/public/log/v1/event'
-      // engage: 'api/public/log/v1/event', //todo
-      // groups: 'api/public/log/v1/event' //todo
+      track: 'api/public/log/v1/track',
+      engage: 'api/public/log/v1/engage', //todo
+      groups: 'api/public/log/v1/groups' //todo
     }
   })
 

@@ -26,19 +26,23 @@ public class MixpanelService {
             return;
         }
 
+        //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
         JSONArray events = new JSONArray(data);
 
         ClientDelivery delivery = new ClientDelivery();
         MessageBuilder messageBuilder = new MessageBuilder(env.getProperty("mixpanel.token"));
 
         for (int i = 0; i < events.length(); i++) {
-            JSONObject event = messageBuilder.event(null,
-                    events.getJSONObject(i).getString("event"),
-                    events.getJSONObject(i).getJSONObject("properties")
-                            .put("token", env.getProperty("mixpanel.token")));
-            log.info("Preparing Mixpanel event: {}", event.toString());
+            JSONObject event = events.getJSONObject(i);
+            JSONObject updatedEvent = messageBuilder.event(
+                    null,
+                    event.getString("event"),
+                    event.getJSONObject("properties")
+                            .put("token", env.getProperty("mixpanel.token"))
+            );
+            log.info("Preparing Mixpanel event: {}", updatedEvent.toString());
 
-            delivery.addMessage(event);
+            delivery.addMessage(updatedEvent);
         }
 
         MixpanelAPI mixpanel = new MixpanelAPI();
@@ -46,7 +50,7 @@ public class MixpanelService {
         try {
             mixpanel.deliver(delivery);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.info("Failed to deliver event to Mixpanel: {}", e.getMessage());
         }
     }
 
