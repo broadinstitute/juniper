@@ -59,9 +59,11 @@ function App() {
     'api_payload_format': 'json',
     'api_host': `https://${window.location.host}`,
     'api_routes': {
-      track: 'api/public/log/v1/track',
-      engage: 'api/public/log/v1/engage', //todo
-      groups: 'api/public/log/v1/groups' //todo
+      track: 'api/public/event/v1/track',
+      // the two following routes are not actually implemented yet,
+      // but they must be specified otherwise Mixpanel errors out
+      engage: 'api/public/event/v1/engage',
+      groups: 'api/public/event/v1/groups'
     }
   })
 
