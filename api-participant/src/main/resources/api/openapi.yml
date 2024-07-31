@@ -59,6 +59,27 @@ paths:
           content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/public/log/v1/event:
+    post:
+      summary: Logs a user event
+      tags: [ eventLogging ]
+      operationId: logEvent
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: the event data
+      responses:
+        '202':
+          description: the id of the generated event
+          content: { application/json: { schema: { type: string }}}
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}:
     get:
       summary: Gets the portal object

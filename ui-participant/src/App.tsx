@@ -29,6 +29,8 @@ import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
 
+import mixpanel from 'mixpanel-browser'
+
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
 const ParticipantTermsOfUsePage = lazy(() => import('terms/ParticipantTermsOfUsePage'))
@@ -49,6 +51,19 @@ const ScrollToTop = () => {
 function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
+
+  mixpanel.init('placeholder-token', {
+    'debug': true,
+    'track_pageview': 'url-with-path',
+    'persistence': 'localStorage',
+    'api_payload_format': 'json',
+    'api_host': `https://${window.location.host}`,
+    'api_routes': {
+      track: 'api/public/log/v1/event'
+      // engage: 'api/public/log/v1/event', //todo
+      // groups: 'api/public/log/v1/event' //todo
+    }
+  })
 
   useEffect(() => {
     const isCompatible = isBrowserCompatible()

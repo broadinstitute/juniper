@@ -38,6 +38,7 @@ import { uniqueId } from 'lodash'
 import { UserManager } from 'oidc-client-ts'
 import { getOidcConfig } from './authConfig'
 import { useActiveUser } from './providers/ActiveUserProvider'
+import mixpanel from 'mixpanel-browser'
 
 const navLinkClasses = 'nav-link fs-5 ms-lg-3'
 
@@ -52,6 +53,8 @@ export default function Navbar(props: NavbarProps) {
   const navLinks = localContent.navbarItems
 
   async function updatePreferredLanguage(selectedLanguage: string) {
+    //track the language change
+    mixpanel.track('languageUpdated', { language: selectedLanguage })
     if (profile && ppUser) {
       await Api.updateProfile({
         profile: { ...profile, preferredLanguage: selectedLanguage },

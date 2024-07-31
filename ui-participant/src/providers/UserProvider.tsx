@@ -16,6 +16,7 @@ import {
   Profile
 } from '@juniper/ui-core'
 import envVars from 'util/envVars'
+import mixpanel from 'mixpanel-browser'
 
 /**
  * The user provide contains the _raw_ user context, which is more or less directly derived
@@ -85,11 +86,13 @@ export default function UserProvider({ children }: { children: React.ReactNode }
    */
   const loginUser = (loginResult: LoginResult, accessToken: string) => {
     setLoginState(loginResult)
+    mixpanel.identify(loginResult.user.username)
     localStorage.setItem(OAUTH_ACCESS_TOKEN_KEY, accessToken)
   }
 
   const loginUserInternal = (loginResult: LoginResult) => {
     setLoginState(loginResult)
+    mixpanel.identify(loginResult.user.username)
     localStorage.setItem(INTERNAL_LOGIN_TOKEN_KEY, loginResult.user.token)
   }
 
@@ -104,6 +107,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     } else {
       window.location.href = '/'
     }
+    mixpanel.reset()
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */
