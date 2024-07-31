@@ -295,20 +295,19 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
-      summary: Updates a configured survey, such as by changing order or deactivating
+      summary: Updates a list of configured surveys, such as by changing order or deactivating
       tags: [ configuredSurvey ]
       operationId: patch
       parameters:
         - *portalShortcodeParam
         - *studyShortcodeParam
         - *envNameParam
-        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
         content: *jsonContent
       responses:
         '200':
-          description: saved configuredSurvey object
+          description: list of saved configuredSurvey objects
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'

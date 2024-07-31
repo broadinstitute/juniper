@@ -60,7 +60,7 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
             AuthAnnotationSpec.withPortalPerm("survey_edit"),
             "createConfiguredSurvey",
             AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
-            "updateConfiguredSurvey",
+            "updateConfiguredSurveys",
             AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
             "removeConfiguredSurvey",
             AuthAnnotationSpec.withPortalStudyEnvPerm("survey_edit", List.of(SandboxOnly.class)),
