@@ -6,10 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class EventLoggingController implements EventApi {
+public class EventController implements EventApi {
   private final MixpanelService mixpanelService;
 
-  public EventLoggingController(MixpanelService mixpanelService) {
+  public EventController(MixpanelService mixpanelService) {
     this.mixpanelService = mixpanelService;
   }
 
