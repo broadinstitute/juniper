@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import PortalEnvConfigView from 'portal/PortalEnvConfigView'
 import {
+  EnvironmentName,
   PortalEnvironment,
   StudyEnvironmentConfig
 } from '@juniper/ui-core'
@@ -24,6 +25,7 @@ import {
   DocsKey,
   ZendeskLink
 } from '../util/zendeskUtils'
+import Select from 'react-select'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -46,8 +48,25 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
                                        {studyEnvContext: StudyEnvContextT, portalContext: LoadedPortalContextT}) {
   const [config, setConfig] = useState(studyEnvContext.currentEnv.studyEnvironmentConfig)
   const [isLoading, setIsLoading] = useState(false)
+  const [kitTypeOptions, setKitTypeOptions] = useState<{ value: string, label: string }[]>([])
+  const [selectedKitTypes, setSelectedKitTypes] = useState<{ value: string, label: string }[]>([])
 
   const { user } = useUser()
+
+  const studyEnvParams = {
+    portalShortcode: portalContext.portal.shortcode,
+    studyShortcode: studyEnvContext.study.shortcode,
+    envName: studyEnvContext.currentEnv.environmentName as EnvironmentName
+  }
+
+  const loadEligibleKitTypes = async () => {
+    const allKitTypes = await Api.fetchAllKitTypes(studyEnvParams)
+    setKitTypeOptions(allKitTypes.map(k => ({ value: k.name, label: k.displayName })))
+  }
+
+  useEffect(() => {
+    loadEligibleKitTypes()
+  }, [studyEnvContext])
 
   /** update a given field in the config */
   const updateConfig = (propName: keyof StudyEnvironmentConfig, value: string | boolean) => {
@@ -136,6 +155,11 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
         </label>
       </div></>
     }
+
+    <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
+      onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
+    />
+
 
     <Button onClick={save}
       variant="primary" disabled={isLoading}

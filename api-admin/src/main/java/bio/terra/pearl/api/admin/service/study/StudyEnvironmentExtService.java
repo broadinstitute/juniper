@@ -20,12 +20,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class StudyEnvironmentExtService {
-  private StudyEnvironmentService studyEnvService;
-  private StudyEnvironmentConfigService studyEnvConfigService;
-  private AuthUtilService authUtilService;
-  private EnrolleeService enrolleeService;
-  private WithdrawnEnrolleeService withdrawnEnrolleeService;
-  private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+  private final StudyEnvironmentService studyEnvService;
+  private final StudyEnvironmentConfigService studyEnvConfigService;
+  private final AuthUtilService authUtilService;
+  private final EnrolleeService enrolleeService;
+  private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+  private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
 
   public StudyEnvironmentExtService(
       StudyEnvironmentService studyEnvService,
@@ -70,6 +70,12 @@ public class StudyEnvironmentExtService {
       AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
     StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
     return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+  }
+
+  public List<KitType> getAllKitTypes(
+      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
+    authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+    return studyEnvironmentKitTypeService.findAllKitTypes();
   }
 
   public StudyEnvStats getStats(

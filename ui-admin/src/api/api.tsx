@@ -984,6 +984,12 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async fetchAllKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/allKitTypes`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async updateTrigger(portalShortcode: string, envName: string, studyShortcode: string,
     oldConfigId: string, updatedConfig: Trigger): Promise<Trigger> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/triggers/${oldConfigId}`

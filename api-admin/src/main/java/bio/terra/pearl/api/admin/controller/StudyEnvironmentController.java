@@ -18,10 +18,10 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class StudyEnvironmentController implements StudyEnvironmentApi {
-  private AuthUtilService requestService;
-  private HttpServletRequest request;
-  private ObjectMapper objectMapper;
-  private StudyEnvironmentExtService studyEnvExtService;
+  private final AuthUtilService requestService;
+  private final HttpServletRequest request;
+  private final ObjectMapper objectMapper;
+  private final StudyEnvironmentExtService studyEnvExtService;
 
   public StudyEnvironmentController(
       AuthUtilService requestService,
@@ -70,6 +70,17 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     List<KitType> kitTypes =
         studyEnvExtService.getKitTypes(adminUser, portalShortcode, studyShortcode, environmentName);
+    return ResponseEntity.ok(kitTypes);
+  }
+
+  @Override
+  public ResponseEntity<Object> getAllKitTypes(
+      String portalShortcode, String studyShortcode, String envName) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<KitType> kitTypes =
+        studyEnvExtService.getAllKitTypes(
+            adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(kitTypes);
   }
 
