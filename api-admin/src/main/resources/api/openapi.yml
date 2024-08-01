@@ -438,6 +438,24 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Updates the configured kit types for a study
+      tags: [ studyEnvironment ]
+      operationId: patchKitTypes
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        description: kit type list dto
+        content: *jsonContent
+      responses:
+        '200':
+          description: List of kit types
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/allKitTypes: #todo clean up this endpoint
     get:
       summary: Gets all kit types that can be configured for a study

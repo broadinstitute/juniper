@@ -7,6 +7,7 @@ import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitType;
+import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
@@ -14,6 +15,8 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -66,10 +69,47 @@ public class StudyEnvironmentExtService {
     return studyEnvConfigService.update(existing);
   }
 
+  // todo update this to use the new auth annotations
   public List<KitType> getKitTypes(
       AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
     StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
     return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+  }
+
+  public void updateKitTypes(
+      AdminUser operator,
+      String portalShortcode,
+      String studyShortcode,
+      EnvironmentName envName,
+      List<String> updatedKitTypes) {
+    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+    List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllKitTypes();
+    List<KitType> existingKitTypes =
+        studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+
+    if (!new HashSet<>(updatedKitTypes)
+        .containsAll(existingKitTypes.stream().map(KitType::getName).toList())) {
+      throw new IllegalArgumentException("You may not remove a kit type from a study environment");
+    }
+
+    if (!new HashSet<>(allowedKitTypes.stream().map(KitType::getName).toList())
+        .containsAll(updatedKitTypes)) {
+      throw new IllegalArgumentException("Invalid kit type");
+    }
+
+    List<StudyEnvironmentKitType> newKitTypes = new ArrayList<>();
+    for (String kitTypeName : updatedKitTypes) {
+      KitType kitType =
+          allowedKitTypes.stream().filter(k -> k.getName().equals(kitTypeName)).findFirst().get();
+      StudyEnvironmentKitType foo =
+          StudyEnvironmentKitType.builder()
+              .studyEnvironmentId(studyEnv.getId())
+              .kitTypeId(kitType.getId())
+              .build();
+      newKitTypes.add(foo);
+    }
+
+    studyEnvironmentKitTypeService.bulkCreate(newKitTypes);
   }
 
   public List<KitType> getAllKitTypes(

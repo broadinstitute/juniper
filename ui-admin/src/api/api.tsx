@@ -984,6 +984,16 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async updateKitTypes(studyEnvParams: StudyEnvParams, kitTypes: string[]): Promise<string> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/kitTypes`
+    const response = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(kitTypes)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async fetchAllKitTypes(studyEnvParams: StudyEnvParams): Promise<KitType[]> {
     const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/allKitTypes`
     const response = await fetch(url, this.getGetInit())

@@ -61,11 +61,19 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
 
   const loadEligibleKitTypes = async () => {
     const allKitTypes = await Api.fetchAllKitTypes(studyEnvParams)
-    setKitTypeOptions(allKitTypes.map(k => ({ value: k.name, label: k.displayName })))
+    const kitTypeOptionz = allKitTypes.map(k => ({ value: k.name, label: k.displayName }))
+    console.log(kitTypeOptionz)
+    setKitTypeOptions(kitTypeOptionz)
+  }
+
+  const loadConfiguredKitTypes = async () => {
+    const selectedKitTypes = await Api.fetchKitTypes(studyEnvParams)
+    setSelectedKitTypes(selectedKitTypes.map(k => ({ value: k.name, label: k.displayName })))
   }
 
   useEffect(() => {
     loadEligibleKitTypes()
+    loadConfiguredKitTypes()
   }, [studyEnvContext])
 
   /** update a given field in the config */
@@ -83,6 +91,14 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       await Api.updateStudyEnvironmentConfig(portalContext.portal.shortcode,
         studyEnvContext.study.shortcode, studyEnvContext.currentEnv.environmentName, config)
       Store.addNotification(successNotification('Config saved'))
+      portalContext.reloadPortal(portalContext.portal.shortcode)
+    }, { setIsLoading })
+  }
+
+  const saveKitTypes = async () => {
+    doApiLoad(async () => {
+      await Api.updateKitTypes(studyEnvParams, selectedKitTypes.map(k => k.value))
+      Store.addNotification(successNotification('Kit types saved'))
       portalContext.reloadPortal(portalContext.portal.shortcode)
     }, { setIsLoading })
   }
@@ -156,16 +172,31 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       </div></>
     }
 
-    <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes}
-      onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
-    />
-
-
     <Button onClick={save}
       variant="primary" disabled={isLoading}
       tooltip={'Save'}>
       {isLoading && <LoadingSpinner/>}
       {!isLoading && 'Save study config'}
     </Button>
+
+    { user?.superuser &&
+        <div>
+          <h4 className="h5 mt-4">{studyEnvContext.study.name} kit type configuration</h4>
+          <label className="form-label mb-0">
+            kit types
+          </label>
+          <div style={{ width: 300 }}>
+            <Select className="m-1" options={kitTypeOptions} isMulti={true} value={selectedKitTypes} isClearable={false}
+              onChange={selected => setSelectedKitTypes(selected as { value: string, label: string }[])}
+            />
+          </div>
+          <Button onClick={saveKitTypes}
+            variant="primary" disabled={isLoading}
+            tooltip={'Save'}>
+            {isLoading && <LoadingSpinner/>}
+            {!isLoading && 'Save kit types'}
+          </Button>
+        </div>
+    }
   </form>
 }

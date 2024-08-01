@@ -11,6 +11,7 @@ import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,19 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     List<KitType> kitTypes =
         studyEnvExtService.getKitTypes(adminUser, portalShortcode, studyShortcode, environmentName);
     return ResponseEntity.ok(kitTypes);
+  }
+
+  public ResponseEntity<Object> patchKitTypes(
+      String portalShortcode, String studyShortcode, String envName, Object body) {
+    AdminUser adminUser = requestService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<String> kitTypeNames =
+        objectMapper.convertValue(
+            body, TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+
+    studyEnvExtService.updateKitTypes(
+        adminUser, portalShortcode, studyShortcode, environmentName, kitTypeNames);
+    return ResponseEntity.ok(body);
   }
 
   @Override
