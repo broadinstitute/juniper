@@ -127,7 +127,7 @@ export default function LogEventViewer() {
       {renderPageHeader('Log Events')}
       <span className="text-muted fst-italic">
         <FontAwesomeIcon icon={faInfoCircle} className="me-2"/>
-        This table is limited to 1000 log events. If you need to view more, query the database directly.
+        This table is limited to 1000 log events. If you need to view more, contact support.
       </span>
       <div className="mt-4">
         {isLoading && <LoadingSpinner/>}
