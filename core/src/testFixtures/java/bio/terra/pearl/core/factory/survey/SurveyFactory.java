@@ -57,6 +57,10 @@ public class SurveyFactory {
         return surveyService.create(survey);
     }
 
+    public StudyEnvironmentSurvey attachToEnv(Survey survey, UUID studyEnvironmentId, boolean active) {
+        return attachToEnv(survey, studyEnvironmentId, active, 0);
+    }
+
     public StudyEnvironmentSurvey attachToEnv(Survey survey, UUID studyEnvironmentId, boolean active, int surveyOrder) {
         return studyEnvironmentSurveyService.create(StudyEnvironmentSurvey.builder()
                 .surveyId(survey.getId())

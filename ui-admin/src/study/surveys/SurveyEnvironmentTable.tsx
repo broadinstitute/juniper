@@ -6,13 +6,12 @@ import {
 } from '@juniper/ui-core'
 import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, EllipsisDropdownButton } from '../../components/forms/Button'
+import { Button, EllipsisDropdownButton } from 'components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
 import { ColumnDef, getCoreRowModel, getSortedRowModel, Row, useReactTable } from '@tanstack/react-table'
-import { RowDragHandleCell, useDraggableTableLayout } from '../../util/tableUtils'
+import { RowDragHandleCell, useDraggableTableLayout } from 'util/tableDragDropUtils'
 import SurveyPublishModal from './SurveyPublishModal'
 
-// needed for table body level scope DnD setup
 import { UniqueIdentifier } from '@dnd-kit/core'
 import InfoPopup from 'components/forms/InfoPopup'
 
