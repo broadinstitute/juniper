@@ -84,27 +84,27 @@ export function useDraggableTableLayout<T>(table: Table<T>, config: BasicTableCo
   }
 
   return <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}
-                     modifiers={[restrictToVerticalAxis]}
-                     sensors={sensors}>
+    modifiers={[restrictToVerticalAxis]}
+    sensors={sensors}>
     <table className={config.tableClass ? config.tableClass : 'table'}>
       <thead>
-      <tr>
-        {table
-          .getFlatHeaders()
-          .map(header => tableHeader(header, {
-            sortable: true, filterable, useSize: config?.useSize || false
-          }))}
-      </tr>
+        <tr>
+          {table
+            .getFlatHeaders()
+            .map(header => tableHeader(header, {
+              sortable: true, filterable, useSize: config?.useSize || false
+            }))}
+        </tr>
       </thead>
       <tbody>
-      <SortableContext
-        items={idList}
-        strategy={verticalListSortingStrategy}
-      >
-        {table.getRowModel().rows.map(row => (
-          <DraggableRow key={row.id} row={row} idFunc={idFunc} />
-        ))}
-      </SortableContext>
+        <SortableContext
+          items={idList}
+          strategy={verticalListSortingStrategy}
+        >
+          {table.getRowModel().rows.map(row => (
+            <DraggableRow key={row.id} row={row} idFunc={idFunc} />
+          ))}
+        </SortableContext>
       </tbody>
     </table>
   </DndContext>

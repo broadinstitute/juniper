@@ -1,7 +1,6 @@
 import React, {
-  CSSProperties, Dispatch,
   Fragment,
-  HTMLProps, SetStateAction,
+  HTMLProps,
   useEffect,
   useState
 } from 'react'
@@ -21,7 +20,7 @@ import {
   faCaretUp,
   faCheck,
   faColumns,
-  faDownload, faGripVertical
+  faDownload
 } from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
@@ -38,18 +37,7 @@ import {
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
 import classNames from 'classnames'
-import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import {
-  closestCenter,
-  DndContext, DragEndEvent,
-  KeyboardSensor,
-  MouseSensor,
-  TouchSensor, UniqueIdentifier,
-  useSensor,
-  useSensors
-} from '@dnd-kit/core'
-import { restrictToVerticalAxis } from '@dnd-kit/modifiers'
+
 
 /**
  * Returns a debounced input react component
