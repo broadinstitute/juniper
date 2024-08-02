@@ -102,7 +102,7 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
     Survey survey1 = surveyFactory.buildPersisted(getTestName(testInfo));
     Survey survey2 = surveyService.createNewVersion(bundle.getPortal().getId(), survey1);
     StudyEnvironmentSurvey studyEnvSurvey1 =
-        surveyFactory.attachToEnv(survey1, bundle.getStudyEnv().getId(), true);
+        surveyFactory.attachToEnv(survey1, bundle.getStudyEnv().getId(), true, 1);
 
     surveyExtService.replace(
         PortalStudyEnvAuthContext.of(
@@ -127,5 +127,50 @@ public class SurveyExtServiceTests extends BaseSpringBootTest {
     StudyEnvironmentSurvey inactiveEnvSurvey =
         studyEnvSurveys.stream().filter(ses -> !ses.isActive()).findFirst().orElseThrow();
     assertThat(inactiveEnvSurvey.getSurveyId(), equalTo(survey1.getId()));
+  }
+
+  @Test
+  @Transactional
+  public void updateConfiguredSurveys(TestInfo testInfo) {
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(testInfo), true);
+    StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
+        studyEnvironmentFactory.buildBundle(getTestName(testInfo), EnvironmentName.sandbox);
+    Survey survey1 =
+        surveyFactory.buildPersisted(getTestName(testInfo), bundle.getPortal().getId());
+    Survey survey2 =
+        surveyFactory.buildPersisted(getTestName(testInfo), bundle.getPortal().getId());
+    StudyEnvironmentSurvey studyEnvSurvey1 =
+        surveyFactory.attachToEnv(survey1, bundle.getStudyEnv().getId(), true, 1);
+    StudyEnvironmentSurvey studyEnvSurvey2 =
+        surveyFactory.attachToEnv(survey2, bundle.getStudyEnv().getId(), true, 2);
+
+    // now switch the order of the surveys
+    studyEnvSurvey1.setSurveyOrder(2);
+    studyEnvSurvey2.setSurveyOrder(1);
+    surveyExtService.updateConfiguredSurveys(
+        PortalStudyEnvAuthContext.of(
+            operator,
+            bundle.getPortal().getShortcode(),
+            bundle.getStudy().getShortcode(),
+            bundle.getStudyEnv().getEnvironmentName()),
+        List.of(studyEnvSurvey1, studyEnvSurvey2));
+
+    // confirm the order switch was persisted
+    List<StudyEnvironmentSurvey> studyEnvSurveys =
+        studyEnvironmentSurveyService.findAllByStudyEnvId(bundle.getStudyEnv().getId(), null);
+    assertThat(
+        studyEnvSurveys.stream()
+            .filter(ses -> ses.getSurveyOrder() == 1)
+            .findFirst()
+            .orElseThrow()
+            .getSurveyId(),
+        equalTo(survey2.getId()));
+    assertThat(
+        studyEnvSurveys.stream()
+            .filter(ses -> ses.getSurveyOrder() == 2)
+            .findFirst()
+            .orElseThrow()
+            .getSurveyId(),
+        equalTo(survey1.getId()));
   }
 }

@@ -20,7 +20,6 @@ import bio.terra.pearl.core.service.survey.SurveyService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -193,7 +192,8 @@ public class SurveyExtService {
                   StudyEnvironmentSurvey existing =
                       studyEnvironmentSurveyService.find(updatedObj.getId()).get();
                   authConfiguredSurveyRequest(authContext, existing);
-                  BeanUtils.copyProperties(updatedObj, existing);
+                  existing.setSurveyOrder(updatedObj.getSurveyOrder());
+                  existing.setActive(updatedObj.isActive());
                   return studyEnvironmentSurveyService.update(existing);
                 })
             .toList();

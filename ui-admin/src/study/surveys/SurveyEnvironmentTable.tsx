@@ -8,9 +8,14 @@ import React, { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, EllipsisDropdownButton } from '../../components/forms/Button'
 import SurveyEnvironmentDetailModal from './SurveyEnvironmentDetailModal'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/tableUtils'
+import { ColumnDef, getCoreRowModel, getSortedRowModel, Row, useReactTable } from '@tanstack/react-table'
+import { RowDragHandleCell, useDraggableTableLayout } from '../../util/tableUtils'
 import SurveyPublishModal from './SurveyPublishModal'
+
+// needed for table body level scope DnD setup
+import { UniqueIdentifier } from '@dnd-kit/core'
+import InfoPopup from 'components/forms/InfoPopup'
+
 
 export type SurveyTableProps = {
   stableIds: string[], // the stableIds of surveys to show in the table
@@ -21,7 +26,7 @@ export type SurveyTableProps = {
   setShowDeleteSurveyModal: (show: boolean) => void
   showArchiveSurveyModal: boolean
   setShowArchiveSurveyModal: (show: boolean) => void
-  updateConfiguredSurvey: (surveyConfig: StudyEnvironmentSurvey) => void
+  updateConfiguredSurveys: (surveyConfigs: StudyEnvironmentSurvey[]) => void
 }
 
 type SurveyEnvTableRow = {
@@ -31,52 +36,95 @@ type SurveyEnvTableRow = {
   live?: StudyEnvironmentSurvey
   name: string
 }
+
+const configForEnv = (stableId: string, envName: EnvironmentName, configs: StudyEnvironmentSurveyNamed[]) => {
+  return configs.find(config => config.survey.stableId === stableId && config.envName === envName)
+}
+
 /**
  * shows a list of surveys and the version currently live in each environment
  */
 export default function SurveyEnvironmentTable(props: SurveyTableProps) {
+  const [orderedStableIds, setOrderedStableIds] = useState<UniqueIdentifier[]>(
+    props.stableIds.sort((a, b) =>
+      (configForEnv(a, props.studyEnvParams.envName, props.configuredSurveys)?.surveyOrder ?? 999) -
+      (configForEnv(b, props.studyEnvParams.envName, props.configuredSurveys)?.surveyOrder ?? 999))
+  )
   const { stableIds, configuredSurveys } = props
+
   if (props.stableIds.length === 0) {
     return <div className="fst-italic fw-light pb-3 ps-2">None</div>
   }
-  const dependencyString = stableIds.join('-')
+  const dependencyString = orderedStableIds.join('^')
 
-  const rowInfo: SurveyEnvTableRow[] = useMemo(() => stableIds.map(stableId => {
+  const rowInfo: SurveyEnvTableRow[] = useMemo(() => orderedStableIds.map(stableId => {
     const info: SurveyEnvTableRow = {
-      stableId,
+      stableId: stableId as string,
       name: configuredSurveys.find(config => config.survey.stableId === stableId)?.survey?.name ?? ''
     }
     ENVIRONMENT_NAMES.forEach(envName => {
-      info[envName] = configuredSurveys.find(config =>
-        config.survey.stableId === stableId && config.envName === envName)
+      info[envName] = configForEnv(stableId as string, envName, configuredSurveys)
     })
     return info
   }), [dependencyString])
 
-  const columns: ColumnDef<SurveyEnvTableRow>[] = useMemo(() => [{
-    header: '',
-    id: 'name',
-    cell: ({ row }) => <Link to={`surveys/${row.original.stableId}`}>
-      {row.original.name}
-    </Link>
-  },
-  ...ENVIRONMENT_NAMES.map((envName): ColumnDef<SurveyEnvTableRow> => ({
-    header: envName,
-    enableSorting: false,
-    id: envName,
-    cell: ({ row }) => <SurveyTableEnvColumn rowInfo={row.original} {...props} envName={envName}/>
-  }))], [dependencyString])
+  const columns: ColumnDef<SurveyEnvTableRow>[] = useMemo(() => {
+    const baseCols = [{
+      header: '',
+      id: 'name',
+      cell: ({ row }) => <div className="h-100 align-items-center d-flex">
+        <Link to={`surveys/${row.original.stableId}`}>
+          {row.original.name}
+        </Link>
+      </div>
+    },
+    ...ENVIRONMENT_NAMES.map((envName): ColumnDef<SurveyEnvTableRow> => ({
+      header: envName,
+      enableSorting: false,
+      id: envName,
+      cell: ({ row }) => <SurveyTableEnvColumn rowInfo={row.original} {...props} envName={envName}/>
+    }))]
+    // add drag handle column if in sandbox
+    if (props.studyEnvParams.envName === 'sandbox') {
+      baseCols.unshift({
+        header: '',
+        id: 'drag-handle',
+        cell: ({ row }) => <RowDragHandleCell rowId={row.id} />,
+        size: 30
+      })
+    }
+    return baseCols
+  }, [])
 
   const table = useReactTable({
     data: rowInfo,
     columns,
+    getRowId: row => row.stableId, //required because row indexes will change
     enableRowSelection: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
 
+  const saveOrdering = () => {
+    const studyEnvSurveys: StudyEnvironmentSurvey[] =
+      rowInfo.filter(row => row.sandbox)
+        .map((row, index) => ({
+          ...row.sandbox as StudyEnvironmentSurvey,
+          surveyOrder: index
+        }))
+    props.updateConfiguredSurveys(studyEnvSurveys)
+  }
+
+  const isReordered = dependencyString !== stableIds.join('^')
+  const renderedTable = useDraggableTableLayout(table, {},
+    orderedStableIds, setOrderedStableIds, (row: Row<SurveyEnvTableRow>) => row.original.stableId)
+
   return <div>
-    { basicTableLayout(table) }
+    { renderedTable }
+    { isReordered && <div>
+      <Button variant="secondary" onClick={saveOrdering}>Save new order</Button>
+      <InfoPopup content={'Oder will only be updated for the sandbox environment'}/>
+    </div>}
   </div>
 }
 

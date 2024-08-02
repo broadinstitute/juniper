@@ -45,10 +45,10 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
         .find(env => env.id === config.studyEnvironmentId)!.environmentName
     })))
   })
-  const updateConfiguredSurvey = async (surveyConfig: StudyEnvironmentSurvey) => {
+  const updateConfiguredSurveys = async (surveyConfigs: StudyEnvironmentSurvey[]) => {
     doApiLoad(async () => {
-      await Api.updateConfiguredSurvey(studyEnvContext.portal.shortcode,
-        studyEnvContext.study.shortcode, currentEnv.environmentName, surveyConfig)
+      await Api.updateConfiguredSurveys(studyEnvContext.portal.shortcode,
+        studyEnvContext.study.shortcode, currentEnv.environmentName, surveyConfigs)
       await portalContext.reloadPortal(studyEnvContext.portal.shortcode)
     }, { setIsLoading })
   }
@@ -108,11 +108,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h2 className="h6">Consent Forms</h2>
             <div className="flex-grow-1 pt-3">
-              <SurveyEnvironmentTable stableIds={consentSurveyStableIds}
+              <SurveyEnvironmentTable
+                key={studyEnvContext.currentEnvPath}
+                stableIds={consentSurveyStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
-                updateConfiguredSurvey={updateConfiguredSurvey}
+                updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                 setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                 showArchiveSurveyModal={showArchiveSurveyModal}
@@ -130,11 +132,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Research Surveys</h6>
             <div className="flex-grow-1 pt-3">
-              <SurveyEnvironmentTable stableIds={researchSurveyStableIds}
+              <SurveyEnvironmentTable
+                key={studyEnvContext.currentEnvPath}
+                stableIds={researchSurveyStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
-                updateConfiguredSurvey={updateConfiguredSurvey}
+                updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                 setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                 showArchiveSurveyModal={showArchiveSurveyModal}
@@ -152,11 +156,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Study Staff Forms</h6>
             <div className="flex-grow-1 pt-3">
-              <SurveyEnvironmentTable stableIds={adminFormStableIds}
+              <SurveyEnvironmentTable
+                key={studyEnvContext.currentEnvPath}
+                stableIds={adminFormStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
-                updateConfiguredSurvey={updateConfiguredSurvey}
+                updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                 setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                 showArchiveSurveyModal={showArchiveSurveyModal}
@@ -174,11 +180,13 @@ function StudyContent({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) 
           <li className="mb-3 rounded-2 p-3" style={{ background: '#efefef' }}>
             <h6>Outreach</h6>
             <div className="flex-grow-1 pt-3">
-              <SurveyEnvironmentTable stableIds={outreachSurveyStableIds}
+              <SurveyEnvironmentTable
+                key={studyEnvContext.currentEnvPath}
+                stableIds={outreachSurveyStableIds}
                 studyEnvParams={paramsFromContext(studyEnvContext)}
                 configuredSurveys={configuredSurveys}
                 setSelectedSurveyConfig={setSelectedSurveyConfig}
-                updateConfiguredSurvey={updateConfiguredSurvey}
+                updateConfiguredSurveys={updateConfiguredSurveys}
                 setShowDeleteSurveyModal={setShowDeleteSurveyModal}
                 setShowArchiveSurveyModal={setShowArchiveSurveyModal}
                 showArchiveSurveyModal={showArchiveSurveyModal}
