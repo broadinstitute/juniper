@@ -18,8 +18,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class LoggingService {
-  private LogEventDao logEventDao;
-  private ObjectMapper filteredEventMapper;
+  private final LogEventDao logEventDao;
+  private final ObjectMapper filteredEventMapper;
 
   public LoggingService(LogEventDao logEventDao, ObjectMapper objectMapper) {
     this.logEventDao = logEventDao;

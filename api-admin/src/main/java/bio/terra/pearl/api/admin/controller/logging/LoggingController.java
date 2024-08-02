@@ -29,7 +29,7 @@ public class LoggingController implements LoggingApi {
   }
 
   @Override
-  public ResponseEntity<Object> get(String days, Integer limit, String eventTypes) {
+  public ResponseEntity<Object> get(String days, String eventTypes, Integer limit) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     OperatorAuthContext authContext = OperatorAuthContext.of(operator);
 

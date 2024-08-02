@@ -1908,7 +1908,7 @@ paths:
       parameters:
         - { name: eventTypes, in: query, required: false, schema: { type: string } }
         - { name: days, in: query, required: true, schema: { type: string } }
-        - { name: limit, in: query, required: true, schema: { type: integer } }
+        - { name: limit, in: query, required: false, schema: { type: integer, default: 1000 } }
       responses:
         '200':
           description: logs
