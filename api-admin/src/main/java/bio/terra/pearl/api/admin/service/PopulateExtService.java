@@ -145,7 +145,9 @@ public class PopulateExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "BASE")
   public Enrollee populateEnrollee(
-      PortalStudyEnvAuthContext authContext, EnrolleePopulateType enrolleePopulateType) {
+      PortalStudyEnvAuthContext authContext,
+      EnrolleePopulateType enrolleePopulateType,
+      String username) {
     StudyPopulateContext config =
         new StudyPopulateContext(
             null,
@@ -155,7 +157,7 @@ public class PopulateExtService {
             new HashMap<>(),
             false,
             null);
-    return enrolleePopulator.populateFromType(enrolleePopulateType, config);
+    return enrolleePopulator.populateFromType(enrolleePopulateType, username, config);
   }
 
   @SuperuserOnly

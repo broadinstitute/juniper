@@ -1486,8 +1486,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async populateEnrollee(studyEnvParams: StudyEnvParams, popType: string) {
-    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/populate?popType=${popType}`
+  async populateEnrollee(studyEnvParams: StudyEnvParams, popType: string, username?: string) {
+    const paramString = queryString.stringify({ username, popType })
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/enrollee/populate?${paramString}`
+
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders()

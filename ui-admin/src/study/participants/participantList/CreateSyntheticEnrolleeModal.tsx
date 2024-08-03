@@ -8,6 +8,8 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
 import useReactSingleSelect from 'util/react-select-utils'
+import { TextInput } from '../../../components/forms/TextInput'
+import InfoPopup from '../../../components/forms/InfoPopup'
 
 const ENROLLEE_TYPES = ['NEW', 'CONSENTED', 'ALL_COMPLETE']
 
@@ -19,6 +21,7 @@ export default function CreateSyntheticEnrolleeModal({
   onDismiss: () => void
   onSubmit: () => void }) {
   const [enrolleeType, setEnrolleeType] = useState<string | undefined>('NEW')
+  const [username, setUsername] = useState<string>()
   const [isLoading, setIsLoading] = useState(false)
 
   const { onChange, options, selectedOption, selectInputId } =
@@ -33,7 +36,7 @@ export default function CreateSyntheticEnrolleeModal({
       return
     }
     doApiLoad(async () => {
-      await Api.populateEnrollee(paramsFromContext(studyEnvContext), enrolleeType)
+      await Api.populateEnrollee(paramsFromContext(studyEnvContext), enrolleeType, username)
       Store.addNotification(successNotification('Enrollee created'))
       onSubmit()
     }, { setIsLoading })
@@ -46,7 +49,16 @@ export default function CreateSyntheticEnrolleeModal({
     <Modal.Body>
       <form onSubmit={e => e.preventDefault()}>
         <div>
-          Type: <Select inputId={selectInputId} options={options} value={selectedOption} onChange={onChange}/>
+          <label className="form-label fw-semibold me-2" htmlFor={selectInputId}>Enrollee type</label>
+          <InfoPopup content={<span>
+              Type determines how much content is auto-populated for the enrollee.
+          </span>}/>
+          <Select inputId={selectInputId} options={options} value={selectedOption} onChange={onChange}/>
+        </div>
+        <div className="mt-3">
+          <TextInput label='Username' id='username' onChange={setUsername} value={username}
+            placeholder="leave blank for auto-generated"
+          />
         </div>
       </form>
     </Modal.Body>

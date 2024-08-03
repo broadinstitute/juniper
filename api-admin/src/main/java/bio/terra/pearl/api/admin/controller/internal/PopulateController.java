@@ -131,6 +131,7 @@ public class PopulateController implements PopulateApi {
       String envName,
       String filePathName,
       String popType,
+      String username,
       Boolean overwrite) {
     EnvironmentName environmentName = EnvironmentName.valueOf(envName);
     AdminUser operator = authUtilService.requireAdminUser(request);
@@ -149,7 +150,8 @@ public class PopulateController implements PopulateApi {
           populateExtService.populateEnrollee(
               PortalStudyEnvAuthContext.of(
                   operator, portalShortcode, studyShortcode, environmentName),
-              populateType);
+              populateType,
+              username);
     }
     return ResponseEntity.ok(populatedObj);
   }

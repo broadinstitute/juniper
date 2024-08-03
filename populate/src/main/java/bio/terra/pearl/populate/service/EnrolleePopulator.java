@@ -56,6 +56,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -534,9 +535,11 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     }
 
     @Transactional
-    public Enrollee populateFromType(EnrolleePopulateType popType, StudyPopulateContext popContext) {
+    public Enrollee populateFromType(EnrolleePopulateType popType, String username, StudyPopulateContext popContext) {
         // this operation always creates a new ParticipantUser
-        String username = PopulateUtils.generateEmail(popType);
+        if (StringUtils.isBlank(username)) {
+            username = PopulateUtils.generateEmail(popType);
+        }
         ParticipantUserPopDto userPopDto = ParticipantUserPopDto.builder()
                 .username(username).build();
         PortalParticipantUserPopDto portalParticipantUserPopDto = PortalParticipantUserPopDto.builder()

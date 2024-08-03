@@ -908,6 +908,7 @@ paths:
         - *envNameParam
         - { name: filePathName, in: query, required: false, schema: { type: string } }
         - { name: popType, in: query, required: false, schema: { type: string } }
+        - { name: username, in: query, required: false, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
         '201':
