@@ -20,11 +20,10 @@ import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.populate.service.EnrolleePopulateType;
 import java.util.List;
 import java.util.Map;
-
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 public class PopulateExtServiceTests extends BaseSpringBootTest {
   private PopulateExtService emptyService =
@@ -58,6 +57,7 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
   }
 
   @Test
+  @Transactional
   public void populatesNewEnrolleeType(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.live);
@@ -68,10 +68,12 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getPortalEnv().getEnvironmentName()),
-        EnrolleePopulateType.NEW, "someone@user.com");
+        EnrolleePopulateType.NEW,
+        "someone@user.com");
     List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(bundle.getStudyEnv().getId());
     assertThat(enrollees, hasSize(1));
-    ParticipantUser pUser = participantUserService.find(enrollees.get(0).getParticipantUserId()).orElseThrow();
+    ParticipantUser pUser =
+        participantUserService.find(enrollees.get(0).getParticipantUserId()).orElseThrow();
     assertThat(pUser.getUsername(), equalTo("someone@user.com"));
   }
 }
