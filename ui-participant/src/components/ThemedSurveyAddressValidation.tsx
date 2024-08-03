@@ -1,6 +1,5 @@
 import React from 'react'
-import { ReactQuestionFactory } from 'survey-react-ui'
-import { SurveyQuestionAddressValidation } from '@juniper/ui-core/build/surveyjs/address-validation-modal-question'
+import { SurveyQuestionAddressValidation } from '@juniper/ui-core'
 import ThemedModal from './ThemedModal'
 import { ModalProps } from 'react-bootstrap'
 
@@ -9,8 +8,3 @@ export class ThemedSurveyQuestionAddressValidation extends SurveyQuestionAddress
     return ThemedModal
   }
 }
-
-// register themed address validation type
-ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
-  return React.createElement(ThemedSurveyQuestionAddressValidation, props)
-})

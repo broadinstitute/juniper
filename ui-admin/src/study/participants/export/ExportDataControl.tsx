@@ -7,6 +7,7 @@ import { currentIsoDate } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import { saveBlobAsDownload } from 'util/downloadUtils'
 import { doApiLoad } from 'api/api-utils'
+import { buildFilter } from 'util/exportUtils'
 
 const FILE_FORMATS = [{
   label: 'Tab-delimted (.tsv)',
@@ -25,6 +26,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
   const [onlyIncludeMostRecent, setOnlyIncludeMostRecent] = useState(true)
   const [fileFormat, setFileFormat] = useState(FILE_FORMATS[0])
   const [includeProxiesAsRows, setIncludeProxiesAsRows] = useState(false)
+  const [includeUnconsented, setIncludeUnconsented] = useState(false)
 
   const [isLoading, setIsLoading] = useState(false)
 
@@ -33,7 +35,7 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
       onlyIncludeMostRecent,
       splitOptionsIntoColumns: !humanReadable,
       stableIdsForOptions: !humanReadable,
-      includeProxiesAsRows,
+      filter: buildFilter({ includeProxiesAsRows, includeUnconsented }),
       fileFormat: fileFormat.value
     }
   }
@@ -103,14 +105,20 @@ const ExportDataControl = ({ studyEnvContext, show, setShow }: {studyEnvContext:
         </div>
         <div className="py-2">
           <p className="fw-bold mb-1">
-            Proxy Options
+            Filter Options
           </p>
+          <label>
+            <input type="checkbox" name="includeUnconsented" checked={includeUnconsented}
+              onChange={() => setIncludeUnconsented(!includeUnconsented)} className="me-1"/>
+            Include enrollees who have not consented
+          </label>
           <label>
             <input type="checkbox" name="includeProxiesAsRows" checked={includeProxiesAsRows}
               onChange={() => setIncludeProxiesAsRows(!includeProxiesAsRows)} className="me-1"/>
             Include proxies as rows
           </label>
         </div>
+
         <div className="py-2">
           <span className="fw-bold">File format</span><br/>
           {FILE_FORMATS.map(format => <label className="me-3" key={format.value}>

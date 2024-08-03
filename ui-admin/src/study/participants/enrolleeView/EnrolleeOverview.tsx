@@ -1,12 +1,24 @@
 import React from 'react'
-import Api, { EnrolleeRelation } from 'api/api'
+import Api from 'api/api'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
 import ParticipantNotesView from './ParticipantNotesView'
-import { dateToDefaultString, Enrollee, Profile } from '@juniper/ui-core'
+import {
+  dateToDefaultString,
+  Enrollee,
+  EnrolleeRelation,
+  Profile
+} from '@juniper/ui-core'
 import KitRequests from '../KitRequests'
-import { InfoCard, InfoCardBody, InfoCardHeader, InfoCardTitle, InfoCardValue } from 'components/InfoCard'
+import {
+  InfoCard,
+  InfoCardBody,
+  InfoCardHeader,
+  InfoCardTitle,
+  InfoCardValue
+} from 'components/InfoCard'
 import { useLoadingEffect } from 'api/api-utils'
 import LoadingSpinner from 'util/LoadingSpinner'
+import Families from 'study/participants/Families'
 
 /** Shows minimal identifying information, and then kits and notes */
 export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }:
@@ -22,7 +34,9 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
     setRelations(relations)
   })
 
-  return <div>
+  const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
+
+  return <>
     <InfoCard>
       <InfoCardHeader>
         <InfoCardTitle title={'Basic Information'}/>
@@ -44,7 +58,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
       relations
         .filter(relation => relation.relationshipType === 'PROXY')
         .map(relation => {
-          return <InfoCard>
+          return <InfoCard key={relation.id}>
             <InfoCardHeader>
               <InfoCardTitle title={'Proxy'}/>
             </InfoCardHeader>
@@ -52,7 +66,7 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
               <InfoCardValue
                 title={'Name'}
                 values={
-                  [formatName(relation.enrollee.profile)]
+                  [formatName(relation.enrollee?.profile)]
                 }
               />
               <InfoCardValue
@@ -63,17 +77,25 @@ export default function EnrolleeOverview({ enrollee, studyEnvContext, onUpdate }
           </InfoCard>
         })}
 
-
-    <div className="mb-5">
+    <div>
       <ParticipantNotesView notes={enrollee.participantNotes} enrollee={enrollee}
         studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
     </div>
 
+    {
+      familyLinkageEnabled && <div>
+        <Families enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
+      </div>
+    }
+
 
     <KitRequests enrollee={enrollee} studyEnvContext={studyEnvContext} onUpdate={onUpdate}/>
-  </div>
+  </>
 }
 
-const formatName = (profile: Profile) => {
+const formatName = (profile: Profile | undefined) => {
+  if (!profile) {
+    return ''
+  }
   return `${profile.givenName || ''} ${profile.familyName || ''}`.trim()
 }

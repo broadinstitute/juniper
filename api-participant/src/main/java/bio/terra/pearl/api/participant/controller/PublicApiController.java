@@ -24,8 +24,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class PublicApiController implements PublicApi {
@@ -100,6 +102,26 @@ public class PublicApiController implements PublicApi {
     return "forward:/";
   }
 
+  @CrossOrigin(
+      origins = {
+        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo only)
+        "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+        "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
+        "https://ourhealthdev.b2clogin.com", // OurHealth (demo)
+        "https://ourhealthstudy.b2clogin.com", // OurHealth (prod)
+        "https://hearthivedev.b2clogin.com", // HeartHive (demo)
+        "https://hearthive.b2clogin.com", // HeartHive (prod)
+        "https://gvascdev.b2clogin.com", // gVASC (demo)
+        "https://gvascprod.b2clogin.com" // gVASC (prod)
+      },
+      maxAge = 3600,
+      methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+  /*
+   * This method is used to get the branding information for a portal environment.
+   * Since this is only returning publicly available assets (logos, css attributes, etc),
+   * this is allowed to be accessed from other domains. Additionally, the domains are
+   * limited to b2c origins that we control.
+   */
   @GetMapping(value = "/favicon.ico")
   public ResponseEntity<Resource> favicon(HttpServletRequest request) {
     Optional<PortalEnvironmentDescriptor> portal = getPortalDescriptorForRequest(request);
@@ -166,19 +188,14 @@ public class PublicApiController implements PublicApi {
    * site not appearing as down during deploys. Eventually, we should upgrade our deployment/hosting
    * infrastructure to solve this problem in a more robust way
    */
-  @GetMapping(value = "/static/js/main.{hash}.js")
-  public String getFingerprintedJs() {
-    return "forward:/static/js/main.js";
-  }
-
-  @GetMapping(value = "/static/css/main.{hash}.css")
+  @GetMapping(value = "/assets/index-{hash:[a-zA-Z0-9-_]{8}}.css")
   public String getFingerprintedCss() {
-    return "forward:/static/css/main.css";
+    return "forward:/assets/index.css";
   }
 
-  @GetMapping(value = "/static/js/{chunkId}.{hash}.chunk.js")
-  public String getFingerprintedJsChunks(@PathVariable("chunkId") String chunkId) {
-    return "forward:/static/js/%s.chunk.js".formatted(chunkId);
+  @GetMapping(value = "/assets/{fileId}-{hash:[a-zA-Z0-9-_]{8}}.js")
+  public String getFingerprintedJs(@PathVariable("fileId") String fileId) {
+    return "forward:/assets/%s.js".formatted(fileId);
   }
 
   private Optional<PortalEnvironmentDescriptor> getPortalDescriptorForRequest(

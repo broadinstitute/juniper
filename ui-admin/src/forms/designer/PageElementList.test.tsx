@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { FormElement, FormPanel } from '@juniper/ui-core'
@@ -93,10 +93,12 @@ describe('PageElementList', () => {
     const elements: FormElement[] = [
       { name: 'q1', title: 'q1', type: 'text' },
       {
+        title: 'My panel',
         type: 'panel',
         elements: []
       },
       {
+        title: 'My panel',
         type: 'panel',
         elements: [
           { name: 'q2', title: 'q2', type: 'text' },

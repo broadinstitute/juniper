@@ -1,11 +1,12 @@
 /* eslint-disable jest/expect-expect */
-import { act, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { FormContent, MockI18nProvider } from '@juniper/ui-core'
 
 import { FormPreview } from './FormPreview'
+import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 const formContent: FormContent = {
   title: 'Test survey',
@@ -34,7 +35,7 @@ describe('FormPreview', () => {
     // Act
     render(
       <MockI18nProvider>
-        <FormPreview formContent={formContent} supportedLanguages={[]}/>
+        <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
       </MockI18nProvider>)
 
     // Assert
@@ -76,7 +77,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -95,7 +96,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -146,50 +147,19 @@ describe('FormPreview', () => {
         ]
       }
 
-      it('defaults to English', () => {
-        render(<MockI18nProvider>
-          <FormPreview formContent={localizedFormContent as unknown as FormContent}
-            supportedLanguages={[]}/>
-        </MockI18nProvider>)
-
-        screen.getByText('First name')
-        screen.getByText('Last name')
-      })
-
-      it('can switch to Spanish', async () => {
-        const user = userEvent.setup()
-
+      it('can show Spanish text', async () => {
         render(
           <MockI18nProvider>
             <FormPreview
               formContent={localizedFormContent as unknown as FormContent}
-              supportedLanguages={[
-                { languageCode: 'en', languageName: 'English' },
-                { languageCode: 'es', languageName: 'Spanish' }
-              ]}
+              currentLanguage={{ languageCode: 'es', id: '', languageName: 'Spanish' }}
             />
           </MockI18nProvider>)
-
-        const languageSelector = screen.getByLabelText('Language Preview')
-        await act(() => user.click(languageSelector))
-        await act(() => user.click(screen.getByText('Spanish')))
 
         waitFor(() => {
           screen.getByText('Nombre')
           screen.getByText('Apellido')
         })
-      })
-
-      it('does not render when there is only one language', () => {
-        render(
-          <MockI18nProvider>
-            <FormPreview
-              formContent={localizedFormContent as unknown as FormContent}
-              supportedLanguages={[{ languageCode: 'en', languageName: 'English' }]}
-            />
-          </MockI18nProvider>)
-
-        expect(screen.queryByLabelText('Language')).not.toBeInTheDocument()
       })
     })
 
@@ -219,7 +189,7 @@ describe('FormPreview', () => {
         // Act
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Assert
@@ -232,7 +202,7 @@ describe('FormPreview', () => {
 
         render(
           <MockI18nProvider>
-            <FormPreview formContent={formContent} supportedLanguages={[]}/>
+            <FormPreview formContent={formContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
           </MockI18nProvider>)
 
         // Act
@@ -243,6 +213,70 @@ describe('FormPreview', () => {
         // Assert
         screen.getAllByLabelText('Hidden question')
       })
+    })
+
+    const dyanmicTextFormContent: FormContent = {
+      title: 'Test survey',
+      pages: [
+        {
+          elements: [
+            {
+              name: 'test_hello',
+              type: 'text',
+              title: 'Hello participant {profile.givenName} {profile.familyName}'
+            },
+            {
+              name: 'test_proxy_hello',
+              type: 'text',
+              title: 'you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'
+            }
+          ]
+        }
+      ]
+    }
+
+    it('updates dynamic text from participant profile', async () => {
+      const user = userEvent.setup()
+      render(
+        <MockI18nProvider>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
+        </MockI18nProvider>)
+      // with no values specified, the dynamic text should not be replaced
+      expect(screen.getByText('Hello participant {profile.givenName} {profile.familyName}'))
+        .toBeInTheDocument()
+      const participantFields = screen.getByTestId('profileInfoFields')
+
+      await user.type(within(participantFields).getByLabelText('Given name'), 'Jonas')
+      expect(screen.getByText('Hello participant Jonas {profile.familyName}'))
+        .toBeInTheDocument()
+
+      await user.type(within(participantFields).getByLabelText('Family name'), 'Salk')
+      expect(screen.getByText('Hello participant Jonas Salk'))
+        .toBeInTheDocument()
+
+      // proxy fields should be unchanged
+      expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+    })
+
+    it('updates dynamic text from proxy profile', async () => {
+      const user = userEvent.setup()
+      render(
+        <MockI18nProvider>
+          <FormPreview formContent={dyanmicTextFormContent} currentLanguage={MOCK_ENGLISH_LANGUAGE}/>
+        </MockI18nProvider>)
+      // with no values specified, the dynamic text should not be replaced
+      expect(screen.getByText('you are proxying {proxyProfile.givenName} {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+      const proxyField = screen.getByTestId('proxyInfoFields')
+
+      await user.type(within(proxyField).getByLabelText('Given name'), 'Child')
+      expect(screen.getByText('you are proxying Child {proxyProfile.familyName}'))
+        .toBeInTheDocument()
+
+      await user.type(within(proxyField).getByLabelText('Family name'), 'Salk')
+      expect(screen.getByText('you are proxying Child Salk'))
+        .toBeInTheDocument()
     })
   })
 })

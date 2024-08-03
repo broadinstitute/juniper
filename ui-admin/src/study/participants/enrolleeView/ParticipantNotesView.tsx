@@ -1,16 +1,23 @@
-import React, { useId, useState } from 'react'
-import Api, { AdminTask } from 'api/api'
-import { AdminUser } from 'api/adminUser'
+import React, { useState } from 'react'
+import Api from 'api/api'
 import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { useLoadingEffect } from 'api/api-utils'
+import {
+  Enrollee,
+  ParticipantNote,
+  ParticipantTask
+} from '@juniper/ui-core'
+import { ParticipantNoteModal } from './ParticipantNoteModal'
+import { renderEmptyMessage } from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
-import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import { failureNotification } from 'util/notifications'
-import { Store } from 'react-notifications-component'
+import { Button } from 'components/forms/Button'
+import {
+  InfoCard,
+  InfoCardHeader
+} from 'components/InfoCard'
 import { ParticipantNoteView } from './ParticipantNoteView'
-import AdminUserSelect from 'user/AdminUserSelect'
-import { useLoadingEffect } from 'api/api-utils'
-import { Enrollee, ParticipantNote } from '@juniper/ui-core'
 
 type ParticipantNotesViewProps = {
   enrollee: Enrollee,
@@ -22,12 +29,9 @@ type ParticipantNotesViewProps = {
 /** shows a list of participant notes, with the ability to add a new note */
 const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: ParticipantNotesViewProps) => {
   const [showAdd, setShowAdd] = useState(false)
-  const [linkedTasks, setLinkedTasks] = useState<AdminTask[]>([])
-  const [newNoteText, setNewNoteText] = useState('')
-  const [newNoteAssignee, setNewNoteAssignee] = useState<AdminUser>()
+  const [linkedTasks, setLinkedTasks] = useState<ParticipantTask[]>([])
   const { users } = useAdminUserContext()
   const sortedNotes = [...notes].sort((a, b) => b.createdAt - a.createdAt)
-  const userSelectId = useId()
 
   const { reload: reloadTasks } = useLoadingEffect(async () => {
     const tasks = await Api.fetchEnrolleeAdminTasks(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
@@ -35,47 +39,36 @@ const ParticipantNotesView = ({ enrollee, notes, studyEnvContext, onUpdate }: Pa
     setLinkedTasks(tasks)
   }, [enrollee.shortcode])
 
-  const createNote = async () => {
-    try {
-      await Api.createParticipantNote(studyEnvContext.portal.shortcode, studyEnvContext.study.shortcode,
-        studyEnvContext.currentEnv.environmentName, enrollee.shortcode, {
-          text: newNoteText, assignedAdminUserId: newNoteAssignee?.id
-        })
-      setShowAdd(false)
-      setNewNoteText('')
-    } catch (e) {
-      Store.addNotification(failureNotification('could not save note'))
-    }
-    onUpdate()
-    reloadTasks()
-  }
-
-  return <div>
-    <h3 className="h4">Notes</h3>
-    <button className="btn btn-secondary" onClick={() => setShowAdd(!showAdd)}>
-      <FontAwesomeIcon icon={faPlus}/> Add
-    </button>
-    {showAdd && <div className="pb-3">
-      <textarea rows={5} cols={80} value={newNoteText} onChange={e => setNewNoteText(e.target.value)}/>
-      <div>
-        <label htmlFor={userSelectId}>Assign to:</label>
-        <AdminUserSelect selectedUser={newNoteAssignee} setSelectedUser={setNewNoteAssignee} users={users}
-          readOnly={false} id={userSelectId}/>
+  return <InfoCard>
+    <InfoCardHeader>
+      <div className="d-flex align-items-center justify-content-between w-100">
+        <div className="fw-bold lead my-1">Notes</div>
+        <Button onClick={() => setShowAdd(!showAdd)}
+          variant="light" className="border m-1">
+          <FontAwesomeIcon icon={faPlus} className="fa-lg"/> Create new note
+        </Button>
       </div>
-      <div className="mt-2">
-        <button className="btn btn-primary" onClick={createNote}>Save</button>
+    </InfoCardHeader>
+    {sortedNotes.length > 0 && sortedNotes.map((note, index) => (<div key={index}>
+      <div className='p-3'>
+        <ParticipantNoteView enrollee={enrollee} note={note}
+          studyEnvContext={studyEnvContext}
+          linkedTasks={linkedTasks}
+          reloadTasks={reloadTasks}
+          users={users}
+          key={note.id}/>
       </div>
-    </div>}
-    { sortedNotes.map(note =>
-      <ParticipantNoteView enrollee={enrollee} note={note}
-        studyEnvContext={studyEnvContext}
-        linkedTasks={linkedTasks}
-        reloadTasks={reloadTasks}
-        users={users}
-        key={note.id}/>
-    )}
-  </div>
+      <hr className='m-0'/>
+    </div>
+    ))}
+    {sortedNotes.length === 0 && <div className='my-3'>{renderEmptyMessage(sortedNotes, 'No notes')}</div>}
+    { showAdd && <ParticipantNoteModal enrollee={enrollee} users={users}
+      onDismiss={async () => {
+        await reloadTasks()
+        onUpdate()
+        setShowAdd(false)
+      }} studyEnvContext={studyEnvContext} />}
+  </InfoCard>
 }
 
 export default ParticipantNotesView
-

@@ -24,4 +24,8 @@ public class ImportItemDao extends BaseMutableJdbiDao<ImportItem> {
         return findAllByProperty("import_id", importId);
     }
 
+    public void deleteByImportId(UUID importId) {
+        deleteByProperty("import_id", importId);
+    }
+
 }

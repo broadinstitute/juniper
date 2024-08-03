@@ -28,7 +28,7 @@ export type VersionedForm = {
   footer?: string
 }
 
-export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT'
+export type SurveyType = 'RESEARCH' | 'OUTREACH' | 'CONSENT' | 'ADMIN'
 
 export type Survey = VersionedForm & {
   surveyType: SurveyType
@@ -70,6 +70,10 @@ export type Answer = {
   surveyStableId?: string
   surveyVersion?: number
   viewedLanguage?: string
+  creatingParticipantUserId?: string
+  creatingAdminUserId?: string
+  createdAt?: number
+  lastUpdatedAt?: number
 }
 
 export type FormResponse = {
@@ -86,6 +90,10 @@ export type SurveyResponse = FormResponse & {
   enrolleeId: string
   answers: Answer[]
   complete: boolean
+}
+
+export type SurveyResponseWithJustification = SurveyResponse & {
+  justification?: string
 }
 
 export type PreregistrationResponse = FormResponse & {
@@ -110,6 +118,13 @@ export type FormContent = {
   title: I18nSurveyElement
   pages: FormContentPage[]
   questionTemplates?: Question[]
+  calculatedValues?: CalculatedValue[]
+}
+
+export type CalculatedValue = {
+  name: string,
+  expression: string,
+  includeIntoResult: boolean
 }
 
 type BaseElement = {
@@ -123,10 +138,8 @@ export type FormContentPage = BaseElement & {
 /**
  *  Certain SurveyJS elements can take on multiple forms. For example, the "title" field
  *  for a question could either be a string, or an object mapping language codes to strings.
- *  "default" is always present; the other languages are arbitrary.
  */
 export type I18nMap = {
-  default: string,
   [language: string]: string
 }
 
@@ -136,6 +149,7 @@ export type I18nSurveyElement = string | I18nMap
 export type FormElement = FormPanel | HtmlElement | Question
 
 export type FormPanel = BaseElement & {
+  title: string
   type: 'panel'
   elements: (HtmlElement | Question)[]
 }
@@ -188,7 +202,7 @@ export type RadiogroupQuestion = WithOtherOption<TitledQuestion & {
 
 export type TemplatedQuestion = BaseQuestion & {
   name: string
-  title?: string
+  title?: I18nSurveyElement
   questionTemplateName: string
 }
 

@@ -1,7 +1,8 @@
 package bio.terra.pearl.api.admin.controller.dataimport;
 
 import bio.terra.pearl.api.admin.api.DataImportApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeImportExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -30,51 +31,25 @@ public class DataImportController implements DataImportApi {
   }
 
   @Override
-  public ResponseEntity<Void> delete(
-      String portalShortcode, String studyShortcode, String envName, UUID importId) {
-    AdminUser operator = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    enrolleeImportExtService.delete(
-        portalShortcode, studyShortcode, environmentName, importId, operator);
-    return ResponseEntity.noContent().build();
-  }
-
-  @Override
-  public ResponseEntity<Void> deleteItem(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      UUID importId,
-      UUID importItemId) {
-    AdminUser operator = authUtilService.requireAdminUser(request);
-    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
-    enrolleeImportExtService.deleteImportItem(
-        portalShortcode, studyShortcode, environmentName, importId, importItemId, operator);
-    return ResponseEntity.noContent().build();
-  }
-
-  @Override
   public ResponseEntity<Object> getAll(
       String portalShortcode, String studyShortcode, String envName) {
     AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     return ResponseEntity.ok(
         enrolleeImportExtService.list(
-            portalShortcode,
-            studyShortcode,
-            EnvironmentName.valueOfCaseInsensitive(envName),
-            operator));
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName)));
   }
 
   @Override
   public ResponseEntity<Object> get(
       String portalShortcode, String studyShortcode, String envName, UUID importId) {
     AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     return ResponseEntity.ok(
         enrolleeImportExtService.get(
-            portalShortcode,
-            studyShortcode,
-            EnvironmentName.valueOfCaseInsensitive(envName),
-            operator,
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
             importId));
   }
 
@@ -90,14 +65,39 @@ public class DataImportController implements DataImportApi {
     try {
       return ResponseEntity.ok(
           enrolleeImportExtService.importData(
-              portalShortcode,
-              studyShortcode,
-              environmentName,
+              PortalStudyEnvAuthContext.of(
+                  operator, portalShortcode, studyShortcode, environmentName),
               importFile.getInputStream(),
-              operator,
               fileFormat));
     } catch (IOException e) {
       throw new IllegalArgumentException("could not read import data");
     }
+  }
+
+  @Override
+  public ResponseEntity<Void> delete(
+      String portalShortcode, String studyShortcode, String envName, UUID importId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    enrolleeImportExtService.delete(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        importId);
+    return ResponseEntity.noContent().build();
+  }
+
+  @Override
+  public ResponseEntity<Void> deleteItem(
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      UUID importId,
+      UUID importItemId) {
+    AdminUser operator = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    enrolleeImportExtService.deleteImportItem(
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        importId,
+        importItemId);
+    return ResponseEntity.noContent().build();
   }
 }

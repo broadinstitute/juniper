@@ -85,5 +85,21 @@
   {"keyName": "hubUpdateGovernedUserAlreadyEnrolledTitle", "text": "This user is already enrolled in ${studyName}.", "language": "en"},
   {"keyName": "cookieAlertTitle", "text": "Cookies", "language": "en"},
   {"keyName": "cookieAlertDetail", "text": "This site uses internet tokens called &quot;cookies&quot; to enable the proper functioning and security of our website, and to improve your experience while you use it. All of the cookies we use are strictly necessary cookies. This type of cookie does not collect any personally identifiable information about you and does not track your browsing habits. To learn more, [read our Privacy Policy](/privacy).", "language": "en"},
-  {"keyName": "joinStudy", "text": "Join Study", "language": "en"}
+  {"keyName": "joinStudy", "text": "Join Study", "language": "en"},
+  {"keyName": "ineligibleThankYou", "text": "Thank you for your interest in ${studyName}", "language": "en" },
+  {"keyName": "ineligibleDescription", "text": "Unfortunately, you do not meet the eligibility criteria to participate in ${studyName} at this time.", "language": "en"},
+  {"keyName": "ineligibleProvideYourEmail", "text": "Provide your email below and we’ll keep you up-to-date on developments. You can unsubscribe at any time.", "language":  "en"},
+  {"keyName": "ineligibleStayInformed", "text": "Stay informed", "language": "en"},
+  {"keyName": "backToPortalHomepage", "text": "Back to ${portalName} homepage", "language": "en"},
+  {"keyName": "joinMailingList", "text": "Join Mailing List", "language": "en"},
+  {"keyName": "mailingFormStayUpdated", "text":  "Stay updated with news about the study", "language": "en"},
+  {"keyName": "yourName", "text": "Your name", "language": "en"},
+  {"keyName": "yourEmail", "text": "Your email", "language": "en"},
+  {"keyName": "join", "text":  "Join", "language": "en"},
+  {"keyName": "thanksForJoining", "text": "Thanks for joining!", "language": "en"},
+  {"keyName": "pageNotFoundTitle", "text": "Page not found", "language": "en"},
+  {"keyName": "pageNotFoundMessage", "text": "If you believe this is an error, please contact ${studyContactEmail}", "language": "en"},
+  {"keyName": "pageNotFoundReturnHome", "text": "Return to the home page", "language": "en"},
+  {"keyName": "authErrorPageTitle", "text": "Something went wrong", "language": "en"},
+  {"keyName": "authErrorPageMessage", "text": "There was an issue with our authentication service. Please try again. If the problem persists, please contact ${studyContactEmail}.", "language": "en"}
 ]

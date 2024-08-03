@@ -22,13 +22,14 @@ describe('RawEnrolleeSurveyView', () => {
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
         configSurvey={mockConfiguredSurvey()}
+        updateResponseMap={jest.fn()}
         onUpdate={jest.fn()}
         response={response}/>)
     render(RoutedComponent)
-    expect(screen.getByText('(version 2)')).toBeInTheDocument()
+    expect(screen.getByText('(version 2)', { exact: false })).toBeInTheDocument()
   })
 
-  it('renders the mutliple versions from the answers', async () => {
+  it('renders the multiple versions from the answers', async () => {
     const response = {
       ...mockSurveyResponse(),
       answers: [
@@ -39,10 +40,11 @@ describe('RawEnrolleeSurveyView', () => {
     const { RoutedComponent } = setupRouterTest(
       <RawEnrolleeSurveyView enrollee={mockEnrollee()}
         studyEnvContext={mockStudyEnvContext()}
+        updateResponseMap={jest.fn()}
         configSurvey={mockConfiguredSurvey()}
         onUpdate={jest.fn()}
         response={response}/>)
     render(RoutedComponent)
-    expect(screen.getByText('(versions 2, 3)')).toBeInTheDocument()
+    expect(screen.getByText('(versions 2, 3)', { exact: false })).toBeInTheDocument()
   })
 })

@@ -1,4 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import {
+  render,
+  screen
+} from '@testing-library/react'
 import React from 'react'
 
 import {
@@ -6,15 +9,28 @@ import {
   NavbarItemExternal,
   NavbarItemInternal,
   NavbarItemInternalAnchor,
-  NavbarItemMailingList, PortalStudy
+  NavbarItemMailingList,
+  PortalStudy
 } from 'api/api'
 
-import Navbar, { AccountOptionsDropdown, CustomNavLink, getMainJoinLink, LanguageDropdown } from './Navbar'
-import { asMockedFn, MockI18nProvider, setupRouterTest } from '@juniper/ui-core'
+import Navbar, {
+  AccountOptionsDropdown,
+  CustomNavLink,
+  getMainJoinLink,
+  LanguageDropdown
+} from './Navbar'
+import {
+  asMockedFn,
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 import { UserManager } from 'oidc-client-ts'
 import { useUser } from './providers/UserProvider'
 import { usePortalEnv } from './providers/PortalProvider'
-import { mockUsePortalEnv } from './test-utils/test-portal-factory'
+import {
+  mockPortalEnvironmentConfig,
+  mockUsePortalEnv
+} from './test-utils/test-portal-factory'
 import { mockUseUser } from './test-utils/user-mocking-utils'
 
 jest.mock('oidc-client-ts')
@@ -97,7 +113,7 @@ describe('CustomNavLink', () => {
     }
 
     // Act
-    render(<CustomNavLink navLink={navbarItem} />)
+    render(<MockI18nProvider><CustomNavLink navLink={navbarItem}/></MockI18nProvider>)
 
     // Assert
     const link = screen.getByText('Mailing list link')
@@ -120,7 +136,7 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/studies/foo/join')
   })
 
@@ -146,7 +162,7 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/join')
   })
 
@@ -172,8 +188,36 @@ describe('joinPath', () => {
         }]
       }
     }] as PortalStudy[]
-    const joinPath = getMainJoinLink(portalStudies)
+    const joinPath = getMainJoinLink(portalStudies, mockPortalEnvironmentConfig())
     expect(joinPath).toBe('/studies/foo/join')
+  })
+
+  it('joins the primary study if there are multiple', () => {
+    const portalStudies = [{
+      study: {
+        shortcode: 'foo',
+        name: 'Foo',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }, {
+      study: {
+        shortcode: 'bar',
+        name: 'Bar',
+        studyEnvironments: [{
+          studyEnvironmentConfig: {
+            acceptingEnrollment: true
+          }
+        }]
+      }
+    }] as PortalStudy[]
+    const joinPath = getMainJoinLink(portalStudies, {
+      ...mockPortalEnvironmentConfig(), primaryStudy: 'bar'
+    })
+    expect(joinPath).toBe('/studies/bar/join')
   })
 })
 
@@ -246,6 +290,8 @@ describe('AccountOptionsDropdown', () => {
     expect(mockSigninRedirect).toHaveBeenCalledWith({
       redirectMethod: 'replace',
       extraQueryParams: {
+        originUrl: 'http://localhost',
+        portalEnvironment: 'live',
         portalShortcode: undefined,
         // eslint-disable-next-line camelcase
         ui_locales: 'es'

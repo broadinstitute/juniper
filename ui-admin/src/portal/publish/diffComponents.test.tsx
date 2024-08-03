@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import React from 'react'
 
 import { ConfigChangeListView, renderStudyEnvironmentSurvey } from './diffComponents'
@@ -7,7 +7,7 @@ import {
   ListChange,
   VersionedConfigChange
 } from 'api/api'
-import { StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
+import { StudyEnvironmentSurvey } from '@juniper/ui-core'
 import { mockConfiguredSurvey, mockSurvey } from 'test-utils/mocking-utils'
 
 const noopUpdate = () => 1

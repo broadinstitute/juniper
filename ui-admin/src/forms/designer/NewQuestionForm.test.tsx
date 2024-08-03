@@ -1,11 +1,13 @@
 import React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import { NewQuestionForm } from './NewQuestionForm'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
+import { MOCK_ENGLISH_LANGUAGE } from '../../test-utils/mocking-utils'
 
 describe('NewQuestionForm', () => {
   test('renders the default view for a new question', () => {
-    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false} />)
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     screen.getByLabelText('Question stable ID')
     const questionTypeSelect = screen.getByLabelText('Question type')
@@ -13,14 +15,16 @@ describe('NewQuestionForm', () => {
   })
 
   test('filters special characters in stableId', async () => {
-    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false} />)
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
     await userEvent.type(screen.getByLabelText('Question stable ID'), 'blah d#_* blah1')
     expect(screen.getByLabelText('Question stable ID')).toHaveValue('blahd_blah1')
   })
 
   test('updates to the appropriate QuestionDesigner when a new question type is selected', async () => {
     const user = userEvent.setup()
-    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}/>)
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     const questionTypeSelect = screen.getByLabelText('Question type')
     await act(() => user.selectOptions(questionTypeSelect, 'checkbox'))
@@ -39,7 +43,8 @@ describe('NewQuestionForm', () => {
   test('renders freetext input', async () => {
     //Arrange
     const user = userEvent.setup()
-    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}/>)
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     //Act
     const questionTypeSelect = screen.getByLabelText('Question type')
@@ -54,7 +59,8 @@ describe('NewQuestionForm', () => {
   test('updates to the appropriate QuestionDesigner based on freetext input', async () => {
     //Arrange
     const user = userEvent.setup()
-    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}/>)
+    render(<NewQuestionForm onCreate={() => jest.fn()} questionTemplates={[]} readOnly={false}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     //Act
     const questionTypeSelect = screen.getByLabelText('Question type')
@@ -74,6 +80,7 @@ describe('NewQuestionForm', () => {
     render(<NewQuestionForm
       onCreate={() => jest.fn()}
       questionTemplates={[{ name: 'oh_oh_template', title: 'A template', type: 'text' }]}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}
       readOnly={false}/>
     )
 
@@ -85,7 +92,7 @@ describe('NewQuestionForm', () => {
     //Arrange
     render(<NewQuestionForm
       onCreate={() => jest.fn()}
-      questionTemplates={[]}
+      questionTemplates={[]} currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}
       readOnly={false}/>
     )
 

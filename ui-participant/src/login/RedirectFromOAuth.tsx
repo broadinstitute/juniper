@@ -17,8 +17,6 @@ import { filterUnjoinableStudies } from 'Navbar'
 import { logError } from 'util/loggingUtils'
 import { useI18n } from '@juniper/ui-core'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const RedirectFromOAuth = () => {
   const auth = useAuth()
   const { loginUser, user, refreshLoginState } = useUser()

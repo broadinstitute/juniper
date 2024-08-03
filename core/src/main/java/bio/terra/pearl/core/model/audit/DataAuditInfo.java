@@ -24,14 +24,15 @@ import java.util.UUID;
 @Setter
 @SuperBuilder
 public class DataAuditInfo {
-    private UUID responsibleUserId;
-    private UUID responsibleAdminUserId;
+    private UUID responsibleUserId; // id of the user making the change, if it was a participant
+    private UUID responsibleAdminUserId; // id of the user making the change, if it was an admin
     private String systemProcess; // if the change was the result of an automatic process, store Class+method here
-    private Boolean anonymousUser;
+    private Boolean anonymousUser; // if the change was made by an anonymous user
     private UUID enrolleeId;
     private UUID portalParticipantUserId;
     private UUID surveyId;
-    private String justification;
+    private UUID familyId;
+    private String justification; // if an admin changes a participant's data, a justification is needed
 
     // If one operation creates multiple DataChangeRecords, then
     // they should all have the same operation id (in other words,

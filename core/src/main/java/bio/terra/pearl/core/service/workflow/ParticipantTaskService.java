@@ -4,23 +4,33 @@ import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantNote;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 
 import java.time.Instant;
 import java.util.*;
 
+import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.DataAuditedService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantNoteService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
 public class ParticipantTaskService extends DataAuditedService<ParticipantTask, ParticipantTaskDao> {
-    public ParticipantTaskService(ParticipantTaskDao dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper) {
+    private final EnrolleeService enrolleeService;
+    private final ParticipantNoteService participantNoteService;
+
+    public ParticipantTaskService(ParticipantTaskDao dao, DataChangeRecordService dataChangeRecordService, ObjectMapper objectMapper, @Lazy EnrolleeService enrolleeService, ParticipantNoteService participantNoteService) {
         super(dao, dataChangeRecordService, objectMapper);
+        this.enrolleeService = enrolleeService;
+        this.participantNoteService = participantNoteService;
     }
 
     public List<ParticipantTask> findByEnrolleeId(UUID enrolleeId) {
@@ -29,6 +39,14 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
 
     public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(List<UUID> enrolleeIds) {
         return dao.findByEnrolleeIds(enrolleeIds);
+    }
+
+    public List<ParticipantTask> findByPortalParticipantUserId(UUID ppUserId) {
+        return dao.findByPortalParticipantUserId(ppUserId);
+    }
+
+    public List<ParticipantTask> findAdminTasksByStudyEnvironmentId(UUID studyEnvId) {
+        return dao.findByStudyEnvironmentId(studyEnvId);
     }
 
     public List<ParticipantTask> findTasksByStudyAndTarget(UUID studyEnvId, List<String> targetStableIds) {
@@ -127,4 +145,21 @@ public class ParticipantTaskService extends DataAuditedService<ParticipantTask, 
         }
         return null;
     }
+
+    public ParticipantTaskTaskListDto findAdminTasksByStudyEnvironmentId(UUID studyEnvId, List<String> includedRelations) {
+        List<ParticipantTask> tasks = dao.findByStudyEnvironmentIdAndTaskType(studyEnvId, List.of(TaskType.ADMIN_NOTE, TaskType.ADMIN_FORM)).stream().toList();
+        List<Enrollee> enrollees = List.of();
+        List<ParticipantNote> notes = List.of();
+        if (includedRelations.contains("enrollee")) {
+            List<UUID> enrolleeIds = tasks.stream().map(ParticipantTask::getEnrolleeId).toList();
+            enrollees = enrolleeService.findAll(enrolleeIds);
+        }
+        if (includedRelations.contains("participantNote")) {
+            List<UUID> noteIds = tasks.stream().map(ParticipantTask::getParticipantNoteId).toList();
+            notes = participantNoteService.findAll(noteIds);
+        }
+        return new ParticipantTaskTaskListDto(tasks, enrollees, notes);
+    }
+
+    public record ParticipantTaskTaskListDto(List<ParticipantTask> tasks, List<Enrollee> enrollees, List<ParticipantNote> participantNotes) {}
 }

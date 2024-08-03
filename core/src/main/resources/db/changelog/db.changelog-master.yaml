@@ -275,6 +275,33 @@ databaseChangeLog:
   - include:
       file: changesets/2024_05_15_answer_type_save.yaml
       relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_05_family_linkage.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_12_family_linkage_modified.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_28_primary_study.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_07_03_family_change_records.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_18_admin_task_refactor.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_06_19_admin_tasks_to_participant_tasks.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_07_17_relax_family_audit_fk.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_07_19_trigger_actions.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changesets/2024_07_25_portal_change_record_fields.yaml
+      relativeToChangelogFile: true
 
 
 # README: it is a best practice to put each DDL statement in its own change set. DDL statements

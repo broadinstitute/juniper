@@ -1,60 +1,54 @@
-import React from 'react'
+import React, { useId } from 'react'
 
-import { HtmlQuestion, InteractiveQuestion, Question } from '@juniper/ui-core'
+import { HtmlQuestion, InteractiveQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 
 import { Checkbox } from 'components/forms/Checkbox'
 import { Textarea } from 'components/forms/Textarea'
-import { i18nSurveyText } from 'util/juniperSurveyUtils'
+import { i18nSurveyText, updateI18nSurveyText } from 'util/juniperSurveyUtils'
+import { CollapsibleSectionButton } from 'portal/siteContent/designer/components/CollapsibleSectionButton'
 
 type BaseFieldsProps = {
+    showIsRequired?: boolean
   disabled: boolean
   question: Question
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: Question) => void
 }
 
 /** Controls for editing base question fields. */
 export const BaseFields = (props: BaseFieldsProps) => {
-  const { disabled, question, onChange } = props
+  const { showIsRequired = true, disabled, question, onChange } = props
   if ((question as HtmlQuestion).type === 'html') {
     return null
   }
   const regularQuestion = question as InteractiveQuestion
+  const additionalFieldsTargetId = useId()
+
   return (
     <>
       <div className="mb-3">
         <Textarea
           disabled={disabled}
-          label="Question text"
+          label="Text"
           required={!Object.hasOwnProperty.call(question, 'questionTemplateName')}
           rows={2}
-          value={i18nSurveyText(regularQuestion.title)}
-          onChange={value => {
+          value={i18nSurveyText(regularQuestion.title, props.currentLanguage.languageCode)}
+          onChange={valueText => {
             onChange({
               ...regularQuestion,
-              title: value
+              title: updateI18nSurveyText({
+                valueText,
+                oldValue: regularQuestion.title,
+                languageCode: props.currentLanguage.languageCode,
+                supportedLanguages: props.supportedLanguages
+              })
             })
           }}
         />
       </div>
 
-      <div className="mb-3">
-        <Textarea
-          infoContent="Optional additional context for the question.
-           Will be displayed in a smaller font beneath the main question text"
-          disabled={disabled}
-          label="Description"
-          rows={2}
-          value={i18nSurveyText(regularQuestion.description)}
-          onChange={value => {
-            onChange({
-              ...regularQuestion,
-              description: value
-            })
-          }}
-        />
-      </div>
-
-      <div className="mb-3">
+      {showIsRequired && <div className="mb-3">
         <Checkbox
           checked={!!regularQuestion.isRequired}
           infoContent="If checked, participants will be required to enter a response
@@ -68,6 +62,27 @@ export const BaseFields = (props: BaseFieldsProps) => {
             })
           }}
         />
+      </div>}
+
+      <div className="bg-white rounded-3 p-2 mb-2">
+        <CollapsibleSectionButton targetSelector={`#${additionalFieldsTargetId}`}
+          sectionLabel={'Additional options'}/>
+        <div className="mb-3 collapse hide" id={additionalFieldsTargetId}>
+          <Textarea
+            infoContent="Optional additional context for the question.
+           Will be displayed in a smaller font beneath the main question text"
+            disabled={disabled}
+            label="Description"
+            rows={2}
+            value={i18nSurveyText(regularQuestion.description)}
+            onChange={value => {
+              onChange({
+                ...regularQuestion,
+                description: value
+              })
+            }}
+          />
+        </div>
       </div>
     </>
   )

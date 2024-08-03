@@ -1,10 +1,11 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import DiscardLocalDraftModal from './DiscardLocalDraftModal'
 
 describe('DiscardLocalDraftModal', () => {
   test('allows discarding drafts on exit', async () => {
+    jest.clearAllMocks()
     //Arrange
     const user = userEvent.setup()
     const FORM_DRAFT_KEY = 'surveyDraft_testForm_12'
@@ -25,6 +26,7 @@ describe('DiscardLocalDraftModal', () => {
   })
 
   test('allows keeping drafts on exit', async () => {
+    jest.clearAllMocks()
     //Arrange
     const user = userEvent.setup()
     const FORM_DRAFT_KEY = 'surveyDraft_testForm_12'
@@ -37,8 +39,8 @@ describe('DiscardLocalDraftModal', () => {
 
     //Act
     jest.spyOn(Storage.prototype, 'removeItem')
-    const exitAndDiscardButton = screen.getByText('Exit & save draft')
-    await user.click(exitAndDiscardButton)
+    const exitAndSaveButton = screen.getByText('Exit & save draft')
+    await user.click(exitAndSaveButton)
 
     //Assert
     expect(localStorage.removeItem).not.toHaveBeenCalled()

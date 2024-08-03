@@ -1,3 +1,4 @@
+
 openapi: 3.0.3
 info:
   title: Juniper Admin API
@@ -45,38 +46,7 @@ paths:
       responses:
         '200':
           description: Configuration information
-          content: { application/json: { schema: { type: object } } }
-
-  /api/example/v1/{resourceType}/{resourceId}/{action}:
-    get:
-      summary: Checks sam access
-      tags: [ example ]
-      operationId: getAction
-      parameters:
-        - name: resourceType
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: resourceId
-          in: path
-          required: true
-          schema:
-            type: string
-        - name: action
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: action access
-          content:
-            application/json:
-              schema:
-                type: boolean
-        '500':
-          $ref: '#/components/responses/ServerError'
+          content: &jsonContent { application/json: { schema: { type: object } } }
   /api/portals/v1:
     get:
       summary: Gets a list of portals for the user
@@ -85,7 +55,7 @@ paths:
       responses:
         '200':
           description: list of portal objects
-          content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PortalShallowDto' } } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}:
@@ -94,12 +64,12 @@ paths:
       tags: [ portal ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - &portalShortcodeParam { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: language, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/i18n/v1:
@@ -109,11 +79,11 @@ paths:
       operationId: listLanguageTexts
       parameters:
         - { name: language, in: query, required: true, schema: { type: string } }
-        - { name: portalShortcode, in: query, required: true, schema: { type: string } }
+        - { name: portalShortcode, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: OK
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/adminUsers:
@@ -122,11 +92,11 @@ paths:
       tags: [ adminUser ]
       operationId: getByPortal
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
       responses:
         '200':
           description: List of admin users
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -136,7 +106,7 @@ paths:
       tags: [ portal ]
       operationId: removePortalUser
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
         - { name: adminUserId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '204':
@@ -149,36 +119,36 @@ paths:
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks:
     get:
       summary: Gets all the admin tasks for this study environment
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: getByStudyEnvironment
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - &studyShortcodeParam { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - &envNameParam { name: envName, in: path, required: true, schema: { type: string } }
         - { name: include, in: query, required: false, schema: { type: string } }
       responses:
         '200':
-          description: List of admin tasks
-          content: { application/json: { schema: { type: object } } }
+          description: List of admin-assigned participant tasks
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/adminTasks/{id}:
     patch:
       summary: Updates the specified task
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: update
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: The updated task
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}/{version}:
@@ -187,13 +157,13 @@ paths:
       tags: [ survey ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
+        - *portalShortcodeParam
+        - &stableIdParam { name: stableId, in: path, required: true, schema: { type: string } }
+        - &versionParam { name: version, in: path, required: true, schema: { type: integer } }
       responses:
         '200':
           description: survey object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}:
@@ -202,8 +172,8 @@ paths:
       tags: [ survey ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
       responses:
         '204':
           description: No Content
@@ -215,12 +185,12 @@ paths:
       tags: [ survey ]
       operationId: getAllVersions
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
       responses:
         '200':
           description: list of survey version metadata
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys:
@@ -229,14 +199,14 @@ paths:
       tags: [ survey ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/surveys/{stableId}/newVersion:
@@ -245,15 +215,15 @@ paths:
       tags: [ survey ]
       operationId: newVersion
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: saved survey object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/configuredSurveys/findWithNoContent:
@@ -262,15 +232,15 @@ paths:
       tags: [ configuredSurvey ]
       operationId: findWithNoContent
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
         - { name: envName, in: query, required: false, schema: { type: string } }
         - { name: stableId, in: query, required: false, schema: { type: string } }
         - { name: active, in: query, required: false, schema: { type: string, format: boolean } }
       responses:
         '200':
           description: list of all the configured surveys for a study
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys:
@@ -279,16 +249,34 @@ paths:
       tags: [ configuredSurvey ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: saved configuredSurvey object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/replace:
+    post:
+      summary: Sets a configured survey on the environment, deactivating any existing configured surveys with the same stableId.
+      tags: [ configuredSurvey ]
+      operationId: replace
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: saved new configuredSurvey object
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}:
@@ -297,9 +285,9 @@ paths:
       tags: [ configuredSurvey ]
       operationId: remove
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '204':
@@ -311,36 +299,17 @@ paths:
       tags: [ configuredSurvey ]
       operationId: patch
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: saved configuredSurvey object
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/{configSurveyId}/replace:
-    post:
-      summary: Replaces a configured survey with a different one, deactivates the old one
-      tags: [ configuredSurvey ]
-      operationId: replace
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
-      requestBody:
-        required: true
-        content: { application/json: { schema: { type: object } } }
-      responses:
-        '200':
-          description: saved new configuredSurvey object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/{enrolleeShortcode}/surveys/{stableId}/{version}:
@@ -349,12 +318,12 @@ paths:
       tags: [ surveyResponse ]
       operationId: update
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
+        - *studyShortcodeParam
+        - &enrolleeShortcodeParam { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
         - { name: stableId, in: path, required: false, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
+        - *versionParam
         - { name: taskId, in: query, required: false, schema: { type: string, format: uuid } }
       requestBody:
         content:
@@ -363,7 +332,7 @@ paths:
       responses:
         '200':
           description: hub response object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteContents/{stableId}:
@@ -372,12 +341,12 @@ paths:
       tags: [ siteContent ]
       operationId: versionList
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
       responses:
         '200':
           description: list of (shallow) SiteContent objects
-          content: { application/json: { schema: { schema: { type: object } } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     post:
@@ -385,15 +354,15 @@ paths:
       tags: [ siteContent ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
       requestBody:
         required: true
-        content: { application/json: { schema: { schema: { type: object } } } }
+        content: *jsonContent
       responses:
         '200':
           description: list of (shallow) SiteContent objects
-          content: { application/json: { schema: { schema: { type: object } } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteContents/{stableId}/{version}:
@@ -402,14 +371,27 @@ paths:
       tags: [ siteContent ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: stableId, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
-        - { name: language, in: query, required: false, schema: { type: string } }
+        - *portalShortcodeParam
+        - *stableIdParam
+        - *versionParam
       responses:
         '200':
           description: SiteContent object with all dependent relations attached
-          content: { application/json: { schema: { schema: { type: object } } } }
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/siteContent:
+    get:
+      summary: Returns the site content with for the given portal environment, along with all child content in the specified language (english is default)
+      tags: [ siteContent ]
+      operationId: getCurrent
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: SiteContent object with all dependent relations attached
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies:
@@ -418,14 +400,14 @@ paths:
       tags: [ study ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
       requestBody:
         required: true
-        content: { application/json: { schema: { schema: { type: object } } } }
+        content: *jsonContent
       responses:
         '200':
           description: new study object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}:
@@ -434,8 +416,8 @@ paths:
       tags: [ study ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
       responses:
         '204':
           description: no content
@@ -447,13 +429,13 @@ paths:
       tags: [ studyEnvironment ]
       operationId: getKitTypes
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: List of kit types
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/requestKits:
@@ -462,17 +444,17 @@ paths:
       tags: [ kit ]
       operationId: requestKits
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
         description: kit request list creation dto
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: Kit requests
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}:
@@ -481,9 +463,9 @@ paths:
       tags: [ studyEnvironment ]
       operationId: patch
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/StudyEnvironmentDto' } } }
@@ -499,16 +481,16 @@ paths:
       tags: [ studyEnvironment ]
       operationId: patchConfig
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: saved studyEnvironment object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/stats:
@@ -517,61 +499,45 @@ paths:
       tags: [ studyEnvironment ]
       operationId: stats
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: saved studyEnvironment object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees:
-    get:
-      summary: Searches for enrollees in an environment
-      tags: [ enrolleeSearch ]
-      operationId: search
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: facets, in: query, required: false, schema: { type: string } }
-      responses:
-        '200':
-          description: EnrolleeSearchResult objects
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/facets:
-    get:
-      summary: Gets enrollee search facets for a study and  environment
-      tags: [ enrolleeSearch ]
-      operationId: getSearchFacets
-      parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-      responses:
-        '200':
-          description: List of enrollee search facets
-          content: { application/json: { schema: { type: object } } }
-        '500':
-          $ref: '#/components/responses/ServerError'
-
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2/facets:
     get:
       summary: Gets all of the possible fields which can be searched on within the provided portal.
       tags: [ enrolleeSearch ]
       operationId: getExpressionSearchFacets
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: List of valid search fields
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/search/v2:
+    get:
+      summary: Searches using a search expression.
+      tags: [ enrolleeSearch ]
+      operationId: executeSearchExpression
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: expression, in: query, required: true, schema: { type: string } }
+        - { name: limit, in: query, required: false, schema: { type: integer } }
+      responses:
+        '200':
+          description: List of results, including any linked objects that were searched upon
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/metrics/{metricName}:
@@ -580,14 +546,14 @@ paths:
       tags: [ metrics ]
       operationId: metricByName
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: metricName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: BasicMetricDatum objects
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/findAll:
@@ -596,14 +562,14 @@ paths:
       tags: [ participantTask ]
       operationId: findAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: targetStableId, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: ParticipantTask objects
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/updateAll:
@@ -612,16 +578,16 @@ paths:
       tags: [ participantTask ]
       operationId: updateAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: updated ParticipantTask objects
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/participantTasks/assignToEnrollees:
@@ -630,32 +596,32 @@ paths:
       tags: [ participantTask ]
       operationId: assignToEnrollees
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: updated ParticipantTask objects
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}:
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcodeOrId}:
     get:
-      summary: Finds an enrollee by shortcode
+      summary: Finds an enrollee by shortcode or id
       tags: [ enrollee ]
       operationId: find
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: enrolleeShortcodeOrId, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: Enrollee object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/withdraw:
@@ -664,13 +630,28 @@ paths:
       tags: [ enrollee ]
       operationId: withdraw
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: withdrawnEnrollee id
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/withdrawnEnrollees:
+    get:
+      summary: gets list of withdrawn participants (with no data attached)
+      tags: [ withdrawnEnrollee ]
+      operationId: getAll
+      parameters:
+        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: envName, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: withdrawnEnrollee list
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -680,14 +661,14 @@ paths:
       tags: [ enrolleeRelation ]
       operationId: findRelationsForTargetEnrollee
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: Enrollee object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byEnrollee/{enrolleeShortcode}:
@@ -696,14 +677,14 @@ paths:
       tags: [ notifications ]
       operationId: find
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: List of notifications
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/byTrigger/{triggerId}:
@@ -712,30 +693,31 @@ paths:
       tags: [ notifications ]
       operationId: findAllByConfigId
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: triggerId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: List of notifications
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/changeRecords:
     get:
-      summary: List the notifications sent/pending for an enrollee
+      summary: List of data change records for an enrollee
       tags: [ enrollee ]
       operationId: listChangeRecords
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
+        - { name: modelName, in: query, required: false, schema: { type: string } }
       responses:
         '200':
           description: List of DataChangeRecords
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/profiles/byEnrollee/{enrolleeShortcode}:
@@ -746,16 +728,53 @@ paths:
       requestBody:
         required: true
         description: profile with all desired changes
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: Updated profile
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations:
+    post:
+      summary: Creates a new relation between two enrollees; if creating a family relation,
+        then they will also be added to the family (if not already).
+      tags: [ enrolleeRelation ]
+      operationId: create
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        description: enrollee relation
+        content: *jsonContent
+      responses:
+        '200':
+          description: List of DataChangeRecords
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrolleeRelations/{enrolleeRelationId}:
+    delete:
+      summary: Deletes a relation between two enrollees
+      tags: [ enrolleeRelation ]
+      operationId: delete
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: enrolleeRelationId, in: path, required: true, schema: { type: string, format: uuid } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful deletion
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/events:
@@ -764,30 +783,30 @@ paths:
       tags: [ event ]
       operationId: getEventsByEnrollee
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: Events
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/adminTasks:
     get:
       summary: List adminTasks related to an enrollee
-      tags: [ adminTask ]
+      tags: [ participantTask ]
       operationId: getByEnrollee
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: Admin tasks
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/kitRequests:
@@ -796,14 +815,14 @@ paths:
       tags: [ kit ]
       operationId: getKitRequests
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       responses:
         '200':
           description: Kit requests
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/requestKit:
@@ -812,18 +831,18 @@ paths:
       tags: [ kit ]
       operationId: requestKit
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
       requestBody:
         required: true
         description: kit request creation dto
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: Kit request
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollees/{enrolleeShortcode}/participantNote:
@@ -832,16 +851,49 @@ paths:
       tags: [ participantNote ]
       operationId: create
       parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - *enrolleeShortcodeParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: Participant note
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families:
+    get:
+      summary: Gets all families in a study environment
+      tags: [ family ]
+      operationId: findAll
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      responses:
+        '200':
+          description: List of families
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+    post:
+      summary: Creates a new family
+      tags: [ family ]
+      operationId: create
+      parameters:
         - { name: portalShortcode, in: path, required: true, schema: { type: string } }
         - { name: studyShortcode, in: path, required: true, schema: { type: string } }
         - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: enrolleeShortcode, in: path, required: true, schema: { type: string } }
+        - { name: justification, in: query, required: true, schema: { type: string } }
       requestBody:
         required: true
         content: { application/json: { schema: { type: object } } }
       responses:
         '200':
-          description: Participant note
+          description: New family object
           content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
@@ -851,9 +903,9 @@ paths:
       tags: [ populate ]
       operationId: populateEnrollee
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: filePathName, in: query, required: false, schema: { type: string } }
         - { name: popType, in: query, required: false, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
@@ -864,6 +916,88 @@ paths:
             application/json:
               schema:
                 type: object
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcodeOrId}:
+    get:
+      summary: Finds a family by shortcode or id
+      tags: [ family ]
+      operationId: find
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcodeOrId, in: path, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Family object
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/proband/{enrolleeShortcode}:
+    patch:
+      summary: Updates the family's proband
+      tags: [ family ]
+      operationId: updateProband
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - *enrolleeShortcodeParam
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          content: *jsonContent
+          description: Successfully updated proband
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/members/{enrolleeShortcode}:
+    put:
+      summary: Adds a new member to the family
+      tags: [ family ]
+      operationId: addEnrollee
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - *enrolleeShortcodeParam
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful addition
+        '500':
+          $ref: '#/components/responses/ServerError'
+    delete:
+      summary: Removes enrollee from the family
+      tags: [ family ]
+      operationId: removeEnrollee
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - *enrolleeShortcodeParam
+        - { name: justification, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: Successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/families/{familyShortcode}/changeRecords:
+    get:
+      summary: List of data change records for a family
+      tags: [ family ]
+      operationId: listChangeRecords
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+        - { name: familyShortcode, in: path, required: true, schema: { type: string } }
+        - { name: modelName, in: query, required: false, schema: { type: string } }
+      responses:
+        '200':
+          description: List of DataChangeRecords
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers:
@@ -872,13 +1006,13 @@ paths:
       tags: [ trigger ]
       operationId: findByStudy
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: The triggered actions
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     post:
@@ -886,16 +1020,16 @@ paths:
       tags: [ trigger ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: The notification config
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers/{configId}:
@@ -904,14 +1038,14 @@ paths:
       tags: [ trigger ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: The trigger
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     delete:
@@ -919,9 +1053,9 @@ paths:
       tags: [ trigger ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
@@ -933,17 +1067,17 @@ paths:
       tags: [ trigger ]
       operationId: replace
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: The new trigger
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/notifications/adhoc:
@@ -952,16 +1086,16 @@ paths:
       tags: [ trigger ]
       operationId: adHoc
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: The trigger created/used for the notification
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/triggers/{configId}/test:
@@ -970,17 +1104,17 @@ paths:
       tags: [ trigger ]
       operationId: test
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: configId, in: path, required: true, schema: { type: string, format: uuid } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: List of notifications
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/export/data:
@@ -989,13 +1123,13 @@ paths:
       tags: [ export ]
       operationId: exportData
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
         - { name: limit, in: query, required: false, schema: { type: integer } }
       responses:
@@ -1010,13 +1144,13 @@ paths:
       tags: [ export ]
       operationId: exportDictionary
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: splitOptionsIntoColumns, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: stableIdsForOptions, in: query, required: false, schema: { type: boolean, default: false } }
         - { name: onlyIncludeMostRecent, in: query, required: false, schema: { type: boolean, default: true } }
-        - { name: includeProxiesAsRows, in: query, required: false, schema: { type: boolean, default: true } }
+        - { name: filter, in: query, required: false, schema: { type: string, default: '' } }
         - { name: fileFormat, in: query, required: false, schema: { type: string, default: "TSV" } }
       responses:
         '200':
@@ -1030,16 +1164,16 @@ paths:
       tags: [ mailingList ]
       operationId: create
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
       requestBody:
         description: list of contacts
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: list of created contacts
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     get:
@@ -1047,12 +1181,12 @@ paths:
       tags: [ mailingList ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: List of mailing list contacts
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/mailingList/{contactId}:
@@ -1061,8 +1195,8 @@ paths:
       tags: [ mailingList ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
         - { name: contactId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '204':
@@ -1077,11 +1211,11 @@ paths:
       requestBody:
         description: mailing address
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: validation results
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/login:
@@ -1094,7 +1228,7 @@ paths:
       responses:
         '200':
           description: portal object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/current-user/v1/unauthed/refresh:
@@ -1153,7 +1287,7 @@ paths:
       responses:
         '200':
           description: List of admin users with portals and roles attached
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     post:
@@ -1162,11 +1296,11 @@ paths:
       operationId: create
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: the new user
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/adminUsers/v1/{id}:
@@ -1180,7 +1314,7 @@ paths:
       responses:
         '200':
           description: admin user object with associated roles
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '404':
           description: admin user not found
         '500':
@@ -1191,15 +1325,32 @@ paths:
       tags: [ portalEnvironment ]
       operationId: update
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: PortalEnvironmentChangeRecord object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/portalLanguages:
+    post:
+      summary: Updates an environments list of supported languages.
+      tags: [ portalEnvironment ]
+      operationId: setLanguages
+      parameters:
+        - *portalShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: List of PortalLanguages
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/dashboard/config/alerts:
@@ -1208,12 +1359,12 @@ paths:
       tags: [ dashboard ]
       operationId: listPortalEnvAlerts
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: OK
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/env/{envName}/dashboard/config/alerts/{triggerName}:
@@ -1222,16 +1373,16 @@ paths:
       tags: [ dashboard ]
       operationId: createPortalEnvAlert
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
         - { name: triggerName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: OK
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     patch:
@@ -1239,66 +1390,78 @@ paths:
       tags: [ dashboard ]
       operationId: updatePortalEnvAlert
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
         - { name: triggerName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: OK
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff:
+  /api/portals/v1/{portalShortcode}/publish/diff/{sourceEnv}/{targetEnv}:
     get:
       summary: Gets the diff between one environment and another
-      tags: [ portalEnvironment ]
+      tags: [ portalPublishing ]
       operationId: diff
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - { name: sourceEnv, in: path, required: true, schema: { type: string } }
         - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: true, schema: { type: string } }
       responses:
         '200':
           description: PortalEnvironmentChangeRecord object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{targetEnv}/diff/apply:
+  /api/portals/v1/{portalShortcode}/publish/apply/{envName}:
     post:
       summary: Updates a portal environment according to the update object obtained from a diff operation
-      tags: [ portalEnvironment ]
-      operationId: apply
+      tags: [ portalPublishing ]
+      operationId: publish
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: targetEnv, in: path, required: true, schema: { type: string } }
-        - { name: sourceEnv, in: query, required: false, schema: { type: string } }
+        - *portalShortcodeParam
+        - { name: envName, in: path, required: true, schema: { type: string } }
       requestBody:
         required: false
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: PortalEnvironment object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/env/{env}/config:
+  /api/portals/v1/{portalShortcode}/publish/changeRecords:
+    get:
+      summary: Gets the change records for a portal environment
+      tags: [ portalPublishing ]
+      operationId: getChangeRecords
+      parameters:
+        - *portalShortcodeParam
+      responses:
+        '200':
+          description: List of PortalEnvironmentChangeRecords
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/portals/v1/{portalShortcode}/env/{envName}/config:
     patch:
       summary: Updates a portal environment config according to the update object
       tags: [ portalEnvironmentConfig ]
       operationId: update
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: env, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '200':
           description: PortalEnvironmentConfig object
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/internal/v1/config:
@@ -1383,7 +1546,7 @@ paths:
       responses:
         '200':
           description: portal object (abbreviated)
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/internal/v1/populate/portal/{portalShortcode}/extract:
@@ -1392,7 +1555,7 @@ paths:
       tags: [ populate ]
       operationId: extractPortal
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
       responses:
         '200':
           description: zip file of portal configs
@@ -1405,7 +1568,7 @@ paths:
       tags: [ populate ]
       operationId: populateSiteContent
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
         - { name: filePathName, in: query, required: true, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
@@ -1423,7 +1586,7 @@ paths:
       tags: [ populate ]
       operationId: populateSurvey
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
         - { name: filePathName, in: query, required: true, schema: { type: string } }
         - { name: overwrite, in: query, required: false, schema: { type: boolean } }
       responses:
@@ -1441,9 +1604,9 @@ paths:
       tags: [ populate ]
       operationId: bulkPopulateEnrollees
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
+        - *studyShortcodeParam
         - { name: numEnrollees, in: query, required: true, schema: { type: integer } }
       responses:
         '204':
@@ -1459,7 +1622,7 @@ paths:
         - { name: command, in: path, required: true, schema: { type: string } }
       requestBody:
         required: false
-        content: { application/json: { schema: { type: object } } }
+        content: *jsonContent
       responses:
         '201':
           description: command result object
@@ -1475,13 +1638,13 @@ paths:
       tags: [ datarepo ]
       operationId: listDatasetsForStudyEnvironment
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: dataset
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
     post:
@@ -1489,9 +1652,9 @@ paths:
       tags: [ datarepo ]
       operationId: createDatasetForStudyEnvironment
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         required: true
         content: { application/json: { schema: { $ref: '#/components/schemas/CreateDataset' } } }
@@ -1506,9 +1669,9 @@ paths:
       tags: [ datarepo ]
       operationId: deleteDataset
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: datasetName, in: path, required: true, schema: { type: string } }
       responses:
         '202':
@@ -1521,14 +1684,14 @@ paths:
       tags: [ datarepo ]
       operationId: getJobHistoryForDataset
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: datasetName, in: path, required: true, schema: { type: string } }
       responses:
         '200':
           description: dataset job history
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteMedia:
@@ -1537,11 +1700,11 @@ paths:
       tags: [ siteMedia ]
       operationId: list
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
       responses:
         '200':
           description: image data
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/siteMedia/{id}:
@@ -1550,7 +1713,7 @@ paths:
       tags: [ siteMedia ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
         - { name: id, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
@@ -1563,9 +1726,9 @@ paths:
       tags: [ siteMedia ]
       operationId: upload
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
         - { name: uploadFileName, in: path, required: true, schema: { type: string } }
-        - { name: version, in: path, required: true, schema: { type: integer } }
+        - *versionParam
       requestBody:
         content:
           multipart/form-data:
@@ -1578,7 +1741,7 @@ paths:
       responses:
         '200':
           description: image data
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/public/portals/v1/{portalShortcode}/env/{envName}/siteMedia/{version}/{cleanFileName}:
@@ -1587,13 +1750,13 @@ paths:
       tags: [ siteMedia ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *envNameParam
         - { name: cleanFileName, in: path, required: true, schema: { type: string } }
         - { name: version, in: path, required: true, schema: { type: string } }
       responses:
         '200':
-          description: image data
+          description: image data. Note that "version" supports both integers and the string 'latest' to get the most recent
           content:
             image/*: # see https://superuser.com/questions/979135/is-there-a-generic-mime-type-for-all-image-files
               schema:
@@ -1607,13 +1770,13 @@ paths:
       tags: [ enrollee ]
       operationId: enrolleesWithKits
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: enrollee list
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits:
@@ -1622,13 +1785,13 @@ paths:
       tags: [ kit ]
       operationId: kitsByStudyEnvironment
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: kit list
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/kits/refreshKitStatuses:
@@ -1637,9 +1800,9 @@ paths:
       tags: [ kit ]
       operationId: refreshKitStatuses
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '204':
           description: Success
@@ -1652,13 +1815,13 @@ paths:
       tags: [ dataImport ]
       operationId: getAll
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       responses:
         '200':
           description: import list
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -1667,9 +1830,9 @@ paths:
       tags: [ dataImport ]
       operationId: importData
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
       requestBody:
         content:
           multipart/form-data:
@@ -1682,7 +1845,7 @@ paths:
       responses:
         '200':
           description: saved import data
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -1692,14 +1855,14 @@ paths:
       tags: [ dataImport ]
       operationId: get
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: importId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: import
-          content: { application/json: { schema: { type: object } } }
+          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -1708,9 +1871,9 @@ paths:
       tags: [ dataImport ]
       operationId: delete
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: importId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
@@ -1725,14 +1888,29 @@ paths:
       tags: [ dataImport ]
       operationId: deleteItem
       parameters:
-        - { name: portalShortcode, in: path, required: true, schema: { type: string } }
-        - { name: studyShortcode, in: path, required: true, schema: { type: string } }
-        - { name: envName, in: path, required: true, schema: { type: string } }
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
         - { name: importId, in: path, required: true, schema: { type: string, format: uuid } }
         - { name: importItemId, in: path, required: true, schema: { type: string, format: uuid } }
       responses:
         '200':
           description: successful deletion
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /api/logEvents:
+    get:
+      summary: Get log events. Filterable by event type and number of days.
+      tags: [ logging ]
+      operationId: get
+      parameters:
+        - { name: eventTypes, in: query, required: false, schema: { type: string } }
+        - { name: days, in: query, required: true, schema: { type: string } }
+      responses:
+        '200':
+          description: logs
+          content: { application/json: { schema: { type: object } } }
         '500':
           $ref: '#/components/responses/ServerError'
 
@@ -1792,13 +1970,6 @@ components:
           type: string
         statusCode:
           type: integer
-    PortalShallowDto:
-      type: object
-      properties:
-        id: { type: string, format: uuid }
-        shortcode: { type: string }
-        name: { type: string }
-        portalStudies: { type: array }
     PortalDto:
       type: object
     CreateDataset:

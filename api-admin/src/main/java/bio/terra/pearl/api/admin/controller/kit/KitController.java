@@ -3,7 +3,7 @@ package bio.terra.pearl.api.admin.controller.kit;
 import bio.terra.pearl.api.admin.api.KitApi;
 import bio.terra.pearl.api.admin.controller.GlobalExceptionHandler;
 import bio.terra.pearl.api.admin.model.ErrorReport;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.kit.KitExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;

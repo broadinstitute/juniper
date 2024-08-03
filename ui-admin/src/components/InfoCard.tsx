@@ -56,7 +56,8 @@ export function InfoCard({ children }: { children: React.ReactNode }) {
  * Header of the card, usually used with CardTitle to display the title of the card.
  */
 export function InfoCardHeader({ children }: { children: React.ReactNode }) {
-  return <div className="card-header border-bottom bg-white d-flex flex-row align-items-center">
+  return <div className="card-header border-bottom d-flex flex-row align-items-center"
+    style={{ backgroundColor: '#ededed' }}>
     {children}
   </div>
 }

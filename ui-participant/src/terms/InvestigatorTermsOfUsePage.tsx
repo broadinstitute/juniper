@@ -4,8 +4,6 @@ import { InvestigatorTermsOfUse } from '@juniper/ui-core'
 
 import Navbar from '../Navbar'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 const InvestigatorTermsOfUsePage = () => {
   return (
     <div className="container-fluid bg-white min-vh-100 d-flex flex-column p-0">

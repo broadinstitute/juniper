@@ -9,8 +9,6 @@ const SectionHeading = (props: SectionHeadingProps) => {
   return <h2 {...otherProps} className={classNames('h3', className)} />
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const ParticipantTermsOfUse = () => {
   return (
     <>

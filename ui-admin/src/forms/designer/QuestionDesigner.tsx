@@ -1,11 +1,9 @@
 import React from 'react'
 
-import { HtmlQuestion, Question } from '@juniper/ui-core'
+import { HtmlQuestion, PortalEnvironmentLanguage, Question } from '@juniper/ui-core'
 
 import { BaseFields } from './questions/BaseFields'
-import { CheckboxFields } from './questions/CheckboxFields'
 import { ChoicesList } from './questions/ChoicesList'
-import { OtherOptionFields } from './questions/OtherOptionFields'
 import { questionTypeDescriptions, questionTypeLabels } from './questions/questionTypes'
 import { TextFields } from './questions/TextFields'
 import { VisibilityFields } from './questions/VisibilityFields'
@@ -21,13 +19,19 @@ export type QuestionDesignerProps = {
   isNewQuestion: boolean
   readOnly: boolean
   showName: boolean
+  showQuestionTypeHeader?: boolean
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   onChange: (newValue: Question) => void
-    addNextQuestion?: () => void
+  addNextQuestion?: () => void
 }
 
 /** UI for editing a question in a form. */
 export const QuestionDesigner = (props: QuestionDesignerProps) => {
-  const { question, isNewQuestion, readOnly, showName, onChange, addNextQuestion } = props
+  const {
+    question, isNewQuestion, readOnly, showName, showQuestionTypeHeader = true,
+    onChange, addNextQuestion, currentLanguage, supportedLanguages
+  } = props
 
   const isTemplated = 'questionTemplateName' in question
 
@@ -41,7 +45,7 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
           </Button>
         </div>}
       </div>
-      {!isTemplated && (
+      {!isTemplated && showQuestionTypeHeader && (
         <>
           <p className="fs-4">{questionTypeLabels[question.type]} question
             <InfoPopup content={questionTypeDescriptions[question.type]}/>
@@ -61,6 +65,8 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
 
       <BaseFields
         disabled={readOnly}
+        currentLanguage={currentLanguage}
+        supportedLanguages={supportedLanguages}
         question={question}
         onChange={onChange}
       />
@@ -69,26 +75,12 @@ export const QuestionDesigner = (props: QuestionDesignerProps) => {
         <>
           {
             (question.type === 'checkbox' || question.type === 'dropdown' || question.type === 'radiogroup') && (
-              <>
-                <ChoicesList
-                  question={question}
-                  isNewQuestion={isNewQuestion}
-                  readOnly={readOnly}
-                  onChange={onChange}
-                />
-                <OtherOptionFields
-                  disabled={readOnly}
-                  question={question}
-                  onChange={onChange}
-                />
-              </>
-            )
-          }
-          {
-            question.type === 'checkbox' && (
-              <CheckboxFields
-                disabled={readOnly}
+              <ChoicesList
                 question={question}
+                isNewQuestion={isNewQuestion}
+                currentLanguage={currentLanguage}
+                supportedLanguages={supportedLanguages}
+                readOnly={readOnly}
                 onChange={onChange}
               />
             )

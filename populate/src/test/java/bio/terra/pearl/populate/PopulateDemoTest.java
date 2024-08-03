@@ -2,26 +2,29 @@ package bio.terra.pearl.populate;
 
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.ParticipantUser;
-import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.participant.Profile;
-import bio.terra.pearl.core.model.participant.RelationshipType;
+import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
+import bio.terra.pearl.core.model.publishing.PortalEnvironmentChangeRecord;
 import bio.terra.pearl.core.model.site.SiteContent;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.survey.Survey;
+import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
 import bio.terra.pearl.core.service.export.formatters.module.ModuleFormatter;
+import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
 import bio.terra.pearl.populate.service.contexts.FilePopulateContext;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,18 +33,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.endsWith;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** confirm demo portal populates as expected */
 public class PopulateDemoTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testPopulateDemo() throws Exception {
+        baseSeedPopulator.populateRolesAndPermissions();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
         Assertions.assertEquals("demo", portal.getShortcode());
         PortalEnvironment sandbox = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).get();
@@ -54,13 +54,35 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .findFirst().get().getId();
 
         List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(sandboxEnvironmentId);
-        Assertions.assertEquals(11, enrollees.size());
+        Assertions.assertEquals(15, enrollees.size());
 
         checkOldVersionEnrollee(enrollees);
         checkKeyedEnrollee(enrollees);
         checkProxyWithOneGovernedEnrollee(enrollees);
         checkProxyWithTwoGovernedEnrollee(enrollees);
+        checkLostInterestEnrollee(enrollees);
         checkExportContent(sandboxEnvironmentId);
+        checkFamilies(sandboxEnvironmentId);
+        checkPortalChangeRecords(portal);
+    }
+
+    private void checkFamilies(UUID sandboxEnvironmentId) {
+        List<Family> families = familyService.findByStudyEnvironmentId(sandboxEnvironmentId);
+        assertThat(families, hasSize(1));
+        Family family = families.get(0);
+        assertThat(family.getShortcode(), equalTo("F_SALKFM"));
+        assertThat(family.getProbandEnrolleeId(), not(equalTo(null)));
+
+        List<Enrollee> members = enrolleeService.findAllByFamilyId(family.getId());
+
+        assertThat(members, hasSize(3));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDSALK")));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDPSLK")));
+        assertTrue(members.stream().anyMatch(enrollee -> enrollee.getShortcode().equals("HDDSLK")));
+
+        List<EnrolleeRelation> relations = enrolleeRelationService.findRelationsForFamily(family.getId());
+        assertThat(relations, hasSize(2));
+
     }
 
     /** confirm the enrollee wtih answers to two different survey versions was populated correctly */
@@ -87,6 +109,19 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).get();
         assertThat(user.getUsername().contains("+invited-"), equalTo(true));
         assertThat(user.getUsername(), endsWith("broadinstitute.org"));
+    }
+
+    private void checkLostInterestEnrollee(List<Enrollee> sandboxEnrollees) {
+        Enrollee enrollee = sandboxEnrollees.stream().filter(sandboxEnrollee -> "HDLOST".equals(sandboxEnrollee.getShortcode()))
+                .findFirst().get();
+        List<ParticipantTask> tasks = participantTaskService.findByEnrolleeId(enrollee.getId());
+        // confirm the survey with an eligibility rule got assigned tot his participant
+        assertThat(tasks.stream().filter(task -> task.getTargetStableId().equals("hd_hd_lost_interest")).toList(), hasSize(1));
+
+        // confirm the outreach task got assigned
+        List<ParticipantTask> outreachTasks = tasks.stream().filter(task -> task.getTaskType().equals(TaskType.OUTREACH)).toList();
+        assertThat(outreachTasks, hasSize(1));
+        assertThat(outreachTasks.get(0).getTargetStableId(), equalTo("depressionOutreach"));
     }
 
     /** confirm the proxy enrollee with one governed user was enrolled appropriately */
@@ -157,12 +192,13 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
                 .builder()
                 .onlyIncludeMostRecent(true)
                 .fileFormat(ExportFileFormat.TSV)
+                .filter(enrolleeSearchExpressionParser.parseRule("{enrollee.subject} = true"))
                 .limit(null)
                 .build();
         List<ModuleFormatter> moduleInfos = enrolleeExportService.generateModuleInfos(options, sandboxEnvironmentId);
-        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, false, options.getLimit());
+        List<Map<String, String>> exportData = enrolleeExportService.generateExportMaps(sandboxEnvironmentId, moduleInfos, options.getFilter(), options.getLimit());
 
-        assertThat(exportData, hasSize(9));
+        assertThat(exportData, hasSize(13));
         Map<String, String> oldVersionMap = exportData.stream().filter(map -> "HDVERS".equals(map.get("enrollee.shortcode")))
                 .findFirst().get();
         assertThat(oldVersionMap.get("account.username"), equalTo("oldversion@test.com"));
@@ -172,28 +208,39 @@ public class PopulateDemoTest extends BasePopulatePortalsTest {
         assertThat(oldVersionMap.get("hd_hd_socialHealth.hd_hd_socialHealth_neighborhoodIsWalkable"), equalTo("Disagree"));
     }
 
+    private void checkPortalChangeRecords(Portal portal) {
+        List<PortalEnvironmentChangeRecord> changeRecords = portalEnvironmentChangeRecordService.findByPortalId(portal.getId());
+        assertThat(changeRecords, hasSize(1));
+        PortalEnvironmentChangeRecord changeRecord = changeRecords.get(0);
+        assertThat(changeRecord.getPortalId(), equalTo(portal.getId()));
+        assertThat(changeRecord.getAdminUserId(), equalTo(adminUserService.findByUsername("power_user@heartdemo.org").orElseThrow().getId()));
+    }
+
     @Test
     @Transactional
     public void testPopulateWithShortcodeOverride() {
         String newShortcode = RandomStringUtils.randomAlphabetic(6);
+        baseSeedPopulator.populateRolesAndPermissions();
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json", false, newShortcode), true);
         assertThat(portal.getShortcode(), equalTo(newShortcode));
         Study mainStudy = portal.getPortalStudies().stream().findFirst().get().getStudy();
         assertThat(mainStudy.getShortcode(), equalTo(newShortcode + "_heartdemo"));
         List<Survey> surveys = surveyService.findByPortalId(portal.getId());
-        assertThat(surveys, hasSize(13));
-        surveys.forEach(survey -> {
-            assertThat(survey.getStableId(), Matchers.startsWith(newShortcode));
-        });
+        assertThat(surveys, hasSize(15));
         List<SiteContent> siteContents = siteContentService.findByPortalId(portal.getId());
         assertThat(siteContents, hasSize(2));
         siteContents.forEach(siteContent -> {
             assertThat(siteContent.getStableId(), Matchers.startsWith(newShortcode));
         });
         List<EmailTemplate> emailTemplates = emailTemplateService.findByPortalId(portal.getId());
-        assertThat(emailTemplates, hasSize(6));
+        assertThat(emailTemplates, hasSize(7));
         emailTemplates.forEach(emailTemplate -> {
             assertThat(emailTemplate.getStableId(), Matchers.startsWith(newShortcode));
         });
     }
+
+    @Autowired
+    private PortalEnvironmentChangeRecordService portalEnvironmentChangeRecordService;
+    @Autowired
+    private AdminUserService adminUserService;
 }

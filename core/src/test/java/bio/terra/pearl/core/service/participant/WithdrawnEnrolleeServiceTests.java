@@ -21,6 +21,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
 public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
   @Autowired
@@ -37,7 +38,7 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
-  public void testWithdraw(TestInfo info) throws Exception {
+  public void testWithdraw(TestInfo info) {
     Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
     DaoTestUtils.assertGeneratedProperties(enrollee);
     WithdrawnEnrollee withdrawnEnrollee = withdrawnEnrolleeService.withdrawEnrollee(enrollee, getAuditInfo(info));
@@ -46,6 +47,12 @@ public class WithdrawnEnrolleeServiceTests extends BaseSpringBootTest {
     assertThat(enrolleeService.find(enrollee.getId()).isPresent(), equalTo(false));
     assertThat(withdrawnEnrolleeService.find(withdrawnEnrollee.getId()).isPresent(), equalTo(true));
     assertThat(withdrawnEnrolleeService.isWithdrawn(enrollee.getShortcode()), equalTo(true));
+
+    // confirm we can fetch by study environment without returning all the data
+    List<WithdrawnEnrollee> withdrawnEnrollees = withdrawnEnrolleeService.findByStudyEnvironmentIdNoData(enrollee.getStudyEnvironmentId());
+    assertThat(withdrawnEnrollees.size(), equalTo(1));
+    assertThat(withdrawnEnrollees.get(0).getShortcode(), equalTo(enrollee.getShortcode()));
+    assertThat(withdrawnEnrollees.get(0).getEnrolleeData(), nullValue());
   }
   @Test
   @Transactional

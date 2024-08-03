@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { Enrollee } from '@juniper/ui-core'
+import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
 
 /** shows not-commonly-used enrollee functionality */
 export default function AdvancedOptions({ enrollee, studyEnvContext }:
@@ -29,9 +30,13 @@ export default function AdvancedOptions({ enrollee, studyEnvContext }:
       <h3 className="h5">Withdraw enrollee: {enrollee.profile.givenName} {enrollee.profile.familyName}</h3>
       <div>contact email: {enrollee.profile.contactEmail}</div>
       <div className="my-3">
+        <strong>Withdrawal is permanent!</strong>  Read more about the
+        <ZendeskLink doc={DocsKey.WITHDRAWAL}> withdrawal process</ZendeskLink>.
+      </div>
+      <div className="my-3">
         <label>
           Confirm by typing &quot;{withdrawString}&quot; below.<br/>
-          <strong>Withdrawal is permanent!</strong>
+
           <input type="text" className="form-control" value={shortcodeConfirm}
             onChange={e => setShortcodeConfirm(e.target.value)}/>
         </label>

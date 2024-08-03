@@ -6,8 +6,6 @@ type DocumentTitleProps = {
   title?: string
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const DocumentTitle = (props: DocumentTitleProps) => {
   const { title } = props
   const { portal } = usePortalEnv()

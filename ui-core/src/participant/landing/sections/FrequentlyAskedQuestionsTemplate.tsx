@@ -4,15 +4,30 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
 import _ from 'lodash'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from 'react'
 
 import { SectionConfig } from '../../../types/landingPageConfig'
-import { getSectionStyle } from '../../util/styleUtils'
-import { requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
-  from '../../util/validationUtils'
+import {
+  applyAllowedStyles,
+  getSectionStyle
+} from '../../util/styleUtils'
+import {
+  requireOptionalBoolean,
+  requireOptionalString,
+  requirePlainObject,
+  requireString
+} from '../../util/validationUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
 
-import { Markdown } from '../Markdown'
+import {
+  InlineMarkdown,
+  Markdown
+} from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
 import { useApiContext } from '../../../participant/ApiProvider'
@@ -25,19 +40,36 @@ const targetFor = (question: string): string => {
   return `#${idFor(question)}`
 }
 
-type FaqQuestion = {
+export type FaqQuestion = {
   question: string,
   answer: string
 }
 
-type FrequentlyAskedQuestionsConfig = {
+export type FrequentlyAskedQuestionsConfig = {
   blurb?: string, //  text below the title
   questions: FaqQuestion[], // the questions
   showToggleAllButton?: boolean, // whether or not the show the expand/collapse button
   title?: string, // large heading text
   collapseAllText?: string,
-  expandAllText?: string
+  expandAllText?: string,
+  blurbSize?: string
 }
+
+const faqQuestionProps = [
+  { name: 'question', translated: true },
+  { name: 'answer', translated: true }
+]
+
+export const frequentlyAskedQuestionsConfigProps = [
+  { name: 'title', translated: true },
+  { name: 'blurb', translated: true },
+  { name: 'questions', isArray: true, subProps: faqQuestionProps },
+  { name: 'showToggleAllButton' },
+  { name: 'collapseAllText' },
+  { name: 'expandAllText' },
+  { name: 'blurbSize' }
+]
+
 
 const validateFaqQuestion = (questionConfig: unknown): FaqQuestion => {
   const message = 'Invalid FrequentlyAskedQuestionsConfig: Invalid question'
@@ -55,6 +87,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
   const showToggleAllButton = requireOptionalBoolean(config, 'showToggleAllButton', message)
   const collapseAllText = requireOptionalString(config, 'collapseAllText', message)
   const expandAllText = requireOptionalString(config, 'expandAllText', message)
+  const blurbSize = requireOptionalString(config, 'blurbSize', message)
 
   const questions = config.questions
   if (!Array.isArray(questions)) {
@@ -63,6 +96,7 @@ const validateFrequentlyAskedQuestionsConfig = (config: SectionConfig): Frequent
 
   return {
     blurb,
+    blurbSize,
     questions: questions.map(validateFaqQuestion),
     showToggleAllButton,
     title,
@@ -75,10 +109,11 @@ type FrequentlyAskedQuestionProps = {
   question: string
   answer: string
   onToggle: (isExpanded: boolean) => void
+  style: React.CSSProperties
 }
 
 const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
-  const { question, answer, onToggle } = props
+  const { question, answer, onToggle, style } = props
 
   const collapseRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -95,10 +130,12 @@ const FrequentlyAskedQuestion = (props: FrequentlyAskedQuestionProps) => {
           'btn btn-link btn-lg',
           'w-100 py-3 px-0 px-sm-2',
           'd-flex',
-          'text-black fw-bold text-start text-decoration-none'
+          'fw-bold text-start text-decoration-none',
+          style.color? '' : 'text-dark'
         )}
         data-bs-target={targetFor(question)}
         data-bs-toggle="collapse"
+        style={style}
       >
         <span className="me-2 text-center" style={{ width: 20 }}>
           <FontAwesomeIcon className="hidden-when-expanded" icon={faPlus} />
@@ -128,7 +165,8 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
     showToggleAllButton = true,
     title = 'Frequently Asked Questions',
     collapseAllText = 'Collapse All',
-    expandAllText = 'Expand All'
+    expandAllText = 'Expand All',
+    blurbSize
   } = config
 
   const { getImageUrl } = useApiContext()
@@ -157,10 +195,12 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
   return <div id={anchorRef} className="row mx-0 justify-content-center" style={getSectionStyle(config, getImageUrl)}>
     <div className="col-12 col-sm-8 col-lg-6">
       {!!title && (
-        <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">{title}</h2>
+        <h2 className="fs-1 fw-normal lh-sm mb-4 text-center">
+          <InlineMarkdown>{title}</InlineMarkdown>
+        </h2>
       )}
       {!!blurb && (
-        <Markdown className="fs-4 mb-4 text-center">
+        <Markdown className={classNames(blurbSize ? blurbSize : 'fs-4', 'mb-4 text-center')}>
           {blurb}
         </Markdown>
       )}
@@ -182,7 +222,10 @@ function FrequentlyAskedQuestionsTemplate(props: FrequentlyAskedQuestionsProps) 
           questions.map(({ question, answer }, i) => {
             return (
               <li key={i} className="border-bottom">
-                <FrequentlyAskedQuestion question={question} answer={answer} onToggle={onToggleQuestion} />
+                <FrequentlyAskedQuestion
+                  question={question} answer={answer}
+                  onToggle={onToggleQuestion} style={applyAllowedStyles(config)}
+                />
               </li>
             )
           })

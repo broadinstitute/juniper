@@ -1,42 +1,54 @@
-import { KEYWORD_FACET, newFacetValue, StringFacetValue } from 'api/enrolleeSearch'
-import React, { useEffect, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { ParticipantSearchState } from 'util/participantSearchUtils'
+import { debounce } from 'lodash'
 
 /**
  * renders and manages updates to a string search facet
  * */
-const BasicSearch = ({ facetValue, updateValue }:
-                           { facetValue: StringFacetValue,
-                             updateValue: (facetValue: StringFacetValue | null) => void
-                           }) => {
-  if (!facetValue) {
-    facetValue = newFacetValue(KEYWORD_FACET) as StringFacetValue
-  }
-  const valueString = facetValue.values.join(', ')
-  const [keywordFieldValue, setKeywordFieldValue] = useState(valueString)
+const BasicSearch = ({ searchState, setSearchState }: {
+  searchState: ParticipantSearchState,
+  setSearchState: (searchState: ParticipantSearchState) => void
+}) => {
+  const [searchText, setSearchText] = useState(searchState.keywordSearch)
 
   useEffect(() => {
-    setKeywordFieldValue(valueString)
-  }, [valueString])
+    setSearchText(searchState.keywordSearch)
+  }, [searchState.keywordSearch])
 
-  const updateKeyword = (keyword: string) => {
-    const newValues = keyword?.split(/[ ,]+/) ?? []
-    updateValue(new StringFacetValue(facetValue.facet, { values: newValues }))
-  }
+  const debouncedUpdate = useMemo(
+    () => debounce(value => {
+      setSearchState({ ...searchState, keywordSearch: value })
+    }, 500), [setSearchState]
+  )
+
+  // downloading all the participant data is expensive, so debounce the searchbar
+  const handleChange = useCallback(debouncedUpdate, [debouncedUpdate])
 
   return <form className="rounded-5" onSubmit={e => {
     e.preventDefault()
-    updateKeyword(keywordFieldValue)
-  }} style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
+    setSearchState({ ...searchState, keywordSearch: searchText })
+  }}
+  style={{ border: '1px solid #bbb', backgroundColor: '#fff', padding: '0.25em 0.75em 0em' }}>
     <button type="submit" title="submit search" className="btn btn-secondary">
       <FontAwesomeIcon icon={faSearch}/>
     </button>
-    <input type="text" value={keywordFieldValue} size={40}
-      title={facetValue.facet.title}
+    <input
+      type="text"
+      value={searchText}
+      size={40}
       style={{ border: 'none', outline: 'none' }}
-      placeholder={facetValue.facet.placeholder}
-      onChange={e => setKeywordFieldValue(e.target.value)}/>
+      placeholder={'Search by name, email, or shortcode'}
+      onChange={e => {
+        setSearchText(e.target.value)
+        handleChange(e.target.value)
+      }}/>
   </form>
 }
 

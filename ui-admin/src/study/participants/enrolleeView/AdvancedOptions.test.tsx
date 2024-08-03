@@ -2,7 +2,7 @@ import React from 'react'
 import { mockEnrollee, mockStudyEnvContext } from 'test-utils/mocking-utils'
 import { render, screen } from '@testing-library/react'
 import AdvancedOptions from './AdvancedOptions'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
 
 test('disables withdraw unless specific confirmation', async () => {

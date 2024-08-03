@@ -19,15 +19,17 @@ import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.*;
-import bio.terra.pearl.core.model.workflow.HubResponse;
-import bio.terra.pearl.core.model.workflow.ParticipantTask;
-import bio.terra.pearl.core.model.workflow.TaskStatus;
-import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.model.workflow.*;
+import bio.terra.pearl.core.service.consent.EnrolleeConsentEvent;
 import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.portal.PortalService;
-import bio.terra.pearl.core.service.study.*;
+import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
+import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.survey.AnswerService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -39,9 +41,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** class for high-level tests of workflow operations -- enroll, consent, etc... */
 public class EnrollmentWorkflowTests extends BaseSpringBootTest {
@@ -52,21 +58,15 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Autowired
     private StudyService studyService;
     @Autowired
-    private PortalService portalService;
-    @Autowired
     private EnrolleeService enrolleeService;
     @Autowired
     private EnrollmentService enrollmentService;
     @Autowired
     private EnrolleeRelationService enrolleeRelationService;
     @Autowired
-    private PortalEnvironmentFactory portalEnvironmentFactory;
-    @Autowired
     private SurveyFactory surveyFactory;
     @Autowired
     private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    @Autowired
-    private StudyEnvironmentSurveyService studyEnvironmentSurveyService;
     @Autowired
     private ParticipantTaskService participantTaskService;
     @Autowired
@@ -79,15 +79,20 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     private ProfileService profileService;
     @Autowired
     private StudyEnvironmentService studyEnvironmentService;
+    @Autowired
+    private AnswerService answerService;
+    @Autowired
+    private EventService eventService;
 
     @Test
     @Transactional
     public void testEnroll(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
-        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
-        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = bundle.getPortalEnv();
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+        String studyShortcode =  bundle.getStudy().getShortcode();
 
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
                 .surveyType(SurveyType.CONSENT)
                 .portalId(portalEnv.getPortalId()));
@@ -111,8 +116,10 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testParticipantWorkflow(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle bundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = bundle.getPortalEnv();
+        StudyEnvironment studyEnv = bundle.getStudyEnv();
+        String studyShortcode = bundle.getStudy().getShortcode();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
 
         Survey consent = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info))
@@ -123,9 +130,6 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         Survey survey = surveyFactory.buildPersisted(surveyFactory.builder(getTestName(info)).portalId(portalEnv.getPortalId()));
         surveyFactory.attachToEnv(survey, studyEnv.getId(), true);
 
-        String portalShortcode = portalService.find(portalEnv.getPortalId()).get().getShortcode();
-
-        String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
         HubResponse hubResponse = enrollmentService.enroll(userBundle.ppUser(), studyEnv.getEnvironmentName(), studyShortcode,
                 userBundle.user(), userBundle.ppUser(), null, true);
         Enrollee enrollee = hubResponse.getEnrollee();
@@ -137,13 +141,25 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 .findFirst().orElseThrow();
         assertThat(enrollee.isConsented(), equalTo(false));
 
-        SurveyResponse consentResponseDto = SurveyResponse.builder()
+        SurveyResponse consentResponse = SurveyResponse.builder()
                 .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
-                .complete(true)
-                .resumeData("stuff")
+                .complete(false)
+                .resumeData("")
                 .build();
-        surveyResponseService.updateResponse(consentResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+        surveyResponseService.updateResponse(consentResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, consentTask.getId(), consent.getPortalId());
+        // since the response is incomplete, no consent event should be fired
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), nullValue());
+
+        consentResponse = SurveyResponse.builder()
+                .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foobar")))
+                .complete(true)
+                .resumeData("")
+                .build();
+        surveyResponseService.updateResponse(consentResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
+                enrollee, consentTask.getId(), consent.getPortalId());
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_CONSENT_EVENT), hasSize(1));
+        assertThat(getEventsByType(enrollee.getId()).get(EventClass.ENROLLEE_SURVEY_EVENT), hasSize(2));
 
         Enrollee refreshedEnrollee = enrolleeService.find(enrollee.getId()).get();
         assertThat(refreshedEnrollee.isConsented(), equalTo(true));
@@ -155,12 +171,12 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(surveyTasks.get(0).getTargetStableId(), equalTo(survey.getStableId()));
 
         // now try to complete the survey
-        SurveyResponse survResponseDto = SurveyResponse.builder()
+        SurveyResponse survResponse = SurveyResponse.builder()
                         .answers(AnswerFactory.fromMap(Map.of("sampleQuestion", "foo")))
                         .complete(true)
                         .resumeData("stuff")
                         .build();
-        hubResponse = surveyResponseService.updateResponse(survResponseDto, new ResponsibleEntity(userBundle.user()), userBundle.ppUser(),
+        hubResponse = surveyResponseService.updateResponse(survResponse, new ResponsibleEntity(userBundle.user()), null, userBundle.ppUser(),
                 enrollee, surveyTasks.get(0).getId(), survey.getPortalId());
         List<ParticipantTask> updatedTasks = participantTaskService.findByEnrolleeId(enrollee.getId());
         assertThat(updatedTasks, containsInAnyOrder(hubResponse.getTasks().toArray()));
@@ -172,12 +188,69 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         assertThat(hubResponse.getProfile(), notNullValue());
     }
 
+    @Test
+    @Transactional
+    public void testBackfillPreEnroll(TestInfo info) {
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
+        EnvironmentName envName = studyEnv.getEnvironmentName();
+        Study study = studyEnvBundle.getStudy();
+
+        Survey preEnrollmentSurvey = surveyFactory.buildPersisted(getTestName(info));
+        StudyEnvironmentSurvey.builder()
+                .surveyId(preEnrollmentSurvey.getId())
+                .studyEnvironmentId(studyEnv.getId())
+                .build();
+
+        studyEnv.setPreEnrollSurveyId(preEnrollmentSurvey.getId());
+        studyEnvironmentService.update(
+                studyEnv
+        );
+
+        String preEnrollmentSurveyResponseData = """
+                [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
+                {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
+        ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
+        PreEnrollmentResponse preEnrollmentResponse = preEnrollmentSurveyFactory.buildPersisted(
+                getTestName(info),
+                preEnrollmentSurvey.getId(),
+                true,
+                preEnrollmentSurveyResponseData,
+                userBundle.ppUser().getId(),
+                userBundle.user().getId(),
+                studyEnv.getId());
+
+        HubResponse<Enrollee> hubResponse = enrollmentService.enroll(
+                envName,
+                study.getShortcode(),
+                userBundle.user(),
+                userBundle.ppUser(),
+                preEnrollmentResponse.getId());
+        // confirm that two enrollees were created, and only one is a subject
+        assertThat(hubResponse.getEnrollee().isSubject(), equalTo(true));
+
+
+        List<Answer> answers = answerService.findByEnrolleeAndSurvey(hubResponse.getEnrollee().getId(), preEnrollmentSurvey.getStableId());
+        assertEquals(2, answers.size());
+        assertTrue(answers.stream().anyMatch(
+                answer -> answer.getQuestionStableId().equals("proxyQuestion")
+                        && answer.getAnswerType().equals(AnswerType.STRING)
+                        && answer.getStringValue().equals("false")));
+        assertTrue(answers.stream().anyMatch(
+                answer -> answer.getQuestionStableId().equals("qualified")
+                        && answer.getAnswerType().equals(AnswerType.BOOLEAN)
+                        && answer.getBooleanValue()));
+
+    }
+
 
     @Test
     @Transactional
     public void testGovernedUserEnrollment(TestInfo info){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
@@ -216,8 +289,9 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testProxyEnrollingMultipleChild(TestInfo info){
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         ParticipantUserFactory.ParticipantUserAndPortalUser userBundle = participantUserFactory.buildPersisted(portalEnv,getTestName(info));
         String studyShortcode = studyService.find(studyEnv.getStudyId()).get().getShortcode();
 
@@ -287,7 +361,7 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
                 {"createdAt":1710527339.202811000,"lastUpdatedAt":1710527339.202811000,"questionStableId":"qualified","surveyVersion":0,"booleanValue":true}]""";
         ParticipantUserFactory.ParticipantUserAndPortalUser userProxyBundle = participantUserFactory.buildPersisted(portalEnv, getTestName(info));
         PreEnrollmentResponse preEnrollmentResponseProxy = preEnrollmentSurveyFactory.buildPersisted(getTestName(info), preEnrollmentSurvey.getId(), true, preEnrollmentSurveyResponseForProxy, userProxyBundle.ppUser().getId(), userProxyBundle.user().getId(), studyEnv.getId());
-        Assertions.assertTrue(enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
+        assertTrue(enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
 
         String preEnrollmentSurveyResponseForRegularUser = """
                 [{"questionStableId": "proxyQuestion","surveyVersion":0,"viewedLanguage":"en","stringValue":"false"},
@@ -334,14 +408,14 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
         // stops proxy enrollment even though question exists
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> enrollmentService.isProxyEnrollment(envName, studyShortcode, preEnrollmentResponseProxy.getId()));
-
     }
 
     @Test
     @Transactional
     public void testMappingProxyAndGovernedUserProfileFromPreEnroll(TestInfo info) {
-        PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info));
-        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
+        StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle = studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.sandbox);
+        PortalEnvironment portalEnv = studyEnvBundle.getPortalEnv();
+        StudyEnvironment studyEnv = studyEnvBundle.getStudyEnv();
         StudyEnvironmentConfig config = studyEnvironmentConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
         config.setAcceptingProxyEnrollment(true);
         studyEnvironmentConfigService.update(config);
@@ -436,6 +510,11 @@ public class EnrollmentWorkflowTests extends BaseSpringBootTest {
 
         Assertions.assertFalse(enrollmentService.isProxyEnrollment(envName, studyShortcode, null));
         Assertions.assertFalse(enrollmentService.isProxyEnrollment(envName, studyShortcode, UUID.randomUUID()));
+    }
+
+    public Map<EventClass, List<Event>> getEventsByType(UUID enrolleeId) {
+        return eventService.findAllEventsByEnrolleeId(enrolleeId).stream()
+                .collect(Collectors.toMap(Event::getEventClass, List::of, (a, b) -> Stream.of(a, b).flatMap(List::stream).toList()));
     }
 
 

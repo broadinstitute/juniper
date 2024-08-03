@@ -33,9 +33,9 @@ public class EnrolleePopDto extends Enrollee implements TimeShiftable {
     private boolean withdrawn = false;
     private PreEnrollmentResponsePopDto preEnrollmentResponseDto;
     @Builder.Default
-    private Set<SurveyResponsePopDto> surveyResponseDtos = new HashSet<>();
+    private List<SurveyResponsePopDto> surveyResponseDtos = new ArrayList<>();
     @Builder.Default
-    private Set<ParticipantTaskPopDto> participantTaskDtos = new HashSet<>();
+    private List<ParticipantTaskPopDto> participantTaskDtos = new ArrayList<>();
     @Builder.Default
     private List<NotificationPopDto> notifications = new ArrayList<>();
     @Builder.Default

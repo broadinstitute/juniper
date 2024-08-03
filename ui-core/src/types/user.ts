@@ -1,7 +1,11 @@
 import { KitRequest } from 'src/types/kits'
 import { ParticipantTask } from 'src/types/task'
-import { PreregistrationResponse, SurveyResponse } from 'src/types/forms'
+import {
+  PreregistrationResponse,
+  SurveyResponse
+} from 'src/types/forms'
 import { MailingAddress } from 'src/types/address'
+import { FamilyEnrollee } from 'src/types/family'
 
 export type ParticipantNote = {
     id: string
@@ -13,6 +17,13 @@ export type ParticipantNote = {
     creatingAdminUserId: string
 }
 
+export type ParticipantUser = {
+    id: string,
+    username: string,
+    token: string,
+    lastLogin: number
+}
+
 export type Enrollee = {
     id: string
     consented: boolean
@@ -22,6 +33,7 @@ export type Enrollee = {
     lastUpdatedAt: number
     participantTasks: ParticipantTask[]
     participantNotes: ParticipantNote[]
+    relations?: EnrolleeRelation[]
     participantUserId: string
     preRegResponse?: PreregistrationResponse
     preEnrollmentResponse?: PreregistrationResponse
@@ -30,6 +42,7 @@ export type Enrollee = {
     shortcode: string
     studyEnvironmentId: string
     surveyResponses: SurveyResponse[]
+    familyEnrollees?: FamilyEnrollee[]
 }
 
 export type HubResponse = {
@@ -51,5 +64,22 @@ export type Profile = {
     birthDate?: number[],
     sexAtBirth?: string,
     preferredLanguage?: string,
+}
+
+type RelationshipType = 'PROXY' | 'FAMILY'
+
+export type EnrolleeRelation = {
+    id: string
+    relationshipType: RelationshipType,
+    targetEnrolleeId: string,
+    targetEnrollee?: Enrollee
+    enrolleeId: string
+    enrollee?: Enrollee
+    createdAt: number
+    lastUpdatedAt: number
+    beginDate?: number
+    endDate?: number
+    familyId?: string
+    familyRelationship?: string
 }
 

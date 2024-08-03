@@ -3,7 +3,6 @@ import { errors, expect, Page, Response, test } from '@playwright/test'
 import StudyEligibilityOurHealth from 'pages/ourhealth/study-eligibility'
 import StudyEligibilityDemo from 'pages/demo/study-eligibility'
 import Navbar from 'src/page-components/navbar'
-import { EnvironmentName } from '@juniper/ui-core'
 
 export type Study = 'OurHealth';
 
@@ -23,26 +22,6 @@ export const randomChars = (length: 6): string => {
 }
 
 /**
- *
- * @param {"OurHealth"} study
- * @param {"local" | "dev"} deploymentZone
- * @returns {string} Participant URL of a specific study
- */
-export function getParticipantUrl(portalShortcode: string, deploymentZone: Environment = 'local',
-  envName: EnvironmentName = 'sandbox'): string {
-  let url: string
-  switch (deploymentZone) {
-    case 'local':
-      url = `https://${envName}.${portalShortcode}.localhost:3001`
-      break
-    case 'dev':
-      url = `https://${envName}.${portalShortcode}.ddp-dev.envs.broadinstitute.org`
-      break
-  }
-  return url
-}
-
-/**
  * login as the given admin user using development mode.
  * This should eventually handle checking to see if the user is already logged in.
  */
@@ -57,7 +36,7 @@ export async function adminLogin(page: Page, username?: string) {
   await page.locator('button:text("Log in")').click()
   // the after login page might be either the participant list or the home page depending on the number of portals
   await Promise.any([
-    expect(page.locator('h1')).toHaveText('Juniper Home'),
+    expect(page.locator('h1')).toHaveText('Select a portal'),
     expect(page.locator('h2')).toHaveText('Participant List')
   ])
 

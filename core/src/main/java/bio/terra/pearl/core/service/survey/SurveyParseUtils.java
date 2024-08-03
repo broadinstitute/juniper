@@ -176,6 +176,7 @@ public class SurveyParseUtils {
      * @param returnClass the class to return the answer as
      *                    The method assumes the returnClass is a valid class that can be used to convert the answer to
      * @param objectMapper the object mapper to use to convert the answer to the returnClass
+     * @param answerField the field to get the answer from in the question node. If null, it will attempt to get the answer from the first non-null field.
      * @param <T> the class to return the answer as
      * @return the answer to the question with the stableId questionStableId as the class returnClass
      * */
@@ -201,7 +202,12 @@ public class SurveyParseUtils {
      * in the answerField of the node
      * */
     protected static <T> T convertQuestionAnswerToClass(JsonNode node, String answerField, Class<T> returnClass, ObjectMapper objectMapper) throws JsonProcessingException {
-        String objectValueString = node.get(answerField).asText();
+        String objectValueString;
+        if (Objects.nonNull(answerField)) {
+            objectValueString = node.get(answerField).asText();
+        } else {
+            objectValueString = getAnswerValue(node);
+        }
         // Direct conversion for String
         if (returnClass == String.class) {
             return returnClass.cast(objectValueString);
@@ -216,9 +222,28 @@ public class SurveyParseUtils {
         }
     }
 
+    private static String getAnswerValue(JsonNode node) {
+        for (String valueField : List.of("stringValue", "booleanValue", "objectValue", "numberValue")) {
+            JsonNode valueNode = node.get(valueField);
+            if (valueNode != null) {
+                return valueNode.asText();
+            }
+        }
+        throw new IllegalArgumentException("Could not find a value in the answer node");
+    }
+
     protected static String getQuestionStableId(JsonNode node) {
         JsonNode questionStableIdNode = node.get("questionStableId");
         return questionStableIdNode != null ? questionStableIdNode.asText() : null;
+    }
+
+    /** extracts LanguageTexts suitable for rendering the survey title in the participant UI from the survey content */
+    public static List<LanguageText> extractLanguageTexts(Survey survey) {
+        Map<String, String> parsedTitles = SurveyParseUtils.parseSurveyTitle(survey.getContent(), survey.getName());
+        return SurveyParseUtils.titlesToLanguageTexts(
+                SurveyParseUtils.formToLanguageTextKey(survey.getStableId(),survey.getVersion()),
+                survey.getPortalId(),
+                parsedTitles);
     }
 
     //Returns a Map of languageCode -> title for the survey
@@ -277,16 +302,14 @@ public class SurveyParseUtils {
     }
 
     public static List<LanguageText> titlesToLanguageTexts(String keyName, UUID portalId, Map<String, String> titles) {
-        List<LanguageText> texts = new ArrayList<>();
-        for (Map.Entry<String, String> entry : titles.entrySet()) {
+        return titles.entrySet().stream().map(entry -> {
             LanguageText text = new LanguageText();
             text.setKeyName(keyName);
             text.setLanguage(entry.getKey());
             text.setText(entry.getValue());
             text.setPortalId(portalId);
-            texts.add(text);
-        }
-        return texts;
+            return text;
+        }).toList();
     }
 
     public static String formToLanguageTextKey(String stableId, Integer version) {

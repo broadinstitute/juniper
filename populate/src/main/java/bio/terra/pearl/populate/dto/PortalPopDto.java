@@ -25,6 +25,7 @@ public class PortalPopDto extends Portal {
     private List<PortalEnvironmentPopDto> portalEnvironmentDtos = new ArrayList<>();
     private List<SiteMediaPopDto> siteMediaDtos = new ArrayList<>();
     private List<String> emailTemplateFiles = new ArrayList<>();
+    private List<PortalEnvironmentChangeRecordPopDto> portalEnvironmentChangeRecordPopDtos = new ArrayList<>();
     /**
      * this allows us to pass a PopulatePortalDto to PortalService.create and have the specified environments
      * in portalEnvironmentDtos used for the creation.

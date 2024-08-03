@@ -69,8 +69,6 @@ export const calculateIdleData = ({ currentTime, lastRecordedActivity, maxIdleSe
   return { timedOut, showCountdown, secondsUntilTimedOut: displaySecondsUntilTimeout, millisecondsUntilNextUpdate }
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const IdleStatusMonitor = ({ maxIdleSessionDuration, idleWarningDuration }: {
   maxIdleSessionDuration: number,
   idleWarningDuration: number
@@ -151,8 +149,6 @@ const InactivityTimer = ({ maxIdleSessionDuration, idleWarningDuration, doSignOu
 
 // Copied from Terra UI
 // Modified to yield execution before looping and starting the next delay
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useCurrentTime = (initialDelay = 250) => {
   const [currentTime, setCurrentTime] = useState(Date.now())
   const signal = useCancellation()
@@ -172,8 +168,6 @@ export const useCurrentTime = (initialDelay = 250) => {
 }
 
 // Copied from Terra UI without modification for use by useCurrentTime
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useCancellation = (): AbortSignal => {
   const controller = useRef<AbortController>()
   useEffect(() => {
@@ -187,8 +181,6 @@ export const useCancellation = (): AbortSignal => {
 }
 
 // Copied from Terra UI without modification for use by useCurrentTime
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const delay = (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }

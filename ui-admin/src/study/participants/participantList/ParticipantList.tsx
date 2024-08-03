@@ -1,226 +1,91 @@
-import React, { useState, useMemo } from 'react'
-import Api, { EnrolleeSearchFacet, EnrolleeSearchResult } from 'api/api'
+import React, { useState } from 'react'
+import Api, { EnrolleeSearchExpressionResult } from 'api/api'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Link, useSearchParams } from 'react-router-dom'
 import { StudyEnvContextT } from '../../StudyEnvironmentRouter'
-import {
-  ColumnDef,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-  VisibilityState
-} from '@tanstack/react-table'
-import {
-  basicTableLayout,
-  ColumnVisibilityControl,
-  DownloadControl,
-  IndeterminateCheckbox, renderEmptyMessage, RowVisibilityCount,
-  useRoutableTablePaging
-} from 'util/tableUtils'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheck, faEnvelope, faPlus } from '@fortawesome/free-solid-svg-icons'
-import AdHocEmailModal from '../AdHocEmailModal'
-import { ALL_FACETS, Facet, FacetValue, facetValuesFromString, facetValuesToString } from 'api/enrolleeSearch'
-import { currentIsoDate, instantToDefaultString } from '@juniper/ui-core'
+import {
+  faPeopleGroup,
+  faPerson
+} from '@fortawesome/free-solid-svg-icons'
 import { useLoadingEffect } from 'api/api-utils'
-import TableClientPagination from 'util/TablePagination'
-import { Button } from 'components/forms/Button'
 import { renderPageHeader } from 'util/pageUtils'
 import ParticipantSearch from './search/ParticipantSearch'
-import _cloneDeep from 'lodash/cloneDeep'
-import CreateSyntheticEnrolleeModal from './CreateSyntheticEnrolleeModal'
+
+import { useParticipantSearchState } from 'util/participantSearchUtils'
+import { concatSearchExpressions } from 'util/searchExpressionUtils'
+import ParticipantListTableGroupedByFamily from 'study/participants/participantList/ParticipantListTableGroupedByFamily'
+import ParticipantListTable from 'study/participants/participantList/ParticipantListTable'
+import { Button } from 'components/forms/Button'
+import { useSingleSearchParam } from 'util/searchParamsUtils'
+import { Link } from 'react-router-dom'
 
 /** Shows a list of (for now) enrollees */
 function ParticipantList({ studyEnvContext }: {studyEnvContext: StudyEnvContextT}) {
-  const { portal, study, currentEnv, currentEnvPath } = studyEnvContext
-  const [searchParams, setSearchParams] = useSearchParams()
-  const [participantList, setParticipantList] = useState<EnrolleeSearchResult[]>([])
-  const [facets, setFacets] = useState<Facet[]>([])
-  const [showEmailModal, setShowEmailModal] = useState(false)
-  const [showSyntheticModal, setShowSyntheticModal] = useState(false)
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: 'createdAt', desc: true }
-  ])
-  const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({
-    'givenName': false,
-    'familyName': false,
-    'contactEmail': false
-  })
+  const { portal, study, currentEnv } = studyEnvContext
+  const [participantList, setParticipantList] = useState<EnrolleeSearchExpressionResult[]>([])
+  const [groupByFamilyString, setGroupByFamily] = useSingleSearchParam('groupByFamily')
+  const groupByFamily = groupByFamilyString === 'true'
 
-  const getFacetValuesFromParams = (facets: Facet[]) => {
-    return facetValuesFromString(searchParams.get('facets') ?? '{}', facets)
-  }
+  const familyLinkageEnabled = studyEnvContext.currentEnv.studyEnvironmentConfig.enableFamilyLinkage
 
-  const updateFacetValues = (facetValues: FacetValue[]) => {
-    searchParams.set('facets', facetValuesToString(facetValues))
-    setSearchParams(searchParams)
-  }
+  const {
+    searchState,
+    updateSearchState,
+    setSearchState,
+    searchExpression
+  } = useParticipantSearchState()
 
-  const { paginationState, preferredNumRowsKey } = useRoutableTablePaging('participantList')
-
-  const columns = useMemo<ColumnDef<EnrolleeSearchResult, string>[]>(() => [{
-    id: 'select',
-    header: ({ table }) => <IndeterminateCheckbox
-      checked={table.getIsAllRowsSelected()} indeterminate={table.getIsSomeRowsSelected()}
-      onChange={table.getToggleAllRowsSelectedHandler()}/>,
-    cell: ({ row }) => (
-      <div className="px-1">
-        <IndeterminateCheckbox
-          checked={row.getIsSelected()} indeterminate={row.getIsSomeSelected()}
-          onChange={row.getToggleSelectedHandler()} disabled={!row.getCanSelect()}/>
-      </div>
-    )
-  }, {
-    header: 'Shortcode',
-    accessorKey: 'enrollee.shortcode',
-    meta: {
-      columnType: 'string'
-    },
-    cell: info => <Link to={`${currentEnvPath}/participants/${info.getValue()}`}>{info.getValue()}</Link>
-  }, {
-    header: 'Created',
-    id: 'createdAt',
-    accessorKey: 'enrollee.createdAt',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }, {
-    id: 'lastLogin',
-    header: 'Last login',
-    accessorKey: 'participantUser.lastLogin',
-    enableColumnFilter: false,
-    meta: {
-      columnType: 'instant'
-    },
-    cell: info => instantToDefaultString(info.getValue() as unknown as number)
-  }, {
-    id: 'familyName',
-    header: 'Family name',
-    accessorKey: 'profile.familyName',
-    meta: {
-      columnType: 'string'
+  const generateFullSearchExpression = () => {
+    const expressions: string[] = [searchExpression, 'include({user.lastLogin})']
+    if (familyLinkageEnabled) {
+      expressions.push('include({family.shortcode})')
     }
-  }, {
-    id: 'givenName',
-    header: 'Given name',
-    accessorKey: 'profile.givenName',
-    meta: {
-      columnType: 'string'
-    }
-  }, {
-    id: 'contactEmail',
-    header: 'Contact email',
-    accessorKey: 'profile.contactEmail',
-    meta: {
-      columnType: 'string'
-    }
-  }, {
-    header: 'Consented',
-    accessorKey: 'enrollee.consented',
-    meta: {
-      columnType: 'boolean',
-      filterOptions: [
-        { value: true, label: 'Consented' },
-        { value: false, label: 'Not Consented' }
-      ]
-    },
-    filterFn: 'equals',
-    cell: info => info.getValue() ? <FontAwesomeIcon icon={faCheck}/> : ''
-  }, {
-    header: 'Kit status',
-    filterFn: 'includesString', //an undefined value in a cell seems to switch the filter table away from the default
-    accessorKey: 'mostRecentKitStatus',
-    meta: {
-      columnType: 'string'
-    }
-  }], [study.shortcode, currentEnv.environmentName])
-
-  const table = useReactTable({
-    data: participantList,
-    columns,
-    state: {
-      sorting,
-      rowSelection,
-      columnVisibility
-    },
-    initialState: {
-      pagination: paginationState
-    },
-    onColumnVisibilityChange: setColumnVisibility,
-    enableRowSelection: true,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange: setRowSelection
-  })
-
-  const updateSearchCriteria = (searchFacets: EnrolleeSearchFacet[]) => {
-    const criteria: Facet[] = _cloneDeep(ALL_FACETS)
-    criteria.push(...searchFacets as Facet[])
-    setFacets(criteria)
-    return criteria
+    return concatSearchExpressions(expressions)
   }
 
   const { isLoading, reload } = useLoadingEffect(async () => {
-    const res = await Api.getSearchFacets(portal.shortcode,
-      study.shortcode, currentEnv.environmentName)
-    const criteria = updateSearchCriteria(res)
-    const response = await Api.searchEnrollees(portal.shortcode,
-      study.shortcode, currentEnv.environmentName, getFacetValuesFromParams(criteria))
-    setParticipantList(response)
-  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchParams.get('facets')])
+    const results = await Api.executeSearchExpression(
+      portal.shortcode,
+      study.shortcode,
+      currentEnv.environmentName,
+      generateFullSearchExpression())
 
-  const numSelected = Object.keys(rowSelection).length
-  const allowSendEmail = numSelected > 0
-  const enrolleesSelected = Object.keys(rowSelection)
-    .filter(key => rowSelection[key])
-    .map(key => participantList[parseInt(key)].enrollee.shortcode)
+    setParticipantList(results)
+  }, [portal.shortcode, study.shortcode, currentEnv.environmentName, searchExpression])
 
   return <div className="ParticipantList container-fluid px-4 py-2">
-    { renderPageHeader('Participant List') }
-    <ParticipantSearch facets={facets} facetValues={getFacetValuesFromParams(facets)}
-      updateFacetValues={updateFacetValues}/>
-    <LoadingSpinner isLoading={isLoading}>
-      <div className="d-flex align-items-center justify-content-between">
-        <div className="d-flex">
-          <RowVisibilityCount table={table}/>
-        </div>
-        <div className="d-flex">
-          <Button onClick={() => setShowEmailModal(allowSendEmail)}
-            variant="light" className="border m-1" disabled={!allowSendEmail}
-            tooltip={allowSendEmail ? 'Send email' : 'Select at least one participant'}>
-            <FontAwesomeIcon icon={faEnvelope} className="fa-lg"/> Send email
+    {renderPageHeader('Participant List')}
+    <div className="d-flex align-content-center align-items-center">
+      <ParticipantSearch
+        key={currentEnv.environmentName}
+        studyEnvContext={studyEnvContext}
+        searchState={searchState}
+        updateSearchState={updateSearchState}
+        setSearchState={setSearchState}
+      />
+
+      {
+        familyLinkageEnabled && <div className="d-flex align-content-center p-2">
+          <Button
+            variant="light" className="border btn-sm"
+            aria-label={groupByFamily ? 'Participant view' : 'Family view'}
+            onClick={() => setGroupByFamily(groupByFamily ? 'false' : 'true')}>
+            {groupByFamily
+              ? <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPerson}/> Participant view</>
+              : <><FontAwesomeIcon size={'sm'} className={'p-0 m-0'} icon={faPeopleGroup}/> Family view</>}
           </Button>
-          <DownloadControl table={table} fileName={`${portal.shortcode}-ParticipantList-${currentIsoDate()}`}/>
-          <ColumnVisibilityControl table={table}/>
-          { showEmailModal && <AdHocEmailModal enrolleeShortcodes={enrolleesSelected}
-            studyEnvContext={studyEnvContext}
-            onDismiss={() => setShowEmailModal(false)}/> }
         </div>
-      </div>
-      { basicTableLayout(table, { filterable: true }) }
-      { renderEmptyMessage(participantList, 'No participants') }
-      <TableClientPagination table={table} preferredNumRowsKey={preferredNumRowsKey}/>
-      {(currentEnv.environmentName != 'live') && <div>
-        <Button variant="secondary" onClick={() => setShowSyntheticModal(!showSyntheticModal)}>
-          <FontAwesomeIcon icon={faPlus}/> Add synthetic participant
-        </Button>
-      </div>}
+      }
+      <div><Link to={`withdrawn`}>Withdrawn</Link></div>
+    </div>
+
+
+    <LoadingSpinner isLoading={isLoading}>
+      {groupByFamily
+        ? <ParticipantListTableGroupedByFamily participantList={participantList} studyEnvContext={studyEnvContext}/>
+        : <ParticipantListTable participantList={participantList} studyEnvContext={studyEnvContext} reload={reload}/>}
     </LoadingSpinner>
-    { showSyntheticModal && <CreateSyntheticEnrolleeModal studyEnvContext={studyEnvContext}
-      onDismiss={() => setShowSyntheticModal(false)}
-      onSubmit={() => { setShowSyntheticModal(false); reload() }}
-    />}
   </div>
 }
-
 
 export default ParticipantList

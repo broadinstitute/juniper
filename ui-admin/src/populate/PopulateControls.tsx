@@ -1,12 +1,14 @@
 import React from 'react'
 import { Button } from 'components/forms/Button'
 import LoadingSpinner from 'util/LoadingSpinner'
+import InfoPopup from '../components/forms/InfoPopup'
 
 /** renders a boolean radiogroup for setting whether the populate is an overwrite command */
 export const OverwriteControl = ({ text, isOverwrite, setIsOverwrite }:
     {text: React.ReactNode, isOverwrite: boolean, setIsOverwrite: (bool: boolean) => void}) => {
   return <div className="py-2">
-    <span className="fw-bold">Overwrite</span><br/>
+    <span className="fw-bold">Overwrite
+      <InfoPopup content={text}/></span><br/>
     <label className="me-3">
       <input type="radio" name="overwrite" value="false" checked={!isOverwrite}
         onChange={e => setIsOverwrite(e.target.value === 'true')}
@@ -17,7 +19,6 @@ export const OverwriteControl = ({ text, isOverwrite, setIsOverwrite }:
         onChange={e => setIsOverwrite(e.target.value === 'true')}
         className="me-1"/> Yes
     </label>
-    <p className="ps-3">{text}</p>
   </div>
 }
 

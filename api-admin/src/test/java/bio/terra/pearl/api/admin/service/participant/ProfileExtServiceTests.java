@@ -1,10 +1,14 @@
 package bio.terra.pearl.api.admin.service.participant;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
+import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.context.PortalEnrolleeAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
@@ -13,6 +17,7 @@ import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
@@ -28,10 +33,19 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
 
   @Test
+  public void testAllAuthenticated() {
+    AuthTestUtils.assertAllMethodsAnnotated(
+        profileExtService,
+        Map.of(
+            "updateProfileForEnrollee",
+            AuthAnnotationSpec.withPortalEnrolleePerm("participant_data_edit")));
+  }
+
+  @Test
   @Transactional
-  public void testUpdateProfileForEnrolleeFailsIfNotInPortal(TestInfo info) {
+  public void testUpdateProfileForEnrolleeFailsIfAdminNotInPortal(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =
         enrolleeFactory.buildPersisted(
@@ -43,8 +57,12 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
         NotFoundException.class,
         () -> {
           profileExtService.updateProfileForEnrollee(
-              operator,
-              enrollee.getShortcode(),
+              PortalEnrolleeAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb,
+                  enrollee.getShortcode()),
               "Asdf",
               Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
         });
@@ -52,9 +70,122 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
 
   @Test
   @Transactional
+  public void testUpdateProfileForEnrolleeFailsIfEnrolleeNotInPortal(TestInfo info) {
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+    Enrollee wrongStudyEnv = enrolleeFactory.buildPersisted(getTestName(info));
+
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
+
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () -> {
+          profileExtService.updateProfileForEnrollee(
+              PortalEnrolleeAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb,
+                  wrongStudyEnv.getShortcode()),
+              "Asdf",
+              Profile.builder().id(wrongStudyEnv.getProfileId()).givenName("TEST").build());
+        });
+  }
+
+  @Test
+  @Transactional
+  public void testUpdateProfileForEnrolleeFailsIfWrongEnvironment(TestInfo info) {
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+    Enrollee enrollee =
+        enrolleeFactory.buildPersisted(
+            getTestName(info), studyEnvBundle.getStudyEnv(), Profile.builder().build());
+
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
+
+    Assertions.assertThrows(
+        NotFoundException.class,
+        () -> {
+          profileExtService.updateProfileForEnrollee(
+              PortalEnrolleeAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.sandbox,
+                  enrollee.getShortcode()),
+              "Asdf",
+              Profile.builder().givenName("TEST").build());
+        });
+  }
+
+  @Test
+  @Transactional
+  public void testUpdateProfileForEnrolleeDoesNotUpdateWrongProfile(TestInfo info) {
+    StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+    Enrollee enrollee =
+        enrolleeFactory.buildPersisted(
+            getTestName(info),
+            studyEnvBundle.getStudyEnv(),
+            Profile.builder().mailingAddress(MailingAddress.builder().build()).build());
+
+    StudyEnvironmentFactory.StudyEnvironmentBundle wrongStudyEnvBundle =
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
+
+    Enrollee wrongStudyEnv =
+        enrolleeFactory.buildPersisted(
+            getTestName(info),
+            wrongStudyEnvBundle.getStudyEnv(),
+            Profile.builder().mailingAddress(MailingAddress.builder().build()).build());
+
+    Profile wrongStudyEnvProfile = profileService.find(wrongStudyEnv.getProfileId()).orElseThrow();
+
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
+
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          profileExtService.updateProfileForEnrollee(
+              PortalEnrolleeAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb,
+                  enrollee.getShortcode()),
+              "Asdf",
+              Profile.builder().id(wrongStudyEnv.getProfileId()).givenName("TEST").build());
+        });
+
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          profileExtService.updateProfileForEnrollee(
+              PortalEnrolleeAuthContext.of(
+                  operator,
+                  studyEnvBundle.getPortal().getShortcode(),
+                  studyEnvBundle.getStudy().getShortcode(),
+                  EnvironmentName.irb,
+                  enrollee.getShortcode()),
+              "Asdf",
+              Profile.builder()
+                  .id(enrollee.getProfileId())
+                  .mailingAddress(
+                      MailingAddress.builder()
+                          .id(wrongStudyEnvProfile.getMailingAddressId())
+                          .build())
+                  .givenName("TEST")
+                  .build());
+        });
+  }
+
+  @Test
+  @Transactional
   public void testUpdateProfileForEnrollee(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle studyEnvBundle =
-        studyEnvironmentFactory.buildBundle("updateConfigAuthsToStudy", EnvironmentName.irb);
+        studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.irb);
 
     Enrollee enrollee =
         enrolleeFactory.buildPersisted(
@@ -63,8 +194,12 @@ public class ProfileExtServiceTests extends BaseSpringBootTest {
     AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
 
     profileExtService.updateProfileForEnrollee(
-        operator,
-        enrollee.getShortcode(),
+        PortalEnrolleeAuthContext.of(
+            operator,
+            studyEnvBundle.getPortal().getShortcode(),
+            studyEnvBundle.getStudy().getShortcode(),
+            EnvironmentName.irb,
+            enrollee.getShortcode()),
         "A good reason",
         Profile.builder().id(enrollee.getProfileId()).givenName("TEST").build());
 

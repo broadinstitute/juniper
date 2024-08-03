@@ -12,11 +12,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 export default function JustifyChangesModal({
   saveWithJustification,
   onDismiss,
-  changes
+  changes,
+  bodyText,
+  confirmText,
+  animated = true
 }: {
   saveWithJustification: (justification: string) => void,
   onDismiss: () => void,
-  changes: ObjectDiff[]
+  changes?: ObjectDiff[],
+  bodyText?: React.ReactNode,
+  confirmText?: string,
+  animated?: boolean
 }) {
   const [justification, setJustification] = useState<string>('')
 
@@ -26,7 +32,7 @@ export default function JustifyChangesModal({
     }
   }
 
-  return <Modal show={true} onHide={onDismiss} size={'lg'}>
+  return <Modal show={true} onHide={onDismiss} size={'lg'} animation={animated}>
     <Modal.Header closeButton>
       <Modal.Title>
         Add Justification
@@ -34,7 +40,8 @@ export default function JustifyChangesModal({
       </Modal.Title>
     </Modal.Header>
     <Modal.Body>
-      <div className="border-start border-3 p-1 ps-2 border-warning w-75 ms-4 mb-4"
+      {bodyText}
+      {(changes && changes.length > 0) && <div className="border-start border-3 p-1 ps-2 border-warning w-75 ms-4 mb-4"
         style={{ backgroundColor: '#f2f2f2' }}>
         <p className={'fw-bold mb-0'}>Pending Changes</p>
         {changes.map((change, idx) =>
@@ -42,7 +49,8 @@ export default function JustifyChangesModal({
             {change.fieldName}: {change.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {change.newValue}
           </p>
         )}
-      </div>
+
+      </div>}
       <h6>Description:</h6>
       <textarea className="form-control" rows={3}
         required={true} value={justification}
@@ -52,7 +60,7 @@ export default function JustifyChangesModal({
     <Modal.Footer>
       <button className='btn btn-secondary' onClick={onDismiss}>Cancel</button>
       <button className='btn btn-primary' onClick={attemptSave} disabled={justification.length === 0}>
-        Save & Complete Change
+        {confirmText || 'Save & Complete Change'}
       </button>
     </Modal.Footer>
   </Modal>

@@ -1,11 +1,18 @@
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 
 import Api, { MailingListContact } from 'api/api'
 import { mockPortalContext } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import MailingListView from './MailingListView'
-import { setupRouterTest } from '@juniper/ui-core'
+import {
+  MockI18nProvider,
+  setupRouterTest
+} from '@juniper/ui-core'
 
 const contacts: MailingListContact[] = [{
   id: 'id1',
@@ -26,7 +33,10 @@ test('renders a mailing list', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
-        setupRouterTest(<MailingListView portalContext={portalContext} portalEnv={portalEnv}/>)
+    setupRouterTest(<MockI18nProvider>
+      <MailingListView portalContext={portalContext}
+        portalEnv={portalEnv}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('person1')).toBeInTheDocument()
@@ -40,7 +50,9 @@ test('renders a download mailing list button', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
-        setupRouterTest(<MailingListView portalContext={portalContext} portalEnv={portalEnv}/>)
+    setupRouterTest(<MockI18nProvider>
+      <MailingListView portalContext={portalContext} portalEnv={portalEnv}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('person1')).toBeInTheDocument()
@@ -59,7 +71,9 @@ test('delete button shows confirmation', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
-      setupRouterTest(<MailingListView portalContext={portalContext} portalEnv={portalEnv}/>)
+    setupRouterTest(<MockI18nProvider>
+      <MailingListView portalContext={portalContext} portalEnv={portalEnv}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('person1')).toBeInTheDocument()
@@ -78,7 +92,9 @@ test('sorts by join date by default', async () => {
   const portalContext = mockPortalContext()
   const portalEnv = portalContext.portal.portalEnvironments[0]
   const { RoutedComponent } =
-      setupRouterTest(<MailingListView portalContext={portalContext} portalEnv={portalEnv}/>)
+    setupRouterTest(<MockI18nProvider>
+      <MailingListView portalContext={portalContext} portalEnv={portalEnv}/>
+    </MockI18nProvider>)
   render(RoutedComponent)
   await waitFor(() => {
     expect(screen.getByText('person1')).toBeInTheDocument()

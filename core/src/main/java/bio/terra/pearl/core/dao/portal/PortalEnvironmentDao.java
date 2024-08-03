@@ -20,16 +20,16 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
     private PortalEnvironmentConfigDao portalEnvironmentConfigDao;
     private SiteContentDao siteContentDao;
     private SurveyDao surveyDao;
-    private PortalLanguageDao portalLanguageDao;
+    private PortalEnvironmentLanguageDao portalEnvironmentLanguageDao;
     public PortalEnvironmentDao(Jdbi jdbi,
                                 PortalEnvironmentConfigDao portalEnvironmentConfigDao,
                                 SiteContentDao siteContentDao, SurveyDao surveyDao,
-                                PortalLanguageDao portalLanguageDao) {
+                                PortalEnvironmentLanguageDao portalEnvironmentLanguageDao) {
         super(jdbi);
         this.portalEnvironmentConfigDao = portalEnvironmentConfigDao;
         this.siteContentDao = siteContentDao;
         this.surveyDao = surveyDao;
-        this.portalLanguageDao = portalLanguageDao;
+        this.portalEnvironmentLanguageDao = portalEnvironmentLanguageDao;
     }
 
     @Override
@@ -37,8 +37,9 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
         return PortalEnvironment.class;
     }
 
-    public List<PortalEnvironment> findByPortal(UUID portalId) {
-        return findAllByProperty("portal_id", portalId);
+    public List<PortalEnvironment> findByPortalWithConfigs(UUID portalId) {
+        return findAllByPropertyWithChildren("portal_id", portalId, "portalEnvironmentConfigId",
+                "portalEnvironmentConfig", portalEnvironmentConfigDao);
     }
 
     public Optional<PortalEnvironment> findOne(String shortcode, EnvironmentName environmentName) {
@@ -66,7 +67,7 @@ public class PortalEnvironmentDao extends BaseMutableJdbiDao<PortalEnvironment> 
             if (portalEnv.getPreRegSurveyId() != null) {
                 portalEnv.setPreRegSurvey(surveyDao.find(portalEnv.getPreRegSurveyId()).get());
             }
-            List<PortalEnvironmentLanguage> portalEnvLanguages = portalLanguageDao.findByPortalEnvId(portalEnv.getId());
+            List<PortalEnvironmentLanguage> portalEnvLanguages = portalEnvironmentLanguageDao.findByPortalEnvId(portalEnv.getId());
             portalEnv.getSupportedLanguages().addAll(portalEnvLanguages);
         });
         return portalEnvOpt;

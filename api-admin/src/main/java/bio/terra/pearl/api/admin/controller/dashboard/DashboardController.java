@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.dashboard;
 
 import bio.terra.pearl.api.admin.api.DashboardApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.dashboard.DashboardExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;

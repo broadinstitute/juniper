@@ -1,12 +1,19 @@
 package bio.terra.pearl.core.dao.search;
 
+import bio.terra.pearl.core.dao.participant.EnrolleeDao;
+import bio.terra.pearl.core.dao.participant.ProfileDao;
 import bio.terra.pearl.core.model.address.MailingAddress;
+import bio.terra.pearl.core.model.kit.KitRequest;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Family;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
 import bio.terra.pearl.core.model.survey.Answer;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchOptions;
+import bio.terra.pearl.core.service.search.expressions.DefaultSearchExpression;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jdbi.v3.core.Handle;
 import org.jdbi.v3.core.Jdbi;
@@ -25,23 +32,41 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Component
 public class EnrolleeSearchExpressionDao {
     private final Jdbi jdbi;
-    public EnrolleeSearchExpressionDao(Jdbi jdbi) {
+    private final EnrolleeDao enrolleeDao;
+    private final ProfileDao profileDao;
+
+    public EnrolleeSearchExpressionDao(Jdbi jdbi, EnrolleeDao enrolleeDao, ProfileDao profileDao) {
         this.jdbi = jdbi;
+        this.enrolleeDao = enrolleeDao;
+        this.profileDao = profileDao;
     }
 
     public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId) {
-        return executeSearch(expression.generateQueryBuilder(studyEnvId));
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), EnrolleeSearchOptions.builder().build());
     }
 
-    private List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search) {
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchExpression expression, UUID studyEnvId, EnrolleeSearchOptions opts) {
+        if (expression == null) {
+            expression = new DefaultSearchExpression(enrolleeDao, profileDao);
+        }
+        return executeSearch(expression.generateQueryBuilder(studyEnvId), opts);
+    }
+
+    public List<EnrolleeSearchExpressionResult> executeSearch(EnrolleeSearchQueryBuilder search, EnrolleeSearchOptions opts) {
         return jdbi.withHandle(handle -> {
-            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES));
+            org.jooq.Query jooqQuery = search.toQuery(DSL.using(SQLDialect.POSTGRES), opts);
+
             Query query = jdbiFromJooq(jooqQuery, handle);
             return query
+                    .registerRowMapper(Family.class, BeanMapper.of(Family.class, "family"))
                     .registerRowMapper(EnrolleeSearchExpressionResult.class, new EnrolleeSearchResultMapper())
                     .reduceRows(new EnrolleeSearchResultReducer())
                     .toList();
@@ -76,44 +101,84 @@ public class EnrolleeSearchExpressionDao {
                             .map(rs, ctx)
             );
 
-            // Loop through all the columns to see if any of the possible extra objects
-            // are present. We cannot check on their existence without throwing and catching
-            // SQL exceptions, so it is better to loop through columns to check presence.
-            // (the column count starts from 1)
-            for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
-                String columnName = rs.getMetaData().getColumnName(i);
+            // anything that starts with "task" will be added to the tasks list
+            mapAllBeans(
+                    rs,
+                    ctx,
+                    ParticipantTask.class,
+                    "task",
+                    enrolleeSearchExpressionResult.getTasks()::add
+            );
 
-                if (columnName.startsWith("answer_") && columnName.endsWith("_created_at")) {
-                    String questionStableId = columnName.substring("answer_".length(),
-                            columnName.length() - "_created_at".length());
+            mapAllBeans(
+                    rs,
+                    ctx,
+                    Answer.class,
+                    "answer",
+                    enrolleeSearchExpressionResult.getAnswers()::add
+            );
 
-                    enrolleeSearchExpressionResult.getAnswers().add(
-                            BeanMapper.of(Answer.class, "answer_" + questionStableId)
-                                    .map(rs, ctx)
-                    );
-                }
+            mapBean(rs,
+                    ctx,
+                    MailingAddress.class,
+                    "mailing_address",
+                    enrolleeSearchExpressionResult::setMailingAddress);
 
-                if (columnName.startsWith("task_") && columnName.endsWith("_created_at")) {
-                    String targetStableId = columnName.substring("task_".length(),
-                            columnName.length() - "_created_at".length());
+            mapBean(rs,
+                    ctx,
+                    KitRequest.class,
+                    "latest_kit",
+                    enrolleeSearchExpressionResult::setLatestKit);
 
-                    enrolleeSearchExpressionResult.getTasks().add(
-                            BeanMapper.of(ParticipantTask.class, "task_" + targetStableId)
-                                    .map(rs, ctx)
-                    );
-                }
-
-                if (columnName.startsWith("mailing_address_")) {
-                    enrolleeSearchExpressionResult.setMailingAddress(
-                            BeanMapper.of(MailingAddress.class, "mailing_address")
-                                    .map(rs, ctx)
-                    );
-                }
-            }
+            mapBean(rs,
+                    ctx,
+                    ParticipantUser.class,
+                    "participant_user",
+                    enrolleeSearchExpressionResult::setParticipantUser);
 
             return enrolleeSearchExpressionResult;
         }
 
+        private boolean isColumnPresent(ResultSet rs, String columnName) {
+            try {
+                rs.findColumn(columnName);
+                return true;
+            } catch (SQLException e) {
+                return false;
+            }
+        }
+
+
+        private <T> void mapBean(
+                ResultSet rs,
+                StatementContext ctx,
+                Class<T> clazz,
+                String prefix,
+                Consumer<T> callback) throws SQLException {
+            if (isColumnPresent(rs, prefix + "_id")) {
+                callback.accept(BeanMapper.of(clazz, prefix).map(rs, ctx));
+            }
+        }
+
+        private <T> void mapAllBeans(
+                ResultSet rs,
+                StatementContext ctx,
+                Class<T> clazz,
+                String prefix,
+                Consumer<T> callback) throws SQLException {
+            // Loop through all the columns to see if any of the possible extra objects
+            // are present.
+            // (the column count starts from 1)
+            for (int i = 1; i < rs.getMetaData().getColumnCount(); i++) {
+                String columnName = rs.getMetaData().getColumnName(i);
+                if (columnName.startsWith(prefix) && columnName.endsWith("_created_at")) {
+                    String modelName = columnName.substring(
+                            0,
+                            columnName.length() - "_created_at".length());
+                    callback.accept(BeanMapper.of(clazz, modelName).map(rs, ctx));
+                }
+            }
+        }
     }
 
     /**
@@ -125,8 +190,18 @@ public class EnrolleeSearchExpressionDao {
             final EnrolleeSearchExpressionResult searchResult = map.computeIfAbsent(rowView.getColumn("enrollee_id", UUID.class),
                     id -> rowView.getRow(EnrolleeSearchExpressionResult.class));
 
-            // currently, does nothing, but in the future could reduce down rows from tables which
-            // could return multiple values; e.g., kits
+            // Add family to enrollee
+            if (isColumnPresent(rowView, "family_id", UUID.class)) {
+                searchResult.getFamilies().add(rowView.getRow(Family.class));
+            }
+        }
+
+        private <T> boolean isColumnPresent(RowView rv, String columnName, Class<T> c) {
+            try {
+                return rv.getColumn(columnName, c) != null;
+            } catch (Exception e) {
+                return false;
+            }
         }
     }
 }

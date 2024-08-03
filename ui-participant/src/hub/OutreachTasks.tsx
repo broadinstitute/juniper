@@ -36,7 +36,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
 
   const sortedOutreachTasks = outreachTasks.sort((a, b) => {
     return a.task.createdAt - b.task.createdAt
-  })
+  }).filter(({ task }) => task.status !== 'COMPLETE')
   const markTaskAsViewed = async (task: ParticipantTask, enrollee: Enrollee, study: Study) => {
     const studyEnvParams = {
       portalShortcode: portalEnvContext.portal.shortcode,
@@ -51,7 +51,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
       surveyId: task.id,
       complete: false
     } as SurveyResponse
-    await Api.updateSurveyResponse({
+    task.targetStableId && task.targetAssignedVersion && await Api.updateSurveyResponse({
       studyEnvParams,
       enrolleeShortcode: enrollee.shortcode,
       stableId: task.targetStableId,
@@ -107,7 +107,7 @@ export default function OutreachTasks({ enrollees, studies }: {enrollees: Enroll
           </div>
         </div>
       })}
-      {outreachParams.isOutreachPath && <SurveyModal onDismiss={() => navigate('/hub')}/>}
+      {outreachParams.isOutreachPath && <SurveyModal onDismiss={() => navigate('/hub')} hideComplete={true}/>}
     </div>
   </div>
 }

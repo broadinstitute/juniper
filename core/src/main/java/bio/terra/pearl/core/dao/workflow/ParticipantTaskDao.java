@@ -34,6 +34,14 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
         return findAllByProperty("enrollee_id", enrolleeId);
     }
 
+    public List<ParticipantTask> findByStudyEnvironmentId(UUID studyEnvId) {
+        return findAllByProperty("study_environment_id", studyEnvId);
+    }
+
+    public List<ParticipantTask> findByStudyEnvironmentIdAndTaskType(UUID studyEnvId, List<TaskType> taskTypes) {
+        return findAllByTwoProperties("study_environment_id", studyEnvId, "task_type", taskTypes);
+    }
+
     public Optional<ParticipantTask> findByEnrolleeId(UUID taskId, UUID enrolleeId) {
         return findByTwoProperties("id", taskId, "enrollee_id", enrolleeId);
     }
@@ -41,6 +49,10 @@ public class ParticipantTaskDao extends BaseMutableJdbiDao<ParticipantTask> {
     public Map<UUID, List<ParticipantTask>> findByEnrolleeIds(Collection<UUID> enrolleeIds) {
         return findAllByPropertyCollection("enrollee_id", enrolleeIds)
                 .stream().collect(Collectors.groupingBy(ParticipantTask::getEnrolleeId, Collectors.toList()));
+    }
+
+    public List<ParticipantTask> findByPortalParticipantUserId(UUID ppUserId) {
+        return findAllByProperty("portal_participant_user_id", ppUserId);
     }
 
     /** Attempts to find a task for the given activity and study.  If there are multiple, it will return the first */

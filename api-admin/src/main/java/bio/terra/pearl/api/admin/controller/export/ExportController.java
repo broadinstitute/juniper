@@ -1,16 +1,19 @@
 package bio.terra.pearl.api.admin.controller.export;
 
 import bio.terra.pearl.api.admin.api.ExportApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
 import bio.terra.pearl.api.admin.service.EnrolleeExportExtService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.service.export.ExportFileFormat;
 import bio.terra.pearl.core.service.export.ExportOptions;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
+import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
+import java.util.Objects;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ExportController implements ExportApi {
+  private final EnrolleeSearchExpressionParser enrolleeSearchExpressionParser;
   private AuthUtilService authUtilService;
   private HttpServletRequest request;
   private EnrolleeExportExtService enrolleeExportExtService;
@@ -29,12 +33,14 @@ public class ExportController implements ExportApi {
       HttpServletRequest request,
       EnrolleeExportExtService enrolleeExportExtService,
       ObjectMapper objectMapper,
-      HttpServletResponse response) {
+      HttpServletResponse response,
+      EnrolleeSearchExpressionParser enrolleeSearchExpressionParser) {
     this.authUtilService = authUtilService;
     this.request = request;
     this.enrolleeExportExtService = enrolleeExportExtService;
     this.objectMapper = objectMapper;
     this.response = response;
+    this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
   }
 
   /** just gets the export as a row TSV string, with no accompanying data dictionary */
@@ -46,11 +52,16 @@ public class ExportController implements ExportApi {
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
       Boolean includeOnlyMostRecent,
-      Boolean includeProxiesAsRows,
+      String searchExpression,
       String fileFormat,
       Integer limit) {
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
+
+    EnrolleeSearchExpression filter =
+        Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
+            ? enrolleeSearchExpressionParser.parseRule(searchExpression)
+            : null;
 
     ExportOptions exportOptions =
         ExportOptions.builder()
@@ -58,7 +69,7 @@ public class ExportController implements ExportApi {
                 splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
             .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
             .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
-            .includeProxiesAsRows(includeProxiesAsRows != null ? includeProxiesAsRows : false)
+            .filter(filter)
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(limit)
@@ -79,8 +90,14 @@ public class ExportController implements ExportApi {
       Boolean splitOptionsIntoColumns,
       Boolean stableIdsForOptions,
       Boolean includeOnlyMostRecent,
-      Boolean includeProxiesAsRows,
+      String searchExpression,
       String fileFormat) {
+
+    EnrolleeSearchExpression filter =
+        Objects.nonNull(searchExpression) && !searchExpression.isEmpty()
+            ? enrolleeSearchExpressionParser.parseRule(searchExpression)
+            : null;
+
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     AdminUser user = authUtilService.requireAdminUser(request);
     ExportOptions exportOptions =
@@ -89,7 +106,7 @@ public class ExportController implements ExportApi {
                 splitOptionsIntoColumns != null ? splitOptionsIntoColumns : false)
             .stableIdsForOptions(stableIdsForOptions != null ? stableIdsForOptions : false)
             .onlyIncludeMostRecent(includeOnlyMostRecent != null ? includeOnlyMostRecent : false)
-            .includeProxiesAsRows(includeProxiesAsRows != null ? includeProxiesAsRows : false)
+            .filter(filter)
             .fileFormat(
                 fileFormat != null ? ExportFileFormat.valueOf(fileFormat) : ExportFileFormat.TSV)
             .limit(null)

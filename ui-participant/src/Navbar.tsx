@@ -1,13 +1,36 @@
-import { faGlobe, faUser } from '@fortawesome/free-solid-svg-icons'
+import {
+  faGlobe,
+  faUser
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Collapse } from 'bootstrap'
 import classNames from 'classnames'
-import React, { useEffect, useId, useRef } from 'react'
-import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useId,
+  useRef
+} from 'react'
+import {
+  Link,
+  NavLink,
+  useLocation,
+  useNavigate,
+  useSearchParams
+} from 'react-router-dom'
 import { HashLink } from 'react-router-hash-link'
 
-import Api, { getEnvSpec, getImageUrl, NavbarItem, PortalStudy, Study } from 'api/api'
-import { MailingListModal, PortalEnvironmentLanguage, useI18n } from '@juniper/ui-core'
+import Api, {
+  getEnvSpec,
+  getImageUrl,
+  NavbarItem,
+  PortalEnvironmentConfig,
+  PortalStudy
+} from 'api/api'
+import {
+  MailingListModal,
+  PortalEnvironmentLanguageOpt,
+  useI18n
+} from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { useUser } from 'providers/UserProvider'
 import { useConfig } from 'providers/ConfigProvider'
@@ -62,7 +85,7 @@ export default function Navbar(props: NavbarProps) {
   return <nav {...props} className={classNames('navbar navbar-expand-lg navbar-light', props.className)}>
     <div className="container-fluid">
       <NavLink to="/" className="navbar-brand">
-        <img className="Navbar-logo" style={{ maxHeight: '30px' }}
+        <img className="Navbar-logo" style={{ height: '30px', maxHeight: '30px' }}
           src={getImageUrl(localContent.navLogoCleanFileName, localContent.navLogoVersion)} alt="logo"/>
       </NavLink>
       <button
@@ -107,7 +130,7 @@ export default function Navbar(props: NavbarProps) {
                     'd-flex justify-content-center',
                     'mb-3 mb-lg-0 ms-lg-3'
                   )}
-                  to={getMainJoinLink(portal.portalStudies)}
+                  to={getMainJoinLink(portal.portalStudies, portalEnv.portalEnvironmentConfig)}
                 >
                   {i18n('navbarJoin')}
                 </NavLink>
@@ -173,9 +196,9 @@ export function CustomNavLink({ navLink }: { navLink: NavbarItem }) {
 /**
  * Returns the join link for a specific study
  */
-export const getJoinLink = (study: Study, opts?: { isProxyEnrollment?: boolean, ppUserId?: string }) => {
+export const getJoinLink = (studyShortcode: string, opts?: { isProxyEnrollment?: boolean, ppUserId?: string }) => {
   const { isProxyEnrollment, ppUserId } = opts || {}
-  const joinPath = `/studies/${study.shortcode}/join`
+  const joinPath = `/studies/${studyShortcode}/join`
   if (isProxyEnrollment || ppUserId) {
     return `${joinPath}?${isProxyEnrollment ? 'isProxyEnrollment=true' : ''}${ppUserId ? `&ppUserId=${ppUserId}` : ''}`
   }
@@ -183,11 +206,15 @@ export const getJoinLink = (study: Study, opts?: { isProxyEnrollment?: boolean, 
 }
 
 /** the default join link -- will be rendered in the top right corner */
-export const getMainJoinLink = (portalStudies: PortalStudy[]) => {
+export const getMainJoinLink = (portalStudies: PortalStudy[], portalEnvConfig: PortalEnvironmentConfig) => {
+  // if there's a primary study, link to it
+  if (portalEnvConfig.primaryStudy) {
+    return getJoinLink(portalEnvConfig.primaryStudy)
+  }
   const joinable = filterUnjoinableStudies(portalStudies)
   /** if there's only one joinable study, link directly to it */
   const joinPath = joinable.length === 1
-    ? getJoinLink(joinable[0].study)
+    ? getJoinLink(joinable[0].study.shortcode)
     : '/join'
   return joinPath
 }
@@ -202,7 +229,7 @@ export const filterUnjoinableStudies = (portalStudies: PortalStudy[]): PortalStu
  *
  */
 export function LanguageDropdown({ languageOptions, selectedLanguage, changeLanguage, reloadPortal }: {
-  languageOptions: PortalEnvironmentLanguage[],
+  languageOptions: PortalEnvironmentLanguageOpt[],
   selectedLanguage: string,
   changeLanguage: (languageCode: string) => void,
   reloadPortal: () => void
@@ -261,7 +288,7 @@ export function LanguageDropdown({ languageOptions, selectedLanguage, changeLang
  * User account dropdown menu, with options to edit profile, change password, and log out
  */
 export const AccountOptionsDropdown = () => {
-  const { user, logoutUser, relations } = useUser()
+  const { user, logoutUser, proxyRelations } = useUser()
   const { i18n, selectedLanguage } = useI18n()
   const config = useConfig()
   const envSpec = getEnvSpec()
@@ -274,6 +301,8 @@ export const AccountOptionsDropdown = () => {
     userManager.signinRedirect({
       redirectMethod: 'replace',
       extraQueryParams: {
+        originUrl: window.location.origin,
+        portalEnvironment: envSpec.envName,
         portalShortcode: envSpec.shortcode as string,
         // eslint-disable-next-line camelcase
         ui_locales: selectedLanguage
@@ -319,7 +348,7 @@ export const AccountOptionsDropdown = () => {
             {user.username}
           </p>
           <hr className="dropdown-divider d-none d-lg-block"/>
-          {relations.length === 0 ? <NavLink to="/hub/profile">
+          {proxyRelations.length === 0 ? <NavLink to="/hub/profile">
             <button className="dropdown-item" aria-label="edit profile">
               {i18n('profile')}
             </button>

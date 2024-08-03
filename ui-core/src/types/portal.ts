@@ -10,9 +10,13 @@ export type Portal = {
   portalStudies: PortalStudy[]
 }
 
-export type PortalEnvironmentLanguage = {
+export type PortalEnvironmentLanguageOpt = {
   languageCode: string
   languageName: string
+}
+
+export type PortalEnvironmentLanguage = PortalEnvironmentLanguageOpt & {
+  id: string
 }
 
 export type PortalStudy = {
@@ -25,7 +29,8 @@ export type PortalEnvironment = {
   supportedLanguages: PortalEnvironmentLanguage[]
   siteContent?: SiteContent
   preRegSurvey?: Survey
-  preRegSurveyId?: string
+  preRegSurveyId?: string,
+  createdAt: number
 }
 
 export type PortalEnvironmentConfig = {
@@ -34,8 +39,9 @@ export type PortalEnvironmentConfig = {
   password: string
   passwordProtected: boolean
   participantHostname?: string
-  emailSourceAddress?: string,
+  emailSourceAddress?: string
   defaultLanguage: string
+  primaryStudy?: string
 }
 
 export {}

@@ -1,15 +1,42 @@
-import React, { HTMLProps, useEffect, useState } from 'react'
-import { CellContext, Column, flexRender, Header, PaginationState, RowData, Table } from '@tanstack/react-table'
+import React, {
+  Fragment,
+  HTMLProps,
+  useEffect,
+  useState
+} from 'react'
+import {
+  CellContext,
+  Column,
+  flexRender,
+  Header,
+  PaginationState,
+  Row,
+  RowData,
+  Table
+} from '@tanstack/react-table'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp, faCheck, faColumns, faDownload } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCaretDown,
+  faCaretUp,
+  faCheck,
+  faColumns,
+  faDownload
+} from '@fortawesome/free-solid-svg-icons'
 import Select from 'react-select'
 import Modal from 'react-bootstrap/Modal'
 import { Button } from 'components/forms/Button'
-import { escapeCsvValue, saveBlobAsDownload } from './downloadUtils'
+import {
+  escapeCsvValue,
+  saveBlobAsDownload
+} from './downloadUtils'
 import { instantToDefaultString } from '@juniper/ui-core'
-import { isEmpty } from 'lodash'
+import {
+  isEmpty,
+  isNil
+} from 'lodash'
 import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
+import classNames from 'classnames'
 
 /**
  * Returns a debounced input react component
@@ -146,14 +173,18 @@ function SearchFilter<A>({
  * */
 export function tableHeader<A, B>(
   header: Header<A, B>,
-  options: { sortable: boolean, filterable: boolean }
+  options: { sortable?: boolean, filterable?: boolean, useSize?: boolean }
 ) {
   const sortDirection = options.sortable && header.column.getIsSorted()
   const ariaSort = options.sortable ?
     sortDirection ? (sortDirection === 'desc' ? 'descending' : 'ascending') : 'none' : undefined
 
   return <th key={header.id}
-    aria-sort={ariaSort}>
+    aria-sort={ariaSort}
+    className={classNames(
+      options.useSize ? `col-${header.getSize()}` : undefined
+    )}
+  >
     <div>
       { options.sortable ? sortableTableHeader(header) : null }
       { options.filterable ? filterableTableHeader(header) : null }
@@ -238,11 +269,9 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
         <div className="border-b border-black">
           <label>
             <input
-              {...{
-                type: 'checkbox',
-                checked: table.getIsAllColumnsVisible(),
-                onChange: table.getToggleAllColumnsVisibilityHandler()
-              }}
+              type='checkbox'
+              checked={table.getIsAllColumnsVisible()}
+              onChange={table.getToggleAllColumnsVisibilityHandler()}
             />
             <span className="ps-2">Toggle All</span>
           </label>
@@ -253,11 +282,9 @@ export function ColumnVisibilityControl<T>({ table }: {table: Table<T>}) {
             <div key={column.id} className="pb-1">
               <label>
                 <input
-                  {...{
-                    type: 'checkbox',
-                    checked: column.getIsVisible(),
-                    onChange: column.getToggleVisibilityHandler()
-                  }}
+                  type='checkbox'
+                  checked={column.getIsVisible()}
+                  onChange={column.getToggleVisibilityHandler()}
                 />
                 <span className="ps-2">{ column.columnDef.header as string ?? column.columnDef.id }</span>
               </label>
@@ -315,8 +342,8 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
 /**
  * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'] }:{
-  table: Table<T>, fileName: string, excludedColumns?: string[]}
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'], buttonClass="border m-1" }:{
+  table: Table<T>, fileName: string, excludedColumns?: string[], buttonClass: string}
 ) {
   const [show, setShow] = useState(false)
 
@@ -342,7 +369,7 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
 
   return <div className="ms-auto">
     <Button onClick={() => setShow(!show)}
-      variant="light" className="border m-1" disabled={disableDownload}
+      variant="light" className={buttonClass} disabled={disableDownload}
       tooltip={!disableDownload ? 'Download table' : 'At least one row must be visible in order to download'}>
       <FontAwesomeIcon icon={faDownload} className="fa-lg"/> Download
     </Button>
@@ -373,10 +400,14 @@ export function DownloadControl<T>({ table, fileName, excludedColumns = ['select
  * Configuration for basicTableLayout. This can have configuration properties that affect different parts of the table,
  * such as headers, rows, etc. All configuration properties are optional.
  */
-export type BasicTableConfig = {
+export type BasicTableConfig<T> = {
   filterable?: boolean,
   tableClass?: string,
-  tdClass?: string
+  tdClass?: string,
+  trClass?: string,
+  customRowHeader?: (row: Row<T>) => React.ReactNode,
+  customRowFooter?: (row: Row<T>) => React.ReactNode,
+  useSize?: boolean
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
@@ -385,26 +416,34 @@ const defaultBasicTableConfig = {
 }
 
 /** helper function for simple table layouts */
-export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig = {}) {
+export function basicTableLayout<T>(table: Table<T>, config: BasicTableConfig<T> = {}) {
   const { filterable } = { ...defaultBasicTableConfig, ...config }
-  return <table className={config.tableClass ? config.tableClass : 'table table-striped'}>
+  return <table className={config.tableClass ? config.tableClass : 'table'}>
     <thead>
       <tr>
-        {table.getFlatHeaders().map(header => tableHeader(header, { sortable: true, filterable }))}
+        {table
+          .getFlatHeaders()
+          .map(header => tableHeader(header, {
+            sortable: true, filterable, useSize: config?.useSize || false
+          }))}
       </tr>
     </thead>
     <tbody>
       {table.getRowModel().rows.map(row => {
         return (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => {
-              return (
-                <td key={cell.id} className={config.tdClass ? config.tdClass : ''}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              )
-            })}
-          </tr>
+          <Fragment key={row.id}>
+            {!isNil(config.customRowHeader) && config.customRowHeader(row)}
+            <tr className={classNames(config.trClass)}>
+              {row.getVisibleCells().map(cell => {
+                return (
+                  <td key={cell.id} className={config.tdClass ? config.tdClass : 'align-middle'}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                )
+              })}
+            </tr>
+            {!isNil(config.customRowFooter) && config.customRowFooter(row)}
+          </Fragment>
         )
       })}
     </tbody>

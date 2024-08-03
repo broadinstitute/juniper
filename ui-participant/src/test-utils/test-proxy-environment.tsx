@@ -1,5 +1,10 @@
-import { Enrollee, Portal } from '@juniper/ui-core'
-import { EnrolleeRelation, ParticipantUser, PortalParticipantUser } from '../api/api'
+import {
+  Enrollee,
+  EnrolleeRelation,
+  ParticipantUser,
+  Portal
+} from '@juniper/ui-core'
+import { PortalParticipantUser } from 'api/api'
 
 export const mockPortal: Portal = {
   id: 'portal-id',
@@ -7,6 +12,7 @@ export const mockPortal: Portal = {
   shortcode: 'TESTPORTAL',
   portalEnvironments: [
     {
+      createdAt: 0,
       environmentName: 'sandbox',
       portalEnvironmentConfig: {
         initialized: true,
@@ -47,6 +53,7 @@ export const mockPortal: Portal = {
         studyEnvironmentConfig: {
           acceptingEnrollment: true,
           acceptingProxyEnrollment: true,
+          enableFamilyLinkage: false,
           initialized: true,
           passwordProtected: false,
           password: '',
@@ -64,7 +71,8 @@ export const mockPortal: Portal = {
 export const mockUser: ParticipantUser = {
   id: 'test-jsalk-user',
   username: 'jsalk',
-  token: ''
+  token: '',
+  lastLogin: 0
 }
 
 // 3 users, main proxy "Jonas Salk" with two dependents - "Peter Salk" and "Jonathan Salk"
@@ -231,7 +239,7 @@ export const mockRelations: EnrolleeRelation[] = [
     targetEnrolleeId: 'test-psalk-enrollee',
     createdAt: 0,
     lastUpdatedAt: 0,
-    participantUserId: 'test-jsalk-user'
+    enrolleeId: 'test-jsalk-enrollee'
   },
   {
     id: 'test-jsalk-jtsalk-relation',
@@ -239,6 +247,6 @@ export const mockRelations: EnrolleeRelation[] = [
     targetEnrolleeId: 'test-jtsalk-enrollee',
     createdAt: 0,
     lastUpdatedAt: 0,
-    participantUserId: 'test-jsalk-user'
+    enrolleeId: 'test-jsalk-enrollee'
   }
 ]

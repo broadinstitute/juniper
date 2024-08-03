@@ -1,16 +1,22 @@
 package bio.terra.pearl.core.service.search.terms;
 
 import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
+import bio.terra.pearl.core.model.search.SearchValueTypeDefinition;
+import bio.terra.pearl.core.model.survey.QuestionChoice;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
+import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.service.search.EnrolleeSearchContext;
 import bio.terra.pearl.core.service.search.sql.EnrolleeSearchQueryBuilder;
 import org.jooq.Condition;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import static bio.terra.pearl.core.dao.BaseJdbiDao.toSnakeCase;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.BOOLEAN;
+import static bio.terra.pearl.core.service.search.terms.SearchValue.SearchValueType.STRING;
 import static org.jooq.impl.DSL.condition;
 
 /**
@@ -50,7 +56,7 @@ public class TaskTerm implements SearchTerm {
             return new SearchValue();
         }
         ParticipantTask task = taskOpt.get();
-        return SearchValue.ofNestedProperty(task, field, FIELDS.get(field));
+        return SearchValue.ofNestedProperty(task, field, FIELDS.get(field).getType());
     }
 
     @Override
@@ -93,7 +99,20 @@ public class TaskTerm implements SearchTerm {
         return "task_" + targetStableId;
     }
 
-    public static final Map<String, SearchValue.SearchValueType> FIELDS = Map.ofEntries(
-            Map.entry("status", SearchValue.SearchValueType.STRING),
-            Map.entry("assigned", SearchValue.SearchValueType.BOOLEAN));
+    @Override
+    public SearchValueTypeDefinition type() {
+        return FIELDS.get(field);
+    }
+
+    public static final Map<String, SearchValueTypeDefinition> FIELDS = Map.ofEntries(
+            Map.entry("status",
+                    SearchValueTypeDefinition
+                            .builder().type(STRING)
+                            .choices(
+                                    Arrays.asList(TaskStatus.values())
+                                            .stream()
+                                            .map(val -> new QuestionChoice(val.name(), val.name()))
+                                            .toList()
+                            ).build()),
+            Map.entry("assigned", SearchValueTypeDefinition.builder().type(BOOLEAN).build()));
 }

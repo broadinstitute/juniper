@@ -1,12 +1,10 @@
 package bio.terra.pearl.api.admin.service;
 
 import bio.terra.pearl.api.admin.model.CreateDataset;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.api.admin.service.auth.*;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.datarepo.DataRepoJob;
 import bio.terra.pearl.core.model.datarepo.Dataset;
-import bio.terra.pearl.core.model.portal.Portal;
-import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.service.datarepo.DataRepoExportService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
@@ -16,9 +14,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataRepoExportExtService {
 
-  private AuthUtilService authUtilService;
-  private DataRepoExportService dataRepoExportService;
-  private StudyEnvironmentService studyEnvironmentService;
+  private final AuthUtilService authUtilService;
+  private final DataRepoExportService dataRepoExportService;
+  private final StudyEnvironmentService studyEnvironmentService;
 
   public DataRepoExportExtService(
       AuthUtilService authUtilService,
@@ -29,68 +27,37 @@ public class DataRepoExportExtService {
     this.studyEnvironmentService = studyEnvironmentService;
   }
 
-  public List<Dataset> listDatasetsForStudyEnvironment(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    return dataRepoExportService.listDatasetsForStudyEnvironment(studyEnv.getId());
+  @EnforcePortalStudyEnvPermission(permission = "tdr_export")
+  public List<Dataset> listDatasetsForStudyEnvironment(PortalStudyEnvAuthContext authContext) {
+    return dataRepoExportService.listDatasetsForStudyEnvironment(
+        authContext.getStudyEnvironment().getId());
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "tdr_export")
   public List<DataRepoJob> getJobHistoryForDataset(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      String datasetName,
-      AdminUser user) {
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-
+      PortalStudyEnvAuthContext authContext, String datasetName) {
     Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
-
+    if (dataset.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
+      throw new PermissionDeniedException("User does not have permission to view this dataset");
+    }
     return dataRepoExportService.getJobHistoryForDataset(dataset.getId());
   }
 
-  public void createDataset(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      CreateDataset createDataset,
-      AdminUser user) {
-    if (!user.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
-    }
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
+  @EnforcePortalStudyEnvPermission(permission = "tdr_export")
+  public void createDataset(PortalStudyEnvAuthContext authContext, CreateDataset createDataset) {
     dataRepoExportService.createDataset(
-        studyEnv, createDataset.getName(), createDataset.getDescription(), user);
+        authContext.getStudyEnvironment(),
+        createDataset.getName(),
+        createDataset.getDescription(),
+        authContext.getOperator());
   }
 
-  public void deleteDataset(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      String datasetName,
-      AdminUser user) {
-    if (!user.isSuperuser()) {
-      throw new PermissionDeniedException("You do not have permissions to perform this operation");
+  @EnforcePortalStudyEnvPermission(permission = "tdr_export")
+  public void deleteDataset(PortalStudyEnvAuthContext authContext, String datasetName) {
+    Dataset dataset = dataRepoExportService.getDatasetByName(datasetName);
+    if (dataset.getStudyEnvironmentId().equals(authContext.getStudyEnvironment().getId())) {
+      throw new PermissionDeniedException("User does not have permission to view this dataset");
     }
-    Portal portal = authUtilService.authUserToPortal(user, portalShortcode);
-    authUtilService.authUserToStudy(user, portalShortcode, studyShortcode);
-
-    StudyEnvironment studyEnv =
-        studyEnvironmentService.findByStudy(studyShortcode, environmentName).get();
-
-    dataRepoExportService.deleteDataset(studyEnv, datasetName);
+    dataRepoExportService.deleteDataset(authContext.getStudyEnvironment(), datasetName);
   }
 }

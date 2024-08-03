@@ -1,39 +1,39 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CalculatedValue, Question, SurveyModel } from 'survey-core'
 
 import {
-  createAddressValidator,
-  makeSurveyJsData,
+  createAddressValidator, Enrollee,
   PortalEnvironment,
   PortalEnvironmentLanguage,
   surveyJSModelFromForm
 } from '@juniper/ui-core'
-import Api, { Answer, Survey } from 'api/api'
+import Api, { Answer, DataChangeRecord, Survey } from 'api/api'
 import InfoPopup from 'components/forms/InfoPopup'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import PrintFormModal from './PrintFormModal'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import { renderTruncatedText } from 'util/pageUtils'
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
+import { doApiLoad } from 'api/api-utils'
+import { AnswerEditHistory } from './AnswerEditHistory'
 
 type SurveyFullDataViewProps = {
+  responseId?: string,
   answers: Answer[],
   survey: Survey,
   resumeData?: string,
-  userId?: string,
+  enrollee?: Enrollee,
   studyEnvContext: StudyEnvContextT
 }
 
 /** renders every item in a survey response */
-export default function SurveyFullDataView({ answers, resumeData, survey, userId, studyEnvContext }:
-  SurveyFullDataViewProps) {
+export default function SurveyFullDataView({
+  responseId, answers, resumeData, survey, enrollee, studyEnvContext
+}: SurveyFullDataViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(true)
   const [showFullQuestions, setShowFullQuestions] = useState(false)
-  const surveyJsData = makeSurveyJsData(resumeData, answers, userId)
+  const [changeRecords, setChangeRecords] = useState<DataChangeRecord[]>([])
   const surveyJsModel = surveyJSModelFromForm(survey)
   surveyJsModel.onServerValidateQuestions.add(createAddressValidator(addr => Api.validateAddress(addr)))
-  surveyJsModel.data = surveyJsData!.data
   const answerMap: Record<string, Answer> = {}
   answers.forEach(answer => {
     answerMap[answer.questionStableId] = answer
@@ -46,6 +46,20 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
   const portalEnv = studyEnvContext.portal.portalEnvironments.find((env: PortalEnvironment) =>
     env.environmentName === studyEnvContext.currentEnv.environmentName)
   const supportedLanguages = portalEnv?.supportedLanguages ?? []
+
+  useEffect(() => {
+    if (responseId && enrollee) {
+      doApiLoad(async () => {
+        const changeRecords = await Api.fetchEnrolleeChangeRecords(
+          studyEnvContext.portal.shortcode,
+          studyEnvContext.study.shortcode,
+          studyEnvContext.currentEnv.environmentName,
+          enrollee.shortcode,
+          survey.stableId)
+        setChangeRecords(changeRecords)
+      })
+    }
+  }, [responseId])
 
   return <div>
     <div className="d-flex d-print-none">
@@ -65,11 +79,6 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
         </label>
         <InfoPopup content="Show full question text vs. truncated to first 100 characters"/>
       </div>
-      <div className="ms-auto">
-        <Link to="print">
-          <FontAwesomeIcon icon={faDownload}/> print/download
-        </Link>
-      </div>
     </div>
     <hr/>
     <Routes>
@@ -80,7 +89,7 @@ export default function SurveyFullDataView({ answers, resumeData, survey, userId
       <Route index element={<dl>
         {questions.map((question, index) =>
           <ItemDisplay key={index} question={question} answerMap={answerMap} supportedLanguages={supportedLanguages}
-            surveyVersion={survey.version} showFullQuestions={showFullQuestions}/>)}
+            surveyVersion={survey.version} showFullQuestions={showFullQuestions} editHistory={changeRecords}/>)}
       </dl>}/>
     </Routes>
   </div>
@@ -91,7 +100,8 @@ type ItemDisplayProps = {
   answerMap: Record<string, Answer>,
   surveyVersion: number,
   showFullQuestions: boolean,
-  supportedLanguages: PortalEnvironmentLanguage[]
+  supportedLanguages: PortalEnvironmentLanguage[],
+  editHistory?: DataChangeRecord[]
 }
 
 /**
@@ -99,10 +109,13 @@ type ItemDisplayProps = {
  * with stableId and the viewed language (if applicable)
  */
 export const ItemDisplay = ({
-  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages
+  question, answerMap, surveyVersion, showFullQuestions, supportedLanguages, editHistory = []
 }: ItemDisplayProps) => {
   const answer = answerMap[question.name]
   const answerLanguage = supportedLanguages.find(lang => lang.languageCode === answer?.viewedLanguage)
+  const editHistoryForQuestion = editHistory
+    .filter(changeRecord => changeRecord.fieldName === question.name)
+    .sort((a, b) => b.createdAt - a.createdAt)
   const displayValue = getDisplayValue(answer, question)
   let stableIdText = question.name
   if (answer && answer.surveyVersion !== surveyVersion) {
@@ -111,15 +124,20 @@ export const ItemDisplay = ({
   if ((question as CalculatedValue).expression) {
     stableIdText += ' -- derived'
   }
+
   return <>
     <dt className="fw-normal">
-      {renderQuestionText(answer, question, showFullQuestions)}
-      <span className="ms-2 fst-italic text-muted">
+      <div className="d-flex align-items-center">
+        {renderQuestionText(answer, question, showFullQuestions)}
+        <span className="ms-2 fst-italic text-muted">
         ({stableIdText}) {answerLanguage && ` (Answered in ${answerLanguage.languageName})`}
-      </span>
+        </span>
+      </div>
     </dt>
     <dl>
-      <pre className="fw-bold">{displayValue}</pre>
+      { answer ?
+        <AnswerEditHistory question={question} answer={answer} editHistory={editHistoryForQuestion}/> :
+        <pre className="fw-bold">{displayValue}</pre>}
     </dl>
   </>
 }
@@ -140,15 +158,26 @@ export const getDisplayValue = (answer: Answer,
   let displayValue: React.ReactNode = answerValue
   if ((question as Question).choices) {
     if (answer.objectValue) {
-      const valueArray = JSON.parse(answer.objectValue)
-      const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question as Question))
-      displayValue = JSON.stringify(textArray)
+      try {
+        const valueArray = JSON.parse(answer.objectValue)
+        const textArray = valueArray.map((value: string | number) => getTextForChoice(value, question as Question))
+        displayValue = JSON.stringify(textArray)
+      } catch (e) {
+        displayValue = renderParseError(answer.objectValue)
+      }
     } else {
       displayValue = getTextForChoice(answerValue, question as Question)
     }
   }
   if (answer.booleanValue !== undefined) {
     displayValue = answer.booleanValue ? 'True' : 'False'
+  }
+  if (answer.objectValue !== undefined) {
+    try {
+      JSON.parse(answer.objectValue)
+    } catch (e) {
+      displayValue = renderParseError(answer.objectValue)
+    }
   }
   if (question.getType() === 'signaturepad') {
     displayValue = <img src={answer.stringValue}/>
@@ -157,6 +186,12 @@ export const getDisplayValue = (answer: Answer,
     displayValue = `${displayValue} - ${answer.otherDescription}`
   }
   return displayValue
+}
+
+const renderParseError = (value: string) => {
+  return <span className={'text-danger'}>[[ parse error ]]
+    <InfoPopup content={`value is not JSON: ${value}`}/>
+  </span>
 }
 
 /**

@@ -2,8 +2,9 @@ import React from 'react'
 import { FormContent, renderWithRouter, setupRouterTest } from '@juniper/ui-core'
 import { getByLabelText, render, screen, waitFor } from '@testing-library/react'
 import { FormDesigner } from './FormDesigner'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { baseQuestions } from './designer/questions/questionTypes'
+import { MOCK_ENGLISH_LANGUAGE } from '../test-utils/mocking-utils'
 
 const formContent: FormContent = {
   title: 'Test survey',
@@ -29,7 +30,8 @@ const formContent: FormContent = {
 
 describe('FormDesigner', () => {
   it('renders form', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>)
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     expect(screen.getByLabelText('test_firstName')).toBeInTheDocument()
     expect(screen.getByLabelText('test_lastName')).toBeInTheDocument()
@@ -37,13 +39,16 @@ describe('FormDesigner', () => {
     expect(screen.getAllByText('Pages')).toHaveLength(2)
   })
 
-  it('shows elements based on the path', () => {
-    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}/>,
-      ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
+  it('shows elements based on the path', async () => {
+    renderWithRouter(<FormDesigner content={formContent} onChange={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>,
+    ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     // we should be showing the editor for the second question
     expect(screen.getByText('Last name')).toBeInTheDocument()
-    expect(screen.getByText('Question text')).toBeInTheDocument()
+    expect(screen.queryAllByText('Text')).toHaveLength(2)
     expect(screen.queryByText('First name')).not.toBeInTheDocument()
+    await userEvent.click(screen.getByText('test_firstName'))
+    expect(screen.queryByText('First name')).toBeInTheDocument()
   })
 
   it('adds questions after a current question', async () => {
@@ -51,7 +56,8 @@ describe('FormDesigner', () => {
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
     const { RoutedComponent, router } = setupRouterTest(
-      <FormDesigner content={formContent} onChange={updateValue}/>,
+      <FormDesigner content={formContent} onChange={updateValue}
+        currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>,
       ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0].elements[1]'])
     render(RoutedComponent)
     // we should be showing the editor for the second question
@@ -60,7 +66,7 @@ describe('FormDesigner', () => {
     const newQuestionForm = screen.getByTestId('newQuestionForm')
     await userEvent.type(getByLabelText(newQuestionForm, 'Question stable ID'), 'stableId1')
     await userEvent.selectOptions(getByLabelText(newQuestionForm, 'Question type'), 'text')
-    await userEvent.type(getByLabelText(newQuestionForm, 'Question text*'), 'fave color?')
+    await userEvent.type(getByLabelText(newQuestionForm, 'Text*'), 'fave color?')
     await userEvent.click(screen.getByText('Create question'))
     await waitFor(() => expect(router.state.location.search)
       .toContain('?selectedElementPath=pages%5B0%5D.elements%5B2%5D'))
@@ -85,8 +91,9 @@ describe('FormDesigner', () => {
     // dummy update function that just invokes the callback
     const updateValue = jest.fn()
       .mockImplementation((content: FormContent, callback?: () => void) => { callback?.() })
-    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent} onChange={updateValue}/>,
-      ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
+    const { RoutedComponent, router } = setupRouterTest(<FormDesigner content={formContent}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]} onChange={updateValue}/>,
+    ['/forms/surveys/oh_oh_basicInfo?selectedElementPath=pages[0]'])
     render(RoutedComponent)
     // we should be showing the page 1 summary
     expect(screen.getAllByText('Page 1')).toHaveLength(2)
@@ -96,7 +103,7 @@ describe('FormDesigner', () => {
     const newQuestionForm = screen.getByTestId('newQuestionForm')
     await userEvent.type(getByLabelText(newQuestionForm, 'Question stable ID'), 'stableId1')
     await userEvent.selectOptions(getByLabelText(newQuestionForm, 'Question type'), 'dropdown')
-    await userEvent.type(getByLabelText(newQuestionForm, 'Question text*'), 'fave color?')
+    await userEvent.type(getByLabelText(newQuestionForm, 'Text*'), 'fave color?')
     await userEvent.click(screen.getByText('Create question'))
     await waitFor(() => expect(router.state.location.search)
       .toContain('?selectedElementPath=pages%5B0%5D.elements%5B2%5D'))

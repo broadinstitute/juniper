@@ -10,21 +10,43 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
 public class SiteMediaController implements SiteMediaApi {
-  private SiteMediaService siteMediaService;
+  private final SiteMediaService siteMediaService;
 
   public SiteMediaController(SiteMediaService siteMediaService) {
     this.siteMediaService = siteMediaService;
   }
 
   @Override
+  @CrossOrigin(
+      origins = {
+        "https://juniperdemodev.b2clogin.com", // Heart Demo (demo only)
+        "https://junipercmidemo.b2clogin.com", // CMI (demo only)
+        "https://juniperrgpdemo.b2clogin.com", // RGP (demo only)
+        "https://ourhealthdev.b2clogin.com", // OurHealth (prod)
+        "https://ourhealthstudy.b2clogin.com", // OurHealth (demo)
+        "https://hearthivedev.b2clogin.com", // HeartHive (prod)
+        "https://hearthive.b2clogin.com", // HeartHive (demo)
+        "https://gvascdev.b2clogin.com", // gVASC (demo)
+        "https://gvascprod.b2clogin.com" // gVASC (prod)
+      },
+      maxAge = 3600,
+      methods = {RequestMethod.GET, RequestMethod.OPTIONS})
+  /*
+   * This method is used to get the branding information for a portal environment.
+   * Since this is only returning publicly available assets (logos, css attributes, etc),
+   * this is allowed to be accessed from other domains. Additionally, the domains are
+   * limited to b2c origins that we control.
+   */
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, Integer version) {
     Optional<SiteMedia> siteMediaOpt;
 
-    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName, version);
+    siteMediaOpt = siteMediaService.findOne(portalShortcode, cleanFileName.toLowerCase(), version);
     return convertToResourceResponse(siteMediaOpt);
   }
 

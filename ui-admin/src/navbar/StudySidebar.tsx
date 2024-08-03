@@ -16,7 +16,7 @@ import {
   studyEnvSiteSettingsPath
 } from '../study/StudyEnvironmentRouter'
 import CollapsableMenu from './CollapsableMenu'
-import { isSuperuser } from 'user/UserProvider'
+import { userHasPermission, useUser } from 'user/UserProvider'
 import { studyPublishingPath, studyUsersPath } from '../study/StudyRouter'
 import { sidebarNavLinkClasses } from './AdminSidebar'
 
@@ -25,6 +25,9 @@ import { sidebarNavLinkClasses } from './AdminSidebar'
 export const StudySidebar = ({ study, portalList, portalShortcode }:
                                { study: Study, portalList: Portal[], portalShortcode: string }) => {
   const navigate = useNavigate()
+  const user = useUser()
+  const portalId = portalList.find(p => p.shortcode === portalShortcode)?.id
+
   /** updates the selected study -- routes to that study's homepage */
   const setSelectedStudy = (portalShortcode: string, studyShortcode: string) => {
     navigate(studyParticipantsPath(portalShortcode, studyShortcode, 'live'))
@@ -53,10 +56,10 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvMailingListPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Mailing List</NavLink>
         </li>
-        {isSuperuser() && <li className="mb-2">
+        <li className="mb-2">
           <NavLink to={studyEnvImportPath(portalShortcode, study.shortcode, 'sandbox')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Import Participants</NavLink>
-        </li>}
+        </li>
       </ul>}/>
       <CollapsableMenu header={'Analytics & Data'} content={<ul className="list-unstyled">
         <li className="mb-2">
@@ -67,10 +70,11 @@ export const StudySidebar = ({ study, portalList, portalShortcode }:
           <NavLink to={studyEnvDataBrowserPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Data Export</NavLink>
         </li>
-        <li>
+        { portalId && userHasPermission(user.user, portalId, 'tdr_export') && <li>
           <NavLink to={studyEnvDatasetListViewPath(portalShortcode, study.shortcode, 'live')}
             className={sidebarNavLinkClasses} style={navStyleFunc}>Terra Data Repo</NavLink>
         </li>
+        }
       </ul>}/>
       <CollapsableMenu header={'Design & Build'} content={<ul className="list-unstyled">
         <li className="mb-2">

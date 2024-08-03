@@ -1,10 +1,25 @@
 import React, { useContext } from 'react'
-import { Portal, PortalEnvironment, Study, StudyEnvironment, Trigger } from 'api/api'
+import {
+  Portal,
+  PortalEnvironment,
+  Study,
+  StudyEnvironment,
+  Trigger
+} from 'api/api'
 import { StudyParams } from 'study/StudyRouter'
 
-import { Route, Routes, useNavigate, useParams } from 'react-router-dom'
+import {
+  Route,
+  Routes,
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import { NavBreadcrumb } from '../navbar/AdminNavbar'
-import { LoadedPortalContextT, PortalContext, PortalParams } from '../portal/PortalProvider'
+import {
+  LoadedPortalContextT,
+  PortalContext,
+  PortalParams
+} from '../portal/PortalProvider'
 import SurveyView from './surveys/SurveyView'
 import PreEnrollView from './surveys/PreEnrollView'
 import StudyContent from './StudyContent'
@@ -18,17 +33,22 @@ import DatasetList from './participants/datarepo/DatasetList'
 import Select from 'react-select'
 import MailingListView from '../portal/MailingListView'
 import StudySettings from './StudySettings'
-import { ENVIRONMENT_ICON_MAP } from './publishing/StudyPublishingView'
+import { ENVIRONMENT_ICON_MAP } from './publishing/PortalPublishingView'
 import TriggerList from './notifications/TriggerList'
 import SiteContentLoader from '../portal/siteContent/SiteContentLoader'
 import AdminTaskList from './adminTasks/AdminTaskList'
 import SiteMediaList from '../portal/media/SiteMediaList'
 import PreRegView from './surveys/PreRegView'
-import { ApiProvider, I18nProvider, StudyEnvParams } from '@juniper/ui-core'
+import {
+  ApiProvider,
+  I18nProvider,
+  StudyEnvParams
+} from '@juniper/ui-core'
 import DashboardSettings from 'dashboard/DashboardSettings'
 import { previewApi } from 'util/apiContextUtils'
 import DataImportView from '../portal/DataImportView'
 import DataImportList from '../portal/DataImportList'
+import FamilyRouter from './families/FamilyRouter'
 
 export type StudyEnvContextT = { study: Study, currentEnv: StudyEnvironment, currentEnvPath: string, portal: Portal }
 
@@ -90,6 +110,7 @@ function StudyEnvironmentRouter({ study }: { study: Study }) {
           <Route path="notificationContent/*" element={<TriggerList studyEnvContext={studyEnvContext}
             portalContext={portalContext}/>}/>
           <Route path="participants/*" element={<ParticipantsRouter studyEnvContext={studyEnvContext}/>}/>
+          <Route path="families/*" element={<FamilyRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="kits/*" element={<KitsRouter studyEnvContext={studyEnvContext}/>}/>
           <Route path="siteContent" element={<SiteContentLoader portalEnvContext={portalEnvContext}/>}/>
           <Route path="media" element={<SiteMediaList portalContext={portalContext} portalEnv={portalEnv}/>}/>
@@ -182,7 +203,7 @@ export const studyEnvAlertsPath = (portalShortcode: string, studyShortcode: stri
 
 /** path for viewing a particular notification config path */
 export const triggerPath = (config: Trigger, currentEnvPath: string) => {
-  return `${currentEnvPath}/notificationContent/configs/${config.id}`
+  return `${currentEnvPath}/notificationContent/triggers/${config.id}`
 }
 
 /** path to the export preview */
@@ -238,9 +259,7 @@ export const studyEnvDatasetListViewPath = (portalShortcode: string, studyShortc
 
 /** helper for pre registration survey path */
 export const studyEnvPreRegPath = (studyEnvParams: StudyEnvParams) => {
-  return `${studyEnvPath(studyEnvParams.portalShortcode,
-    studyEnvParams.studyShortcode,
-    studyEnvParams.envName)}/forms/preReg`
+  return `${baseStudyEnvPath(studyEnvParams)}/forms/preReg`
 }
 
 /** helper for path for particular dataset route */
@@ -251,4 +270,24 @@ export const datasetDashboardPath = (datasetName: string, currentEnvPath: string
 /** helper for path to admin task list page */
 export const adminTasksPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
   return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/adminTasks`
+}
+
+/**
+ * helper for getting paths to family pages
+ */
+export const familyPath = (portalShortcode: string, studyShortcode: string, envName: string) => {
+  return `${studyEnvPath(portalShortcode, studyShortcode, envName)}/families`
+}
+
+/**
+ * viewing publishing history
+ */
+export const portalPublishHistoryPath = (portalShortcode: string, studyShortcode: string) => {
+  return `/${portalShortcode}/studies/${studyShortcode}/publishing/history`
+}
+
+const baseStudyEnvPath = (params: StudyEnvParams) => {
+  return `${studyEnvPath(params.portalShortcode,
+    params.studyShortcode,
+    params.envName)}`
 }

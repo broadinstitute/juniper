@@ -1,7 +1,9 @@
 package bio.terra.pearl.api.admin.controller.forms;
 
 import bio.terra.pearl.api.admin.api.ConfiguredSurveyApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.forms.SurveyExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -48,7 +50,10 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
     Boolean activeVal = active != null ? Boolean.valueOf(active) : null;
     List<StudyEnvironmentSurvey> studyEnvSurveys =
         surveyExtService.findWithSurveyNoContent(
-            portalShortcode, studyShortcode, environmentName, stableId, activeVal, operator);
+            PortalStudyAuthContext.of(operator, portalShortcode, studyShortcode),
+            stableId,
+            environmentName,
+            activeVal);
     return ResponseEntity.ok(studyEnvSurveys);
   }
 
@@ -59,61 +64,59 @@ public class ConfiguredSurveyController implements ConfiguredSurveyApi {
       String envName,
       UUID configuredSurveyId,
       Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
 
     StudyEnvironmentSurvey savedSes =
         surveyExtService.updateConfiguredSurvey(
-            portalShortcode, environmentName, studyShortcode, configuredSurvey, adminUser);
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            configuredSurvey);
     return ResponseEntity.ok(savedSes);
   }
 
   @Override
   public ResponseEntity<Object> replace(
-      String portalShortcode,
-      String studyShortcode,
-      String envName,
-      UUID studyEnvSurveyId,
-      Object body) {
+      String portalShortcode, String studyShortcode, String envName, Object body) {
     AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey newStudyEnvSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
     newStudyEnvSurvey =
         surveyExtService.replace(
-            portalShortcode,
-            studyShortcode,
-            environmentName,
-            studyEnvSurveyId,
-            newStudyEnvSurvey,
-            operator);
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            newStudyEnvSurvey);
     return ResponseEntity.ok(newStudyEnvSurvey);
   }
 
   @Override
   public ResponseEntity<Object> create(
       String portalShortcode, String studyShortcode, String envName, Object body) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
     StudyEnvironmentSurvey configuredSurvey =
         objectMapper.convertValue(body, StudyEnvironmentSurvey.class);
 
     StudyEnvironmentSurvey savedSes =
         surveyExtService.createConfiguredSurvey(
-            portalShortcode, studyShortcode, environmentName, configuredSurvey, adminUser);
+            PortalStudyEnvAuthContext.of(
+                operator, portalShortcode, studyShortcode, environmentName),
+            configuredSurvey);
     return ResponseEntity.ok(savedSes);
   }
 
   @Override
   public ResponseEntity<Void> remove(
       String portalShortcode, String studyShortcode, String envName, UUID configuredSurveyId) {
-    AdminUser adminUser = authUtilService.requireAdminUser(request);
+    AdminUser operator = authUtilService.requireAdminUser(request);
     EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
 
     surveyExtService.removeConfiguredSurvey(
-        portalShortcode, studyShortcode, environmentName, configuredSurveyId, adminUser);
+        PortalStudyEnvAuthContext.of(operator, portalShortcode, studyShortcode, environmentName),
+        configuredSurveyId);
     return ResponseEntity.noContent().build();
   }
 }

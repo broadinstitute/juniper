@@ -2,7 +2,7 @@ import { exec } from 'child_process'
 
 const runPopulatePortalScript = (): Promise<undefined> => {
   return new Promise((resolve, reject) => {
-    exec('../scripts/populate_portal.sh demo', (err, stdout, stderr) => {
+    exec('../scripts/populate_portal.sh demo ourhealth', (err, stdout, stderr) => {
       if (err) {
         console.error(err.message)
         console.error(stderr)
@@ -31,7 +31,7 @@ const globalSetup = async () => {
   if (process.env.CI) {
     await runPopulatePortalScript()
   } else {
-    console.log('INFO - Skipping `populate_portal.sh demo` -- Non-CI env. assumes demo is already populated')
+    console.log('INFO - Skipping `populate_portal.sh demo ourhealth` -- Non-CI env. assumes demo is already populated')
   }
 }
 

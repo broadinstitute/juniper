@@ -2,16 +2,26 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Store } from 'react-notifications-component'
 
-import { StudyEnvContextT, studyEnvSiteContentPath } from 'study/StudyEnvironmentRouter'
+import {
+  StudyEnvContextT,
+  studyEnvSiteContentPath
+} from 'study/StudyEnvironmentRouter'
 import Api, { Survey } from 'api/api'
 
 import { successNotification } from 'util/notifications'
 import SurveyEditorView from './SurveyEditorView'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { useLoadedSurvey, useSurveyParams } from './SurveyView'
+import {
+  SaveableFormProps,
+  useLoadedSurvey,
+  useSurveyParams
+} from './SurveyView'
 import { doApiLoad } from 'api/api-utils'
 import { PortalEnvContext } from 'portal/PortalRouter'
-import { DocsKey, ZendeskLink } from 'util/zendeskUtils'
+import {
+  DocsKey,
+  ZendeskLink
+} from 'util/zendeskUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 
 /** Preregistration editor.  This shares a LOT in common with SurveyView and PreEnrollView,
@@ -25,10 +35,10 @@ function RawPreRegView({ studyEnvContext, portalEnvContext, survey, readOnly = f
   const [currentSurvey, setCurrentSurvey] = useState(survey)
 
   /** saves as a new version and updates the study environment accordingly */
-  async function createNewVersion({ content: updatedContent }: { content: string }): Promise<void> {
-    survey.content = updatedContent
+  async function createNewVersion(changes: SaveableFormProps): Promise<void> {
+    const newSurvey = { ...currentSurvey, ...changes }
     doApiLoad(async () => {
-      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, currentSurvey)
+      const updatedSurvey = await Api.createNewSurveyVersion(portal.shortcode, newSurvey)
       Store.addNotification(successNotification(`Survey saved successfully`))
       setCurrentSurvey(updatedSurvey)
       const updatedEnv = { ...portalEnv, preRegSurveyId: updatedSurvey.id }

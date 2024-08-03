@@ -1,12 +1,12 @@
 package bio.terra.pearl.api.admin.service.forms;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.*;
+import bio.terra.pearl.api.admin.service.auth.context.PortalAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyAuthContext;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.BaseEntity;
 import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.study.PortalStudy;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.model.survey.Survey;
@@ -51,38 +51,36 @@ public class SurveyExtService {
     this.enrolleeSearchExpressionParser = enrolleeSearchExpressionParser;
   }
 
-  public Survey get(String portalShortcode, String stableId, int version, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    Survey survey = authUtilService.authSurveyToPortal(portal, stableId, version);
+  @EnforcePortalPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public Survey get(PortalAuthContext authContext, String stableId, int version) {
+    Survey survey = authUtilService.authSurveyToPortal(authContext.getPortal(), stableId, version);
     surveyService.attachAnswerMappings(survey);
     return survey;
   }
 
-  public List<Survey> listVersions(String portalShortcode, String stableId, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+  @EnforcePortalPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public List<Survey> listVersions(PortalAuthContext authContext, String stableId) {
     // This is used to populate the version selector in the admin UI. It's not necessary
     // to return the surveys with any content or answer mappings, the response will
     // be too large. Instead, just get the individual versions as content is needed.
     List<Survey> surveys = surveyService.findByStableIdNoContent(stableId);
     List<Survey> surveysInPortal =
-        surveys.stream().filter(survey -> portal.getId().equals(survey.getPortalId())).toList();
+        surveys.stream()
+            .filter(survey -> authContext.getPortal().getId().equals(survey.getPortalId()))
+            .toList();
     return surveysInPortal;
   }
 
+  @EnforcePortalStudyPermission(permission = AuthUtilService.BASE_PERMISSON)
   public List<StudyEnvironmentSurvey> findWithSurveyNoContent(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
+      PortalStudyAuthContext authContext,
       String stableId,
-      Boolean active,
-      AdminUser operator) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
-    PortalStudy portalStudy =
-        authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
+      EnvironmentName envName,
+      Boolean active) {
     List<UUID> studyEnvIds =
         studyEnvIds =
             studyEnvironmentService
-                .findByStudy(portalStudy.getStudyId())
+                .findByStudy(authContext.getPortalStudy().getStudyId())
                 // if no envName is specified, include all environments, otherwise just include the
                 // specified one
                 .stream()
@@ -93,27 +91,26 @@ public class SurveyExtService {
     return studyEnvironmentSurveyService.findAllWithSurveyNoContent(studyEnvIds, stableId, active);
   }
 
-  public Survey create(String portalShortcode, Survey survey, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
-    List<Survey> existing = surveyService.findByStableId(survey.getStableId(), portal.getId());
+  @EnforcePortalPermission(permission = "survey_edit")
+  public Survey create(PortalAuthContext authContext, Survey survey) {
+    List<Survey> existing =
+        surveyService.findByStableId(survey.getStableId(), authContext.getPortal().getId());
     if (existing.size() > 0) {
       throw new IllegalArgumentException("A survey with that stableId already exists");
     }
     // ensure the rule can be parsed (if null/empty, this will be a no-op)
     enrolleeSearchExpressionParser.parseRule(survey.getEligibilityRule());
-    survey.setPortalId(portal.getId());
+    survey.setPortalId(authContext.getPortal().getId());
     survey.setVersion(1);
     return surveyService.create(survey);
   }
 
+  @EnforcePortalPermission(permission = "survey_edit")
   @Transactional
-  public void delete(String portalShortcode, String surveyStableId, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+  public void delete(PortalAuthContext authContext, String surveyStableId) {
     // Find all of the versions of the specified survey that are in the specified portal
     List<Survey> existingVersions =
-        surveyService.findByStableId(surveyStableId, portal.getId()).stream()
-            .filter(survey -> portal.getId().equals(survey.getPortalId()))
-            .toList();
+        surveyService.findByStableId(surveyStableId, authContext.getPortal().getId());
 
     if (existingVersions.size() == 0) {
       throw new NotFoundException("Survey not found");
@@ -154,87 +151,79 @@ public class SurveyExtService {
     }
   }
 
-  public Survey createNewVersion(String portalShortcode, Survey survey, AdminUser operator) {
-    Portal portal = authUtilService.authUserToPortal(operator, portalShortcode);
+  @EnforcePortalPermission(permission = "survey_edit")
+  public Survey createNewVersion(PortalAuthContext authContext, Survey survey) {
     // ensure the rule can be parsed (if null/empty, this will be a no-op)
     enrolleeSearchExpressionParser.parseRule(survey.getEligibilityRule());
-    return surveyService.createNewVersion(portal.getId(), survey);
+    return surveyService.createNewVersion(authContext.getPortal().getId(), survey);
   }
 
+  @SandboxOnly
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   public StudyEnvironmentSurvey createConfiguredSurvey(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      StudyEnvironmentSurvey surveyToConfigure,
-      AdminUser operator) {
-    AuthEntities authEntities =
-        authConfiguredSurveyRequest(
-            portalShortcode, envName, studyShortcode, surveyToConfigure, operator);
-
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey surveyToConfigure) {
+    SurveyAuthEntities surveyAuth = authConfiguredSurveyRequest(authContext, surveyToConfigure);
     StudyEnvironmentSurvey studyEnvSurvey = studyEnvironmentSurveyService.create(surveyToConfigure);
     eventService.publishSurveyPublishedEvent(
-        authEntities.portalEnv.getId(), authEntities.studyEnv.getId(), authEntities.survey());
+        surveyAuth.portalEnv.getId(),
+        authContext.getStudyEnvironment().getId(),
+        surveyAuth.survey());
     return studyEnvSurvey;
   }
 
+  @SandboxOnly
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   public void removeConfiguredSurvey(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      UUID configuredSurveyId,
-      AdminUser operator) {
+      PortalStudyEnvAuthContext authContext, UUID configuredSurveyId) {
     StudyEnvironmentSurvey configuredSurvey =
         studyEnvironmentSurveyService.find(configuredSurveyId).get();
-    authConfiguredSurveyRequest(
-        portalShortcode, envName, studyShortcode, configuredSurvey, operator);
+    authConfiguredSurveyRequest(authContext, configuredSurvey);
     studyEnvironmentSurveyService.deactivate(configuredSurveyId);
   }
 
+  @SandboxOnly
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   public StudyEnvironmentSurvey updateConfiguredSurvey(
-      String portalShortcode,
-      EnvironmentName envName,
-      String studyShortcode,
-      StudyEnvironmentSurvey updatedObj,
-      AdminUser operator) {
-    authConfiguredSurveyRequest(portalShortcode, envName, studyShortcode, updatedObj, operator);
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey updatedObj) {
+    authConfiguredSurveyRequest(authContext, updatedObj);
     StudyEnvironmentSurvey existing = studyEnvironmentSurveyService.find(updatedObj.getId()).get();
     BeanUtils.copyProperties(updatedObj, existing);
     return studyEnvironmentSurveyService.update(existing);
   }
 
   /**
-   * deactivates the studyEnvironmentSurvey with studyEnvrionmentSurveyId, and adds a new config as
-   * specified in the update object. Note that the portalEnvironmentId and studyEnvironmentId will
-   * be set from the portalShortcode and studyShortcode params.
+   * deactivates any existing active studyEnvironmentSurvey for the given stableId, and adds a new
+   * config as specified in the update object. Note that the portalEnvironmentId and
+   * studyEnvironmentId will be set from the portalShortcode and studyShortcode params, and the
+   * order will be pulled from the prior active version.
    */
+  @SandboxOnly
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
   @Transactional
   public StudyEnvironmentSurvey replace(
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      UUID studyEnvironmentSurveyId,
-      StudyEnvironmentSurvey update,
-      AdminUser operator) {
-    authUtilService.authUserToPortal(operator, portalShortcode);
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey update) {
+    SurveyAuthEntities authEntities = authConfiguredSurveyRequest(authContext, update);
+    List<StudyEnvironmentSurvey> existingActives =
+        studyEnvironmentSurveyService.findActiveBySurvey(
+            authContext.getStudyEnvironment().getId(), authEntities.survey().getStableId());
+    if (existingActives.size() == 0) {
+      throw new NotFoundException("No active survey found for the given stableId");
+    }
+    existingActives.forEach(
+        existing -> {
+          existing.setActive(false);
+          studyEnvironmentSurveyService.update(existing);
+        });
+    // preserve the surveyOrder from the existing active config
+    update.setSurveyOrder(existingActives.get(0).getSurveyOrder());
 
-    AuthEntities authEntities =
-        authConfiguredSurveyRequest(
-            portalShortcode, environmentName, studyShortcode, update, operator);
-    StudyEnvironmentSurvey existing =
-        studyEnvironmentSurveyService
-            .find(studyEnvironmentSurveyId)
-            .orElseThrow(
-                () ->
-                    new NotFoundException(
-                        "No existing StudyEnvironmentSurvey with id " + studyEnvironmentSurveyId));
-    verifyStudyEnvironmentSurvey(existing, authEntities.studyEnv);
     StudyEnvironmentSurvey newConfig =
         studyEnvironmentSurveyService.create(update.cleanForCopying());
-    // after creating the new config, deactivate the old config
-    existing.setActive(false);
-    studyEnvironmentSurveyService.update(existing);
+
     eventService.publishSurveyPublishedEvent(
-        authEntities.portalEnv.getId(), authEntities.studyEnv.getId(), authEntities.survey());
+        authEntities.portalEnv.getId(),
+        authContext.getStudyEnvironment().getId(),
+        authEntities.survey());
     return newConfig;
   }
 
@@ -243,33 +232,25 @@ public class SurveyExtService {
    * and that it's in the sandbox environment. Returns the study environment for which the change is
    * being made in.
    */
-  protected AuthEntities authConfiguredSurveyRequest(
-      String portalShortcode,
-      EnvironmentName envName,
-      String studyShortcode,
-      StudyEnvironmentSurvey updatedObj,
-      AdminUser operator) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    StudyEnvironment studyEnv = studyEnvironmentService.findByStudy(studyShortcode, envName).get();
-    if (!EnvironmentName.sandbox.equals(envName)) {
-      throw new IllegalArgumentException(
-          "Updates can only be made directly to the sandbox environment".formatted(envName));
-    }
-    if (!studyEnv.getId().equals(updatedObj.getStudyEnvironmentId())) {
+  protected SurveyAuthEntities authConfiguredSurveyRequest(
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentSurvey updatedObj) {
+
+    if (!authContext.getStudyEnvironment().getId().equals(updatedObj.getStudyEnvironmentId())) {
       throw new IllegalArgumentException(
           "Study environment id in request body does not belong to this study");
     }
     PortalEnvironment portalEnvironment =
-        portalEnvironmentService.findOne(portalShortcode, envName).get();
+        portalEnvironmentService
+            .findOne(authContext.getPortalShortcode(), authContext.getEnvironmentName())
+            .get();
     Survey survey = surveyService.find(updatedObj.getSurveyId()).get();
     if (!portalEnvironment.getPortalId().equals(survey.getPortalId())) {
       throw new IllegalArgumentException("Survey does not belong to the specified portal");
     }
-    return new AuthEntities(studyEnv, portalEnvironment, survey);
+    return new SurveyAuthEntities(portalEnvironment, survey);
   }
 
-  private record AuthEntities(
-      StudyEnvironment studyEnv, PortalEnvironment portalEnv, Survey survey) {}
+  private record SurveyAuthEntities(PortalEnvironment portalEnv, Survey survey) {}
 
   /** confirms the given config is associated with the given study */
   private void verifyStudyEnvironmentSurvey(

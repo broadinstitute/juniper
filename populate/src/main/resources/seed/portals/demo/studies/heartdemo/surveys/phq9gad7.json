@@ -5,7 +5,7 @@
   "footer": "UHS Rev 4/2020, Developed by Drs. Robert L. Spitzer, Janet B.W. Williams, Kurt Kroenke and colleagues, with an educational grant from Pfizer Inc., No permission required to reproduce, translate, display or distribute, 1999. ",
   "jsonContent": {
     "title": {
-      "default": "Mental Health",
+      "en": "Mental Health",
       "es": "Salud Mental",
       "dev": "DEV_Mental Health"
     },

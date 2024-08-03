@@ -6,9 +6,10 @@ import { LoadedPortalContextT } from 'portal/PortalProvider'
 import StudyEnvironmentRouter from './StudyEnvironmentRouter'
 import StudyDashboard from './StudyDashboard'
 import PortalEnvDiffProvider from '../portal/publish/PortalEnvDiffProvider'
-import StudyPublishingView from './publishing/StudyPublishingView'
-import LoadingSpinner from '../util/LoadingSpinner'
-import { PortalAdminUserRouter } from '../user/AdminUserRouter'
+import PortalPublishingView from './publishing/PortalPublishingView'
+import LoadingSpinner from 'util/LoadingSpinner'
+import { PortalAdminUserRouter } from 'user/AdminUserRouter'
+import PortalChangeHistoryView from '../portal/publish/PortalChangeHistoryView'
 
 export type StudyContextT = {
   updateStudy: (study: Study) => void
@@ -57,12 +58,16 @@ function StudyRouterFromShortcode({ shortcode, portalContext }:
   return <>
     <Routes>
       <Route path="env/:studyEnv/*" element={<StudyEnvironmentRouter study={study}/>}/>
-      <Route path="diff/:sourceEnvName/:destEnvName" element={
-        <PortalEnvDiffProvider portal={portalContext.portal}
-          reloadPortal={() => portalContext.reloadPortal(portalContext.portal.shortcode)}
+      <Route path="publishing">
+        <Route path="diff/:sourceEnvName/:destEnvName" element={
+          <PortalEnvDiffProvider portal={portalContext.portal}
+            reloadPortal={() => portalContext.reloadPortal(portalContext.portal.shortcode)}
+            studyShortcode={study.shortcode}/>}/>
+        <Route path="history" element={<PortalChangeHistoryView portal={portalContext.portal}/>}/>
+        <Route index element={<PortalPublishingView portal={portalContext.portal}
           studyShortcode={study.shortcode}/>}/>
-      <Route path="publishing" element={<StudyPublishingView portal={portalContext.portal}
-        studyShortcode={study.shortcode}/>}/>
+      </Route>
+
       <Route path="users/*" element={<PortalAdminUserRouter portal={portalContext.portal}
         study={study}/>}/>
       <Route index element={<StudyDashboard study={study}/>}/>
@@ -90,5 +95,5 @@ export const studyPublishingPath = (portalShortcode: string, studyShortcode: str
 /** path for showing the diff between two study environments */
 export const studyDiffPath = (portalShortcode: string, studyShortcode: string,
   srcEnvName: string, destEnvName: string) => {
-  return `/${portalShortcode}/studies/${studyShortcode}/diff/${srcEnvName}/${destEnvName}`
+  return `/${portalShortcode}/studies/${studyShortcode}/publishing/diff/${srcEnvName}/${destEnvName}`
 }

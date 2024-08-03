@@ -22,7 +22,6 @@ import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.survey.event.SurveyPublishedEvent;
 import bio.terra.pearl.core.service.workflow.*;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.internal.concurrent.Task;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -185,7 +184,7 @@ public class SurveyTaskDispatcher {
         }
         if (event.getSurvey().isAssignToExistingEnrollees()) {
             ParticipantTaskAssignDto assignDto = new ParticipantTaskAssignDto(
-                    TaskType.SURVEY,
+                    taskTypeForSurveyType.get(event.getSurvey().getSurveyType()),
                     event.getSurvey().getStableId(),
                     event.getSurvey().getVersion(),
                 null,
@@ -248,7 +247,8 @@ public class SurveyTaskDispatcher {
     private final Map<SurveyType, TaskType> taskTypeForSurveyType = Map.of(
             SurveyType.CONSENT, TaskType.CONSENT,
             SurveyType.RESEARCH, TaskType.SURVEY,
-            SurveyType.OUTREACH, TaskType.OUTREACH
+            SurveyType.OUTREACH, TaskType.OUTREACH,
+            SurveyType.ADMIN, TaskType.ADMIN_FORM
     );
 
     /**

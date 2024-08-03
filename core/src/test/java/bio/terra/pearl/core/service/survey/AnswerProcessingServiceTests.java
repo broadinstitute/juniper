@@ -9,6 +9,8 @@ import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.address.MailingAddress;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -18,6 +20,7 @@ import bio.terra.pearl.core.model.survey.AnswerMappingMapType;
 import bio.terra.pearl.core.model.survey.AnswerMappingTargetType;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.ObjectWithChangeLog;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.ProfileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Assertions;
@@ -41,6 +44,8 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
     private AnswerProcessingService answerProcessingService;
     @Autowired
     private ProfileService profileService;
+    @Autowired
+    private ParticipantUserService participantUserService;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -101,11 +106,31 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
 
         List<Profile> before = profileService.findAll();
         answerProcessingService.processAllAnswerMappings(null, answers,
-                new ArrayList<>(), null, DataAuditInfo.builder().build());
+                new ArrayList<>(), null, null, DataAuditInfo.builder().build());
         List<Profile> after = profileService.findAll();
 
         // no profiles were added or removed, in other words, no-op
         Assertions.assertEquals(before.size(), after.size());
+    }
+
+    @Test
+    public void mapStringToStringTrims() {
+        AnswerMapping mapping = new AnswerMapping();
+        Object result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_STRING)
+                .apply(Answer.builder().stringValue("  foo  ").build(), mapping);
+        assertThat((String) result, equalTo("foo"));
+    }
+
+    @Test
+    public void mapStringToBoolean() {
+        AnswerMapping mapping = new AnswerMapping();
+        Object result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
+                .apply(Answer.builder().stringValue("true").build(), mapping);
+        assertThat((Boolean) result, equalTo(true));
+
+        result = AnswerProcessingService.JSON_MAPPERS.get(AnswerMappingMapType.STRING_TO_BOOLEAN)
+                .apply(Answer.builder().stringValue("false").build(), mapping);
+        assertThat((Boolean) result, equalTo(false));
     }
 
     @Test
@@ -153,7 +178,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
                 "testSurvey_q1", "myFirstName",
-                "testSurvey_q2", "addressPart1",
+                "testSurvey_q2", "addressPart1 ",
                 "testSurvey_q3", "11/12/1987"
         ));
         List<AnswerMapping> mappings = List.of(
@@ -183,6 +208,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
                 answers,
                 mappings,
                 enrolleeBundle.portalParticipantUser(),
+                new ResponsibleEntity(enrolleeBundle.participantUser()),
                 DataAuditInfo.builder()
                         .responsibleUserId(enrolleeBundle.portalParticipantUser().getParticipantUserId())
                         .enrolleeId(enrolleeBundle.enrollee().getId())
@@ -202,6 +228,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
         PortalEnvironment portalEnv = portalEnvironmentFactory.buildPersisted(getTestName(info), EnvironmentName.irb);
         StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(portalEnv, getTestName(info));
         EnrolleeFactory.EnrolleeAndProxy enrolleeAndProxy = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), portalEnv, studyEnv);
+        ParticipantUser pUser = participantUserService.find(enrolleeAndProxy.proxyPpUser().getParticipantUserId()).orElseThrow();
         Survey survey = surveyFactory.buildPersisted(getTestName(info));
 
         List<Answer> answers = AnswerFactory.fromMap(Map.of(
@@ -258,6 +285,7 @@ public class AnswerProcessingServiceTests extends BaseSpringBootTest {
                 answers,
                 mappings,
                 enrolleeAndProxy.proxyPpUser(),
+                new ResponsibleEntity(pUser),
                 DataAuditInfo.builder()
                         .responsibleUserId(enrolleeAndProxy.proxyPpUser().getParticipantUserId())
                         .enrolleeId(enrolleeAndProxy.governedEnrollee().getId())

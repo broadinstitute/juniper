@@ -7,19 +7,18 @@ import bio.terra.pearl.core.dao.workflow.ParticipantTaskDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
+import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.SurveyResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.survey.SurveyResponseService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import org.springframework.context.annotation.Lazy;
@@ -33,26 +32,26 @@ import java.util.stream.Collectors;
 
 @Service
 public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
-    public static final String PARTICIPANT_SHORTCODE_ALLOWED_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    public static final int PARTICIPANT_SHORTCODE_LENGTH = 6;
     private final ParticipantTaskDao participantTaskDao;
     private final SurveyResponseDao surveyResponseDao;
     private final ProfileService profileService;
-    private SurveyResponseService surveyResponseService;
-    private ParticipantTaskService participantTaskService;
-    private StudyEnvironmentService studyEnvironmentService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private NotificationService notificationService;
-    private DataChangeRecordService dataChangeRecordService;
-    private WithdrawnEnrolleeService withdrawnEnrolleeService;
-    private ParticipantUserService participantUserService;
-    private PortalParticipantUserService portalParticipantUserService;
-    private ParticipantNoteService participantNoteService;
-    private KitRequestService kitRequestService;
-    private AdminTaskService adminTaskService;
-    private SecureRandom secureRandom;
-    private RandomUtilService randomUtilService;
-    private EnrolleeRelationService enrolleeRelationService;
+    private final SurveyResponseService surveyResponseService;
+    private final ParticipantTaskService participantTaskService;
+    private final StudyEnvironmentService studyEnvironmentService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final NotificationService notificationService;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final WithdrawnEnrolleeService withdrawnEnrolleeService;
+    private final ParticipantUserService participantUserService;
+    private final PortalParticipantUserService portalParticipantUserService;
+    private final ParticipantNoteService participantNoteService;
+    private final KitRequestService kitRequestService;
+    private final SecureRandom secureRandom;
+    private final RandomUtilService randomUtilService;
+    private final EnrolleeRelationService enrolleeRelationService;
+    private final FamilyService familyService;
+    private final ShortcodeService shortcodeService;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public EnrolleeService(EnrolleeDao enrolleeDao,
                            SurveyResponseDao surveyResponseDao,
@@ -68,10 +67,11 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                            @Lazy ParticipantUserService participantUserService,
                            ParticipantNoteService participantNoteService,
                            KitRequestService kitRequestService,
-                           AdminTaskService adminTaskService, SecureRandom secureRandom,
+                           SecureRandom secureRandom,
                            RandomUtilService randomUtilService,
                            EnrolleeRelationService enrolleeRelationService,
-                           PortalParticipantUserService portalParticipantUserService) {
+                           PortalParticipantUserService portalParticipantUserService,
+                           FamilyService familyService, ShortcodeService shortcodeService, FamilyEnrolleeService familyEnrolleeService) {
         super(enrolleeDao);
         this.surveyResponseDao = surveyResponseDao;
         this.participantTaskDao = participantTaskDao;
@@ -86,11 +86,13 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         this.participantUserService = participantUserService;
         this.participantNoteService = participantNoteService;
         this.kitRequestService = kitRequestService;
-        this.adminTaskService = adminTaskService;
         this.secureRandom = secureRandom;
         this.randomUtilService = randomUtilService;
         this.enrolleeRelationService = enrolleeRelationService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.familyService = familyService;
+        this.shortcodeService = shortcodeService;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     public Optional<Enrollee> findOneByShortcode(String shortcode) {
@@ -136,6 +138,8 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         enrollee.getParticipantTasks().addAll(participantTaskService.findByEnrolleeId(enrollee.getId()));
         enrollee.getKitRequests().addAll(kitRequestService.findByEnrollee(enrollee));
         enrollee.setProfile(profileService.loadWithMailingAddress(enrollee.getProfileId()).orElseThrow(() -> new IllegalStateException("enrollee does not have a profile")));
+        enrollee.setFamilyEnrollees(familyEnrolleeService.findByEnrolleeId(enrollee.getId()));
+        enrollee.setRelations(enrolleeRelationService.findAllByEnrolleeOrTargetId(enrollee.getId()));
         return enrollee;
     }
 
@@ -208,7 +212,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
         for (SurveyResponse surveyResponse : surveyResponseService.findByEnrolleeId(enrolleeId)) {
             surveyResponseService.delete(surveyResponse.getId(), cascades);
         }
-        adminTaskService.deleteByEnrolleId(enrolleeId, null);
         participantNoteService.deleteByEnrollee(enrolleeId);
         kitRequestService.deleteByEnrolleeId(enrolleeId, cascades);
 
@@ -236,7 +239,7 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
     @Transactional
     public Enrollee create(Enrollee enrollee) {
         if (enrollee.getShortcode() == null) {
-            enrollee.setShortcode(generateShortcode());
+            enrollee.setShortcode(shortcodeService.generateShortcode(null, dao::findOneByShortcode));
         }
         Enrollee savedEnrollee = dao.create(enrollee);
         logger.info("Enrollee created.  id: {}, shortcode: {}, participantUserId: {}", savedEnrollee.getId(),
@@ -254,27 +257,6 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                                      String targetStableId,
                                      Integer targetAssignedVersion) {
         return dao.findUnassignedToTask(studyEnvironmentId, targetStableId, targetAssignedVersion);
-    }
-
-    /** It's possible there are snazzier ways to get postgres to generate this for us,
-     * but for now, just keep trying strings until we get a unique one
-     * returns null if we couldn't generate one.
-     */
-    @Transactional
-    public String generateShortcode() {
-        int MAX_TRIES = 10;
-        String shortcode = null;
-        for (int tryNum = 0; tryNum < MAX_TRIES; tryNum++) {
-            String possibleShortcode = randomUtilService.generateSecureRandomString(PARTICIPANT_SHORTCODE_LENGTH, PARTICIPANT_SHORTCODE_ALLOWED_CHARS);
-            if (dao.findOneByShortcode(possibleShortcode).isEmpty()) {
-                shortcode = possibleShortcode;
-                break;
-            }
-        }
-        if (shortcode == null) {
-            throw new InternalServerException("Unable to generate unique shortcode");
-        }
-        return shortcode;
     }
 
     public Optional<Enrollee> findByParticipantUserIdAndStudyEnvId(UUID participantUserId, UUID studyEnvId) {
@@ -298,6 +280,33 @@ public class EnrolleeService extends CrudService<Enrollee, EnrolleeDao> {
                             .filter(enrollee -> enrollee.getStudyEnvironmentId().equals(environment.getId()));
                 });
 
+    }
+
+    public Optional<Enrollee> findByShortcodeAndStudyEnvId(String enrolleeShortcode, UUID studyEnvId) {
+        return dao.findByShortcodeAndStudyEnvId(enrolleeShortcode, studyEnvId);
+    }
+
+    public Enrollee attachProfile(Enrollee enrollee) {
+        Optional<Profile> profiles = profileService.find(enrollee.getProfileId());
+
+        profiles.ifPresent(enrollee::setProfile);
+
+        return enrollee;
+    }
+
+
+    public List<Enrollee> attachProfiles(List<Enrollee> enrollees) {
+        List<Profile> profiles = profileService.findAllPreserveOrder(enrollees.stream().map(Enrollee::getProfileId).toList());
+
+        for (int i = 0; i < enrollees.size(); i++) {
+            enrollees.get(i).setProfile(profiles.get(i));
+        }
+
+        return enrollees;
+    }
+
+    public List<Enrollee> findAllByFamilyId(UUID id) {
+        return dao.findAllByFamilyId(id);
     }
 
     public enum AllowedCascades implements CascadeProperty {

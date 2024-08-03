@@ -3,18 +3,23 @@ import React, { useId } from 'react'
 import InfoPopup from './InfoPopup'
 
 export type TextInputProps = Omit<JSX.IntrinsicElements['input'], 'onChange'> & {
-  infoContent?: React.ReactNode,
+  infoContent?: React.ReactNode
   description?: string
   required?: boolean
   label?: string
-  labelClassname?: string,
-  placeholder?: string,
+  labelClassname?: string
+  unboldLabel?: boolean // by default, form labels are 'fw-semibold', set this to not apply that style
+  placeholder?: string
   onChange?: (value: string) => void
 }
 
 /** A text input with label and description. */
 export const TextInput = (props: TextInputProps) => {
-  const { infoContent, description, required, label, labelClassname, placeholder, ...inputProps } = props
+  const {
+    infoContent, description,
+    required, label, labelClassname, unboldLabel,
+    placeholder, ...inputProps
+  } = props
   const { className, disabled, id, value, onChange } = inputProps
 
   const generatedId = useId()
@@ -24,11 +29,11 @@ export const TextInput = (props: TextInputProps) => {
   return (
     <>
       {label && <label
-        className={classNames('form-label', 'fw-semibold', labelClassname)}
+        className={classNames('form-label', unboldLabel ? '' :'fw-semibold', labelClassname)}
         htmlFor={inputId}
       >
         {label}
-        {required && <span className="text-danger">*</span>}
+        {required && <span className="text-danger ms-1">*</span>}
       </label>}
       {infoContent && <InfoPopup content={infoContent}/>}
       <input

@@ -1,0 +1,32 @@
+{
+  "stableId": "depressionOutreach",
+  "version": 1,
+  "surveyType": "OUTREACH",
+  "name": "Depression sleep study",
+  "blurb": "Now enrolling participants with depression for a sleep study",
+  "eligibilityRule": "{answer.hd_hd_mental.hd_hd_mental_phq9LostInterest} = '3'",
+  "jsonContent": {
+    "title": {
+      "en": "Depression sleep study",
+      "es": "Estudio del sueño de depresión",
+      "dev": "Depression sleep study"
+    },
+    "showQuestionNumbers": "off",
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "description",
+                "type": "html",
+                "html": "<p>Your survey answers indicate you may be eligible for a depression sleep study.  We're trying to identify links between activity interest levels and sleep quality. </p><p> Click <a href=\"https://serta.com\" target=\"_blank\">here</a> to learn more.</p>"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -13,6 +13,7 @@ import bio.terra.pearl.core.service.study.StudyService;
 import bio.terra.pearl.core.service.workflow.EnrollmentService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.With;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +30,11 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
     private final EnrollmentService enrollmentService;
     private final StudyEnvironmentService studyEnvironmentService;
     private final StudyService studyService;
+    private final FamilyEnrolleeService familyEnrolleeService;
 
     public WithdrawnEnrolleeService(WithdrawnEnrolleeDao dao, EnrolleeService enrolleeService, ObjectMapper objectMapper,
                                     PortalParticipantUserService portalParticipantUserService, ParticipantUserService participantUserService,
-                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService) {
+                                    EnrolleeRelationService enrolleeRelationService, EnrollmentService enrollmentService, StudyEnvironmentService studyEnvironmentService, StudyService studyService, FamilyEnrolleeService familyEnrolleeService) {
         super(dao);
         this.enrolleeService = enrolleeService;
         this.objectMapper = objectMapper;
@@ -42,10 +44,16 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
         this.enrollmentService = enrollmentService;
         this.studyEnvironmentService = studyEnvironmentService;
         this.studyService = studyService;
+        this.familyEnrolleeService = familyEnrolleeService;
     }
 
     public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
         dao.deleteByStudyEnvironmentId(studyEnvironmentId);
+    }
+
+    /** Returns a list of WithdrawnEnrollees for the given study environment, but without the enrollee data. */
+    public List<WithdrawnEnrollee> findByStudyEnvironmentIdNoData(UUID studyEnvironmentId) {
+        return dao.findByStudyEnvironmentIdNoData(studyEnvironmentId);
     }
 
     public int countByStudyEnvironmentId(UUID studyEnvironmentId) {
@@ -82,6 +90,7 @@ public class WithdrawnEnrolleeService extends ImmutableEntityService<WithdrawnEn
 
             enrolleeRelationService.deleteAllByEnrolleeIdOrTargetId(enrollee.getId());
             enrolleeService.delete(enrollee.getId(), CascadeProperty.EMPTY_SET);
+            familyEnrolleeService.deleteByEnrolleeId(enrollee.getId()); // delete all family relationships
 
             //now withdraw all the proxied users
             for (Enrollee proxy : proxiesOnlyProxyingForThisUser) {

@@ -8,7 +8,8 @@ import bio.terra.pearl.core.model.dataimport.ImportItem;
 import bio.terra.pearl.core.model.dataimport.ImportItemStatus;
 import bio.terra.pearl.core.model.dataimport.ImportStatus;
 import bio.terra.pearl.core.model.dataimport.ImportType;
-import bio.terra.pearl.core.model.audit.ResponsibleEntity;
+import bio.terra.pearl.core.model.kit.KitRequest;
+import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
@@ -23,9 +24,12 @@ import bio.terra.pearl.core.service.dataimport.ImportItemService;
 import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import bio.terra.pearl.core.service.export.formatters.module.EnrolleeFormatter;
+import bio.terra.pearl.core.service.export.formatters.module.KitRequestFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ParticipantUserFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.ProfileFormatter;
 import bio.terra.pearl.core.service.export.formatters.module.SurveyFormatter;
+import bio.terra.pearl.core.service.kit.KitRequestDto;
+import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.core.service.participant.PortalParticipantUserService;
@@ -92,6 +96,7 @@ public class EnrolleeImportService {
     private final TimeShiftPopulateDao timeShiftPopulateDao;
     private final ImportService importService;
     private final ImportItemService importItemService;
+    private final KitRequestService kitRequestService;
     private final char CSV_DELIMITER = ',';
     private final char TSV_DELIMITER = '\t';
 
@@ -100,7 +105,7 @@ public class EnrolleeImportService {
                                  SurveyResponseService surveyResponseService, ParticipantTaskService participantTaskService, PortalService portalService,
                                  ImportService importService, ImportItemService importItemService, SurveyTaskDispatcher surveyTaskDispatcher,
                                  TimeShiftPopulateDao timeShiftPopulateDao, EnrolleeService enrolleeService, ParticipantUserService participantUserService,
-                                 PortalParticipantUserService portalParticipantUserService) {
+                                 PortalParticipantUserService portalParticipantUserService, KitRequestService kitRequestService) {
         this.registrationService = registrationService;
         this.enrollmentService = enrollmentService;
         this.profileService = profileService;
@@ -115,6 +120,7 @@ public class EnrolleeImportService {
         this.enrolleeService = enrolleeService;
         this.participantUserService = participantUserService;
         this.portalParticipantUserService = portalParticipantUserService;
+        this.kitRequestService = kitRequestService;
     }
 
     @Transactional
@@ -144,7 +150,7 @@ public class EnrolleeImportService {
             Enrollee enrollee = null;
             ImportItem importItem;
             try {
-                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions);
+                enrollee = importEnrollee(portalShortcode, studyShortcode, studyEnv, enrolleeMap, exportOptions, adminId);
                 importItem = ImportItem.builder()
                         .createdEnrolleeId(enrollee.getId())
                         .importId(dataImport.getId())
@@ -204,7 +210,7 @@ public class EnrolleeImportService {
         }
     }
 
-    public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions) {
+    public Enrollee importEnrollee(String portalShortcode, String studyShortcode, StudyEnvironment studyEnv, Map<String, String> enrolleeMap, ExportOptions exportOptions, UUID adminId) {
         /** while importing handle update for existing import
          if same enrolle: update enrollee
          if same participant & same portal.. new enrollee & same profile
@@ -215,7 +221,6 @@ public class EnrolleeImportService {
                 DataAuditInfo.systemProcessName(getClass(), "importEnrollee")
         ).build();
 
-        //
         ParticipantUserFormatter participantUserFormatter = new ParticipantUserFormatter(exportOptions);
         final ParticipantUser participantUserInfo = participantUserFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
 
@@ -226,12 +231,42 @@ public class EnrolleeImportService {
         /** now update the profile */
         Profile profile = importProfile(enrolleeMap, regResult.profile(), exportOptions, studyEnv, auditInfo);
 
+        /** populate kit_requests */
+        importKitRequests(enrolleeMap, adminId, enrollee);
+
         importSurveyResponses(portalShortcode, enrolleeMap, exportOptions, studyEnv, regResult.portalParticipantUser(), enrollee, auditInfo);
 
         /** restore email */
         profile.setDoNotEmail(false);
         profileService.update(profile, auditInfo);
         return enrollee;
+    }
+
+    private void importKitRequests(Map<String, String> enrolleeMap, UUID adminId, Enrollee enrollee) {
+        new KitRequestFormatter().listFromStringMap(enrolleeMap).stream().map(
+                kitRequestDto -> kitRequestService.create(convertKitRequestDto(adminId, enrollee, kitRequestDto))).toList();
+    }
+
+    private KitRequest convertKitRequestDto(
+            UUID adminUserId,
+            Enrollee enrollee,
+            KitRequestDto kitRequestDto) {
+
+        KitType kitType = kitRequestService.lookupKitTypeByName(kitRequestDto.getKitType().getName());
+        return KitRequest.builder()
+                .creatingAdminUserId(adminUserId)
+                .enrolleeId(enrollee.getId())
+                .status(kitRequestDto.getStatus())
+                .sentToAddress(kitRequestDto.getSentToAddress())
+                .skipAddressValidation(kitRequestDto.isSkipAddressValidation())
+                .kitTypeId(kitType.getId())
+                .createdAt(kitRequestDto.getCreatedAt())
+                .labeledAt(kitRequestDto.getLabeledAt())
+                .sentAt(kitRequestDto.getSentAt())
+                .receivedAt(kitRequestDto.getReceivedAt())
+                .trackingNumber(kitRequestDto.getTrackingNumber())
+                .returnTrackingNumber(kitRequestDto.getReturnTrackingNumber())
+                .build();
     }
 
     private RegistrationService.RegistrationResult registerIfNeeded(String portalShortcode, StudyEnvironment studyEnv, ParticipantUser participantUserInfo) {
@@ -274,6 +309,8 @@ public class EnrolleeImportService {
                                     ExportOptions exportOptions, StudyEnvironment studyEnv, DataAuditInfo auditInfo) {
         ProfileFormatter profileFormatter = new ProfileFormatter(exportOptions);
         Profile profile = profileFormatter.fromStringMap(studyEnv.getId(), enrolleeMap);
+        // we still don't want to send emails during the import process
+        profile.setDoNotEmail(true);
         profile.setId(registrationProfile.getId());
         profile.setMailingAddressId(registrationProfile.getMailingAddressId());
         profile.getMailingAddress().setId(registrationProfile.getMailingAddressId());
@@ -322,6 +359,6 @@ public class EnrolleeImportService {
         }
         // we're not worrying about dating the response yet
         return surveyResponseService.updateResponse(response, new ResponsibleEntity(DataAuditInfo.systemProcessName(getClass(), "importSurveyResponse")),
-                        ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
+                "Imported", ppUser, enrollee, relatedTask.getId(), portalId).getResponse();
     }
 }

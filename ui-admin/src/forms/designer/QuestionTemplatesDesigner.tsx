@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { FormContent } from '@juniper/ui-core'
+import { FormContent, PortalEnvironmentLanguage } from '@juniper/ui-core'
 
 import { QuestionTemplateList } from './QuestionTemplateList'
 import { Button } from 'components/forms/Button'
@@ -11,6 +11,8 @@ import { NewQuestionForm } from './NewQuestionForm'
 
 type QuestionTemplatesDesignerProps = {
   formContent: FormContent
+  currentLanguage: PortalEnvironmentLanguage
+  supportedLanguages: PortalEnvironmentLanguage[]
   readOnly: boolean
   onChange: (newValue: FormContent) => void
 }
@@ -44,6 +46,8 @@ export const QuestionTemplatesDesigner = (props: QuestionTemplatesDesignerProps)
           <Modal.Body>
             <NewQuestionForm
               readOnly={readOnly}
+              currentLanguage={props.currentLanguage}
+              supportedLanguages={props.supportedLanguages}
               questionTemplates={[]} //Question templates can't be based off of other templates, so don't pass any in
               onCreate={newQuestionTemplate => {
                 setShowCreateQuestionTemplateModal(false)

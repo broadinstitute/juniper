@@ -33,6 +33,8 @@
       },
       "participantUserFiles": [
         "participants/jsalk.json",
+        "participants/psalk.json",
+        "participants/dsalk.json",
         "participants/newEnrollee.json",
         "participants/consentedEnrollee.json",
         "participants/basicsDone.json",
@@ -41,8 +43,9 @@
         "participants/proxy.json",
         "participants/proxyFamily2.json",
         "participants/invited.json",
-        "participants/unenrolled.json"
-
+        "participants/unenrolled.json",
+        "participants/lostInterest.json",
+        "participants/lostInterestNo.json"
       ],
       "mailingListContacts": [
         {
@@ -97,8 +100,8 @@
     }
   ],
   "adminUsers": [
-    {"username": "staff@heartdemo.org", "roleNames": ["study_admin"]},
-    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester"]}
+    {"username": "heartdemostaff@gmail.com", "roleNames": ["study_admin"]},
+    {"username": "power_user@heartdemo.org", "roleNames": ["study_admin", "prototype_tester", "power_user", "publisher"]}
   ],
   "siteMediaDtos": [
     {
@@ -155,5 +158,20 @@
       "populateFileName": "media/globe_and_hearts.png"
   }, {
       "populateFileName": "media/favicon.ico"
-  }]
+  }],
+  "portalEnvironmentChangeRecordPopDtos": [
+    {
+      "submittedHoursAgo": 48,
+      "adminUsername": "power_user@heartdemo.org",
+      "environmentName": "irb",
+      "portalEnvironmentChangeJson": {
+        "configChanges": [
+          {
+            "propertyName": "acceptingRegistration",
+            "oldValue": false,
+            "newValue": true
+          }]
+      }
+    }
+  ]
 }

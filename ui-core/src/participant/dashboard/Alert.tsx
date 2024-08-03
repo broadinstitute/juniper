@@ -46,8 +46,6 @@ export type AlertProps = {
   onDismiss?: () => void
 } & JSX.IntrinsicElements['div']
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const Alert = (props: AlertProps) => {
   const { className, icon, level = 'INFO', title, detail, onDismiss, ...otherProps } = props
   const renderedIcon = icon ? icon : getDefaultIcon(level)

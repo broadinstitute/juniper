@@ -2,19 +2,28 @@ import React, { useState } from 'react'
 import Api, { DataChangeRecord } from 'api/api'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import LoadingSpinner from 'util/LoadingSpinner'
-import { Enrollee, findDifferencesBetweenObjects, instantToDefaultString, ObjectDiff } from '@juniper/ui-core'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
-import { ColumnDef, getCoreRowModel, getSortedRowModel, SortingState, useReactTable } from '@tanstack/react-table'
-import { basicTableLayout } from '../../util/tableUtils'
-import { useLoadingEffect } from '../../api/api-utils'
-import { isEmpty } from 'lodash'
+import {
+  Enrollee,
+  instantToDefaultString
+} from '@juniper/ui-core'
+import {
+  ColumnDef,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
+import { basicTableLayout } from 'util/tableUtils'
+import { useLoadingEffect } from 'api/api-utils'
+import { useAdminUserContext } from 'providers/AdminUserProvider'
+import { renderDiff } from 'util/changeRecordUtils'
 
 
 /** loads the list of notifications for a given enrollee and displays them in the UI */
 export default function DataChangeRecords({ enrollee, studyEnvContext }:
                                                 {enrollee: Enrollee, studyEnvContext: StudyEnvContextT }) {
   const { currentEnv, study, portal } = studyEnvContext
+  const { users } = useAdminUserContext()
   const [notifications, setNotifications] = useState<DataChangeRecord[]>([])
 
   const [sorting, setSorting] = React.useState<SortingState>([{ 'id': 'createdAt', 'desc': true }])
@@ -32,44 +41,7 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
     {
       header: 'Update',
       cell: ({ row }) => {
-        const diffs: ObjectDiff[] = []
-
-        try {
-          const newObject: {
-            [index: string]: object
-          } = !isEmpty(row.original.newValue) ? JSON.parse(row.original.newValue) : {}
-          const oldObject: {
-            [index: string]: object
-          } = !isEmpty(row.original.oldValue) ? JSON.parse(row.original.oldValue) : {}
-
-          if ((newObject && typeof newObject === 'object') && (oldObject && typeof oldObject === 'object')) {
-            diffs.push(...findDifferencesBetweenObjects(oldObject, newObject))
-          } else {
-            diffs.push({
-              fieldName: row.original.fieldName || row.original.modelName,
-              oldValue: row.original.oldValue,
-              newValue: row.original.newValue
-            })
-          }
-        } catch (e: unknown) {
-          diffs.push({
-            fieldName: row.original.fieldName || row.original.modelName,
-            oldValue: row.original.oldValue,
-            newValue: row.original.newValue
-          })
-        }
-
-        return (
-          <div>
-            {
-              diffs.map((diff, idx) => (
-                <div key={idx}>
-                  {diff.fieldName}: {diff.oldValue} <FontAwesomeIcon icon={faArrowRight}/> {diff.newValue}
-                </div>
-              ))
-            }
-          </div>
-        )
+        return renderDiff(row.original)
       }
     },
     {
@@ -79,7 +51,9 @@ export default function DataChangeRecords({ enrollee, studyEnvContext }:
     {
       header: 'Source',
       cell: ({ row }) => (
-        row.original.responsibleUserId ? 'Participant' : 'Admin'
+        row.original.responsibleUserId ? 'Participant' :
+          row.original.responsibleAdminUserId &&
+            `Admin (${(users.find(u => u.id === row.original.responsibleAdminUserId)?.username)})`
       )
     }
   ]

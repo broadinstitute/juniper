@@ -10,6 +10,7 @@ import bio.terra.pearl.core.model.notification.EmailTemplate;
 import bio.terra.pearl.core.model.notification.Trigger;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
 import bio.terra.pearl.core.model.publishing.ConfigChange;
 import bio.terra.pearl.core.model.publishing.ListChange;
 import bio.terra.pearl.core.model.publishing.ParticipantDashboardAlertChange;
@@ -27,6 +28,7 @@ import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.site.SiteContentService;
 import bio.terra.pearl.core.service.survey.SurveyService;
@@ -44,17 +46,18 @@ import java.util.UUID;
  */
 @Service
 public class PortalPublishingService {
-    private PortalDiffService portalDiffService;
-    private PortalEnvironmentService portalEnvironmentService;
-    private PortalEnvironmentConfigService portalEnvironmentConfigService;
-    private PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
-    private PortalDashboardConfigService portalDashboardConfigService;
-    private TriggerService triggerService;
-    private SurveyService surveyService;
-    private EmailTemplateService emailTemplateService;
-    private SiteContentService siteContentService;
-    private StudyPublishingService studyPublishingService;
-    private ObjectMapper objectMapper;
+    private final PortalDiffService portalDiffService;
+    private final PortalEnvironmentService portalEnvironmentService;
+    private final PortalEnvironmentConfigService portalEnvironmentConfigService;
+    private final PortalEnvironmentChangeRecordDao portalEnvironmentChangeRecordDao;
+    private final PortalDashboardConfigService portalDashboardConfigService;
+    private final TriggerService triggerService;
+    private final SurveyService surveyService;
+    private final EmailTemplateService emailTemplateService;
+    private final SiteContentService siteContentService;
+    private final StudyPublishingService studyPublishingService;
+    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
+    private final ObjectMapper objectMapper;
 
 
     public PortalPublishingService(PortalDiffService portalDiffService,
@@ -64,7 +67,8 @@ public class PortalPublishingService {
                                    PortalDashboardConfigService portalDashboardConfigService,
                                    TriggerService triggerService, SurveyService surveyService,
                                    EmailTemplateService emailTemplateService, SiteContentService siteContentService,
-                                   StudyPublishingService studyPublishingService, ObjectMapper objectMapper) {
+                                   StudyPublishingService studyPublishingService,
+                                   PortalEnvironmentLanguageService portalEnvironmentLanguageService, ObjectMapper objectMapper) {
         this.portalDiffService = portalDiffService;
         this.portalEnvironmentService = portalEnvironmentService;
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
@@ -75,6 +79,7 @@ public class PortalPublishingService {
         this.emailTemplateService = emailTemplateService;
         this.siteContentService = siteContentService;
         this.studyPublishingService = studyPublishingService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
         this.objectMapper = objectMapper;
     }
 
@@ -82,29 +87,32 @@ public class PortalPublishingService {
      * updates the dest environment with the given changes
      */
     @Transactional
-    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser user) {
+    public PortalEnvironment applyChanges(String shortcode, EnvironmentName dest, PortalEnvironmentChange change, AdminUser operator) {
         PortalEnvironment destEnv = portalDiffService.loadPortalEnvForProcessing(shortcode, dest);
-        return applyUpdate(destEnv, change, user);
+        return applyUpdate(destEnv, change, operator);
     }
 
     /**
      * applies the given update -- the destEnv provided must already be fully-hydrated from loadPortalEnv
      * returns the updated environment
      */
-    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser user) {
-        applyChangesToEnvConfig(destEnv, envChanges.configChanges());
+    protected PortalEnvironment applyUpdate(PortalEnvironment destEnv, PortalEnvironmentChange envChanges, AdminUser operator) {
+        applyChangesToEnvConfig(destEnv, envChanges.getConfigChanges());
 
-        applyChangesToPreRegSurvey(destEnv, envChanges.preRegSurveyChanges());
-        applyChangesToSiteContent(destEnv, envChanges.siteContentChange());
-        applyChangesToTriggers(destEnv, envChanges.triggerChanges());
-        applyChangesToParticipantDashboardAlerts(destEnv, envChanges.participantDashboardAlertChanges());
-        for (StudyEnvironmentChange studyEnvChange : envChanges.studyEnvChanges()) {
-            StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.studyShortcode(), destEnv.getEnvironmentName());
-            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv.getId(), destEnv.getPortalId());
+        applyChangesToPreRegSurvey(destEnv, envChanges.getPreRegSurveyChanges());
+        applyChangesToSiteContent(destEnv, envChanges.getSiteContentChange());
+        applyChangesToTriggers(destEnv, envChanges.getTriggerChanges());
+        applyChangesToParticipantDashboardAlerts(destEnv, envChanges.getParticipantDashboardAlertChanges());
+        applyChangesToLanguages(destEnv, envChanges.getLanguageChanges());
+        for (StudyEnvironmentChange studyEnvChange : envChanges.getStudyEnvChanges()) {
+            StudyEnvironment studyEnv = portalDiffService.loadStudyEnvForProcessing(studyEnvChange.getStudyShortcode(), destEnv.getEnvironmentName());
+            studyPublishingService.applyChanges(studyEnv, studyEnvChange, destEnv);
         }
         try {
             PortalEnvironmentChangeRecord changeRecord = PortalEnvironmentChangeRecord.builder()
-                    .adminUserId(user.getId())
+                    .adminUserId(operator.getId())
+                    .portalId(destEnv.getPortalId())
+                    .environmentName(destEnv.getEnvironmentName())
                     .portalEnvironmentChange(objectMapper.writeValueAsString(envChanges))
                     .build();
             portalEnvironmentChangeRecordDao.create(changeRecord);
@@ -211,6 +219,17 @@ public class PortalPublishingService {
             }
         } catch (Exception e) {
             throw new RuntimeException("Error applying changes to alert: " + alert.getId(), e);
+        }
+    }
+
+    protected void applyChangesToLanguages(PortalEnvironment destEnv, ListChange<PortalEnvironmentLanguage, Object> languageChanges) {
+        for (PortalEnvironmentLanguage language : languageChanges.addedItems()) {
+            language.cleanForCopying();
+            language.setPortalEnvironmentId(destEnv.getId());
+            portalEnvironmentLanguageService.create(language);
+        }
+        for (PortalEnvironmentLanguage language : languageChanges.removedItems()) {
+            portalEnvironmentLanguageService.delete(language.getId(), CascadeProperty.EMPTY_SET);
         }
     }
 

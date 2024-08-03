@@ -4,29 +4,59 @@ import React from 'react'
 import { SectionConfig } from '../../../types/landingPageConfig'
 import { getSectionStyle } from '../../util/styleUtils'
 import { withValidatedSectionConfig } from '../../util/withValidatedSectionConfig'
-import { requireOptionalArray, requireOptionalBoolean, requireOptionalString, requirePlainObject, requireString }
-  from '../../util/validationUtils'
+import {
+  requireOptionalArray,
+  requireOptionalBoolean,
+  requireOptionalString,
+  requirePlainObject,
+  requireString
+} from '../../util/validationUtils'
 
-import ConfiguredButton, { ButtonConfig, validateButtonConfig } from '../ConfiguredButton'
-import ConfiguredMedia, { MediaConfig, validateMediaConfig } from '../ConfiguredMedia'
+import ConfiguredButton, {
+  ButtonConfig,
+  buttonConfigProps,
+  validateButtonConfig
+} from '../ConfiguredButton'
+import ConfiguredMedia, {
+  MediaConfig,
+  mediaConfigProps,
+  validateMediaConfig
+} from '../ConfiguredMedia'
 import { InlineMarkdown } from '../Markdown'
 
 import { TemplateComponentProps } from './templateUtils'
-import { useApiContext } from '../../../participant/ApiProvider'
+import { useApiContext } from '../../ApiProvider'
 import classNames from 'classnames'
+import {
+  blurbProp,
+  titleProp
+} from './SectionProp'
 
-type StepConfig = {
+export type StepConfig = {
   image: MediaConfig,
   duration: string,
-  blurb: string
+  blurb: string,
 }
 
-type StepOverviewTemplateConfig = {
+export type StepOverviewTemplateConfig = {
   buttons?: ButtonConfig[], // array of objects containing `text` and `href` attributes
   steps: StepConfig[]
   showStepNumbers?: boolean, // whether to show step numbers, default true
   title?: string, // large heading text
 }
+
+export const stepOverviewTemplateConfigProps = [
+  { name: 'buttons', subProps: buttonConfigProps, isArray: true },
+  {
+    name: 'steps', isArray: true, subProps: [
+      { name: 'image', subProps: mediaConfigProps },
+      { name: 'duration', translated: true },
+      blurbProp
+    ]
+  },
+  { name: 'showStepNumbers' },
+  titleProp
+]
 
 const validateStepConfig = (config: unknown): StepConfig => {
   const message = 'Invalid StepOverviewTemplateConfig: Invalid step'
@@ -38,7 +68,7 @@ const validateStepConfig = (config: unknown): StepConfig => {
 }
 
 /** Validate that a section configuration object conforms to StepOverviewTemplateConfig */
-const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverviewTemplateConfig => {
+export const validateStepOverviewTemplateConfig = (config: SectionConfig): StepOverviewTemplateConfig => {
   const message = 'Invalid StepOverviewTemplateConfig'
   const buttons = requireOptionalArray(config, 'buttons', validateButtonConfig, message)
   const title = requireOptionalString(config, 'title', message)
@@ -74,15 +104,15 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
       {
         _.map(steps, ({ image, duration, blurb }: StepConfig, i: number) => {
           return <div key={i}
-            className={classNames('col-12 d-flex flex-column align-items-center mt-4',
-              lgWidthClass)}>
-            <div className="w-75 d-flex flex-column align-items-center align-items-lg-start">
+            className={classNames('col-12 d-flex flex-column align-items-center mt-4', lgWidthClass)}>
+            <div className={classNames('w-75 d-flex flex-column align-items-center align-items-lg-start')}>
               <ConfiguredMedia media={image} className="img-fluid p-3" style={{ maxWidth: '200px' }}/>
-              { showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p> }
-              <p className="text-uppercase fs-6">{duration}</p>
-              <p className="fs-4 mb-0">
-                {blurb}
-              </p>
+              <div>{showStepNumbers && <p className="text-uppercase fs-5 fw-semibold mb-0">Step {i + 1}</p>}
+                <p className="text-uppercase fs-6">{duration}</p>
+                <p className="fs-4 mb-0">
+                  <InlineMarkdown>{blurb}</InlineMarkdown>
+                </p>
+              </div>
             </div>
           </div>
         })
@@ -92,7 +122,7 @@ function StepOverviewTemplate(props: StepOverviewTemplateProps) {
       <div className="d-grid gap-2 d-md-flex justify-content-center mt-4">
         {
           _.map(buttons, (button, i) => {
-            return <ConfiguredButton key={i} config={button} className="px-4 me-md-2" />
+            return <ConfiguredButton key={i} config={button} className="btn-lg px-4 me-md-2" />
           })
         }
       </div>

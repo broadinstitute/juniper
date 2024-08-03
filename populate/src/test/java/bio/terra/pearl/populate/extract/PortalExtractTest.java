@@ -31,6 +31,7 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
     @Test
     @Transactional
     public void testExtractDemoPortal() throws Exception {
+        baseSeedPopulator.populateRolesAndPermissions();
         // populate a portal, then see if we can extract it, delete it, and repopulate it
 
         Portal portal = portalPopulator.populate(new FilePopulateContext("portals/demo/portal.json"), true);
@@ -48,19 +49,19 @@ public class PortalExtractTest extends BasePopulatePortalsTest {
         PortalEnvironment sandboxPortalEnv = portalEnvironmentService.findOne("demo", EnvironmentName.sandbox).orElseThrow();
         // confirm portal environment properties got copied
         assertThat(participantDashboardAlertDao.findByPortalEnvironmentId(sandboxPortalEnv.getId()), hasSize(1));
-        assertThat(portalLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
+        assertThat(portalEnvironmentLanguageService.findByPortalEnvId(sandboxPortalEnv.getId()), hasSize(3));
 
         // confirm all templates got repopulated
-        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(13));
+        assertThat(surveyService.findByPortalId(restoredPortal.getId()), hasSize(15));
         assertThat(studyService.findByPortalId(restoredPortal.getId()), hasSize(1));
-        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(6));
+        assertThat(emailTemplateService.findByPortalId(restoredPortal.getId()), hasSize(7));
         // confirm both the old and current versions of the site content got populated
         assertThat(siteContentService.findByPortalId(restoredPortal.getId()), hasSize(2));
 
         // confirm the sandbox got configured
         Study study = studyService.findByPortalId(restoredPortal.getId()).get(0);
         StudyEnvironment sandboxEnv = studyEnvironmentService.findByStudy(study.getShortcode(), EnvironmentName.sandbox).orElseThrow();
-        assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(6));
+        assertThat(triggerService.findByStudyEnvironmentId(sandboxEnv.getId()), hasSize(7));
         assertThat(studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(sandboxEnv.getId()), hasSize(1));
     }
 

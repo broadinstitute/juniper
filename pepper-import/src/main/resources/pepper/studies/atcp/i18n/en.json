@@ -10,7 +10,6 @@
   "prequal_first_name_req_hint": "First name cannot be empty",
   "prequal_req_hint": "Please choose one of the above options.",
   "prequal_last_name_req_hint": "Last name cannot be empty",
-
   "registration_name": "Registration",
   "registration_title": "Registration",
   "registration_summary_created": "Registration",
@@ -46,8 +45,6 @@
   "registration_choose_state_province": "Choose state/province...",
   "registration_country_label": "Choose country...",
   "registration_which_name": "If you are a parent/legal guardian of a child(ren) with A-T, please create the account under your name. Once your account is created, you will be able to register your child(ren) with A-T as Participants.",
-
-
   "consent_agreement_indicates_li1": "Researchers may use my health information, medical information, the results of the DNA sequencing (as indicated in the checkboxes on the next page) and any other data I share via this platform for future research studies - including studies that have not yet been designed; studies for A-T; studies involving diseases other than A-T, and/or studies that may be for commercial purposes, subject to review and approval by the A-T data access committee. This information will be stored without identification information on a cloud-computing storage system administered by Broad Institute.",
   "consent_agreement_indicates_li2": "Researchers may share this information with qualified researchers in a manner that does not include my name, social security number, or any other information that could be used to readily identify me, to be used by other qualified researchers to perform future research studies, including studies that have not yet been designed, studies for A-T; studies involving diseases other than A-T, and studies that may be for commercial purposes.",
   "consent_agreement_title": "This is what I agree to:",
@@ -55,14 +52,15 @@
   "consent_benefits_title": "4. Will I benefit from participating?",
   "consent_contact_detail_p1": "If you have any questions, concerns, or complaints please send an email to",
   "consent_contact_detail_p2": "or call the phone number on the first page of this form, and ask to speak with one of the Global A-T Family Data Platform staff trained on the platform about this initiative and the data platform or if you feel you have experienced a research-related issue. <br><br>If you have questions about your rights as a research subject or if you have questions, concerns, or complaints about the research, you may contact:",
-  "consent_contact_detail_br1": "North Star Review Board",
-  "consent_contact_detail_br2": "",
-  "consent_contact_detail_br3": "",
-  "consent_contact_detail_br4": "",
+  "consent_contact_detail_p2": "or call the phone number on the first page of this form, and ask to speak with one of the Global A-T Family Data Platform staff trained on the platform about this initiative and the data platform or if you feel you have experienced a research-related issue. If you have questions about your rights as a research subject or if you have questions, concerns, or complaints about the research, you may contact:",
+  "consent_contact_detail_br1": "Western Institutional Review Board® (WIRB®)",
+  "consent_contact_detail_br2": "1019 39th Avenue SE Suite 120",
+  "consent_contact_detail_br3": "Puyallup, Washington  98374-2115",
+  "consent_contact_detail_br4": "Telephone:  1-800-562-4789 or 360-252-2500",
   "consent_contact_detail_email_help": "E-mail: ",
-  "consent_contact_detail_actual_email": "<a class=\"Link\" href=\"mailto:info@northstarreviewboard.org\">info@northstarreviewboard.org</a>",
-  "consent_contact_detail_br5": "North Star is a group of people who perform independent review of research.",
-  "consent_contact_detail_end": "North Star will not be able to answer some study-specific questions, such as questions about appointment times. However, you may contact North Star if the research staff cannot be reached or if you wish to talk to someone other than the research staff.",
+  "consent_contact_detail_actual_email": "Help@wirb.com",
+  "consent_contact_detail_br5": "WIRB is a group of people who perform independent review of research.",
+  "consent_contact_detail_end": "WIRB will not be able to answer some study-specific questions, such as questions about appointment times. However, you may contact WIRB if the research staff cannot be reached or if you wish to talk to someone other than the research staff.",
   "consent_contact_my_physician": "Study staff may contact my physician if a researcher reports genetic analysis results about my A-T mutations.",
   "consent_contact_title": "9. What if I have questions?",
   "consent_cost_detail": "No.",
@@ -78,7 +76,6 @@
   "consent_download_indicates_arrow_down": "arrow_circle_down",
   "consent_download_indicates_a_end": "Download Complete Consent Form",
   "consent_download_indicates_p3": "Please click \"Next\" to continue the consent process.",
-
   "consent_make_changes_intro": "If you would like to change what you consented to or withdraw your information for use in future studies, please let us know by submitting the following form. Our study staff will contact you and help you make the changes.",
   "consent_make_changes_contact": "You may also contact Jennifer Thornton, the Principal Investigator of the data repository, at:",
   "consent_make_changes_contact_email": "support@atfamilies.org",
@@ -134,7 +131,6 @@
   "consent_voluntary_title": "3. Do I have to participate in this initiative?",
   "consent_withdraw_detail": "Yes, you can withdraw from this research study at any time, and your data will no longer be shared with researchers in future research studies. However, any of your information that has already been shared with investigators cannot be withdrawn from their studies.",
   "consent_withdraw_title": "8. Can I stop taking part in this research initiative?",
-
   "assent_attest": "I attest that the participant named above had enough time to consider this information, had an opportunity to ask questions, and voluntarily agreed to be in this study.",
   "assent_benefits_details": "This research is not likely to help you. We do hope to learn something from this research though. And some day we hope it will help other kids who have issues like you do.",
   "assent_benefits_title": "Could this research help me?",
@@ -201,7 +197,6 @@
   "assent_title": "Assent for Kids",
   "assent_voluntary_details": "You can ask the researchers questions before you make up your mind. You can also talk to your mom or dad or anyone you want to about the study. You can ask to read the information the doctor gives your mom or dad about this study.",
   "assent_voluntary_title": "You do not have to be in the study if you don't want to.",
-
   "contacting_physician_name": "Contacting Physician",
   "contacting_physician_title": "Contacting Physician",
   "contacting_physician_summary_created": "Contacting Physician",
@@ -227,7 +222,6 @@
   "contacting_physician_prompt_mail": "Physician's Complete Mailing Address*",
   "contacting_physician_prompt_phone": "Physician's Phone*",
   "contacting_physician_title_p1": "Our staff may contact $ddp.participantFirstName()'s doctor with information about $ddp.participantFirstName()'s data (if you so consented) or to confirm the A-T diagnosis. To enable that, please complete the following form with $ddp.participantFirstName()'s physician's information (the doctor who plays the most central role in $ddp.participantFirstName()'s care.",
-
   "medical_history_age_months_range_hint": "Please enter month between 1 and 12",
   "medical_history_age_placeholder_months": "Months",
   "medical_history_age_placeholder_years": "Years",
@@ -454,7 +448,6 @@
   "medical_summary_created": "Medical History",
   "medical_summary_in_progress": "Medical History",
   "medical_title": "Medical History",
-
   "genome_ethnicity_african_african_american": "African/African american",
   "genome_ethnicity_caucasian": "Caucasian",
   "genome_ethnicity_east_asian": "East Asian",
@@ -482,7 +475,6 @@
   "genome_summary_created": "Genome Study",
   "genome_summary_in_progress": "Genome Study",
   "genome_title": "Genome Study",
-
   "feeding_name": "Feeding Survey",
   "feeding_title": "Feeding Survey",
   "feeding_summary_created": "Feeding Survey",
@@ -527,12 +519,10 @@
   "feed_pa_help_concern_prompt": "How often do others help $ddp.participantFirstName() finish meals because of concerns about getting enough to eat or drink? ",
   "feed_pa_poor_appetite_prompt": "How often does $ddp.participantFirstName() have a poor appetite (are not hungry) that limits intake?",
   "feed_pa_medication_prompt": "How often does $ddp.participantFirstName() take medications by mouth on their own?",
-
   "picklist_options_yes": "Yes",
   "picklist_options_no": "No",
   "picklist_options_dont_know": "Don't know",
   "required_field_hint": "* Required field",
-
   "review_title": "Review & Submission",
   "review_summary": "Review & Submission",
   "review_created": "Review & Submission",
@@ -540,7 +530,6 @@
   "review_in_progress": "Review & Submission",
   "review_introduction_p1": "Please review the information you provided during this enrollment process and submit when you have confirmed that it is correct.",
   "review_introduction_p2": "We look forward to learning about your experiences with A-T.",
-
   "stay_informed_email": "Your email address",
   "stay_informed_email_placeholder": "name@email.com",
   "stay_informed_email_req_hint": "Please provide an email address.",
@@ -552,7 +541,6 @@
   "stay_informed_lastname_req_hint": "Your Last Name is required.",
   "stay_informed_name": "Stay Informed",
   "stay_informed_readonly_hint": "Thank you for submitting your survey.",
-
   "blood_type_name": "Blood Type Survey",
   "blood_type_title": "Blood Type Survey",
   "blood_type_summary_created": "Blood Type Survey",
@@ -569,7 +557,6 @@
   "blood_type_dk": "I'm not sure",
   "blood_type_rh_pos": "+ (positive)",
   "blood_type_rh_neg": "- (negative)",
-
   "support_email": "support@atfamilies.org",
   "support_phone": "+1 954-481-6611"
 }

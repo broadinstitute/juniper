@@ -13,8 +13,6 @@ type FormContentJsonEditorProps = {
   onChange: OnChangeFormContent
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentJsonEditor = (props: FormContentJsonEditorProps) => {
   const { initialValue, readOnly = false, onChange } = props
   const [editorValue, _setEditorValue] = useState(() => JSON.stringify(initialValue, null, 2))

@@ -20,4 +20,6 @@ public class SurveyResponsePopDto extends SurveyResponse implements TimeShiftabl
     private List<AnswerPopDto> answerPopDtos = new ArrayList<>();
     private Integer currentPageNo;
     private Integer submittedHoursAgo;
+    private String justification;
+    private String creatingAdminUsername;
 }

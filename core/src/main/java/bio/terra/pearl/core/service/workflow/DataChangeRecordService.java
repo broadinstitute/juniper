@@ -38,6 +38,15 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
         return dao.findAllRecordsForEnrollee(enrollee.getId(), ppUser.getId());
     }
 
+    // There can be records which exist for an enrollee which, for one reason or another,
+    // are tied only to the PortalParticipantUser. This grabs all of them
+    // to ensure that we are missing nothing for a given enrollee.
+    public List<DataChangeRecord> findAllRecordsForEnrolleeAndModelName(Enrollee enrollee, String modelName) {
+        PortalParticipantUser ppUser = portalParticipantUserService
+                .findForEnrollee(enrollee);
+        return dao.findAllRecordsForEnrolleeAndModelName(enrollee.getId(), ppUser.getId(), modelName);
+    }
+
     public List<DataChangeRecord> findByEnrollee(UUID enrolleeId) {
         return dao.findByEnrolleeId(enrolleeId);
     }
@@ -65,5 +74,17 @@ public class DataChangeRecordService extends ImmutableEntityService<DataChangeRe
     @Transactional
     public void deleteByEnrolleeId(UUID enrolleeId) {
         dao.deleteByEnrolleeId(enrolleeId);
+    }
+
+    public List<DataChangeRecord> findByFamilyId(UUID familyId) {
+        return dao.findByFamilyId(familyId);
+    }
+
+    public List<DataChangeRecord> findByFamilyIdAndModelName(UUID familyId, String model) {
+        return dao.findByFamilyIdAndModelName(familyId, model);
+    }
+
+    public void deleteByStudyEnvironmentId(UUID studyEnvironmentId) {
+        dao.deleteByStudyEnvironmentId(studyEnvironmentId);
     }
 }

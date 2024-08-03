@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.EnrolleeApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.EnrolleeExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -46,10 +46,14 @@ public class EnrolleeController implements EnrolleeApi {
 
   @Override
   public ResponseEntity<Object> listChangeRecords(
-      String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
+      String portalShortcode,
+      String studyShortcode,
+      String envName,
+      String enrolleeShortcode,
+      String modelName) {
     AdminUser adminUser = authUtilService.requireAdminUser(request);
     List<DataChangeRecord> records =
-        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode);
+        enrolleeExtService.findDataChangeRecords(adminUser, enrolleeShortcode, modelName);
     return ResponseEntity.ok(records);
   }
 

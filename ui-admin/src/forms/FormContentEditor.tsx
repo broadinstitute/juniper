@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Tab, Tabs } from 'react-bootstrap'
 
-import { AnswerMapping, FormContent, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
+import { AnswerMapping, FormContent, Portal, PortalEnvironmentLanguage, VersionedForm } from '@juniper/ui-core'
 
 import { FormDesigner } from './FormDesigner'
 import { OnChangeAnswerMappings, OnChangeFormContent } from './formEditorTypes'
@@ -10,27 +10,30 @@ import { FormPreview } from './FormPreview'
 import { validateFormContent } from './formContentValidation'
 import ErrorBoundary from 'util/ErrorBoundary'
 import { isEmpty } from 'lodash'
-import useStateCallback from '../util/useStateCallback'
-import AnswerMappingEditor from '../study/surveys/AnswerMappingEditor'
+import useStateCallback from 'util/useStateCallback'
+import AnswerMappingEditor from 'study/surveys/AnswerMappingEditor'
+import { SplitFormDesigner } from './designer/split/SplitFormDesigner'
+import { userHasPermission, useUser } from 'user/UserProvider'
 
 type FormContentEditorProps = {
+  portal: Portal
   initialContent: string
   initialAnswerMappings: AnswerMapping[]
   visibleVersionPreviews: VersionedForm[]
   supportedLanguages: PortalEnvironmentLanguage[]
+  currentLanguage: PortalEnvironmentLanguage
   readOnly: boolean
   onFormContentChange: OnChangeFormContent
   onAnswerMappingChange: OnChangeAnswerMappings
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const FormContentEditor = (props: FormContentEditorProps) => {
   const {
+    portal,
     initialContent,
     initialAnswerMappings,
-    visibleVersionPreviews,
     supportedLanguages,
+    currentLanguage,
     readOnly,
     onFormContentChange,
     onAnswerMappingChange
@@ -38,6 +41,7 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
 
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [tabsEnabled, setTabsEnabled] = useState(true)
+  const { user } = useUser()
 
   const [editedContent, setEditedContent] = useStateCallback(() => JSON.parse(initialContent) as FormContent)
 
@@ -59,6 +63,8 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             <FormDesigner
               readOnly={readOnly}
               content={editedContent}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
               onChange={(newContent, callback?: () => void) => {
                 setEditedContent(newContent, callback)
                 try {
@@ -72,6 +78,29 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
             />
           </ErrorBoundary>
         </Tab>
+        {userHasPermission(user, portal.id, 'prototype_tester') && <Tab
+          disabled={activeTab !== 'split' && !tabsEnabled}
+          eventKey="split"
+          title={<>Split Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
+        >
+          <ErrorBoundary>
+            <SplitFormDesigner
+              content={editedContent}
+              currentLanguage={currentLanguage}
+              supportedLanguages={supportedLanguages}
+              onChange={(newContent: FormContent) => {
+                setEditedContent(newContent)
+                try {
+                  const errors = validateFormContent(newContent)
+                  onFormContentChange(errors, newContent)
+                } catch (err) {
+                  //@ts-ignore
+                  onFormContentChange([err.message], undefined)
+                }
+              }}
+            />
+          </ErrorBoundary>
+        </Tab> }
         <Tab
           disabled={activeTab !== 'json' && !tabsEnabled}
           eventKey="json"
@@ -110,21 +139,9 @@ export const FormContentEditor = (props: FormContentEditorProps) => {
           title="Preview"
         >
           <ErrorBoundary>
-            <FormPreview formContent={editedContent} supportedLanguages={supportedLanguages} />
+            <FormPreview formContent={editedContent} currentLanguage={currentLanguage} />
           </ErrorBoundary>
         </Tab>
-        { visibleVersionPreviews.map(form =>
-          <Tab
-            key={`preview${form.version}`}
-            eventKey={`preview${form.version}`}
-            title={`Version ${form.version}`}
-          >
-            <FormPreview
-              formContent={JSON.parse(form.content) as FormContent}
-              supportedLanguages={supportedLanguages}
-            />
-          </Tab>
-        )}
       </Tabs>
     </div>
   )

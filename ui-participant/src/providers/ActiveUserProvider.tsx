@@ -1,13 +1,20 @@
-import React, { useContext, useEffect } from 'react'
-import { EnrolleeRelation, PortalParticipantUser } from 'api/api'
+import React, {
+  useContext,
+  useEffect
+} from 'react'
+import { PortalParticipantUser } from 'api/api'
 import { useUser } from './UserProvider'
-import { Enrollee, Profile } from '@juniper/ui-core'
+import {
+  Enrollee,
+  EnrolleeRelation,
+  Profile
+} from '@juniper/ui-core'
 
 export type ActiveUserContextT = {
   ppUser: PortalParticipantUser | null,
   profile: Profile | null,
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  proxyRelations: EnrolleeRelation[],
   setActiveUser: (ppUserId: string) => void;
   updateProfile: (profile: Profile) => void;
 }
@@ -17,7 +24,7 @@ const ActiveUserContext = React.createContext<ActiveUserContextT>({
   ppUser: null,
   profile: null,
   enrollees: [],
-  relations: [],
+  proxyRelations: [],
   setActiveUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -36,7 +43,7 @@ export const useActiveUser = () => useContext(ActiveUserContext)
 /** Provider for the current logged-in user. */
 export default function ActiveUserProvider({ children }: { children: React.ReactNode }) {
   const userContext = useUser()
-  const { ppUsers, enrollees, relations, updateEnrollee } = userContext
+  const { ppUsers, enrollees, proxyRelations, updateEnrollee } = userContext
 
   const [activePpUser, setActivePpUser] = React.useState<PortalParticipantUser | null>(null)
 
@@ -60,8 +67,8 @@ export default function ActiveUserProvider({ children }: { children: React.React
     profile:
       enrollees.find(enrollee => enrollee.profile && enrollee.profileId == activePpUser?.profileId)?.profile || null,
     enrollees: activePpUser ? enrollees.filter(enrollee => enrollee.profileId === activePpUser.profileId) : [],
-    relations: activePpUser
-      ? relations.filter(
+    proxyRelations: activePpUser
+      ? proxyRelations.filter(
         relation => enrollees.some(
           enrollee => enrollee.id === relation.targetEnrolleeId
             && enrollee.profileId === activePpUser.profileId))

@@ -2,25 +2,37 @@ import {
   AddressValidationResult,
   AlertTrigger,
   Enrollee,
-  EnvironmentName, HubResponse, KitRequest, KitType,
+  EnrolleeRelation,
+  EnvironmentName,
+  Family,
+  HubResponse,
+  KitRequest,
+  KitType,
   MailingAddress,
-  ParticipantDashboardAlert, ParticipantNote,
+  ParticipantDashboardAlert,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskType,
+  ParticipantUser,
   Portal,
   PortalEnvironment,
-  PortalEnvironmentConfig, Profile,
+  PortalEnvironmentConfig,
+  PortalEnvironmentLanguage,
+  Profile,
   SiteContent,
   Study,
   StudyEnvironmentConfig,
-  StudyEnvironmentSurvey, StudyEnvParams,
+  StudyEnvironmentSurvey,
+  StudyEnvParams,
   Survey,
   SurveyResponse,
   Trigger
 } from '@juniper/ui-core'
-import { FacetOption, FacetType, FacetValue, facetValuesToString } from './enrolleeSearch'
 import queryString from 'query-string'
-import { AdminUser, NewAdminUser } from './adminUser'
+import {
+  AdminUser,
+  NewAdminUser
+} from './adminUser'
 
 export type {
   Answer,
@@ -59,39 +71,15 @@ export type StudyEnvironmentUpdate = {
   preEnrollSurveyId: string
 }
 
-export type EnrolleeSearchFacet = {
-  keyName: string,
-  category: string,
-  label: string,
-  facetType: FacetType,
-  entities: FacetOption[]
-  options: FacetOption[]
-}
-
-export type EnrolleeSearchResult = {
+export type EnrolleeSearchExpressionResult = {
   enrollee: Enrollee,
   profile: Profile,
-  participantUser: {
-    lastLogin: number,
-    username: string
-  }
-  mostRecentKitStatus: string | null
+  latestKit?: KitRequest,
+  families: Family[]
+  participantUser?: ParticipantUser
 }
 
-type RelationshipType = 'PROXY'
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: RelationshipType,
-  targetEnrolleeId: string,
-  targetEnrollee: Enrollee
-  enrolleeId: string
-  enrollee: Enrollee
-  createdAt: number
-  lastUpdatedAt: number
-  beginDate: number
-  endDate: number
-}
+export type ExpressionSearchFacets  = { [index: string]: SearchValueTypeDefinition }
 
 export type ProfileUpdateDto = {
   justification: string,
@@ -140,6 +128,7 @@ export type DataChangeRecord = {
   oldValue: string,
   newValue: string,
   responsibleUserId?: string,
+  enrolleeId?: string,
   responsibleAdminUserId?: string,
   justification?: string
 }
@@ -155,26 +144,10 @@ export type PepperKit = {
   errorMessage: string
 }
 
-export type AdminTaskListDto = {
-  tasks: AdminTask[]
+export type ParticipantTaskListDto = {
+  tasks: ParticipantTask[]
   enrollees: Enrollee[]
   participantNotes: ParticipantNote[]
-}
-
-export type AdminTaskStatus = 'NEW' | 'COMPLETE' | 'REJECTED'
-
-export type AdminTask = {
-  id: string
-  createdAt: number
-  completedAt?: number
-  status: AdminTaskStatus
-  studyEnvironmentId: string
-  enrolleeId?: string
-  participantNoteId?: string
-  creatingAdminUserId?: string
-  assignedAdminUserId?: string
-  description?: string
-  dispositionNote?: string
 }
 
 export type SiteMediaMetadata = {
@@ -225,6 +198,15 @@ export type DataImportItem = {
   lastUpdatedAt?: number
 }
 
+export type PortalEnvironmentChangeRecord = {
+  createdAt: number
+  portalId?: string
+  environmentName: string
+  adminUserId: string
+  portalEnvironmentChange: string
+  parsedChange?: PortalEnvironmentChange
+}
+
 export type PortalEnvironmentChange = {
   siteContentChange: VersionedEntityChange
   configChanges: ConfigChange[]
@@ -232,6 +214,7 @@ export type PortalEnvironmentChange = {
   triggerChanges: ListChange<Trigger, VersionedConfigChange>
   participantDashboardAlertChanges: ParticipantDashboardAlertChange[]
   studyEnvChanges: StudyEnvironmentChange[]
+  languageChanges: ListChange<PortalEnvironmentLanguage, VersionedConfigChange>
 }
 
 export type StudyEnvironmentChange = {
@@ -282,7 +265,7 @@ export type ExportOptions = {
   splitOptionsIntoColumns?: boolean,
   stableIdsForOptions?: boolean,
   onlyIncludeMostRecent?: boolean,
-  includeProxiesAsRows?: boolean,
+  filter?: string,
   limit?: number
 }
 
@@ -365,7 +348,19 @@ export type StudyCreationDto = {
   template: StudyTemplate
 }
 
-export type SearchValueType = 'STRING' | 'INTEGER' | 'DOUBLE' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueType = 'STRING' | 'NUMBER' | 'DATE' | 'BOOLEAN' | 'INSTANT'
+export type SearchValueTypeDefinition = {
+  type: SearchValueType
+  choices?: { stableId: string, text: string }[]
+  allowMultiple: boolean
+  allowOtherDescription: boolean
+}
+
+export type WithdrawnEnrollee = {
+  createdAt: number
+  shortcode: string
+  userData: string
+}
 
 let bearerToken: string | null = null
 export const API_ROOT = '/api'
@@ -541,6 +536,12 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getStudyEnvSurveys(portalShortcode: string, stableId: string, version: number): Promise<Survey> {
+    const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys/${stableId}/${version}/studyEnvSurveys`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async createNewSurvey(portalShortcode: string, survey: Survey): Promise<Survey> {
     const url = `${API_ROOT}/portals/v1/${portalShortcode}/surveys`
 
@@ -572,10 +573,10 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string, oldId: string,
-    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
+  async replaceConfiguredSurvey(portalShortcode: string, studyShortcode: string, environmentName: string,
+    configuredSurvey: { surveyId: string, studyEnvironmentId: string }): Promise<StudyEnvironmentSurvey> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}`
-      + `/configuredSurveys/${oldId}/replace`
+      + `/configuredSurveys/replace`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
@@ -691,11 +692,18 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSiteContent(portalShortcode: string, stableId: string, version: number, language?: string) {
+  async getSiteContent(portalShortcode: string, stableId: string, version: number) {
     const baseUrl = `${basePortalUrl(portalShortcode)}/siteContents/${stableId}/${version}`
-    const response = await fetch(language ? `${baseUrl}?language=${language}` : baseUrl, this.getGetInit())
+    const response = await fetch(baseUrl, this.getGetInit())
     return await this.processJsonResponse(response)
   },
+
+  async getCurrentSiteContent(portalShortcode: string, environmentName: string) {
+    const baseUrl = `${basePortalEnvUrl(portalShortcode, environmentName)}/siteContent`
+    const response =await fetch(baseUrl, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
 
   async assignParticipantTasksToEnrollees(studyEnvParams: StudyEnvParams,
     assignDto: ParticipantTaskAssignDto): Promise<ParticipantTask[]> {
@@ -723,31 +731,33 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async getSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<EnrolleeSearchFacet[]> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/facets`
-    const response = await fetch(url, this.getGetInit())
-    return await this.processJsonResponse(response)
-  },
-
   async getExpressionSearchFacets(portalShortcode: string, studyShortcode: string, envName: string):
-    Promise<{ [index: string]: SearchValueType }> {
+    Promise<ExpressionSearchFacets> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollee/search/v2/facets`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async searchEnrollees(portalShortcode: string, studyShortcode: string, envName: string, facetValues: FacetValue[]):
-    Promise<EnrolleeSearchResult[]> {
-    const facetString = encodeURIComponent(facetValuesToString(facetValues))
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees?facets=${facetString}`
+  async executeSearchExpression(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: string,
+    expression: string,
+    opts: { limit?: number } = {}):
+    Promise<EnrolleeSearchExpressionResult[]> {
+    let url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollee/search/v2?expression=${encodeURIComponent(expression)}`
+    if (opts.limit) {
+      url += `&limit=${opts.limit}`
+    }
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
-  async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcode: string):
+  async getEnrollee(portalShortcode: string, studyShortcode: string, envName: string, enrolleeShortcodeOrId: string):
     Promise<Enrollee> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}`
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcodeOrId}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
@@ -782,16 +792,23 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async fetchWithdrawnEnrollees(studyEnvParams: StudyEnvParams): Promise<WithdrawnEnrollee[]> {
+    const url = `${baseStudyEnvUrlFromParams(studyEnvParams)}/withdrawnEnrollees`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   async fetchEnrolleeChangeRecords(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<DataChangeRecord[]> {
-    const url =
-      `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/changeRecords`
+    enrolleeShortcode: string, modelName?: string): Promise<DataChangeRecord[]> {
+    const params = queryString.stringify({ modelName })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)
+    }/enrollees/${enrolleeShortcode}/changeRecords?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async fetchEnrolleeAdminTasks(portalShortcode: string, studyShortcode: string, envName: string,
-    enrolleeShortcode: string): Promise<AdminTask[]> {
+    enrolleeShortcode: string): Promise<ParticipantTask[]> {
     const url =
       `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrollees/${enrolleeShortcode}/adminTasks`
     const response = await fetch(url, this.getGetInit())
@@ -859,6 +876,37 @@ export default {
     )
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
+  },
+
+  async createRelation(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: EnvironmentName,
+    relation: EnrolleeRelation,
+    justification: string): Promise<EnrolleeRelation> {
+    const params = queryString.stringify({ justification })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations?${params}`
+    const response = await fetch(url, {
+      method: 'POST',
+      body: JSON.stringify(relation),
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(response)
+  },
+
+  async deleteRelation(
+    portalShortcode: string,
+    studyShortcode: string,
+    envName: EnvironmentName,
+    relationId: string,
+    justification: string): Promise<Response> {
+    const params = queryString.stringify({ justification })
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/enrolleeRelations/${relationId}?${params}`
+    const response = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(response)
   },
 
   async fetchKitsByStudyEnvironment(
@@ -1167,7 +1215,7 @@ export default {
   },
 
   async fetchAdminTasksByStudyEnv(portalShortcode: string, studyShortcode: string,
-    envName: string, include: string[]): Promise<AdminTaskListDto> {
+    envName: string, include: string[]): Promise<ParticipantTaskListDto> {
     let url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks`
     if (include.length) {
       url = `${url}?include=${include.join(',')}`
@@ -1177,7 +1225,7 @@ export default {
   },
 
   async updateAdminTask(portalShortcode: string, studyShortcode: string,
-    envName: string, task: AdminTask): Promise<AdminTask> {
+    envName: string, task: ParticipantTask): Promise<ParticipantTask> {
     const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/adminTasks/${task.id}`
     const response = await fetch(url, {
       method: 'PATCH',
@@ -1222,6 +1270,16 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async setPortalEnvLanguages(portalShortcode: string, envName: string, languages: PortalEnvironmentLanguage[]) {
+    const url = `${basePortalEnvUrl(portalShortcode, envName)}/portalLanguages`
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(languages)
+    })
+    return await this.processJsonResponse(response)
+  },
+
   async listPortalEnvAlerts(portalShortcode: string, envName: string): Promise<ParticipantDashboardAlert[]> {
     const url = `${basePortalEnvUrl(portalShortcode, envName)}/dashboard/config/alerts`
     const response = await fetch(url, this.getGetInit())
@@ -1252,21 +1310,122 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async getFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName, familyShortcodeOrId: string
+  ): Promise<Family> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families/${familyShortcodeOrId}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async getAllFamilies(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName
+  ): Promise<Family[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)}/families`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
+  async addMemberToFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string, justification: string
+  ) {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/members/${enrolleeShortcode}?${params}`
+
+    const result = await fetch(url, {
+      method: 'PUT',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(result)
+  },
+
+  async removeMemberFromFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string, justification: string
+  ) {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/members/${enrolleeShortcode}?${params}`
+
+    const result = await fetch(url, {
+      method: 'DELETE',
+      headers: this.getInitHeaders()
+    })
+    return await this.processResponse(result)
+  },
+
+  async updateProband(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, enrolleeShortcode: string, justification: string
+  ): Promise<Family> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/proband/${enrolleeShortcode}?${params}`
+
+    const result = await fetch(url, {
+      method: 'PATCH',
+      headers: this.getInitHeaders()
+    })
+    return await this.processJsonResponse(result)
+  },
+
+  async createFamily(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    family: Family, justification: string
+  ): Promise<Family> {
+    const params = queryString.stringify({ justification })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families?${params}`
+
+    const result = await fetch(url, {
+      method: 'POST',
+      headers: this.getInitHeaders(),
+      body: JSON.stringify(family)
+    })
+    return await this.processJsonResponse(result)
+  },
+
+  async fetchFamilyChangeRecords(
+    portalShortcode: string, studyShortcode: string, environmentName: EnvironmentName,
+    familyShortcode: string, modelName?: string
+  ): Promise<DataChangeRecord[]> {
+    const params = queryString.stringify({ modelName })
+    const url = `${
+      baseStudyEnvUrl(portalShortcode, studyShortcode, environmentName)
+    }/families/${familyShortcode}/changeRecords?${params}`
+
+    const result = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(result)
+  },
+
   async fetchEnvDiff(portalShortcode: string, sourceEnvName: string, destEnvName: string):
     Promise<PortalEnvironmentChange> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff?sourceEnv=${sourceEnvName}`
+    const url = `${basePortalUrl(portalShortcode)}/publish/diff/${sourceEnvName}/${destEnvName}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
   async applyEnvChanges(portalShortcode: string, destEnvName: string, changes: PortalEnvironmentChange):
     Promise<PortalEnvironment> {
-    const url = `${basePortalEnvUrl(portalShortcode, destEnvName)}/diff/apply`
+    const url = `${basePortalUrl(portalShortcode)}/publish/apply/${destEnvName}`
     const response = await fetch(url, {
       method: 'POST',
       headers: this.getInitHeaders(),
       body: JSON.stringify(changes)
     })
+    return await this.processJsonResponse(response)
+  },
+
+  async fetchPortalEnvChangeRecords(portalShortcode: string):
+    Promise<PortalEnvironmentChangeRecord[]> {
+    const url = `${basePortalUrl(portalShortcode)}/publish/changeRecords`
+    const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
   },
 
@@ -1364,6 +1523,13 @@ export default {
     return await this.processJsonResponse(response)
   },
 
+  async loadLogEvents(eventTypes: string[], days: string) {
+    const params = queryString.stringify({ eventTypes: eventTypes.join(','), days })
+    const url = `${API_ROOT}/logEvents?${params}`
+    const response = await fetch(url, this.getGetInit())
+    return await this.processJsonResponse(response)
+  },
+
   getParticipantLink(portalEnvConfig: PortalEnvironmentConfig, uiHostname: string,
     portalShortcode: string, envName: string): string {
     if (portalEnvConfig?.participantHostname) {
@@ -1376,6 +1542,7 @@ export default {
   setBearerToken(token: string | null) {
     bearerToken = token
   }
+
 }
 
 /** gets an image url for SiteMedia */

@@ -1,35 +1,33 @@
 package bio.terra.pearl.api.admin.controller.portal;
 
 import bio.terra.pearl.api.admin.api.PortalEnvironmentApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.portal.PortalExtService;
-import bio.terra.pearl.api.admin.service.portal.PortalPublishingExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
-import bio.terra.pearl.core.model.publishing.PortalEnvironmentChange;
+import bio.terra.pearl.core.model.portal.PortalEnvironmentLanguage;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
 @Controller
 public class PortalEnvironmentController implements PortalEnvironmentApi {
-  private HttpServletRequest request;
-  private AuthUtilService authUtilService;
-  private PortalPublishingExtService portalPublishingExtService;
-  private PortalExtService portalExtService;
-  private ObjectMapper objectMapper;
+  private final HttpServletRequest request;
+  private final AuthUtilService authUtilService;
+  private final PortalExtService portalExtService;
+  private final ObjectMapper objectMapper;
 
   public PortalEnvironmentController(
       HttpServletRequest request,
       AuthUtilService authUtilService,
-      PortalPublishingExtService portalPublishingExtService,
       PortalExtService portalExtService,
       ObjectMapper objectMapper) {
     this.request = request;
     this.authUtilService = authUtilService;
-    this.portalPublishingExtService = portalPublishingExtService;
     this.portalExtService = portalExtService;
     this.objectMapper = objectMapper;
   }
@@ -45,23 +43,13 @@ public class PortalEnvironmentController implements PortalEnvironmentApi {
   }
 
   @Override
-  public ResponseEntity<Object> diff(String portalShortcode, String destEnv, String sourceEnv) {
+  public ResponseEntity<Object> setLanguages(String portalShortcode, String envName, Object body) {
     AdminUser user = authUtilService.requireAdminUser(request);
-    return ResponseEntity.ok(
-        portalPublishingExtService.diff(
-            portalShortcode,
-            EnvironmentName.valueOfCaseInsensitive(sourceEnv),
-            EnvironmentName.valueOfCaseInsensitive(destEnv),
-            user));
-  }
-
-  @Override
-  public ResponseEntity<Object> apply(
-      String portalShortcode, String destEnv, String sourceEnv, Object body) {
-    AdminUser user = authUtilService.requireAdminUser(request);
-    PortalEnvironmentChange change = objectMapper.convertValue(body, PortalEnvironmentChange.class);
-    return ResponseEntity.ok(
-        portalPublishingExtService.update(
-            portalShortcode, EnvironmentName.valueOfCaseInsensitive(destEnv), change, user));
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<PortalEnvironmentLanguage> updatedLanguages =
+        objectMapper.convertValue(body, new TypeReference<List<PortalEnvironmentLanguage>>() {});
+    updatedLanguages =
+        portalExtService.setLanguages(portalShortcode, environmentName, updatedLanguages, user);
+    return ResponseEntity.ok(updatedLanguages);
   }
 }

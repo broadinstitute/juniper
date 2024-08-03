@@ -1,6 +1,7 @@
 package bio.terra.pearl.populate.service;
 
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.dashboard.ParticipantDashboardAlert;
 import bio.terra.pearl.core.model.portal.MailingListContact;
@@ -15,10 +16,12 @@ import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.portal.MailingListContactService;
 import bio.terra.pearl.core.service.portal.PortalDashboardConfigService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
-import bio.terra.pearl.core.service.portal.PortalLanguageService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import bio.terra.pearl.core.service.publishing.PortalEnvironmentChangeRecordService;
 import bio.terra.pearl.core.service.study.PortalStudyService;
 import bio.terra.pearl.populate.dto.AdminUserPopDto;
+import bio.terra.pearl.populate.dto.PortalEnvironmentChangeRecordPopDto;
 import bio.terra.pearl.populate.dto.PortalEnvironmentPopDto;
 import bio.terra.pearl.populate.dto.PortalPopDto;
 import bio.terra.pearl.populate.dto.site.SiteMediaPopDto;
@@ -51,7 +54,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
     private final AdminUserPopulator adminUserPopulator;
     private final EmailTemplatePopulator emailTemplatePopulator;
     private final PortalDashboardConfigService portalDashboardConfigService;
-    private final PortalLanguageService portalLanguageService;
+    private final PortalEnvironmentLanguageService portalEnvironmentLanguageService;
+    private final PortalEnvironmentChangeRecordPopulator portalEnvironmentChangeRecordPopulator;
 
 
     public PortalPopulator(PortalService portalService,
@@ -65,7 +69,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
                            AdminUserPopulator adminUserPopulator,
                            MailingListContactService mailingListContactService,
                            EmailTemplatePopulator emailTemplatePopulator,
-                           PortalLanguageService portalLanguageService) {
+                           PortalEnvironmentLanguageService portalEnvironmentLanguageService,
+                           PortalEnvironmentChangeRecordPopulator portalEnvironmentChangeRecordPopulator) {
         this.siteContentPopulator = siteContentPopulator;
         this.portalParticipantUserPopulator = portalParticipantUserPopulator;
         this.portalEnvironmentService = portalEnvironmentService;
@@ -78,7 +83,8 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         this.mailingListContactService = mailingListContactService;
         this.adminUserPopulator = adminUserPopulator;
         this.emailTemplatePopulator = emailTemplatePopulator;
-        this.portalLanguageService = portalLanguageService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
+        this.portalEnvironmentChangeRecordPopulator = portalEnvironmentChangeRecordPopulator;
     }
 
     private void populateStudy(String studyFileName, PortalPopulateContext context, Portal portal, boolean overwrite) {
@@ -123,7 +129,7 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (PortalEnvironmentLanguage language : portalEnvPopDto.getSupportedLanguages()) {
             language.setPortalEnvironmentId(savedEnv.getId());
-            portalLanguageService.create(language);
+            portalEnvironmentLanguageService.create(language);
         }
         // re-save the portal environment to update it with any attached siteContents or preRegSurveys
         portalEnvironmentService.update(savedEnv);
@@ -210,6 +216,10 @@ public class PortalPopulator extends BasePopulator<Portal, PortalPopDto, FilePop
         }
         for (String studyFileName : popDto.getPopulateStudyFiles()) {
             populateStudy(studyFileName, portalPopContext, portal, overwrite);
+        }
+
+        for (PortalEnvironmentChangeRecordPopDto changeRecordPopDto : popDto.getPortalEnvironmentChangeRecordPopDtos()) {
+            portalEnvironmentChangeRecordPopulator.populateFromDto(changeRecordPopDto, portalPopContext, overwrite);
         }
 
         return portal;

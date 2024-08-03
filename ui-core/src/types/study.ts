@@ -1,4 +1,5 @@
 import { Survey } from './forms'
+import { ParticipantTaskStatus } from './task'
 
 export type Study = {
   name: string
@@ -28,6 +29,7 @@ export type StudyEnvironment = {
 export type StudyEnvironmentConfig = {
   acceptingEnrollment: boolean
   acceptingProxyEnrollment: boolean
+  enableFamilyLinkage: boolean
   initialized: boolean
   passwordProtected: boolean
   password: string
@@ -49,17 +51,25 @@ export type StudyEnvironmentSurveyNamed = StudyEnvironmentSurvey & {
   envName: EnvironmentName
 }
 
+export type TriggerType = 'EVENT' | 'TASK_REMINDER' | 'AD_HOC'
+export type TriggerDeliveryType = 'EMAIL'
+export type TriggerActionType = 'NOTIFICATION' | 'TASK_STATUS_CHANGE'
+export type TriggerScope = 'PORTAL' | 'STUDY'
+
 export type Trigger = {
   id: string
   portalEnvironmentId: string
   studyEnvironmentId: string
   active: boolean
-  triggerType: string
-  deliveryType: string
+  triggerType: TriggerType
+  deliveryType: TriggerDeliveryType
+  actionType: TriggerActionType
   rule?: string
   eventType: string
   taskType?: string
-  taskTargetStableId?: string
+  actionScope: TriggerScope
+  updateTaskTargetStableId?: string
+  statusToUpdateTo?: ParticipantTaskStatus
   afterMinutesIncomplete: number
   reminderIntervalMinutes: number
   maxNumReminders: number

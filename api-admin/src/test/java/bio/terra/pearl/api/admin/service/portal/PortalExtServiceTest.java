@@ -2,7 +2,7 @@ package bio.terra.pearl.api.admin.service.portal;
 
 import static org.mockito.Mockito.when;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
@@ -10,8 +10,10 @@ import bio.terra.pearl.core.model.portal.PortalEnvironmentConfig;
 import bio.terra.pearl.core.service.admin.PortalAdminUserService;
 import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentConfigService;
+import bio.terra.pearl.core.service.portal.PortalEnvironmentLanguageService;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
 import bio.terra.pearl.core.service.portal.PortalService;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
@@ -32,6 +34,7 @@ public class PortalExtServiceTest {
   @MockBean private PortalEnvironmentService mockPortalEnvironmentService;
   @MockBean private PortalEnvironmentConfigService portalEnvironmentConfigService;
   @MockBean private PortalAdminUserService portalAdminUserService;
+  @MockBean private PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
   @Test
   public void updateConfigHostnameRequiresSuperuser() {
@@ -66,5 +69,13 @@ public class PortalExtServiceTest {
     Assertions.assertThrows(
         PermissionDeniedException.class,
         () -> portalExtService.removeUserFromPortal(UUID.randomUUID(), "testPortal", operator));
+  }
+
+  @Test
+  public void updateLanguagesRequiresSandbox() {
+    AdminUser user = AdminUser.builder().superuser(true).build();
+    Assertions.assertThrows(
+        IllegalArgumentException.class,
+        () -> portalExtService.setLanguages("foo", EnvironmentName.irb, List.of(), user));
   }
 }

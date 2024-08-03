@@ -1,4 +1,4 @@
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import DeleteNavItemModal from './DeleteNavItemModal'
 import { render, screen } from '@testing-library/react'
 import React from 'react'

@@ -27,6 +27,7 @@ import InvitationPage from './landing/registration/InvitationPage'
 import AuthError from './login/AuthError'
 import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
+import PageNotFound from './PageNotFound'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -49,7 +50,24 @@ function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
 
+  useEffect(() => {
+    const isCompatible = isBrowserCompatible()
+    if (!isCompatible) {
+      alert('Your browser does not support this page. ' +
+        'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
+    }
+  }, [])
+
+
   const brandConfig: BrandConfiguration = {}
+  if (!localContent) {
+    return <div className="alert alert-warning">
+      No content has been configured for this language.
+      <button className='btn btn-outline-secondary ms-2' onClick={
+        () => { localStorage.removeItem('selectedLanguage'); window.location.reload() }
+      }>Reload with default language</button>
+    </div>
+  }
   if (localContent.primaryBrandColor) {
     brandConfig.brandColor = localContent.primaryBrandColor
   }
@@ -58,13 +76,6 @@ function App() {
     brandConfig.backgroundColor = localContent.dashboardBackgroundColor
   }
 
-  useEffect(() => {
-    const isCompatible = isBrowserCompatible()
-    if (!isCompatible) {
-      alert('Your browser does not support this page. ' +
-          'Please use the latest version of Chrome, Safari, Firefox, Edge, or Android')
-    }
-  }, [])
 
   let landingRoutes: JSX.Element[] = []
   if (localContent.navbarItems) {
@@ -130,7 +141,7 @@ function App() {
                               <Route path="/privacy" element={<PrivacyPolicyPage/>}/>
                               <Route path="/terms/investigator" element={<InvestigatorTermsOfUsePage/>}/>
                               <Route path="/terms/participant" element={<ParticipantTermsOfUsePage/>}/>
-                              <Route path="*" element={<div>unmatched route</div>}/>
+                              <Route path="*" element={<PageNotFound/>}/>
                             </Routes>
                           </Suspense>
                           {!cookiesAcknowledged && <CookieAlert onDismiss={() => setCookiesAcknowledged()} />}

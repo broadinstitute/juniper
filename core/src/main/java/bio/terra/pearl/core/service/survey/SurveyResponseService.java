@@ -5,13 +5,9 @@ import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.model.participant.PortalParticipantUser;
-import bio.terra.pearl.core.model.survey.Answer;
-import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
-import bio.terra.pearl.core.model.survey.Survey;
-import bio.terra.pearl.core.model.survey.SurveyResponse;
-import bio.terra.pearl.core.model.survey.SurveyType;
-import bio.terra.pearl.core.model.survey.SurveyWithResponse;
+import bio.terra.pearl.core.model.survey.*;
 import bio.terra.pearl.core.model.workflow.HubResponse;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
@@ -19,24 +15,15 @@ import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.ImmutableEntityService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentSurveyService;
 import bio.terra.pearl.core.service.survey.event.EnrolleeSurveyEvent;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import bio.terra.pearl.core.service.workflow.EventService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class SurveyResponseService extends ImmutableEntityService<SurveyResponse, SurveyResponseDao> {
@@ -118,7 +105,8 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
             }
         }
         StudyEnvironmentSurvey configSurvey = studyEnvironmentSurveyService
-                .findActiveBySurvey(studyEnvId, stableId).get();
+                .findActiveBySurvey(studyEnvId, stableId)
+                .stream().findFirst().orElseThrow(() -> new NotFoundException("no active survey found"));
         configSurvey.setSurvey(form);
         return new SurveyWithResponse(
                 configSurvey, lastResponse
@@ -130,6 +118,7 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      */
     @Transactional
     public HubResponse<SurveyResponse> updateResponse(SurveyResponse responseDto, ResponsibleEntity operator,
+                                                      String justification,
                                                       PortalParticipantUser ppUser,
                                                       Enrollee enrollee, UUID taskId, UUID portalId) {
 
@@ -143,12 +132,17 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         // find or create the SurveyResponse object to attach the snapshot
         SurveyResponse response = findOrCreateResponse(task, enrollee, enrollee.getParticipantUserId(), responseDto, portalId, operator);
 
-        List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, survey, ppUser);
+        List<Answer> updatedAnswers = createOrUpdateAnswers(responseDto.getAnswers(), response, justification, survey, ppUser, operator);
+        List<Answer> allAnswers = new ArrayList<>(response.getAnswers());
+        List<Answer> existingAnswers = answerService.findByResponse(response.getId());
+        allAnswers.addAll(existingAnswers);
+        response.setAnswers(allAnswers);
 
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
+                .justification(justification)
                 .build();
         auditInfo.setResponsibleEntity(operator);
 
@@ -158,15 +152,13 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
                 responseDto.getAnswers(),
                 survey.getAnswerMappings(),
                 ppUser,
+                operator,
                 auditInfo);
 
         // now update the task status and response id
         task = updateTaskToResponse(task, response, updatedAnswers, auditInfo);
+        EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser, task);
 
-        EnrolleeSurveyEvent event = eventService.publishEnrolleeSurveyEvent(enrollee, response, ppUser);
-        if (survey.getSurveyType().equals(SurveyType.CONSENT)) {
-            eventService.publishEnrolleeConsentEvent(enrollee, ppUser, response, task);
-        }
         logger.info("SurveyResponse received -- enrollee: {}, surveyStabledId: {}", enrollee.getShortcode(), survey.getStableId());
         HubResponse<SurveyResponse> hubResponse = eventService.buildHubResponse(event, response);
         return hubResponse;
@@ -209,32 +201,45 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     protected ParticipantTask updateTaskToResponse(ParticipantTask task, SurveyResponse response,
                                                    List<Answer> updatedAnswers, DataAuditInfo auditInfo) {
         task.setSurveyResponseId(response.getId());
-        if (task.getStatus() != TaskStatus.COMPLETE) { // task statuses shouldn't ever change from complete to not
-            if (response.isComplete()) {
-
-                if (task.getTaskType().equals(TaskType.CONSENT)) {
-                    // consent tasks are only marked as complete if they consented
-                    boolean isConsented = isConsented(response, answerService.findByResponse(response.getId()));
-                    task.setStatus(isConsented ? TaskStatus.COMPLETE : TaskStatus.REJECTED);
-                } else {
-                    task.setStatus(TaskStatus.COMPLETE);
-                }
-            } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
-                // if the task is new and no answers we submitted, this is just indicating the survey was viewed
-                task.setStatus(TaskStatus.VIEWED);
-            } else if (updatedAnswers.size() > 0) {
-                task.setStatus(TaskStatus.IN_PROGRESS);
-            }
+        TaskStatus updatedStatus = computeNewStatus(task, response, updatedAnswers);
+        if (task.getStatus() != updatedStatus || task.getSurveyResponseId() != response.getId()) {
+            task.setStatus(updatedStatus);
+            task.setSurveyResponseId(response.getId());
+            task = participantTaskService.update(task, auditInfo);
         }
-        return participantTaskService.update(task, auditInfo);
+        return task;
+    }
+
+    protected static TaskStatus computeNewStatus(ParticipantTask task, SurveyResponse response, List<Answer> updatedAnswers) {
+        if (task.getStatus() == TaskStatus.COMPLETE) {
+            // task statuses shouldn't ever change from complete to not
+            return TaskStatus.COMPLETE;
+        }
+
+        if (response.isComplete()) {
+            if (task.getTaskType().equals(TaskType.CONSENT)) {
+                // consent tasks are only marked as complete if they are completed and consented
+                boolean isConsented = isConsented(response, updatedAnswers);
+                return isConsented ? TaskStatus.COMPLETE : TaskStatus.REJECTED;
+            } else {
+                return TaskStatus.COMPLETE;
+            }
+        } else if (task.getStatus() == TaskStatus.NEW && updatedAnswers.size() == 0) {
+            // if the task is new and no answers we submitted, this is just indicating the survey was viewed
+            return TaskStatus.VIEWED;
+        } else if (updatedAnswers.size() > 0) {
+            return TaskStatus.IN_PROGRESS;
+        }
+        // nothing has changed, so keep the status the same
+        return task.getStatus();
     }
 
     /**
      * Creates and attaches the answers to the response.
      */
     @Transactional
-    public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response,
-                                              Survey survey, PortalParticipantUser ppUser) {
+    public List<Answer> createOrUpdateAnswers(List<Answer> answers, SurveyResponse response, String justification,
+                                              Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
         List<String> updatedStableIds = answers.stream().map(Answer::getQuestionStableId).toList();
         // bulk-fetch any existingAnswers that will need to be updated
         // note that we do not use any answer ids returned by the client -- we'd have to run a query on them anyway
@@ -251,31 +256,39 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
         List<Answer> updatedAnswers = answers.stream().map(answer -> {
             Answer existing = existingAnswerMap.get(answer.getQuestionStableId());
             if (existing != null) {
-                return updateAnswer(existing, answer, response, survey, ppUser, changeRecords);
+                return updateAnswer(existing, answer, response, justification, survey, ppUser, changeRecords, operator);
             }
-            return createAnswer(answer, response, survey, ppUser);
+            return createAnswer(answer, response, survey, ppUser, operator);
         }).toList();
         dataChangeRecordService.bulkCreate(changeRecords);
         return updatedAnswers;
     }
 
     @Transactional
-    public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response,
-                               Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords) {
+    public Answer updateAnswer(Answer existing, Answer updated, SurveyResponse response, String justification,
+                               Survey survey, PortalParticipantUser ppUser, List<DataChangeRecord> changeRecords,
+                               ResponsibleEntity operator) {
         if (existing.valuesEqual(updated)) {
             // if the values are the same, don't bother with an update
             return existing;
         }
-        DataChangeRecord change = DataChangeRecord.builder()
-                .surveyId(survey.getId())
+
+        DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(response.getEnrolleeId())
-                .operationId(response.getId())
-                .responsibleUserId(ppUser.getParticipantUserId())
+                .surveyId(survey.getId())
                 .portalParticipantUserId(ppUser.getId())
+                .justification(justification)
+                .build();
+        auditInfo.setResponsibleEntity(operator);
+
+        DataChangeRecord change = DataChangeRecord.fromAuditInfo(auditInfo)
+                .operationId(response.getId())
                 .modelName(survey.getStableId())
                 .fieldName(existing.getQuestionStableId())
                 .oldValue(existing.valueAsString())
-                .newValue(updated.valueAsString()).build();
+                .newValue(updated.valueAsString())
+                .build();
+
         changeRecords.add(change);
         existing.inferTypeIfMissing();
         existing.setSurveyVersion(updated.getSurveyVersion());
@@ -289,8 +302,13 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
     }
 
     private Answer createAnswer(Answer answer, SurveyResponse response,
-                                Survey survey, PortalParticipantUser ppUser) {
-        answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
+                                Survey survey, PortalParticipantUser ppUser, ResponsibleEntity operator) {
+        if(operator.getParticipantUser() != null || operator.getAdminUser() != null) {
+            answer.setCreatingEntity(operator);
+        } else {
+            //Answers created by a system process (i.e. enrollee import) should be associated with the participant user
+            answer.setCreatingParticipantUserId(ppUser.getParticipantUserId());
+        }
         answer.setSurveyResponseId(response.getId());
         answer.setSurveyStableId(survey.getStableId());
         if (answer.getSurveyVersion() == 0) {
@@ -321,10 +339,10 @@ public class SurveyResponseService extends ImmutableEntityService<SurveyResponse
      * for surveys of type CONSENT, if the survey has an explicit computed property "consented", that determines
      * consent.  Otherwise, the form is consented if it is complete
      */
-    public boolean isConsented(SurveyResponse response, List<Answer> responseAnswers) {
+    public static boolean isConsented(SurveyResponse response, List<Answer> responseAnswers) {
         return responseAnswers.stream().filter(answer -> answer.getQuestionStableId().equals(CONSENTED_ANSWER_STABLE_ID))
                 .findFirst()
-                .map(answer -> answer.getBooleanValue())
+                .map(Answer::getBooleanValue)
                 .orElse(response.isComplete());
 
     }

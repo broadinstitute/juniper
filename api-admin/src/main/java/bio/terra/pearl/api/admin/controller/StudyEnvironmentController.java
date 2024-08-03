@@ -2,7 +2,8 @@ package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.StudyEnvironmentApi;
 import bio.terra.pearl.api.admin.model.StudyEnvironmentDto;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.api.admin.service.study.StudyEnvironmentExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
@@ -42,7 +43,9 @@ public class StudyEnvironmentController implements StudyEnvironmentApi {
     StudyEnvironment envUpdate = objectMapper.convertValue(body, StudyEnvironment.class);
     StudyEnvironment savedEnv =
         studyEnvExtService.update(
-            adminUser, portalShortcode, studyShortcode, environmentName, envUpdate);
+            PortalStudyEnvAuthContext.of(
+                adminUser, portalShortcode, studyShortcode, environmentName),
+            envUpdate);
     return ResponseEntity.ok(objectMapper.convertValue(savedEnv, StudyEnvironmentDto.class));
   }
 

@@ -1,14 +1,18 @@
 import {
   AddressValidationResult,
-  Enrollee, HubResponse,
+  Enrollee,
+  EnrolleeRelation,
+  HubResponse,
+  LogEvent,
   MailingAddress,
   ParticipantDashboardAlert,
   ParticipantTask,
+  ParticipantUser,
   Portal,
   PreEnrollmentResponse,
   PreregistrationResponse,
-  StudyEnvironmentSurvey,
   Profile,
+  StudyEnvironmentSurvey,
   StudyEnvParams,
   Survey,
   SurveyResponse
@@ -46,27 +50,12 @@ export type {
   SurveyResponse
 } from '@juniper/ui-core'
 
-export type ParticipantUser = {
-  id: string,
-  username: string,
-  token: string
-};
-
 export type LoginResult = {
   user: ParticipantUser,
   ppUsers: PortalParticipantUser[],
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  proxyRelations: EnrolleeRelation[],
   profile: Profile
-}
-
-export type EnrolleeRelation = {
-  id: string
-  relationshipType: string,
-  targetEnrolleeId: string,
-  createdAt: number
-  lastUpdatedAt: number
-  participantUserId: string
 }
 
 export type KitRequest = {
@@ -116,21 +105,8 @@ export type Config = {
   b2cChangePasswordPolicyName: string,
 }
 
-export type LogEvent = {
-  id?: string,
-  eventType: 'ERROR' | 'ACCESS' | 'EVENT' | 'STATS' | 'INFO'
-  eventName: string,
-  stackTrace?: string,
-  eventDetail?: string,
-  studyShortcode?: string,
-  portalShortcode?: string,
-  environmentName?: string,
-  enrolleeShortcode?: string,
-  operatorId?: string,
-}
-
 let bearerToken: string | null = null
-const API_ROOT = `${process.env.REACT_APP_API_ROOT}`
+const API_ROOT = `/api`
 
 export default {
   getInitHeaders() {

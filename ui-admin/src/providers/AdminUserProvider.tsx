@@ -1,13 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Api from 'api/api'
 import { AdminUser } from 'api/adminUser'
+import { useUser } from 'user/UserProvider'
 
 export type AdminUserContextT = {
   users: AdminUser[],
   isLoading: boolean
 }
 
-const AdminUserContext = React.createContext<AdminUserContextT>({
+export const AdminUserContext = React.createContext<AdminUserContextT>({
   users: [],
   isLoading: true
 })
@@ -26,14 +27,24 @@ export const useAdminUserContext = () => {
  */
 export default function AdminUserProvider({ portalShortcode, children }:
 {portalShortcode: string, children: React.ReactNode}) {
+  const { user } = useUser()
   const [userState, setUserState] = useState<AdminUserContextT>({ users: [], isLoading: true })
   useEffect(() => {
-    Api.fetchAdminUsersByPortal(portalShortcode).then(result => {
-      setUserState({
-        users: result,
-        isLoading: true
+    if (user?.superuser) {
+      Api.fetchAdminUsers().then(result => {
+        setUserState({
+          users: result,
+          isLoading: true
+        })
       })
-    })
+    } else {
+      Api.fetchAdminUsersByPortal(portalShortcode).then(result => {
+        setUserState({
+          users: result,
+          isLoading: true
+        })
+      })
+    }
   }, [portalShortcode])
   return <AdminUserContext.Provider value={userState}>
     {children}

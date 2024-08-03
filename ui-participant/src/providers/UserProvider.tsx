@@ -1,8 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, {
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import { useAuth } from 'react-oidc-context'
-import Api, { EnrolleeRelation, LoginResult, ParticipantUser, PortalParticipantUser } from 'api/api'
+import Api, {
+  LoginResult,
+  PortalParticipantUser
+} from 'api/api'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
-import { Enrollee, Profile } from '@juniper/ui-core'
+import {
+  Enrollee,
+  EnrolleeRelation,
+  ParticipantUser,
+  Profile
+} from '@juniper/ui-core'
+import envVars from 'util/envVars'
 
 /**
  * The user provide contains the _raw_ user context, which is more or less directly derived
@@ -17,7 +30,7 @@ export type UserContextT = {
   // logged in.
   ppUsers: PortalParticipantUser[]
   enrollees: Enrollee[],
-  relations: EnrolleeRelation[],
+  proxyRelations: EnrolleeRelation[],
   profile?: Profile,
   loginUser: (result: LoginResult, accessToken: string) => void,
   loginUserInternal: (result: LoginResult) => void,
@@ -32,7 +45,7 @@ const UserContext = React.createContext<UserContextT>({
   user: null,
   ppUsers: [],
   enrollees: [],
-  relations: [],
+  proxyRelations: [],
   loginUser: () => {
     throw new Error('context not yet initialized')
   },
@@ -55,8 +68,6 @@ const UserContext = React.createContext<UserContextT>({
 const INTERNAL_LOGIN_TOKEN_KEY = 'internalLoginToken'
 const OAUTH_ACCESS_TOKEN_KEY = 'oauthAccessToken'
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
 export const useUser = () => useContext(UserContext)
 
 /** Provider for the current logged-in user. */
@@ -87,7 +98,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
     await Api.logout()
-    if (!process.env.REACT_APP_UNAUTHED_LOGIN) {
+    if (!envVars.unauthedLogin) {
       // eslint-disable-next-line camelcase
       auth.signoutRedirect({ post_logout_redirect_uri: window.location.origin })
     } else {
@@ -187,7 +198,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const userContext: UserContextT = {
     user: loginState ? loginState.user : null,
     enrollees: loginState ? loginState.enrollees : [],
-    relations: loginState ? loginState.relations : [],
+    proxyRelations: loginState ? loginState.proxyRelations : [],
     ppUsers: loginState?.ppUsers ? loginState.ppUsers : [],
     profile: loginState?.profile,
     loginUser,

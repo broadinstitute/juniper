@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller.notifications;
 
 import bio.terra.pearl.api.admin.api.TriggerApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.notifications.NotificationExtService;
 import bio.terra.pearl.api.admin.service.notifications.TriggerExtService;
 import bio.terra.pearl.core.model.EnvironmentName;

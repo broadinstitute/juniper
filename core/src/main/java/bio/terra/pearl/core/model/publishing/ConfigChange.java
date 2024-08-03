@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import bio.terra.pearl.core.service.exception.internal.InternalServerException;
 import org.apache.commons.beanutils.PropertyUtils;
 
 public record ConfigChange(String propertyName, Object oldValue, Object newValue) {
@@ -20,24 +22,29 @@ public record ConfigChange(String propertyName, Object oldValue, Object newValue
      * gets a list of change records for each property that has changed between source and dest.  If one of source
      * or dest is null, all properties will be returned.  If both are null, an empty list will be returned
      */
-    public static <T> List<ConfigChange> allChanges(T source, T dest, List<String> ignoreProperties) throws ReflectiveOperationException, IntrospectionException {
+    public static <T> List<ConfigChange> allChanges(T source, T dest, List<String> ignoreProperties) {
         if (source == null && dest == null) {
             return List.of();
         }
-        BeanInfo info = Introspector.getBeanInfo(source != null ? source.getClass() : dest.getClass());
+        try {
+            BeanInfo info = Introspector.getBeanInfo(source != null ? source.getClass() : dest.getClass());
 
-        List<String> propertyNames = Arrays.asList(info.getPropertyDescriptors()).stream()
-                .map(descriptor -> descriptor.getName())
-                .filter(name -> !ignoreProperties.contains(name)).toList();
-        List<ConfigChange> records = new ArrayList<>();
-        for (String propertyName : propertyNames) {
-            ConfigChange record = new ConfigChange(source, dest, propertyName);
-            // if the new value is different than the old, add the record
-            if (!Objects.equals(record.newValue, record.oldValue)) {
-                records.add(record);
+            List<String> propertyNames = Arrays.asList(info.getPropertyDescriptors()).stream()
+                    .map(descriptor -> descriptor.getName())
+                    .filter(name -> !ignoreProperties.contains(name)).toList();
+            List<ConfigChange> records = new ArrayList<>();
+            for (String propertyName : propertyNames) {
+                ConfigChange record = new ConfigChange(source, dest, propertyName);
+                // if the new value is different than the old, add the record
+                if (!Objects.equals(record.newValue, record.oldValue)) {
+                    records.add(record);
+                }
             }
+            return records;
+        } catch (Exception e) {
+            throw new InternalServerException("Error introspecting bean", e);
         }
-        return records;
+
     }
 }
 

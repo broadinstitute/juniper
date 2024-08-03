@@ -1,21 +1,15 @@
 package bio.terra.pearl.api.admin.service.enrollee;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
 import bio.terra.pearl.core.model.audit.DataChangeRecord;
 import bio.terra.pearl.core.model.participant.Enrollee;
-import bio.terra.pearl.core.model.participant.EnrolleeSearchFacet;
-import bio.terra.pearl.core.model.participant.EnrolleeSearchResult;
 import bio.terra.pearl.core.model.participant.WithdrawnEnrollee;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
-import bio.terra.pearl.core.service.participant.search.EnrolleeSearchService;
-import bio.terra.pearl.core.service.participant.search.facets.BooleanFacetValue;
-import bio.terra.pearl.core.service.participant.search.facets.sql.EnrolleeFacetSqlGenerator;
-import bio.terra.pearl.core.service.participant.search.facets.sql.SqlSearchableFacet;
 import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.List;
@@ -28,42 +22,16 @@ public class EnrolleeExtService {
   private EnrolleeService enrolleeService;
   private WithdrawnEnrolleeService withdrawnEnrolleeService;
   private DataChangeRecordService dataChangeRecordService;
-  private EnrolleeSearchService enrolleeSearchService;
 
   public EnrolleeExtService(
       AuthUtilService authUtilService,
       EnrolleeService enrolleeService,
       WithdrawnEnrolleeService withdrawnEnrolleeService,
-      DataChangeRecordService dataChangeRecordService,
-      EnrolleeSearchService enrolleeSearchService) {
+      DataChangeRecordService dataChangeRecordService) {
     this.authUtilService = authUtilService;
     this.enrolleeService = enrolleeService;
     this.withdrawnEnrolleeService = withdrawnEnrolleeService;
     this.dataChangeRecordService = dataChangeRecordService;
-    this.enrolleeSearchService = enrolleeSearchService;
-  }
-
-  public List<EnrolleeSearchResult> search(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName,
-      List<SqlSearchableFacet> facets) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    // for now, we're hardcoded to always limit the search to subjects (e.g. don't return proxies)
-    facets.add(
-        new SqlSearchableFacet(
-            new BooleanFacetValue("subject", true), new EnrolleeFacetSqlGenerator()));
-    return enrolleeSearchService.search(studyShortcode, environmentName, facets);
-  }
-
-  public List<EnrolleeSearchFacet> getSearchFacets(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName environmentName) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    return enrolleeSearchService.getFacets(studyShortcode, environmentName);
   }
 
   public List<Enrollee> findForKitManagement(
@@ -94,8 +62,11 @@ public class EnrolleeExtService {
   }
 
   public List<DataChangeRecord> findDataChangeRecords(
-      AdminUser operator, String enrolleeShortcode) {
+      AdminUser operator, String enrolleeShortcode, String modelName) {
     Enrollee enrollee = authUtilService.authAdminUserToEnrollee(operator, enrolleeShortcode);
+    if (modelName != null) {
+      return dataChangeRecordService.findAllRecordsForEnrolleeAndModelName(enrollee, modelName);
+    }
     return dataChangeRecordService.findAllRecordsForEnrollee(enrollee);
   }
 

@@ -1,0 +1,51 @@
+{
+  "stableId": "massachusettsSurvey",
+  "version": 1,
+  "name": "Massachusetts Survey",
+  "assignToAllNewEnrollees": false,
+  "eligibilityRule": "{profile.mailingAddress.state} = 'MA'",
+  "jsonContent": {
+    "title": {
+      "en": "Massachusetts Survey",
+      "es": "Massachusetts encuesta",
+      "dev": "DEV_Massachusetts"
+    },
+    "showQuestionNumbers": "off",
+    "showProgressBar": "bottom",
+    "pages": [
+      {
+        "elements": [
+          {
+            "type": "panel",
+            "elements": [
+              {
+                "name": "maSurveyHeader",
+                "type": "html",
+                "html": "<p>You, {profile.givenName} {profile.familyName}, say you live in Massachusetts</p>"
+              }
+            ]
+          },
+          {
+            "name": "favoriteCity",
+            "type": "radiogroup",
+            "title": "Which city is your favorite?",
+            "choices": [
+              {
+                "text": "Boston",
+                "value": "boston"
+              },
+              {
+                "text": "Cambridge",
+                "value": "cambridge"
+              },
+              {
+                "text": "Not sure",
+                "value": "unsure"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

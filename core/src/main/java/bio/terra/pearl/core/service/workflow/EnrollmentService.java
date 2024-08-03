@@ -4,6 +4,7 @@ import bio.terra.pearl.core.dao.survey.AnswerMappingDao;
 import bio.terra.pearl.core.dao.survey.PreEnrollmentResponseDao;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
+import bio.terra.pearl.core.model.audit.ResponsibleEntity;
 import bio.terra.pearl.core.model.participant.*;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
@@ -192,7 +193,11 @@ public class EnrollmentService {
             throw new IllegalStateException("Invalid pre-enrollment response data: " + e.getMessage());
         }
 
+        answers.forEach(Answer::inferTypeIfMissing);
+
         PortalParticipantUser ppUser = portalParticipantUserService.findForEnrollee(enrollee);
+        ParticipantUser participantUser = participantUserService.find(ppUser.getParticipantUserId())
+                .orElseThrow(() -> new NotFoundException("Participant user not found"));
 
         SurveyResponse surveyResponse =
                 SurveyResponse
@@ -219,6 +224,7 @@ public class EnrollmentService {
                 answers,
                 answerMappingDao.findBySurveyId(preEnrollResponse.getSurveyId()),
                 operator,
+                new ResponsibleEntity(participantUser),
                 auditInfo);
     }
 
@@ -247,7 +253,7 @@ public class EnrollmentService {
             return false;
         }
         String questionStableId = answerMappingForProxyOpt.get().getQuestionStableId();
-        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, "stringValue");
+        Boolean proxyAnswer = SurveyParseUtils.getAnswerByStableId(preEnrollResponse.getFullData(), questionStableId, Boolean.class, objectMapper, null);
         if (proxyAnswer == null) {
             return false;
         }

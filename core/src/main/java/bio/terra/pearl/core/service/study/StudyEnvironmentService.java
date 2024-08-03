@@ -11,13 +11,17 @@ import bio.terra.pearl.core.model.study.StudyEnvironmentConfig;
 import bio.terra.pearl.core.model.survey.StudyEnvironmentSurvey;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.CrudService;
+import bio.terra.pearl.core.service.dataimport.ImportService;
 import bio.terra.pearl.core.service.datarepo.DataRepoJobService;
 import bio.terra.pearl.core.service.datarepo.DatasetService;
 import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.StudyEnvironmentKitTypeService;
 import bio.terra.pearl.core.service.notification.TriggerService;
+import bio.terra.pearl.core.service.participant.EnrolleeRelationService;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
-import bio.terra.pearl.core.service.workflow.AdminTaskService;
+import bio.terra.pearl.core.service.participant.FamilyEnrolleeService;
+import bio.terra.pearl.core.service.participant.FamilyService;
+import bio.terra.pearl.core.service.workflow.DataChangeRecordService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,16 +32,20 @@ import java.util.UUID;
 
 @Service
 public class StudyEnvironmentService extends CrudService<StudyEnvironment, StudyEnvironmentDao> {
-    private StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
-    private StudyEnvironmentConfigService studyEnvironmentConfigService;
-    private EnrolleeService enrolleeService;
-    private PreEnrollmentResponseDao preEnrollmentResponseDao;
-    private TriggerService triggerService;
-    private DatasetService datasetService;
-    private DataRepoJobService dataRepoJobService;
-    private WithdrawnEnrolleeDao withdrawnEnrolleeDao;
-    private AdminTaskService adminTaskService;
-    private StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    private final FamilyService familyService;
+    private final FamilyEnrolleeService familyEnrolleeService;
+    private final EnrolleeRelationService enrolleeRelationService;
+    private final DataChangeRecordService dataChangeRecordService;
+    private final StudyEnvironmentSurveyDao studyEnvironmentSurveyDao;
+    private final StudyEnvironmentConfigService studyEnvironmentConfigService;
+    private final EnrolleeService enrolleeService;
+    private final PreEnrollmentResponseDao preEnrollmentResponseDao;
+    private final TriggerService triggerService;
+    private final DatasetService datasetService;
+    private final DataRepoJobService dataRepoJobService;
+    private final WithdrawnEnrolleeDao withdrawnEnrolleeDao;
+    private final StudyEnvironmentKitTypeService studyEnvironmentKitTypeService;
+    private final ImportService importService;
 
 
     public StudyEnvironmentService(StudyEnvironmentDao studyEnvironmentDao,
@@ -49,7 +57,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
                                    DatasetService datasetService,
                                    DataRepoJobService dataRepoJobService,
                                    WithdrawnEnrolleeDao withdrawnEnrolleeDao,
-                                   AdminTaskService adminTaskService, StudyEnvironmentKitTypeService studyEnvironmentKitTypeService) {
+                                   StudyEnvironmentKitTypeService studyEnvironmentKitTypeService,
+                                   ImportService importService, FamilyService familyService, FamilyEnrolleeService familyEnrolleeService, EnrolleeRelationService enrolleeRelationService, DataChangeRecordService dataChangeRecordService) {
         super(studyEnvironmentDao);
         this.studyEnvironmentSurveyDao = studyEnvironmentSurveyDao;
         this.studyEnvironmentConfigService = studyEnvironmentConfigService;
@@ -59,8 +68,12 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         this.datasetService = datasetService;
         this.dataRepoJobService = dataRepoJobService;
         this.withdrawnEnrolleeDao = withdrawnEnrolleeDao;
-        this.adminTaskService = adminTaskService;
         this.studyEnvironmentKitTypeService = studyEnvironmentKitTypeService;
+        this.importService = importService;
+        this.familyService = familyService;
+        this.familyEnrolleeService = familyEnrolleeService;
+        this.enrolleeRelationService = enrolleeRelationService;
+        this.dataChangeRecordService = dataChangeRecordService;
     }
 
     public List<StudyEnvironment> findByStudy(UUID studyId) {
@@ -106,6 +119,10 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
     @Override
     public void delete(UUID studyEnvironmentId, Set<CascadeProperty> cascade) {
         StudyEnvironment studyEnv = dao.find(studyEnvironmentId).get();
+        enrolleeRelationService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        familyEnrolleeService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        dataChangeRecordService.deleteByStudyEnvironmentId(studyEnvironmentId);
+        familyService.deleteByStudyEnvironmentId(studyEnvironmentId);
         enrolleeService.deleteByStudyEnvironmentId(studyEnv.getId(), cascade);
         studyEnvironmentSurveyDao.deleteByStudyEnvironmentId(studyEnvironmentId);
         triggerService.deleteByStudyEnvironmentId(studyEnvironmentId);
@@ -113,8 +130,8 @@ public class StudyEnvironmentService extends CrudService<StudyEnvironment, Study
         dataRepoJobService.deleteByStudyEnvironmentId(studyEnvironmentId);
         datasetService.deleteByStudyEnvironmentId(studyEnvironmentId);
         withdrawnEnrolleeDao.deleteByStudyEnvironmentId(studyEnvironmentId);
-        adminTaskService.deleteByStudyEnvironmentId(studyEnvironmentId, null);
         studyEnvironmentKitTypeService.deleteByStudyEnvironmentId(studyEnvironmentId, cascade);
+        importService.deleteByStudyEnvId(studyEnvironmentId);
         dao.delete(studyEnvironmentId);
         if (studyEnv.getStudyEnvironmentConfigId() != null) {
             studyEnvironmentConfigService.delete(studyEnv.getStudyEnvironmentConfigId());

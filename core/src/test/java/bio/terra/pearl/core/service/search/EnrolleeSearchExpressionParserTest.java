@@ -4,6 +4,7 @@ import bio.terra.pearl.core.BaseSpringBootTest;
 import org.jooq.Query;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -24,7 +25,8 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
 
         Query query = searchExp.generateQuery(fakeStudyEnvId);
         assertEquals("select enrollee.consented as enrollee_consented, " +
-                        "enrollee.created_at as enrollee_created_at, enrollee.id as enrollee_id, " +
+                        "enrollee.created_at as enrollee_created_at, " +
+                        "enrollee.id as enrollee_id, " +
                         "enrollee.last_updated_at as enrollee_last_updated_at, " +
                         "enrollee.participant_user_id as enrollee_participant_user_id, " +
                         "enrollee.pre_enrollment_response_id as enrollee_pre_enrollment_response_id, " +
@@ -118,6 +120,30 @@ class EnrolleeSearchExpressionParserTest extends BaseSpringBootTest {
         assertThrows(IllegalArgumentException.class,
                 () -> enrolleeSearchExpressionParser.parseRule("{profile .givenName} = 'Jonas'"));
 
+    }
+
+    @Test
+    @Transactional
+    public void testFunctionsErrorWithWrongType() {
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "lower({enrollee.subject}) = 'true'"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "trim(10) = 10"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "max('hey', 3, 4) = 5"
+                ));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> enrolleeSearchExpressionParser.parseRule(
+                        "min('hey', 3, 4) = 5"
+                ));
     }
 
 

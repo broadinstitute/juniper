@@ -2,11 +2,17 @@ import React, { useState } from 'react'
 import Api, { HtmlSection, NavbarItemExternal, NavbarItemInternal } from 'api/api'
 import Select from 'react-select'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClipboard, faClockRotateLeft, faImage, faPalette, faPlus, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+  faClockRotateLeft, faGlobe,
+  faImage,
+  faPalette,
+  faPlus,
+  faTrash
+} from '@fortawesome/free-solid-svg-icons'
 import HtmlPageEditView from './HtmlPageEditView'
 import {
   HtmlPage, LocalSiteContent, ApiProvider, SiteContent,
-  ApiContextT, HtmlSectionView, SiteFooter, PortalEnvironmentLanguage
+  ApiContextT, HtmlSectionView, SiteFooter
 } from '@juniper/ui-core'
 import { Link } from 'react-router-dom'
 import SiteContentVersionSelector from './SiteContentVersionSelector'
@@ -21,7 +27,10 @@ import BrandingModal from './BrandingModal'
 import { faExternalLink } from '@fortawesome/free-solid-svg-icons/faExternalLink'
 import { useConfig } from 'providers/ConfigProvider'
 import Modal from 'react-bootstrap/Modal'
-import useReactSingleSelect from 'util/react-select-utils'
+
+import _cloneDeep from 'lodash/cloneDeep'
+import TranslationModal from './TranslationModal'
+import useLanguageSelectorFromParam from '../languages/useLanguageSelector'
 
 type NavbarOption = {label: string, value: string}
 const landingPageOption = { label: 'Landing page', value: 'Landing page' }
@@ -42,37 +51,26 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     siteContent, previewApi, portalEnvContext, loadSiteContent, switchToVersion, createNewVersion, readOnly
   } = props
   const { portalEnv } = portalEnvContext
-  const initialContent = siteContent
   const [activeTab, setActiveTab] = useState<string | null>('designer')
   const [selectedNavOpt, setSelectedNavOpt] = useState<NavbarOption>(landingPageOption)
-  const [workingContent, setWorkingContent] = useState<SiteContent>(initialContent)
+  const [workingContent, setWorkingContent] = useState<SiteContent>(siteContent)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
   const [showAddPageModal, setShowAddPageModal] = useState(false)
   const [showBrandingModal, setShowBrandingModal] = useState(false)
   const [showDeletePageModal, setShowDeletePageModal] = useState(false)
   const [showAddPreRegModal, setShowAddPreRegModal] = useState(false)
   const [showUnsavedPreviewModal, setShowUnsavedPreviewModal] = useState(false)
+  const [showTranslationModal, setShowTranslationModal] = useState(false)
   const [hasInvalidSection, setHasInvalidSection] = useState(false)
-  const [selectedLanguage, setSelectedLanguage] = useState<PortalEnvironmentLanguage | undefined>(
-    portalEnvContext.portalEnv.supportedLanguages.find(f =>
-      workingContent.localizedSiteContents[0]?.language === f.languageCode))
-  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
   const zoneConfig = useConfig()
-  if (!localContent) {
-    return <div>no content for language {selectedLanguage?.languageName}</div>
-  }
-  const navBarItems = localContent.navbarItems
-
   const {
-    onChange: languageOnChange, options: languageOptions,
-    selectedOption: selectedLanguageOption, selectInputId: selectLanguageInputId
-  } =
-      useReactSingleSelect(
-        portalEnvContext.portalEnv.supportedLanguages,
-        (language: PortalEnvironmentLanguage) => ({ label: language.languageName, value: language }),
-        setSelectedLanguage,
-        selectedLanguage
-      )
+    defaultLanguage, languageOnChange, selectedLanguageOption,
+    selectLanguageInputId, languageOptions
+  } = useLanguageSelectorFromParam()
+  const selectedLanguage = selectedLanguageOption?.value
+  const localContent = workingContent.localizedSiteContents.find(lsc => lsc.language === selectedLanguage?.languageCode)
+
+  const navBarItems = localContent?.navbarItems ?? []
 
   /** updates the global SiteContent object with the given LocalSiteContent */
   const updateLocalContent = (localContent: LocalSiteContent) => {
@@ -80,6 +78,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     const matchedIndex = workingContent.localizedSiteContents
       .findIndex(lsc => lsc.language === localContent.language)
     updatedLocalContents[matchedIndex] = localContent
+    const newWorkingContent: SiteContent = {
+      ...workingContent,
+      localizedSiteContents: updatedLocalContents
+    }
+    setWorkingContent(newWorkingContent)
+  }
+
+  /** creates a new local site content for the current language based on the content for the default language */
+  const addLocalContent = () => {
+    const defaultContent = workingContent.localizedSiteContents
+      .find(lsc => lsc.language === defaultLanguage.languageCode)
+    if (!selectedLanguage || !defaultContent) {
+      return
+    }
+    const newLocalContent: LocalSiteContent = {
+      ..._cloneDeep(defaultContent),
+      language: selectedLanguage!.languageCode
+    }
+    const updatedLocalContents = [...workingContent.localizedSiteContents, newLocalContent]
     const newWorkingContent: SiteContent = {
       ...workingContent,
       localizedSiteContents: updatedLocalContents
@@ -179,7 +196,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
   }
 
   const participantViewClick = () => {
-    if (hasInvalidSection || (initialContent !== workingContent)) {
+    if (hasInvalidSection || (siteContent !== workingContent)) {
       setShowUnsavedPreviewModal(true)
     } else {
       showParticipantView()
@@ -192,12 +209,12 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
     window.open(url, '_blank')
   }
 
-
   const isEditable = !readOnly && portalEnv.environmentName === 'sandbox'
 
   const currentNavBarItem = selectedNavOpt.value ? navBarItems
     .find(navItem => navItem.text === selectedNavOpt.value) : null
-  const pageToRender = currentNavBarItem ? (currentNavBarItem as NavbarItemInternal).htmlPage : localContent.landingPage
+  const pageToRender = currentNavBarItem ?
+    (currentNavBarItem as NavbarItemInternal).htmlPage : localContent?.landingPage
 
   const pageOpts: {label: string, value: string}[] = navBarItems
     .map(navItem => ({ label: navItem.text, value: navItem.text }))
@@ -207,8 +224,8 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
 
   return <div className="d-flex bg-white pb-5">
     <div className="d-flex flex-column flex-grow-1 mx-1 mb-1">
-      <div className="d-flex p-2 align-items-center">
-        <div className="d-flex flex-grow-1">
+      <div className="d-flex p-2">
+        <div className="d-flex flex-grow-1 align-items-center">
           <h5>Website Content
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
             (v{siteContent.version})
@@ -222,30 +239,32 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
             </Button>
           </h5>
         </div>
-        {
-          isEditable && <div className="d-flex flex-grow-1">
-            <Button className="ms-auto me-md-2" variant="primary"
-              disabled={readOnly || hasInvalidSection || (initialContent === workingContent)}
-              tooltipPlacement={'left'}
-              tooltip={(() => {
-                if (initialContent === workingContent) {
-                  return 'Site is unchanged. Make changes to save.'
-                }
-                if (hasInvalidSection) {
-                  return 'Site is invalid. Correct to save.'
-                }
-                return 'Save changes'
-              })()}
-              onClick={() => createNewVersion(workingContent)}>
+        <div className="d-flex flex-grow-1 justify-content-end align-items-center">
+          {
+            isEditable && <>
+              <Button className="me-md-2" variant="primary"
+                disabled={readOnly || hasInvalidSection || (siteContent === workingContent)}
+                tooltipPlacement={'left'}
+                tooltip={(() => {
+                  if (siteContent === workingContent) {
+                    return 'Site is unchanged. Make changes to save.'
+                  }
+                  if (hasInvalidSection) {
+                    return 'Site is invalid. Correct to save.'
+                  }
+                  return 'Save changes'
+                })()}
+                onClick={() => createNewVersion(workingContent)}>
                   Save
-            </Button>
-            {
-            // eslint-disable-next-line
+              </Button>
+              {
+                // eslint-disable-next-line
             // @ts-ignore  Link to type also supports numbers for back operations
-              <Link className="btn btn-cancel" to={-1}>Cancel</Link>
-            }
-          </div>
-        }
+                <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+              }
+            </>
+          }
+        </div>
       </div>
       <div className="px-2">
         <div className="d-flex flex-grow-1 mb-1">
@@ -256,49 +275,45 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                 setSelectedNavOpt(e ?? landingPageOption)
               }}/>
           </div>
-          { portalEnvContext.portalEnv.supportedLanguages.length > 1 && <div className="ms-2" style={{ width: 200 }}>
-            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
-              isDisabled={hasInvalidSection} aria-label={'Select a language'}
-              onChange={e => {
-                languageOnChange(e)
-                loadSiteContent(workingContent.stableId, workingContent.version, e?.value.languageCode)
-              }}/>
-          </div> }
           <Button className="btn btn-secondary"
             tooltip={'Add a new page'}
             disabled={readOnly || !isEditable || hasInvalidSection}
             onClick={() => setShowAddPageModal(!showAddPageModal)}>
-            <FontAwesomeIcon icon={faPlus}/> Add navbar item
+            <FontAwesomeIcon icon={faPlus}/> Add
           </Button>
           <Button className="btn btn-secondary"
             tooltip={!isLandingPage ? 'Delete this page' : 'You cannot delete the landing page'}
             disabled={readOnly || !isEditable || hasInvalidSection || isLandingPage}
             onClick={() => setShowDeletePageModal(!showAddPageModal)}>
-            <FontAwesomeIcon icon={faTrash}/> Delete navbar item
+            <FontAwesomeIcon icon={faTrash}/> Delete
           </Button>
-          <Button variant="light"  className="ms-auto  border m-1" tooltip={''}
-            onClick={() => setShowBrandingModal(true)}
-          >
-            <FontAwesomeIcon icon={faPalette} className="fa-lg"/> Branding
-          </Button>
-          <Link to="../media" className="btn btn-light border m-1">
-            <FontAwesomeIcon icon={faImage} className="fa-lg"/> Manage media
-          </Link>
-          { portalEnv.preRegSurveyId &&
-            <Link to={'../forms/preReg'} className="btn btn-light border m-1">
-              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Pre-registration
-            </Link> }
-          { !portalEnv.preRegSurveyId &&
-            <Button variant="light"  className="border m-1" tooltip={'Add a pre-registration survey that' +
-                ' users must complete before being able to sign up for the portal.'}
-            onClick={() => setShowAddPreRegModal(true)}
-            >
-              <FontAwesomeIcon icon={faClipboard} className="fa-lg"/> Pre-registration
-            </Button> }
+          { languageOptions.length > 1 && <div className="ms-2" style={{ width: 200 }}>
+            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+              isDisabled={hasInvalidSection} aria-label={'Select a language'}
+              onChange={languageOnChange}/>
+          </div> }
+          <div className="d-flex ms-auto">
+            <Button variant="light" onClick={() => setShowBrandingModal(true)}>
+              Branding <FontAwesomeIcon icon={faPalette} className="fa-lg"/>
+            </Button>
+            <Link to="../media" className="btn btn-light ms-2">
+              Media <FontAwesomeIcon icon={faImage} className="fa-lg"/>
+            </Link>
+            <Button variant="light" onClick={() => setShowTranslationModal(true)} className="ms-2">
+              Translations <FontAwesomeIcon icon={faGlobe} className="fa-lg"/>
+            </Button>
+          </div>
         </div>
-
       </div>
-      <div className="d-flex flex-column flex-grow-1 mt-2">
+      { !localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
+        <div className="alert alert-warning" role="alert">
+          No content has been configured for this language.
+          <Button className="btn btn-secondary ms-3" onClick={addLocalContent}>
+            Clone from default
+          </Button>
+        </div>
+      </div>}
+      {localContent && <div className="d-flex flex-column flex-grow-1 mt-2">
         { pageToRender &&
           <Tabs
             activeKey={activeTab ?? undefined}
@@ -309,7 +324,7 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           >
             <Tab
               eventKey="designer"
-              title="Designer"
+              title={<>Designer<span className='badge bg-primary fw-light ms-2'>BETA</span></>}
               disabled={hasInvalidSection}
             >
               <ErrorBoundary>
@@ -317,6 +332,25 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
                   {pageToRender &&
                       <ApiProvider api={previewApi}>
                         <HtmlPageEditView htmlPage={pageToRender} readOnly={readOnly}
+                          portalEnvContext={portalEnvContext}
+                          siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
+                          footerSection={localContent.footerSection} updateFooter={updateFooter}
+                          updatePage={page => updatePage(page, currentNavBarItem?.text)} useJsonEditor={false}/>
+                      </ApiProvider>}
+                </div>
+              </ErrorBoundary>
+            </Tab>
+            <Tab
+              eventKey="json"
+              title="JSON Editor"
+              disabled={hasInvalidSection}
+            >
+              <ErrorBoundary>
+                <div>
+                  {pageToRender &&
+                      <ApiProvider api={previewApi}>
+                        <HtmlPageEditView portalEnvContext={portalEnvContext} htmlPage={pageToRender}
+                          readOnly={readOnly}
                           siteHasInvalidSection={hasInvalidSection} setSiteHasInvalidSection={setHasInvalidSection}
                           footerSection={localContent.footerSection} updateFooter={updateFooter}
                           updatePage={page => updatePage(page, currentNavBarItem?.text)}/>
@@ -357,46 +391,53 @@ const SiteContentEditor = (props: InitializedSiteContentViewProps) => {
           </form>
         </div>
         }
+        { showVersionSelector &&
+          <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode}
+            stableId={siteContent.stableId} current={siteContent}
+            loadSiteContent={loadSiteContent} portalEnv={portalEnv}
+            switchToVersion={switchToVersion}
+            onDismiss={() => setShowVersionSelector(false)}/>
+        }
+        { showAddPageModal &&
+          <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
+            insertNewNavItem={insertNewNavItem}
+            onDismiss={() => setShowAddPageModal(false)}/>
+        }
+        { (showDeletePageModal && currentNavBarItem) &&
+          <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
+            onDismiss={() => setShowDeletePageModal(false)}/>
+        }
+        { showAddPreRegModal &&
+          <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>
+        }
+        { showBrandingModal &&
+          <BrandingModal onDismiss={() => setShowBrandingModal(false)} localContent={localContent}
+            updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
+        }
+        { showTranslationModal &&
+          <TranslationModal onDismiss={() => setShowTranslationModal(false)}
+            siteContent={workingContent}
+            setSiteContent={setWorkingContent} />
+        }
+        { showUnsavedPreviewModal &&
+          <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
+            <Modal.Body>
+              Please note that your unsaved changes will not appear in the participant view until you save them.
+            </Modal.Body>
+            <Modal.Footer>
+              <button className="btn btn-primary" onClick={() => {
+                showParticipantView()
+                setShowUnsavedPreviewModal(false)
+              }}>
+                Launch participant view in new tab
+              </button>
+              <button className="btn btn-secondary" onClick={() => setShowUnsavedPreviewModal(false)}>Cancel</button>
+            </Modal.Footer>
+          </Modal>
+        }
       </div>
+      }
     </div>
-    { showVersionSelector &&
-        <SiteContentVersionSelector portalShortcode={portalEnvContext.portal.shortcode} stableId={siteContent.stableId}
-          current={siteContent} loadSiteContent={loadSiteContent} portalEnv={portalEnv}
-          switchToVersion={switchToVersion}
-          onDismiss={() => setShowVersionSelector(false)}/>
-    }
-    { showAddPageModal &&
-        <AddNavbarItemModal portalEnv={portalEnv} portalShortcode={portalEnvContext.portal.shortcode}
-          insertNewNavItem={insertNewNavItem}
-          onDismiss={() => setShowAddPageModal(false)}/>
-    }
-    { (showDeletePageModal && currentNavBarItem) &&
-        <DeleteNavItemModal navItem={currentNavBarItem} deleteNavItem={deleteNavItem}
-          onDismiss={() => setShowDeletePageModal(false)}/>
-    }
-    { showAddPreRegModal &&
-        <CreatePreRegSurveyModal portalEnvContext={portalEnvContext} onDismiss={() => setShowAddPreRegModal(false)}/>
-    }
-    { showBrandingModal &&
-        <BrandingModal onDismiss={() => setShowBrandingModal(false)} localContent={localContent}
-          updateLocalContent={updateLocalContent} portalShortcode={portalEnvContext.portal.shortcode}/>
-    }
-    { showUnsavedPreviewModal &&
-        <Modal show={true} onHide={() => setShowUnsavedPreviewModal(false)}>
-          <Modal.Body>
-            Please note that your unsaved changes will not appear in the participant view until you save them.
-          </Modal.Body>
-          <Modal.Footer>
-            <button className="btn btn-primary" onClick={() => {
-              showParticipantView()
-              setShowUnsavedPreviewModal(false)
-            }}>
-              Launch participant view in new tab
-            </button>
-            <button className="btn btn-secondary" onClick={() => setShowUnsavedPreviewModal(false)}>Cancel</button>
-          </Modal.Footer>
-        </Modal>
-    }
   </div>
 }
 

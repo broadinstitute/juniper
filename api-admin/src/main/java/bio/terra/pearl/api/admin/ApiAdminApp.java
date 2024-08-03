@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.retry.annotation.EnableRetry;
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableScheduling
 @EnableSchedulerLock(defaultLockAtMostFor = "60m")
 @EnableConfigurationProperties
+@EnableAspectJAutoProxy
 public class ApiAdminApp {
   public static void main(String[] args) {
     new SpringApplicationBuilder(ApiAdminApp.class)

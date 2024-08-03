@@ -33,25 +33,6 @@ public class NotificationDispatcher {
         senderMap = Map.of(NotificationDeliveryType.EMAIL, enrolleeEmailService);
     }
 
-    /** notifications could be triggered by just about anything, so listen to all enrollee events */
-    @EventListener
-    @Order(DispatcherOrder.NOTIFICATION)
-    public void handleEvent(EnrolleeEvent event) {
-        List<Trigger> configs = triggerService
-                .findByStudyEnvironmentId(event.getEnrollee().getStudyEnvironmentId(), true)
-                .stream().filter(config  -> config.getTriggerType().equals(TriggerType.EVENT))
-                .toList();
-        for (Trigger config: configs) {
-            Class configClass = config.getEventType().eventClass;
-            if (configClass.isInstance(event)) {
-                if (EnrolleeRuleEvaluator.evaluateRule(config.getRule(), event.getEnrolleeContext())) {
-                    dispatchNotificationAsync(config, event.getEnrolleeContext(),
-                            event.getPortalParticipantUser().getPortalEnvironmentId());
-                }
-            }
-        }
-    }
-
     /**
      * if we invoke the EmailService async, then we save the notification first so that we have a record of it.
      * If we invoke it synchronously, then we don't save it. Because if it's a synchronous call and the process gets killed,
@@ -59,7 +40,7 @@ public class NotificationDispatcher {
      * Where this will help is for bulk operations -- if we want to send out 2000 emails to all the ourHealth participants
      * because of a new survey, it lets us have just 1 database operation per notification instead of 2
      * */
-    protected void dispatchNotificationAsync(Trigger config, EnrolleeContext enrolleeContext, UUID portalEnvId) {
+    public void dispatchNotificationAsync(Trigger config, EnrolleeContext enrolleeContext, UUID portalEnvId) {
         Notification notification = initializeNotification(config, enrolleeContext, portalEnvId, null);
         notification = notificationService.create(notification);
         senderMap.get(config.getDeliveryType())

@@ -1,16 +1,19 @@
 package bio.terra.pearl.api.admin.controller.enrollee;
 
 import bio.terra.pearl.api.admin.api.ParticipantTaskApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.enrollee.ParticipantTaskExtService;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskAssignDto;
+import bio.terra.pearl.core.service.workflow.ParticipantTaskService;
 import bio.terra.pearl.core.service.workflow.ParticipantTaskUpdateDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -67,5 +70,42 @@ public class ParticipantTaskController implements ParticipantTaskApi {
         participantTaskExtService.findAll(
             portalShortcode, studyShortcode, environmentName, targetStableId, operator);
     return ResponseEntity.ok(participantTasks);
+  }
+
+  @Override
+  public ResponseEntity<Object> getByStudyEnvironment(
+      String portalShortcode, String studyShortcode, String envName, String include) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<String> includedRelations = List.of();
+    if (!StringUtils.isBlank(include)) {
+      includedRelations = List.of(include.split(","));
+    }
+    ParticipantTaskService.ParticipantTaskTaskListDto tasks =
+        participantTaskExtService.getByStudyEnvironment(
+            portalShortcode, studyShortcode, environmentName, includedRelations, user);
+    return ResponseEntity.ok(tasks);
+  }
+
+  @Override
+  public ResponseEntity<Object> getByEnrollee(
+      String portalShortcode, String studyShortcode, String envName, String enrolleeShortcode) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    List<ParticipantTask> tasks = participantTaskExtService.getByEnrollee(enrolleeShortcode, user);
+    return ResponseEntity.ok(tasks);
+  }
+
+  @Override
+  public ResponseEntity<Object> update(
+      String portalShortcode, String studyShortcode, String envName, UUID taskId, Object body) {
+    AdminUser user = authUtilService.requireAdminUser(request);
+    EnvironmentName environmentName = EnvironmentName.valueOfCaseInsensitive(envName);
+    ParticipantTask updatedTask = objectMapper.convertValue(body, ParticipantTask.class);
+    updatedTask.setId(taskId);
+    updatedTask =
+        participantTaskExtService.update(
+            portalShortcode, studyShortcode, environmentName, taskId, updatedTask, user);
+    return ResponseEntity.ok(updatedTask);
   }
 }

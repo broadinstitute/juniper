@@ -1,7 +1,7 @@
 package bio.terra.pearl.api.admin.controller;
 
 import bio.terra.pearl.api.admin.api.SiteMediaApi;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.siteContent.SiteMediaExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.site.SiteMedia;
@@ -40,6 +40,7 @@ public class SiteMediaController implements SiteMediaApi {
   @Override
   public ResponseEntity<Resource> get(
       String portalShortcode, String envName, String cleanFileName, String version) {
+    cleanFileName = cleanFileName.toLowerCase();
     if (version.equalsIgnoreCase("latest")) {
       Optional<SiteMedia> siteMediaOpt =
           siteMediaExtService.findLatest(portalShortcode, cleanFileName);

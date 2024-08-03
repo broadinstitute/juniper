@@ -23,7 +23,7 @@ function AdminNavbar() {
         aria-label="Toggle navigation">
         <span className="navbar-toggler-icon"></span>
       </button>
-      <div className="collapse navbar-collapse" id="navbarSupportedContent">
+      <div className="collapse navbar-collapse z-1" id="navbarSupportedContent">
         <ul className="navbar-nav ms-lg-3">
           { breadCrumbs.map((crumb, index) => <li key={index}
             className="ms-2 d-flex align-items-center" >

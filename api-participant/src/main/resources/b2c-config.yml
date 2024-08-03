@@ -24,3 +24,13 @@ b2c:
     clientId: 0cdfdafd-75fb-4e36-b6a2-c00e79c86bb0
     policyName: B2C_1A_ddp_participant_signup_signin_cmi-dev
     changePasswordPolicyName: B2C_1A_ddp_participant_change_password_cmi-dev
+  rgp:
+    tenantName: juniperrgpdemo
+    clientId: 42445bb9-7ab2-48e9-b7a7-c5f84258e87b
+    policyName: B2C_1A_ddp_participant_signup_signin_rgp-dev
+    changePasswordPolicyName: B2C_1A_ddp_participant_change_password_rgp-dev
+  atcp:
+    tenantName: none
+    clientId: none
+    policyName: none
+    changePasswordPolicyName: none

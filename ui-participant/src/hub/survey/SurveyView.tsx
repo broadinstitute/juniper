@@ -1,33 +1,55 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, {
+  useEffect,
+  useState
+} from 'react'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import 'survey-core/survey.i18n'
 
-import Api, { Portal, SurveyWithResponse } from 'api/api'
+import Api, {
+  Portal,
+  SurveyWithResponse
+} from 'api/api'
 
 import {
-  ApiProvider, Enrollee, EnvironmentName, PagedSurveyView,
-  useI18n, useTaskIdParam
+  ApiProvider,
+  Enrollee,
+  EnvironmentName,
+  PagedSurveyView,
+  useI18n,
+  useTaskIdParam
 } from '@juniper/ui-core'
 import { usePortalEnv } from 'providers/PortalProvider'
 import { PageLoadingIndicator } from 'util/LoadingSpinner'
 import { withErrorBoundary } from 'util/ErrorBoundary'
 import { DocumentTitle } from 'util/DocumentTitle'
-import { useActiveUser } from 'providers/ActiveUserProvider'
 import { useUser } from 'providers/UserProvider'
 import { HubUpdate } from 'hub/hubUpdates'
+import { useActiveUser } from 'providers/ActiveUserProvider'
+import { ThemedSurveyQuestionAddressValidation } from 'components/ThemedSurveyAddressValidation'
+import { ReactQuestionFactory } from 'survey-react-ui'
+
+// register themed address validation type
+ReactQuestionFactory.Instance.registerQuestion('addressvalidation', props => {
+  return React.createElement(ThemedSurveyQuestionAddressValidation, props)
+})
 
 /** handles loading the survey form and responses from the server */
 function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
   const { portal, portalEnv } = usePortalEnv()
   const { enrollees } = useActiveUser()
-  const { user, updateEnrollee, updateProfile } = useUser()
+  const { user, updateEnrollee, updateProfile, enrollees: allEnrollees } = useUser()
   const [formAndResponses, setFormAndResponse] = useState<SurveyWithResponse | null>(null)
   const params = useParams()
   const studyShortcode = params.studyShortcode
   const stableId = params.stableId
   const version = parseInt(params.version ?? '')
 
-  const proxyProfile = enrollees.find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)?.profile
+  const proxyProfile = allEnrollees
+    .find(enrollee => enrollee.participantUserId === user?.id && enrollee.profile)
+    ?.profile
 
   const { i18n, selectedLanguage } = useI18n()
   const taskId = useTaskIdParam() ?? ''
@@ -69,9 +91,8 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
           'hubUpdateFormSubmittedTitle',
           {
             substitutions: {
-              formName: i18n(`${form.stableId}:${form.version}`)
-            },
-            defaultValue: form.name
+              formName: i18n(`${form.stableId}:${form.version}`, { defaultValue: form.name })
+            }
           }),
         type: 'SUCCESS'
       }
@@ -90,9 +111,11 @@ function SurveyView({ showHeaders = true }: { showHeaders?: boolean }) {
         studyEnvParams={studyEnvParams}
         form={formAndResponses.studyEnvironmentSurvey.survey}
         enrollee={enrollee}
+        updateResponseMap={() => { /* no-op */ }}
         proxyProfile={proxyProfile}
         response={formAndResponses.surveyResponse}
         selectedLanguage={selectedLanguage}
+        setAutosaveStatus={() => { /* no-op */ }}
         adminUserId={null}
         onSuccess={onSuccess}
         onFailure={onFailure}

@@ -35,9 +35,7 @@ public class EventServiceTests extends BaseSpringBootTest {
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeConsentEvent(
                 bundle.enrollee(),
-                bundle.portalParticipantUser(),
-                SurveyResponse.builder().build(),
-                ParticipantTask.builder().status(TaskStatus.NEW).build()
+                bundle.portalParticipantUser()
                 );
 
         List<Event> createdEvents = eventService.findAll();
@@ -50,7 +48,6 @@ public class EventServiceTests extends BaseSpringBootTest {
     @Test
     @Transactional
     public void testPersistsEnrolleeCreationEvent() {
-
         EnrolleeFactory.EnrolleeBundle bundle = enrolleeFactory.buildWithPortalUser("testPersistsEnrolleeCreationEvent");
         Assertions.assertEquals(0, eventService.findAll().size());
         eventService.publishEnrolleeCreationEvent(
@@ -73,7 +70,8 @@ public class EventServiceTests extends BaseSpringBootTest {
         eventService.publishEnrolleeSurveyEvent(
                 bundle.enrollee(),
                 SurveyResponse.builder().build(),
-                bundle.portalParticipantUser());
+                bundle.portalParticipantUser(),
+                new ParticipantTask());
 
         List<Event> createdEvents = eventService.findAll();
         Assertions.assertEquals(1, createdEvents.size());

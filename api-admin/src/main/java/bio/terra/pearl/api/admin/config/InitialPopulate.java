@@ -27,5 +27,7 @@ public class InitialPopulate {
     }
     log.info("Repopulating core language texts");
     baseSeedPopulator.populateLanguageTexts();
+    log.info("Repopulating roles and permissions");
+    baseSeedPopulator.populateRolesAndPermissions();
   }
 }

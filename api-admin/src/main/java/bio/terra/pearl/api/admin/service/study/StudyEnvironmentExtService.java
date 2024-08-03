@@ -1,6 +1,9 @@
 package bio.terra.pearl.api.admin.service.study;
 
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
+import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
+import bio.terra.pearl.api.admin.service.auth.SandboxOnly;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitType;
@@ -40,13 +43,10 @@ public class StudyEnvironmentExtService {
   }
 
   /** currently only supports changing the pre-enroll survey id */
-  public StudyEnvironment update(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      StudyEnvironment update) {
-    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+  @SandboxOnly
+  @EnforcePortalStudyEnvPermission(permission = "survey_edit")
+  public StudyEnvironment update(PortalStudyEnvAuthContext authContext, StudyEnvironment update) {
+    StudyEnvironment studyEnv = authContext.getStudyEnvironment();
     studyEnv.setPreEnrollSurveyId(update.getPreEnrollSurveyId());
     return studyEnvService.update(studyEnv);
   }

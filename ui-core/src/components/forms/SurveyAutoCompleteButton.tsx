@@ -3,6 +3,7 @@ import { SurveyModel } from 'survey-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWandSparkles } from '@fortawesome/free-solid-svg-icons'
 import { EnvironmentName } from 'src/types/study'
+import { isEmpty, isNumber } from 'lodash'
 
 /** button to automatically fill in a survey. this doesn't handle every single question type, but works with the more
  * commonly tested forms like preEnroll. Only available in sandbox and irb environments. */
@@ -13,7 +14,11 @@ export function SurveyAutoCompleteButton({ surveyModel, envName }: {
     if (surveyModel) {
       surveyModel.pages.forEach(page => {
         page.questions.forEach(question => {
-          if (question.readOnly || question.isReadOnly) {
+          const value = surveyModel.getValue(question.name)
+          if (question.readOnly
+            || question.isReadOnly
+            || (!isEmpty(value) || (isNumber(value) && value > 0))
+          ) {
             return
           }
 

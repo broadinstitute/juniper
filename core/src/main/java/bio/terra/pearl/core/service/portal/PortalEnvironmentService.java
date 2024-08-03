@@ -36,7 +36,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
     private SiteContentService siteContentService;
     private SurveyService surveyService;
     private PortalDashboardConfigService portalDashboardConfigService;
-    private PortalLanguageService portalLanguageService;
+    private PortalEnvironmentLanguageService portalEnvironmentLanguageService;
 
     public PortalEnvironmentService(PortalEnvironmentDao portalEnvironmentDao,
                                     PortalEnvironmentConfigService portalEnvironmentConfigService,
@@ -49,7 +49,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
                                     DataChangeRecordService dataChangeRecordService,
                                     PortalDashboardConfigService portalDashboardConfigService,
                                     SurveyService surveyService,
-                                    PortalLanguageService portalLanguageService) {
+                                    PortalEnvironmentLanguageService portalEnvironmentLanguageService) {
         super(portalEnvironmentDao);
         this.portalEnvironmentConfigService = portalEnvironmentConfigService;
         this.portalParticipantUserService = portalParticipantUserService;
@@ -61,11 +61,11 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         this.siteContentService = siteContentService;
         this.surveyService = surveyService;
         this.portalDashboardConfigService = portalDashboardConfigService;
-        this.portalLanguageService = portalLanguageService;
+        this.portalEnvironmentLanguageService = portalEnvironmentLanguageService;
     }
 
     public List<PortalEnvironment> findByPortal(UUID portalId) {
-        return dao.findByPortal(portalId);
+        return dao.findByPortalWithConfigs(portalId);
     }
 
     public Optional<PortalEnvironment> findOne(String portalShortcode, EnvironmentName environmentName) {
@@ -97,7 +97,7 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
 
         newEnv.getSupportedLanguages().forEach(supportedLanguage -> {
             supportedLanguage.setPortalEnvironmentId(newEnv.getId());
-            portalLanguageService.create(supportedLanguage);
+            portalEnvironmentLanguageService.create(supportedLanguage);
         });
 
         return newEnv;
@@ -137,11 +137,11 @@ public class PortalEnvironmentService extends CrudService<PortalEnvironment, Por
         portalParticipantUserService.deleteByPortalEnvironmentId(id);
         // clean up any preregistration responses not associated with a user
         preregistrationResponseDao.deleteByPortalEnvironmentId(id);
+        mailingListContactService.deleteByPortalEnvId(id);
         if (cascades.contains(PortalService.AllowedCascades.PARTICIPANT_USER)) {
             participantUserService.deleteOrphans(participantUserIds, cascades);
         }
         triggerService.deleteByPortalEnvironmentId(id);
-        mailingListContactService.deleteByPortalEnvId(id);
         dataChangeRecordService.deleteByPortalEnvironmentId(id);
         portalDashboardConfigService.deleteAlertsByPortalEnvId(id);
         dao.delete(id);

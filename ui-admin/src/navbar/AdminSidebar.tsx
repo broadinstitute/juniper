@@ -33,7 +33,7 @@ const AdminSidebar = ({ config }: { config: Config }) => {
     studyList = portalList.flatMap(portal => portal.portalStudies.map(ps => ps.study))
   }
 
-  if (!user) {
+  if (!user || (!user.superuser && !portalShortcode)) {
     return <div></div>
   }
   const currentStudy = studyList.find(study => study.shortcode === studyShortcode)
@@ -64,8 +64,11 @@ const AdminSidebar = ({ config }: { config: Config }) => {
           <li className="mb-2">
             <NavLink to="/populate" className={sidebarNavLinkClasses}>Populate</NavLink>
           </li>
-          <li>
+          <li className="mb-2">
             <NavLink to="/integrations" className={sidebarNavLinkClasses}>Integrations</NavLink>
+          </li>
+          <li className="mb-2">
+            <NavLink to="/logEvents" className={sidebarNavLinkClasses}>Log Events</NavLink>
           </li>
         </ul>}/>}
     </>}

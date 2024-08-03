@@ -2,12 +2,16 @@ package bio.terra.pearl.core.dao.search;
 
 import bio.terra.pearl.core.BaseSpringBootTest;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
+import bio.terra.pearl.core.factory.kit.KitRequestFactory;
 import bio.terra.pearl.core.factory.participant.EnrolleeFactory;
+import bio.terra.pearl.core.factory.participant.FamilyFactory;
 import bio.terra.pearl.core.factory.participant.ParticipantTaskFactory;
 import bio.terra.pearl.core.factory.survey.SurveyFactory;
 import bio.terra.pearl.core.factory.survey.SurveyResponseFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
+import bio.terra.pearl.core.model.kit.KitRequestStatus;
 import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.Family;
 import bio.terra.pearl.core.model.participant.Profile;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.search.EnrolleeSearchExpressionResult;
@@ -15,8 +19,10 @@ import bio.terra.pearl.core.model.study.StudyEnvironment;
 import bio.terra.pearl.core.model.survey.Survey;
 import bio.terra.pearl.core.model.workflow.TaskStatus;
 import bio.terra.pearl.core.model.workflow.TaskType;
+import bio.terra.pearl.core.service.kit.pepper.PepperKitStatus;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpression;
 import bio.terra.pearl.core.service.search.EnrolleeSearchExpressionParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
@@ -53,6 +60,12 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
     @Autowired
     ParticipantTaskFactory participantTaskFactory;
+
+    @Autowired
+    KitRequestFactory kitRequestFactory;
+
+    @Autowired
+    FamilyFactory familyFactory;
 
 
     @Test
@@ -114,7 +127,12 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
         List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(exp, studyEnv.getId());
 
         Assertions.assertEquals(1, results.size());
-        Assertions.assertTrue(results.stream().anyMatch(r -> r.getEnrollee().getId().equals(salk.getId())));
+        EnrolleeSearchExpressionResult result = results.get(0);
+        Assertions.assertEquals(salk.getId(), result.getEnrollee().getId());
+        Assertions.assertEquals(
+                "answer",
+                result.getAnswers().get(0).getStringValue()
+        );
     }
 
     @Test
@@ -463,6 +481,213 @@ public class EnrolleeSearchExpressionDaoTests extends BaseSpringBootTest {
 
         Assertions.assertEquals(1, resultsName.size());
         assertTrue(resultsName.stream().anyMatch(r -> r.getEnrollee().getId().equals(jsalkBundle.enrollee().getId())));
+    }
 
+    @Test
+    @Transactional
+    public void testLatestKit(TestInfo info) throws JsonProcessingException {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.CREATED);
+
+        EnrolleeSearchExpression createdExp = enrolleeSearchExpressionParser.parseRule(
+                "{latestKit.status} = 'CREATED'"
+        );
+
+        EnrolleeSearchExpression erroredExp = enrolleeSearchExpressionParser.parseRule(
+                "{latestKit.status} = 'ERRORED'"
+        );
+
+        List<EnrolleeSearchExpressionResult> resultsCreated =
+                enrolleeSearchExpressionDao.executeSearch(
+                        createdExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, resultsCreated.size());
+        assertEquals(enrollee.getId(), resultsCreated.get(0).getEnrollee().getId());
+        assertEquals(KitRequestStatus.CREATED, resultsCreated.get(0).getLatestKit().getStatus());
+
+        List<EnrolleeSearchExpressionResult> resultsErrored =
+                enrolleeSearchExpressionDao.executeSearch(
+                        erroredExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(0, resultsErrored.size());
+
+        kitRequestFactory.buildPersisted(getTestName(info), enrollee, PepperKitStatus.ERRORED);
+
+        resultsErrored =
+                enrolleeSearchExpressionDao.executeSearch(
+                        erroredExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, resultsErrored.size());
+        assertEquals(enrollee.getId(), resultsErrored.get(0).getEnrollee().getId());
+        assertEquals(KitRequestStatus.ERRORED, resultsErrored.get(0).getLatestKit().getStatus());
+
+        resultsCreated =
+                enrolleeSearchExpressionDao.executeSearch(
+                        createdExp,
+                        enrollee.getStudyEnvironmentId());
+
+        assertEquals(0, resultsCreated.size());
+
+    }
+
+    @Test
+    @Transactional
+    public void testLowerFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression lowerExp = enrolleeSearchExpressionParser.parseRule(
+                "lower({enrollee.shortcode}) = '" + enrollee.getShortcode().toLowerCase() + "'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(lowerExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testNot(TestInfo info) {
+        EnrolleeFactory.EnrolleeAndProxy bundle = enrolleeFactory.buildProxyAndGovernedEnrollee(getTestName(info), "proxy@test.com");
+
+        EnrolleeSearchExpression notSubjectExp = enrolleeSearchExpressionParser.parseRule(
+                "!{enrollee.subject} = true"
+        );
+
+
+        // test if it works with parents
+        EnrolleeSearchExpression notSubjectOrConsentedExp = enrolleeSearchExpressionParser.parseRule(
+                "!({enrollee.subject} = true or {enrollee.consented} = true)"
+        );
+
+        List<EnrolleeSearchExpressionResult> resultsNotSubject = enrolleeSearchExpressionDao.executeSearch(notSubjectExp, bundle.governedEnrollee().getStudyEnvironmentId());
+        List<EnrolleeSearchExpressionResult> resultsNotSubjectOrConsented = enrolleeSearchExpressionDao.executeSearch(notSubjectOrConsentedExp, bundle.governedEnrollee().getStudyEnvironmentId());
+
+        assertEquals(1, resultsNotSubject.size());
+        assertEquals(1, resultsNotSubjectOrConsented.size());
+
+        assertTrue(resultsNotSubject.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
+        assertTrue(resultsNotSubjectOrConsented.stream().anyMatch(r -> r.getEnrollee().getId().equals(bundle.proxy().getId())));
+    }
+
+    @Test
+    @Transactional
+    public void testTrimFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
+                "trim('  hello  ') = 'hello'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(trimExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testNestedFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression trimExp = enrolleeSearchExpressionParser.parseRule(
+                "trim(lower('  HEY  ')) = 'hey'"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(trimExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testMinFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression minExp = enrolleeSearchExpressionParser.parseRule(
+                "min(20, 6, 5, 10, 8, 100) = 5"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(minExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testMaxFunction(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+
+        EnrolleeSearchExpression maxExp = enrolleeSearchExpressionParser.parseRule(
+                "max(20, 6, 5, 10, 8, 100) = 100"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(maxExp, enrollee.getStudyEnvironmentId());
+
+        // should true for everybody
+        assertEquals(1, results.size());
+    }
+
+    @Test
+    @Transactional
+    public void testFamilyTerm(TestInfo info) {
+        StudyEnvironment studyEnv = studyEnvironmentFactory.buildPersisted(getTestName(info));
+        Enrollee enrolleeNoFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+        Enrollee enrolleeWithOtherFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+        Enrollee enrolleeWithFamily = enrolleeFactory.buildPersisted(getTestName(info), studyEnv);
+
+        Family family = familyFactory.buildPersisted(getTestName(info), enrolleeWithFamily);
+        // create some other families to ensure no match
+        familyFactory.buildPersisted(getTestName(info), enrolleeWithFamily);
+        familyFactory.buildPersisted(getTestName(info), enrolleeWithOtherFamily);
+
+        EnrolleeSearchExpression familyExp = enrolleeSearchExpressionParser.parseRule(
+                "{family.shortcode} = '%s'".formatted(family.getShortcode())
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(familyExp, enrolleeWithFamily.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+        assertEquals(enrolleeWithFamily.getId(), results.get(0).getEnrollee().getId());
+        assertEquals(1, results.get(0).getFamilies().size());
+        assertEquals(family.getId(), results.get(0).getFamilies().get(0).getId());
+    }
+
+    @Test
+    @Transactional
+    public void testInclude(TestInfo info) {
+        Enrollee enrollee = enrolleeFactory.buildPersisted(getTestName(info));
+        Family family = familyFactory.buildPersisted(getTestName(info), enrollee);
+
+        EnrolleeSearchExpression defaultExp = enrolleeSearchExpressionParser.parseRule(
+                ""
+        );
+
+        EnrolleeSearchExpression includeExp = enrolleeSearchExpressionParser.parseRule(
+                "include({family.shortcode})"
+        );
+
+        List<EnrolleeSearchExpressionResult> results = enrolleeSearchExpressionDao.executeSearch(defaultExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+
+        EnrolleeSearchExpressionResult result = results.get(0);
+        assertEquals(enrollee.getId(), result.getEnrollee().getId());
+        assertEquals(0, result.getFamilies().size());
+
+
+        results = enrolleeSearchExpressionDao.executeSearch(includeExp, enrollee.getStudyEnvironmentId());
+
+        assertEquals(1, results.size());
+
+        result = results.get(0);
+
+        assertEquals(enrollee.getId(), result.getEnrollee().getId());
+        assertEquals(1, result.getFamilies().size());
+        assertEquals(family.getId(), result.getFamilies().get(0).getId());
     }
 }

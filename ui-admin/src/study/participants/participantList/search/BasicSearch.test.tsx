@@ -1,32 +1,46 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
 import {
-  KEYWORD_FACET,
-  StringFacetValue
-} from 'api/enrolleeSearch'
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
 import BasicSearch from './BasicSearch'
-import userEvent from '@testing-library/user-event'
+import { userEvent } from '@testing-library/user-event'
 import { setupRouterTest } from '@juniper/ui-core'
+import { DefaultParticipantSearchState } from 'util/participantSearchUtils'
 
-describe('BasicSearch', () => {
+describe('keywordSearch', () => {
   test('can specify keyword facet value', async () => {
-    const keywordFacetValue = new StringFacetValue(KEYWORD_FACET, { values: [] })
-
-    const mockUpdateKeywordFacetValueFn = jest.fn()
+    const setSearchState = jest.fn()
     const { RoutedComponent } = setupRouterTest(
-      <BasicSearch facetValue={keywordFacetValue}
-        updateValue={mockUpdateKeywordFacetValueFn} />)
+      <BasicSearch searchState={DefaultParticipantSearchState}
+        setSearchState={setSearchState}/>)
     render(RoutedComponent)
 
-    const searchBox = screen.getByPlaceholderText(KEYWORD_FACET.placeholder)
+    const searchBox = screen.getByPlaceholderText('Search by name, email, or shortcode')
     expect(searchBox).toBeInTheDocument()
-    await userEvent.type(searchBox, 'test{enter}')
-
-    const updatedFacetValue = new StringFacetValue(KEYWORD_FACET, { values: ['test'] })
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith(updatedFacetValue)
+    await userEvent.type(searchBox, 'test')
+    await waitFor(
+      () => expect(setSearchState).toHaveBeenCalledWith({
+        'custom': '',
+        'keywordSearch': 'test',
+        'latestKitStatus': [],
+        'sexAtBirth': [],
+        'subject': true,
+        'tasks': []
+      })
+    )
 
     await userEvent.clear(searchBox)
-    await userEvent.type(searchBox, '{enter}')
-    expect(mockUpdateKeywordFacetValueFn).toHaveBeenLastCalledWith(keywordFacetValue)
+    await waitFor(
+      () => expect(setSearchState).toHaveBeenCalledWith({
+        'custom': '',
+        'keywordSearch': '',
+        'latestKitStatus': [],
+        'sexAtBirth': [],
+        'subject': true,
+        'tasks': []
+      })
+    )
   })
 })

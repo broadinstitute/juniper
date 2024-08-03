@@ -1,10 +1,18 @@
-import Api, { EnrolleeRelation, ParticipantUser, Portal, PortalParticipantUser } from '../api/api'
+import Api, {
+  Portal,
+  PortalParticipantUser
+} from '../api/api'
 import UserProvider, { useUser } from '../providers/UserProvider'
 import React, { useEffect } from 'react'
 import { AuthProvider } from 'react-oidc-context'
 import PortalProvider from '../providers/PortalProvider'
 import ActiveUserProvider from '../providers/ActiveUserProvider'
-import { Enrollee, Profile } from '@juniper/ui-core'
+import {
+  Enrollee,
+  EnrolleeRelation,
+  ParticipantUser,
+  Profile
+} from '@juniper/ui-core'
 
 
 type ProvideTestUserProps = {
@@ -13,7 +21,7 @@ type ProvideTestUserProps = {
   user?: ParticipantUser,
   portal?: Portal,
   enrollees?: Enrollee[],
-  relations?: EnrolleeRelation[],
+  proxyRelations?: EnrolleeRelation[],
   children: React.ReactNode
 }
 /**
@@ -32,6 +40,7 @@ export default function ProvideFullTestUserContext(
       shortcode: '',
       portalEnvironments: [
         {
+          createdAt: 0,
           environmentName: 'sandbox',
           portalEnvironmentConfig: {
             initialized: true,
@@ -87,7 +96,7 @@ const _ProvideTestUser = ({
   ppUsers,
   user,
   enrollees = [],
-  relations = [],
+  proxyRelations = [],
   children
 }: ProvideTestUserProps) => {
   const {
@@ -146,10 +155,11 @@ const _ProvideTestUser = ({
       user: user || {
         id: '',
         username: '',
-        token: ''
+        token: '',
+        lastLogin: 0
       },
       enrollees,
-      relations
+      proxyRelations
     })
   }, [])
 

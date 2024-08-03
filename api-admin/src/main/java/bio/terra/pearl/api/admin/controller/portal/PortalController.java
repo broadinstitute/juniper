@@ -1,8 +1,8 @@
 package bio.terra.pearl.api.admin.controller.portal;
 
 import bio.terra.pearl.api.admin.api.PortalApi;
-import bio.terra.pearl.api.admin.model.PortalShallowDto;
-import bio.terra.pearl.api.admin.service.AuthUtilService;
+import bio.terra.pearl.api.admin.models.dto.PortalShallowDto;
+import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.portal.PortalExtService;
 import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.portal.Portal;
@@ -40,7 +40,7 @@ public class PortalController implements PortalApi {
   }
 
   @Override
-  public ResponseEntity<List<PortalShallowDto>> getAll() {
+  public ResponseEntity<Object> getAll() {
     AdminUser adminUser = requestService.requireAdminUser(request);
 
     List<Portal> portals = portalExtService.getAll(adminUser);

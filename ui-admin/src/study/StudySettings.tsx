@@ -2,7 +2,10 @@ import React, { useState } from 'react'
 import { StudyEnvContextT } from './StudyEnvironmentRouter'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import PortalEnvConfigView from 'portal/PortalEnvConfigView'
-import { PortalEnvironment } from '@juniper/ui-core'
+import {
+  PortalEnvironment,
+  StudyEnvironmentConfig
+} from '@juniper/ui-core'
 import { doApiLoad } from 'api/api-utils'
 import { Button } from 'components/forms/Button'
 import { set } from 'lodash/fp'
@@ -13,7 +16,14 @@ import LoadingSpinner from 'util/LoadingSpinner'
 import { renderPageHeader } from 'util/pageUtils'
 import InfoPopup from 'components/forms/InfoPopup'
 import useUpdateEffect from 'util/useUpdateEffect'
-import { userHasPermission, useUser } from 'user/UserProvider'
+import {
+  userHasPermission,
+  useUser
+} from 'user/UserProvider'
+import {
+  DocsKey,
+  ZendeskLink
+} from '../util/zendeskUtils'
 
 /** shows settings for both a study and its containing portal */
 export default function StudySettings({ studyEnvContext, portalContext }:
@@ -24,8 +34,10 @@ export default function StudySettings({ studyEnvContext, portalContext }:
 
   return <div className="container-fluid px-4 py-2">
     { renderPageHeader('Site Settings') }
-    <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}/>
-    <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}/>
+    <StudyEnvConfigView studyEnvContext={studyEnvContext} portalContext={portalContext}
+      key={studyEnvContext.currentEnvPath}/>
+    <PortalEnvConfigView portalEnv={portalEnv} portalContext={portalContext}
+      key={portalEnv.environmentName}/>
   </div>
 }
 
@@ -38,7 +50,7 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
   const { user } = useUser()
 
   /** update a given field in the config */
-  const updateConfig = (propName: string, value: string | boolean) => {
+  const updateConfig = (propName: keyof StudyEnvironmentConfig, value: string | boolean) => {
     setConfig(set(propName, value))
   }
 
@@ -80,16 +92,26 @@ export function StudyEnvConfigView({ studyEnvContext, portalContext }:
       </label>
     </div>
 
+    <div>
+      <label className="form-label">
+                accepting proxy enrollment <InfoPopup content={
+          <span>
+            Enables enrolling as a proxy on behalf of a dependent.
+            Requires extensive changes to your pre-enroll; see the
+            <ZendeskLink doc={DocsKey.PROXY_ENROLLMENT}> proxy enrollment documentation </ZendeskLink>
+            for more details.
+          </span>}/>
+        <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
+          onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
+      </label>
+    </div>
     {
-      // TODO: JN-1017 - Create zendesk article for proxy enrollment, link in info popup
       userHasPermission(user, studyEnvContext.portal.id, 'prototype') && (
         <div>
           <label className="form-label">
-                accepting proxy enrollment <InfoPopup content={
-                `Enables enrolling as a proxy on behalf of a dependent. Note that you will need to make edits to 
-          your pre-enrollment survey to fully enable proxy enrollment.`}/>
-            <input type="checkbox" checked={config.acceptingProxyEnrollment} className="ms-2"
-              onChange={e => updateConfig('acceptingProxyEnrollment', e.target.checked)}/>
+            enable family linkage <InfoPopup content={'If checked, allows participants to be grouped by families.'}/>
+            <input type="checkbox" checked={config.enableFamilyLinkage} className="ms-2"
+              onChange={e => updateConfig('enableFamilyLinkage', e.target.checked)}/>
           </label>
         </div>
       )

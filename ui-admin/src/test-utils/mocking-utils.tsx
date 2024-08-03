@@ -1,14 +1,12 @@
 import { StudyEnvContextT } from 'study/StudyEnvironmentRouter'
-import {
-  AdminTask,
+import Api, {
   Answer,
   DatasetDetails,
-  EnrolleeSearchFacet,
-  EnrolleeSearchResult,
+  EnrolleeSearchExpressionResult,
   Notification,
   NotificationEventDetails,
   PepperKit,
-  Portal,
+  Portal, PortalEnvironmentConfig,
   PortalStudy,
   SiteMediaMetadata,
   StudyEnvironment,
@@ -18,36 +16,40 @@ import {
 import {
   AlertTrigger,
   defaultSurvey,
+  Enrollee,
+  Family,
+  KitRequest,
+  KitType,
+  LocalizedEmailTemplate,
   ParticipantDashboardAlert,
-  Enrollee, KitRequest, KitType,
-  LocalizedEmailTemplate, ParticipantNote,
+  ParticipantNote,
   ParticipantTask,
   ParticipantTaskStatus,
-  ParticipantTaskType, StudyEnvParams,
-  Survey
+  ParticipantTaskType, renderWithRouter,
+  StudyEnvParams,
+  Survey,
+  SurveyType,
+  EmailTemplate,
+  StudyEnvironmentSurvey,
+  PortalEnvironment
 } from '@juniper/ui-core'
 
 import _times from 'lodash/times'
 import _random from 'lodash/random'
-import { EmailTemplate, StudyEnvironmentSurvey } from '@juniper/ui-core/build/types/study'
-import { LoadedPortalContextT } from '../portal/PortalProvider'
-import { PortalEnvironment } from '@juniper/ui-core/build/types/portal'
+import { LoadedPortalContextT, PortalContext, PortalContextT } from '../portal/PortalProvider'
 import { PortalEnvContext } from '../portal/PortalRouter'
-import {
-  EntityOptionsArrayFacet,
-  EntityOptionsArrayFacetValue,
-  EntityOptionsValue,
-  FacetValue,
-  StringOptionsFacet,
-  StringOptionsFacetValue
-} from '../api/enrolleeSearch'
+import React from 'react'
+import { AdminUserContext } from '../providers/AdminUserProvider'
+import { AdminUser } from '../api/adminUser'
+import { mockAdminUser } from './user-mocking-utils'
+import { UserContext } from '../user/UserProvider'
 
 const randomString = (length: number) => {
   return _times(length, () => _random(35).toString(36)).join('')
 }
 
 /** returns a mock portal */
-export const mockPortal: () => Portal = () => ({
+export const mockPortal = (): Portal => ({
   id: 'fakeportalid1',
   name: 'mock portal',
   shortcode: 'mock4u',
@@ -57,18 +59,27 @@ export const mockPortal: () => Portal = () => ({
   ]
 })
 
+/** mock portal with two supported languages */
+export const mockTwoLanguagePortal = (): Portal => ({
+  ...mockPortal(),
+  portalEnvironments: [
+    {
+      ...mockPortalEnvironment('sandbox'),
+      supportedLanguages: [MOCK_ENGLISH_LANGUAGE, MOCK_SPANISH_LANGUAGE]
+    }
+  ]
+})
+
 /** returns a simple portalContext, loosely modeled on OurHealth */
-export const mockPortalContext: () => LoadedPortalContextT = () => ({
+export const mockPortalContext = (): LoadedPortalContextT => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
-  updatePortalEnv: jest.fn(),
-  isError: false,
-  isLoading: false
+  updatePortalEnv: jest.fn()
 })
 
 /** mock with a mock portal and mock portalEnv */
-export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envName => ({
+export const mockPortalEnvContext = (envName: string): PortalEnvContext => ({
   portal: mockPortal(),
   updatePortal: jest.fn(),
   reloadPortal: () => Promise.resolve(mockPortal()),
@@ -77,24 +88,32 @@ export const mockPortalEnvContext: (envName: string) => PortalEnvContext = envNa
 })
 
 /** returns simple mock portal environment */
-export const mockPortalEnvironment: (envName: string) => PortalEnvironment = (envName: string) => ({
-  portalEnvironmentConfig: {
+export const mockPortalEnvironment = (envName: string): PortalEnvironment => ({
+  portalEnvironmentConfig: mockPortalEnvironmentConfig(),
+  environmentName: envName,
+  supportedLanguages: [
+    { languageCode: 'en', languageName: 'English', id: '1' },
+    { languageCode: 'es', languageName: 'Spanish', id: '2' }
+  ],
+  createdAt: 0
+})
+
+/**
+ *
+ */
+export const mockPortalEnvironmentConfig = (): PortalEnvironmentConfig => {
+  return {
     initialized: true,
     password: 'broad_institute',
     passwordProtected: false,
     acceptingRegistration: true,
     defaultLanguage: 'en'
-  },
-  environmentName: envName,
-  supportedLanguages: [
-    { languageCode: 'en', languageName: 'English' },
-    { languageCode: 'es', languageName: 'Spanish' }
-  ]
-})
+  }
+}
 
 
 /** returns a simple survey object for use/extension in tests */
-export const mockSurvey: () => Survey = () => ({
+export const mockSurvey: (surveyType?: SurveyType) => Survey = (surveyType = 'RESEARCH') => ({
   ...defaultSurvey,
   id: 'surveyId1',
   stableId: 'survey1',
@@ -103,7 +122,7 @@ export const mockSurvey: () => Survey = () => ({
   name: 'Survey number one',
   lastUpdatedAt: 0,
   createdAt: 0,
-  surveyType: 'RESEARCH'
+  surveyType
 })
 
 /** returns a mock portal study */
@@ -155,6 +174,7 @@ export const mockStudyEnvContext: () => StudyEnvContextT = () => {
       password: 'blah',
       passwordProtected: false,
       acceptingEnrollment: true,
+      enableFamilyLinkage: false,
       acceptingProxyEnrollment: false,
       useDevDsmRealm: false,
       useStubDsm: false
@@ -301,56 +321,33 @@ export const mockEnrollee: () => Enrollee = () => {
   }
 }
 
-/** returns a mock enrollee search result */
-export const mockEnrolleeSearchResult: () => EnrolleeSearchResult = () => {
+/**
+ * Mocks most basic enrollee search expression result response.
+ */
+export const mockEnrolleeSearchExpressionResult: () => EnrolleeSearchExpressionResult = () => {
   return {
     enrollee: mockEnrollee(),
     profile: mockEnrollee().profile,
-    mostRecentKitStatus: null,
-    participantUser: {
-      lastLogin: 50405345,
-      username: `${randomString(10)}@test.com`
-    }
+    families: [mockFamily(), mockFamily()]
   }
 }
 
-/** returns a mock enrollee task search facet */
-export const mockTaskSearchFacet: () => EnrolleeSearchFacet = () => {
-  const entities = [
-    { value: 'consent', label: 'Consent' },
-    { value: 'basicInfo', label: 'Basics' },
-    { value: 'cardioHistory', label: 'Cardio History' }
-  ]
-  const options = [
-    { value: 'COMPLETE', label: 'Complete' },
-    { value: 'IN_PROGRESS', label: 'In progress' },
-    { value: 'NEW', label: 'New' }
-  ]
-
+/**
+ * Mocks a family object.
+ */
+export const mockFamily = (): Family => {
   return {
-    keyName: 'status',
-    category: 'participantTask',
-    label: 'Task status',
-    facetType: 'ENTITY_OPTIONS',
-    entities,
-    options
+    id: 'familyId1',
+    createdAt: 0,
+    lastUpdatedAt: 0,
+    shortcode: 'F_MOCK',
+    members: [mockEnrollee()],
+    studyEnvironmentId: 'studyEnvId1',
+    relations: [],
+    proband: mockEnrollee(),
+    probandEnrolleeId: 'proband'
   }
 }
-
-/** returns a mock enrollee task search facet value */
-export const mockTaskFacetValue: (facet: EntityOptionsArrayFacet, optionValue: string) =>
-  FacetValue = (facet: EntityOptionsArrayFacet, optionValue: string) => {
-    const optionValues: string[] = [optionValue]
-    const facetValues = facet.entities.map(entity => new EntityOptionsValue(entity.value, optionValues))
-    return new EntityOptionsArrayFacetValue(facet, { values: facetValues })
-  }
-
-/** returns a mock enrollee options search facet value */
-export const mockOptionsFacetValue: (facet: StringOptionsFacet, optionValue: string) =>
-  FacetValue = (facet: StringOptionsFacet, optionValue: string) => {
-    const optionValues: string[] = [optionValue]
-    return new StringOptionsFacetValue(facet, { values: optionValues })
-  }
 
 /** helper function to generate a ParticipantTask object for a survey and enrollee */
 export const taskForForm = (form: Survey, enrolleeId: string, taskType: ParticipantTaskType):
@@ -390,13 +387,14 @@ export const mockTrigger = (): Trigger => {
     triggerType: 'EVENT',
     eventType: 'CONSENT',
     deliveryType: 'EMAIL',
+    actionType: 'NOTIFICATION',
     taskType: '',
     portalEnvironmentId: 'portalEnvId',
     studyEnvironmentId: 'studyEnvId',
     maxNumReminders: -1,
     afterMinutesIncomplete: -1,
     reminderIntervalMinutes: 10,
-    taskTargetStableId: '',
+    updateTaskTargetStableId: '',
     active: true,
     emailTemplateId: 'emailTemplateId',
     emailTemplate: mockEmailTemplate(),
@@ -459,11 +457,16 @@ export const mockLocalizedEmailTemplate = (): LocalizedEmailTemplate => {
 
 
 /** mock admin task */
-export const mockAdminTask = (): AdminTask => {
+export const mockAdminTask = (): ParticipantTask => {
   return {
     id: 'taskId1',
+    blocksHub: false,
+    enrolleeId: 'enrolleeId1',
+    portalParticipantUserId: 'ppUserId1',
     assignedAdminUserId: 'userId1',
     createdAt: 0,
+    taskOrder: 1,
+    taskType: 'ADMIN_FORM',
     status: 'NEW',
     creatingAdminUserId: 'userId2',
     studyEnvironmentId: 'studyEnvId1'
@@ -544,4 +547,75 @@ export const mockStudyEnvParams = (): StudyEnvParams => {
 /** random ids to be used in place of guids */
 export const randomId = (prefix: string): string => {
   return `${prefix}${Math.floor(Math.random() * 1000)}`
+}
+
+/** APIs invoked for query builder UX */
+export const mockExpressionApis = () => {
+  jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  jest.spyOn(Api, 'executeSearchExpression').mockResolvedValue([])
+  jest.spyOn(Api, 'getExpressionSearchFacets').mockResolvedValue({})
+}
+
+export const MOCK_ENGLISH_LANGUAGE = {
+  languageCode: 'en',
+  languageName: 'English',
+  id: '1'
+}
+export const MOCK_SPANISH_LANGUAGE = {
+  languageCode: 'es',
+  languageName: 'Español',
+  id: '1'
+}
+
+export type RenderInPortalRouterOpts = {
+  envName?: string,
+  mockWindowAlert?: boolean,
+  adminUsers?: AdminUser[], // will be put in the AdminUserContext
+  user: AdminUser, // will be put in the UserContext
+  permissions?: string[] // convenience for setting permissions without setting a full user with portalPermissions
+}
+
+export const defaultRenderOpts = {
+  envName: 'sandbox',
+  mockWindowAlert: true,
+  adminUsers: [],
+  user: mockAdminUser(false),
+  permissions: undefined
+}
+
+/**
+ * renders the children in a PortalProvider context and simulating appropriate routes
+ * so that useStudyEnvParams hook works as expected. Hardcoded to sandbox for now.
+ * Also includes AdminUserContext for showing admin user names
+ *
+ * By default, this mocks window alert since many of our contexts use window alert for error handling.
+ * */
+export const renderInPortalRouter = (portal: Portal,
+  children: React.ReactNode, opts: RenderInPortalRouterOpts = defaultRenderOpts) => {
+  const portalContext: PortalContextT = {
+    ...mockPortalContext(),
+    portal,
+    isLoading: false,
+    isError: false
+  }
+
+  if (opts.mockWindowAlert) {
+    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+  }
+
+  if (opts.permissions) {
+    opts.user.portalPermissions = { [portal.id]: opts.permissions }
+  }
+
+  const studyShortcode = portal.portalStudies[0] ? portal.portalStudies[0].study.shortcode : 'fakestudy'
+  return renderWithRouter(
+    <AdminUserContext.Provider value={{ users: opts.adminUsers ?? [], isLoading: false }}>
+      <UserContext.Provider
+        value={{ user: opts.user, logoutUser: jest.fn(), loginUser: jest.fn(), loginUserUnauthed: jest.fn() }}>
+        <PortalContext.Provider value={portalContext}>
+          { children }
+        </PortalContext.Provider>
+      </UserContext.Provider>
+    </AdminUserContext.Provider>, [`/${portal.shortcode}/studies/${studyShortcode}/${opts.envName}`],
+    ':portalShortcode/studies/:studyShortcode/:studyEnv')
 }

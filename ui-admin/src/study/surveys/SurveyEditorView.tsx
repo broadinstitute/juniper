@@ -7,17 +7,19 @@ import { FormContentEditor } from 'forms/FormContentEditor'
 import LoadedLocalDraftModal from 'forms/designer/modals/LoadedLocalDraftModal'
 import DiscardLocalDraftModal from 'forms/designer/modals/DiscardLocalDraftModal'
 import { deleteDraft, FormDraft, getDraft, getFormDraftKey, saveDraft } from 'forms/designer/utils/formDraftUtils'
-import { useAutosaveEffect } from '@juniper/ui-core/build/autoSaveUtils'
+import { useAutosaveEffect, ApiProvider } from '@juniper/ui-core'
 import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import FormOptionsModal from './FormOptionsModal'
 import { StudyEnvContextT } from '../StudyEnvironmentRouter'
 import { isEmpty, isEqual } from 'lodash'
 import { SaveableFormProps } from './SurveyView'
-import { ApiProvider } from '@juniper/ui-core'
 import { previewApi } from 'util/apiContextUtils'
-import { saveBlobAsDownload } from '../../util/downloadUtils'
+import { saveBlobAsDownload } from 'util/downloadUtils'
 import FormHistoryModal from './FormHistoryModal'
+import useLanguageSelectorFromParam from 'portal/languages/useLanguageSelector'
+import Select from 'react-select'
+import InfoPopup from 'components/forms/InfoPopup'
 
 type SurveyEditorViewProps = {
   studyEnvContext: StudyEnvContextT
@@ -25,6 +27,7 @@ type SurveyEditorViewProps = {
   readOnly?: boolean
   onCancel: () => void
   onSave: (update: SaveableFormProps) => Promise<void>
+  replaceSurvey: (updatedSurvey: Survey) => void
 }
 
 /** renders a survey for editing/viewing */
@@ -34,6 +37,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
     studyEnvContext: { portal, currentEnv },
     currentForm,
     readOnly = false,
+    replaceSurvey,
     onCancel,
     onSave
   } = props
@@ -50,7 +54,6 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const [showDiscardDraftModal, setShowDiscardDraftModal] = useState(false)
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false)
   const [showVersionSelector, setShowVersionSelector] = useState(false)
-  const [visibleVersionPreviews, setVisibleVersionPreviews] = useState<VersionedForm[]>([])
   const [showErrors, setShowErrors] = useState(false)
 
   const [draft, setDraft] = useState<FormDraft | undefined>(
@@ -60,7 +63,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   const isSaveEnabled = !!draft && isEmpty(validationErrors) && !saving
   const isSurvey = !!(currentForm as Survey).surveyType
   const portalEnv = portal.portalEnvironments.find((env: PortalEnvironment) =>
-    env.environmentName === currentEnv.environmentName)
+    env.environmentName === currentEnv.environmentName)!
+  const {
+    currentLanguage, languageOnChange, selectedLanguageOption,
+    selectLanguageInputId, languageOptions
+  } = useLanguageSelectorFromParam()
 
   const saveDraftToLocalStorage = () => {
     setDraft(currentDraft => {
@@ -116,7 +123,7 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
   return (
     <div className="SurveyView d-flex flex-column flex-grow-1 mx-1 mb-1">
       <div className="d-flex p-2 align-items-center">
-        <div className="d-flex flex-grow-1">
+        <div className="d-flex flex-grow-1 align-items-center">
           <h5>{currentForm.name}
             <span className="fs-6 text-muted fst-italic me-2 ms-2">
               (<span>{currentForm.stableId} v{currentForm.version}</span>
@@ -126,6 +133,19 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
               )
             </span>
           </h5>
+          <div className="ms-2 d-flex align-items-center" style={{ width: 200 }}>
+            <Select options={languageOptions} value={selectedLanguageOption} inputId={selectLanguageInputId}
+              aria-label={'Select a language'}
+              isDisabled={languageOptions.length < 2}
+              onChange={languageOnChange}/>
+            <InfoPopup placement="bottom" content={<p><p>
+              The language to edit and preview the form in. If the language is not explicitly
+              supported for this form, the default
+              language for the form will be used. </p>
+            <p>The values for this dropdown are taken from the supported languages
+                configurable in &quot;Site Settings&quot;.
+            </p></p>}/>
+          </div>
         </div>
         { savingDraft && <span className="detail me-2 ms-2">Saving draft...</span> }
         { !isEmpty(validationErrors) &&
@@ -212,10 +232,9 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
           </ul>
         </div>
         { showVersionSelector && <FormHistoryModal
-          studyEnvContext={studyEnvContext} visibleVersionPreviews={visibleVersionPreviews}
-          setVisibleVersionPreviews={setVisibleVersionPreviews}
+          studyEnvContext={studyEnvContext}
           workingForm={{ ...currentForm, ...draft }}
-          isConsentForm={!isSurvey}
+          replaceSurvey={replaceSurvey}
           onDismiss={() => setShowVersionSelector(false)}
         />}
         { showAdvancedOptions && <FormOptionsModal
@@ -229,10 +248,11 @@ const SurveyEditorView = (props: SurveyEditorViewProps) => {
       </div>
       <ApiProvider api={previewApi(portal.shortcode, currentEnv.environmentName)}>
         <FormContentEditor
+          portal={portal}
           initialContent={draft?.content || currentForm.content} //favor loading the draft, if we find one
           initialAnswerMappings={draft?.answerMappings || currentForm.answerMappings || []}
-          visibleVersionPreviews={visibleVersionPreviews}
           supportedLanguages={portalEnv?.supportedLanguages || []}
+          currentLanguage={currentLanguage}
           readOnly={readOnly}
           onFormContentChange={(newValidationErrors, newContent) => {
             if (isEmpty(newValidationErrors)) {

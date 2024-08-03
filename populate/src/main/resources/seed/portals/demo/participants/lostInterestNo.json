@@ -1,0 +1,19 @@
+{
+  "participantUser": {
+    "username": "lostInterestNo@test.com",
+    "lastLoginHoursAgo": 45
+  },
+  "profile": {
+    "givenName": "Lost",
+    "familyName": "InterestNoFollow",
+    "contactEmail": "lostInterestNo@test.com",
+    "sexAtBirth": "male",
+    "mailingAddress": {
+      "street1": "446 Spruce Street",
+      "city": "New York",
+      "state": "NY",
+      "country": "US",
+      "postalCode": "10006"
+    }
+  }
+}

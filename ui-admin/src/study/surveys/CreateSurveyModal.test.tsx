@@ -1,18 +1,19 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import React from 'react'
 import CreateSurveyModal from './CreateSurveyModal'
-import { mockConfiguredSurvey, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
-import userEvent from '@testing-library/user-event'
+import { mockConfiguredSurvey, mockExpressionApis, mockStudyEnvContext, mockSurvey } from 'test-utils/mocking-utils'
+import { userEvent } from '@testing-library/user-event'
 import Api from 'api/api'
 import { defaultSurvey, setupRouterTest } from '@juniper/ui-core'
 
 describe('CreateSurveyModal', () => {
-  test('disables Create button when survey name and stable ID are blank', () => {
+  test('disables Create button when survey name and stable ID are blank', async () => {
+    mockExpressionApis()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'RESEARCH'}
       onDismiss={jest.fn()}/>)
-    render(RoutedComponent)
+    await act(() => render(RoutedComponent))
 
     const createButton = screen.getByText('Create')
     expect(createButton).toBeDisabled()
@@ -20,6 +21,7 @@ describe('CreateSurveyModal', () => {
 
   test('enables Create button when survey name and stable ID are filled out', async () => {
     const user = userEvent.setup()
+    mockExpressionApis()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'RESEARCH'}
@@ -37,6 +39,7 @@ describe('CreateSurveyModal', () => {
 
   test('should autofill the stable ID as the user fills in the survey name', async () => {
     const user = userEvent.setup()
+    mockExpressionApis()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'RESEARCH'}
@@ -53,6 +56,7 @@ describe('CreateSurveyModal', () => {
 
   test('outreach surveys should present a blurb input', async () => {
     const user = userEvent.setup()
+    mockExpressionApis()
     const studyEnvContext = mockStudyEnvContext()
     const { RoutedComponent } = setupRouterTest(<CreateSurveyModal
       studyEnvContext={studyEnvContext} type={'OUTREACH'}
@@ -71,7 +75,7 @@ describe('CreateSurveyModal', () => {
   })
 
   test('outreach surveys should allow creating marketing types', async () => {
-    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+    mockExpressionApis()
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
@@ -112,7 +116,7 @@ describe('CreateSurveyModal', () => {
   })
 
   test('outreach surveys should allow creating screener types', async () => {
-    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+    mockExpressionApis()
     const user = userEvent.setup()
     const studyEnvContext = mockStudyEnvContext()
     const survey = mockSurvey()
@@ -153,7 +157,7 @@ describe('CreateSurveyModal', () => {
   })
 
   test('create a required survey', async () => {
-    jest.spyOn(window, 'alert').mockImplementation(jest.fn())
+    mockExpressionApis()
     const survey = mockSurvey()
     jest.spyOn(Api, 'createConfiguredSurvey').mockResolvedValue(mockConfiguredSurvey())
     jest.spyOn(Api, 'createNewSurvey').mockResolvedValue(survey)

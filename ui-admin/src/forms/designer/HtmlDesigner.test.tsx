@@ -4,6 +4,7 @@ import React from 'react'
 import { HtmlElement } from '@juniper/ui-core'
 
 import { HtmlDesigner } from './HtmlDesigner'
+import { MOCK_ENGLISH_LANGUAGE } from '../../test-utils/mocking-utils'
 
 describe('HtmlDesigner', () => {
   const element: HtmlElement = {
@@ -14,20 +15,22 @@ describe('HtmlDesigner', () => {
 
   it('renders HTML', () => {
     // Act
-    render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} addNextQuestion={jest.fn()} />)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={jest.fn()} addNextQuestion={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Assert
-    const htmlTextarea = screen.getByLabelText('HTML')
+    const htmlTextarea = screen.getByLabelText('HTML markup')
     expect(htmlTextarea.textContent).toBe('<h2>Section heading</h2><p>This is a section.</p>')
   })
 
   it('allows editing HTML', () => {
     // Arrange
     const onChange = jest.fn()
-    render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} addNextQuestion={jest.fn()}/>)
+    render(<HtmlDesigner element={element} readOnly={false} onChange={onChange} addNextQuestion={jest.fn()}
+      currentLanguage={MOCK_ENGLISH_LANGUAGE} supportedLanguages={[]}/>)
 
     // Act
-    const htmlTextarea = screen.getByLabelText('HTML')
+    const htmlTextarea = screen.getByLabelText('HTML markup')
     fireEvent.change(htmlTextarea, {
       target: {
         value: '<h2>New section heading</h2><p>This is a section.</p>'

@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import UserProvider, { useUser } from './UserProvider'
-import { mockEnrollee, mockParticipantUser } from '../test-utils/test-participant-factory'
-import { act, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import {
+  mockEnrollee,
+  mockParticipantUser
+} from '../test-utils/test-participant-factory'
+import {
+  act,
+  render,
+  screen,
+  waitFor
+} from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { AuthProvider } from 'react-oidc-context'
 import { setupRouterTest } from '@juniper/ui-core'
 
@@ -14,7 +25,7 @@ const UpdateEnrolleeTestComponent = () => {
     loginUserInternal({
       user: mockParticipantUser(),
       ppUsers: [],
-      relations: [],
+      proxyRelations: [],
       profile: {},
       enrollees: [mockEnrollee()]
     })

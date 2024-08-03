@@ -3,15 +3,19 @@ package bio.terra.pearl.api.admin.service;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 
+import bio.terra.pearl.api.admin.AuthAnnotationSpec;
+import bio.terra.pearl.api.admin.AuthTestUtils;
 import bio.terra.pearl.api.admin.BaseSpringBootTest;
+import bio.terra.pearl.api.admin.service.auth.SuperuserOnly;
+import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
 import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.service.exception.PermissionDeniedException;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.populate.service.EnrolleePopulateType;
-import org.junit.jupiter.api.Assertions;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,65 +30,38 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
   @Autowired private EnrolleeService enrolleeService;
 
   @Test
-  public void baseSeedRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class, () -> emptyService.populateBaseSeed(user));
-  }
-
-  @Test
-  public void portalRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> emptyService.populatePortal("dfafd", user, false, null));
-  }
-
-  @Test
-  public void surveyRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> emptyService.populateSurvey("dsafsd", "filepath", user, false));
-  }
-
-  @Test
-  public void enrolleeRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () ->
-            emptyService.populateEnrollee(
-                "ffo", EnvironmentName.live, "dfa", "dfadf", user, false));
-  }
-
-  @Test
-  public void siteContentRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> emptyService.populateSiteContent("ffo", "dfa", user, false));
-  }
-
-  @Test
-  public void bulkEnrolleeRequiresAuth() {
-    AdminUser user = new AdminUser();
-    Assertions.assertThrows(
-        PermissionDeniedException.class,
-        () -> emptyService.bulkPopulateEnrollees("ffo", EnvironmentName.live, "dfa", 100, user));
+  public void allMethodsAuthed(TestInfo info) {
+    AuthTestUtils.assertAllMethodsAnnotated(
+        populateExtService,
+        Map.of(
+            "populateBaseSeed",
+                AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populateAdminConfig",
+                AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populatePortal", AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populateSurvey", AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populateSiteContent",
+                AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populateEnrollee", AuthAnnotationSpec.withPortalStudyEnvPerm("BASE"),
+            "bulkPopulateEnrollees",
+                AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "extractPortal", AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class)),
+            "populateCommand",
+                AuthAnnotationSpec.withOtherAnnotations(List.of(SuperuserOnly.class))));
   }
 
   @Test
   public void populatesNewEnrolleeType(TestInfo info) {
     StudyEnvironmentFactory.StudyEnvironmentBundle bundle =
         studyEnvironmentFactory.buildBundle(getTestName(info), EnvironmentName.live);
-    AdminUser user = adminUserFactory.buildPersisted(getTestName(info), true);
+    AdminUser operator = adminUserFactory.buildPersisted(getTestName(info), true);
     populateExtService.populateEnrollee(
-        bundle.getPortal().getShortcode(),
-        bundle.getPortalEnv().getEnvironmentName(),
-        bundle.getStudy().getShortcode(),
-        EnrolleePopulateType.NEW,
-        user);
+        PortalStudyEnvAuthContext.of(
+            operator,
+            bundle.getPortal().getShortcode(),
+            bundle.getStudy().getShortcode(),
+            bundle.getPortalEnv().getEnvironmentName()),
+        EnrolleePopulateType.NEW);
     assertThat(enrolleeService.findByStudyEnvironment(bundle.getStudyEnv().getId()), hasSize(1));
   }
 }

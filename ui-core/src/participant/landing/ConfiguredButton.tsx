@@ -3,6 +3,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 
 import { requireOptionalString, requirePlainObject, requireString } from '../util/validationUtils'
+import { SectionProp, textProp } from './sections/SectionProp'
 
 type JoinButtonConfig = {
   type: 'join'
@@ -33,8 +34,10 @@ export type ButtonConfig =
   | InternalLinkButtonConfig
   | ExternalLinkButtonConfig
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+export const buttonConfigProps: SectionProp[] = [
+  textProp
+]
+
 export const validateButtonConfig = (buttonConfig: unknown): ButtonConfig => {
   const message = 'Invalid button config'
   const config = requirePlainObject(buttonConfig, message)
@@ -60,8 +63,7 @@ type ConfiguredButtonProps = {
   className?: string;
 }
 
-// TODO: Add JSDoc
-// eslint-disable-next-line jsdoc/require-jsdoc
+/** link typically used for navbar items */
 export const ConfiguredLink = (props: ConfiguredButtonProps) => {
   const { className, config } = props
   if (config.type === 'join') {

@@ -25,6 +25,7 @@ import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.model.workflow.TaskType;
 import bio.terra.pearl.core.service.CascadeProperty;
 import bio.terra.pearl.core.service.exception.internal.InternalServerException;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.kit.KitRequestDto;
 import bio.terra.pearl.core.service.kit.KitRequestService;
 import bio.terra.pearl.core.service.kit.pepper.PepperKit;
@@ -86,7 +87,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                              KitRequestService kitRequestService, KitTypeDao kitTypeDao, AdminUserDao adminUserDao,
                              ParticipantNotePopulator participantNotePopulator,
                              ParticipantUserPopulateDao participantUserPopulateDao, PortalParticipantUserPopulator portalParticipantUserPopulator, ObjectMapper objectMapper, PortalService portalService,
-                             SurveyQuestionDefinitionDao surveyQuestionDefinitionDao) {
+                             SurveyQuestionDefinitionDao surveyQuestionDefinitionDao, ShortcodeService shortcodeService) {
         this.portalParticipantUserService = portalParticipantUserService;
         this.preEnrollmentResponseDao = preEnrollmentResponseDao;
         this.surveyService = surveyService;
@@ -111,22 +112,31 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         this.objectMapper = objectMapper;
         this.portalService = portalService;
         this.surveyQuestionDefinitionDao = surveyQuestionDefinitionDao;
+        this.shortcodeService = shortcodeService;
     }
 
     private void populateResponse(Enrollee enrollee, SurveyResponsePopDto responsePopDto,
                                   PortalParticipantUser ppUser, boolean simulateSubmissions, StudyPopulateContext context,
-                                  ParticipantUser responsibleUser)
+                                  ParticipantUser pUser)
             throws JsonProcessingException {
-        Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
-                responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
+        ResponsibleEntity responsibleUser;
+        if(responsePopDto.getCreatingAdminUsername() != null) {
+            responsibleUser = new ResponsibleEntity(adminUserDao.findByUsername(responsePopDto.getCreatingAdminUsername()).get());
+        } else {
+            responsibleUser = new ResponsibleEntity(pUser);
+        }
+        Survey survey = surveyService.findByStableIdAndPortalShortcodeWithMappings(responsePopDto.getSurveyStableId(),
+                responsePopDto.getSurveyVersion(), context.getPortalShortcode()).orElseThrow(() -> new NotFoundException("Survey not found " + context.applyShortcodeOverride(responsePopDto.getSurveyStableId())));
 
-        SurveyResponse response = SurveyResponse.builder()
+        SurveyResponseWithJustification response = SurveyResponseWithJustification.builder()
                 .surveyId(survey.getId())
                 .enrolleeId(enrollee.getId())
                 .complete(responsePopDto.isComplete())
+                .justification(responsePopDto.getJustification())
                 .creatingParticipantUserId(enrollee.getParticipantUserId())
                 .resumeData(makeResumeData(responsePopDto.getCurrentPageNo(), enrollee.getParticipantUserId()))
                 .build();
+
         for (AnswerPopDto answerPopDto : responsePopDto.getAnswerPopDtos()) {
             Answer answer = convertAnswerPopDto(answerPopDto);
             response.getAnswers().add(answer);
@@ -134,11 +144,21 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         DataAuditInfo auditInfo = DataAuditInfo.builder()
                 .enrolleeId(enrollee.getId())
                 .portalParticipantUserId(ppUser.getId()).build();
-        auditInfo.setResponsibleEntity(new ResponsibleEntity(responsibleUser));
+
+        auditInfo.setResponsibleEntity(responsibleUser);
+
+        if(responsePopDto.getCreatingAdminUsername() != null) {
+            AdminUser adminUser = adminUserDao.findByUsername(responsePopDto.getCreatingAdminUsername()).get();
+            response.setCreatingAdminUserId(adminUser.getId());
+            response.setCreatingParticipantUserId(null);
+            auditInfo.setJustification(responsePopDto.getJustification());
+        }
+
         SurveyResponse savedResponse;
         if (simulateSubmissions) {
             ParticipantTask task = participantTaskService
-                    .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
+                        .findTaskForActivity(ppUser.getId(), enrollee.getStudyEnvironmentId(), survey.getStableId()).get();
+
             if (responsePopDto.getSurveyVersion() != task.getTargetAssignedVersion()) {
                 /**
                  * in simulateSubmission mode, tasks will be automatically created with the curren versions of the survey.
@@ -149,7 +169,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
                 participantTaskService.update(task, auditInfo);
             }
             HubResponse<SurveyResponse> hubResponse = surveyResponseService
-                    .updateResponse(response, new ResponsibleEntity(responsibleUser), ppUser, enrollee, task.getId(), survey.getPortalId());
+                    .updateResponse(response, responsibleUser, responsePopDto.getJustification(), ppUser, enrollee, task.getId(), survey.getPortalId());
             savedResponse = hubResponse.getResponse();
             if (responsePopDto.isTimeShifted()) {
                 timeShiftPopulateDao.changeSurveyResponseTime(savedResponse.getId(), responsePopDto.shiftedInstant());
@@ -187,7 +207,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
         if (responsePopDto == null) {
             return null;
         }
-        Survey survey = surveyService.findByStableIdAndPortalShortcode(context.applyShortcodeOverride(responsePopDto.getSurveyStableId()),
+        Survey survey = surveyService.findByStableIdAndPortalShortcode(responsePopDto.getSurveyStableId(),
                 responsePopDto.getSurveyVersion(), context.getPortalShortcode()).get();
         String fullData = objectMapper.writeValueAsString(responsePopDto.getAnswers());
         PreEnrollmentResponse response = PreEnrollmentResponse.builder()
@@ -532,7 +552,7 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
             EnrolleePopDto enrolleePopDto = EnrolleePopDto.builder()
                     .linkedUsername(username)
                     .simulateSubmissions(true)
-                    .shortcode(enrolleeService.generateShortcode())
+                    .shortcode(shortcodeService.generateShortcode("", enrolleeService::findOneByShortcode))
                     .build();
             Enrollee enrollee = createNew(enrolleePopDto, popContext, true);
             ParticipantUser user = participantUserService.find(enrollee.getParticipantUserId()).orElseThrow();
@@ -610,5 +630,6 @@ public class EnrolleePopulator extends BasePopulator<Enrollee, EnrolleePopDto, S
     private final ObjectMapper objectMapper;
     private final PortalService portalService;
     private final SurveyQuestionDefinitionDao surveyQuestionDefinitionDao;
+    private final ShortcodeService shortcodeService;
 }
 

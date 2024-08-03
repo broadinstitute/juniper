@@ -28,6 +28,7 @@ import NavContextProvider from 'navbar/NavContextProvider'
 import PopulateRouteSelect from './populate/PopulateRouteSelect'
 import IntegrationDashboard from './integration/IntegrationDashboard'
 import AdminUserRouter from './user/AdminUserRouter'
+import LogEventViewer from './health/LogEventViewer'
 
 /** auto-scroll-to-top on any navigation */
 const ScrollToTop = () => {
@@ -59,6 +60,7 @@ function App() {
                         <NavContextProvider><PageFrame config={config}/></NavContextProvider>
                       </ProtectedRoute>}>
                         <Route path="populate/*" element={<PopulateRouteSelect/>}/>
+                        <Route path="logEvents/*" element={<LogEventViewer/>}/>
                         <Route path="users/*" element={<AdminUserRouter/>}/>
                         <Route path="integrations/*" element={<IntegrationDashboard/>}/>
                         <Route path=":portalShortcode/*" element={<PortalProvider><PortalRouter/></PortalProvider>}/>

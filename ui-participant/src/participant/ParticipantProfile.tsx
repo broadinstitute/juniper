@@ -1,7 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import React, {
+  useEffect,
+  useState
+} from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronLeft, faPencil } from '@fortawesome/free-solid-svg-icons'
-import { dateToDefaultString, MailingAddress, Profile, useI18n } from '@juniper/ui-core'
+import {
+  faChevronLeft,
+  faPencil
+} from '@fortawesome/free-solid-svg-icons'
+import {
+  dateToDefaultString,
+  MailingAddress,
+  Profile,
+  useI18n
+} from '@juniper/ui-core'
 import Api from 'api/api'
 import { isEmpty } from 'lodash'
 import {
@@ -13,7 +24,10 @@ import {
   EditPhoneNumber
 } from './EditParticipantProfileModals'
 import { useActiveUser } from '../providers/ActiveUserProvider'
-import { Link, useParams } from 'react-router-dom'
+import {
+  Link,
+  useParams
+} from 'react-router-dom'
 import { useUser } from '../providers/UserProvider'
 
 /**
@@ -209,7 +223,8 @@ const ReadOnlyAddress = ({ address }: { address: MailingAddress | undefined }) =
     {address.street1 && <ProfileTextRow text={address.street1}/>}
     {address.street2 && <ProfileTextRow text={address.street2}/>}
     {(address.city || address.postalCode || address.state) &&
-        <ProfileTextRow text={`${address.city} ${address.state} ${address.postalCode}`.split(/\s+/).join(' ')}/>}
+        <ProfileTextRow
+          text={`${address.city || ''} ${address.state || ''} ${address.postalCode || ''}`.split(/\s+/).join(' ')}/>}
     {address.country && <ProfileTextRow text={address.country}/>}
   </>
 }

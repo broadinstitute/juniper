@@ -25,6 +25,10 @@ public class LanguageTextDao extends BaseMutableJdbiDao<LanguageText> {
         return findByTwoProperties("key_name", keyName, "language", language);
     }
 
+    public void deleteByKeyNameAndPortal(String keyName, UUID portalId) {
+        deleteByTwoProperties("key_name", keyName, "portal_id", portalId);
+    }
+
     //returns all language texts that are either global or portal specific
     public List<LanguageText> findByPortalIdOrNullPortalId(UUID portalId, String language) {
         return jdbi.withHandle(
@@ -40,5 +44,9 @@ public class LanguageTextDao extends BaseMutableJdbiDao<LanguageText> {
 
     public void deleteByPortalId(UUID portalId) {
         deleteByProperty("portal_id", portalId);
+    }
+
+    public List<LanguageText> findByPortalId(UUID id, String lang) {
+        return findAllByTwoProperties("portal_id", id, "language", lang);
     }
 }

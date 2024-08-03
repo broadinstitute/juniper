@@ -120,10 +120,11 @@ export const IconButton = (props: IconButtonProps) => {
 /**
  * button for an ellipsis "More actions" menu
  */
-export const EllipsisDropdownButton = (props: ButtonProps & {'aria-label': string}) => {
+export const EllipsisDropdownButton = (props: ButtonProps & {'aria-label': string, text?: string}) => {
   return <Button tooltip={props['aria-label']} data-bs-toggle="dropdown"
     aria-expanded="false"
     {...props}>
+    { props.text ? <span className="me-2">{props.text}</span> : '' }
     <FontAwesomeIcon icon={faEllipsisV} className="fa-lg"/>
   </Button>
 }

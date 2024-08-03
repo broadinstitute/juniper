@@ -6,10 +6,18 @@ import {
 } from 'api/api'
 import { Link } from 'react-router-dom'
 import StudyEnvDiff from './StudyEnvDiff'
-import { ConfigChangeListView, ConfigChanges, renderNotificationConfig, VersionChangeView } from './diffComponents'
+import {
+  ConfigChangeListView,
+  ConfigChanges,
+  renderNotificationConfig,
+  renderPortalLanguage,
+  VersionChangeView
+} from './diffComponents'
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import _cloneDeep from 'lodash/cloneDeep'
+import { userHasPermission, useUser } from 'user/UserProvider'
+import { Button } from 'components/forms/Button'
 
 export const emptyChangeSet: PortalEnvironmentChange = {
   siteContentChange: { changed: false },
@@ -17,7 +25,8 @@ export const emptyChangeSet: PortalEnvironmentChange = {
   preRegSurveyChanges: { changed: false },
   triggerChanges: { addedItems: [], removedItems: [], changedItems: [] },
   participantDashboardAlertChanges: [],
-  studyEnvChanges: []
+  studyEnvChanges: [],
+  languageChanges: { addedItems: [], removedItems: [], changedItems: [] }
 }
 
 export const emptyStudyEnvChange: StudyEnvironmentChange = {
@@ -89,7 +98,7 @@ type EnvironmentDiffProps = {
 export default function PortalEnvDiffView(
   { changeSet, destEnvName, applyChanges, sourceEnvName, portal }: EnvironmentDiffProps) {
   const [selectedChanges, setSelectedChanges] = useState<PortalEnvironmentChange>(getDefaultPortalEnvChanges(changeSet))
-
+  const { user } = useUser()
   const updateSelectedStudyEnvChanges = (update: StudyEnvironmentChange) => {
     const matchedIndex = selectedChanges.studyEnvChanges
       .findIndex(change => change.studyShortcode === update.studyShortcode)
@@ -107,7 +116,9 @@ export default function PortalEnvDiffView(
       <FontAwesomeIcon icon={faArrowRight} className="fa-sm mx-2"/>
       {destEnvName}
     </h1>
-    <span>Select changes to apply</span>
+    { userHasPermission(user, portal.id, 'publish') &&
+      <span>Select changes to publish</span>
+    }
 
     <div className="bg-white p-3">
       <div className="my-2">
@@ -193,6 +204,17 @@ export default function PortalEnvDiffView(
             renderItemSummary={renderNotificationConfig}/>
         </div>
       </div>
+      <div className="my-2">
+        <h2 className="h6">
+          Portal languages</h2>
+        <div className="ms-4">
+          <ConfigChangeListView configChangeList={changeSet.languageChanges}
+            selectedChanges={selectedChanges.languageChanges}
+            setSelectedChanges={languageChanges =>
+              setSelectedChanges({ ...selectedChanges, languageChanges })}
+            renderItemSummary={renderPortalLanguage}/>
+        </div>
+      </div>
       <div>
         <h2 className="h6">Studies</h2>
         {changeSet.studyEnvChanges.map(studyEnvChange => {
@@ -206,11 +228,20 @@ export default function PortalEnvDiffView(
       </div>
     </div>
     <div className="d-flex justify-content-center mt-2 pb-5">
-      <button className="btn btn-primary" onClick={() => applyChanges(selectedChanges)}>Copy changes</button>
-      {
-        // eslint-disable-next-line
-        // @ts-ignore  Link to type also supports numbers for back operations
-        <Link className="btn btn-cancel" to={-1}>Cancel</Link>
+      { userHasPermission(user, portal.id, 'publish') && <>
+        <Button variant="primary" onClick={() => applyChanges(selectedChanges)}>
+          Publish changes to {destEnvName}
+        </Button>
+        {
+          // eslint-disable-next-line
+          // @ts-ignore  Link to type also supports numbers for back operations
+          <Link className="btn btn-cancel" to={-1}>Back</Link>
+        }
+      </> }
+      { !userHasPermission(user, portal.id, 'publish') &&
+         <div>
+           To publish selected changes, you must have the &quot;publish&quot; permission, or contact support
+         </div>
       }
     </div>
   </div>
