@@ -342,7 +342,7 @@ function cellToCsvString(cellType: string, cellValue: unknown): string {
 /**
  * Adds a control to download the table data as a csv file
  */
-export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'], buttonClass="border m-1" }:{
+export function DownloadControl<T>({ table, fileName, excludedColumns = ['select'], buttonClass='border m-1' }:{
   table: Table<T>, fileName: string, excludedColumns?: string[], buttonClass: string}
 ) {
   const [show, setShow] = useState(false)

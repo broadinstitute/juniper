@@ -1,6 +1,7 @@
 package bio.terra.pearl.api.admin.service;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import bio.terra.pearl.api.admin.AuthAnnotationSpec;
@@ -12,10 +13,15 @@ import bio.terra.pearl.core.factory.StudyEnvironmentFactory;
 import bio.terra.pearl.core.factory.admin.AdminUserFactory;
 import bio.terra.pearl.core.model.EnvironmentName;
 import bio.terra.pearl.core.model.admin.AdminUser;
+import bio.terra.pearl.core.model.participant.Enrollee;
+import bio.terra.pearl.core.model.participant.ParticipantUser;
 import bio.terra.pearl.core.service.participant.EnrolleeService;
+import bio.terra.pearl.core.service.participant.ParticipantUserService;
 import bio.terra.pearl.populate.service.EnrolleePopulateType;
 import java.util.List;
 import java.util.Map;
+
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +34,7 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
   @Autowired private StudyEnvironmentFactory studyEnvironmentFactory;
   @Autowired private AdminUserFactory adminUserFactory;
   @Autowired private EnrolleeService enrolleeService;
+  @Autowired private ParticipantUserService participantUserService;
 
   @Test
   public void allMethodsAuthed(TestInfo info) {
@@ -61,7 +68,10 @@ public class PopulateExtServiceTests extends BaseSpringBootTest {
             bundle.getPortal().getShortcode(),
             bundle.getStudy().getShortcode(),
             bundle.getPortalEnv().getEnvironmentName()),
-        EnrolleePopulateType.NEW);
-    assertThat(enrolleeService.findByStudyEnvironment(bundle.getStudyEnv().getId()), hasSize(1));
+        EnrolleePopulateType.NEW, "someone@user.com");
+    List<Enrollee> enrollees = enrolleeService.findByStudyEnvironment(bundle.getStudyEnv().getId());
+    assertThat(enrollees, hasSize(1));
+    ParticipantUser pUser = participantUserService.find(enrollees.get(0).getParticipantUserId()).orElseThrow();
+    assertThat(pUser.getUsername(), equalTo("someone@user.com"));
   }
 }
