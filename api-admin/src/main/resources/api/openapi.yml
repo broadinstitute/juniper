@@ -456,11 +456,11 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/allKitTypes: #todo clean up this endpoint
+  /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/allowedKitTypes:
     get:
-      summary: Gets all kit types that can be configured for a study
+      summary: Gets all kit types that can be configured for a study environment
       tags: [ studyEnvironment ]
-      operationId: getAllKitTypes
+      operationId: getAllowedKitTypes
       parameters:
         - *portalShortcodeParam
         - *studyShortcodeParam

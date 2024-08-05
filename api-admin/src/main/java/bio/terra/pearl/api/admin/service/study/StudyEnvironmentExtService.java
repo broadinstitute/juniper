@@ -4,8 +4,6 @@ import bio.terra.pearl.api.admin.service.auth.AuthUtilService;
 import bio.terra.pearl.api.admin.service.auth.EnforcePortalStudyEnvPermission;
 import bio.terra.pearl.api.admin.service.auth.SandboxOnly;
 import bio.terra.pearl.api.admin.service.auth.context.PortalStudyEnvAuthContext;
-import bio.terra.pearl.core.model.EnvironmentName;
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.kit.KitType;
 import bio.terra.pearl.core.model.kit.StudyEnvironmentKitType;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
@@ -54,38 +52,31 @@ public class StudyEnvironmentExtService {
     return studyEnvService.update(studyEnv);
   }
 
+  @EnforcePortalStudyEnvPermission(permission = "study_settings_edit")
   public StudyEnvironmentConfig updateConfig(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      StudyEnvironmentConfig update) {
-    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+      PortalStudyEnvAuthContext authContext, StudyEnvironmentConfig update) {
     StudyEnvironmentConfig existing =
-        studyEnvConfigService.find(studyEnv.getStudyEnvironmentConfigId()).get();
+        studyEnvConfigService
+            .find(authContext.getStudyEnvironment().getStudyEnvironmentConfigId())
+            .get();
     // we don't allow directly setting the 'initialized' field -- that comes from the publishing
     // flows
     BeanUtils.copyProperties(update, existing, "initialized", "id", "createdAt", "lastUpdatedAt");
     return studyEnvConfigService.update(existing);
   }
 
-  // todo update this to use the new auth annotations
-  public List<KitType> getKitTypes(
-      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
-    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
-    return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public List<KitType> getKitTypes(PortalStudyEnvAuthContext authContext) {
+    return studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(
+        authContext.getStudyEnvironment().getId());
   }
 
-  public void updateKitTypes(
-      AdminUser operator,
-      String portalShortcode,
-      String studyShortcode,
-      EnvironmentName envName,
-      List<String> updatedKitTypes) {
-    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+  @EnforcePortalStudyEnvPermission(permission = "study_settings_edit")
+  public void updateKitTypes(PortalStudyEnvAuthContext authContext, List<String> updatedKitTypes) {
     List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllKitTypes();
     List<KitType> existingKitTypes =
-        studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(studyEnv.getId());
+        studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(
+            authContext.getStudyEnvironment().getId());
 
     if (!new HashSet<>(updatedKitTypes)
         .containsAll(existingKitTypes.stream().map(KitType::getName).toList())) {
@@ -103,7 +94,7 @@ public class StudyEnvironmentExtService {
           allowedKitTypes.stream().filter(k -> k.getName().equals(kitTypeName)).findFirst().get();
       StudyEnvironmentKitType foo =
           StudyEnvironmentKitType.builder()
-              .studyEnvironmentId(studyEnv.getId())
+              .studyEnvironmentId(authContext.getStudyEnvironment().getId())
               .kitTypeId(kitType.getId())
               .build();
       newKitTypes.add(foo);
@@ -112,24 +103,17 @@ public class StudyEnvironmentExtService {
     studyEnvironmentKitTypeService.bulkCreate(newKitTypes);
   }
 
-  public List<KitType> getAllKitTypes(
-      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
-    authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public List<KitType> getAllowedKitTypes(PortalStudyEnvAuthContext authContext) {
     return studyEnvironmentKitTypeService.findAllKitTypes();
   }
 
-  public StudyEnvStats getStats(
-      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
-    StudyEnvironment studyEnv = authToStudyEnv(operator, portalShortcode, studyShortcode, envName);
+  @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
+  public StudyEnvStats getStats(PortalStudyEnvAuthContext authContext) {
     return new StudyEnvStats(
-        enrolleeService.countByStudyEnvironmentId(studyEnv.getId()),
-        withdrawnEnrolleeService.countByStudyEnvironmentId(studyEnv.getId()));
-  }
-
-  private StudyEnvironment authToStudyEnv(
-      AdminUser operator, String portalShortcode, String studyShortcode, EnvironmentName envName) {
-    authUtilService.authUserToStudy(operator, portalShortcode, studyShortcode);
-    return studyEnvService.findByStudy(studyShortcode, envName).get();
+        enrolleeService.countByStudyEnvironmentId(authContext.getStudyEnvironment().getId()),
+        withdrawnEnrolleeService.countByStudyEnvironmentId(
+            authContext.getStudyEnvironment().getId()));
   }
 
   public record StudyEnvStats(int enrolleeCount, int withdrawnCount) {}

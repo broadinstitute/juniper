@@ -29,7 +29,7 @@ public class InitialPopulate {
     baseSeedPopulator.populateLanguageTexts();
     log.info("Repopulating roles and permissions");
     baseSeedPopulator.populateRolesAndPermissions();
-    log.info("Repopulate kit types");
+    log.info("Repopulating kit types");
     baseSeedPopulator.populateKitTypes();
   }
 }
