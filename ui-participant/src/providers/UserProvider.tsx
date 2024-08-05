@@ -98,6 +98,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   /** Sign out of the UI. Does not invalidate any tokens, but maybe it should... */
   const logoutUser = async () => {
+    mixpanel.reset()
     localStorage.removeItem(INTERNAL_LOGIN_TOKEN_KEY)
     localStorage.removeItem(OAUTH_ACCESS_TOKEN_KEY)
     await Api.logout()
@@ -107,7 +108,6 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     } else {
       window.location.href = '/'
     }
-    mixpanel.reset()
   }
 
   /** updates a single enrollee in the list of enrollees -- the enrollee object should contain an updated task list */

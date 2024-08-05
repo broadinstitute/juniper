@@ -29,7 +29,7 @@ import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
 
-import mixpanel from 'mixpanel-browser'
+import useMixpanel from './util/useMixpanel'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -52,20 +52,7 @@ function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
 
-  mixpanel.init('placeholder-token', {
-    'debug': false,
-    'track_pageview': 'url-with-path',
-    'persistence': 'localStorage',
-    'api_payload_format': 'json',
-    'api_host': `https://${window.location.host}`,
-    'api_routes': {
-      track: 'api/public/log/v1/track',
-      // the two following routes are stubs in the Juniper API,
-      // but they must be specified otherwise Mixpanel errors out
-      engage: 'api/public/log/v1/engage',
-      groups: 'api/public/log/v1/groups'
-    }
-  })
+  useMixpanel('placeholder-token')
 
   useEffect(() => {
     const isCompatible = isBrowserCompatible()

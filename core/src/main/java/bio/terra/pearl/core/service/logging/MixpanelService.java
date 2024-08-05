@@ -1,4 +1,4 @@
-package bio.terra.pearl.core.service.events;
+package bio.terra.pearl.core.service.logging;
 
 import com.mixpanel.mixpanelapi.ClientDelivery;
 import com.mixpanel.mixpanelapi.MessageBuilder;
@@ -22,7 +22,6 @@ public class MixpanelService {
 
     public void logEvent(String data) {
         if(!Boolean.parseBoolean(env.getProperty("env.mixpanel.enabled"))) {
-            log.info("Mixpanel is disabled. Skipping event logging.");
             return;
         }
 
@@ -30,20 +29,28 @@ public class MixpanelService {
         JSONArray events = new JSONArray(data);
 
         ClientDelivery delivery = new ClientDelivery();
-        MessageBuilder messageBuilder = new MessageBuilder(env.getProperty("mixpanel.token"));
 
         for (int i = 0; i < events.length(); i++) {
-            JSONObject event = events.getJSONObject(i);
-            JSONObject updatedEvent = messageBuilder.event(
-                    null,
-                    event.getString("event"),
-                    event.getJSONObject("properties")
-                            .put("token", env.getProperty("mixpanel.token"))
-            );
-
-            delivery.addMessage(updatedEvent);
+            JSONObject mixpanelEvent = buildEvent(events.getJSONObject(i));
+            log.info("Preparing Mixpanel event: {}", mixpanelEvent.toString());
+            delivery.addMessage(mixpanelEvent);
         }
 
+        deliverEvents(delivery);
+    }
+
+    public JSONObject buildEvent(JSONObject event) {
+        MessageBuilder messageBuilder = new MessageBuilder(env.getProperty("mixpanel.token"));
+
+        return messageBuilder.event(
+                null,
+                event.getString("event"),
+                event.getJSONObject("properties")
+                        .put("token", env.getProperty("mixpanel.token"))
+        );
+    }
+
+    public void deliverEvents(ClientDelivery delivery) {
         MixpanelAPI mixpanel = new MixpanelAPI();
 
         try {

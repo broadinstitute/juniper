@@ -4,7 +4,7 @@ import bio.terra.pearl.api.participant.api.LoggingApi;
 import bio.terra.pearl.core.model.log.LogEvent;
 import bio.terra.pearl.core.model.log.LogEventSource;
 import bio.terra.pearl.core.service.LoggingService;
-import bio.terra.pearl.core.service.events.MixpanelService;
+import bio.terra.pearl.core.service.logging.MixpanelService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
