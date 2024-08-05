@@ -8,8 +8,6 @@ import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitu
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
 import org.apache.commons.text.StringSubstitutor;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -17,6 +15,9 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class SendgridClientTests extends BaseSpringBootTest {
   @Autowired
@@ -35,7 +36,7 @@ public class SendgridClientTests extends BaseSpringBootTest {
     EmailTemplate emailTemplate = EmailTemplate.builder()
             .localizedEmailTemplates(List.of(localizedEmailTemplate)).build();
       NotificationContextInfo contextInfo = new NotificationContextInfo(null, null, null, null, emailTemplate);
-    StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths);
+    StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor("admin@admin.com", contextInfo, applicationRoutingPaths, null);
 
     Mail email = sendgridClient.buildEmail(localizedEmailTemplate, "admin@admin.com", "us@broad.org", "Broad", substitutor);
     assertThat(email.personalization.get(0).getTos().get(0).getEmail(), equalTo("admin@admin.com"));

@@ -1,20 +1,38 @@
 import React, { useState } from 'react'
-import { StudyEnvContextT, triggerPath } from '../StudyEnvironmentRouter'
-import { useNavigate, useParams } from 'react-router-dom'
+import {
+  StudyEnvContextT,
+  triggerPath
+} from '../StudyEnvironmentRouter'
+import {
+  useNavigate,
+  useParams
+} from 'react-router-dom'
 import Select from 'react-select'
 import TestEmailSender from './TestEmailSender'
 import Api, { Trigger } from 'api/api'
 import { successNotification } from 'util/notifications'
 import { Store } from 'react-notifications-component'
-import { doApiLoad, useLoadingEffect } from 'api/api-utils'
+import {
+  doApiLoad,
+  useLoadingEffect
+} from 'api/api-utils'
 import { LoadedPortalContextT } from 'portal/PortalProvider'
 import LoadingSpinner from 'util/LoadingSpinner'
 import EmailTemplateEditor from './EmailTemplateEditor'
 import { Modal } from 'react-bootstrap'
-import { TriggerDeliveryType, TriggerScope, ParticipantTaskStatus } from '@juniper/ui-core'
+import {
+  ParticipantTaskStatus,
+  TriggerDeliveryType,
+  TriggerScope
+} from '@juniper/ui-core'
 import InfoPopup from 'components/forms/InfoPopup'
 import { TextInput } from 'components/forms/TextInput'
-import TriggerBaseForm, { isAction, isNotification, isTaskReminder } from './TriggerBaseForm'
+import TriggerBaseForm, {
+  isAction,
+  isAdminNotification,
+  isNotification,
+  isTaskReminder
+} from './TriggerBaseForm'
 
 
 const deliveryTypeOptions: { label: string, value: TriggerDeliveryType}[] = [
@@ -48,7 +66,9 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
   const triggerId = useParams().triggerId
   const [trigger, setTrigger] = useState<Trigger>()
   const [workingTrigger, setWorkingTrigger] = useState<Trigger>()
+  console.log(workingTrigger)
   const hasTemplate = !!workingTrigger?.emailTemplate
+  console.log(hasTemplate)
 
   const { isLoading, setIsLoading } = useLoadingEffect(async () => {
     if (!triggerId) { return }
@@ -112,7 +132,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </div>
       </div>
       }
-      { isNotification(workingTrigger) && <div>
+      {(isNotification(workingTrigger) || isAdminNotification(workingTrigger)) && <div>
         <div>
           <label className="form-label">Delivery
             <Select options={deliveryTypeOptions} isDisabled={true}
@@ -167,9 +187,9 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </div>
       </div> }
 
-      <div className="d-flex justify-content-center">
+      <div className="d-flex justify-content-center mt-2">
         <button type="button" className="btn btn-primary" onClick={saveConfig}>Save</button>
-        { isNotification(workingTrigger) &&
+        {(isNotification(workingTrigger) || isAdminNotification(workingTrigger)) &&
           <button type="button" className="btn btn-secondary ms-4"
             onClick={() => setShowSendModal(true)}>Send test email
           </button> }
@@ -196,7 +216,7 @@ export default function TriggerView({ studyEnvContext, portalContext, onDelete }
         </Modal>
       )}
     </form> }
-    { isNotification(workingTrigger) && <div>
+    {(isNotification(workingTrigger) || isAdminNotification(workingTrigger)) && <div>
       Note the preview above does not guarantee how the email will appear in all browsers and clients. To test this,
       use the &apos;Send test email&apos; button to send test emails to a given email address.
     </div> }

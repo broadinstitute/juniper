@@ -117,7 +117,7 @@ public class PortalDao extends BaseMutableJdbiDao<Portal> {
 
     public Optional<Portal> findByPortalEnvironmentId(UUID portalEnvironmentId) {
         return jdbi.withHandle(handle ->
-                handle.createQuery("select * from " + tableName + " p " +
+                handle.createQuery("select p.* from " + tableName + " p " +
                                 " inner join portal_environment pe on pe.portal_id = p.id " +
                                 " where pe.id = :portalEnvironmentId " +
                                 " limit 1")

@@ -1,7 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react'
-import EmailEditor, { EditorRef, EmailEditorProps } from 'react-email-editor'
-import { EmailTemplate, PortalEnvironmentLanguage } from '@juniper/ui-core'
-import { Tab, Tabs } from 'react-bootstrap'
+import React, {
+  useEffect,
+  useRef,
+  useState
+} from 'react'
+import EmailEditor, {
+  EditorRef,
+  EmailEditorProps
+} from 'react-email-editor'
+import {
+  EmailTemplate,
+  PortalEnvironmentLanguage
+} from '@juniper/ui-core'
+import {
+  Tab,
+  Tabs
+} from 'react-bootstrap'
 import { getMediaBaseUrl } from 'api/api'
 import { usePortalLanguage } from 'portal/languages/usePortalLanguage'
 import useReactSingleSelect from 'util/react-select-utils'
