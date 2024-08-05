@@ -7,6 +7,7 @@ import bio.terra.pearl.core.service.LoggingService;
 import bio.terra.pearl.core.service.logging.MixpanelService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 
@@ -38,6 +39,10 @@ public class LoggingController implements LoggingApi {
 
   @Override
   public ResponseEntity<String> trackEvent(String data) {
+    if (StringUtils.isEmpty(data)) {
+      // If there is no urlencoded form data, return no content
+      return ResponseEntity.noContent().build();
+    }
     mixpanelService.logEvent(data);
     return ResponseEntity.accepted().build();
   }

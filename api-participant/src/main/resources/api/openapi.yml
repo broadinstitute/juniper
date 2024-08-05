@@ -65,7 +65,7 @@ paths:
       tags: [ logging ]
       operationId: trackEvent
       requestBody:
-        required: true
+        required: false
         content:
           application/x-www-form-urlencoded:
             schema:
@@ -74,6 +74,10 @@ paths:
                 data:
                   type: string
                   description: The event data
+          text/plain:
+            schema:
+              type: string
+              description: The event data
       responses:
         '202':
           description: the id of the generated event

@@ -45,15 +45,15 @@ const ScrollToTop = () => {
   return null
 }
 
+// The actual project token is injected into the event by the backend
+initializeMixpanel('placeholder-token')
+
 /**
  * root app -- handles dynamically creating all the routes based on the siteContent
  */
 function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
-
-  // The actual project token is injected into the event by the backend
-  initializeMixpanel('placeholder-token')
 
   useEffect(() => {
     const isCompatible = isBrowserCompatible()

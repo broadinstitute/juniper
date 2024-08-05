@@ -24,7 +24,7 @@ public class MixpanelService {
         if(!Boolean.parseBoolean(env.getProperty("env.mixpanel.enabled"))) {
             return;
         }
-
+        
         //Mixpanel sends event data as urlencoded form data, so we need to parse the event data as a JSON array
         JSONArray events = new JSONArray(data);
 
