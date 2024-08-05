@@ -37,11 +37,12 @@ public class LogEventDao {
     );
   }
 
-  public List<LogEvent> listLogEvents(String days, List<LogEventType> eventTypes) {
+  public List<LogEvent> listLogEvents(String days, List<LogEventType> eventTypes, int limit) {
     return jdbi.withHandle(handle ->
-        handle.createQuery("SELECT * FROM log_event WHERE event_type IN (<eventTypes>) AND created_at > now() - (:days || ' day')::interval")
+        handle.createQuery("SELECT * FROM log_event WHERE event_type IN (<eventTypes>) AND created_at > now() - (:days || ' day')::interval limit :limit")
             .bindList("eventTypes", eventTypes)
             .bind("days", days)
+            .bind("limit", limit)
             .mapTo(LogEvent.class)
             .list()
     );

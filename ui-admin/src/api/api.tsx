@@ -1514,8 +1514,8 @@ export default {
     return await this.processJsonResponse(response)
   },
 
-  async loadLogEvents(eventTypes: string[], days: string) {
-    const params = queryString.stringify({ eventTypes: eventTypes.join(','), days })
+  async loadLogEvents(eventTypes: string[], days: string, limit: number = 1000) {
+    const params = queryString.stringify({ eventTypes: eventTypes.join(','), days, limit })
     const url = `${API_ROOT}/logEvents?${params}`
     const response = await fetch(url, this.getGetInit())
     return await this.processJsonResponse(response)
