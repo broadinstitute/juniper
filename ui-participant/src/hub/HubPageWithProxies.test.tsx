@@ -28,6 +28,7 @@ jest.mock('../api/api', () => {
   }
 })
 
+jest.mock('mixpanel-browser')
 
 describe('HubPage with proxies', () => {
   it('is rendered with participant selector and study name', async () => {

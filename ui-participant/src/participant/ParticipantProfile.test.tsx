@@ -50,6 +50,8 @@ jest.mock('react-router-dom', () => ({
   useParams: jest.fn()
 }))
 
+jest.mock('mixpanel-browser')
+
 
 test('renders jsalk profile', async () => {
   asMockedFn(useParams).mockReturnValue({})

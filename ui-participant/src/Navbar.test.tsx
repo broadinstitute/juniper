@@ -35,6 +35,7 @@ import { mockUseUser } from './test-utils/user-mocking-utils'
 
 jest.mock('oidc-client-ts')
 jest.mock('providers/UserProvider')
+jest.mock('mixpanel-browser')
 jest.mock('providers/PortalProvider', () => {
   return {
     ...jest.requireActual('providers/PortalProvider'),

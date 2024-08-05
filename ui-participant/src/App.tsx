@@ -29,7 +29,7 @@ import ActiveUserProvider from './providers/ActiveUserProvider'
 import { CookieAlert } from './CookieAlert'
 import PageNotFound from './PageNotFound'
 
-import useMixpanel from './util/useMixpanel'
+import { initializeMixpanel } from './util/mixpanelUtils'
 
 const PrivacyPolicyPage = lazy(() => import('terms/PrivacyPolicyPage'))
 const InvestigatorTermsOfUsePage = lazy(() => import('terms/InvestigatorTermsOfUsePage'))
@@ -52,7 +52,8 @@ function App() {
   const [cookiesAcknowledged, setCookiesAcknowledged] = useCookiesAcknowledged()
   const { localContent, portal, portalEnv } = usePortalEnv()
 
-  useMixpanel('placeholder-token')
+  // The actual project token is injected into the event by the backend
+  initializeMixpanel('placeholder-token')
 
   useEffect(() => {
     const isCompatible = isBrowserCompatible()

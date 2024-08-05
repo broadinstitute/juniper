@@ -15,6 +15,7 @@ const TestComponent = () => {
   </span>
 }
 
+jest.mock('mixpanel-browser')
 
 test('logs JS exceptions', async () => {
   const logSpy = jest.spyOn(Api, 'log').mockImplementation(jest.fn())
