@@ -20,7 +20,6 @@ import bio.terra.pearl.core.service.portal.exception.PortalEnvironmentMissing;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.exception.StudyEnvironmentMissing;
-import bio.terra.pearl.core.service.workflow.TriggerActionService;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,13 +29,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TriggerExtService {
   private final AdminEmailService adminEmailService;
-  private final TriggerActionService triggerActionService;
   private final EmailTemplateService emailTemplateService;
-  private TriggerService triggerService;
-  private AuthUtilService authUtilService;
-  private StudyEnvironmentService studyEnvironmentService;
-  private PortalEnvironmentService portalEnvironmentService;
-  private NotificationDispatcher notificationDispatcher;
+  private final TriggerService triggerService;
+  private final AuthUtilService authUtilService;
+  private final StudyEnvironmentService studyEnvironmentService;
+  private final PortalEnvironmentService portalEnvironmentService;
+  private final NotificationDispatcher notificationDispatcher;
 
   public TriggerExtService(
       TriggerService triggerService,
@@ -45,7 +43,6 @@ public class TriggerExtService {
       PortalEnvironmentService portalEnvironmentService,
       NotificationDispatcher notificationDispatcher,
       AdminEmailService adminEmailService,
-      TriggerActionService triggerActionService,
       EmailTemplateService emailTemplateService) {
     this.triggerService = triggerService;
     this.authUtilService = authUtilService;
@@ -53,7 +50,6 @@ public class TriggerExtService {
     this.portalEnvironmentService = portalEnvironmentService;
     this.notificationDispatcher = notificationDispatcher;
     this.adminEmailService = adminEmailService;
-    this.triggerActionService = triggerActionService;
     this.emailTemplateService = emailTemplateService;
   }
 

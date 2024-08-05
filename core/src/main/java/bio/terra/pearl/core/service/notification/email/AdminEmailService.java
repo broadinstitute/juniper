@@ -31,9 +31,9 @@ public class AdminEmailService {
   private final StudyEnvironmentService studyEnvironmentService;
   private final StudyService studyService;
   private final PortalEnvironmentService portalEnvironmentService;
-  private EmailTemplateService emailTemplateService;
-  private ApplicationRoutingPaths routingPaths;
-  private SendgridClient sendgridClient;
+  private final EmailTemplateService emailTemplateService;
+  private final ApplicationRoutingPaths routingPaths;
+  private final SendgridClient sendgridClient;
 
   public AdminEmailService(EmailTemplateService emailTemplateService,
                            ApplicationRoutingPaths routingPaths,
