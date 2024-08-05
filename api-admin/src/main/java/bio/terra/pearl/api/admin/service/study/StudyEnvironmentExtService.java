@@ -73,7 +73,7 @@ public class StudyEnvironmentExtService {
 
   @EnforcePortalStudyEnvPermission(permission = "study_settings_edit")
   public void updateKitTypes(PortalStudyEnvAuthContext authContext, List<String> updatedKitTypes) {
-    List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllKitTypes();
+    List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllowedKitTypes();
     List<KitType> existingKitTypes =
         studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(
             authContext.getStudyEnvironment().getId());
@@ -105,7 +105,7 @@ public class StudyEnvironmentExtService {
 
   @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
   public List<KitType> getAllowedKitTypes(PortalStudyEnvAuthContext authContext) {
-    return studyEnvironmentKitTypeService.findAllKitTypes();
+    return studyEnvironmentKitTypeService.findAllowedKitTypes();
   }
 
   @EnforcePortalStudyEnvPermission(permission = AuthUtilService.BASE_PERMISSON)
