@@ -13,7 +13,6 @@ import { RowDragHandleCell, useDraggableTableLayout } from 'util/tableDragDropUt
 import SurveyPublishModal from './SurveyPublishModal'
 
 import { UniqueIdentifier } from '@dnd-kit/core'
-import InfoPopup from 'components/forms/InfoPopup'
 
 
 export type SurveyTableProps = {
@@ -120,10 +119,12 @@ export default function SurveyEnvironmentTable(props: SurveyTableProps) {
 
   return <div>
     { renderedTable }
-    { isReordered && <div>
-      <Button variant="secondary" onClick={saveOrdering}>Save new order</Button>
-      <InfoPopup content={'Oder will only be updated for the sandbox environment'}/>
-    </div>}
+    { (orderedStableIds.length > 1 && props.studyEnvParams.envName == 'sandbox') && <div>
+      <Button variant={isReordered ? 'primary' : 'secondary'} onClick={saveOrdering} disabled={!isReordered}
+        tooltip={isReordered ? 'Order will be updated for the sandbox environment.' :
+          'No changes to save.  Drag and drop to reorder. '
+        }>Save reordering</Button>
+    </div> }
   </div>
 }
 
