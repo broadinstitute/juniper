@@ -13,9 +13,12 @@ import bio.terra.pearl.core.service.participant.EnrolleeService;
 import bio.terra.pearl.core.service.participant.WithdrawnEnrolleeService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentConfigService;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
+import jakarta.ws.rs.BadRequestException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -74,30 +77,26 @@ public class StudyEnvironmentExtService {
   @EnforcePortalStudyEnvPermission(permission = "study_settings_edit")
   public void updateKitTypes(PortalStudyEnvAuthContext authContext, List<String> updatedKitTypes) {
     List<KitType> allowedKitTypes = studyEnvironmentKitTypeService.findAllowedKitTypes();
-    List<KitType> existingKitTypes =
+    List<KitType> configuredKitTypes =
         studyEnvironmentKitTypeService.findKitTypesByStudyEnvironmentId(
             authContext.getStudyEnvironment().getId());
 
-    if (!new HashSet<>(updatedKitTypes)
-        .containsAll(existingKitTypes.stream().map(KitType::getName).toList())) {
-      throw new IllegalArgumentException("You may not remove a kit type from a study environment");
-    }
-
-    if (!new HashSet<>(allowedKitTypes.stream().map(KitType::getName).toList())
-        .containsAll(updatedKitTypes)) {
-      throw new IllegalArgumentException("Invalid kit type");
-    }
+    validateNoRemovalOfKitTypes(updatedKitTypes, configuredKitTypes);
+    validateKitTypes(updatedKitTypes, allowedKitTypes);
 
     List<StudyEnvironmentKitType> newKitTypes = new ArrayList<>();
     for (String kitTypeName : updatedKitTypes) {
       KitType kitType =
-          allowedKitTypes.stream().filter(k -> k.getName().equals(kitTypeName)).findFirst().get();
-      StudyEnvironmentKitType foo =
+          allowedKitTypes.stream()
+              .filter(k -> k.getName().equals(kitTypeName))
+              .findFirst()
+              .orElseThrow(() -> new BadRequestException("Invalid kit type"));
+      StudyEnvironmentKitType studyEnvironmentKitType =
           StudyEnvironmentKitType.builder()
               .studyEnvironmentId(authContext.getStudyEnvironment().getId())
               .kitTypeId(kitType.getId())
               .build();
-      newKitTypes.add(foo);
+      newKitTypes.add(studyEnvironmentKitType);
     }
 
     studyEnvironmentKitTypeService.bulkCreate(newKitTypes);
@@ -117,4 +116,25 @@ public class StudyEnvironmentExtService {
   }
 
   public record StudyEnvStats(int enrolleeCount, int withdrawnCount) {}
+
+  protected void validateNoRemovalOfKitTypes(
+      List<String> updatedKitTypes, List<KitType> existingKitTypes) {
+    Set<String> updatedKitTypeSet = new HashSet<>(updatedKitTypes);
+    Set<String> existingKitTypeSet =
+        existingKitTypes.stream().map(KitType::getName).collect(Collectors.toSet());
+
+    if (!updatedKitTypeSet.containsAll(existingKitTypeSet)) {
+      throw new BadRequestException("You may not remove a kit type from a study environment");
+    }
+  }
+
+  protected void validateKitTypes(List<String> updatedKitTypes, List<KitType> allowedKitTypes) {
+    Set<String> updatedKitTypeSet = new HashSet<>(updatedKitTypes);
+    Set<String> allowedKitTypeSet =
+        allowedKitTypes.stream().map(KitType::getName).collect(Collectors.toSet());
+
+    if (!allowedKitTypeSet.containsAll(updatedKitTypeSet)) {
+      throw new BadRequestException("Invalid kit type");
+    }
+  }
 }
