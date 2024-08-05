@@ -71,11 +71,11 @@ describe('SurveyEnvironmentTest', () => {
     />)
 
     expect(screen.getByText(configuredSurveys[0].survey.name)).toBeInTheDocument()
-    const sandboxCell = getTableCell(screen.getByRole('table'), configuredSurveys[0].survey.name, 'sandbox')
+    const sandboxCell = getTableCell(screen.getByRole('table'), configuredSurveys[0].survey.name, 'sandbox', 1)
     await userEvent.click(sandboxCell.querySelector('button[aria-label="Configure survey menu"]')!)
     expect(screen.getByText('Publish to irb')).toBeVisible()
 
-    const irbCell = getTableCell(screen.getByRole('table'), configuredSurveys[0].survey.name, 'sandbox')
+    const irbCell = getTableCell(screen.getByRole('table'), configuredSurveys[0].survey.name, 'sandbox', 1)
     await userEvent.click(irbCell.querySelector('button[aria-label="Configure survey menu"]')!)
     expect(screen.getByText('Publish to live')).toBeVisible()
     await userEvent.click(screen.getByText('Publish to live'))

@@ -38,6 +38,7 @@ import { useSearchParams } from 'react-router-dom'
 import { TextInput } from 'components/forms/TextInput'
 import classNames from 'classnames'
 
+
 /**
  * Returns a debounced input react component
  * Adapted from https://tanstack.com/table/v8/docs/examples/react/filters
@@ -411,7 +412,7 @@ export type BasicTableConfig<T> = {
 }
 
 /** Default configuration if no `BasicTableConfig` is provided or any of its attributes are not specified. */
-const defaultBasicTableConfig = {
+export const defaultBasicTableConfig = {
   filterable: false
 }
 

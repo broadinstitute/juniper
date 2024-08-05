@@ -661,14 +661,14 @@ export default {
     return await this.processResponse(response)
   },
 
-  async updateConfiguredSurvey(portalShortcode: string, studyShortcode: string, envName: string,
-    configuredSurvey: StudyEnvironmentSurvey): Promise<StudyEnvironmentSurvey> {
-    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys/${configuredSurvey.id}`
+  async updateConfiguredSurveys(portalShortcode: string, studyShortcode: string, envName: string,
+    configuredSurveys: StudyEnvironmentSurvey[]): Promise<StudyEnvironmentSurvey[]> {
+    const url = `${baseStudyEnvUrl(portalShortcode, studyShortcode, envName)}/configuredSurveys`
 
     const response = await fetch(url, {
       method: 'PATCH',
       headers: this.getInitHeaders(),
-      body: JSON.stringify(configuredSurvey)
+      body: JSON.stringify(configuredSurveys)
     })
     return await this.processJsonResponse(response)
   },

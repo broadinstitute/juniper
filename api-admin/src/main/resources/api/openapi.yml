@@ -261,6 +261,23 @@ paths:
           content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
+    patch:
+      summary: Updates a list of configured surveys, such as by changing order
+      tags: [ configuredSurvey ]
+      operationId: patch
+      parameters:
+        - *portalShortcodeParam
+        - *studyShortcodeParam
+        - *envNameParam
+      requestBody:
+        required: true
+        content: *jsonContent
+      responses:
+        '200':
+          description: list of saved configuredSurvey objects
+          content: *jsonContent
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/configuredSurveys/replace:
     post:
       summary: Sets a configured survey on the environment, deactivating any existing configured surveys with the same stableId.
@@ -292,24 +309,6 @@ paths:
       responses:
         '204':
           description: No Content
-        '500':
-          $ref: '#/components/responses/ServerError'
-    patch:
-      summary: Updates a configured survey, such as by changing order or deactivating
-      tags: [ configuredSurvey ]
-      operationId: patch
-      parameters:
-        - *portalShortcodeParam
-        - *studyShortcodeParam
-        - *envNameParam
-        - { name: configSurveyId, in: path, required: true, schema: { type: string, format: uuid } }
-      requestBody:
-        required: true
-        content: *jsonContent
-      responses:
-        '200':
-          description: saved configuredSurvey object
-          content: *jsonContent
         '500':
           $ref: '#/components/responses/ServerError'
   /api/portals/v1/{portalShortcode}/studies/{studyShortcode}/env/{envName}/enrollee/{enrolleeShortcode}/surveys/{stableId}/{version}:
