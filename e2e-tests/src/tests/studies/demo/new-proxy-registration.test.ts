@@ -22,33 +22,35 @@ test.describe('Proxy', () => {
       const prequal = await goToDemoPreEnroll(page)
 
       await prequal.getQuestion(data.PreEnroll.ProxyQuestion).select(data.PreEnroll.ProxyAnswerYes)
-      expect(await prequal.progress()).toMatch('Answered 1/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 1/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.ProxyGivenName).fillIn('Jonas')
-      expect(await prequal.progress()).toMatch('Answered 2/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 2/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.ProxyFamilyName).fillIn('Salk')
-      expect(await prequal.progress()).toMatch('Answered 3/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 3/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.GivenName, { exact: true }).fillIn('Peter')
-      expect(await prequal.progress()).toMatch('Answered 4/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 4/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.FamilyName, { exact: true }).fillIn('Salk')
-      expect(await prequal.progress()).toMatch('Answered 5/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 5/10 questions')
 
       await prequal.clickByRole('button', 'Next')
 
       await prequal.getQuestion(data.PreEnroll.SouthAsianAncestry).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 6/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 6/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.UnderstandEnglish).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 7/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 7/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.IsAdult).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 8/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 8/10 questions')
 
       await prequal.getQuestion(data.PreEnroll.LiveInUS).select('Yes')
-      expect(await prequal.progress()).toMatch('Answered 9/9 questions')
+      expect(await prequal.progress()).toMatch('Answered 9/10 questions')
+
+      await prequal.getQuestion(data.PreEnroll.marketing).select('Yes')
 
       await prequal.submit()
     })
