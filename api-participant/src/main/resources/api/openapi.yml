@@ -59,10 +59,10 @@ paths:
           content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/event/v1/track:
+  /api/public/log/v1/track:
     post:
       summary: Tracks a user event
-      tags: [ event ]
+      tags: [ logging ]
       operationId: trackEvent
       requestBody:
         required: true
@@ -80,10 +80,10 @@ paths:
           content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/event/v1/engage:
+  /api/public/log/v1/engage:
     post:
-      summary: Tracks a user engagement event
-      tags: [ event ]
+      summary: Tracks a user engagement event (stub)
+      tags: [ logging ]
       operationId: trackEngage
       requestBody:
         required: true
@@ -101,10 +101,10 @@ paths:
           content: { application/json: { schema: { type: string }}}
         '500':
           $ref: '#/components/responses/ServerError'
-  /api/public/event/v1/groups:
+  /api/public/log/v1/groups:
     post:
-      summary: Tracks user group
-      tags: [ event ]
+      summary: Tracks user groups (stub)
+      tags: [ logging ]
       operationId: trackGroups
       requestBody:
         required: true

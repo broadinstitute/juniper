@@ -53,17 +53,17 @@ function App() {
   const { localContent, portal, portalEnv } = usePortalEnv()
 
   mixpanel.init('placeholder-token', {
-    'debug': true,
+    'debug': false,
     'track_pageview': 'url-with-path',
     'persistence': 'localStorage',
     'api_payload_format': 'json',
     'api_host': `https://${window.location.host}`,
     'api_routes': {
-      track: 'api/public/event/v1/track',
-      // the two following routes are not actually implemented yet,
+      track: 'api/public/log/v1/track',
+      // the two following routes are stubs in the Juniper API,
       // but they must be specified otherwise Mixpanel errors out
-      engage: 'api/public/event/v1/engage',
-      groups: 'api/public/event/v1/groups'
+      engage: 'api/public/log/v1/engage',
+      groups: 'api/public/log/v1/groups'
     }
   })
 

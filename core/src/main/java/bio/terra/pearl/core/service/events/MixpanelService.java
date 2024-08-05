@@ -40,7 +40,6 @@ public class MixpanelService {
                     event.getJSONObject("properties")
                             .put("token", env.getProperty("mixpanel.token"))
             );
-            log.info("Preparing Mixpanel event: {}", updatedEvent.toString());
 
             delivery.addMessage(updatedEvent);
         }
