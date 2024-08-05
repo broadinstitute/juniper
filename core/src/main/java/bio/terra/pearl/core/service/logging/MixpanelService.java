@@ -39,7 +39,7 @@ public class MixpanelService {
         deliverEvents(delivery);
     }
 
-    public JSONObject buildEvent(JSONObject event) {
+    protected JSONObject buildEvent(JSONObject event) {
         MessageBuilder messageBuilder = new MessageBuilder(env.getProperty("mixpanel.token"));
 
         return messageBuilder.event(
@@ -50,7 +50,7 @@ public class MixpanelService {
         );
     }
 
-    public void deliverEvents(ClientDelivery delivery) {
+    protected void deliverEvents(ClientDelivery delivery) {
         MixpanelAPI mixpanel = new MixpanelAPI();
 
         try {
