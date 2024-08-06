@@ -17,6 +17,7 @@ import TriggerTypeDisplay from '../../notifications/TriggerTypeDisplay'
 import { Link } from 'react-router-dom'
 import _capitalize from 'lodash/capitalize'
 import _startCase from 'lodash/startCase'
+import _lower from 'lodash/lowerCase'
 import {
   ColumnDef,
   getCoreRowModel,
@@ -91,6 +92,15 @@ export default function EnrolleeTimeline({ enrollee, studyEnvContext }:
       header: 'time',
       accessorKey: 'createdAt',
       cell: info => instantToDefaultString(info.getValue() as number)
+    },
+    {
+      header: 'notification type',
+      accessorKey: 'notificationType',
+      cell: info => _startCase(_lower(info.getValue() as string))
+    },
+    {
+      header: 'sent to',
+      accessorKey: 'sentTo'
     },
     {
       header: 'trigger',

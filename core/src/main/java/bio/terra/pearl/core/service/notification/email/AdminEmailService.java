@@ -1,18 +1,23 @@
 package bio.terra.pearl.core.service.notification.email;
 
 import bio.terra.pearl.core.model.admin.AdminUser;
-import bio.terra.pearl.core.model.notification.EmailTemplate;
-import bio.terra.pearl.core.model.notification.LocalizedEmailTemplate;
+import bio.terra.pearl.core.model.notification.*;
+import bio.terra.pearl.core.model.participant.Enrollee;
 import bio.terra.pearl.core.model.portal.Portal;
 import bio.terra.pearl.core.model.portal.PortalEnvironment;
 import bio.terra.pearl.core.model.study.Study;
 import bio.terra.pearl.core.model.study.StudyEnvironment;
+import bio.terra.pearl.core.service.admin.AdminUserService;
+import bio.terra.pearl.core.service.exception.NotFoundException;
 import bio.terra.pearl.core.service.notification.NotificationContextInfo;
+import bio.terra.pearl.core.service.notification.NotificationService;
 import bio.terra.pearl.core.service.notification.substitutors.AdminEmailSubstitutor;
 import bio.terra.pearl.core.service.portal.PortalEnvironmentService;
+import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeContext;
 import bio.terra.pearl.core.service.study.StudyEnvironmentService;
 import bio.terra.pearl.core.service.study.StudyService;
+import bio.terra.pearl.core.service.workflow.EnrolleeEvent;
 import bio.terra.pearl.core.shared.ApplicationRoutingPaths;
 import com.sendgrid.Mail;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +25,7 @@ import org.apache.commons.text.StringSubstitutor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -34,19 +39,25 @@ public class AdminEmailService {
   private final EmailTemplateService emailTemplateService;
   private final ApplicationRoutingPaths routingPaths;
   private final SendgridClient sendgridClient;
+  private final AdminUserService adminUserService;
+  private final PortalService portalService;
+  private final NotificationService notificationService;
 
   public AdminEmailService(EmailTemplateService emailTemplateService,
                            ApplicationRoutingPaths routingPaths,
                            SendgridClient sendgridClient,
                            StudyEnvironmentService studyEnvironmentService,
                            StudyService studyService,
-                           PortalEnvironmentService portalEnvironmentService) {
+                           PortalEnvironmentService portalEnvironmentService, AdminUserService adminUserService, PortalService portalService, NotificationService notificationService) {
     this.emailTemplateService = emailTemplateService;
     this.routingPaths = routingPaths;
     this.sendgridClient = sendgridClient;
     this.studyEnvironmentService = studyEnvironmentService;
     this.studyService = studyService;
     this.portalEnvironmentService = portalEnvironmentService;
+    this.adminUserService = adminUserService;
+    this.portalService = portalService;
+    this.notificationService = notificationService;
   }
 
   @Async
@@ -55,7 +66,12 @@ public class AdminEmailService {
     sendEmail(contextInfo, adminUser, null);
   }
 
-  public void sendEmail(NotificationContextInfo contextInfo, AdminUser adminUser, @Nullable EnrolleeContext enrolleeContext) {
+
+  /**
+   * Sends an admin email; if the email template is about a specific enrollee, enrolleeContext should be provided
+   * so that there can be enrollee-specific substitutions in the email.
+   */
+  public void sendEmail(NotificationContextInfo contextInfo, AdminUser adminUser, EnrolleeContext enrolleeContext) {
     if (!shouldSendEmail(contextInfo)) {
       return;
     }
@@ -71,10 +87,53 @@ public class AdminEmailService {
     }
   }
 
-  protected void buildAndSendEmail(LocalizedEmailTemplate localizedEmailTemplate, String adminUsername, StringSubstitutor substitutor) throws Exception {
+  protected String buildAndSendEmail(LocalizedEmailTemplate localizedEmailTemplate, String adminUsername, StringSubstitutor substitutor) throws Exception {
     String fromAddress = routingPaths.getSupportEmailAddress();
     Mail mail = sendgridClient.buildEmail(localizedEmailTemplate, adminUsername, fromAddress, "Juniper", substitutor);
-    sendgridClient.sendEmail(mail);
+    return sendgridClient.sendEmail(mail);
+  }
+
+  protected Mail buildEmailToAllAdmins(LocalizedEmailTemplate localizedEmailTemplate, StringSubstitutor substitutor, List<AdminUser> adminUsers) throws Exception {
+
+    return sendgridClient.buildMultiRecipientMail(
+            localizedEmailTemplate,
+            adminUsers.stream().map(AdminUser::getUsername).toList(),
+            routingPaths.getSupportEmailAddress(),
+            null,
+            substitutor);
+  }
+
+  public void sendEmailFromTrigger(Trigger trigger, EnrolleeEvent event) throws Exception {
+    Portal portal = portalService
+            .findByPortalEnvironmentId(event.getPortalParticipantUser().getPortalEnvironmentId())
+            .orElseThrow(() -> new IllegalStateException("Portal not found"));
+    List<AdminUser> adminUsers = adminUserService.findAllWithRolesByPortal(portal.getId());
+
+    EmailTemplate emailTemplate = emailTemplateService.find(trigger.getEmailTemplateId())
+            .orElseThrow(() -> new NotFoundException("Email template not found"));
+    emailTemplateService.attachLocalizedTemplates(emailTemplate);
+
+    NotificationContextInfo contextInfo = loadContextInfoFromEnrollee(emailTemplate, portal, event.getEnrolleeContext().getEnrollee().getStudyEnvironmentId());
+
+    StringSubstitutor substitutor = AdminEmailSubstitutor.newSubstitutor(
+            null,
+            contextInfo,
+            routingPaths,
+            event.getEnrolleeContext());
+
+
+    Mail mail = buildEmailToAllAdmins(
+            contextInfo.template().getTemplateForLanguage("en").orElseThrow(() -> new IllegalStateException("Failed to send admin email: expected to find an English template, but could not find it.")),
+            substitutor,
+            adminUsers);
+
+    String id = sendgridClient.sendEmail(mail);
+
+    createAdminNotification(
+            event.getEnrollee(),
+            trigger,
+            id,
+            adminUsers.stream().map(AdminUser::getUsername).toList());
   }
 
   public boolean shouldSendEmail(NotificationContextInfo contextInfo) {
@@ -120,6 +179,24 @@ public class AdminEmailService {
             study,
             template
     );
+  }
 
+  private void createAdminNotification(Enrollee enrollee, Trigger trigger, String sendgridApiId, List<String> sentTo) {
+    Notification notification = Notification.builder()
+            .enrolleeId(enrollee.getId())
+            .enrollee(enrollee)
+            .participantUserId(enrollee.getParticipantUserId())
+            .portalEnvironmentId(trigger.getPortalEnvironmentId())
+            .studyEnvironmentId(enrollee.getStudyEnvironmentId())
+            .triggerId(trigger.getId())
+            .deliveryStatus(NotificationDeliveryStatus.SENT)
+            .deliveryType(NotificationDeliveryType.EMAIL)
+            .notificationType(NotificationType.ADMIN)
+            .sentTo(String.join(" ", sentTo))
+            .sendgridApiRequestId(sendgridApiId)
+            .retries(0)
+            .build();
+
+    notificationService.create(notification);
   }
 }

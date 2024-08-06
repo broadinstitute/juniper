@@ -8,7 +8,6 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.commons.text.lookup.StringLookup;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,7 +45,7 @@ public class AdminEmailSubstitutor implements StringLookup {
   public static StringSubstitutor newSubstitutor(String adminUsername,
                                                  NotificationContextInfo contextInfo,
                                                  ApplicationRoutingPaths routingPaths,
-                                                 @Nullable EnrolleeContext enrolleeContext) {
+                                                 EnrolleeContext enrolleeContext) {
     return new StringSubstitutor(new AdminEmailSubstitutor(adminUsername, contextInfo, routingPaths, enrolleeContext));
   }
 

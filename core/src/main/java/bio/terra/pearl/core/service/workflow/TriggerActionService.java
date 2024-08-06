@@ -1,19 +1,19 @@
 package bio.terra.pearl.core.service.workflow;
 
-import bio.terra.pearl.core.model.admin.AdminUser;
 import bio.terra.pearl.core.model.audit.DataAuditInfo;
-import bio.terra.pearl.core.model.notification.*;
-import bio.terra.pearl.core.model.portal.Portal;
+import bio.terra.pearl.core.model.notification.Trigger;
+import bio.terra.pearl.core.model.notification.TriggerActionType;
+import bio.terra.pearl.core.model.notification.TriggerScope;
+import bio.terra.pearl.core.model.notification.TriggerType;
 import bio.terra.pearl.core.model.workflow.ParticipantTask;
 import bio.terra.pearl.core.service.admin.AdminUserService;
-import bio.terra.pearl.core.service.exception.NotFoundException;
-import bio.terra.pearl.core.service.notification.NotificationContextInfo;
 import bio.terra.pearl.core.service.notification.NotificationDispatcher;
 import bio.terra.pearl.core.service.notification.TriggerService;
 import bio.terra.pearl.core.service.notification.email.AdminEmailService;
 import bio.terra.pearl.core.service.notification.email.EmailTemplateService;
 import bio.terra.pearl.core.service.portal.PortalService;
 import bio.terra.pearl.core.service.rule.EnrolleeRuleEvaluator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ import java.util.Objects;
  * and then executes the actions
  */
 @Service
+@Slf4j
 public class TriggerActionService {
     private final TriggerService triggerService;
     private final NotificationDispatcher notificationDispatcher;
@@ -64,29 +65,18 @@ public class TriggerActionService {
                 notificationDispatcher.dispatchNotificationAsync(trigger, event.getEnrolleeContext(),
                         event.getPortalParticipantUser().getPortalEnvironmentId());
             } else if (TriggerActionType.ADMIN_NOTIFICATION.equals(trigger.getActionType())) {
-                sendEmailToAllAdmins(trigger, event);
+                try {
+                    adminEmailService.sendEmailFromTrigger(trigger, event);
+                } catch (Exception e) {
+                    log.error("Failed to send admin email for trigger {}", trigger.getId(), e);
+                }
             } else if (TriggerActionType.TASK_STATUS_CHANGE.equals(trigger.getActionType())) {
                 updateTaskStatus(trigger, event);
             }
         }
     }
 
-    private void sendEmailToAllAdmins(Trigger trigger, EnrolleeEvent event) {
-        Portal portal = portalService
-                .findByPortalEnvironmentId(event.getPortalParticipantUser().getPortalEnvironmentId())
-                .orElseThrow(() -> new IllegalStateException("Portal not found"));
 
-        EmailTemplate emailTemplate = emailTemplateService.find(trigger.getEmailTemplateId())
-                .orElseThrow(() -> new NotFoundException("Email template not found"));
-        emailTemplateService.attachLocalizedTemplates(emailTemplate);
-
-        NotificationContextInfo contextInfo = adminEmailService.loadContextInfoFromEnrollee(emailTemplate, portal, event.getEnrolleeContext().getEnrollee().getStudyEnvironmentId());
-
-        List<AdminUser> adminUsers = adminUserService.findAllWithRolesByPortal(portal.getId());
-        for (AdminUser adminUser : adminUsers) {
-            adminEmailService.sendEmail(contextInfo, adminUser, event.getEnrolleeContext());
-        }
-    }
     /**
      * for tasks of type TASK_STATUS_CHANGE, update the task status
      */
